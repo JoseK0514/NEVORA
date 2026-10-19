@@ -1,0 +1,11 @@
+diff --git a/src/app/app/schedule/coverage/loading.tsx b/src/app/app/schedule/coverage/loading.tsx
+new file mode 100644
+--- /dev/null
++++ b/src/app/app/schedule/coverage/loading.tsx
+@@ -0,0 +1,6 @@
++import { RouteSkeleton } from "@/components/route-skeleton";
++
++/** ST-WA-1 / IS-WA-5: Coverage uses its own form-shaped loading state and existing per-width band rules. */
++export default function Loading() {
++  return <RouteSkeleton route="wa-coverage" label="coverage" shape="cards" band={312} />;
++}

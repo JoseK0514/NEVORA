@@ -1,0 +1,87 @@
+--- a/src/components/employee-updates.tsx
++++ b/src/components/employee-updates.tsx
+@@ -50,7 +50,7 @@
+    <div className="updates-toolbar">
+     {/* P3-ST-05: the filters are there from the first frame (disabled, counts "–" until read), so the list never jumps down. */}
+     <fieldset className="updates-filters" disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
+-    <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason && unavailableReason !== 'access_denied' ? 'Try again' : 'Refresh'}</span></button>
++    {unavailableReason !== 'access_denied' ? <button type="button" className={unavailableReason ? "nv-btn" : "updates-refresh"} data-kind={unavailableReason ? "primary" : undefined} disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason ? 'Try again' : 'Refresh'}</span></button> : null}
+    </div>
+    {current?.state === 'partial' ? <p className="updates-partial" role="status"><NavIcon name="alert" />Some updates couldn’t load. Try again to check for the rest.</p> : null}
+    {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : unavailableReason === 'access_denied' ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : unavailableReason === 'access_denied' ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.'}</p>{unavailableReason === 'access_denied' ? <Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link> : null}</div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
+--- a/src/components/timecards.tsx
++++ b/src/components/timecards.tsx
+@@ -166,9 +166,9 @@
+       <label>Period start<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
+       <label>Period end<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
+       <button className={corporate?employeeButtonClass('primary','button primary'):'button primary'} disabled={paused||busy||!!pending}>View period</button>
+-      <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label={readFailed?'Try again to load timecards':'Refresh timecards'} disabled={paused||busy} onClick={()=>void refresh(period)}>{readFailed?'Try again':corporate?<><span className="employee-corporate-desktop-copy">Refresh timecards</span><span className="employee-corporate-mobile-copy">Refresh</span></>:<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>
++      {!signInRequired?<button type="button" className={corporate?employeeButtonClass(readFailed?'primary':'secondary',readFailed?'button primary':'button secondary'):readFailed?'button primary':'button secondary'} aria-label={readFailed?'Try again to load timecards':'Refresh timecards'} disabled={paused||busy} onClick={()=>void refresh(period)}>{readFailed?<><NavIcon name="refresh" size={18}/>Try again</>:corporate?<><span className="employee-corporate-desktop-copy">Refresh timecards</span><span className="employee-corporate-mobile-copy">Refresh</span></>:<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>:null}
+     </form>
+-    <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}{signInRequired?<> <Link href="/login">Sign in</Link></>:null}</p>
++    <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}{signInRequired?<> <Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link></>:null}</p>
+     </div>
+     {manager&&currentActor&&data?.state==='ready'&&cards.length?<dl className={styles.overview} aria-label="Period overview"><div><dt>Timecards</dt><dd>{cards.length}</dd></div><div><dt>Need attention</dt><dd>{cards.filter(item=>needsAttention(item.card)).length}</dd></div><div><dt>Finalized</dt><dd>{cards.filter(item=>item.state==='FINALIZED').length}</dd></div></dl>:null}
+     {!manager?<Link href="/app/my-time" className={corporate?employeeRowClass('employee-corporate-correction-link '+styles.link):styles.link}><NavIcon name="clock" size={18}/>{corporate?<><span className="employee-corporate-desktop-copy">Request a correction in My time →</span><span className="employee-corporate-mobile-copy">Request a correction<small>Continue in My time</small></span><CaretRightIcon className="employee-corporate-caret" size={20} aria-hidden="true"/></>:'Request a correction in My time →'}</Link>:null}
+--- a/src/components/payroll/payroll-ui.tsx
++++ b/src/components/payroll/payroll-ui.tsx
+@@ -23,7 +23,7 @@
+ export function PayrollState({ title, children, error = false, retry }: { title: string; children: ReactNode; error?: boolean; retry?: () => void }) {
+   return <div className={`pw-state${error ? ' pw-state-error' : ''}`} role={error ? 'alert' : 'status'}>
+     {error ? <WarningCircleIcon size={25} aria-hidden /> : <FileTextIcon size={25} aria-hidden />}
+-    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar, .payroll-workflow #payroll-company-defaults, .payroll-workflow .pw-panel-heading h2', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} aria-hidden />Try again</button>}</div>
++    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar, .payroll-workflow #payroll-company-defaults, .payroll-workflow .pw-panel-heading h2', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} aria-hidden />Try again</button>}</div>
+   </div>;
+ }
+ export function OperationFeedback({ operation }: { operation: ReturnType<typeof usePayrollOperation> }) {
+--- a/src/components/notification-inbox.tsx
++++ b/src/components/notification-inbox.tsx
+@@ -58,7 +58,7 @@
+  return <section ref={root} className={styles.inbox} aria-label="Notifications" data-private-view="notifications">
+   <header className={styles.toolbar}>
+    <div className={styles.inboxTitle}><BellIcon size={22} aria-hidden="true"/><div><h2>Your alerts</h2><p>Review an update. Take the next step.</p></div></div>
+-   {denied?<Link className={styles.refresh} href="/login">Sign in</Link>:<button className={styles.refresh} type="button" data-retry={unavailable?'true':undefined} disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Try again':'Refresh'}</span></button>}
++   {denied?<Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link>:<button className={styles.refresh} type="button" data-retry={unavailable?'true':undefined} disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Try again':'Refresh'}</span></button>}
+   </header>
+   {readNotice?<p className={styles.notice} role="status">{readNotice}</p>:null}
+   {ready?<>
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -351,7 +351,7 @@
+         </HoldHeight>
+         <HoldHeight as="aside" holding={!snapshot} memory="employee-home-clock" className={styles.recordedSlot} aria-label="Own recorded time">
+           {snapshot ? ownTimeSlot : <div className={styles.recordedFallback}>
+-            <EmployeeTimeView compact state={{
++            <EmployeeTimeView compact showRecovery={false} state={{
+               time: loading || paused ? null : {state: 'unavailable', reason: denied ? 'access_denied' : 'read_failed'},
+               refreshing: refreshing || loading, paused,
+             }} onRefresh={refreshHome}/>
+@@ -369,7 +369,7 @@
+       <footer className={styles.freshness}>
+         {snapshot ? <small data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
+         {/* P3-WR-14: a failed read gets the same control as every other page: a primary "Try again" with the refresh icon. */}
+-        {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
++        {denied ? <Link className="nv-btn" data-kind="primary" href="/login">Sign in <Arrow forward/></Link>
+           : (!snapshot || snapshot.publicationState === 'unavailable') && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={refreshHome} disabled={paused} aria-disabled={refreshing || undefined} aria-busy={refreshing || undefined}>
+             <ArrowsClockwiseIcon size={18} aria-hidden="true"/>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
+           </button>
+--- a/src/components/employee-time-panel.tsx
++++ b/src/components/employee-time-panel.tsx
+@@ -51,7 +51,7 @@
+  </details>;
+ }
+ 
+-export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}:{state:EmployeeTimePanelState;compact?:boolean;corporate?:boolean;onRefresh:()=>void}){
++export function EmployeeTimeView({state,compact=false,corporate=false,showRecovery=true,onRefresh}:{state:EmployeeTimePanelState;compact?:boolean;corporate?:boolean;showRecovery?:boolean;onRefresh:()=>void}){
+  const {time,paused,refreshing}=state;
+  // IS-P4-19: keep focus during a read and guard another activation before React renders the pending state.
+  let refreshStarted=false;
+@@ -63,7 +63,7 @@
+  const unavailable=!denied&&time?.state==='unavailable';
+  const title=paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load your time records':'Loading recorded time';
+  const controls=<div className="employee-time-controls">
+-  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass(unavailable?'primary':'quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} aria-disabled={refreshing||undefined} onClick={refreshTime} disabled={paused}><NavIcon name="refresh" size={16}/>{unavailable?'Try again':'Refresh'}</button>}
++  {showRecovery?(denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass(unavailable?'primary':'quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} aria-disabled={refreshing||undefined} onClick={refreshTime} disabled={paused}><NavIcon name="refresh" size={16}/>{unavailable?'Try again':'Refresh'}</button>):null}
+   {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
+  </div>;
+  const content=<>

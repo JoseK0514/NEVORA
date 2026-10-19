@@ -1,0 +1,1 @@
+Withdrawn proposals. Do not apply. Root clarified these source-fixed behaviors already exist in ready368; old actual RC stays explicitly open until the zero WaveB integration. These drafts are retained only as preparation evidence, not active fixes. No app edits or tests occurred.

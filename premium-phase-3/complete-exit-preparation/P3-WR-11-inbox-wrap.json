@@ -1,0 +1,14 @@
+{
+  "base": "4314266b0020b6f0a566543c8d6b569256c3648f",
+  "finding": "P3-WR-11-inbox-wrap",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md:1060",
+  "sourceSHA": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "files": [
+    "src/components/manager-inbox.tsx"
+  ],
+  "scopeNotes": [
+    "Drops exactly reported ShiftRow whole-range nowrap; existing keepWhole utility keeps an individual time intact and permits a break after its dash. Location and action remain unchanged."
+  ],
+  "applicationFilesEdited": false,
+  "runtimeOrTestsRun": false
+}

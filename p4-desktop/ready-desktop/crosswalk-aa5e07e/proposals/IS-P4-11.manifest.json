@@ -1,0 +1,26 @@
+{
+  "finding": "IS-P4-11",
+  "base": "56570fd0fc5e23503dbb50550af9dfcd965861ec",
+  "sourceTreesEdited": false,
+  "applied": false,
+  "testsRun": false,
+  "browserRun": false,
+  "rootReviewRequired": true,
+  "files": [
+    {
+      "file": "src/components/manager-inbox.tsx",
+      "beforeSha256": "ae35a3081ecefc1c289a7043bc7cd7a7cd68a1303264345e37c60a07bfa6911c",
+      "proposedSha256": "babeeb5d7de4a6045870d4f7a325b1f81b339d2f623883c710f4e566ff2ca2b6"
+    },
+    {
+      "file": "src/components/manager-time-off.tsx",
+      "beforeSha256": "b641583e4246c65ea4b49c374794ae16827618a46d23064c15664d874d9506a8",
+      "proposedSha256": "d013277745bb926a53275a8edff86385118fd1b3ae8c8ff2cd714ac506025ad5"
+    },
+    {
+      "file": "src/app/app/requests/page.tsx",
+      "beforeSha256": "53fcdc0bcbe3edd8c9361c360f888d0932d329bbacb242870576b8b29dd2c658",
+      "proposedSha256": "58bf46b4138578742a20e7047bc82c89961c2af2f6ecb558025240e44af52d6b"
+    }
+  ]
+}

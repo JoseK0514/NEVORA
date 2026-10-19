@@ -1,0 +1,27 @@
+{
+  "base": "56570fd0fc5e23503dbb50550af9dfcd965861ec",
+  "finding": "TC-P3-25",
+  "citation": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md:1200 and1295 on227150b; source cloud round5 Timecards503 is already inbase56570fd",
+  "files": [
+    "src/app/app/error.tsx",
+    "src/components/app-error-screen.tsx",
+    "src/app/app/page.tsx",
+    "src/components/employee-my-schedule.tsx",
+    "src/components/employee-home-reviewed.tsx",
+    "src/components/calendar-subscription-panel.tsx",
+    "src/components/app-error-screen.test.tsx",
+    "src/components/employee-home-reviewed.test.tsx",
+    "src/components/employee-my-schedule.test.tsx"
+  ],
+  "rootAppliesAndAmendsFinding34": true,
+  "applicationFilesEdited": false,
+  "testsRun": false,
+  "scopeNotes": [
+    "Generic root/portal/ManagerHome title and live-alert first sentence follow the exact prescribed Couldn\u2019t load this page.; existing context/retry-before-action copy is retained to avoid unrelated modernization.",
+    "MySchedule failed read uses prescribed heading and existing shared connection/retry helper; its Tryagain action is unchanged.",
+    "ReviewedHome schedule-unavailable copy follows same prescribed phrase; partial schedule failure now selects its existing primaryTryagain branch so failure wording and recovery action agree. Authority and lifecycle untouched.",
+    "Calendar only unavailable-read copy changes; its401/403 branch text, Signin link, command identity, unknown-result retry and protected URL behavior stay as inbase.",
+    "Only existing assertions of changed strings are updated; no tests were executed.",
+    "Exchange, Timeoff, payroll/legal, decided-state and unusedlegacyEmployeeHomeView copy are untouched."
+  ]
+}

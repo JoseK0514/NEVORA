@@ -1,0 +1,16 @@
+# Wave B named finding crosswalk before freeze
+
+Source reports: all five `docs/product/specs/p35-wave-b/inspection/*.md` histories at frozen9bd source, plus latest remote `p35-wave-b/round-4/*.md` (aa5e07e, inspections merge daf5b1b) and local measured round-4-9bd reports. Candidate33 b68f250, patch base56570fd; ready368e98a. CROSSWALK.json lists every named table ID with exact source line and latest row. No earlier unmeasured finding is closed.
+
+Latest two P1 findings are mapped correctly: **ST-WB-15→980e823** keeps both publication labels in PendingLabel; **IS-WB-34→0443030** reveals recovery and actual Check status while the preview-heading effect runs only for a new preview. Both contracts were explicitly ported in ready08548f9. Existing TC-B-16→2e40573,TC-B-32→ed62b42 and parent-read/Company-button IS-B12→21e603b are preserved, with completion gaps below.
+
+Confirmed uncovered source-report scope:
+
+- **IS-B12:** recovery controller clears notice while looking up, unmounting focused Check status. Settings read retry targets only `.pw-toolbar`, which Settings never renders. Signed-out ACK/Withdraw replaces the action with Sign in but never deliberately focuses the new recovery. Existing candidate read-parent patch covers a different transition. Prepared completion patch preserves the notice for the same retained operation (lookup/original retry), keeps recovery buttons focusable/guarded, targets an actual ready heading and tracks whether the user moved before handing focus to Sign in.
+- **IS-B31 Payroll:** original source report explicitly includes reason-field Enter on Payroll settings. eb83869 covers only four Rules forms. Company,Exception andAccess still disable their focused fields; the latter two also disable their submit buttons through the fieldset. Separate Payroll-only patch queued.
+- **IS-B33:** source ready adds the feedback float but leaves Prepare draft and other business actions with literal pending labels/native disabled focus loss. Candidate has the same action markup and needs the float as well. Separate patch queued.
+- **IS-B29:** source refresh timing is improved to remaining/3 and scroll is restored, but unavoidable expiry still unmounts focus/disclosures and never restores those DOM preferences after fresh authorized same-view data. Candidate lacks this UI implementation; ready-only patch queued, privacy expiry unchanged.
+
+All other latest open geometry/type/width IDs have source fix declarations/preservation paths or decided coordinator/legal scopes; this read-only pass adds no new measured geometry defect. Their acceptance remains incomplete and must be measured on the final ready SHA. Retain full3008 all-axe coverage and all five manual areas. No source edits, previews, CI or tests were run for this crosswalk.
+
+Root scope clarification: IS-B10, IS-B14 and IS-B27 are source-fixed integration behavior already present in ready368. Old RC stays explicitly open until verified zero WaveB integration; withdrawn external duplicate drafts are excluded from active patches. Retained causes remain IS-B12, IS-B31 Payroll, IS-B33 on both branches and ready-only IS-B29.

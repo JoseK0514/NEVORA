@@ -1,0 +1,111 @@
+--- a/src/components/payroll/payroll-settings.tsx
++++ b/src/components/payroll/payroll-settings.tsx
+@@ -6,6 +6,8 @@
+ import { readSettings } from './api';
+ import { dollarsToMinor, minorToDollars } from './money';
+ import { usePayrollOperation, usePayrollResource } from './use-payroll';
++import { usePendingPayrollFields } from './pending-fields';
++import { PendingLabel } from '../employee-submit-button';
+ import type { ReactNode } from 'react';
+ import { OperationFeedback, PayrollFrame, PayrollState, PrivacyNote } from './payroll-ui';
+ import { KeepFocusClear } from '../wave-b-forms';
+@@ -84,6 +86,7 @@
+   const locked = operation.locked;
+   const [savingId, setSaving] = useContext(SavingForm);
+   const form = useRef<HTMLFormElement>(null),sent=useRef(false);
++  usePendingPayrollFields(form, locked);
+   useEffect(()=>{
+     if(operation.busy||!sent.current)return;
+     sent.current=false;
+@@ -109,7 +112,7 @@
+       void operation.submit({ action: 'SAVE_SETTINGS', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), preferences: next });
+     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Check payroll preferences.'); }
+   };
+-  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form ref={form} className="wb-form" data-form="company" onSubmit={save}><fieldset disabled={locked} className="wb-form">
++  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form ref={form} className="wb-form" data-form="company" onSubmit={save}><fieldset aria-disabled={locked || undefined} className="wb-form">
+     <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Company and documents</h3></div><div className="wb-body"><div className="wb-grid">
+       <label>Company name on documents<input name="companyName" defaultValue={preferences.companyName} maxLength={160} required /></label>
+       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
+@@ -127,7 +130,7 @@
+       <label>Desired bank channel<select aria-label="Desired bank channel" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No channel preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or channel</option></select></label>
+     </div><p className="wb-note">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p></div></section>
+     <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}</div></section>
+-  </fieldset><div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={locked}>{operation.busy && savingId === 'company' ? 'Saving…' : 'Save company preferences'}</button></div></form></section>;
++  </fieldset><div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div></form></section>;
+ }
+ 
+ function newRule(): PayrollRule { return { id: crypto.randomUUID(), name: '', kind: 'EMPLOYEE_DEDUCTION', method: 'FIXED', amountMinor: null, basisPoints: null, base: 'GROSS', applicability: 'ALL', effectiveFrom: today(), effectiveTo: null, capMinor: null, remittance: 'EMPLOYER' }; }
+@@ -165,19 +168,20 @@
+   const [rules, setRules] = useState(initialRules ?? preferences.rules);
+   const [error, setError] = useState('');
+   const [savingId, setSaving] = useContext(SavingForm);
+-  return <form className="wb-form" data-form="exception" onSubmit={event => {
+-    setSaving('exception');
+-    event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
++  const form = useRef<HTMLFormElement>(null);
++  usePendingPayrollFields(form, operation.locked);
++  return <form ref={form} className="wb-form" data-form="exception" onSubmit={event => {
++    event.preventDefault(); if (operation.locked) return; setSaving('exception'); setError(''); const values = new FormData(event.currentTarget);
+     try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: inherit ? null : rulesFromForm(values, rules) } }); }
+     catch (failure) { setError(failure instanceof Error ? failure.message : 'Check this employee exception.'); }
+-  }}><fieldset disabled={operation.locked} className="wb-form">
++  }}><fieldset aria-disabled={operation.locked || undefined} className="wb-form">
+     <p className="wb-note">Exception revision {revision} · Provider imports continue to determine actual gross and net pay.</p>
+     <label>Statement language<select aria-label="Statement language" name="exceptionLanguage" defaultValue={language ?? ''}><option value="">Inherit company language</option><option value="en">English</option><option value="es">Español</option></select></label>
+     <label className="wb-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>Inherit company deduction and contribution rules</span></label>
+     {!inherit && <><RuleEditor rules={rules} onChange={setRules} /><button className="nv-btn" data-kind="secondary" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule()])}><PlusIcon size={18} aria-hidden />Add employee rule</button></>}
+     <div className="wb-grid"><label>Exception effective date<input name="effectiveFrom" type="date" required defaultValue={today()} /></label><label>Exception reason<input name="reason" required maxLength={300} /></label></div>
+     <ImpactPreview data={data} />{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}
+-    <button className="nv-btn" data-kind="primary" type="submit">{operation.busy && savingId === 'exception' ? 'Saving…' : 'Save employee exception'}</button>
++    <button className="nv-btn" data-kind="primary" type="submit" aria-disabled={operation.locked || undefined}><PendingLabel pending={operation.busy && savingId === 'exception'} pendingText="Saving…">Save employee exception</PendingLabel></button>
+   </fieldset></form>;
+ }
+ 
+@@ -190,15 +194,16 @@
+   const [canReview, setReview] = useState(review);
+   const [canApprove, setApprove] = useState(approve);
+   const [savingId, setSaving] = useContext(SavingForm);
+-  return <form className="wb-form" data-form="access" onSubmit={event => {
+-    setSaving('access');
+-    event.preventDefault(); const values = new FormData(event.currentTarget);
++  const form = useRef<HTMLFormElement>(null);
++  usePendingPayrollFields(form, operation.locked);
++  return <form ref={form} className="wb-form" data-form="access" onSubmit={event => {
++    event.preventDefault(); if (operation.locked) return; setSaving('access'); const values = new FormData(event.currentTarget);
+     void operation.submit({ action: 'SET_GRANT', expectedRevision: revision, reason: String(values.get('reason')).trim(), grant: { employeeId, review: canReview, approve: canApprove } });
+-  }}><fieldset disabled={operation.locked} className="wb-form">
++  }}><fieldset aria-disabled={operation.locked || undefined} className="wb-form">
+     <label className="wb-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>Review payroll amounts and documents</span></label>
+     <label className="wb-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
+     <label>Access change reason<textarea name="reason" required maxLength={300} rows={3} /></label>
+     <p className="wb-note">Approval requires review access. Clear both permissions to revoke this grant. The server checks the current grant on every action.</p>
+-    <button type="submit" className="nv-btn" data-kind="primary">{operation.busy && savingId === 'access' ? 'Saving…' : 'Save payroll access'}</button>
++    <button type="submit" className="nv-btn" data-kind="primary" aria-disabled={operation.locked || undefined}><PendingLabel pending={operation.busy && savingId === 'access'} pendingText="Saving…">Save payroll access</PendingLabel></button>
+   </fieldset></form>;
+ }
+--- /dev/null
++++ b/src/components/payroll/pending-fields.ts
+@@ -0,0 +1,23 @@
++"use client";
++
++import { useLayoutEffect, type RefObject } from 'react';
++
++/** Keep an Enter-initiated field focused while the operation's existing guard locks edits. */
++export function usePendingPayrollFields(form: RefObject<HTMLFormElement | null>, locked: boolean) {
++  useLayoutEffect(() => {
++    const root = form.current;
++    if (!locked || !root) return;
++    const active = document.activeElement;
++    const fields = [...root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>('fieldset input, fieldset textarea, fieldset select, fieldset button')];
++    const original = fields.map(field => ({ field, disabled: field.disabled, readOnly: 'readOnly' in field ? field.readOnly : undefined }));
++    for (const { field } of original) {
++      // Submit controls stay focusable; their form handler and operation retain duplicate guards.
++      if (field instanceof HTMLButtonElement && field.type === 'submit') continue;
++      const supportsReadOnly = field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement && !['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'range', 'reset', 'submit'].includes(field.type);
++      if (field === active && supportsReadOnly) (field as HTMLInputElement | HTMLTextAreaElement).readOnly = true;
++      else field.disabled = true;
++    }
++    if (active instanceof HTMLElement && root.contains(active) && active.matches(':disabled')) root.querySelector<HTMLButtonElement>('button[type="submit"]:not(:disabled)')?.focus({ preventScroll: true });
++    return () => { for (const { field, disabled, readOnly } of original) { field.disabled = disabled; if (readOnly !== undefined && 'readOnly' in field) field.readOnly = readOnly; } };
++  }, [form, locked]);
++}

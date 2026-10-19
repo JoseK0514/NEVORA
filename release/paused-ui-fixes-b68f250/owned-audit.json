@@ -1,0 +1,45 @@
+{
+  "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "tree": "9aadeddf8545ec66bf4aa6a985cf7cdce1f01c93",
+  "startedAt": "2026-10-19T22:00:48.351Z",
+  "screens": [],
+  "errors": [],
+  "checks": [
+    {
+      "name": "Fictional update inserted through owned fixture executor",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.",
+    "Viewport emulation is not physical iPhone/iPad testing.",
+    "Automated axe and keyboard checks do not certify a screen-reader audit.",
+    "Route visual inspection is not complete business workflow regression or production verification."
+  ],
+  "runtimeAdapter": {
+    "source": "/workspace/inspect-final-b68f250",
+    "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+    "runtimeMode": "Next dev Turbopack; physical copied dependencies; source branch migrations; fictional executor-only bootstrap; pool12 scratch transport",
+    "helperHashes": {
+      "preview-runtime.mjs": "9da8070d9f0f3a4d94977a2c7fa71b8ff62f0e404102ef6648e0f5c5938bbee9",
+      "owned-preview-app-dev.mts": "4057b152a2a9d67b4234891fcb139271241d42165ec05beed10be12a7bd1a91a"
+    }
+  },
+  "sourceManifest": "/workspace/paused-previews/final-b68f250/evidence-2026-10-19T22-00-47-634Z/owned-next-k8GY1i/source-manifest.json",
+  "fixtureDate": "2026-10-19",
+  "fixtureWeek": "2026-10-19",
+  "nextWeekSeeded": "2026-10-26",
+  "payrollFixtureSeeded": true,
+  "bootstrapMethod": "fixture-only executor; no browser publication",
+  "demoAccounts": {
+    "owner": "QAOWNER",
+    "manager": "AUDIT-M",
+    "lead": "AUDIT-LEAD",
+    "employee": "AUDIT-E",
+    "payrollOwner": "payroll-qa-owner",
+    "payrollEmployee": "payroll-qa-a"
+  },
+  "completedAt": "2026-10-19T22:10:32.317Z",
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true
+}

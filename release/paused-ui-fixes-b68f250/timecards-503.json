@@ -1,0 +1,896 @@
+{
+  "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "expectedRetry": false,
+  "cases": [
+    {
+      "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "expectedRetry": false,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Baseline confirms missing Try again control",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 189,
+                "bottom": 465,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 201,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 374,
+                "bottom": 465,
+                "left": 201
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        }
+      ],
+      "failed": {
+        "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "hasTryAgain": false,
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "expectedRetry": false,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Baseline confirms missing Try again control",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 845.515625,
+                "width": 288,
+                "height": 52,
+                "top": 845.515625,
+                "right": 304,
+                "bottom": 897.515625,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 909.515625,
+                "width": 288,
+                "height": 52,
+                "top": 909.515625,
+                "right": 304,
+                "bottom": 961.515625,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        }
+      ],
+      "failed": {
+        "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 845.515625,
+              "width": 288,
+              "height": 52,
+              "top": 845.515625,
+              "right": 304,
+              "bottom": 897.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 909.515625,
+              "width": 288,
+              "height": 52,
+              "top": 909.515625,
+              "right": 304,
+              "bottom": 961.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "hasTryAgain": false,
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "expectedRetry": false,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Baseline confirms missing Try again control",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 189,
+                "bottom": 465,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 201,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 374,
+                "bottom": 465,
+                "left": 201
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        }
+      ],
+      "failed": {
+        "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "hasTryAgain": false,
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "expectedRetry": false,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Baseline confirms missing Try again control",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 845.515625,
+                "width": 288,
+                "height": 52,
+                "top": 845.515625,
+                "right": 304,
+                "bottom": 897.515625,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 909.515625,
+                "width": 288,
+                "height": 52,
+                "top": 909.515625,
+                "right": 304,
+                "bottom": 961.515625,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        }
+      ],
+      "failed": {
+        "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 845.515625,
+              "width": 288,
+              "height": 52,
+              "top": 845.515625,
+              "right": 304,
+              "bottom": 897.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 909.515625,
+              "width": 288,
+              "height": 52,
+              "top": 909.515625,
+              "right": 304,
+              "bottom": 961.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "hasTryAgain": false,
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "expectedRetry": false,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Baseline confirms missing Try again control",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 189,
+                "bottom": 465,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 201,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 374,
+                "bottom": 465,
+                "left": 201
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        }
+      ],
+      "failed": {
+        "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "hasTryAgain": false,
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "expectedRetry": false,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Baseline confirms missing Try again control",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 967.515625,
+                "width": 288,
+                "height": 52,
+                "top": 967.515625,
+                "right": 304,
+                "bottom": 1019.515625,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 1031.515625,
+                "width": 288,
+                "height": 52,
+                "top": 1031.515625,
+                "right": 304,
+                "bottom": 1083.515625,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        }
+      ],
+      "failed": {
+        "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 967.515625,
+              "width": 288,
+              "height": 52,
+              "top": 967.515625,
+              "right": 304,
+              "bottom": 1019.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 1031.515625,
+              "width": 288,
+              "height": 52,
+              "top": 1031.515625,
+              "right": 304,
+              "bottom": 1083.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "hasTryAgain": false,
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "expectedRetry": false,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Baseline confirms missing Try again control",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 189,
+                "bottom": 465,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 201,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 374,
+                "bottom": 465,
+                "left": 201
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        }
+      ],
+      "failed": {
+        "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "hasTryAgain": false,
+      "completed": true,
+      "passed": true
+    },
+    {
+      "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "expectedRetry": false,
+      "assertions": [
+        {
+          "passed": true,
+          "message": "Baseline confirms missing Try again control",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 967.515625,
+                "width": 288,
+                "height": 52,
+                "top": 967.515625,
+                "right": 304,
+                "bottom": 1019.515625,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 1031.515625,
+                "width": 288,
+                "height": 52,
+                "top": 1031.515625,
+                "right": 304,
+                "bottom": 1083.515625,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        }
+      ],
+      "failed": {
+        "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 967.515625,
+              "width": 288,
+              "height": 52,
+              "top": 967.515625,
+              "right": 304,
+              "bottom": 1019.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 1031.515625,
+              "width": 288,
+              "height": 52,
+              "top": 1031.515625,
+              "right": 304,
+              "bottom": 1083.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "hasTryAgain": false,
+      "completed": true,
+      "passed": true
+    }
+  ]
+}

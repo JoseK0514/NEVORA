@@ -1,0 +1,99 @@
+--- a/src/components/payroll/payroll-settings.tsx
++++ b/src/components/payroll/payroll-settings.tsx
+@@ -6,6 +6,7 @@
+ import { readSettings } from './api';
+ import { dollarsToMinor, minorToDollars } from './money';
+ import { usePayrollOperation, usePayrollResource } from './use-payroll';
++import { usePendingPayrollFields } from './pending-fields';
+ import { OperationFeedback, PayrollFrame, PayrollPanel, PayrollState, PrivacyNote } from './payroll-ui';
+ import { noticeReadiness, reminderWindow } from './workflow-status';
+ import { revealFeedback } from '@/lib/reveal-feedback';
+@@ -62,6 +63,7 @@
+   const [noticesEnabled, setNoticesEnabled] = useState(preferences.automation.reminders);
+   const locked = operation.locked;
+   const form = useRef<HTMLFormElement>(null),sent=useRef(false);
++  usePendingPayrollFields(form, locked);
+   useEffect(()=>{
+     if(operation.busy||!sent.current)return;
+     sent.current=false;
+@@ -87,7 +89,7 @@
+       void operation.submit({ action: 'SAVE_SETTINGS', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), preferences: next });
+     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Check payroll preferences.'); }
+   };
+-  return <PayrollPanel title="Company defaults" description={`Revision ${revision} · Currency USD`}><form ref={form} className="pw-form" onSubmit={save}><fieldset disabled={locked}>
++  return <PayrollPanel title="Company defaults" description={`Revision ${revision} · Currency USD`}><form ref={form} className="pw-form" onSubmit={save}><fieldset aria-disabled={locked || undefined}>
+     <section className="pw-section pw-section-first"><h3>Company and documents</h3><div className="pw-fields">
+       <label>Company name on documents<input name="companyName" defaultValue={preferences.companyName} maxLength={160} required /></label>
+       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
+@@ -142,18 +144,20 @@
+   const [inherit, setInherit] = useState(initialRules === null);
+   const [rules, setRules] = useState(initialRules ?? preferences.rules);
+   const [error, setError] = useState('');
+-  return <form className="pw-form" onSubmit={event => {
+-    event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
++  const form = useRef<HTMLFormElement>(null);
++  usePendingPayrollFields(form, operation.locked);
++  return <form ref={form} className="pw-form" onSubmit={event => {
++    event.preventDefault(); if (operation.locked) return; setError(''); const values = new FormData(event.currentTarget);
+     try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: inherit ? null : rulesFromForm(values, rules) } }); }
+     catch (failure) { setError(failure instanceof Error ? failure.message : 'Check this employee exception.'); }
+-  }}><fieldset disabled={operation.locked}>
++  }}><fieldset aria-disabled={operation.locked || undefined}>
+     <p className="pw-small">Exception revision {revision} · Provider imports continue to determine actual gross and net pay.</p>
+     <label>Statement language<select aria-label="Statement language" name="exceptionLanguage" defaultValue={language ?? ''}><option value="">Inherit company language</option><option value="en">English</option><option value="es">Español</option></select></label>
+     <label className="pw-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>Inherit company deduction and contribution rules</span></label>
+     {!inherit && <><RuleEditor rules={rules} onChange={setRules} /><button className="pw-button pw-secondary" type="button" onClick={() => setRules(items => [...items, newRule()])}><PlusIcon size={18} aria-hidden />Add employee rule</button></>}
+     <div className="pw-fields"><label>Exception effective date<input name="effectiveFrom" type="date" required defaultValue={today()} /></label><label>Exception reason<input name="reason" required maxLength={300} /></label></div>
+     <ImpactPreview data={data} />{error && <p role="alert" className="pw-error">{error}</p>}
+-    <button className="pw-button" type="submit">Save employee exception</button>
++    <button className="pw-button" type="submit" aria-disabled={operation.locked || undefined}>Save employee exception</button>
+   </fieldset></form>;
+ }
+ 
+@@ -165,14 +169,16 @@
+ function GrantForm({ employeeId, revision, review, approve, operation }: { employeeId: string; revision: number; review: boolean; approve: boolean; operation: ReturnType<typeof usePayrollOperation> }) {
+   const [canReview, setReview] = useState(review);
+   const [canApprove, setApprove] = useState(approve);
+-  return <form className="pw-form" onSubmit={event => {
+-    event.preventDefault(); const values = new FormData(event.currentTarget);
++  const form = useRef<HTMLFormElement>(null);
++  usePendingPayrollFields(form, operation.locked);
++  return <form ref={form} className="pw-form" onSubmit={event => {
++    event.preventDefault(); if (operation.locked) return; const values = new FormData(event.currentTarget);
+     void operation.submit({ action: 'SET_GRANT', expectedRevision: revision, reason: String(values.get('reason')).trim(), grant: { employeeId, review: canReview, approve: canApprove } });
+-  }}><fieldset disabled={operation.locked}>
++  }}><fieldset aria-disabled={operation.locked || undefined}>
+     <label className="pw-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>Review payroll amounts and documents</span></label>
+     <label className="pw-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
+     <label>Access change reason<textarea name="reason" required maxLength={300} rows={3} /></label>
+     <p className="pw-small">Approval requires review access. Clear both permissions to revoke this grant. The server checks the current grant on every action.</p>
+-    <button type="submit" className="pw-button">Save payroll access</button>
++    <button type="submit" className="pw-button" aria-disabled={operation.locked || undefined}>Save payroll access</button>
+   </fieldset></form>;
+ }
+--- /dev/null
++++ b/src/components/payroll/pending-fields.ts
+@@ -0,0 +1,23 @@
++"use client";
++
++import { useLayoutEffect, type RefObject } from 'react';
++
++/** Keep an Enter-initiated field focused while the operation's existing guard locks edits. */
++export function usePendingPayrollFields(form: RefObject<HTMLFormElement | null>, locked: boolean) {
++  useLayoutEffect(() => {
++    const root = form.current;
++    if (!locked || !root) return;
++    const active = document.activeElement;
++    const fields = [...root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>('fieldset input, fieldset textarea, fieldset select, fieldset button')];
++    const original = fields.map(field => ({ field, disabled: field.disabled, readOnly: 'readOnly' in field ? field.readOnly : undefined }));
++    for (const { field } of original) {
++      // Submit controls stay focusable; their form handler and operation retain duplicate guards.
++      if (field instanceof HTMLButtonElement && field.type === 'submit') continue;
++      const supportsReadOnly = field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement && !['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'range', 'reset', 'submit'].includes(field.type);
++      if (field === active && supportsReadOnly) (field as HTMLInputElement | HTMLTextAreaElement).readOnly = true;
++      else field.disabled = true;
++    }
++    if (active instanceof HTMLElement && root.contains(active) && active.matches(':disabled')) root.querySelector<HTMLButtonElement>('button[type="submit"]:not(:disabled)')?.focus({ preventScroll: true });
++    return () => { for (const { field, disabled, readOnly } of original) { field.disabled = disabled; if (readOnly !== undefined && 'readOnly' in field) field.readOnly = readOnly; } };
++  }, [form, locked]);
++}

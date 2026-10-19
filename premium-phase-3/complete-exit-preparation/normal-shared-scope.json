@@ -1,0 +1,42 @@
+{
+  "preparedAgainst": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "releaseTarget": "await final exact SHA",
+  "dataset": "normal",
+  "scope": {
+    "AUDIT-M": [
+      "/app",
+      "/app/inbox",
+      "/app/schedule",
+      "/app/employees",
+      "/app/notifications",
+      "/app/requests?tab=pending&requestId=audit-timeoff"
+    ],
+    "QAOWNER": [
+      "/app",
+      "/app/inbox",
+      "/app/schedule",
+      "/app/employees",
+      "/app/notifications",
+      "/app/requests?tab=pending&requestId=audit-timeoff"
+    ]
+  },
+  "sizes": [
+    "320",
+    "360",
+    "390",
+    "430",
+    "844x390"
+  ],
+  "texts": [
+    100,
+    125,
+    150,
+    200
+  ],
+  "engines": [
+    "chromium",
+    "webkit"
+  ],
+  "axe": true,
+  "expectedCells": 480
+}

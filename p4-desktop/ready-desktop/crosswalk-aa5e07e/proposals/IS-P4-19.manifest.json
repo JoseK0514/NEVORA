@@ -1,0 +1,37 @@
+{
+  "finding": "IS-P4-19",
+  "base": "6aed3eaa3fd0f58fefe7173d40beea57f9d76c96",
+  "sourceTreesEdited": false,
+  "applied": false,
+  "testsRun": false,
+  "browserRun": false,
+  "rootReviewRequired": true,
+  "preservedTC25PublicationUnavailablePrimaryRetry": true,
+  "files": [
+    {
+      "file": "src/components/employee-time-panel.tsx",
+      "beforeSha256": "caae005cf115af15370738d19829ae693127a61860d177a7dde7006d500f48a5",
+      "proposedSha256": "f3d947c9b2d7990e8c9a519ca9c2822a3ebd8cbd5029039849c5bf7640289841"
+    },
+    {
+      "file": "src/components/employee-home-reviewed.tsx",
+      "beforeSha256": "3cd7f1d03d04f6bad5474d3877ac1c470528f5989991e9c73493ff3db6083376",
+      "proposedSha256": "5cff0f19af4a26fcb97c66b4e814b2a580abb2e82415f8a1827eb0d697817426"
+    },
+    {
+      "file": "src/components/employee-home-reviewed.test.tsx",
+      "beforeSha256": "f79c233cad15e9be664194ee531707ab4658a1248f000d6ddff9a71d685bc8ac",
+      "proposedSha256": "f86df85c6afb8471bbf668e08d212f1856fe71106253a538c37749ae26d0f049"
+    },
+    {
+      "file": "src/components/employee-home-reviewed-wiring.test.tsx",
+      "beforeSha256": "6f3e9f3bc9cf48dfdb75eb0043bdc95b23272b8fe7f4dfe5d8d20d89dc68165d",
+      "proposedSha256": "500253460ea71f3dd0fcfe6337b0025342a7dd8215c4fe4057ffa84d649cd2e1"
+    },
+    {
+      "file": "src/components/employee-time-panel.test.tsx",
+      "beforeSha256": "08eda14fb754a516b54c42173b195a2d1c3a7e2b05e033210bae44d0b958407b",
+      "proposedSha256": "827570058febd33555f3ba5dab488ce1a96b516d55873a0345e6e091071211e7"
+    }
+  ]
+}

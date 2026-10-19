@@ -1,0 +1,53 @@
+{
+  "candidateBase": "56570fd0fc5e23503dbb50550af9dfcd965861ec",
+  "reportsSnapshot": "aa5e07e83039d9448eaebcec50a7f3928821ffca",
+  "reviewSha": "563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea",
+  "preparedAt": "2026-10-19T22:06:19.463532+00:00",
+  "sourceEdits": false,
+  "testOrBrowserExecution": false,
+  "files": [
+    {
+      "finding": "IS-WA-12",
+      "file": "src/components/select-field.tsx",
+      "baseBlob": "1d883ca54e23acf460d3b5010c7d6a7a04a04d87",
+      "proposedSha256": "c6d9908f28e40a96e001d17009c846ebe1e1a194ecae89fc0071227f33b871c8"
+    },
+    {
+      "finding": "IS-WA-12",
+      "file": "src/components/wave-a/parts.tsx",
+      "baseBlob": "dc46c838e84f14430c9c902afdd9765faf19b98c",
+      "proposedSha256": "67558f0dd93557e6956f31c5c66bfeedecf2d19b4266a67137cd5e10347d847b"
+    },
+    {
+      "finding": "IS-WA-12",
+      "file": "src/components/reviewed-callout-form.tsx",
+      "baseBlob": "8c0594cf8929bbf2e7025b120ac6b17ecfa6e29e",
+      "proposedSha256": "134105e4d8fb065eb9f24d5b18ce33f56958f83704272a3c3afb9a42c4af7152"
+    },
+    {
+      "finding": "ST-WA-1",
+      "alias": "IS-WA-5 Coverage subcase",
+      "file": "src/app/app/schedule/coverage/loading.tsx",
+      "baseAbsent": true,
+      "existingCandidateRoute": true,
+      "existingCss312And228Rules": true,
+      "proposedSha256": "dde553d9ba2f782551932a8158380eb2f5e42075a271f4ff7638928f38bdbd7a"
+    }
+  ],
+  "patchChecks": [
+    {
+      "finding": "IS-WA-12",
+      "check": "git apply --check",
+      "passed": true,
+      "patchSha256": "9960d0383509c4d2d893c8e40afc86b2f9edf13af045cdd3b4a46509570d0589",
+      "applicationApplied": false
+    },
+    {
+      "finding": "ST-WA-1",
+      "check": "git apply --check",
+      "passed": true,
+      "patchSha256": "55d27645a7e68bfeae35432bf88669c1fa75b493cacf230505008d7e363af312",
+      "applicationApplied": false
+    }
+  ]
+}

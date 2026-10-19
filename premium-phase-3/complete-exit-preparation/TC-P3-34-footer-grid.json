@@ -1,0 +1,14 @@
+{
+  "base": "4314266b0020b6f0a566543c8d6b569256c3648f",
+  "finding": "TC-P3-34-footer-grid",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md:1214",
+  "sourceSHA": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "files": [
+    "src/app/employee-mobile-corporate.css"
+  ],
+  "scopeNotes": [
+    "Repairs the actual corporate grid rather than applying flex-direction to a grid. Resets controls explicit column2/row1. Existing record-details full-span rule remains valid. Only phone150/200 text; default and desktop unchanged. Frozen portal-premium.css unchanged."
+  ],
+  "applicationFilesEdited": false,
+  "runtimeOrTestsRun": false
+}

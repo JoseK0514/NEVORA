@@ -1,0 +1,27 @@
+--- a/src/components/company-policy-editor.tsx
++++ b/src/components/company-policy-editor.tsx
+@@ -36,6 +36,7 @@
+   const router = useRouter();
+   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
+   const submitGate = useRef(false);
++  const pendingLabel = useRef("Save policies");
+   const feedback = useRef<HTMLDivElement>(null);
+   const [scope, setScope] = useState(""),
+     [notice, setNotice] = useState<{ tone: Tone; title?: string; text: string } | null>(null),
+@@ -103,6 +104,7 @@
+       locationId: scope || null,
+       settings,
+     };
++    pendingLabel.current = retry ? "Retry the same save" : "Save policies";
+     setRetry(command);
+     submitGate.current = true;
+     setBusy(true);
+@@ -247,7 +249,7 @@
+         <p className="nv-sr" role="status" aria-live="polite">{busy ? "Saving…" : ""}</p>
+         <FormActions sticky>
+           {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "urgent" ? "alert" : "status"}><Notice tone={notice.tone} title={notice.title} action={notice.title === "Your session ended" ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
+-          <button className="nv-btn" data-kind="primary" disabled={busy} type="submit"><ButtonLabel pending={busy} idle={retry && !busy ? "Retry the same save" : "Save policies"} busy="Saving…" /></button>
++          <button className="nv-btn" data-kind="primary" disabled={busy} type="submit"><ButtonLabel pending={busy} idle={busy ? pendingLabel.current : retry ? "Retry the same save" : "Save policies"} busy="Saving…" /></button>
+         </FormActions>
+       </form>
+       <section className="nv-card" aria-labelledby="policy-history-title">

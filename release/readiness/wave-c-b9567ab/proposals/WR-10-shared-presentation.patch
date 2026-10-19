@@ -1,0 +1,29 @@
+--- a/src/components/presentation-context.tsx
++++ b/src/components/presentation-context.tsx
+@@ -6,11 +6,11 @@
+ 
+ /** Company modules and words (B2) for client components inside the portal.
+  * Only hides entry points; pages, actions and APIs enforce on the server. */
+-type Presentation = { modules: EnabledModules; words: WordSlots };
+-const PresentationContext = createContext<Presentation>({ modules: ALL_MODULES_ON, words: DEFAULT_WORDS.en });
++type Presentation = { modules: EnabledModules; words: WordSlots; settingsBackAvailable: boolean };
++const PresentationContext = createContext<Presentation>({ modules: ALL_MODULES_ON, words: DEFAULT_WORDS.en, settingsBackAvailable: false });
+ 
+-export function PresentationProvider({ modules, words, children }: { modules?: EnabledModules; words?: WordSlots; children: ReactNode }) {
+-  return <PresentationContext.Provider value={{ modules: modules ?? ALL_MODULES_ON, words: words ?? DEFAULT_WORDS.en }}>{children}</PresentationContext.Provider>;
++export function PresentationProvider({ modules, words, settingsBackAvailable = false, children }: { modules?: EnabledModules; words?: WordSlots; settingsBackAvailable?: boolean; children: ReactNode }) {
++  return <PresentationContext.Provider value={{ modules: modules ?? ALL_MODULES_ON, words: words ?? DEFAULT_WORDS.en, settingsBackAvailable }}>{children}</PresentationContext.Provider>;
+ }
+ 
+ export const usePresentation = () => useContext(PresentationContext);
+--- a/src/components/app-shell.tsx
++++ b/src/components/app-shell.tsx
+@@ -261,7 +261,7 @@
+           </div>
+         </header>
+ 
+-        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></main>
++        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words} settingsBackAvailable={navigation.some(item => item.href === "/app/settings")}>{children}</PresentationProvider></main>
+ 
+         <nav className="mobile-nav" aria-label="Mobile navigation">
+           {employee ? (

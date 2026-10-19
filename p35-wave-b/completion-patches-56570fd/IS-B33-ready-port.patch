@@ -1,0 +1,199 @@
+--- a/src/components/payroll/payroll-runs.tsx
++++ b/src/components/payroll/payroll-runs.tsx
+@@ -1,7 +1,9 @@
+ 'use client';
+ 
+ import { PayrollStepper } from './payroll-stepper';
+-import { useState, type FormEvent } from 'react';
++import { useRef, useState, type FormEvent } from 'react';
++import { PendingLabel } from '../employee-submit-button';
++import { usePendingPayrollFields } from './pending-fields';
+ import { ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, FileArrowUpIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
+ import type { PayrollCapabilities, PayrollRun } from '@/lib/payroll/contracts';
+ import { parsePayrollImport, readRuns } from './api';
+@@ -23,6 +25,8 @@
+   const operation = usePayrollOperation('/api/payroll/runs', resource.reload, recoveryScope);
+   const [selectedId, setSelectedId] = useState<string | null>(null);
+   const [prepareOpen, setPrepareOpen] = useState(false);
++  const prepareForm = useRef<HTMLFormElement>(null);
++  usePendingPayrollFields(prepareForm, operation.locked);
+   const run = resource.data?.runs.find(item => item.id === selectedId) ?? resource.data?.runs[0];
+   const locked = operation.busy || (!!operation.pending && !operation.resuming);
+   return <PayrollFrame title="Payroll" description="Prepare a draft, review provider amounts and publish approved pay statements.">
+@@ -30,10 +34,10 @@
+     <div className="wb-payroll-feedback"><OperationFeedback operation={operation} /></div>
+     {resource.loading && !resource.data ? <PayrollState title="Loading payroll">Checking your current access and payroll runs.</PayrollState> : resource.error ? <PayrollState title="Payroll unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : resource.data && <>
+       <div className="pw-toolbar"><p><CalendarDotsIcon size={18} aria-hidden />{resource.data.runs.length} payroll {resource.data.runs.length === 1 ? 'run' : 'runs'}</p><div className="pw-actions"><button className="pw-button pw-secondary" onClick={() => void resource.reload()} disabled={resource.loading || locked}>Refresh</button><button className="pw-button" onClick={() => setPrepareOpen(value => !value)} disabled={locked}>Prepare a draft<ArrowRightIcon size={18} aria-hidden /></button></div></div>
+-      {prepareOpen && <PayrollPanel title="New payroll draft" description="Draft preparation checks finalized time. It does not finalize timecards or approve payroll."><form className="pw-form" onSubmit={event => {
+-        event.preventDefault(); const values = new FormData(event.currentTarget);
+-        void operation.submit({ action: 'PREPARE', period: { startDate: String(values.get('start')), endDate: String(values.get('end')) }, payday: String(values.get('payday')) });
+-      }}><fieldset disabled={locked}><div className="pw-fields"><label>Period start<input name="start" type="date" required /></label><label>Period end<input name="end" type="date" required /></label><label>Payday<input name="payday" type="date" required /></label></div><button className="pw-button" type="submit">Prepare draft</button></fieldset></form></PayrollPanel>}
++      {prepareOpen && <PayrollPanel title="New payroll draft" description="Draft preparation checks finalized time. It does not finalize timecards or approve payroll."><form ref={prepareForm} className="pw-form" onSubmit={event => {
++        event.preventDefault(); if (locked) return; const values = new FormData(event.currentTarget);
++        void operation.submit({ action: 'PREPARE', period: { startDate: String(values.get('start')), endDate: String(values.get('end')) }, payday: String(values.get('payday')) }, 'new-draft');
++      }}><fieldset aria-disabled={locked || undefined}><div className="pw-fields"><label>Period start<input name="start" type="date" required /></label><label>Period end<input name="end" type="date" required /></label><label>Payday<input name="payday" type="date" required /></label></div><button className="pw-button" type="submit" aria-disabled={locked || undefined}><PendingLabel pending={operation.busy && operation.activeAction === 'PREPARE' && operation.activeTarget === 'new-draft'} pendingText="Preparing…">Prepare draft</PendingLabel></button></fieldset></form></PayrollPanel>}
+       <BacklogReview data={resource.data} operation={operation} />
+       {resource.data.runs.length === 0 ? <PayrollState title="No payroll runs yet">Start with company payroll settings, then prepare a draft for the period you want to review.</PayrollState> : <div className="pw-review-layout">
+         <PayrollPanel title="Pay periods" description="Each approval belongs to one exact revision."><div className="pw-run-list">{resource.data.runs.map(item => <button key={item.id} type="button" className={`pw-run-option${item.id === run?.id ? ' selected' : ''}`} aria-pressed={item.id === run?.id} onClick={() => setSelectedId(item.id)} disabled={locked}>
+@@ -48,7 +52,7 @@
+             {job.kind === 'REMINDER' && <p className="pw-small">{noticeOutcome(job.outcome)}</p>}
+             {job.error && <p className="pw-error"><WarningCircleIcon size={18} aria-hidden="true" /><span>{job.error}</span></p>}
+           </div>
+-          {job.status === 'FAILED' && resource.data?.capabilities.canApprove && <button className="pw-button pw-secondary" type="button" disabled={locked} onClick={() => void operation.submit({ action: 'RETRY_JOB', jobId: job.id })}>Retry {job.kind === 'REMINDER' ? 'notice queue' : jobLabels[job.kind].toLowerCase()}</button>}
++          {job.status === 'FAILED' && resource.data?.capabilities.canApprove && <button className="pw-button pw-secondary" type="button" aria-disabled={locked || undefined} onClick={() => { if (!locked) void operation.submit({ action: 'RETRY_JOB', jobId: job.id }); }}><PendingLabel pending={operation.busy && operation.activeAction === 'RETRY_JOB' && operation.activeTarget === job.id} pendingText="Retrying…">Retry {job.kind === 'REMINDER' ? 'notice queue' : jobLabels[job.kind].toLowerCase()}</PendingLabel></button>}
+         </div>)}</div>
+       </PayrollPanel>}
+       <PrivacyNote>Financial records are restricted to current payroll access. Payment instructions do not submit or confirm a payment. {noticeReadiness(resource.data.capabilities)}</PrivacyNote>
+@@ -63,11 +67,13 @@
+   const [importError, setImportError] = useState('');
+   const [correctionOpen, setCorrectionOpen] = useState(false);
+   const [filter, setFilter] = useState('');
++  const importForm = useRef<HTMLFormElement>(null);
++  usePendingPayrollFields(importForm, operation.locked);
+   const locked = operation.busy || (!!operation.pending && !operation.resuming);
+   const notes = payrollReviewNotes(run.exceptions);
+   const rows = run.rows?.filter(row => row.employeeName.toLowerCase().includes(filter.toLowerCase())) ?? [];
+   const importAmounts = (event: FormEvent<HTMLFormElement>) => {
+-    event.preventDefault(); setImportError('');
++    event.preventDefault(); if (locked) return; setImportError('');
+     try {
+       const amounts = parsePayrollImport(importText);
+       if (amounts.period.startDate !== run.period.startDate || amounts.period.endDate !== run.period.endDate || amounts.payday !== run.payday) throw new Error('The import period and payday must match this draft.');
+@@ -91,17 +97,17 @@
+     </dl>}
+     <div className="pw-source"><strong>Amounts from your payroll provider or accountant</strong><p>{run.sourceName ? `${run.sourceName} · ${run.sourceReference}` : 'Import trusted provider or accountant amounts before reviewing payroll.'}</p><details><summary>Source details</summary><small>Settings version {run.settingsRevision ?? 'not configured'} · Import version {run.importRevision} · Employee version {run.populationRevision ?? 'not ready'}</small></details></div>
+     {run.rows && <section className="pw-section"><div className="pw-subheading"><h3>Employee amounts</h3><label className="pw-search"><span className="sr-only">Find employee amounts</span><input type="search" placeholder="Find an employee" value={filter} onChange={event => setFilter(event.target.value)} /></label></div><div className="pw-amount-list">{rows.map(row => <details key={row.employeeId} className="pw-employee-amount"><summary><span><strong>{row.employeeName}</strong><small>Net pay</small></span><strong className="pw-money">{formatPayrollMoney(row.netMinor)}</strong></summary><dl className="pw-lines"><div><dt>Gross pay</dt><dd>{formatPayrollMoney(row.grossMinor)}</dd></div>{row.earnings?.map((line, index) => <div key={`earnings${index}`}><dt>{line.label}</dt><dd>{formatPayrollMoney(line.amountMinor)}</dd></div>)}<div className="pw-line-label"><dt>Employee deductions</dt><dd /></div>{row.employeeDeductions.length ? row.employeeDeductions.map((line, index) => <div key={`deduction${index}`}><dt>{line.label}</dt><dd>{formatPayrollMoney(line.amountMinor)}</dd></div>) : <div><dt>No imported employee deductions</dt><dd /></div>}<div className="pw-line-label"><dt>Employer contributions</dt><dd /></div>{row.employerContributions.length ? row.employerContributions.map((line, index) => <div key={`employer${index}`}><dt>{line.label}</dt><dd>{formatPayrollMoney(line.amountMinor)}</dd></div>) : <div><dt>No imported employer contributions</dt><dd /></div>}</dl><p className="pw-small">Employee exception revision {run.exceptionRevisions.find(item => item.employeeId === row.employeeId)?.revision ?? 'none'} · Employee reference <code>{row.employeeId}</code></p></details>)}</div>{rows.length === 0 && <p className="pw-small">No employees match your search.</p>}</section>}
+-    {(run.status !== 'APPROVED' || correctionOpen) && <section className="pw-section"><h3><FileArrowUpIcon size={20} aria-hidden />{correctionOpen ? 'Create a linked correction' : 'Import provider amounts'}</h3><p className="pw-small">Use the neutral JSON import supplied by your payroll provider or accountant. NEVORA preserves imported amounts; a statutory calculator is unavailable.</p><form className="pw-form" onSubmit={importAmounts}><fieldset disabled={locked}><label>Payroll import file<input type="file" accept="application/json,.json" onChange={async event => {
++    {(run.status !== 'APPROVED' || correctionOpen) && <section className="pw-section"><h3><FileArrowUpIcon size={20} aria-hidden />{correctionOpen ? 'Create a linked correction' : 'Import provider amounts'}</h3><p className="pw-small">Use the neutral JSON import supplied by your payroll provider or accountant. NEVORA preserves imported amounts; a statutory calculator is unavailable.</p><form ref={importForm} className="pw-form" onSubmit={importAmounts}><fieldset aria-disabled={locked || undefined}><label>Payroll import file<input type="file" accept="application/json,.json" onChange={async event => {
+       const file = event.target.files?.[0]; if (!file) return;
+       setImportError('');
+       try { if (file.size > 524288) throw new Error('Choose an import smaller than 512 KB.'); setImportText(await file.text()); } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'The import file could not be read.'); }
+-    }} /></label><details className="pw-import-format"><summary>Import format and contents</summary><p className="pw-small">Required: schema NEVORA_PAYROLL_IMPORT_V1, currency USD, sourceName, sourceReference, period, payday and rows. Each row includes employeeId, grossMinor, employeeDeductions, employerContributions and netMinor. Each amount is a whole-cent string; each line includes code, label and amountMinor.</p><label>Import JSON<textarea rows={8} value={importText} onChange={event => setImportText(event.target.value)} spellCheck={false} /></label></details>{importText && <p className="pw-small">Import loaded in this page. Review employee amounts after the server validates it.</p>}{correctionOpen && <label>Correction reason<textarea name="correctionReason" required maxLength={300} rows={3} /></label>}{importError && <p className="pw-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{importError}</span></p>}<button className="pw-button" type="submit" disabled={!importText}>{correctionOpen ? 'Create correction draft' : 'Validate and import amounts'}<ArrowRightIcon size={18} aria-hidden /></button></fieldset></form></section>}
++    }} /></label><details className="pw-import-format"><summary>Import format and contents</summary><p className="pw-small">Required: schema NEVORA_PAYROLL_IMPORT_V1, currency USD, sourceName, sourceReference, period, payday and rows. Each row includes employeeId, grossMinor, employeeDeductions, employerContributions and netMinor. Each amount is a whole-cent string; each line includes code, label and amountMinor.</p><label>Import JSON<textarea rows={8} value={importText} onChange={event => setImportText(event.target.value)} spellCheck={false} /></label></details>{importText && <p className="pw-small">Import loaded in this page. Review employee amounts after the server validates it.</p>}{correctionOpen && <label>Correction reason<textarea name="correctionReason" required maxLength={300} rows={3} /></label>}{importError && <p className="pw-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{importError}</span></p>}<button className="pw-button" type="submit" disabled={!importText} aria-disabled={locked || undefined}><PendingLabel pending={operation.busy && (operation.activeAction === 'CORRECT' || operation.activeAction === 'IMPORT')} pendingText={correctionOpen ? 'Creating…' : 'Importing…'}>{correctionOpen ? 'Create correction draft' : 'Validate and import amounts'}</PendingLabel><ArrowRightIcon size={18} aria-hidden /></button></fieldset></form></section>}
+     {run.status === 'REVIEW_REQUIRED' && <section className="pw-section">
+       <h3>Approve this revision</h3>
+       <p className="pw-small">Approval freezes the reviewed amounts, finalized time, settings and employee exceptions. A changed source requires a fresh review.</p>
+       {capabilities.canApprove ? <>
+         <label className="pw-check"><input type="checkbox" checked={reviewed} onChange={event => setReviewed(event.target.checked)} disabled={locked || operation.revisionConflict} /><span>I reviewed revision {run.revision}, the provider amounts and all employee details.</span></label>
+-        <button className="pw-button" type="button" disabled={locked || operation.revisionConflict || !reviewed || !run.reviewToken || !run.rows || !run.totals || notes.blocking.length > 0} onClick={() => run.reviewToken && void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken })}>Approve revision {run.revision}<CheckCircleIcon size={18} aria-hidden /></button>
++        <button className="pw-button" type="button" disabled={operation.revisionConflict || !reviewed || !run.reviewToken || !run.rows || !run.totals || notes.blocking.length > 0} aria-disabled={locked || undefined} onClick={() => { if (!locked && run.reviewToken) void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken }); }}><PendingLabel pending={operation.busy && operation.activeAction === 'APPROVE'} pendingText="Approving…">Approve revision {run.revision}</PendingLabel><CheckCircleIcon size={18} aria-hidden /></button>
+       </> : <p className="pw-notice">An authorized payroll approver must approve this revision.</p>}
+     </section>}
+     {run.status === 'APPROVED' && <section className="pw-section pw-approved">
+@@ -109,12 +115,12 @@
+       {run.documents.length ? <div className="pw-documents">{run.documents.map(document => <DocumentLink key={document.id} document={document} />)}</div> : <PayrollState title="Documents are being prepared">Check PDF generation below. Documents appear when generation succeeds.</PayrollState>}
+       {run.documents.some(document => document.kind === 'EMPLOYEE_STATEMENT' && !document.published) && (capabilities.canApprove ? <div className="pw-publication">
+         <label className="pw-check"><input type="checkbox" checked={publishConfirmed} onChange={event => setPublishConfirmed(event.target.checked)} disabled={locked} /><span>Make the approved statements available to their employees.</span></label>
+-        <button className="pw-button" type="button" disabled={locked || !publishConfirmed} onClick={() => void operation.submit({ action: 'PUBLISH', runId: run.id, expectedRevision: run.revision })}>Publish employee statements</button>
++        <button className="pw-button" type="button" disabled={!publishConfirmed} aria-disabled={locked || undefined} onClick={() => { if (!locked) void operation.submit({ action: 'PUBLISH', runId: run.id, expectedRevision: run.revision }); }}><PendingLabel pending={operation.busy && operation.activeAction === 'PUBLISH'} pendingText="Publishing…">Publish employee statements</PendingLabel></button>
+       </div> : <p className="pw-notice">An authorized payroll approver must publish the employee statements.</p>)}
+       <details className="pw-secondary-actions"><summary>Corrections and payment instructions</summary>
+         <p className="pw-small">Corrections create a linked draft and require a new approval. Neutral payment instructions have unverified bank compatibility; no bank submission or payment confirmation is available.</p>
+         <div className="pw-actions"><button className="pw-button pw-secondary" type="button" disabled={locked} onClick={() => setCorrectionOpen(value => !value)}>{correctionOpen ? 'Close correction' : 'Create correction'}</button>
+-          {capabilities.canApprove && <button className="pw-button pw-secondary" type="button" disabled={locked} onClick={() => void operation.submit({ action: 'PAYMENT_EXPORT', runId: run.id, expectedRevision: run.revision })}>Prepare payment instructions</button>}
++          {capabilities.canApprove && <button className="pw-button pw-secondary" type="button" aria-disabled={locked || undefined} onClick={() => { if (!locked) void operation.submit({ action: 'PAYMENT_EXPORT', runId: run.id, expectedRevision: run.revision }); }}><PendingLabel pending={operation.busy && operation.activeAction === 'PAYMENT_EXPORT'} pendingText="Preparing…">Prepare payment instructions</PendingLabel></button>}
+         </div>
+       </details>
+     </section>}
+--- a/src/components/payroll/use-payroll.ts
++++ b/src/components/payroll/use-payroll.ts
+@@ -65,6 +65,8 @@
+   const referenceKey = `nevora-payroll-operation:${recoveryScope}`;
+   const [pending, setPending] = useState<string | null>(null);
+   const [busy, setBusy] = useState(false);
++  const [activeAction, setActiveAction] = useState<Command['action'] | null>(null);
++  const [activeTarget, setActiveTarget] = useState<string | null>(null);
+   const [message, setMessage] = useState('');
+   const [error, setError] = useState('');
+   const [retryAvailable, setRetryAvailable] = useState(false);
+@@ -73,17 +75,18 @@
+   const [resuming, setResuming] = useState(false);
+   const reference = useRef<string | null>(null);
+   const command = useRef<Command | null>(null);
++  const commandOrigin = useRef<string | null>(null);
+   const reconstructedCommand = useRef(false);
+   const inFlight = useRef(false);
+ 
+   const finish = useCallback((id: string) => {
+     if (localStorage.getItem(referenceKey) === id) localStorage.removeItem(referenceKey);
+-    reference.current = null; command.current = null; reconstructedCommand.current = false;
++    reference.current = null; command.current = null; commandOrigin.current = null; reconstructedCommand.current = false;
+     setPending(null); setRetryAvailable(false); setUnconfirmed(false); setResuming(false);
+   }, [referenceKey]);
+   const check = useCallback(async (id = reference.current) => {
+     if (!id || inFlight.current) return;
+-    inFlight.current = true; setBusy(true); setError('');
++    inFlight.current = true; setBusy(true); setActiveAction(null); setActiveTarget(null); setError('');
+     try {
+       const receipt = readReceipt(await payrollRequest(`/api/payroll/receipts?operationId=${encodeURIComponent(id)}`));
+       if (receipt && receipt.operationId !== id) throw new Error('The returned receipt does not match this action reference. Check the same reference again.');
+@@ -96,7 +99,7 @@
+     } catch (failure) {
+       if (failure instanceof PayrollRequestError && failure.status === 403) { finish(id); await reload(); }
+       setError(failure instanceof Error ? failure.message : 'The action reference could not be checked.');
+-    } finally { inFlight.current = false; setBusy(false); }
++    } finally { inFlight.current = false; setBusy(false); setActiveAction(null); setActiveTarget(null); }
+   }, [finish, reload]);
+   useEffect(() => {
+     let active = true;
+@@ -111,7 +114,7 @@
+ 
+   const dispatch = async (next: Command, reconstructed = false) => {
+     if (inFlight.current) return;
+-    inFlight.current = true; setBusy(true); setError(''); setMessage(''); setRevisionConflict(false); setResuming(false); setUnconfirmed(false);
++    inFlight.current = true; setBusy(true); setActiveAction(next.action); setActiveTarget(next.action === 'PREPARE' ? commandOrigin.current : 'jobId' in next ? next.jobId : 'runId' in next ? next.runId : null); setError(''); setMessage(''); setRevisionConflict(false); setResuming(false); setUnconfirmed(false);
+     try {
+       const receipt = readReceipt(await payrollRequest(path, next));
+       if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
+@@ -125,9 +128,9 @@
+       else if (failure instanceof PayrollRequestError && [400, 401, 403, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
+       else setRetryAvailable(true);
+       setError(failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'The action response was interrupted. Check its reference.');
+-    } finally { inFlight.current = false; setBusy(false); }
++    } finally { inFlight.current = false; setBusy(false); setActiveAction(null); setActiveTarget(null); }
+   };
+-  const submit = async (input: WithoutOperation<Command>) => {
++  const submit = async (input: WithoutOperation<Command>, uiOrigin: string | null = null) => {
+     if ((reference.current && !resuming) || inFlight.current) return;
+     if ('reason' in input && (!input.reason || input.reason.length > 300 || /[\u0000-\u001f\u007f]/.test(input.reason))) {
+       setError('Enter a single-line reason of 1 to 300 characters.'); return;
+@@ -141,10 +144,10 @@
+     }
+     catch { setError('The browser could not save a recovery reference. Enable browser storage before recording this action.'); return; }
+     const next = { ...input, operationId } as Command;
+-    reference.current = operationId; command.current = next; reconstructedCommand.current = reconstructed; setPending(operationId);
++    reference.current = operationId; command.current = next; commandOrigin.current = uiOrigin; reconstructedCommand.current = reconstructed; setPending(operationId);
+     await dispatch(next, reconstructed);
+   };
+-  return { pending, busy, message, error, retryAvailable, revisionConflict, resuming, locked: busy || (!!pending && !resuming),
++  return { pending, busy, activeAction, activeTarget, message, error, retryAvailable, revisionConflict, resuming, locked: busy || (!!pending && !resuming),
+     resumeAvailable: unconfirmed && !retryAvailable && !busy && !resuming,
+     resume: () => { if (unconfirmed && !command.current && !inFlight.current) { setResuming(true); setError(''); setMessage('Re-enter the original action and details below. Submission will reuse this exact reference; changed details cannot replace a recorded action.'); } },
+     pauseResume: () => setResuming(false),
+--- a/src/components/payroll/backlog-review.tsx
++++ b/src/components/payroll/backlog-review.tsx
+@@ -1,6 +1,7 @@
+ 'use client';
+ 
+ import { useState } from 'react';
++import { PendingLabel } from '../employee-submit-button';
+ import type { PayrollRunsResponse } from '@/lib/payroll/contracts';
+ import type { usePayrollOperation } from './use-payroll';
+ import { PayrollPanel } from './payroll-ui';
+@@ -20,6 +21,7 @@
+   if (!backlog || (!backlog.overflow && backlog.missingCount === 0 && missing.length === 0)) return null;
+   const key = (item: typeof missing[number]) => JSON.stringify(item);
+   const visible = expanded ? missing : missing.slice(0, 3);
++  const origin = (item: typeof missing[number]) => `backlog:${item.period.startDate}:${item.period.endDate}:${item.payday}:${item.settingsRevision}`;
+   return <PayrollPanel title="Pay periods with no payroll run" description={backlogDescription(backlog)}>
+     <p className="pw-small">Checked {keepWhole(`${backlog.rangeStart ? `${formatDisplayDate(backlog.rangeStart)} – ` : 'through '}${formatDisplayDate(backlog.asOfDate)}`)}. A draft doesn’t finalize hours, approve amounts or send a payment.</p>
+     {backlog.ambiguousCount !== null && backlog.ambiguousCount > 0 && <p className="pw-notice">{backlog.ambiguousCount} {backlog.ambiguousCount === 1 ? 'period needs' : 'periods need'} schedule-transition review.</p>}
+@@ -29,7 +31,7 @@
+         {item.state === 'AMBIGUOUS_TRANSITION' && <div className="pw-notice"><strong>Review the schedule transition</strong>{item.issues.map((issue, index) => <p key={index}>{issue}</p>)}<p>Confirm these period boundaries and payday before manual preparation.</p></div>}
+         <p className="pw-small">This draft uses the saved effective settings. Review its timecards, population and provider amounts before a separate approval.</p>
+         {item.state === 'AMBIGUOUS_TRANSITION' && <label className="pw-check"><input type="checkbox" checked={acknowledged} disabled={locked} onChange={event => setAcknowledged(event.target.checked)} /><span>I reviewed this schedule transition, period boundaries and payday.</span></label>}
+-        <button type="button" className="pw-button" disabled={locked || (item.state === 'AMBIGUOUS_TRANSITION' && !acknowledged)} onClick={() => void operation.submit({ action: 'PREPARE', period: item.period, payday: item.payday })}>Prepare this period</button>
++        <button type="button" className="pw-button" disabled={item.state === 'AMBIGUOUS_TRANSITION' && !acknowledged} aria-disabled={locked || undefined} onClick={() => { if (!locked && (item.state !== 'AMBIGUOUS_TRANSITION' || acknowledged)) void operation.submit({ action: 'PREPARE', period: item.period, payday: item.payday }, origin(item)); }}><PendingLabel pending={operation.busy && operation.activeAction === 'PREPARE' && operation.activeTarget === origin(item)} pendingText="Preparing…">Prepare this period</PendingLabel></button>
+       </div>}
+     </div>)}</div>
+     {missing.length > 3 && <button type="button" className="pw-button pw-secondary" disabled={locked} onClick={() => setExpanded(value => !value)}>{expanded ? 'Show oldest three periods' : `Show all ${missing.length} returned periods`}</button>}

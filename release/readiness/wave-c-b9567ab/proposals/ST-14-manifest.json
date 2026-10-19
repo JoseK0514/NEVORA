@@ -1,0 +1,15 @@
+{
+  "finding": "ST-14",
+  "severity": "P2",
+  "reviewSha": "de8b15851d6280fd31fba3db63dcbe976a19584a",
+  "kind": "source-confirmed retained retry-path label reservation; geometry proof pending",
+  "changesApplied": false,
+  "previewStarted": false,
+  "testsRun": false,
+  "files": {
+    "src/components/company-policy-editor.tsx": {
+      "beforeSha256": "8d053084dd02cc3c70e5f95db9d79cd91765dda0cbdc58fb0b29ea32e4d9be68",
+      "proposedSha256": "db6d23ea5743575851aa31acda3cdfb973d0d10a4c0f6ad5e09bb31fa8af8d8a"
+    }
+  }
+}

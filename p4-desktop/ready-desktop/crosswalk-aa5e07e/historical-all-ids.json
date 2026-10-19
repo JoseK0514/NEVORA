@@ -1,0 +1,1159 @@
+{
+  "reportsCommit": "aa5e07e",
+  "originalDesktop": "8012d9790e72987140f939c7d70e1df9612ea009",
+  "candidate33": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "candidate34": "56570fd0fc5e23503dbb50550af9dfcd965861ec",
+  "ready": "724b430f3693bc5a9d37677ad250581e33d0f866",
+  "reportHashes": [
+    {
+      "file": "p4-desktop/round-5/alignment.md",
+      "commit": "aa5e07e",
+      "sha256": "643ca1a8dd822c84e449aa742e57cf468a6bcbd774b28d114a58c3ac06dca6b3"
+    },
+    {
+      "file": "p4-desktop/round-5/stability.md",
+      "commit": "aa5e07e",
+      "sha256": "c4ee4400a1186ce4d543e683c7627fe8addec46b11360b97019a480e9900dec2"
+    },
+    {
+      "file": "p4-desktop/round-5/type-colour-copy.md",
+      "commit": "aa5e07e",
+      "sha256": "5c7300f61828b4a914e0b4be6a69e751f055edc4bea916ed814f9a73c5917bed"
+    },
+    {
+      "file": "p4-desktop/round-5/interaction-states.md",
+      "commit": "aa5e07e",
+      "sha256": "11576b52db160c9cc054b77b3b9bbf116467c7de6c25f53c098546e9f4c624d2"
+    },
+    {
+      "file": "p4-desktop/round-5/widths-roles.md",
+      "commit": "aa5e07e",
+      "sha256": "07360138e68dd3c7902e5e0b4945f4fdd4755fa6c5726c244f238b84fc405aca"
+    }
+  ],
+  "rows": [
+    {
+      "id": "AL4-01",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 124,
+        "row": "| AL4-01 | **Fixed** | \"Details\" now follows the name in flow, so nothing is drawn over it. At 1440 the 3-line name runs 1389\u20131455 and Details 1459\u20131503; at 768 the name runs 1619\u20131685 and Details 1717\u20131761. The new gap is AL4-20. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-02",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 125,
+        "row": "| AL4-02 | **Fixed** | At 768, band text equals card text (280/280) on Home, Inbox, Schedule, Team, Timecards, Time exports, Team overview and Updates. Inbox's filters stay on the title row (band 188). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-03",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 126,
+        "row": "| AL4-03 | **Fixed** | Scrolled 1500px, the header ends at 1565 and the pane starts at 1581 (16px below it) at 1024 and 1440. The pane alone sticks: 448px at 1024 and 376px at 1440, both within the window. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-04",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 127,
+        "row": "| AL4-04 | **Fixed** | Values end under their headers: \"8h 5m\" and \"0h\" end at 866 (header 866) and \"5h 15m\" and \"0h\" at 952 (header 952) at 1024; 807.3/807.33 and 893.3/893.33 at 1440. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-05",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 128,
+        "row": "| AL4-05 | **Fixed** | Totals panel inset 12/16: labels at 973.33 (panel 957.33 + 16) and values end at 1340 (panel 1356 \u2212 16). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-06",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 129,
+        "row": "| AL4-06 | **Fixed** | One row at every width. It scrolls at 768 and 1024 (scrollWidth 760 against 460 and 716) and fits at 1440. A new P2 for the fade is AL4-21. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-10",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 133,
+        "row": "| AL4-10 | **Fixed** | Every page starts at x 276 at 1440 and at 1920, the same as the header trail: Home, Inbox, Time off, Updates, Settings and Payroll. Bands run 276\u20131396 with text at 312, cards at 292 with text at 312. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Transferred coordinator shared rule; latest candidate rule/font bytes retained in ready; exact-review measurement pending"
+    },
+    {
+      "id": "AL4-15",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 138,
+        "row": "| AL4-15 | **Withdrawn** | It was a capture artifact. Chromium's *full-page* screenshot draws the top-layer popover see-through. A viewport screenshot shows it opaque (`r2/c-menu-1440-vp.png`; the full-page `r2/c-menu-1440.png` still shows the artifact). The header is now solid (`rgba(255,255,255,.97)`, no backdrop filter). Not a defect, and I should have checked a viewport capture in round 1. |",
+        "reportedStatus": "**Withdrawn**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-07",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 206,
+        "row": "| AL4-07 | **Fixed** | Toolbar padding is 12/20. The period control starts at 312 at 1180 and 1440 (280 at 1024), the same as the card text edge. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-08",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 131,
+        "row": "| AL4-08 | **Fixed** | Manager Home gap between \"Also needs you\" and \"This week\" is 16px (1107\u21921123 at 768; 1067\u21921083 at 1024). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-09",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 132,
+        "row": "| AL4-09 | Kept by decision | Not refiled (ROUND-2: data-dependent; the DOM order can't be rebalanced without masonry). Employee and Lead Home show the same pattern: left ends 1043.89 and right 1155 (E); left 1097.89 and right 957 (Lead). |",
+        "reportedStatus": "Kept by decision"
+      },
+      "disposition": "Accepted/kept by explicit source ROUND2 decision; preserve exception"
+    },
+    {
+      "id": "AL4-11",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 134,
+        "row": "| AL4-11 | **Fixed** | Columns are 2 / .8 / 1.2 / 1. At 1024 the long name takes 2 lines (was 3), and Role, Location and Phone share its first baseline (866/866/866/866). Headers sit over their cells to 0px (332/566.4/669.8/816.8 at 1024; 364/747.2/910.1/1146.4 at 1440). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-12",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 207,
+        "row": "| AL4-12 | **Regressed** (see AL4-28) | Pay period and Export summary are padded 20 now (text at 312/280, as expected). But the selector now also matches the employee card. That card was 0 at the sides because its sections carry their own 24px, so its content is now double-inset. |",
+        "reportedStatus": "**Regressed** (see AL4-28)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-18",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 208,
+        "row": "| AL4-18 | **Fixed** | The status line's cap centre is 341.91 against the buttons' 343 (1.1px) at 1440. At 768 it takes its own line below the buttons. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-13",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 136,
+        "row": "| AL4-13 | **Fixed** | \"Powered by\" text at 28 at 1440 and 24 at 768, the same as the group labels (28/24). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-14",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 137,
+        "row": "| AL4-14 | **Fixed** | \"Signed in as\" at 1109 = items 1109; the divider runs 1099\u20131399 = the item edges. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-16",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 139,
+        "row": "| AL4-16 | **Fixed** | At 200% text, Team avatars are 80px and the initials (28px) sit inside them, 333\u2013371 within 312\u2013392. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-17",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 140,
+        "row": "| AL4-17 | **Fixed** | Plan ahead: card 727\u2013803, row 731\u2013799, tile 745\u2013785. The tile is 18px from the top and 18px from the bottom. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-22",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 212,
+        "row": "| AL4-22 | **Partly fixed** | Insets are 20 and the two panels end together at 1440 (293\u2013601 / 293\u2013601). But \"Current status\" and \"Today\" are still **square with no shadow** (radius 0, `box-shadow: none`) at 768, 1024 and 1440. \"Recent entries\" and \"Corrections\" below them are radius 16 with e1 (`r4/c-mt-1440.png`). The flattening rule `portal-premium.css:1084` still wins. Fix: in the `premium-desktop.css` desktop block, set `border-radius: var(--nv-r-card); box-shadow: var(--nv-e1)` on `.premium-employee-time .employee-time-overview > .employee-view-surface` at higher specificity than `:1084`. P1. |",
+        "reportedStatus": "**Partly fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-23",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 213,
+        "row": "| AL4-23 | **Partly fixed** | Now at kit insets:<br>\u2022 My time cards are padded 20.<br>\u2022 The Timecards period panel is a kit card (radius 16, e1, padding 20; text at 312/280).<br>\u2022 Profile Work details is padded 20 at the sides (icon tile at 312).<br>\u2022 Updates' controls start at 312 (the \"Filter updates\" heading I measured in round 2 is visually hidden; I withdraw that part).<br>Still at 24: the Employee \"Your timecard\" article (`employee-corporate-timecard`, 292\u20131380), with content at 316/284. Fix: `padding: var(--nv-s-5)` on it in the desktop block. P2. |",
+        "reportedStatus": "**Partly fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-24",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 214,
+        "row": "| AL4-24 | **Fixed** | Profile at 1440: Work details and the settings card both start at 263. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-25",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 215,
+        "row": "| AL4-25 | **Partly fixed** | At 1024 and wider, the Requests tabs nearly share one line: Time off, Shift requests and Availability 188/214, Overview 184/212 (2px).<br>Pay still steps: My pay is **192/220** against My time and Timecards 184/212, so the title drops 8px when you go from My pay to My time.<br>Tab labels don't slide (\u22640.5px between pages).<br>At 768, titles agree within 2px; band heights differ only where a chip row is added (by design). P2. |",
+        "reportedStatus": "**Partly fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-19",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 209,
+        "row": "| AL4-19 | **Fixed** | Shift pane head: the title's cap centre is 292.45 against the avatar's 293 at 1024 and 1440. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-20",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 210,
+        "row": "| AL4-20 | **Fixed** | At 1440, Details sits 14px under a one-line name (box 1206 against name 1192) and 4px under a three-line name (1343 against 1339). One-line rows are 103px (were 129). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-21",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 211,
+        "row": "| AL4-21 | **Partly fixed** | There's no fade from 1180 (`mask: none`). At 1179 (1100\u20131179) the strip still fits (scrollWidth 760 = clientWidth 760) but the fade is on, dimming the last 24px of \"Not started\". Fix: switch the fade on by overflow (`data-overflow`), not by width. P2. |",
+        "reportedStatus": "**Partly fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-26",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 216,
+        "row": "| AL4-26 | **Partly fixed** (see AL4-29) | Three across at every width: 768 (260\u2013720, 68px tall) and 1440 (one line each). At 1024 the three cells are 128px wide and the labels break inside words. |",
+        "reportedStatus": "**Partly fixed** (see AL4-29)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-27",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 155,
+        "row": "| AL4-27 | Timecards \u00b7 M and O \u00b7 390 (phone) | Period line under each name | On phones the per-row line \"Oct 13, 2026 \u2013 Oct 19, 2026\" (88,743, 195\u00d719 in the pre-Phase-4 baseline) is now visually hidden (`position:absolute; width:1px; clip-path:inset(50%)`). That's a visible phone change not on ROUND-2's list. Rows are otherwise the same; they're 24px taller only from longer hour values in today's data. | (diff against `rt/phone-base.json`) | `timecards.module.css:187` hides `.rowIdentity small` at every width (the D2 desktop intent). Whatever kept it visible on phones no longer applies. | Confirm whether this is intended (the band eyebrow already shows the period). If not, scope `:187` to desktop. | P2 |",
+        "reportedStatus": "Timecards \u00b7 M and O \u00b7 390 (phone)"
+      },
+      "disposition": "Coordinator confirmed intended in source round4; preserve decision"
+    },
+    {
+      "id": "AL4-28",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 222,
+        "row": "| AL4-28 | Time exports \u00b7 M and O \u00b7 1024, 1440 | \"Choose finalized employees\" card | The card's content is **24px right of every other card's**:<br>\u2022 Heading icon at 336 against Pay period's 312, and title at 388 against 364 (1440).<br>\u2022 The grey selection bar, column header (\"Employee\" 366) and rows sit inside a 20px card padding plus their own 24px (`sectionHeading`, `selectionBar` and `employeeFootnote` padded `0 24px`, `6px 24px` and `15px 24px`).<br>\u2022 At 1024: heading 304/356 against 280/332. | r4/c-ex-1440.png | `premium-desktop.css:321` now matches `[class*=\"__card \"]`, which includes `__employeeCard`. That card was designed with 0 side padding and inner sections at 24. | Add `:not([class*=\"__employeeCard\"])` to `:321`. Set the employee card's inner sections to `padding-inline: var(--nv-s-5)` (heading, selection bar, footnote, table header and rows), so its text starts at 312/280 like the cards above and beside it. | P1 |",
+        "reportedStatus": "Time exports \u00b7 M and O \u00b7 1024, 1440"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-29",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 223,
+        "row": "| AL4-29 | Inbox \u00b7 M and O \u00b7 1024 (and 200% text at every desktop width) | \"Request pages\" row labels | At 1024 each cell is 128px (260\u2013645 / 3), and the labels **break inside words**: \"Time / off\", \"Shift / reque / sts\", \"Availa / bility\" (card 90px tall). At 200% text it reads \"Ti / me / off\", \"Shi / ft / re\u2026\", \"Av / aila / bi\u2026\". | shots/r4i-AUDIT-M-_app_inbox-1024.png, shots/r4z-AUDIT-M-_app_inbox-1024.png | Three fixed columns in a 385px list column. The labels inherit the kit's `overflow-wrap: anywhere` (row title). | Below about 1180px, and whenever the band is in its large-text state, stack the three as a one-column list (kit rows), or drop the tiles and centre icon above label. Give the labels `overflow-wrap: normal; word-break: keep-all`, so a word never splits. | P1 |",
+        "reportedStatus": "Inbox \u00b7 M and O \u00b7 1024 (and 200% text at every desktop width)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "AL4-30",
+      "source": "docs/product/specs/p4-desktop/inspection/alignment.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 224,
+        "row": "| AL4-30 | Inbox \u00b7 M and O \u00b7 200% text (all widths, coordinator's shared rule) | Band summary against the filter row | At 200%:<br>\u2022 The summary reserves **192px** (`min-height`) for two 48px lines.<br>\u2022 The filters start 96px below the summary text (summary text ends about 337, filters at 445; the band is 452px at 1024).<br>\u2022 A large empty teal area sits between the summary and the filters. | shots/r4z-AUDIT-M-_app_inbox-1024.png | `portal-premium.css:502` `min-height: calc(3rem * var(--nv-text-scale, 1))`. `rem` already scales with text size, and `--nv-text-scale` scales it again. | Use `min-height: 2lh` (or `3rem` without the multiplier). The two reserved lines then follow the text size once. This is a coordinator file: send the change. | P2 |",
+        "reportedStatus": "Inbox \u00b7 M and O \u00b7 200% text (all widths, coordinator's shared rule)"
+      },
+      "disposition": "Implemented by candidate coordinator646939c; ready inherits exact sharedCSS; exact-review geometry pending"
+    },
+    {
+      "id": "ST-P4-01",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 81,
+        "row": "| ST-P4-01 Sticky pane under the header | **Fixed** | The side column holds only the pane now and sticks at `top: 81px`, 16px under the 65px header. `elementFromPoint` at the pane's top centre returns the pane at every scroll position, at 1440 (pane 81\u2013457) and at 1024 (81\u2013529 on a 768px screen, so the whole pane is visible). At maximum scroll the list ends below the pane (1440: list bottom 788 against pane 457; 1024: 656 against 529), so the pane never detaches or covers anything. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-02",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 82,
+        "row": "| ST-P4-02 Desktop placeholders without a band (Manager and Owner) | **Fixed** (1440 measured) | Placeholder band against final band, Owner, sidebar navigation: Team 168/168, Schedule 168/168, Home 168/168, Inbox 196/196, Timecards 184/184 and Payroll 164/164 (the last two include the section-tab row). All start at y=93. One leftover is filed separately as ST-P4-10 (the tabs slide sideways). Employee and Lead placeholders are still bandless (ST-P4-09). |",
+        "reportedStatus": "**Fixed** (1440 measured)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-03",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 159,
+        "row": "| ST-P4-03 Inbox loses scroll position | **Fixed** | Scrolled to 800, every transition kept 800: paused and back, offline and online, and a failed read. That held in Chromium at 1024 (Owner; list held at 4000) and 1440 (Manager; list held at 3580), and in WebKit at 1440. The document height was the same in every state (4361 / 3941). The re-read and the server failures kept the two columns, the 200px pane placeholder and the Request pages row in place. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-04",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 84,
+        "row": "| ST-P4-04 Team filter row moves the list | **Fixed** | 1440, Manager. The Find card stays 200px and the people list stays at y=437 through typing, choosing a role, a status segment and Clear filters. \"Updating employees\u2026\" and \"Clear filters\" sit on the status row (y=357\u2013413). The only layout shift is the list's own rows changing (12 \u2192 2 people). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-05",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 160,
+        "row": "| ST-P4-05 Home loading rows | **Fixed** | Today, Now, Setup and Week keep identical rectangles from the first painted frame to ready. That's 768 (Owner and Manager; Now 680, Setup at 1123), 1024 (Manager; Now 640, Week at 1083) and 1440 (Owner; Now 640, Setup at 1083). Paused and offline: 0 frames changed at any of the three widths. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-06",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 164,
+        "row": "| ST-P4-06 | Kept by decision | \u2013 |",
+        "reportedStatus": "Kept by decision"
+      },
+      "disposition": "Accepted/kept by explicit source ROUND2 decision; preserve exception"
+    },
+    {
+      "id": "ST-P4-07",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 87,
+        "row": "| ST-P4-07 All requests jumps under the pane | **Fixed** | The Request pages row is at the top of the list (1440: 60px tall; 1024: 112px). Nothing sits under the pane, so its height (shift 376/448, request 286/306, planning 222/262) moves nothing. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-08",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 165,
+        "row": "| ST-P4-08 | Coordinator (Inter fallback metrics cherry-picked) | Not counted. |",
+        "reportedStatus": "Coordinator (Inter fallback metrics cherry-picked)"
+      },
+      "disposition": "Transferred coordinator shared rule; latest candidate rule/font bytes retained in ready; exact-review measurement pending"
+    },
+    {
+      "id": "ST-P4-09",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 161,
+        "row": "| ST-P4-09 Employee and Lead placeholders without a band | **Fixed** | Placeholder band against final band, sidebar navigation (all match, all at y=93):<br>\u2022 **`AUDIT-E` at 1440:** My schedule 120/120, Requests 184/184, My time 184/184, My pay 192/192, Updates 116/116, Notifications 116/116, Home 172/172.<br>\u2022 **`AUDIT-E` at 1024:** the same.<br>\u2022 **`AUDIT-E` at 768:** My schedule 172/172, Requests 164/164, My time 184/184, My pay 196/196, Updates 116/116, Notifications 140/140.<br>\u2022 **`AUDIT-LEAD` at 1024:** the same, Home 172/172.<br>The 48px tab row is in the band from the first frame, and the placeholder is the page's width (1120 at 1440). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-10",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 162,
+        "row": "| ST-P4-10 Section tabs slide | **Fixed** | Tab positions and widths are identical in placeholder and page: Manager Timecards at 1440 (72/79/88/103 wide at x 312/408/511/622) and 1024; Employee My pay at 1440; Employee Requests at 768. `padding-inline` is 0 in both states. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-11",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 163,
+        "row": "| ST-P4-11 My schedule side column doesn't stick | **Fixed** | The side column is now its content's height (262) and holds at y=81 from scrollY 400 to the end of the page. The review card stays the element at its top centre at every scroll position. Measured `AUDIT-E` and `AUDIT-LEAD` at 1440, Lead at 1100, and Lead at 1440 in WebKit. At maximum scroll it still ends above the week's bottom (1100: 343 against 357). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "ST-P4-12",
+      "source": "docs/product/specs/p4-desktop/inspection/stability.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 171,
+        "row": "| ST-P4-12 | Home's views (Attendance, Team overview, Schedule activity), both roles, 761\u20131023 at 125% text and above (measured Owner 768, Manager 761) | `.premium-home-view .nv-masthead__extra` (view chips) | At 761\u20131023 the chips get their own row, but that row neither scrolls nor wraps, so at larger text it runs past the band and the band cuts it off. **768, Owner:** the chips end at x=744 at 125% against the band's edge at 736. At 200% they end at x=937, so \"Schedule activity\" (691\u2013937) is cut to \"Sc\" and can't be clicked. **761, Manager:** 768 at 125% and 972 at 200%, against the band at 729. At 100% they fit (700 against 736). Because the chip row isn't a scroll container, a mouse user has no way to reach the last view. | `SI/shots/r4-ST-P4-12-chips-768-200.png`, `\u2026-768-125.png` | `src/app/app/premium-desktop.css:59-60` gives the views' chips `min-width: 0; max-width: 100%` and `overflow-x: auto; flex-wrap: nowrap` only from 1024px up. At 761\u20131023 (`:54`) the chips only get `margin-top`. In the band grid (`:19`, `minmax(min-content, max-content)`) the chips' row is then as wide as the chips themselves, wider than the band. | Apply `:59-60`'s sizing at every desktop width. In the 761\u20131023 block, add `.premium-home-view > .nv-pageband > .nv-masthead__extra { min-width: 0; max-width: 100%; }` and `\u2026 .nv-masthead__extra > * { overflow-x: auto; flex-wrap: nowrap; }`, as Employee My schedule already does (its chips stay inside the band at 768 up to 200%). | P1 |",
+        "reportedStatus": "Home's views (Attendance, Team overview, Schedule activity), both roles, 761\u20131023 at 125% text and above (measured Owner 768, Manager 761)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-01",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 125,
+        "row": "| TCD-01 | Fixed | \u2022 The pane sticks at y 81, below the 65px header.<br>\u2022 On every selected type, scrolled up to 6111px, `elementFromPoint` on the title returns the title, at 1440 and 1024. `S/r2/shots/owner-pane-1440-TIMECARD.png` |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-02",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 202,
+        "row": "| TCD-02 | Fixed | \u2022 \"Availability deadline not set\" now says \"Set when availability is due for this week, on the Schedule.\" That names the right thing and matches its button (`/app/schedule\u2026#schedule-deadline`).<br>\u2022 The coverage gap says \"This shift still needs people. Open the coverage gap to fill it.\" That's true for partly short gaps too. (\"Shift\" for a time window is a judgment call I accept.)<br>\u2022 The other notes are unchanged and still correct. `S/r4/shots/owner-pane-SETUP.png` |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-03",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 127,
+        "row": "| TCD-03 | Fixed | The overview figures are 22/28 at 600, the same as Schedule's strip. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-04",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 128,
+        "row": "| TCD-04 | Fixed | \u2022 \"Casey Rivera \u00b7 Oct 19 \u2013 Oct 25 \u00b7 Fix recorded-time issues before finalizing.\" (`present.ts:20-29`)<br>\u2022 2 lines in the 1024 pane, and no ISO dates anywhere. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-05",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 129,
+        "row": "| TCD-05 | Fixed | \"Team member\", \"Mon\" and \"Today\" are 14/20; date figures 18. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-06",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 130,
+        "row": "| TCD-06 | Fixed | \"Plan \u203a Home[link] \u203a Team overview[current]\". |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-07",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 131,
+        "row": "| TCD-07 | Fixed | \u2022 \"Request pages\" is now a compact row of three links (Time off, Shift requests, Availability) at 16px, at the top of the list.<br>\u2022 Its title is kept for screen readers only.<br>\u2022 It shows as 1 row at 1440 and 2 rows at 1024. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-08",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 132,
+        "row": "| TCD-08 | Fixed | The shift pane says each thing once:<br>\u2022 title, then the \"Not clocked in\" pill<br>\u2022 facts: Shift \"7:00 AM \u2013 3:00 PM\", Location \"Main Office\"<br>\u2022 note \"Check in with them, or look at the Clocker.\"<br>\u2022 Contact / Open timecard |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-09",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 133,
+        "row": "| TCD-09 | Fixed in this branch | `timecards.tsx:21` now reads \"No clock-out yet\". |",
+        "reportedStatus": "Fixed in this branch"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-10",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 134,
+        "row": "| TCD-10 | Fixed | At 200% text: group labels 28/40, nav 28, footer 28, trail 28, \"Workforce\" 26. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-11",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 135,
+        "row": "| TCD-11 | Fixed | The bell count is 12/16 at 600 on desktop (Employee pages, count \"3\"). `premium-desktop.css:335`. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-12",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 136,
+        "row": "| TCD-12 | Fixed | \"Workforce\" is 13/16 in rem (`premium-desktop.css:337`). |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-13",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 137,
+        "row": "| TCD-13 | Fixed | Items \"Your profile\", \"My pay\", \"Sign out\" are 14/20 at 500 in #16191C. A new item on the same menu is filed as TCD-19. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-14",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 203,
+        "row": "| TCD-14 | **Not fixed** | \u2022 Names on Time exports are still **14/20** at 500 in #16191C; Timecards names are 16/22.<br>\u2022 CDP shows three rules setting the legend's size, in cascade order:<br>  1. `.employee-form legend` (12px)<br>  2. the new row-role rule (`premium-desktop.css:323`)<br>  3. the floor rule (`premium-desktop.css:163-174`), which wins. Its `:is(\u2026)` carries the specificity of its heaviest selector.<br>\u2022 Fix: take `form.employee-form > fieldset > legend` out of the `:174` list, or move that legend's size into the `:323` rule as `font-size: 1rem` with the same prefix as the floor rule.<br>P2. |",
+        "reportedStatus": "**Not fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-15",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 139,
+        "row": "| TCD-15 | Fixed | \"Mar\u00eda Jos\u00e9 Rivera Santiago With A Long Name\" is on 1 line in a 367px Name column at 1440. Columns at x 364 / 747 / 910 / 1146 match their cells. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-16",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 204,
+        "row": "| TCD-16 | **Partly fixed** | Now 14px at 768, 1024 and 1440:<br>\u2022 Home clock notes (14/20, \"Refresh\" 14/20/500)<br>\u2022 My time entries and footer (14/20)<br>\u2022 Time off summary (14/20)<br>\u2022 Availability hints (14/20)<br>\u2022 Timecards labels (14/20/500)<br>\u2022 Profile notes (14/20)<br>\u2022 My schedule \"Today\" (14/24/600)<br>\u2022 the shift options note<br>\u2022 Updates footnote (14/20)<br>One left: **\"Review update\"** on Updates rows (`AUDIT-LEAD`, 1440) is 12/24 at 500. It shows from 1101px (it's hidden at 1100 and below by `updates-review.css:85`).<br>\u2022 Cause: `src/components/updates-review.css:41` (`calc(12 * --type-unit)`), and `.updates-row-action` isn't in the floor list at `premium-desktop.css:398+`.<br>\u2022 Fix: add `.updates-row-action` to that list.<br>Now P2 (one label). |",
+        "reportedStatus": "**Partly fixed**"
+      },
+      "disposition": "Candidate31f87cd and ready Desktop floor include updates-row-action; final type recheck pending"
+    },
+    {
+      "id": "TCD-17",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 205,
+        "row": "| TCD-17 | Fixed | \u2022 At 768, `AUDIT-LONG`'s name gives way: it's 128px with an ellipsis (\"Mar\u00eda Jos\u00e9 River\u2026\", scrollWidth 310).<br>\u2022 The trail \"Home\" is whole (40px, nav 216px), and so are \"Profile\" at 768 and \"My schedule\" at 1024.<br>\u2022 At 1101 the full trail returns and the name is 192px with an ellipsis.<br>\u2022 Short names aren't truncated: \"Fictional Owner\" 105px and \"Morgan Rivera\" 97px. `S/r4/shots/hdr-AUDIT-LONG-768_app.png` |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-18",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 206,
+        "row": "| TCD-18 | Fixed | \"Signed in as Fictional Owner\" is 14/20 at 400 in #5F666A (5.84:1), above items at 14/20/500. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-19",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 207,
+        "row": "| TCD-19 | Fixed | The Pay tabs read \"My pay \u00b7 My time \u00b7 Timecards\" (`navigation.ts:211-212`), matching the sidebar and h1. The selected tab is white on #1C4A47 (9.91:1); the others are #CFE3E1 (7.42:1). |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-20",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 208,
+        "row": "| TCD-20 | Fixed | Home's band says \"Scheduled until 4:00 PM.\" (`AUDIT-E`) and \"Scheduled until 5:00 PM.\" (`AUDIT-ON` clocked in, `AUDIT-BREAK` on break). That's correct next to \"Off clock\", \"Clocked in\" and \"On break\". |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "TCD-21",
+      "source": "docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 209,
+        "row": "| TCD-21 | Fixed | The \"What changed\" line breaks only after \"\u00b7\": \"After: Oct 19 \u00b7 9:00 AM \u2013 5:00 PM \u00b7\" / \"Main Office \u00b7 Customer Support \u00b7\" / \"Designated lead\" (Lead, 1440, 280px column). Place names are joined with NBSP. |",
+        "reportedStatus": "Fixed"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-01",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 127,
+        "row": "| IS-P4-01 | **Fixed** | **Manager, 1440:** with focus on `Review time off` at scrollY 2615 and the read slowed to 3 s, one 30 s poll ran. There was no state change (`data-inbox-state` stayed `ready`, with no mutations), scrollY stayed 2615 the whole time, and focus stayed on the row.<br>**Owner, 1024\u00d7768:** the same result at scrollY 3035. Log: `out-inbox-r2-M-1440.txt` G, `out-inbox-r2-O-1024.txt` G. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-02",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 128,
+        "row": "| IS-P4-02 | **Fixed** | The side column is sticky at top **81**. After scrolling and selecting with Enter, the heading is at top **103** and visible: `elementFromPoint` hits the heading, at 1440, at 1024\u00d7768, and in WebKit. All requests left the side column, so the pane ends at 367 (1440) and 431 (1024\u00d7768), inside the window. Crop: `r2/shots/AUDIT-M-1440-pane-sticky.png` |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-03",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 129,
+        "row": "| IS-P4-03 | **Fixed** | **Owner, 1440:** three Tabs past the last item close the menu, and focus lands on a visible `Refresh` with its white ring. Shift+Tab returns to the trigger with the menu closed. Employee (1440) and Lead (1024) behave the same; their menu is Your profile and Sign out. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-04",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 130,
+        "row": "| IS-P4-04 | **Fixed** | `?item=HOURS%3AAUDIT-E` opens its group, so the row shows as selected. Escape returns focus to it (318,438). Choosing **Plan ahead** keeps the selection visible. The same happens in WebKit. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-05",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 230,
+        "row": "| IS-P4-05, IS-P4-11 | Waiting (not counted) | Unchanged. |",
+        "reportedStatus": "Waiting (not counted)"
+      },
+      "disposition": "Profile/backend already merged in candidate; ready inherits; final integration recheck pending"
+    },
+    {
+      "id": "IS-P4-06",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 224,
+        "row": "| IS-P4-06 | **Partly fixed** | Down from `Review time off` now lands on the \"12 people with no weekly hour target\" heading (292,646). Up from the first row of an open group returns to its heading.<br>**Down from a closed group heading is stuck:** three presses leave focus on the same heading at y 646, and the page doesn't scroll either. Plan ahead has three closed groups, so a keyboard user moving down the list stops at the first one and has to switch to Tab.<br>Cause: `src/lib/row-navigation.ts:8` and `:16`. `visible()` uses `getClientRects()`, which still counts the rows inside a closed `<details>`. The next row is one of those hidden rows, its `focus()` fails silently, and the key's default is already prevented.<br>Fix: drop rows inside a closed group from the list: `.filter(el => visible(el) && !(el.parentElement?.closest('details:not([open])') && !el.matches('summary')))`. **P2** |",
+        "reportedStatus": "**Partly fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-07",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 133,
+        "row": "| IS-P4-07 | **Fixed** | Enter on `Refresh` keeps focus on it (`disabled` false, white ring) through a 3 s read. A failed refresh also keeps focus on `Refresh`. See IS-P4-17 for the missing busy state. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-08",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 225,
+        "row": "| IS-P4-08 | **Fixed** (named cases) | Section entries are now `aria-current=\"true\"` on their sub-pages: Settings on Payroll settings, Home on Team overview, Attendance and Schedule activity, Inbox on Time off and Shift requests, Timecards on Time exports, and Schedule on Templates. The top pages themselves are `\"page\"`: Timecards, Settings, Schedule. Residual: see IS-P4-20. |",
+        "reportedStatus": "**Fixed** (named cases)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-09",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 135,
+        "row": "| IS-P4-09 | **Fixed** | The trails read \"Plan \u203a [Home \u2192 /app] \u203a *Team overview*\" and \"\u2026 \u203a *Attendance*\". Payroll settings reads \"Workspace \u203a [Settings] \u203a *Payroll settings*\". |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-10",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 136,
+        "row": "| IS-P4-10 | **Fixed** | The selected waiting avatar is `rgb(255,255,255)` with an inset 1px `rgb(232,236,235)` ring, on the row's `rgb(231,243,242)`. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-11",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 230,
+        "row": "| IS-P4-05, IS-P4-11 | Waiting (not counted) | Unchanged. |",
+        "reportedStatus": "Waiting (not counted)"
+      },
+      "disposition": "Confirmed historical P2 still uncovered in candidate34 and ready; separate external patch requested"
+    },
+    {
+      "id": "IS-P4-12",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 138,
+        "row": "| IS-P4-12 | **Fixed** | `scroll-padding-top: 81px` on every desktop page checked. A focused row after Shift+Tab is visible below the header. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-13",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 139,
+        "row": "| IS-P4-13 | **Fixed** | The trigger is named \"Fictional Owner, account menu\", \"Alexandra Rivera, account menu\" and so on, matching the visible name. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-14",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 140,
+        "row": "| IS-P4-14 | **Fixed** | The first Tab on every desktop page is \"Skip to content\": 134\u00d744 at (12,12), white, teal text, 2px teal ring, z 100, not covered. Enter moves focus to `main#main-content`, and the next Tab is the page's first control (Inbox: `Refresh`). It's `display: none` on phones (390, 320, all roles), and the first phone Tab is still the brand link. Crop: `r2/shots/QAOWNER-1440-skip-link.png` |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-15",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 141,
+        "row": "| IS-P4-15 | **Fixed** | \"Alexandra Rivera, Employee, Main Office, 787-555-0101\" matches the visible cells. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-16",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 226,
+        "row": "| IS-P4-16 | **Fixed** | Request pages is now DOM and Tab stop 5, with the first Inbox row at stop 8. After the filters, Tab goes Time off \u2192 Shift requests \u2192 Availability (y 253) \u2192 the first row (y 377), so the Tab order matches what you see. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-17",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 227,
+        "row": "| IS-P4-17 | **Fixed** | With a 3 s read, Enter on Refresh shows \"Refreshing\u2026\" with `aria-disabled=\"true\"`, so `disabled` stays false and focus stays on the button. The accessible name is \"Refreshing\u2026\", and it contains a `status` that says \"Refreshing the Inbox\u2026\". A second Enter sends no second read. Afterwards it reads \"Refresh\" again, with focus kept. A failed refresh returns to \"Refresh\", with focus kept and the failure card shown. The 30 s background poll stays silent: the button only ever read \"Refresh\", and focus and scroll (2615) held. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-18",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 228,
+        "row": "| IS-P4-18 | **Fixed** (known 404 counted under Gaps) | The count stops after its first 404. Owner session: 14 requests over 305 s across 8 full page loads, two per load (the dev server runs effects twice). There was no repeat during a 65 s wait and none on client navigation. |",
+        "reportedStatus": "**Fixed** (known 404 counted under Gaps)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-19",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 229,
+        "row": "| IS-P4-19 | Waiting on the coordinator (not counted) | Still open as measured. Lead, 1024: Enter on `Refresh recorded time` sets `disabled=true`, and focus drops to `<body>`. |",
+        "reportedStatus": "Waiting on the coordinator (not counted)"
+      },
+      "disposition": "Confirmed historical P2 partly fixed: name corrected, native pending focus loss still uncovered in candidate34 and ready; external patch requested"
+    },
+    {
+      "id": "IS-P4-21",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 236,
+        "row": "| IS-P4-21 | Inbox \u00b7 Manager \u00b7 1440 (same code at 1024 and on Owner) | Failure, sign-out and offline states arriving while the list is scrolled | Now that the list column keeps its height and the scroll stays put (ST-P4-03), a state that replaces the list leaves the reader looking at an **empty screen**. Scrolled to y 2000, with focus on a row:<br>\u2022 the poll returns 500;<br>\u2022 the poll returns 401;<br>\u2022 the network goes offline.<br>In all three, scrollY stays **2000** and document height stays 3941. The status card (\"The Inbox isn't available right now. / Try again\", \"Sign in again to see your Inbox. / Sign in\", \"You're offline\u2026\") is at top **\u22121675**, far above the window. **No text at all** is in the window: the visible-text scan returned `[]`. Only the pane's still grey skeleton shows. Focus goes to `<body>`. The band's eyebrow (\"Not available\", \"Offline\") is off screen too. A screen reader hears the `role=\"status\"`, but a sighted manager sees a blank page and has no Try again or Sign in in reach. | `r4/shots/AUDIT-M-1440-poll-fails-500-.png`, `AUDIT-M-1440-401-on-poll.png`, `AUDIT-M-1440-offline.png`; `out-scrolledstates-M-1440.txt` | `src/components/manager-inbox.tsx:293` puts the status card at the top of a list column held at its last height. The sticky side column (`:335`) shows only `DetailPlaceholder still`. | Show the state where the reader is. Render the status message and its action (Try again or Sign in) in the sticky side column instead of the still skeleton, for every state except `loading`; the sticky side column stays in view at top 81. Or make `.inbox-status` `position: sticky; top: 81px` inside the held column. Either way, move focus to that action only if focus was inside the list (`focusAfterRetry` pattern). | P1 |",
+        "reportedStatus": "Inbox \u00b7 Manager \u00b7 1440 (same code at 1024 and on Owner)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "IS-P4-20",
+      "source": "docs/product/specs/p4-desktop/inspection/interaction-states.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 237,
+        "row": "| IS-P4-20 | Sidebar \u00b7 both \u00b7 768\u20131440 | A sidebar entry on a page *below* it that has no trail page of its own | On `/app/employees/AUDIT-E` (Team member detail), **Team** is `aria-current=\"page\"`. The trail ends with \"People \u203a Team\", where Team is a link and nothing is marked current. A screen reader hears \"Team, current page\" on Alexandra's page. This is the same rule as IS-P4-08, for `deeper` pages. | `out-shell-r4-O.txt` | `src/components/app-shell.tsx:212`: `item.href === activeHref && !pageItem` ignores `deeper` | `aria-current={active ? (item.href === activeHref && !pageItem && !deeper ? \"page\" : \"true\") : undefined}` | P2 |",
+        "reportedStatus": "Sidebar \u00b7 both \u00b7 768\u20131440"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-01",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 143,
+        "row": "| WR4-01 | **Fixed as filed, but the fix regressed (new WR4-11)** | No title breaks inside a word any more: <ul><li>Inbox: \"Inbox\" is one line at 761\u20131440 at 100%, 150% and 200%. The band at 761 is 188px (was 216).</li><li>\"Schedule activity\" is one line at 150% and 200% text at 761\u20131440 (was 16 lines at 200% at 1024).</li></ul>The filters and chips now scroll beside the title. But the title column can no longer wrap, so long titles are cut off at the band edge. See WR4-11. |",
+        "reportedStatus": "**Fixed as filed, but the fix regressed (new WR4-11)**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-02",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 236,
+        "row": "| WR4-02 | Waiting on the Profile merge (not counted) | Manager and Owner More \u203a Profile still land on `/app` at 320 and 390. |",
+        "reportedStatus": "Waiting on the Profile merge (not counted)"
+      },
+      "disposition": "Profile/backend already merged in candidate; ready inherits; final integration recheck pending"
+    },
+    {
+      "id": "WR4-03",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 145,
+        "row": "| WR4-03 | **Fixed** | Collapsed at 1440 and 1920, and collapsed at 1024: the Timecards tab box, every kit band (Inbox, Timecards, Updates), Time off and Insights all start at x=112. Expanded at 1440 they all start at x=276. The band text and the tab text share x=148 (collapsed) and x=312 (expanded). |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Transferred coordinator shared rule; latest candidate rule/font bytes retained in ready; exact-review measurement pending"
+    },
+    {
+      "id": "WR4-04",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 146,
+        "row": "| WR4-04 | **Fixed** | Sidebar group labels are 14px and \"Powered by\" is 14px at 761\u20131440 (AUDIT-M, AUDIT-LONG). The rule is at `premium-desktop.css:273-275`, in rem. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-05",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 147,
+        "row": "| WR4-05 / WR-34 | Kept by the coordinator's decision (not counted) | Unchanged. Manager at 1440: left column ends at 1067, right at 1217. Owner: 1338 vs 1217. |",
+        "reportedStatus": "Kept by the coordinator's decision (not counted)"
+      },
+      "disposition": "Accepted/kept by explicit source ROUND2 decision; preserve exception"
+    },
+    {
+      "id": "WR4-06",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 233,
+        "row": "| WR4-06 | **Partly fixed** | Manager and Owner at 1024 and up: Timecards, Payroll runs, Time exports and Payroll settings all put the title at y=181 (184px bands). **Still open** (see the bullets after this table). |",
+        "reportedStatus": "**Partly fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-07",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 149,
+        "row": "| WR4-07 | **Fixed** | \"Workspace \u203a Settings \u203a Payroll settings\" at 1440 and 1180; \"Payroll settings\" alone at 1100 and below. Home's views: \"Plan \u203a Home \u203a Schedule activity\". |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-08",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 150,
+        "row": "| WR4-08 | **Fixed** | The Updates title is at x=280 at 761\u20131023, the same as Team, Inbox and Timecards. At 1440 it is at x=312. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-09",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 151,
+        "row": "| WR4-09 | **Fixed** | Owner at 390\u00d7844 and 320\u00d7844: the sheet is 748px tall with 785px of content. \"Close\" stays at y=780\u2013828, fully visible, and \"Sign out\" scrolls up from under it (`R2/crops/more-owner-390-foot.png`). Manager: 697px, no scroll. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-10",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 152,
+        "row": "| WR4-10 | **Fixed, with a new P2 (WR4-12)** | The \"Request pages\" row is first in the Inbox list (y=249) at every desktop width, for both roles. |",
+        "reportedStatus": "**Fixed, with a new P2 (WR4-12)**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-11",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 229,
+        "row": "| WR4-11 | **Fixed** | No title anywhere breaks inside a word at 125\u2013200%, and nothing in a band runs past its text edge:<ul><li>Owner greeting: 1 line at 1440, 2 lines at 125% 768 (231px band), 3 lines at 200% 768 (404px band).</li><li>\"Schedule activity\": 1 line, and 2 lines at 200% 768.</li><li>Inbox filters move to their own row at 125% from 768 down and at 200% from 1024 down. They scroll at their own width.</li><li>AUDIT-E Home: \"N items need your review\" (209\u2013342px wide) moves under the title at 125\u2013200% from 768 down and at 200% at 1024.</li><li>Employee view chips (My schedule, Shift requests) move under the title or scroll; they are never cut.</li></ul>One gap is left at 761\u20131023 on Home's views; see WR4-17. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-13",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 231,
+        "row": "| WR4-13 | **Fixed** | The AUDIT-LONG account button is 208px wide at 761\u20131100 (name capped at 8rem) and 272px from 1101. The trail's last crumb gets its full 40px (\"Home\") at every width from 761. At 761 there are 225px between the trail start and the bell, so longer names (\"Notifications\", \"Shift requests\") fit too. AUDIT-M's button is unchanged at 177px. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-16",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 235,
+        "row": "| WR4-16 | **Not fixed** | Employee Home To do at 320: \"Mon, October 19, 202 / 6\". The date span is 157\u00d739px, two lines. With non-breaking spaces the whole date is 167px, wider than the 157px column, so the browser breaks it inside \"2026\". At 390 it fits on one line (167px). |",
+        "reportedStatus": "**Not fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-12",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 230,
+        "row": "| WR4-12 | **Fixed as filed, but it regressed (WR4-18)** | Three across at every width. The row is 60px at 1440 and 1023, 68px at 1180, 1179, 768 and 761, and 90px at 1024, because the labels now split inside words. |",
+        "reportedStatus": "**Fixed as filed, but it regressed (WR4-18)**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-14",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 234,
+        "row": "| WR4-14 | **Not fixed** | My schedule week rows at 1100, 1150 and 1180 (the week column is 436\u2013484px): the position still drops to a second line starting with \"\u00b7\". Location at y=574, then \"\u00b7 Customer Support\" at y=596, and the `::before` content is still `\"\u00b7\"`. One line from 1279. The shared fix (`408b603`) keeps the separator whole in the line at `employee-my-schedule.tsx:94`, but the week rows render location and position as separate spans (`:196-197`), so they still split. |",
+        "reportedStatus": "**Not fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-15",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 232,
+        "row": "| WR4-15 | **Fixed** | Profile's two cards share one top: y=263 for both at 1440 and at 1024. Stacked at 1023. |",
+        "reportedStatus": "**Fixed**"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-17",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 247,
+        "row": "| WR4-17 | Home's views (Attendance, Team overview, Schedule activity) \u00b7 Manager and Owner \u00b7 761\u20131023 at 125\u2013200% text | View chips row under the title | Below 1024 the chips have their own row but can't scroll, so they run past the band and are cut at its edge. The cut chip is the selected one (\"Schedule a\u2026\", \"Sc\u2026\"). Measured as the chip row's overrun past the band's text edge:<ul><li>768: 44px at 125%, 111px at 150%, 238px at 200%.</li><li>761: 75px at 125%, 146px at 150%, 280px at 200%.</li><li>At 100% the row fits exactly (420 in 420).</li></ul>From 1024 the chips scroll and nothing is cut. | `R4/crops/r4-large-a.png` (first two) | `premium-desktop.css:59-60` gives the chips `overflow-x: auto; flex-wrap: nowrap` only inside `@media (min-width: 1024px)`. The 761\u20131023 rule (`:53-54`) only moves the row. | Move `:60` into the 761px-and-up query, so the chips scroll at every desktop width: `\u2026 > .premium-home-view > .nv-pageband .nv-masthead__extra > * { margin: 0; padding: 0; overflow-x: auto; flex-wrap: nowrap; }`. Then add the Inbox's right-edge fade. | P1 |",
+        "reportedStatus": "Home's views (Attendance, Team overview, Schedule activity) \u00b7 Manager and Owner \u00b7 761\u20131023 at 125\u2013200% text"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    },
+    {
+      "id": "WR4-18",
+      "source": "docs/product/specs/p4-desktop/inspection/widths-roles.md",
+      "sourceCommit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "lastHistoricalTable": {
+        "line": 248,
+        "row": "| WR4-18 | Inbox \u00b7 both roles \u00b7 761\u20131180 (all but 1023 and 1440) | \"Request pages\" links | Three across, but the labels split inside words:<ul><li>1024: \"Time / off\", \"Shift / reque / sts\", \"Availa / bility\" (90px row).</li><li>768, 1180 and 1179: \"Shift / requests\" and \"Availabilit / y\" (68px row).</li></ul>Each cell is about 128px wide at 1024 and 150px at 768, of which the tile, gap and padding take 76px. | `R4/crops/reqrow-r4.png` | `premium-desktop.css:350` (`repeat(3, minmax(0, 1fr))` at every desktop width) with `.nv-row__title { overflow-wrap: break-word }` (`kit.css:205`) and `white-space: normal` (`:349`) | `a2d9823` (AL4-29) appears to do this: three across only when the card is at least 36rem, otherwise a short list, with `overflow-wrap: normal; word-break: keep-all` on the titles. Re-measure once it's on the preview. | P1 |",
+        "reportedStatus": "Inbox \u00b7 both roles \u00b7 761\u20131180 (all but 1023 and 1440)"
+      },
+      "disposition": "Source ROUND5 claims round4 fix is implemented; exact review measurement pending"
+    }
+  ],
+  "note": "Inventory/crosswalk only. No current browser measurement or independent closure. All original reports remain nonzero/incomplete. AL4-31 appears in latest report range but no historical row/measurement exists in source8012; unresolved ID reference, not a finding."
+}

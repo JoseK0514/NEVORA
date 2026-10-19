@@ -1,0 +1,23 @@
+{
+  "candidate": "4314266b0020b6f0a566543c8d6b569256c3648f",
+  "scope": "Read-only static peer review. No tests/browser/app edits.",
+  "patches": [
+    {
+      "name": "IS-B33.patch",
+      "sha256": "a813ef9bd0e09ca9d599b3ac97d38604935c85115ab5544b72a875ad106a297b"
+    },
+    {
+      "name": "IS-B33.md",
+      "sha256": "34aa5b4550b6261821be36364589e1d0941f9e050b59659df3e7b00bed6030d2"
+    },
+    {
+      "name": "IS-B31-PAYROLL.patch",
+      "sha256": "677b15e717dc5283db8a7ff62762d4158c9b9377d94d57acb1f4deb636628359"
+    },
+    {
+      "name": "IS-B31-PAYROLL.md",
+      "sha256": "c7c2f2f2e6c98fa4683c0a1223aa80efd6083fb467e0dfcf3fe9717ae762b15b"
+    }
+  ],
+  "snapshotClarification": "Author replaced external proposal during peer review. These copies were captured after the backlog revision; they do not archive the earlier proposal that prompted the issue. revised/REVIEW.md is the final peer recommendation."
+}

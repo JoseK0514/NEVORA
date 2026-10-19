@@ -1,0 +1,14 @@
+{
+  "base": "4314266b0020b6f0a566543c8d6b569256c3648f",
+  "finding": "TC-P3-24-manager-timezone",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md:1199",
+  "sourceSHA": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "files": [
+    "src/components/manager-weekly-roster.tsx"
+  ],
+  "scopeNotes": [
+    "Reuses existing public display helper for both full/compact roster timezone strings. Does not alter business timezone, dates, data, authority, or layout."
+  ],
+  "applicationFilesEdited": false,
+  "runtimeOrTestsRun": false
+}

@@ -1,0 +1,89 @@
+--- a/src/lib/communications/recovery.ts
++++ b/src/lib/communications/recovery.ts
+@@ -17,7 +17,7 @@
+    if(command&&JSON.stringify(command)!==JSON.stringify(body))return;
+    command=structuredClone(body);operationId=String(body.operationId);
+   }
+-  const sequence=++generation,controller=new AbortController();abort=controller;publish({pending:true,notice:null,canRetry:false});
++  const sequence=++generation,controller=new AbortController();abort=controller;publish({pending:true,notice:state.hasUnknown?state.notice:null,canRetry:false});
+   try{
+    const result=await request(lookup?'/operations/'+operationId:'',lookup?undefined:command,controller.signal) as CommandResult;
+    if(sequence!==generation||!authorized)return;
+--- a/src/components/communication-detail.tsx
++++ b/src/components/communication-detail.tsx
+@@ -31,6 +31,23 @@
+  const noticeRef=useRef<HTMLElement>(null);
+  const receiptRef=useRef<HTMLElement>(null),withdrawRef=useRef<HTMLButtonElement>(null),confirmRef=useRef<HTMLButtonElement>(null),askedWithdraw=useRef(false);
+  const surface=useRef<HTMLElement>(null);
++ const actionFocus=useRef<{origin:HTMLElement;moved:boolean}|null>(null);
++ function sendAction(kind:Parameters<typeof onAction>[0]){
++  const origin=document.activeElement;
++  actionFocus.current=origin instanceof HTMLElement&&origin!==document.body?{origin,moved:false}:null;
++  onAction(kind);
++ }
++ useEffect(()=>{
++  const moved=(event:FocusEvent)=>{const tracked=actionFocus.current;if(tracked&&event.target!==tracked.origin&&event.target!==document.body)tracked.moved=true;};
++  document.addEventListener('focusin',moved);return()=>document.removeEventListener('focusin',moved);
++ },[]);
++ useEffect(()=>{
++  if(notice!=='signed-out')return;
++  const tracked=actionFocus.current;actionFocus.current=null;
++  if(!tracked||tracked.moved||document.visibilityState==='hidden'||document.activeElement!==document.body&&document.activeElement!==tracked.origin)return;
++  const signIn=surface.current?.querySelector<HTMLElement>('a[href="/login"]');
++  if(signIn)revealFeedback(signIn);
++ },[notice]);
+  const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&notice!=='signed-out'&&read?.state==='ready'?read:null;
+  useGSAP(()=>{
+   if(!ready?.ownAcknowledgedAt&&!ready?.ownReadAt)return;
+@@ -80,7 +97,7 @@
+  const locked=pending||notice==='unknown';
+  const sent=ready.sentCount!==undefined?<p className="wb-note">Sent to {ready.sentCount} {ready.sentCount===1?'recipient':'recipients'}. Delivery does not confirm reading.</p>:null;
+  const audience=ready.management?.recipients.length??ready.sentCount;
+- const withdraw=ready.canWithdraw?(confirmWithdraw?<div className="wb-confirm" role="group" aria-labelledby="withdraw-confirm-text"><p className="wb-text" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p><div className="wb-actions"><button ref={confirmRef} type="button" className="nv-btn" data-kind="danger" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('WITHDRAW');}}>{pending?'Withdrawing…':'Withdraw update'}</button><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button></div></div>:<button ref={withdrawRef} type="button" className="nv-btn" data-kind="secondary" data-tone="urgent" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}>Withdraw update</button>):null;
++ const withdraw=ready.canWithdraw?(confirmWithdraw?<div className="wb-confirm" role="group" aria-labelledby="withdraw-confirm-text"><p className="wb-text" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p><div className="wb-actions"><button ref={confirmRef} type="button" className="nv-btn" data-kind="danger" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)sendAction('WITHDRAW');}}>{pending?'Withdrawing…':'Withdraw update'}</button><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button></div></div>:<button ref={withdrawRef} type="button" className="nv-btn" data-kind="secondary" data-tone="urgent" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}>Withdraw update</button>):null;
+  return <>
+   <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow={category} title={ready.title} summary={<MetaParts text={`${ready.authorContext} · Published ${stamp(ready.publishedAt)}`}/>}/>
+   <article ref={surface} className="nv-content wb-focus-target" tabIndex={-1} data-update-revision={ready.revisionId}>
+@@ -104,9 +121,9 @@
+      </div>
+      {!acknowledged&&!ready.management&&required?<>
+       <label className="wb-check"><input type="checkbox" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label>
+-      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Acknowledge update</PendingLabel></button></div>
++      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)sendAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Acknowledge update</PendingLabel></button></div>
+      </>:null}
+-     {!acknowledged&&!ready.management&&!required&&!markedRead?<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><CheckCircleIcon size={20} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button></div>:null}
++     {!acknowledged&&!ready.management&&!required&&!markedRead?<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)sendAction('MARK_READ');}}><CheckCircleIcon size={20} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button></div>:null}
+     </div>
+    </section>
+ 
+@@ -120,7 +137,7 @@
+      <div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href={'/app/updates/compose?update='+ready.id}><PencilSimpleIcon size={20} aria-hidden="true"/>Edit update</Link>{withdraw}</div>
+     </div>
+    </section>:sent||withdraw?<section className="nv-card" aria-label="Delivery"><div className="wb-body">{sent}{withdraw?<div className="wb-actions">{withdraw}</div>:null}</div></section>:null}
+-  {notice==='unknown'?<section ref={noticeRef} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Result not yet confirmed</h2><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('LOOKUP');}}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{pending?'Checking…':'Check status'}</button></div></div></section>:notice==='unavailable'?<section ref={noticeRef} className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Unable to confirm</h2><p>We couldn’t check this update. Try again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" aria-disabled={pending||undefined} onClick={()=>{if(!pending)onRefresh();}}><ArrowClockwiseIcon size={20} aria-hidden="true"/>Try again</button></div></div></section>:null}
++  {notice==='unknown'?<section ref={noticeRef} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Result not yet confirmed</h2><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)sendAction('LOOKUP');}}><ArrowClockwiseIcon size={20} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Checking…">Check status</PendingLabel></button></div></div></section>:notice==='unavailable'?<section ref={noticeRef} className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><h2 className="wb-notice__title">Unable to confirm</h2><p>We couldn’t check this update. Try again.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" aria-disabled={pending||undefined} onClick={()=>{if(!pending)onRefresh();}}><ArrowClockwiseIcon size={20} aria-hidden="true"/>Try again</button></div></div></section>:null}
+   </article>
+  </>;
+ }
+--- a/src/components/payroll/payroll-ui.tsx
++++ b/src/components/payroll/payroll-ui.tsx
+@@ -23,7 +23,7 @@
+ export function PayrollState({ title, children, error = false, retry }: { title: string; children: ReactNode; error?: boolean; retry?: () => void }) {
+   return <div className={`pw-state${error ? ' pw-state-error' : ''}`} role={error ? 'alert' : 'status'}>
+     {error ? <WarningCircleIcon size={25} aria-hidden /> : <FileTextIcon size={25} aria-hidden />}
+-    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} aria-hidden />Try again</button>}</div>
++    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar, .payroll-workflow #payroll-company-defaults, .payroll-workflow .pw-panel-heading h2', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} aria-hidden />Try again</button>}</div>
+   </div>;
+ }
+ export function OperationFeedback({ operation }: { operation: ReturnType<typeof usePayrollOperation> }) {
+--- a/src/components/communication-compose.tsx
++++ b/src/components/communication-compose.tsx
+@@ -108,7 +108,7 @@
+    {action.notice==='conflict'||staleEdit?<div className="wb-notice" data-tone="review" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><strong>Review the latest information</strong><p>{staleEdit?'A newer version is available. Your retained draft belongs to the version you originally reviewed. Review latest before editing again.':'This update or its audience changed. Review the latest context and preview again.'}</p>{editing?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href={'/app/updates/'+editing.id}>Review latest</Link></div>:null}</div></div>:action.notice==='unavailable'?<div className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><p>We could not confirm the result. Check status before trying again.</p></div></div>:null}
+    {preview&&action.notice!=='conflict'&&!staleEdit?<section className="nv-card compose-reviewed" aria-label="Audience preview"><div className="nv-card__head"><h2 className="nv-card__title" ref={previewHeadingRef} tabIndex={-1}>Audience preview</h2></div><div className="wb-body"><div className="wb-receipt"><Tile tone={preview.count===0?'review':'done'}><UsersThreeIcon size={22}/></Tile><div><p className="wb-strong">{preview.count} eligible {preview.count===1?'recipient':'recipients'}</p><p className="wb-note">At {location}.</p>{scopeKind==='SHIFT'?<p className="wb-note">{context.shifts.filter(s=>s.id===shiftId&&s.locationId===locationId).map(s=><span key={s.id}>{keepWhole(`${s.assigneeLabel}${s.positionLabel?` · ${s.positionLabel}`:''} · ${formatDisplayDate(s.date)} · ${formatTimeRange(s.startTime,s.endTime)}`)}</span>)}</p>:null}</div></div><p className="wb-note">{preview.count===0?'No eligible recipients in this audience. You can change the delivery settings before publishing.':'Check your message and delivery settings, then publish.'}</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" type="button" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><PendingLabel pending={action.pending} pendingText="Publishing…">{editing?'Publish new version':'Publish update'}</PendingLabel><PaperPlaneTiltIcon size={20} aria-hidden="true"/></button></div><p className="wb-help">Eligibility is checked again when you publish. Changing any field requires a new preview.</p></div></section>:<section className="nv-card" aria-label="Review before publishing"><div className="nv-card__head"><h2 className="nv-card__title">Review before publishing</h2></div><div className="wb-body"><p className="wb-note">Check the eligible audience before your update goes live.</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" disabled={disabled||previewing} aria-busy={previewing||undefined} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} aria-hidden="true"/></button></div></div></section>}
+    {previewing||action.pending?<p className="nv-sr" role="status">{previewing?'Checking audience…':'Confirming publication…'}</p>:null}
+-   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><strong>Publication needs a status check</strong><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div></div>:null}
++   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><strong>Publication needs a status check</strong><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button className="nv-btn" data-kind="secondary" type="button" aria-disabled={action.pending} onClick={()=>{if(!action.pending)void action.lookup();}}>Check status</button>{action.canRetry?<button className="nv-btn" data-kind="secondary" type="button" aria-disabled={action.pending} onClick={()=>{if(!action.pending)void action.retry();}}>Retry original publication</button>:null}</div></div></div>:null}
+   </div>
+  </form>;
+ }

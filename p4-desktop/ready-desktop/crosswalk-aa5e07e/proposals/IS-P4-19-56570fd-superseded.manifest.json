@@ -1,0 +1,21 @@
+{
+  "finding": "IS-P4-19",
+  "base": "56570fd0fc5e23503dbb50550af9dfcd965861ec",
+  "sourceTreesEdited": false,
+  "applied": false,
+  "testsRun": false,
+  "browserRun": false,
+  "rootReviewRequired": true,
+  "files": [
+    {
+      "file": "src/components/employee-time-panel.tsx",
+      "beforeSha256": "caae005cf115af15370738d19829ae693127a61860d177a7dde7006d500f48a5",
+      "proposedSha256": "f3d947c9b2d7990e8c9a519ca9c2822a3ebd8cbd5029039849c5bf7640289841"
+    },
+    {
+      "file": "src/components/employee-home-reviewed.tsx",
+      "beforeSha256": "9e64e4319ae71b9eb6808d4b2aafde57dcfd141b96e3c6f66f8ad656d3f6c298",
+      "proposedSha256": "79f25c8a2509cbd389d90436820b51ee5ea6a0ba935962ed3f911baf57af7673"
+    }
+  ]
+}

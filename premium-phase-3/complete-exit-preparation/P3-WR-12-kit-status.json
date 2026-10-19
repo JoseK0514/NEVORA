@@ -1,0 +1,20 @@
+{
+  "finding": "P3-WR-12",
+  "base": "538caf3364e27aa8df5cb759abf4870aee43354e",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md:1061 on227150b",
+  "files": [
+    "src/components/employee-home-reviewed.tsx",
+    "src/components/employee-home-reviewed.module.css",
+    "src/components/employee-updates.tsx",
+    "src/components/timecards.tsx",
+    "src/components/employee-time-panel.tsx"
+  ],
+  "scope": [
+    "All four explicitly reported custom surfaces: HomeReviewneeded,UpdatesReviewneeded,TimecardsDraft,Home/MytimeOffclock.",
+    "Existing approved Onbreak/Clockedin state styling and all other update/timecard states retained.",
+    "Uses existing Status component without altering shared API or frozen portal CSS.",
+    "Home Status allows wrapping within available row width at200%; existing date-to-status4px gap retained."
+  ],
+  "applicationFilesEdited": false,
+  "testsOrRuntimeRun": false
+}

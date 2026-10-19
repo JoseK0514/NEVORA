@@ -1,0 +1,57 @@
+--- a/src/components/employee-time-panel.tsx
++++ b/src/components/employee-time-panel.tsx
+@@ -53,6 +53,9 @@
+ 
+ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}:{state:EmployeeTimePanelState;compact?:boolean;corporate?:boolean;onRefresh:()=>void}){
+  const {time,paused,refreshing}=state;
++ // IS-P4-19: keep focus during a read and guard another activation before React renders the pending state.
++ let refreshStarted=false;
++ const refreshTime=()=>{if(paused||refreshing||refreshStarted)return;refreshStarted=true;onRefresh();};
+  const ready=!paused&&time?.state==='ready'?time:null;
+  const denied=time?.state==='unavailable'&&time.reason==='access_denied';
+  const current=ready?.current??null;
+@@ -60,7 +63,7 @@
+  const unavailable=!denied&&time?.state==='unavailable';
+  const title=paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load your time records':'Loading recorded time';
+  const controls=<div className="employee-time-controls">
+-  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass(unavailable?'primary':'quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{unavailable?'Try again':'Refresh'}</button>}
++  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass(unavailable?'primary':'quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} aria-disabled={refreshing||undefined} onClick={refreshTime} disabled={paused}><NavIcon name="refresh" size={16}/>{unavailable?'Try again':'Refresh'}</button>}
+   {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
+  </div>;
+  const content=<>
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -258,6 +258,9 @@
+   // Read when the pause re-renders Home (going offline pauses it), so no subscription is needed.
+   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
+   const paused = status === 'paused';
++  // IS-P4-19: both Home retry controls share one synchronous guard for the same read.
++  let refreshStarted = false;
++  const refreshHome = () => { if (paused || refreshing || refreshStarted) return; refreshStarted = true; onRetry(); };
+   const denied = !paused && (status === 'unauthorized' || home?.state === 'unauthorized');
+   const released = !paused && !denied && (status === 'ready' || status === 'partial') && home && 'snapshot' in home ? home : null;
+   const snapshot = released?.snapshot;
+@@ -350,8 +353,8 @@
+           {snapshot ? ownTimeSlot : <div className={styles.recordedFallback}>
+             <EmployeeTimeView compact state={{
+               time: loading || paused ? null : {state: 'unavailable', reason: denied ? 'access_denied' : 'read_failed'},
+-              refreshing: loading, paused,
+-            }} onRefresh={onRetry}/>
++              refreshing: refreshing || loading, paused,
++            }} onRefresh={refreshHome}/>
+           </div>}
+         </HoldHeight>
+       </HoldHeight>
+@@ -367,10 +370,10 @@
+         {snapshot ? <small data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
+         {/* P3-WR-14: a failed read gets the same control as every other page: a primary "Try again" with the refresh icon. */}
+         {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
+-          : !snapshot && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
++          : !snapshot && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={refreshHome} disabled={paused} aria-disabled={refreshing || undefined} aria-busy={refreshing || undefined}>
+             <ArrowsClockwiseIcon size={18} aria-hidden="true"/>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
+           </button>
+-          : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
++          : <button className={styles.refreshButton} data-home-refresh type="button" onClick={refreshHome} disabled={paused} aria-disabled={refreshing || undefined} aria-busy={refreshing || undefined}>
+             {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Try again'}
+           </button>}
+       </footer>

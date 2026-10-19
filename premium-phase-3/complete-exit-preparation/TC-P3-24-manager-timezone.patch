@@ -1,0 +1,19 @@
+--- a/src/components/manager-weekly-roster.tsx
++++ b/src/components/manager-weekly-roster.tsx
+@@ -1,6 +1,7 @@
+ "use client";
+ 
+ import Link from "next/link";
++import { timeZoneLabel } from "../lib/time-zone-label";
+ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+ import { useGSAP } from "@gsap/react";
+ import { gsap } from "gsap";
+@@ -176,7 +177,7 @@
+ 
+   return <section className="mws-roster manager-issue-target" id={reviewDay ? undefined : "schedule-review"} tabIndex={-1} ref={container} aria-labelledby="mws-roster-title">
+     <header className="mws-roster-heading">
+-      <div><h2 id="mws-roster-title">Team schedule</h2><p><span className="mws-timezone-full">Times in {timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? timeZone}. Select a shift to edit.</span><span className="mws-timezone-compact">Times in {timeZone.split("/").at(-1)?.replaceAll("_", " ")}</span></p></div>
++      <div><h2 id="mws-roster-title">Team schedule</h2><p><span className="mws-timezone-full">Times in {timeZoneLabel(timeZone)}. Select a shift to edit.</span><span className="mws-timezone-compact">Times in {timeZoneLabel(timeZone)}</span></p></div>
+       <div className="mws-search">
+         <MagnifyingGlassIcon size={18} aria-hidden="true" />
+         <input type="search" aria-label="Search team" placeholder="Search team" value={query} onChange={event => setQuery(event.target.value)} />

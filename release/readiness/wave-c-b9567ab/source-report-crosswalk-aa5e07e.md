@@ -1,0 +1,66 @@
+# Wave C historical finding crosswalk
+
+**Read-only source review; exit incomplete.** Compared the five source round-4 reports on inspections `aa5e07e`, all five original reports and their Round 2 appendices on Wave C `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8`, and all explicit Round 2/3 decisions against isolated ready target `de8b15851d6280fd31fba3db63dcbe976a19584a`. Candidate started at fix 33 `b68f250` and advanced to fix 34 `56570fd0fc5e23503dbb50550af9dfcd965861ec` during this crosswalk. Ready still contains fixes 1–32; later candidate ports remain root-owned. No preview, browser, CI, tests, app edit or branch mutation occurred in this crosswalk.
+
+Two retained source-level P2 remainders need patches: **WR-10 loading Back** and **ST-14 pending retry label**. Both reuse existing IDs. **WR-14** still exists in the current candidate Home and ready-wave-c Home, but was transferred to Desktop; its isolated replacement needs the final disposition. The three measured source P1s already have code repairs in ready-wave-c: **TC-WC-28, WR-WC-25 and ST-13**. Their actual merged UI is unverified. This is not a zero verdict.
+
+## Retained remainders and proposals
+
+| ID | Evidence and boundary | Proposed repair | Required live proof |
+|---|---|---|---|
+| WR-10 · P2 | Original `inspection/widths-roles-consistency.md:32` explicitly includes `wave-c-recovery-loading.tsx` among the causes. Round 2 line 103 measures the ready pages fixed. Ready `src/app/app/settings/wave-c-recovery-loading.tsx:10–11` still honors `from=settings` for every role; both recovery loading routes consume it. Ready recovery page files correctly restrict Settings Back to Owner. The Round 2 no-access exception is a refused-route redirect, whereas this is an allowed Manager page's wrong destination. The Round 3 loading exception applies specifically to Locations company wording. | [Combined three-file proposal](proposals/WR-10-combined.patch). Pass only a boolean from the shell's **already computed `navigationForRole` result**, through the existing presentation provider; recovery loading honors `from=settings` only when `/app/settings` is already an available navigation entry. Default is Home. No added read, endpoint, role payload, authority decision or employee data. | Native loading → ready for both recovery pages, Owner and Manager, with `?from=settings`; default and employee variants; Chromium/WebKit, phone/desktop and large text. Manager Home, Owner Settings; employee Back priority unchanged. No new measured geometry claim. |
+| ST-14 · P2 | Original `inspection/stability.md` Round 2 ST-14 requires no pending button movement. Ready `src/components/company-policy-editor.tsx:250` uses `retry && !busy` for the reserved idle label; a blocked first send retains `retry`. Retrying sets `busy=true` at line 108, replacing “Retry the same save” with shorter “Save policies” in the hidden idle span. `ButtonLabel` reserves only its current idle/busy pair. First-send enlargement was repaired, but retry reservation is still lost. This is source state-transition evidence; exact resulting pixels are pending. | [Separate one-file snapshot proposal](proposals/ST-14-retry-label.patch). Snapshot the initiating idle label before `setRetry`/`setBusy`, retain it while busy, and use the normal retry state afterward. Simply removing `!busy` would restore the original first-send enlargement because `setRetry(command)` runs before the request. Request fields, retained command, retry gate and outcome handling stay byte-identical. | Held first and repeated sends at 320/390/844×390/1440, 100/200%, Chromium/WebKit as scoped; unchanged bounds and scroll while pending, visible centered words, one held POST per repeated activation, retained command reused. Failure growth remains a separate ST-13 obligation. |
+| WR-14 · P2 · transferred to Desktop | Original `inspection/widths-roles-consistency.md:36`; Round 2 line 107 and `ROUND-2.md:67` transfer the Home description to Desktop. Candidate `56570fd` and ready both retain `src/components/premium-home.tsx:328` “Reconnect a shared clock-in device” for Clocker recovery, which checks a saved action rather than setting up a device. Desktop's isolated replacement diff removes/replaces this legacy row. Transfer is not a new duplicate and does not establish merged closure. | Desktop owner/root to confirm the final Home entry or amend its copy. No Home patch proposed here, to preserve that owned replacement. | Owner/Manager Home entry and destination on the final composed review SHA. |
+
+The WR-10 proposal is split into [shared presentation support](proposals/WR-10-shared-presentation.patch) and [Wave C loading consumption](proposals/WR-10-wave-c-loading.patch). The two shared files exist in actual candidate; the Wave C loading file does not. Root may stage the support in candidate, then apply the loading hunk to the isolated integration target when its incoming UI exists. Do not create dangling loading routes on actual candidate. Both halves belong to one WR-10 finding repair in the final review ledger. The ST-14 patch targets incoming Wave C UI; actual candidate currently has a different legacy Company Policies component and must not receive this hunk mechanically. Root owns commit custody and each final finding commit/STATUS row. Neither proposal has been applied or tested. Before/proposed hashes are in their manifests.
+
+## All exit-list findings
+
+“Present” below means a relevant source repair is present. It does not mean a complete measured merged pass.
+
+| ID | Current source/repair crosswalk | Remaining gate |
+|---|---|---|
+| AL-08 | Scalable `calc(0.5lh - 8px)` disclosure caret, premium-wave-c.css:190. | First-line centers at text extremes, all disclosures. |
+| AL-13 | Swap label block text and inline SVG, CSS:139–142. | Wrapped inline icon placement and label centers; all ready/pending labels. |
+| AL-14 | Hub negative bottom margin removed; two columns retain their card margins. | Actual 16px gap to footnote, phone and desktop. |
+| AL-15 | Wrapped band control left margin offset, CSS:538. | Back/Add visible edges at both text extremes. |
+| AL-16 | Links align first-line SVG using scalable margin, CSS:540–541. | Wrapped links, both engines. |
+| ST-02 | Live measured bar and tab bar variables, CSS toast lift; source recheck measured 0px Save overlap and 8px settled gap. | Exact merged source at sampled top/middle/end and text sizes. |
+| ST-05 | Landscape parent placeholder bands added, CSS:555–559; original source decisions preserved. | Native loading traces, every route, no hidden-only placeholder pass. |
+| ST-08 | Phone action bars fixed to measured tab bar rather than form boundary, CSS:507–515. | End of form/history, scroll range and action reachability. |
+| ST-13 | Source continuation measured failure feedback covering header at 320×568/200%; exact candidate bounded scrollable feedback rule is appended at CSS:567–570. | Actual merged failure bars, all feedback reachable, both engines. |
+| ST-14 | **Retained retry-path remainder; external snapshot proposal above.** | First and repeated held-send bounds. |
+| ST-15 | FormActions ResizeObserver publishes actual `.mobile-nav` height; CSS uses it. Source Features sample fixed. | Policy and Features, both engines and text extremes. |
+| ST-16 | Guarded swatches/color well opacity 1, CSS:553; Preview tabs are not disabled. | Guarded and hydrated colors/ring equality. |
+| ST-17 | Failed edit action shortened to Reload in clocker-break-types.tsx:202. | Failed landscape/desktop rows, text extremes and unequal-height regression. |
+| TC-10 | Container rule removes decorative Hub tile/Positions edit label before words break, CSS:543–546. | Actual long words/names at narrow large text; neither source intent nor hidden decoration proves text fit. |
+| TC-11 | Device dates use Intl parts and keepWhole, clocker-device-manager.tsx:58–64. | Pending/expired/last-checked actual fixtures. |
+| TC-15 | Location first-run body/eligibility/not-found use company words; error page deliberately uses neutral “Your workplaces”; loading wording explicitly decided. | Preset variants, first-run and no-match separately, error/not-found. |
+| TC-16 | Location/Branding/Features Saved/Unsaved changes; Revoke access; Add break subtitle changed. | Idle/pending/outcomes across all pages. |
+| TC-17 | Wave C generic failure body now “Your entries are kept. Try again.” | All failure notices, no duplicated title/body meaning. |
+| TC-26 | `hyphens: manual` replaces auto, CSS:528. | Whole-word wrapping in actual cells, including narrow meta. |
+| TC-27 | Employee ID Back label capped at 16 characters; longer IDs use Employee. | Long-ID/default/employee variants; decided fallback remains intact. |
+| IS-6 | Priority autofocus query separated; source destructive-dialog samples now start on Cancel. | All seven actual merged dialogs, keyboard/scroll/focus return and failure states. |
+| IS-15 | Same toast/bar issue counted once as ST-02. | Same merged toast/bar proof; no duplicate finding. |
+| WR-11 | Device first pill now All, source line 183; count/search pattern fixes retained; Add entry variation decided. | Cross-list states/counts/filter focus and query behavior. |
+| WR-13 | Not-found/body/ready terms fixed; hard-coded **loading** terms explicitly accepted by ROUND-3:45. Earlier loading alert withdrawn; no patch. | Remaining preset consistency; do not refile accepted loading labels. |
+| WR-21 | Inline height 3rem color well; source both engines measured 64×48 / 64×96 and actual teal pixels. | Actual merged swatch pixels at text extremes. |
+| WR-22 | Busy labels shortened to Checking… / Issuing code…; source Check receipt 390/200 measured 68px. | Full pending/ready button bounds; no assumed global centering pass. |
+| WR-23 | Hub decoration gives way in narrow cards; hyphens manual. | Whole words, card inset and long names. |
+| WR-24 | Same capped Back ID repair as TC-27. | Both allowed roles, short/long IDs and loading/ready variants. |
+| TC-WC-28 | Latest exact coordinator winning textarea/search border uses `--nv-field-border`; retained in ready portal-premium.css:882–883. | Actual new textarea/search idle/hover/focus edges, including replacement assisted UI after legacy stylesheet deletion. |
+| WR-WC-25 | Exact candidate flex/center overrides appended at CSS:561–565. Source-only proof previously covered 56 flex cases plus 28 centering cases; no merged certificate. | All seven actual merged dialogs; label clipping, pending centers, focus return and one held POST. |
+
+WR-10 is an additional reopened historical ID outside the source's 28-ID exit list. WR-14 remains a cross-owner obligation. Their review work cannot be dropped because a prior table said “Fixed” or “sent on.”
+
+## Complete historical inventory and explicit decisions
+
+[Machine-readable inventory](source-findings-crosswalk-aa5e07e.json) covers **all 95 historical IDs**: AL 16, ST 17, TC 27, IS 15 and WR 20, plus the two added source round-4 IDs. Every record includes the last original source table line and its disposition. No earlier round-1 item was silently treated as an unhandled current defect solely because its old report still contains a failure description. Historical closure/supersession is distinguished from exact merged regression verification.
+
+Preserved decisions: ROUND-2:62 shared 48px fields; :63 bordered white search; :64 wrapping count pills; :65/`CODEX.md` §2b refused-role Home redirect and transient band; :66 Desktop parent placeholder ownership; :67 Home description transferred to Desktop; :68 accurate Branding adjustment contrast wording; :69–71 legal/server wording; :72 varying Add entry. ROUND-3:42 native-select WR-09; :43 native-datetime TC-24; :44 shared-library spelling TC-25; :45 Locations/Add location loading wording; :46 shell landscape breakpoint. WR-15 is superseded by WR-24/TC-27. These decisions are not relabeled defects. WR-14's transfer still needs an owner disposition.
+
+The latest aa5e07e five area reports remain partial: AL and IS report no newly measured defects in their completed scope; ST reports sampled toast/docking repairs; TC reports TC-WC-28; WR reports WR-WC-25 and sampled swatch repair. Their checks.json has 978 completed rows of 2,080 planned, with shared sidebar/footer floor flags and environmental errors. It neither supersedes nor completes the prepared merged-SHA review. Those shared floor flags map to the candidate coordinator/Desktop repairs and are not new Wave C IDs.
+
+## Exit scope stays complete
+
+The unchanged checker still must run **all 960 cells with `--axe`**, all fifteen allowed route/role pairs, eight widths, four text sizes and both engines. Passive post-result collection remains 960 fact captures/240 judgment samples with zero extra baseline visits. All 1,085 supplementary state jobs and five manual workstreams remain required. Add explicit native loading traces for Owner/Manager `?from=settings` on both recovery routes, and held **retry** geometry for ST-14; ready-only query captures or first-send pending captures cannot close those remainders. The final SHA must include root-approved fixes and all later candidate ports before execution. No unexecuted page or state has a pass or zero claim.

@@ -1,0 +1,20 @@
+{
+  "candidateObserved": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "b31HelperCommit": "538caf3364e27aa8df5cb759abf4870aee43354e",
+  "review": "Static only. No application edits, tests, browser, or runtime.",
+  "recommendation": "Apply revised IS-B33 and its ready port; no remaining confirmed static blocker in reviewed scope. Final frozen-SHA runtime gates required.",
+  "patches": [
+    {
+      "file": "IS-B33.patch",
+      "sha256": "a813ef9bd0e09ca9d599b3ac97d38604935c85115ab5544b72a875ad106a297b"
+    },
+    {
+      "file": "IS-B33-ready-port.patch",
+      "sha256": "45b040e91bb4aa398661927b230ff5a5b21a4485283318d0ccf9884d38fc79d4"
+    },
+    {
+      "file": "IS-B33.md",
+      "sha256": "34aa5b4550b6261821be36364589e1d0941f9e050b59659df3e7b00bed6030d2"
+    }
+  ]
+}

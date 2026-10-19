@@ -1,0 +1,24 @@
+{
+  "finding": "WR-10",
+  "severity": "P2",
+  "kind": "source-confirmed retained loading remainder; browser recheck pending",
+  "reviewSha": "de8b15851d6280fd31fba3db63dcbe976a19584a",
+  "sourceSha": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+  "changesApplied": false,
+  "previewStarted": false,
+  "testsRun": false,
+  "files": {
+    "src/components/presentation-context.tsx": {
+      "beforeSha256": "a2d950c7351b7c613485b2d76de0f86fd4eefa43fa212e2206e052997ba7b7ba",
+      "proposedSha256": "cf36fa270443f6af0666e9928b98bacee839012c74c5a704fc82d387826dbdd0"
+    },
+    "src/components/app-shell.tsx": {
+      "beforeSha256": "e3f6b0c8791de69375a452b5bd3f5bfa61a0e267ea1e3d647552902626dd9c80",
+      "proposedSha256": "9157ba3c67555d0124714268363893c41722842dedf6450d2b49b0b6fc8eb39f"
+    },
+    "src/app/app/settings/wave-c-recovery-loading.tsx": {
+      "beforeSha256": "70a1876d8ec854adc5eef55d75baf89f7338ef50acdb1450bd42d9af0b1303fd",
+      "proposedSha256": "9ee24e6050fa05a470e91d7313ba293e2f80e1b41231a4cd250e3ffa81ebd5f0"
+    }
+  }
+}

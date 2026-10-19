@@ -1,0 +1,14 @@
+{
+  "base": "4314266b0020b6f0a566543c8d6b569256c3648f",
+  "finding": "TC-P3-28-today-role",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md:1203",
+  "sourceSHA": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "files": [
+    "src/app/app/schedule/employee-schedule.css"
+  ],
+  "scopeNotes": [
+    "Local schedule CSS only; role is prescribed headline17/22/600 and selector outranks shell a/button17/1.5. Width, height, padding, href and desktop remain as before. Frozen portal-premium.css unchanged."
+  ],
+  "applicationFilesEdited": false,
+  "runtimeOrTestsRun": false
+}

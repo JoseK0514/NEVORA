@@ -1,0 +1,52 @@
+diff --git a/src/components/select-field.tsx b/src/components/select-field.tsx
+--- a/src/components/select-field.tsx
++++ b/src/components/select-field.tsx
+@@ -39,6 +39,7 @@
+ }) {
+   const generatedId = useId().replaceAll(":", "");
+   const selectId = id ?? `nevora-select-${generatedId}`;
++  const labelId = `${selectId}-label`;
+   const hintId = hint ? `${selectId}-hint` : undefined;
+ 
+   return (
+@@ -46,7 +47,7 @@
+       className={className ? `nevora-field ${className}` : "nevora-field"}
+       htmlFor={selectId}
+     >
+-      <span className="nevora-field-label">{label}</span>
++      <span id={labelId} className="nevora-field-label">{label}</span>
+       <span className="nevora-select-shell">
+         <select
+           id={selectId}
+@@ -55,6 +56,7 @@
+           {...(value === undefined ? { defaultValue } : { value })}
+           required={required}
+           disabled={disabled}
++          aria-labelledby={labelId}
+           aria-describedby={hintId}
+           onChange={onChange}
+         >
+diff --git a/src/components/wave-a/parts.tsx b/src/components/wave-a/parts.tsx
+--- a/src/components/wave-a/parts.tsx
++++ b/src/components/wave-a/parts.tsx
+@@ -46,7 +46,7 @@
+   return (
+     <div className={className ? `wa-field ${className}` : "wa-field"}>
+       <label className="wa-field__control">
+-        <span className="wa-field__label">{label}{optional ? <span className="wa-field__optional">Optional</span> : null}</span>
++        <span className="wa-field__label">{label}{optional ? <span className="wa-field__optional" aria-hidden="true">Optional</span> : null}</span>
+         {children}
+       </label>
+       {help ? <span className="wa-field__help" id={helpId}>{help}</span> : null}
+diff --git a/src/components/reviewed-callout-form.tsx b/src/components/reviewed-callout-form.tsx
+--- a/src/components/reviewed-callout-form.tsx
++++ b/src/components/reviewed-callout-form.tsx
+@@ -68,7 +68,7 @@
+         />
+         <div className="wa-field">
+         <label className="wa-field__control">
+-          <span className="wa-field__label">More details{reason === "OTHER" ? null : <span className="wa-field__optional">Optional</span>}</span>
++          <span className="wa-field__label">More details{reason === "OTHER" ? null : <span className="wa-field__optional" aria-hidden="true">Optional</span>}</span>
+           <textarea
+             ref={noteInput}
+             aria-describedby={detailsId}

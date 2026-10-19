@@ -1,0 +1,144 @@
+--- a/src/components/employee-time-panel.tsx
++++ b/src/components/employee-time-panel.tsx
+@@ -53,6 +53,9 @@
+ 
+ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}:{state:EmployeeTimePanelState;compact?:boolean;corporate?:boolean;onRefresh:()=>void}){
+  const {time,paused,refreshing}=state;
++ // IS-P4-19: keep focus during a read and guard another activation before React renders the pending state.
++ let refreshStarted=false;
++ const refreshTime=()=>{if(paused||refreshing||refreshStarted)return;refreshStarted=true;onRefresh();};
+  const ready=!paused&&time?.state==='ready'?time:null;
+  const denied=time?.state==='unavailable'&&time.reason==='access_denied';
+  const current=ready?.current??null;
+@@ -60,7 +63,7 @@
+  const unavailable=!denied&&time?.state==='unavailable';
+  const title=paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load your time records':'Loading recorded time';
+  const controls=<div className="employee-time-controls">
+-  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass(unavailable?'primary':'quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{unavailable?'Try again':'Refresh'}</button>}
++  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass(unavailable?'primary':'quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} aria-disabled={refreshing||undefined} onClick={refreshTime} disabled={paused}><NavIcon name="refresh" size={16}/>{unavailable?'Try again':'Refresh'}</button>}
+   {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
+  </div>;
+  const content=<>
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -258,6 +258,9 @@
+   // Read when the pause re-renders Home (going offline pauses it), so no subscription is needed.
+   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
+   const paused = status === 'paused';
++  // IS-P4-19: both Home retry controls share one synchronous guard for the same read.
++  let refreshStarted = false;
++  const refreshHome = () => { if (paused || refreshing || refreshStarted) return; refreshStarted = true; onRetry(); };
+   const denied = !paused && (status === 'unauthorized' || home?.state === 'unauthorized');
+   const released = !paused && !denied && (status === 'ready' || status === 'partial') && home && 'snapshot' in home ? home : null;
+   const snapshot = released?.snapshot;
+@@ -350,8 +353,8 @@
+           {snapshot ? ownTimeSlot : <div className={styles.recordedFallback}>
+             <EmployeeTimeView compact state={{
+               time: loading || paused ? null : {state: 'unavailable', reason: denied ? 'access_denied' : 'read_failed'},
+-              refreshing: loading, paused,
+-            }} onRefresh={onRetry}/>
++              refreshing: refreshing || loading, paused,
++            }} onRefresh={refreshHome}/>
+           </div>}
+         </HoldHeight>
+       </HoldHeight>
+@@ -367,10 +370,10 @@
+         {snapshot ? <small data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
+         {/* P3-WR-14: a failed read gets the same control as every other page: a primary "Try again" with the refresh icon. */}
+         {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
+-          : (!snapshot || snapshot.publicationState === 'unavailable') && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
++          : (!snapshot || snapshot.publicationState === 'unavailable') && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={refreshHome} disabled={paused} aria-disabled={refreshing || undefined} aria-busy={refreshing || undefined}>
+             <ArrowsClockwiseIcon size={18} aria-hidden="true"/>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
+           </button>
+-          : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
++          : <button className={styles.refreshButton} data-home-refresh type="button" onClick={refreshHome} disabled={paused} aria-disabled={refreshing || undefined} aria-busy={refreshing || undefined}>
+             {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Try again'}
+           </button>}
+       </footer>
+--- a/src/components/employee-home-reviewed.test.tsx
++++ b/src/components/employee-home-reviewed.test.tsx
+@@ -269,13 +269,24 @@
+     expect(button!.props.type).toBe('button');
+     expect(button!.props.disabled).toBe(false);
+     (button!.props.onClick as () => void)();
++    (button!.props.onClick as () => void)();
+     expect(onRetry).toHaveBeenCalledTimes(1);
+-  });
+-
+-  it.each([{status: 'paused' as const, refreshing: false}, {status: 'ready' as const, refreshing: true}])('disables retry for $status/refreshing=$refreshing without removing current released facts', extra => {
++    const pending = EmployeeHomeReviewedView(props({state: 'unavailable', reason: 'read_failed'}, {status: 'unavailable', refreshing: true, onRetry}));
++    const pendingButton = nativeElements(pending).find(element => element.type === 'button' && element.props['data-home-refresh'] === true)!;
++    (pendingButton.props.onClick as () => void)();
++    expect(onRetry).toHaveBeenCalledTimes(1);
++    const settled = EmployeeHomeReviewedView(props({state: 'unavailable', reason: 'read_failed'}, {status: 'unavailable', refreshing: false, onRetry}));
++    const retry = nativeElements(settled).find(element => element.type === 'button' && element.props['data-home-refresh'] === true)!;
++    (retry.props.onClick as () => void)();
++    expect(onRetry).toHaveBeenCalledTimes(2);
++  });
++
++  it.each([{status: 'paused' as const, refreshing: false}, {status: 'ready' as const, refreshing: true}])('keeps paused retry disabled and pending retry focusable for $status/refreshing=$refreshing without exposing paused facts', extra => {
+     const value = props(undefined, extra), view = EmployeeHomeReviewedView(value);
+     const button = nativeElements(view).find(element => element.type === 'button' && element.props['data-home-refresh'] === true);
+-    expect(button!.props.disabled).toBe(true);
++    expect(button!.props.disabled).toBe(extra.status === 'paused');
++    expect(button!.props['aria-disabled']).toBe(extra.refreshing || undefined);
++    (button!.props.onClick as () => void)();
+     expect(value.onRetry).not.toHaveBeenCalled();
+     if (extra.status === 'ready') expect(html(value)).toContain('Private location');
+     else expect(html(value)).not.toContain('Private location');
+@@ -295,7 +306,12 @@
+   const clock=lost.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/)![1];
+   expect(clock).toContain('href="/app/my-time"');
+   if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign in');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
+-  else {expect(clock).toMatch(/aria-label="(?:Refresh(?:ing)? recorded time|Try again to load your time records)"/);if(status==='paused'||status==='loading')expect(clock).toMatch(/aria-label="(?:Refresh(?:ing)? recorded time|Try again to load your time records)"[^>]*disabled/);else expect(clock).not.toMatch(/aria-label="(?:Refresh(?:ing)? recorded time|Try again to load your time records)"[^>]*disabled/);}
++  else {
++   const refresh=clock.match(/<button\b[^>]*aria-label="(?:Refresh(?:ing)? recorded time|Try again to load your time records)"[^>]*>/)?.[0];
++   expect(refresh).toBeDefined();
++   expect(/\sdisabled(?:=|\s|>)/.test(refresh!)).toBe(status==='paused');
++   if(status==='loading')expect(refresh).toContain('aria-disabled="true"');
++  }
+  });
+ });
+ 
+--- a/src/components/employee-home-reviewed-wiring.test.tsx
++++ b/src/components/employee-home-reviewed-wiring.test.tsx
+@@ -139,16 +139,16 @@
+     expect(first.props.home).toBe(next.props.home); expect(next.props.status).toBe('ready');
+   });
+ 
+-  it('forwards the same explicit retry to Home and original redacted clock controls without invoking it during render', () => {
++  it('shares one guarded Home retry with redacted clock controls without invoking it during render', () => {
+     const onRetry = vi.fn(), state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason: 'read_failed'}, paused: false, refreshing: false};
+     const view = adapter(state, {onRetry}); expect(view.props.onRetry).toBe(onRetry);
+     const rendered = EmployeeHomeReviewedView(view.props), all = elements(rendered);
+     const homeButton = all.find(element => element.type === 'button' && element.props['data-home-refresh'] === true);
+     const clock = all.find(element => element.type === EmployeeTimeView);
+     expect(homeButton).toBeDefined(); expect(clock).toBeDefined(); expect(onRetry).not.toHaveBeenCalled();
+-    expect(homeButton!.props.disabled).toBe(false); expect(clock!.props.onRefresh).toBe(onRetry);
++    expect(homeButton!.props.disabled).toBe(false); expect(clock!.props.onRefresh).toBe(homeButton!.props.onClick);
+     (homeButton!.props.onClick as () => void)();
+-    (clock!.props.onRefresh as () => void)(); expect(onRetry).toHaveBeenCalledTimes(2);
++    (clock!.props.onRefresh as () => void)(); expect(onRetry).toHaveBeenCalledTimes(1);
+   });
+ });
+ 
+--- a/src/components/employee-time-panel.test.tsx
++++ b/src/components/employee-time-panel.test.tsx
+@@ -17,9 +17,16 @@
+  expect(disclosure).toContain('Updates every 30s while active.');
+  expect(html.match(/aria-label="Refresh recorded time"/g)).toHaveLength(1);
+ });
+-it('keeps Refresh before the following record disclosure in native keyboard order',()=>{
++it('keeps Refresh in keyboard order while pending and natively disables it only when paused',()=>{
+  const html=renderCorporate(ready());
+  expect(html.indexOf('aria-label="Refresh recorded time"')).toBeLessThan(html.indexOf('Record details'));
++ for(const [refreshing,paused] of [[false,false],[true,false],[false,true]]){
++  const markup=renderToStaticMarkup(<EmployeeTimeView state={{time:ready(),paused,refreshing}} corporate onRefresh={()=>{}}/>);
++  const button=markup.match(/<button\b[^>]*aria-label="Refresh(?:ing)? recorded time"[^>]*>/)?.[0];
++  expect(button).toBeDefined();
++  expect(/\sdisabled(?:=|\s|>)/.test(button!)).toBe(paused);
++  if(refreshing)expect(button).toContain('aria-disabled="true"');
++ }
+ });
+ it('removes the corporate record disclosure and all earlier private data on pause or denial',()=>{
+  for(const html of [renderCorporate(ready([raw()]),true),renderCorporate({state:'unavailable',reason:'access_denied'})]){

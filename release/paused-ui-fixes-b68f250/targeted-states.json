@@ -1,0 +1,5373 @@
+{
+  "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "scope": "Targeted candidate-fix regression; no full exit certification",
+  "cases": [
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:05.117Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nevora-action-menu-item nevora-more-search",
+            "text": "Search",
+            "box": {
+              "x": 16,
+              "y": 131,
+              "width": 288,
+              "height": 44,
+              "top": 131,
+              "right": 304,
+              "bottom": 175,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "cls": "",
+              "text": "Checking what needs you…",
+              "box": {
+                "x": 16,
+                "y": 206,
+                "width": 221,
+                "height": 20,
+                "top": 206,
+                "right": 237,
+                "bottom": 226,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Good evening, Fictional",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 72,
+                "top": 124,
+                "right": 304,
+                "bottom": 196,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Today",
+              "box": {
+                "x": 36,
+                "y": 272,
+                "width": 49.734375,
+                "height": 22,
+                "top": 272,
+                "right": 85.734375,
+                "bottom": 294,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Also needs you",
+              "box": {
+                "x": 36,
+                "y": 737,
+                "width": 119.4375,
+                "height": 22,
+                "top": 737,
+                "right": 155.4375,
+                "bottom": 759,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "_R_1r5et5knelb_-title",
+              "cls": "",
+              "text": "Finish setting up",
+              "box": {
+                "x": 36,
+                "y": 1265,
+                "width": 248,
+                "height": 22,
+                "top": 1265,
+                "right": 284,
+                "bottom": 1287,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-week-title",
+              "cls": "nv-card__title",
+              "text": "This week",
+              "box": {
+                "x": 36,
+                "y": 1556,
+                "width": 79.71875,
+                "height": 22,
+                "top": 1556,
+                "right": 115.71875,
+                "bottom": 1578,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-tools-title",
+              "cls": "nv-card__title",
+              "text": "Team tools",
+              "box": {
+                "x": 36,
+                "y": 2029,
+                "width": 85.453125,
+                "height": 22,
+                "top": 2029,
+                "right": 121.453125,
+                "bottom": 2051,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Monday, October 19\n\nGood evening, Fictional\n\nChecking what needs you…\n\nToday\nLoading…\nScheduled today\n–\nClocked in now\n–\nNo clock‑in\n–\nPublished shifts only\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 6:01 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-QAOWNER-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link manager-more-trigger",
+            "text": "More navigation",
+            "box": {
+              "x": 260.53125,
+              "y": 783,
+              "width": 55.46875,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 260.53125
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "cls": "",
+              "text": "Checking what needs you…",
+              "box": {
+                "x": 16,
+                "y": 206,
+                "width": 221,
+                "height": 20,
+                "top": 206,
+                "right": 237,
+                "bottom": 226,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Good evening, Fictional",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 72,
+                "top": 124,
+                "right": 304,
+                "bottom": 196,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Today",
+              "box": {
+                "x": 36,
+                "y": 272,
+                "width": 49.734375,
+                "height": 22,
+                "top": 272,
+                "right": 85.734375,
+                "bottom": 294,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Also needs you",
+              "box": {
+                "x": 36,
+                "y": 737,
+                "width": 119.4375,
+                "height": 22,
+                "top": 737,
+                "right": 155.4375,
+                "bottom": 759,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "_R_1r5et5knelb_-title",
+              "cls": "",
+              "text": "Finish setting up",
+              "box": {
+                "x": 36,
+                "y": 1265,
+                "width": 248,
+                "height": 22,
+                "top": 1265,
+                "right": 284,
+                "bottom": 1287,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-week-title",
+              "cls": "nv-card__title",
+              "text": "This week",
+              "box": {
+                "x": 36,
+                "y": 1556,
+                "width": 79.71875,
+                "height": 22,
+                "top": 1556,
+                "right": 115.71875,
+                "bottom": 1578,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-tools-title",
+              "cls": "nv-card__title",
+              "text": "Team tools",
+              "box": {
+                "x": 36,
+                "y": 2029,
+                "width": 85.453125,
+                "height": 22,
+                "top": 2029,
+                "right": 121.453125,
+                "bottom": 2051,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Monday, October 19\n\nGood evening, Fictional\n\nChecking what needs you…\n\nToday\nLoading…\nScheduled today\n–\nClocked in now\n–\nNo clock‑in\n–\nPublished shifts only\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 6:01 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-QAOWNER-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 103,
+        "width": 320,
+        "height": 741
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:06.948Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:06.964Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nevora-action-menu-item nevora-more-search",
+            "text": "Search",
+            "box": {
+              "x": 16,
+              "y": 219,
+              "width": 288,
+              "height": 44,
+              "top": 219,
+              "right": 304,
+              "bottom": 263,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "cls": "",
+              "text": "Checking what needs you…",
+              "box": {
+                "x": 16,
+                "y": 206,
+                "width": 221,
+                "height": 20,
+                "top": 206,
+                "right": 237,
+                "bottom": 226,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Good evening, Morgan",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 72,
+                "top": 124,
+                "right": 304,
+                "bottom": 196,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Today",
+              "box": {
+                "x": 36,
+                "y": 272,
+                "width": 49.734375,
+                "height": 22,
+                "top": 272,
+                "right": 85.734375,
+                "bottom": 294,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Also needs you",
+              "box": {
+                "x": 36,
+                "y": 737,
+                "width": 119.4375,
+                "height": 22,
+                "top": 737,
+                "right": 155.4375,
+                "bottom": 759,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-week-title",
+              "cls": "nv-card__title",
+              "text": "This week",
+              "box": {
+                "x": 36,
+                "y": 1265,
+                "width": 79.71875,
+                "height": 22,
+                "top": 1265,
+                "right": 115.71875,
+                "bottom": 1287,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-tools-title",
+              "cls": "nv-card__title",
+              "text": "Team tools",
+              "box": {
+                "x": 36,
+                "y": 1738,
+                "width": 85.453125,
+                "height": 22,
+                "top": 1738,
+                "right": 121.453125,
+                "bottom": 1760,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Monday, October 19\n\nGood evening, Morgan\n\nChecking what needs you…\n\nToday\nLoading…\nScheduled today\n–\nClocked in now\n–\nNo clock‑in\n–\nPublished shifts only\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 6:01 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-M-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link manager-more-trigger",
+            "text": "More navigation",
+            "box": {
+              "x": 260.53125,
+              "y": 783,
+              "width": 55.46875,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 260.53125
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "cls": "",
+              "text": "Checking what needs you…",
+              "box": {
+                "x": 16,
+                "y": 206,
+                "width": 221,
+                "height": 20,
+                "top": 206,
+                "right": 237,
+                "bottom": 226,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Good evening, Morgan",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 72,
+                "top": 124,
+                "right": 304,
+                "bottom": 196,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-today-title",
+              "cls": "nv-card__title",
+              "text": "Today",
+              "box": {
+                "x": 36,
+                "y": 272,
+                "width": 49.734375,
+                "height": 22,
+                "top": 272,
+                "right": 85.734375,
+                "bottom": 294,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Also needs you",
+              "box": {
+                "x": 36,
+                "y": 737,
+                "width": 119.4375,
+                "height": 22,
+                "top": 737,
+                "right": 155.4375,
+                "bottom": 759,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-week-title",
+              "cls": "nv-card__title",
+              "text": "This week",
+              "box": {
+                "x": 36,
+                "y": 1265,
+                "width": 79.71875,
+                "height": 22,
+                "top": 1265,
+                "right": 115.71875,
+                "bottom": 1287,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-tools-title",
+              "cls": "nv-card__title",
+              "text": "Team tools",
+              "box": {
+                "x": 36,
+                "y": 1738,
+                "width": 85.453125,
+                "height": 22,
+                "top": 1738,
+                "right": 121.453125,
+                "bottom": 1760,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Monday, October 19\n\nGood evening, Morgan\n\nChecking what needs you…\n\nToday\nUpdated\n6:09 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 6:01 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-M-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 191,
+        "width": 320,
+        "height": 653
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:09.406Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:09.423Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-LEAD-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 268,
+              "y": 783,
+              "width": 48,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 268
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-LEAD-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:11.461Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "payroll-qa-b",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:11.475Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-payroll-qa-b-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 268,
+              "y": 783,
+              "width": 48,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 268
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-payroll-qa-b-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:13.021Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:13.035Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-E-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 268,
+              "y": 783,
+              "width": 48,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 268
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-E-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:14.217Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "payroll-qa-a",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:14.232Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-payroll-qa-a-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 268,
+              "y": 783,
+              "width": 48,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 268
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-payroll-qa-a-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:16.121Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-LONG",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:16.142Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 541,
+              "width": 288,
+              "height": 48,
+              "top": 541,
+              "right": 304,
+              "bottom": 589,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-LONG-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 268,
+              "y": 783,
+              "width": 48,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 268
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-LONG-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 487,
+        "width": 320,
+        "height": 357
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:18.040Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-ON",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:18.053Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-ON-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 268,
+              "y": 783,
+              "width": 48,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 268
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-ON-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:19.215Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-BREAK",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:19.226Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-BREAK-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 268,
+              "y": 783,
+              "width": 48,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 268
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-BREAK-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:20.374Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "chromium",
+      "account": "AUDIT-SWAP",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:20.383Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-SWAP-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 268,
+              "y": 783,
+              "width": 48,
+              "height": 55,
+              "top": 783,
+              "right": 316,
+              "bottom": 838,
+              "left": 268
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 87,
+                "height": 25,
+                "top": 310,
+                "right": 123,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-phone-more-shell-AUDIT-SWAP-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:21.716Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:22.240Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nevora-action-menu-item nevora-more-search",
+            "text": "Search",
+            "box": {
+              "x": 16,
+              "y": 131,
+              "width": 288,
+              "height": 44,
+              "top": 131,
+              "right": 304,
+              "bottom": 175,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "cls": "",
+              "text": "Checking what needs you…",
+              "box": {
+                "x": 16,
+                "y": 206,
+                "width": 222.83447265625,
+                "height": 20,
+                "top": 206,
+                "right": 238.83447265625,
+                "bottom": 226,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Good evening, Fictional",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 72,
+                "top": 124,
+                "right": 304,
+                "bottom": 196,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Today",
+              "box": {
+                "x": 36,
+                "y": 272,
+                "width": 49.078125,
+                "height": 22,
+                "top": 272,
+                "right": 85.078125,
+                "bottom": 294,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Also needs you",
+              "box": {
+                "x": 36,
+                "y": 737,
+                "width": 122.40625,
+                "height": 22,
+                "top": 737,
+                "right": 158.40625,
+                "bottom": 759,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "_R_1r5et5knelb_-title",
+              "cls": "",
+              "text": "Finish setting up",
+              "box": {
+                "x": 36,
+                "y": 1265,
+                "width": 248,
+                "height": 22,
+                "top": 1265,
+                "right": 284,
+                "bottom": 1287,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-week-title",
+              "cls": "nv-card__title",
+              "text": "This week",
+              "box": {
+                "x": 36,
+                "y": 1556,
+                "width": 81.21875,
+                "height": 22,
+                "top": 1556,
+                "right": 117.21875,
+                "bottom": 1578,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-tools-title",
+              "cls": "nv-card__title",
+              "text": "Team tools",
+              "box": {
+                "x": 36,
+                "y": 2029,
+                "width": 87.25,
+                "height": 22,
+                "top": 2029,
+                "right": 123.25,
+                "bottom": 2051,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Monday, October 19\n\nGood evening, Fictional\n\nChecking what needs you…\n\nToday\nLoading…\nScheduled today\n–\nClocked in now\n–\nNo clock‑in\n–\nPublished shifts only\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 6:01 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-QAOWNER-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link manager-more-trigger",
+            "text": "More navigation",
+            "box": {
+              "x": 255.859375,
+              "y": 783,
+              "width": 60.171875,
+              "height": 55,
+              "top": 783,
+              "right": 316.03125,
+              "bottom": 838,
+              "left": 255.859375
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "cls": "",
+              "text": "26 things need you today.",
+              "box": {
+                "x": 16,
+                "y": 206,
+                "width": 207.951171875,
+                "height": 20,
+                "top": 206,
+                "right": 223.951171875,
+                "bottom": 226,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Good evening, Fictional",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 72,
+                "top": 124,
+                "right": 304,
+                "bottom": 196,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-today-title",
+              "cls": "nv-card__title",
+              "text": "Today",
+              "box": {
+                "x": 36,
+                "y": 272,
+                "width": 49.078125,
+                "height": 22,
+                "top": 272,
+                "right": 85.078125,
+                "bottom": 294,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-nextup__title",
+              "text": "4 shifts with no clock‑in",
+              "box": {
+                "x": 92,
+                "y": 536,
+                "width": 192,
+                "height": 50,
+                "top": 536,
+                "right": 284,
+                "bottom": 586,
+                "left": 92
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-needs-you-title",
+              "cls": "nv-card__title",
+              "text": "Also needs you",
+              "box": {
+                "x": 36,
+                "y": 771,
+                "width": 122.40625,
+                "height": 22,
+                "top": 771,
+                "right": 158.40625,
+                "bottom": 793,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "_R_1r5et5knelb_-title",
+              "cls": "",
+              "text": "Finish setting up",
+              "box": {
+                "x": 36,
+                "y": 1392,
+                "width": 248,
+                "height": 22,
+                "top": 1392,
+                "right": 284,
+                "bottom": 1414,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-week-title",
+              "cls": "nv-card__title",
+              "text": "This week",
+              "box": {
+                "x": 36,
+                "y": 1683,
+                "width": 81.21875,
+                "height": 22,
+                "top": 1683,
+                "right": 117.21875,
+                "bottom": 1705,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-tools-title",
+              "cls": "nv-card__title",
+              "text": "Team tools",
+              "box": {
+                "x": 36,
+                "y": 2196,
+                "width": 87.25,
+                "height": 22,
+                "top": 2196,
+                "right": 123.25,
+                "bottom": 2218,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Monday, October 19\n\nGood evening, Fictional\n\n26 things need you today.\n\nToday\nUpdated\n6:09 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 ·midnight – 7:00 AM ·Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day ·Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 ·5:00 PM – midnight ·Need 1 employee\nNot covered\nSee all 22 in Inbox\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\n29 items for the coming weeks. None are urgent.\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 6:01 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-QAOWNER-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 103,
+        "width": 320,
+        "height": 741
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:26.024Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:26.037Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nevora-action-menu-item nevora-more-search",
+            "text": "Search",
+            "box": {
+              "x": 16,
+              "y": 219,
+              "width": 288,
+              "height": 44,
+              "top": 219,
+              "right": 304,
+              "bottom": 263,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "cls": "",
+              "text": "Checking what needs you…",
+              "box": {
+                "x": 16,
+                "y": 206,
+                "width": 222.83447265625,
+                "height": 20,
+                "top": 206,
+                "right": 238.83447265625,
+                "bottom": 226,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Good evening, Morgan",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 72,
+                "top": 124,
+                "right": 304,
+                "bottom": 196,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Today",
+              "box": {
+                "x": 36,
+                "y": 272,
+                "width": 49.078125,
+                "height": 22,
+                "top": 272,
+                "right": 85.078125,
+                "bottom": 294,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Also needs you",
+              "box": {
+                "x": 36,
+                "y": 737,
+                "width": 122.40625,
+                "height": 22,
+                "top": 737,
+                "right": 158.40625,
+                "bottom": 759,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-week-title",
+              "cls": "nv-card__title",
+              "text": "This week",
+              "box": {
+                "x": 36,
+                "y": 1265,
+                "width": 81.21875,
+                "height": 22,
+                "top": 1265,
+                "right": 117.21875,
+                "bottom": 1287,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-tools-title",
+              "cls": "nv-card__title",
+              "text": "Team tools",
+              "box": {
+                "x": 36,
+                "y": 1738,
+                "width": 87.25,
+                "height": 22,
+                "top": 1738,
+                "right": 123.25,
+                "bottom": 1760,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Monday, October 19\n\nGood evening, Morgan\n\nChecking what needs you…\n\nToday\nLoading…\nScheduled today\n–\nClocked in now\n–\nNo clock‑in\n–\nPublished shifts only\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 6:01 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-M-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link manager-more-trigger",
+            "text": "More navigation",
+            "box": {
+              "x": 255.859375,
+              "y": 783,
+              "width": 60.171875,
+              "height": 55,
+              "top": 783,
+              "right": 316.03125,
+              "bottom": 838,
+              "left": 255.859375
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "cls": "",
+              "text": "Checking what needs you…",
+              "box": {
+                "x": 16,
+                "y": 206,
+                "width": 222.83447265625,
+                "height": 20,
+                "top": 206,
+                "right": 238.83447265625,
+                "bottom": 226,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Good evening, Morgan",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 72,
+                "top": 124,
+                "right": 304,
+                "bottom": 196,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-today-title",
+              "cls": "nv-card__title",
+              "text": "Today",
+              "box": {
+                "x": 36,
+                "y": 272,
+                "width": 49.078125,
+                "height": 22,
+                "top": 272,
+                "right": 85.078125,
+                "bottom": 294,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Also needs you",
+              "box": {
+                "x": 36,
+                "y": 737,
+                "width": 122.40625,
+                "height": 22,
+                "top": 737,
+                "right": 158.40625,
+                "bottom": 759,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-week-title",
+              "cls": "nv-card__title",
+              "text": "This week",
+              "box": {
+                "x": 36,
+                "y": 1265,
+                "width": 81.21875,
+                "height": 22,
+                "top": 1265,
+                "right": 117.21875,
+                "bottom": 1287,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "home-tools-title",
+              "cls": "nv-card__title",
+              "text": "Team tools",
+              "box": {
+                "x": 36,
+                "y": 1738,
+                "width": 87.25,
+                "height": 22,
+                "top": 1738,
+                "right": 123.25,
+                "bottom": 1760,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Monday, October 19\n\nGood evening, Morgan\n\nChecking what needs you…\n\nToday\nUpdated\n6:09 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 6:01 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-M-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 191,
+        "width": 320,
+        "height": 653
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:29.908Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:29.913Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-LEAD-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 261.15625,
+              "y": 783,
+              "width": 54.8125,
+              "height": 55,
+              "top": 783,
+              "right": 315.96875,
+              "bottom": 838,
+              "left": 261.15625
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-LEAD-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:32.276Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "payroll-qa-b",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:32.283Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-payroll-qa-b-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 261.15625,
+              "y": 783,
+              "width": 54.8125,
+              "height": 55,
+              "top": 783,
+              "right": 315.96875,
+              "bottom": 838,
+              "left": 261.15625
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-time-message",
+              "text": "Loading recorded timeChecking your actual punches and breaks.",
+              "box": {
+                "x": 36,
+                "y": 497.5,
+                "width": 248,
+                "height": 60,
+                "top": 497.5,
+                "right": 284,
+                "bottom": 557.5,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Hi, Robin.",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "",
+              "text": "Clock status",
+              "box": {
+                "x": 36,
+                "y": 467,
+                "width": 144.140625,
+                "height": 25,
+                "top": 467,
+                "right": 180.140625,
+                "bottom": 492,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-actions-heading",
+              "cls": "",
+              "text": "To do",
+              "box": {
+                "x": 36,
+                "y": 677.5,
+                "width": 50.84375,
+                "height": 25,
+                "top": 677.5,
+                "right": 86.84375,
+                "bottom": 702.5,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-home-quick",
+              "cls": "",
+              "text": "Quick actions",
+              "box": {
+                "x": 16,
+                "y": 908.5,
+                "width": 288,
+                "height": 25,
+                "top": 908.5,
+                "right": 304,
+                "bottom": 933.5,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-updates-heading",
+              "cls": "",
+              "text": "Recent activity",
+              "box": {
+                "x": 36,
+                "y": 1259.5,
+                "width": 136.890625,
+                "height": 25,
+                "top": 1259.5,
+                "right": 172.890625,
+                "bottom": 1284.5,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Good evening · Monday, October 19\n\nHi, Robin.\n\nNo published shifts coming up.\n\n1 item needs your review\nNext shift\n\nNo upcoming published shift\n\nView schedule\nClock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time\nTo do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 6:01 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.\n\nUpdated 6:09 PM\nRefresh home",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-payroll-qa-b-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:36.429Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:36.435Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-E-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 261.15625,
+              "y": 783,
+              "width": 54.8125,
+              "height": 55,
+              "top": 783,
+              "right": 315.96875,
+              "bottom": 838,
+              "left": 261.15625
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-E-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:38.711Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "payroll-qa-a",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:38.716Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-payroll-qa-a-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 261.15625,
+              "y": 783,
+              "width": 54.8125,
+              "height": 55,
+              "top": 783,
+              "right": 315.96875,
+              "bottom": 838,
+              "left": 261.15625
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-payroll-qa-a-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:41.659Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "AUDIT-LONG",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:41.665Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 541,
+              "width": 288,
+              "height": 48,
+              "top": 541,
+              "right": 304,
+              "bottom": 589,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-LONG-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 261.15625,
+              "y": 783,
+              "width": 54.8125,
+              "height": 55,
+              "top": 783,
+              "right": 315.96875,
+              "bottom": 838,
+              "left": 261.15625
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-LONG-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 487,
+        "width": 320,
+        "height": 357
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:43.701Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "AUDIT-ON",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:43.706Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-ON-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 261.15625,
+              "y": 783,
+              "width": 54.8125,
+              "height": 55,
+              "top": 783,
+              "right": 315.96875,
+              "bottom": 838,
+              "left": 261.15625
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-ON-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:46.017Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "AUDIT-BREAK",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:46.033Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-BREAK-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 261.15625,
+              "y": 783,
+              "width": 54.8125,
+              "height": 55,
+              "top": 783,
+              "right": 315.96875,
+              "bottom": 838,
+              "left": 261.15625
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-BREAK-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:49.577Z"
+    },
+    {
+      "name": "phone-more-shell",
+      "ids": [
+        "shared shell"
+      ],
+      "engine": "webkit",
+      "account": "AUDIT-SWAP",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "variant": "default",
+      "assertions": [
+        {
+          "message": "More sheet fits viewport",
+          "passed": true
+        },
+        {
+          "message": "Escape returns More trigger focus",
+          "passed": true
+        },
+        {
+          "message": "Shell does not overflow at enlarged text",
+          "passed": true
+        },
+        {
+          "message": "No unexpected client exception",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "message": "Every attempted application mutation had a held/answered test handler",
+          "passed": true,
+          "detail": []
+        }
+      ],
+      "blocked": [],
+      "pageErrors": [],
+      "startedAt": "2026-10-19T22:09:49.582Z",
+      "states": {
+        "more-open": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "A",
+            "id": "",
+            "cls": "employee-more-link",
+            "text": "Updates",
+            "box": {
+              "x": 16,
+              "y": 563,
+              "width": 288,
+              "height": 48,
+              "top": 563,
+              "right": 304,
+              "bottom": 611,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "employee-home-reviewed-module__k4entG__recovery premium-pass-placeholder",
+              "text": "Loading Home…",
+              "box": {
+                "x": 36,
+                "y": 347,
+                "width": 248,
+                "height": 291,
+                "top": 347,
+                "right": 284,
+                "bottom": 638,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Home",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-SWAP-320x844-t100-default-more-open.png"
+        },
+        "more-closed": {
+          "path": "/app",
+          "scrollY": 0,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "mobile-nav-link employee-more-trigger",
+            "text": "More",
+            "box": {
+              "x": 261.15625,
+              "y": 783,
+              "width": 54.8125,
+              "height": 55,
+              "top": 783,
+              "right": 315.96875,
+              "bottom": 838,
+              "left": 261.15625
+            },
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Hi, Riley.",
+              "box": {
+                "x": 16,
+                "y": 124,
+                "width": 288,
+                "height": 36,
+                "top": 124,
+                "right": 304,
+                "bottom": 160,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-next-heading",
+              "cls": "",
+              "text": "Next shift",
+              "box": {
+                "x": 36,
+                "y": 310,
+                "width": 88.296875,
+                "height": 25,
+                "top": 310,
+                "right": 124.296875,
+                "bottom": 335,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "",
+              "text": "Clock status",
+              "box": {
+                "x": 36,
+                "y": 675.5,
+                "width": 144.140625,
+                "height": 25,
+                "top": 675.5,
+                "right": 180.140625,
+                "bottom": 700.5,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-actions-heading",
+              "cls": "",
+              "text": "To do",
+              "box": {
+                "x": 36,
+                "y": 874,
+                "width": 50.84375,
+                "height": 25,
+                "top": 874,
+                "right": 86.84375,
+                "bottom": 899,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-home-quick",
+              "cls": "",
+              "text": "Quick actions",
+              "box": {
+                "x": 16,
+                "y": 1041,
+                "width": 288,
+                "height": 25,
+                "top": 1041,
+                "right": 304,
+                "bottom": 1066,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "employee-reviewed-updates-heading",
+              "cls": "",
+              "text": "Recent activity",
+              "box": {
+                "x": 36,
+                "y": 1392,
+                "width": 136.890625,
+                "height": 25,
+                "top": 1392,
+                "right": 172.890625,
+                "bottom": 1417,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Good evening · Monday, October 19\n\nHi, Riley.\n\nNext shift Sat, Oct 31, 8:00 AM.\n\n1 item needs your review\nNext shift\nPublished\n\nSat, Oct 31\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 12 days\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nClock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 6:09 PM\nRefresh\nMy time\nTo do\n1 item\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.\n\nUpdated 6:09 PM\nRefresh home",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-phone-more-shell-AUDIT-SWAP-320x844-t100-default-more-closed.png"
+        }
+      },
+      "moreBox": {
+        "x": 0,
+        "y": 509,
+        "width": 320,
+        "height": 335
+      },
+      "completed": true,
+      "passed": true,
+      "completedAt": "2026-10-19T22:09:53.244Z"
+    }
+  ]
+}

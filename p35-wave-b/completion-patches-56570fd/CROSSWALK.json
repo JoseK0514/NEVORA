@@ -1,0 +1,1258 @@
+{
+  "candidate": "56570fd0fc5e23503dbb50550af9dfcd965861ec",
+  "candidate33Review": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "ready": "368e98a18c16d47df04a93f2bea560843e461e0e",
+  "reportsHead": "daf5b1bf7f2fab89fd2aab38204f748086fb0a08",
+  "remoteLatest": "aa5e07e",
+  "IDs": [
+    {
+      "id": "AL-B01",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 92,
+      "section": "## Round 2",
+      "row": "| AL-B01 | Fixed | Overflow 0 in all four tables at 320, 390, 768, 1024, 1440 and 844\u00d7390 (Owner and Manager). The 460 px column at 768 and the 350 px half-cards at 1024 use stacked rows. Names take 2 lines at most. | `premium-wave-b.css:159, 171-194` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B02",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 93,
+      "section": "## Round 2",
+      "row": "| AL-B02 | Fixed | Below 27rem the card uses one-column rows: \"14h 26m\" and \"4h 53m\" each fit on 1 line at 320 and 390. From 768, the three values sit on 1 line with equal baselines (1317 / 1317 / 1317). WebKit is the same. | `:431-436` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B03",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 94,
+      "section": "## Round 2",
+      "row": "| AL-B03 | Fixed | Value baselines in a row differ by 0 px at 320, 390, 768, 1024, 1440 and 844\u00d7390, including rows with two-line labels. WebKit is the same. | `:136-138` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B04",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 95,
+      "section": "## Round 2",
+      "row": "| AL-B04 | Fixed | Every single-line field is 48 px on Scheduling rules, Compose and Payroll settings, with the darker border rgb(133,139,143). | `:38, 45-49` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B05",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 162,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B05 | Fixed | The wrapper is `display: contents`. \"Scheduling rules saved.\", \"Coverage period added.\", \"Template saved.\" and \"Template archived.\" all show as the toast, at full opacity for about 4.5 s, at 390, 844\u00d7390, 1024 and 1440. Gaps stay at 16 (Templates: week card 413 \u2192 next card 429; Scheduling rules: band 269 \u2192 navigation 285). | `premium-wave-b.css:441` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B06",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 163,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B06 | Fixed (now visible) | The toast sits 8 px above the save bar: 390, toast 636\u2013692 and bar from 700; 1024 and 1440, toast 744\u2013800 and bar from 808. Landscape: see AL-B30. | `:443-448` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B07",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 98,
+      "section": "## Round 2",
+      "row": "| AL-B07 | Fixed | Remove's cap centre is 0.7 px from the title's at 390 and 844\u00d7390 (3744.54 against 3743.82), and 1.7 px at 768, 1024 and 1440. Baselines differ by 0\u20131 px. | `:349` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B08",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 99,
+      "section": "## Round 2",
+      "row": "| AL-B08 | Fixed | First day \u2192 Last day 16 (768+: 16 across). Target \u2192 Maximum 16. Minimum staff \u2192 \"Designated lead required\" 16. Name \u2192 fields 16. | `:127, 312, 316-317` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B09",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 100,
+      "section": "## Round 2",
+      "row": "| AL-B09 | Fixed | Rows stack until 1180. At 1024 the staffing field is 466 px, with the checkbox 16 px under it. The hours row is 168 px (the same as on phones). At 1180: name 230, fields 322. | `:369-372` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B10",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 101,
+      "section": "## Round 2",
+      "row": "| AL-B10 | Fixed | At 1024 the paired cards have equal heights: 170/170, 174/174 and 147/147. 1440: 150/150, 130/130 and 142/142. | `:224` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B11",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 102,
+      "section": "## Round 2",
+      "row": "| AL-B11 | Fixed | \"View period\" and \"Refresh\" share a row at every desktop width: 184 + 184 at 1024, 204 + 204 at 768, 296 + 296 at 1440. | `:449`, `reports.tsx:151` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B12",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 103,
+      "section": "## Round 2",
+      "row": "| AL-B12 | Fixed | The icon centre is 0.5 px from the first line's centre at 320, 390, 768, 1024, 1440 and 844\u00d7390 (WebKit 0). | `:141-142` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B13",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 104,
+      "section": "## Round 2",
+      "row": "| AL-B13 | Fixed | On two-line labels the box centre is 0.18 px from the first line's cap centre (320, 390). | `:68, 71` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B14",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 105,
+      "section": "## Round 2",
+      "row": "| AL-B14 | Fixed | Text at x 16 on phones (band 16) and 318 at 1440 (band and card text 318). | `:386, 445` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B15",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 106,
+      "section": "## Round 2",
+      "row": "| AL-B15 | Fixed | A full-width hairline, then the note 17 px under the last row (16 padding + 1 border). Crop: `crops/r2/upd-manage-1024.png`. | `communication-detail.tsx:103` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B16",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 164,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B16 | **Not fixed** (P2) | The policy facts divider is still inset 20 on **both** sides (Manager, 390 and 1440). The new `margin-right` at `:555` computes to 0. `:11`, `.wb-page\u2026\u00d77 .nv-content :is(\u2026, dl, \u2026){margin:0}`, has specificity (0,8,1) and beats `.wb-facts` (0,8,0). `:556` still applies, so the values now end **40 px** from the card edge (they were at 20). Every other right-aligned item in the card ends at 20\u201323. Crop: `crops/r3/rules-facts-390-m.png`. | `:11, 555-556` |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "AL-B17",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 165,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B17 | Fixed | \"Name a template\" fits on 1 line at 320 (248 px), and its arrow is on the line's centre (1143 = 1143). \"Save company preferences\" (2 lines at 320) is payroll wording, deferred and not counted. | `templates/page.tsx` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B18",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 109,
+      "section": "## Round 2",
+      "row": "| AL-B18 | Fixed | \"Review schedule\" is 44 px tall (508\u2013552), and the lines stay 24 px apart. | `:249` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B19",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 110,
+      "section": "## Round 2",
+      "row": "| AL-B19 | Fixed at 1024 and 1440 (see AL-B24 for 768) | The nav top equals the first card's top (285). The label sits on the first title's line (305). Label and link text are at the band title's x (280 at 1024, 318 at 1440; WebKit the same). | `:373-379` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B20",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 166,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B20 | Fixed | The chevron grows with text: 27 px at 150% and 36 px at 200%. \"Find a person\" now matches the fields beside it: 72 px at 150% and 96 at 200%, with 8 px padding. A related defect at 100% is filed as AL-B31. | `:558-560` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B21",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 112,
+      "section": "## Round 2",
+      "row": "| AL-B21 | Fixed | At 844\u00d7390 the bar is static at the end of the form (y 3148), 16 px from the cards above and below, and clear of the tab bar. | `:451-453` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B22",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 167,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B22 | Fixed | Section links put the card top at 84 (16 under the 68 px header) on phones, and at 84 (19 under the 65 px header) at 1024 and 1440. The heading lands at 104 and takes focus. Landscape: card at 96. `#rules-coverage` and `#rules-policy` stop at the end of the page. | `:310-312` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B23",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 168,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B23 | Fixed | At a glance shows 2 + 2 + 2 at 320, 390 and 768, 3 + 3 at 844\u00d7390 and 1024, and 6 at 1440 (Owner and Manager; WebKit the same). Value baselines in a row differ by 0. No empty cells. | `:561-565` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B24",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 169,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B24 | Fixed | At 768 the label and note are at 260, on the pill edge, as on phones. At 1024 and 1440 they're at the link text (280, 318). | `:550-553` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B25",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 170,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B25 | Fixed | Report period and Export have equal heights: 282 / 282 at 1024 and 274 / 274 at 1440 (WebKit 282 / 282). | `:126` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B26",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 171,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B26 | Fixed (different fix) | At 320, Remove wraps onto its own line at the end of the row. Its text ends 20 px from the card edge, as at every other width. Nothing sits off the text edge. Crop: `crops/r3/rules-period-320.png`. | `:568` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B27",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 172,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B27 | Fixed | Withdraw's confirm spans the card's text width: 280\u2013956 at 1024, 458\u20131226 at 1440 and 280\u2013700 at 768 (20 / 20). On phones it's 36\u2013354. The buttons are 192 px, matching \"Edit update\" above. | `:570` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B28",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 173,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B28 | Fixed | Insights jumps put the card at 84 on phones and desktop (16 and 19 under the header), and at 96 in landscape, the same as Scheduling rules. | `:153-154` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "AL-B31",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 179,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B31 | Payroll settings \u00b7 O \u00b7 320, 390 and every width at 150\u2013200%; Scheduling rules (Owner's location, day and approval selects) at 125%+ on 320 | Selects inside `.wb-auto` | The chevron (18 px, 14 px from the right edge) is drawn **on the text**: each select's right padding computes to **14 px**, not 40. At 320 and 100%, \"No provider preference saved\", \"Neutral instructions \u00b7 compatible\u2026\" and \"No channel preference saved\" run 18 px under the chevron. At 390 \"Neutral instructions\u2026\" does too. At 150% on 390, four selects collide by 27 px. At 1440 and 200%, the bank profile select collides by 36 px. WebKit is the same, and worse: it has no ellipsis, so the chevron covers a letter. The Scheduling rules selects clear by 5 px at 320 and collide from 125%. | `crops/r3/pay-sel1-320.png`, `crops/r3/pay-sel3-320.png`, `crops/r3/pay-sel3-320-webkit.png` | `premium-wave-b.css:280` sets `padding-inline:14px` with specificity (0,14,1): `:is()` takes its most specific argument (`input:not()\u00d74`). That beats the select rules at `:284` `padding-right:40px` and `:558` `calc(1.125rem + 22px)`, which are (0,13,1). | Add `.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto select:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u):not(.wb-t) { padding-right: calc(1.125rem + 22px); }` (0,15,1). Text then ends 8 px before the chevron at every text size. Or change `:280` to `:where(input:not(\u2026), select, textarea)`. | P1 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "AL-B29",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 180,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B29 | Scheduling rules \u00b7 O, M \u00b7 1180 and up (1440 measured) | Setting rows in Location staffing and Weekly hours | The name block is centred on the whole row, label included, not on the field. At 1440: name 399\u2013443 (centre 421), the field's label 383\u2013403, field 411\u2013459 (centre 435). \"Main Office\" and \"Fictional Owner\" sit between the label line and the field, **14 px** above the field's centre and 16 px below the label's top. They line up with neither. The checkbox and suffixes centre on the field. WebKit is the same. | `crops/r3/rules-staff-1440.png`, `crops/r3/rules-hours-1440.png` | `:373` `.wb-setting{\u2026align-items:center}` | In the 1180 block, set `.wb-setting{align-items:end}` and add `.wb-setting__name{min-height:3rem;justify-content:center}`. The name block then centres on the 48 px field (its centre lands on 435). | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "AL-B30",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 181,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B30 | Scheduling rules and Templates \u00b7 O \u00b7 landscape 844\u00d7390 | Success toast | **Scheduling rules:** the toast is lifted for a save bar that's static in landscape (AL-B21), so it floats at **182\u2013238** of 390, over the band summary, 84 px above the tab bar. **Templates:** the toast sits at **310\u2013366** and covers the tab bar (322\u2013390) by **44 px**, hiding \"Team\" and \"More\" for about 5 s. | `crops/r3/toast-844x390-_app_schedule_settings_saved_1.png`, `crops/r3/toast-844x390-_app_schedule_templates_saved_1.png` | Scheduling rules: `premium-wave-b.css:443-444` includes the landscape query in the save-bar lift. Templates: the shared `portal-motion.css:185` (`bottom:24px`) applies, because the phone rule at `:199` is `max-width:760px` only. | Drop the landscape clause from `:443`. Add `@media (max-height:430px) and (orientation:landscape) and (pointer:coarse){ html body .app-shell.nevora-portal.nevora-portal:has(.wb-page) .page-frame .form-success[role=\"status\"]{ bottom:calc(68px + var(--nv-s-2) + env(safe-area-inset-bottom,0px)); } }`. The toast then sits 8 px above the tab bar (258\u2013314) on both pages. Also tell the coordinator about the shared `:199` landscape gap. | P2 |",
+      "classification": "coordinator decided/shared fix; not refiled"
+    },
+    {
+      "id": "AL-B32",
+      "area": "alignment",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/alignment.md",
+      "line": 182,
+      "section": "## Round 3 (exit)",
+      "row": "| AL-B32 | Scheduling rules \u00b7 O, M \u00b7 768 (761 to about 900) | Save bar button \"Save staffing and hours\" | The note and the button each get **208 px** (`flex:1 1 12rem`). The button label wraps to **2 lines** (\"Save staffing and / hours\") inside the 52 px button. At 1024 it's 231 px and fits on 1 line. Phones hide the note. | `crops/r3/rules-savebar-768.png` | `:335-336`; label at `wave-b-forms.tsx:108` | `:336` \u2192 `.wb-savebar > .nv-btn{flex:0 0 auto}` and `:335` \u2192 `flex:1 1 0`, so the button keeps its 1-line width (about 240) and the note takes the rest. Or hide the note below 1024, as phones do. | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "ST-B01",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 161,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B01 | **Fixed** | Each run read for 65s with the reader parked mid-report: scrollY 5300 at 390, 1400 at 1440. **Normal reads** (34\u20131,615ms): Owner and Manager at 390 and 1440. The refresh fires at half-life, about every 7.5s, 8\u201310 swaps per run. In all 4 runs the page didn't change once: height 7690 or 4311, scroll and the anchor row's top unchanged, CSV enabled. CLS 0 to 0.0004 (one value's text changing width). **Slowed reads**, held at a fixed delay: Owner 390 at 3.5s, Owner 1440 at 4.0s, Manager 390 at 3.0s, Manager 1440 at 4.0s. Again 0 changes in 65s, scroll held, CLS 0 to 0.0001. In print emulation the report is still present after 16s. | `reports.tsx:108-110` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B02",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 162,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B02 | **Fixed** | Phone `scroll-padding-bottom` is 216px at 100% and 315px at 200%. Tab sweep: 0 of 30 stops covered at 320, 390, 320 at 200% and 390 at 200%, for Owner and Manager. Also 0 of 30 at landscape, 768, 1024 and 1440. After a failed save the bar grows (68\u2192124px at 320 and 390), and a second sweep still covers 0 of 30. At 390 and 200% after a failure, the bar is 240px and 12 stops touch it by 1px of 96. That isn't obscured, so it isn't filed. | `premium-wave-b.css:592` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B03",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 119,
+      "section": "## Round 2",
+      "row": "| ST-B03 | **Fixed** (Wave B's part) | Hard load at 390 now matches exactly. Insights 200=200, Templates 244=244, Rules 196=196, Compose 312=312, Payroll settings 128=128. Update detail still shows `updates` at 106px (Owner) or 128px (Lead) \u2192 288. That remainder is the coordinator's `/app/updates/<id>` fix (decided). | `root-loading.tsx:14-18` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B04",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 163,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B04 | **Fixed** | Landscape placeholder \u2192 ready, Owner on in-app navigation: Insights 136=136, Templates 180=180, Rules 172=172, Update detail 224=224, Compose 224=224, Payroll settings 104=104. Lead and Employee: Update detail and Compose 224=224. | `premium-wave-b.css:526` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B05",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 164,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B05 | **Fixed** | Owner at 320, 360 and 430: 18 of 18 placeholders exact. Manager at 320: 5 of 5. Lead and Employee Compose at 320: 348=348. | `premium-wave-b.css:522-525`, `:589` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B06",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 165,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B06 | **Decided**, not counted (\"Update detail band height depends on the title's length\") | Same as round 2 against a 2.5s-held read: 288\u2192348 at 320 and 288\u2192324 at 360. A new side effect of the round-2 placeholder fix is filed separately as ST-B14. | `communication-detail.tsx:56` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B07",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 166,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B07 | **Deferred** (coordinator's Inter fix) | Still seen. **Rules 390: CLS 0.1115** in 1 of 3 loads: Inter arrives after first paint, the \"On this page\" pills widen by 2\u20134px and wrap from 3 to 4 rows, and the page drops 52px (`r3/fonts.mjs`, trace `h`: 172\u2192224). Rules 768 with `?error=invalid_hours`: 0.0114 (the layout drops 24px). Insights 768: 0.016. When the font is cached before first paint, all three read 0. | not counted |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B08",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 167,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B08 | **Partly fixed**. Open, P2 | Placeholder \u2192 ready at 390. **200%:** 6 of 6 exact. **125%:** Insights 227\u2192221 (+6), Templates 289\u2192295 (\u22126), the other 4 exact. **150%:** Templates 334\u2192322 (+12), **Rules 310\u2192286 (+24)**, the other 4 exact. 320 at 200%: 5 of 6 exact. Update detail 720\u2192684 depends on the title (decided). | `premium-wave-b.css:524`. **Fix:** a min/max over three slopes reproduces all four measured points exactly. Rules: `max(min(calc(-32px + 14.25rem), calc(88px + 8.25rem)), calc(-416px + 29.25rem))` (196/253/286/520). Templates: `max(min(calc(40px + 12.75rem), calc(160px + 6.75rem)), calc(16px + 12.75rem))` (244/295/322/424). Insights: `max(calc(116px + 5.25rem), min(calc(-64px + 14.25rem), calc(-28px + 12.75rem)))` (200/221/278/380). |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "ST-B09",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 168,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B09 | **Fixed** | The stuck bar sits clear of the tab bar at 390: gaps 8.0, 8.7, 8.5 and 8.0px at 100, 125, 150 and 200%, with the tab bar at 68, 71, 75 and 83px. 320 at 200%: 8.0px. `elementFromPoint` at the bar's bottom edge returns the bar every time. | `premium-wave-b.css:339` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B10",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 126,
+      "section": "## Round 2",
+      "row": "| ST-B10 | **Fixed** | Landscape: the bar is static and ends the form (3148\u20133216). 0 of 30 stops are covered. | `premium-wave-b.css:452` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B11",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 127,
+      "section": "## Round 2",
+      "row": "| ST-B11 | Decided, not refiled | Coordinator: More is current. | n/a |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B12",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 169,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B12 | **Fixed** | Failed save at 320 and 390: `p.wb-error` is `display: flex`, 44px tall (2 lines), and reads \"Couldn\u2019t save your changes. They\u2019re still here; try again.\" Focus stays on the button. 390 at 200%: 124px, visible. Landscape, 768, 1024 and 1440: 20\u201360px, visible. Success (injected): `p.wb-saved` is flex and 24px; the bar is 104px at 320 and 390. Pending: \"Saving\u2026\", the bar stays 68px and focus stays on the button. `r3/savebar-abort-QAOWNER-390-f0.png`, `\u2026-f200.png`, `r3/savebar-saved-QAOWNER-390-f0.png` | `premium-wave-b.css:340`, `:472-474` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "ST-B13",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 175,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B13 | Insights, Owner and Manager, 390 and 1440, reads of about 7s or longer | `.wb-insights` hold and restore | The round-2 fix holds the page's height when a snapshot retires before its refresh lands. **Restoring the reader's scroll fails in 3 of 4 restores.** With reads held at 8s, the refresh is aborted at expiry, \"Loading insights\" replaces the report for about 8s, and the height holds (7690, `min-height: 7406px`). **Owner 390:** the first restore returns to 5300. The second lands at **250**, the clamp of the collapsed 1114px page, and every later cycle stays there. **Manager 1440:** the first restore lands at **0** (from 1400). Download CSV is disabled during each gap. With 3\u20134s reads this never happens (ST-B01). | `r3/readD8000-QAOWNER-390-end.png` (period card and \"Loading insights\" at the top instead of Clock-in notes) | `reports.tsx:109`: `releasePlace` runs in the next `requestAnimationFrame` after `setReport`, which can fire before React commits the report. `releasePlace` (`:92`) then clears `min-height` while the one-card loading state is still on screen, so the page collapses and `scrollTo(heldScroll)` clamps to the short page's maximum (250 at 390, 0 at 1440). | Restore after the commit, not on a timer. Either wrap `:106` in `flushSync(() => { setReport(result); setState('ready'); })` and call `releasePlace()` synchronously, or keep `heldScroll` in a ref and restore in `useLayoutEffect(() => { if (report && heldRef.current !== null) releasePlace(); }, [report])`. | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "ST-B14",
+      "area": "stability",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/stability.md",
+      "line": 176,
+      "section": "## Round 3 (exit)",
+      "row": "| ST-B14 | Update detail, every role, 320, 360 and large text, in-app navigation | `[data-nv-band]` between the route placeholder and the ready page | Since the round-2 placeholder fix, the route placeholder matches the ready band. The in-page \"Loading update\u2026\" band that shows between them is still one line, so the content jumps up and back down. **320:** placeholder 348 (about 300ms) \u2192 loading band **288** (118\u2013352ms; 2.4s on a 2.5s read) \u2192 ready 348. The first card goes 344\u2192284\u2192344, same for Owner, Manager, Lead and Employee. **360:** 324\u2192288\u2192324. **390 at 200%:** 612\u2192**492**\u2192612 (\u2212120 then +120). CLS stays 0 because the nodes are new, but the jump is visible. | No screenshot. `r3/navframes.jsonl` | `communication-detail.tsx:56`: the loading branch's `PageBand` has a one-line title and no facts row. It doesn't reuse the per-width `wb-update` height from `premium-wave-b.css:522-526`. | Define the five `wb-update` values once as a custom property (for example `--wb-update-band` on `:root` in the same media queries). Use it for both `.route-skeleton[data-route=\"wb-update\"]` and a `min-height` on the loading branch's band (`[data-nv-band][aria-busy]` or a `data-loading` attribute). The loading step then equals the placeholder, and only a title-length difference remains (decided). | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "TC-B-01",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 261,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-01 | **Partly fixed (P2 open)** | The pill is fixed: at 320@200 it wraps inside the card at its soft hyphen, \"Acknowledge- / ment required\" (`crops3/r3-detail-head-320-200.png`). The recipient pills aren't cut at any size.<br>Still open, at **320@200** only:<br>\u2022 Owner and Manager receipt heading `.wb-receipt h2.wb-strong` breaks \"Acknowledg / ement required\", without a hyphen and not at the soft hyphen (`crops3/r3-detail-receipt-320-200.png`).<br>\u2022 Employee, Lead and AUDIT-LONG help `#communication-acknowledgement-help` breaks \"Acknowledge / ment confirms\u2026\" without a hyphen (`crops3/r3-detail-e-help-320-200.png`).<br>\"Acknowledge-\" is wider than the 196px text column beside the tile, so `overflow-wrap` breaks first. Cause: `premium-wave-b.css:121` (the receipt row never wraps) and the help text at `communication-detail.tsx:94`, which has no soft hyphen. Downgraded from P1: nothing is cut any more. |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "TC-B-02",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 278,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-02 | Insights \u00b7 Owner, Manager \u00b7 320@100 and up (see status table) | `.wb-glance` labels, values and details | Text is cut by the neighbouring cell from 320@100. The full measurements are in the status table above. | `S3/crops3/r3-glance-320-150.png`, `r3-glance-390-200.png` | `premium-wave-b.css:563` (fixed 2 columns) overrides `:136`; grid items keep `min-width:auto` | \u2022 Under the 34rem container step, go back to `grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr))`. At 100% this keeps 2 columns at 390 (358px card) and gives 1 column at 320 (288px). It drops to 1 column at 125%+ on phones. Keep the 3 and 6 column steps above.<br>\u2022 Add `.wb-glance a > * { min-width: 0 }`.<br>\u2022 Re-run `glance3.mjs`: every one of the 32 combinations should read \"ok\". | **P1** |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "TC-B-03",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 183,
+      "section": "## Round 2",
+      "row": "| TC-B-03 | Fixed | The dates read \"Revision 1 \u00b7 Effective Thu, Jan 1, 2026\" and \"Recorded Oct 19, 2026, 9:12 AM\", and the impact range reads \"Sep 21 \u2013 Sep 27, 2026\". No split at 320\u2013390, 100\u2013200%. \"Recorded\" uses the browser's time zone, because payroll data carries no zone (noted only). |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-04",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 185,
+      "section": "## Round 2",
+      "row": "| TC-B-04 | Fixed | At 1024@200, the buttons sit inside 976: Download CSV and Print end at 956, Add coverage period at 874, Save trade policy at 874, Save template at 472. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-05",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 184,
+      "section": "## Round 2",
+      "row": "| TC-B-05 | Fixed | A failed read on both pages shows \"Payroll could not load.\" with its icon, instead of \"Failed to fetch\". `.pw-error` has an icon. The 401 text and the action reference are payroll wording (decided), so they stay in the suggestions. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-06",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 186,
+      "section": "## Round 2",
+      "row": "| TC-B-06 | Fixed | \"Optional\" wraps under its title (320@200: 36\u2013147). \"Designated lead required\" ends at 871 at 1024@200, 661 at 768@200 and 284 at 320@200. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-07",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 187,
+      "section": "## Round 2",
+      "row": "| TC-B-07 | Fixed | Zero U+0027 apostrophes in visible text, `aria-label`s or options across all 414 snapshots. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-08",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 188,
+      "section": "## Round 2",
+      "row": "| TC-B-08 | Fixed | The label reads \"Available until (Puerto Rico time)\". The error reads \"Choose a valid date and time in Puerto Rico time.\" |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-09",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 189,
+      "section": "## Round 2",
+      "row": "| TC-B-09 | Fixed at the filed size | At 320@100: the placeholder \"Add a short, clear title\" fits (202 in 218), and the select fits (\"Location announcement\" in 194 after `padding-right:40px`). Still cut: \"Find a person\" at 320@200 (200/188). The select cuts from 125% up, which a closed select can't avoid. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-10",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 263,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-10 | Fixed | The glance reads \"Some clock-ins couldn\u2019t be compared\", the same as the card. On 401, Insights reads \"Your session ended / Sign in again with a manager or owner account.\" with \"Sign in\", which matches the brief's rule. The `project.ts` strings are decided. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-11",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 191,
+      "section": "## Round 2",
+      "row": "| TC-B-11 | Decided: kept as a suggestion | Report definitions wording (`project.ts`) needs Jose's approval. My suggested set stays in round 1. Not counted. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-12",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 192,
+      "section": "## Round 2",
+      "row": "| TC-B-12 | Fixed | \"Time off and callouts\" is used in both places. \"Scheduled vs recorded\" is used in the glance, card and table, and \"Recorded time\" throughout. The card says \"No coverage requests in this period.\" The \"&\" against \"and\" is in TC-B-26. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-13",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 193,
+      "section": "## Round 2",
+      "row": "| TC-B-13 | Fixed (source) | `reports.tsx:31` builds \"Coverage request filled\", \"Shift trade completed\" and \"Older shift change updated\". There's no data to show it on screen. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-14",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 264,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-14 | Fixed | Every server message is mapped before it's shown. All nine keys in `wave-b-forms.tsx:16\u201325` match `actions.ts` exactly, checked by script. The success texts are client-side: \"Scheduling rules saved.\", \"Coverage period added.\" and \"Position quantities saved.\". Seen on screen: \"Couldn\u2019t save your changes. They\u2019re still here; try again.\", \"That coverage period already exists.\", and \"Minimum staff must be a whole number from 1 to 100, and each new location needs a designated lead choice.\" |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-15",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 195,
+      "section": "## Round 2",
+      "row": "| TC-B-15 | Fixed (on screen) | Seen:<br>\u2022 \"How requests are approved\": \"Not set yet\", \"Automatically, when the request is valid\" and \"A manager reviews each one\"<br>\u2022 \"Ask at least / Finish at least this many minutes before the shift\"<br>\u2022 \"Leave blank if you haven\u2019t decided. 0 means right up to the start.\"<br>\u2022 \"Couldn\u2019t load this policy\u2026\"<br>The server's invalid message is in TC-B-14. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-16",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 265,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-16 | **Partly fixed (P2 open)** | Fixed: Update detail offline reads \"You\u2019re offline / Connect to the internet, then try again.\" for Owner and Employee.<br>Still open:<br>\u2022 **Compose offline** reads \"Paused while you were away / Come back online, then retry.\" (`communication-compose.tsx:130`, `shots3/state-compose-offline-390.png`).<br>\u2022 **Compose signed out (401)**, Owner and Employee: \"Couldn\u2019t load the form / Check your connection, then retry. If it keeps happening, you may not have access.\" It has a \"Sign in again\" button, but the words point at the connection (`shots3/state-compose-401-390.png`).<br>\u2022 **Update detail 401**, Owner and Employee: \"You can\u2019t open this update / Your access may have changed. Sign in again to check.\" The brief's rule is \"Your session ended\", with a Sign in link, as Insights does. 403 shows the same words, because `lib/communications/client.ts:13` folds 401 and 403 into one state.<br>\u2022 **Source only** (not reachable without a real publish): \"We could not confirm the result.\" and \"Review the latest context and preview again.\" (`communication-compose.tsx:99`).<br>Fix:<br>\u2022 Offline: \"You\u2019re offline / Reconnect, then try again.\"<br>\u2022 401: keep `status` in `client.ts:13`, then show \"Your session ended / Sign in again to send updates.\" (Compose) or \"\u2026to see this update.\" (Update detail), with \"Sign in\".<br>\u2022 403: \"You can\u2019t open this update / It may be for another team or location.\"<br>\u2022 \"We couldn\u2019t confirm the result.\" |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "TC-B-17",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 197,
+      "section": "## Round 2",
+      "row": "| TC-B-17 | Fixed | Reads \"Applied 3 shifts. 1 skipped because of current conflicts or unavailable employees. 1 added with a warning to review.\" |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-18",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 198,
+      "section": "## Round 2",
+      "row": "| TC-B-18 | Fixed | The count is 12/16/600 at 100%, scaling to 24/32 at 200%. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-19",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 199,
+      "section": "## Round 2",
+      "row": "| TC-B-19 | Decided: kept as a suggestion | The cut is caused by payroll option wording (\"Neutral instructions \u00b7 compatibility unverified\" is 354px in 220 at 320). Payroll strings need Jose's approval. The payroll selects still have 220px of room at 320 (no padding change). Not counted. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-20",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 266,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-20 | Fixed | At 390, after an aborted save, the bar shows \"Couldn\u2019t save your changes. They\u2019re still here; try again.\" with its icon, above \"Save staffing and hours\" (`shots3/state-settings-save-fail-390.png`). |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-21",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 267,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-21 | Fixed | At 320@200 the Period summary stacks: \"16h 56m\", \"6h 8m\" and \"12\" are whole (`crops3/r3-summary-320-200.png`). No `.nv-stat__value` is cut at any size. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-22",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 268,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-22 | Fixed | \"Automatically when valid\" fits at 100% at 320 and 390 (`crops3/r3-policy-select-390.png`). From 125% at 320, and at 390@200, a closed select still cuts it, which a closed select can't avoid. Not counted, as in round 2. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-23",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 269,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-23 | Fixed | `hyphens:auto` is gone from Wave B and the kit. Across 513 snapshots the only word breaks are the soft hyphen above, TC-B-01's two 320@200 breaks, the kit masthead and TC-B-27's names. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-24",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 270,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-24 | Fixed on Wave B pages | Compose Message and every other Wave B field is at **3.45:1**. Payroll settings is clean. Payroll runs keeps its legacy textarea at 1.24:1 and its search at 1.41:1. That page isn't under `.wb-page`, so it falls under the shared WR-49 item that ROUND.md lists as decided (sent to the coordinator). Not counted. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-25",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 271,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-25 | Fixed | No date splits on Payroll runs in any snapshot (it had 12 at 320@200 in round 2). \"Sep 21 \u2013 Sep 27, 2026\" and \"Payday Tue, Sep 29\" stay whole. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-26",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 272,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-26 | Fixed | The link and heading read \"Trades and coverage\", and the disclosure \"How trades and coverage work\". The bar note reads \"Staffing and weekly hours save together and apply right away.\". Insights uses \"Shift changes and coverage\". No \" & \" and no \"cover requests\" in visible text. |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "TC-B-27",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 279,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-27 | Payroll runs \u00b7 Manager `payroll-qa-reviewer`, Owner `QAOWNER` \u00b7 320@200; labels also at 320@150 and 390@200 | Totals `dl.pw-totals` tiles; line amounts `.pw-lines dd`; employee names; import format text | **Money loses digits at 320@200** (`payprobe.mjs`, `crops3/r3-payroll-dl-payroll-qa-reviewer-320-200.png`):<br>\u2022 \"$1,000.00\" runs 48\u2013191 in a 36\u2013155 tile, so it reads \"$1,000.0\" under the next tile.<br>\u2022 \"$123.40\" runs 177\u2013294 against 284.<br>\u2022 \"$876.60\" runs 177\u2013294.<br>\u2022 \"Employee deductions\" runs to 323 and \"Employer contributions\" to 220 (shows \"Employe / contribut\"). The labels are also past their tiles at 320@150 and 390@200, by 7\u201330px.<br>**Line amounts:** \"$1,000.00\", \"$123.40\" and \"$70.00\" end at 293\u2013330 in a 50\u2013270 row.<br>**Other:**<br>\u2022 Names break inside words: \"Alexand / ra Rivera\" (`r3-payroll-names-320-200.png`).<br>\u2022 The schema name \"NEVORA_PAYROLL_IMPORT_V\u2026\" runs past the card from 320@125 (to 330\u2013482; `r3-payroll-import-320-150.png`).<br>Round 2's \"amounts stay whole\" (`nowrap`) traded the date splits for overflow. | `S3/crops3/r3-payroll-dl-payroll-qa-reviewer-320-200.png`, `r3-payroll-names-320-200.png`, `r3-payroll-import-320-150.png` | \u2022 `src/app/app/payroll/payroll-workflow.css:57`: `.pw-totals{grid-template-columns:1fr 1fr}`, 119px tiles at 320<br>\u2022 `premium-wave-b.css:587`: `white-space:nowrap` on `.pw-totals dd, .pw-lines dd, .pw-money`<br>\u2022 `portal-premium.css:783` (import format) | Formatting only; the payroll wording stays:<br>\u2022 `.payroll-workflow .pw-totals{grid-template-columns:repeat(auto-fit,minmax(min(100%,7rem),1fr))}`: 2 tiles at 320@100, 1 from 320@150 and at 390@200<br>\u2022 `.pw-totals dt{overflow-wrap:break-word}`<br>\u2022 `.pw-lines > div{flex-wrap:wrap}`, so the amount drops under its label instead of past the row<br>\u2022 `.pw-import-format p{overflow-wrap:anywhere}` (a code string, not words) | **P1** |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "TC-B-28",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 280,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-28 | Templates \u00b7 Owner, Manager \u00b7 every width | `?error=save` banner `p.form-error` | It reads \"That template could not be saved. The name may already be in use.\". That breaks the brief's word rule (\"could not\"), and the client failure beside it already says \"Template not saved\u2026\". | `S3/crops3/r3-templates-error-390.png` | `src/app/app/schedule/templates/page.tsx:87` | \"Couldn\u2019t save the template. That name may already be in use.\" | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "TC-B-29",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 281,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-29 | Insights; Scheduling rules \u00b7 Owner vs Manager \u00b7 every width | The same value worded two ways | \u2022 **Insights:** the glance says \"Not available\" (`lib/reports/insights.ts:22`). The Scheduled vs recorded table, in the next card, says \"Unavailable\" 24 times (`components/reports.tsx:26`).<br>\u2022 **Scheduling rules:** the Owner's option reads \"Automatically when valid\" (`shift-change-policy-fields.tsx:32`), and the Manager's read-only value reads \"Automatically, when valid\" (`:82`). | `S3/raw3/chromium-QAOWNER-390-reports-open-100.json`, `S3/raw-states3/settings-manager-390.json` | as listed | \u2022 `reports.tsx:26`: `'Not available'`<br>\u2022 `shift-change-policy-fields.tsx:82`: `\"Automatically when valid\"` | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "TC-B-30",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 282,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-30 | Insights \u00b7 Owner, Manager \u00b7 every width | Clock-in notes card | The card says the same thing twice in a row: the notice \"Some clock-ins couldn\u2019t be compared with the schedule.\" and then the empty line \"Not every clock-in could be checked for this period.\" | `S3/crops3/r3-clockin-320-100.png` | `components/reports.tsx:72`: the `<Empty>` text for a partial attendance state | When the notice is shown, say what's left: \"No notes for the clock-ins that could be checked.\" Or drop the empty line when the state isn't `ready`. | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "TC-B-31",
+      "area": "type-colour-copy",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/type-colour-copy.md",
+      "line": 283,
+      "section": "## Round 3 (exit)",
+      "row": "| TC-B-31 | Scheduling rules \u00b7 Owner \u00b7 every width | Trade or coverage policy save failure `p.wb-error` plus \"Reload current policy\" | A dropped connection shows \"Couldn\u2019t save the policy. Reload it before saving again; your entries are kept.\" The only button offered, \"Reload current policy\", runs `window.location.reload()`, which throws the entries away. The message promises what the action undoes. | `S3/shots3/state-settings-policy-fail-390.png` | `src/components/wave-b-forms.tsx:189` (catch uses tone `conflict`) and `:197` (reload button) | In the catch: tone `error`, \"Couldn\u2019t save the policy. Check your connection and try again; your entries are still here.\", and no reload button. Keep reload for the real revision conflict (`:187`). | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "IS-B1",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 194,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B1 | Fixed | Quiet refresh at half-life. Each read was delayed locally on top of the server's own ~0.1\u20131s. 0 ms, 2.5s and 3.5s delays: 0 empty samples in 40s at 390, and 0 in 30s at 1440 with 3.5s. Height, `scrollY` 3,000, focus on Report definitions and its open state were kept through 4\u20138 reads. A failed refresh retires the report at 8.5s (decided privacy contract), with height and scroll held. Reads slower than about 5s are tracked as IS-B29 | `reports.tsx:105-110` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B2",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 195,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B2 | Fixed | Period error at 430\u2013450 (390), 454\u2013494 (320), 76\u201396 (844\u00d7390) and 343 (1440). Each sits under the dates, with `aria-invalid` and `aria-describedby`, and focus moves to First day. Export error at 724\u2013764 (390; the tab bar starts at 776), 530\u2013570 (320) and 267\u2013287 (844\u00d7390), inside the Export card. WebKit matches | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B3",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 136,
+      "section": "## Round 2",
+      "row": "| IS-B3 | Fixed | After a failed preview and a retry, the error is empty and the preview shows \u201c3 eligible recipients\u201d | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B4",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 137,
+      "section": "## Round 2",
+      "row": "| IS-B4 | Fixed | Empty title: \u201cTitle must contain 1\u2013120 characters.\u201d at 442\u2013462, under Title. Title has focus, with `aria-invalid=\"true\"` and `aria-describedby` set to the error. Empty message: the error shows at 627\u2013667 under Message. The same holds for Manager and Employee | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B5",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 138,
+      "section": "## Round 2",
+      "row": "| IS-B5 | Fixed | The first press sends 0 requests and opens \u201cWithdraw this update for 5 people? They won\u2019t see it anymore.\u201d (`role=group`), with focus on Withdraw update. Keep update closes it and returns focus. The confirm press reads \u201cWithdrawing\u2026\u201d, busy, with 1 request for 2 presses | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B6",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 139,
+      "section": "## Round 2",
+      "row": "| IS-B6 | Fixed (Save); Archive by code only | Save with the request aborted: the page stays on Templates and shows \u201cTemplate not saved\u2026\u201d at 723 under the button. The name is kept and focus stays on Save. Held: \u201cSaving template\u2026\u201d, `aria-disabled`, 1 request for 3 presses. Archive uses the same `ActionForm` with a confirm step (`templates/page.tsx:156`); there's no saved template to press | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B7",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 140,
+      "section": "## Round 2",
+      "row": "| IS-B7 | Fixed | The first press sends 0 requests and opens \u201cRemove Monday, All day? Remove / Keep period\u201d with focus on Remove. Keep period returns focus. Confirm: \u201cRemoving\u2026\u201d, `aria-disabled`, 1 request. Aborted: \u201cNot removed. Check your connection and try again.\u201d at 678\u2013718; the page stays and focus stays on Remove. WebKit matches | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B8",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 196,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B8 | Fixed | The error shows in the bar at 390 (652\u2013696, above the button at 708 and the tab bar at 776), 320 (same), WebKit 390 (same), 844\u00d7390 (135\u2013159; the bar is static there) and 1440 (836\u2013856). The success line shows at 616\u2013640 (390). The button reads \u201cSaving\u2026\u201d and sends 1 request for 2 presses | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B9",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 197,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B9 | Fixed | Location staffing and Weekly hours land at 104 at 390, 1024 and 1440 (sticky header bottoms 68 and 65), and at 116 at 844\u00d7390, with focus and a ring. Recurring coverage and Trades land lower only because the page ends | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B10",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 143,
+      "section": "## Round 2",
+      "row": "| IS-B10 | Fixed | Pending and failure now float above the tab bar. At 390, \u201cRecording action\u2026\u201d shows at 480\u2013760 and the failure at 352\u2013760. At 1440 they sit at 506\u2013876, and at 844\u00d7390 at 111\u2013306 (50vh, scrolls inside). The panel covers Save company preferences, but the form is locked while the action is unconfirmed, and Check and Retry are in the panel | \u2014 |",
+      "classification": "Source-fixed in ready368; old actual RC integration-dependent and explicitly open until zero WaveB merge; no duplicate candidate fix authorized"
+    },
+    {
+      "id": "IS-B11",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 144,
+      "section": "## Round 2",
+      "row": "| IS-B11 | Fixed | An aborted Acknowledge leaves the button at 650 \u2192 650 with 0px movement, and the notice renders below the review card. Its visibility is IS-B26 | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B12",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 198,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B12 | **Partly fixed (P2 open)** | Fixed: Withdrawing\u2026 and Confirming\u2026 keep focus. A 409 on Payroll settings returns focus to Save company preferences, and a failed Publish focuses the Audience preview heading (ring). Still falls to `<body>` after: Acknowledge or Withdraw \u201cResult not yet confirmed\u201d (the button becomes `disabled`) at 320, 390, 844 and 1440; Check status pressed (the notice is removed while the lookup runs); Try again succeeding on Update detail, Compose and Payroll settings; Payroll save pending and unconfirmed (the button is in a disabled fieldset); and a 401 on Acknowledge or Withdraw. Shots: `upd-ack-abort-390.png`, `upd-check-AUDIT-E-hold-390.png`; logs: `upd-390.log`, `states-390.log`, `pay.log` | `communication-detail.tsx:99`, `:76` (`disabled={notice==='unknown'}`), `:115`; `payroll-settings.tsx:59` (the focus return needs `!operation.busy`), `:101`, `:162`, `:186` |",
+      "classification": "confirmed uncovered lookup/retry/auth transitions; IS-B12-COMPLETION candidate patch + ready port prepared"
+    },
+    {
+      "id": "IS-B13",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 199,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B13 | Fixed | A 401 on the Compose read (Manager and Employee) now shows Try again plus \u201cSign in again\u201d (`/login`). Update detail: 401 \u2192 Sign in. Insights: 401 \u2192 Sign in. Payroll's 401 wording is decided (coordinator's fix arrives with the merge) | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B14",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 147,
+      "section": "## Round 2",
+      "row": "| IS-B14 | Fixed | Saving\u2026 (rules bar, quantities, policy, payroll), Adding\u2026, Removing\u2026, Withdrawing\u2026, Confirming\u2026, Publishing\u2026, Saving template\u2026. A related new defect is IS-B27 | \u2014 |",
+      "classification": "Source-fixed in ready368; old actual RC integration-dependent and explicitly open until zero WaveB merge; no duplicate candidate fix authorized"
+    },
+    {
+      "id": "IS-B15",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 148,
+      "section": "## Round 2",
+      "row": "| IS-B15 | Fixed | `?saved=1`: focus stays on `body`, `.wb-feedback` is 0px tall and there's no ring. `?error=save` focuses the feedback, with a ring | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B16",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 149,
+      "section": "## Round 2",
+      "row": "| IS-B16 | Fixed | The Changes link focuses `#report-changes` with a 2px `#077572` ring at top 172, like the other three | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B17",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 150,
+      "section": "## Round 2",
+      "row": "| IS-B17 | Fixed | While loading, View period reads \u201cLoading\u2026\u201d and both buttons are `aria-busy`, with no movement (y 490 \u2192 490). Two taps on Refresh send 2 reads, and the first is aborted (reads only) | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B18",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 151,
+      "section": "## Round 2",
+      "row": "| IS-B18 | Fixed | No `tabindex` on the four regions. `scrollWidth` equals `clientWidth` at 390 (358), 768 (460), 1024 (716 and 350) and 1440 (1,088 and 536) | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B19",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 152,
+      "section": "## Round 2",
+      "row": "| IS-B19 | Fixed | Blur shows \u201cInsights paused / Return to this page to see the current numbers.\u201d and focus reloads the report | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B20",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 153,
+      "section": "## Round 2",
+      "row": "| IS-B20 | Fixed | While held, the week value is at 0.45 opacity, the nav has `pointer-events:none` and the screen reader hears \u201cLoading the week\u2026\u201d; focus stays on Next week. A second Enter re-requests the same URL, which is invisible to the user (not filed) | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B21",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 154,
+      "section": "## Round 2",
+      "row": "| IS-B21 | Fixed | By keyboard, the Audience preview heading takes focus with a 2px ring at offset 4. A failed preview focuses the feedback block, with a ring | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B22",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 155,
+      "section": "## Round 2",
+      "row": "| IS-B22 | Fixed | 2020-01-01 09:00 shows \u201cChoose a time later than now.\u201d under the field, with focus, `aria-invalid` and 0 requests | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B23",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 156,
+      "section": "## Round 2",
+      "row": "| IS-B23 | Fixed | 60/120 gives 0 requests; focus goes to the Finish field with `aria-invalid=\"true\"`, and the message is `role=alert`. The message's linkage and position are IS-B28 | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B24",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 157,
+      "section": "## Round 2",
+      "row": "| IS-B24 | Fixed | Hover `rgb(228,232,231)` (from `rgb(238,241,240)`), pressed `scale(.98)`, and no transform under reduced motion | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B25",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 200,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B25 | Fixed | Withdraw failure notice below the management card, scrolled into view: 602\u2013764 (390), 582\u2013764 (320), 168\u2013310 (844\u00d7390), 758\u2013900 (1440). The focus part is IS-B12 | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B26",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 201,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B26 | Fixed | Insights export error at 724\u2013764, Acknowledge notice at 602\u2013764 with Check status visible, and Template not saved at 704\u2013764: all above the tab bar (776) at 390 and 320 | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B27",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 202,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B27 | Fixed | Holding Save company preferences gives \u201cSaving\u2026\u201d on that button only; Save employee exception keeps its label (390, 844, 1440) | \u2014 |",
+      "classification": "Source-fixed in ready368; old actual RC integration-dependent and explicitly open until zero WaveB merge; no duplicate candidate fix authorized"
+    },
+    {
+      "id": "IS-B28",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 203,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B28 | Fixed | The order message is at 258\u2013298, right under the Finish field (202\u2013250). It is linked through `aria-describedby`, with `aria-invalid=\"true\"`, `role=alert` and 0 requests | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "IS-B33",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 209,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B33 | Payroll runs | Manager with payroll access, Owner | 390 (OK at 1440) | Prepare draft (and every runs action that uses the shared operation feedback) | Prepare draft with the request held: the whole form greys out and the button keeps \u201cPrepare draft\u201d. \u201cRecording action\u2026\u201d renders at \u2212401 to \u2212139, above the viewport. With the request aborted, \u201cThe action response was interrupted\u2026 Check action reference / Retry same action\u201d renders at \u2212539 to \u2212139. Focus falls to `<body>`. On a phone the user sees a dead form and no reason, which is IS-B10 again. At 1440 the feedback is at 306\u2013583, in view | `shots/r3/runs-prepare-abort-390.png`; log `runs-prep.log` | `payroll-runs.tsx:29` (`<OperationFeedback>` at the top of the frame, without the `.wb-payroll-feedback` float that Payroll settings got, `payroll-settings.tsx:64`, `premium-wave-b.css:501-507`) | Wrap it in the same `.wb-payroll-feedback` container so it floats above the tab bar on phones. Show a pending label on the pressed button. Payroll wording stays unchanged. This predates Wave B (not a regression), but it's this page and role | P1 |",
+      "classification": "Retained cause on both branches; IS-B33 + ready port prepared including BacklogReview initiating-surface distinction, runtime pending"
+    },
+    {
+      "id": "IS-B29",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 210,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B29 | Insights | Owner, Manager | 390 (timing is width-independent) | Quiet refresh on a slow network | When each read takes more than about a third of the snapshot's 14.6s life, the refresh lands after expiry. 4.5s delay: the report emptied once in 40s (10 of 80 samples). 5.2s: twice, at 21s and 36s (18 of 80). 6s: twice (20 of 80). Height and scroll were held (`scrollY` 3,000 kept), but focus fell to `<body>` and the open Report definitions closed each time. Validity is counted from the request start, so a slow read also shortens the next window: steady state needs the read time to be under (validity \u2212 read time) \u00f7 2 | log `r3/ins-slow.log` | `reports.tsx:110` (refresh at `remaining/2`), `:108` (expiry clears the view) | Start the quiet read earlier when reads are slow, e.g. at `min(remaining/2, remaining \u2212 2 \u00d7 lastReadMs)`. Then remember the focused element (by id or jump target) and open disclosures before `clear`, and restore them after the next snapshot lands. Keep the privacy expiry as is | P2 |",
+      "classification": "Retained source/ready cause; IS-B29-ready-only proposed, absent candidate implementation untouched"
+    },
+    {
+      "id": "IS-B30",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 211,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B30 | Scheduling rules, Payroll settings | Owner, Manager | WebKit 390 | Keyboard focus under the tab bar | Walking with Alt+Tab from the top of the page: on Scheduling rules, 23 of 47 stops are hidden behind the tab bar (top 776) or below the viewport. Examples: Main Office minimum staff at top 746 with `scrollY` 0, Fictional Owner target at 748, and hours fields at 916\u20131,509 with `scrollY` 740. Payroll settings: 5 of 47 (inputs at 808\u2013819). Chromium has 0 hidden stops on both pages. WebKit Insights and Payroll runs: 0. Programmatic `focus()` in WebKit does respect the 216px scroll padding (field lands at 595). Removing scroll padding or card overflow doesn't change it, so WebKit's keyboard focus reveal is skipping the padding | `shots/r3/` none; logs `kb-webkit-390.log`, `wk-scroll2` runs | WebKit keyboard focus reveal doesn't apply `scroll-padding-bottom` (`premium-wave-b.css:514`, shell 80px) | Add a `focusin` listener on these forms. When the target's rect crosses `innerHeight \u2212 scrollPaddingBottom` or the top padding, call `scrollIntoView({block:'nearest'})`, which WebKit honours. It may belong in the shell for every page; the coordinator should decide. Not checked on a real iPhone or iPad (simulators are reserved) | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "IS-B31",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 212,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B31 | Scheduling rules (Save staffing and hours, Add coverage period, Save trade policy), Payroll settings | Owner, Manager | 390 | Enter in a field to submit | Pressing Enter in an hours field, a coverage time field, the policy minutes field or the payroll reason field sends 1 request, then disables the fieldset that holds the focused field. Focus falls to `<body>` while pending, and stays there after the failure re-enables the fields. Pressing the button itself keeps focus (it's outside the fieldset). Templates' name field keeps focus (ActionForm doesn't disable it) | log `r3/enter-390.log` | `wave-b-forms.tsx:101`, `:134`, `:194` (`<fieldset disabled={pending}>`); `payroll-settings.tsx:101`, `:162`, `:186` | Before setting pending, move focus to the form's submit button when `document.activeElement` is inside the fieldset, so the pending label and the result are read there. Or mark the fields `readOnly` and `aria-disabled` instead of disabling the fieldset | P2 |",
+      "classification": "Rules eb83869; Payroll completion proposal IS-B31-PAYROLL + ready port prepared, no independent closure"
+    },
+    {
+      "id": "IS-B32",
+      "area": "interaction-states",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/interaction-states.md",
+      "line": 213,
+      "section": "## Round 3 (exit)",
+      "row": "| IS-B32 | Scheduling rules (Remove), Update detail (Withdraw) | Owner, Manager | 844\u00d7390 (fine at 320, 390, 1440) | Confirm step's Keep button | When the confirm opens, focus goes to Remove or Withdraw update (258\u2013310), which is scrolled just into view. The safe choice, Keep period or Keep update, sits at 322\u2013374, under the tab bar (top 322): `elementFromPoint` returns the tab bar. A touch user sees only the destructive button until they scroll | `shots/r3/rul-remove-confirm-open-844.png`, `upd-withdraw-confirm-open-844.png`; log `confirm-land` runs | `wave-b-forms.tsx:45` and `communication-detail.tsx:46` focus only the first button, so `focus()` scrolls just that into view | After the confirm opens, call `scrollIntoView({block:'nearest'})` on the `.wb-confirm` group, then focus. The 80px landscape scroll padding then clears the tab bar | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "WR-B-01",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 107,
+      "section": "## Round 2",
+      "row": "| WR-B-01 | **Fixed** | Container queries: `sw == cw` for all four tables at 320\u20131440 and 100\u2013200%. Real table at 1024/100 (716px cards) and 1440, label-and-value rows in the 350px half cards at 1024 and at 761/768. WebKit 1024 the same. | `premium-wave-b.css:159-194` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-02",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 108,
+      "section": "## Round 2",
+      "row": "| WR-B-02 | **Fixed** | \"Designated lead required\" ends 20\u2013264px inside the card at 768\u20131440, 100\u2013200% (was 6px past at 768/125%). Rows stack below 1180. | `:369-372` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-03",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 109,
+      "section": "## Round 2",
+      "row": "| WR-B-03 | **Fixed** | Nav 186px vs content 506px at 1024/200% (was 416 vs 276). 1440/200%: 283 vs 781. | `:374` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-04",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 185,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-04 | **Fixed** | The pill and buttons stay inside the card for every role: \"Acknowledge-/ment required\" wraps at the soft hyphen with a 19\u201320px inset at 320/200%, and \"Acknowledge update\" is 248px at a 20px inset. Recipient pills, Edit, Withdraw and the Withdraw confirm likewise, at 320\u20131440 and 100\u2013200%. WebKit the same. `S/shots/r3/upd-card-chromium-AUDIT-E-320-200.png` | `premium-wave-b.css:579-580` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-05",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 111,
+      "section": "## Round 2",
+      "row": "| WR-B-05 | **Fixed** | No spin buttons (`appearance: textfield`). \"Not set\" needs 57px and has 76 at 360, 91 at 390 and 165 at 1024. One column at 200%. | `:528-530` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-06",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 186,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-06 | **Fixed** (but see WR-B-22) | Apply and Archive have one width everywhere: 248/248 at 320, 318/318 at 390, 173/173 at 430, 204/204 at 768, 192/192 at 1440, one column at 200%. *(Inserted row, as before.)* | `:574`, `:576` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-07",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 113,
+      "section": "## Round 2",
+      "row": "| WR-B-07 | **Fixed** | Insights Export and period buttons end 20px inside the card at 1024 and 1440, 100\u2013200%; Save template likewise. | `:82` `min(100%,12rem)` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-08",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 114,
+      "section": "## Round 2",
+      "row": "| WR-B-08 | **Fixed** | Day names on one line at 320\u20131440, 100\u2013200%. The tile grows with the text (73\u00d744 at 200%) and Remove moves under the period. | `:534-536` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-09",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 187,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-09 | **Regressed** | Period summary fixed: values drop under their labels with a \u226520px inset at 320\u20131440 and 100\u2013200%, with real data and the fixture. **At a glance is cut again.** AL-B23 keeps two columns on phones at every text size, and a cell is 144px at 320 or 179px at 390. With real data: \"Incomplete\" runs 14px past its cell at 320/125%, then 38px at 150% and 93px at 200%. At 390/200%: \"16h 10m\" +25px, \"Incomplete\" +58px, and the labels \"Clock-in not\u2026\" and \"Some clock-\u2026\" are cut. The right column runs past the card (\"Not available\" +44px, clipped). Fixture: \"269h 3\u2026\" and \"+29h 3\u2026\" at 320/125\u2013150%, +88px at 320/200%, +53px at 390/200% and +2px at 768/200%. WebKit the same (320/125%: \"Incomplete\" +14px). `S/shots/r3/glance-chromium-real-390-200.png`, `glance-chromium-fx-320-150.png`, `wk-glance-320-200.png` | `:562-563` (`repeat(2, minmax(0,1fr))` at any card width); `:143` |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "WR-B-10",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 188,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-10 | **Not fixed** (layout part) | \"Neutral instructions \u00b7 compatibility unverified\" is still cut at 1024/100% and 125% (needs 335px, has 300; two 330px columns) and at 1440/200% (614 vs 486). On phones it is cut at every width and size, and so are \"No provider\u2026\" and \"No channel\u2026 preference saved\" at 320/100% and from 150% at 390. Only wording solves the phone case (wording list). `S/shots/r3/pset-bank-chromium-1024-100.png` | `:540`; `payroll-settings.tsx:115` |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "WR-B-11",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 189,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-11 | **Partly fixed** | The stepper is fixed, and amounts no longer split (no money breaks at 320\u20131440, 100\u2013200%). **But** `nowrap` makes them overflow the two-column totals at 320/200%. \"$1,000.00\" runs 36px past its tile under the next one, and \"$123.40\" and \"$876.60\" run 10px past (WebKit 36/10/10). \"Employer contribut\u2026\" and \"deductions\" are cut. In the opened amount, \"$123.40\" runs 10px past its line at 320/200% and 6px past at 360/200%. The weekday still splits from its date: \"Checked Mon, Sep 21 \u2013 Mon, / Oct 19\" at 320/100% and 390/150%, and \"Payday Tue, / Sep 29\" at 200%. `keepWhole` joins \"Oct 19\" but not \"Mon, Oct 19\". `S/shots/r3/payroll-totals-chromium-payroll-qa-reviewer-320-200.png`, `payroll-date-chromium-320-100-r3d0.png` | `premium-wave-b.css:587`; `payroll-workflow.css:57,59`; `src/lib/keep-whole.ts` (shared) |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "WR-B-12",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 118,
+      "section": "## Round 2",
+      "row": "| WR-B-12 | **Closed (decided)** | Shared WR-55 rule. Every field is 48px at 100% (3rem, growing with text) with the `rgb(133,139,143)` border on Wave B pages and Timecards alike. | `:38` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-13",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 119,
+      "section": "## Round 2",
+      "row": "| WR-B-13 | **Fixed** | \"Find a person\" is white with the 1px field border (`rgb(133,139,143)`). | `:322-324` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-14",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 120,
+      "section": "## Round 2",
+      "row": "| WR-B-14 | **Closed (decided D3)** | Sidebar and breadcrumb unchanged (Owner: Settings; Manager: Scheduling rules). The back link \"Schedule\" matches the page's place under Schedule, so it isn't refiled. | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-15",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 121,
+      "section": "## Round 2",
+      "row": "| WR-B-15 | **Fixed** | Subgrid: values share one y per row: 598 for all six at 1440, 606 \u00d74 and 750 \u00d72 at 1024; WebKit 606 \u00d74 and 770 \u00d72. | `:136-138` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-16",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 122,
+      "section": "## Round 2",
+      "row": "| WR-B-16 | **Fixed** | At 1024 \"View period\" and \"Refresh\" share a row at 184px each; at 768 they're 204px each. They stack full width at 125%+ where they can't fit. | `:449` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-17",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 190,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-17 | **Partly fixed** | \"Announcement\" (the type select's new default) fits at 320\u20131440 up to 150%. It's cut only at 320/200% (227 vs 192). **Still cut:** when a manager picks **\"Require acknowledgement of this version\"**, it shows cut on every phone at 100% (needs 327px; has 192 at 320, 262 at 390 and 302 at 430). The title placeholder \"Add a short, clear title\" is cut from 320/150% and at 390/200% (320 vs 288), for all roles. WebKit the same. `S/shots/r3/compose-req-chromium-390-100.png` | `communication-compose.tsx:69`, `:88` |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "WR-B-18",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 124,
+      "section": "## Round 2",
+      "row": "| WR-B-18 | **Closed (decided WR-41)** | Landscape band 224px on Update and Compose, as decided. | \u2014 |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-19",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 125,
+      "section": "## Round 2",
+      "row": "| WR-B-19 | **Fixed** | Legend = title: \"Message today\u2019s team\" for Lead, Employee and AUDIT-LONG; \"Create update\" for Owner and Manager. | `communication-compose.tsx:63` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-20",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 126,
+      "section": "## Round 2",
+      "row": "| WR-B-20 | **Fixed** | \"1\u201315\" and \"16\u2013month end\" in `.nv-nowrap`: one line at 320\u20131440. | `payroll-settings.tsx:103` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-21",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 191,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-21 | **Fixed** | While Archive asks, the row stacks: the name is on one line, Apply is full width, and the confirm sits 20px inside the card at 320\u20131440, 100\u2013200% (was 89px past at 1024). WebKit the same. | `:571-572` |",
+      "classification": "source UI integration/history; exact-ready recheck still required, no static closure"
+    },
+    {
+      "id": "WR-B-22",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 197,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-22 | Templates \u00b7 Owner, Manager \u00b7 1024\u20131279 at 100%; 1024 and 1180 from 125%; 1440 at 150\u2013200% (Chromium, WebKit) | Template row (not confirming): name and Apply/Archive pair | WR-B-06's fix fixes the pair at `repeat(2, 12rem)`, and the actions keep `flex: none` in the desktop row layout. In the 2fr column (380px of row at 1024), the pair is 396px, so the name column gets **0px**. \"Regular week\" stacks one letter per line (11 lines), and a long name takes 49 lines. Archive runs 8px past the card at 1024/100%, 200px at 1024/150%, 392px at 1024/200%, 318px at 1180/200% and 169px at 1440/200%. At 1440/100% it fits (name 102px). *Inserted row with the page's own markup (no saved template in the data).* | `S/shots/r3/tpl-rows-chromium-1024-100.png`, `S/shots/r3/wk-tpl-1024-100.png` | `premium-wave-b.css:576` (`repeat(2, 12rem)`) with `:273` (`flex: none`) and `:272` (row layout from 1024) | In the \u22651024 block: `P .wb-template-list > li:not(:has([data-confirming])){flex-wrap:wrap}`, `P .wb-template-identity{flex:1 1 14rem}`, and `P .wb-template-list > li:not(:has([data-confirming])) .wb-template-actions{flex:0 1 auto;max-width:100%;grid-template-columns:repeat(2,minmax(0,12rem))}`. The pair then moves under the name when both can't share the row, keeping equal widths. | P1 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "WR-B-23",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 198,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-23 | Scheduling rules \u00b7 Owner (edits the trade policy) \u00b7 320 from 125%; 390 at 200% (Chromium, WebKit) | Trade policy \"How requests are approved\" selects (both) | \"Automatically when valid\" needs 241px and has 218 at 320/125% (\"Automatically when \u2026\" over the chevron). It needs 284 at 150% and 366 at 200% (288 available at 390/200%). | `S/shots/r3/rules-policy-select-chromium-320-125.png` | `shift-change-policy-fields.tsx:32`, `:82` (option label) | A shorter option, \"Automatic if valid\" (fits to 150% at 320), or let these two selects use the full card width on phones. Wording belongs to the type, colour and copy inspector. | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "WR-B-24",
+      "area": "widths-roles",
+      "source": "/workspace/ready-wave-b/docs/product/specs/p35-wave-b/inspection/widths-roles.md",
+      "line": 199,
+      "section": "## Round 3 (exit)",
+      "row": "| WR-B-24 | Scheduling rules \u00b7 Owner, Manager \u00b7 320 at 200% (Chromium, WebKit) | Band title | \"Scheduling\" (60px) is wider than the 288px title column, so it breaks inside the word with no hyphen: \"Schedulin / g rules\". The other Wave B titles fit at 320/200% (\"Payroll settings\", \"Create update\" and \"Templates\" have no split words), as does \"Timecards\". | `S/shots/r3/rules-top-chromium-320-200.png`, `S/shots/r3/wk-rules-top-320-200.png` | `schedule/settings/page.tsx:65` (title) with the kit's `overflow-wrap: break-word` on `.nv-masthead__title` (`kit.css:161`) | A soft hyphen, as on \"Acknowledge\u00adment\": `title=\"Schedul\u00ading rules\"` gives \"Schedul- / ing rules\". | P2 |",
+      "classification": "latest ROUND open: source fix/preservation present or measured scope incomplete; review remains mandatory"
+    },
+    {
+      "id": "ST-WB-15",
+      "area": "stability",
+      "source": "/workspace/nevora-inspections/p35-wave-b/round-4/stability.md",
+      "classification": "candidate fix 980e823eba6e243d456483b33cd0571131389cb6; preserved in ready08548f9; full exact-SHA acceptance pending"
+    },
+    {
+      "id": "IS-WB-34",
+      "area": "interaction-states",
+      "source": "/workspace/nevora-inspections/p35-wave-b/round-4/interaction-states.md",
+      "classification": "candidate fix 04430302d2e8242489d028a1e3bba090497124af; preserved in ready08548f9; full exact-SHA acceptance pending"
+    },
+    {
+      "id": "TC-B-32",
+      "area": "type-colour-copy",
+      "source": "/workspace/nevora-inspections/p35-wave-b/round-4-9bd265e/type-colour-copy.md",
+      "classification": "candidate fix ed62b42; preserved in ready08548f9; full exact-SHA acceptance pending"
+    }
+  ],
+  "count": 137,
+  "fullMatrixRequirement": "3008 cells; --axe every cell; all five manual areas; no tests/previews during hold",
+  "noIndependentClosure": true,
+  "activePatches": [
+    "IS-B12-COMPLETION.patch",
+    "IS-B31-PAYROLL.patch",
+    "IS-B33.patch",
+    "IS-B12-COMPLETION-ready-port.patch",
+    "IS-B31-PAYROLL-ready-port.patch",
+    "IS-B33-ready-port.patch",
+    "IS-B29-ready-only.patch"
+  ],
+  "patchHashes": {
+    "IS-B12-COMPLETION.patch": "121fb10fdbf76c585b83081e75525b3e99470704ff4ebb8ca27e5826f30343d7",
+    "IS-B31-PAYROLL.patch": "677b15e717dc5283db8a7ff62762d4158c9b9377d94d57acb1f4deb636628359",
+    "IS-B33.patch": "a813ef9bd0e09ca9d599b3ac97d38604935c85115ab5544b72a875ad106a297b",
+    "IS-B12-COMPLETION-ready-port.patch": "4193f964e6d044723bdac927040141243a6fe763a0597324d3787a49a728b8c4",
+    "IS-B31-PAYROLL-ready-port.patch": "e108c1d99b4a1cd48503f0276b3472fafcbc90e16ce5538ea0af7af62005a277",
+    "IS-B33-ready-port.patch": "45b040e91bb4aa398661927b230ff5a5b21a4485283318d0ccf9884d38fc79d4",
+    "IS-B29-ready-only.patch": "1e69fae739594e478bd372b0c9e007d727068048950181a72d7c275214611d35"
+  },
+  "withdrawnIntegrationDependent": [
+    "IS-B10-PENDING",
+    "IS-B14-SETTINGS"
+  ]
+}

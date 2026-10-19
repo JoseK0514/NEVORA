@@ -1,0 +1,87 @@
+--- a/src/components/manager-inbox.tsx
++++ b/src/components/manager-inbox.tsx
+@@ -13,7 +13,7 @@
+ import { Avatar, Card, Freshness, KitStack, MetaParts, PageBand, Status, Tile } from "./kit/kit";
+ import { KeepSelectedVisible } from "./kit/keep-selected-visible";
+ import { CLOCK_IN, groupHeading, presentItem } from "@/lib/action-center/present";
+-import { groupInboxItems, inboxFilter, type InboxFilter } from "@/lib/action-center/inbox";
++import { groupInboxItems, inboxFilter, timeOffRequestId, type InboxFilter } from "@/lib/action-center/inbox";
+ import { needsYou, needsYouDetail } from "@/lib/action-center/needs-you";
+ import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
+ import type { Today, TodayShift } from "@/lib/today/project";
+@@ -55,10 +55,14 @@
+ }
+ 
+ /** Review links remember the Inbox filter, so Back and the decision return to it (IS-14). */
+-function withFilter(href: string, filter: InboxFilter) {
++function withFilter(href: string, filter: InboxFilter, item: ActionItem) {
+   const url = new URL(href, "https://nevora.invalid");
+   if (url.pathname !== "/app/requests") return href;
+   url.searchParams.set("filter", filter);
++  // IS-P4-11: carry only this released time-off item's identity to its matching review.
++  url.searchParams.delete("item");
++  const requestId = timeOffRequestId(item);
++  if (requestId && requestId === url.searchParams.get("requestId")) url.searchParams.set("item", item.id);
+   url.hash = "";
+   return url.pathname + url.search;
+ }
+@@ -69,7 +73,7 @@
+   const Icon = urgent ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : request ? UserCheckIcon : CalendarBlankIcon;
+   const action = actionCenterNavigation(item);
+   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
+-  return <KitRow href={withFilter(action.href, filter)} label={`${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`} urgent={urgent}
++  return <KitRow href={withFilter(action.href, filter, item)} label={`${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`} urgent={urgent}
+     leading={request && shown.person ? <Avatar initials={initials(shown.person)} waiting /> : <Tile tone={urgent ? "urgent" : request ? "review" : "neutral"}><Icon size={20} weight="bold" /></Tile>}
+     title={shown.title} meta={<MetaParts text={shown.detail} />} action={shown.action}
+     status={request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined} />;
+--- a/src/components/manager-time-off.tsx
++++ b/src/components/manager-time-off.tsx
+@@ -31,8 +31,14 @@
+ 
+ /** F6: one request on its own page. Back names where the manager came from;
+  * the decision returns there (D-5). Dates, length and the note come first (O1). */
+-type Origin = { from: "home" | "inbox"; filter: string };
+-const backTo = ({ from, filter }: Origin) => from === "home" ? { href: "/app", label: "Home" } : { href: filter === "all" ? "/app/inbox" : `/app/inbox?filter=${filter}`, label: "Inbox" };
++type Origin = { from: "home" | "inbox"; filter: string; item?: string };
++const backTo = ({ from, filter, item }: Origin) => {
++  if (from === "home") return { href: "/app", label: "Home" };
++  const params = new URLSearchParams();
++  if (filter !== "all") params.set("filter", filter);
++  if (item) params.set("item", item);
++  return { href: `/app/inbox${params.size ? `?${params}` : ""}`, label: "Inbox" };
++};
+ 
+ function FocusedReview({ request, origin, error }: { request: PendingRequest; origin: Origin; error?: string }) {
+   const back = backTo(origin);
+@@ -92,8 +98,8 @@
+ const rangeLabel = (request: { startDate: string; endDate: string }) =>
+   request.endDate !== request.startDate ? `${shortDate(request.startDate)}\u00a0– ${shortDate(request.endDate)}` : shortDate(request.startDate);
+ 
+-export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, filter }: {
+-  tab?: string; error?: string; reviewed?: string; requestId?: string; from?: string; filter?: string;
++export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, filter, item }: {
++  tab?: string; error?: string; reviewed?: string; requestId?: string; from?: string; filter?: string; item?: string;
+ }) {
+   await requireRoles(MANAGER_ROLES);
+   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
+@@ -101,7 +107,9 @@
+     ? await listPendingTimeOffRequests()
+     : await listTeamTimeOffRequests(selected.status);
+   const focused = selected.status === "PENDING" && requestId ? requests.find(request => request.id === requestId) : undefined;
+-  const origin: Origin = { from: from === "home" ? "home" : "inbox", filter: inboxFilter(filter ?? "requests") };
++  // IS-P4-11: a selection is presentation state, accepted only for the authorized pending request already read above.
++  const origin: Origin = { from: from === "home" ? "home" : "inbox", filter: inboxFilter(filter ?? "requests"),
++    item: focused && from !== "home" && item === `TIME_OFF:${focused.id}` ? item : undefined };
+   if (focused) return <FocusedReview request={focused as PendingRequest} origin={origin} error={error} />;
+   if (selected.status === "PENDING" && requestId && !error) return <DecidedReview origin={origin} />;
+ 
+--- a/src/app/app/requests/page.tsx
++++ b/src/app/app/requests/page.tsx
+@@ -39,6 +39,7 @@
+     requestId?: string;
+     from?: string;
+     filter?: string;
++    item?: string;
+   }>;
+ }) {
+   const moduleOff = await moduleGate("timeOff");

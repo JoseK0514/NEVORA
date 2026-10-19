@@ -1,0 +1,9 @@
+# IS-B31 Payroll completion — static proposal
+
+Candidate base56570fd; ready port368e98a. Primary source `inspection/interaction-states.md:212` explicitly includes Payroll reason Enter and lists Company/Exception/Grant native-disabled fieldsets. Rules-only eb83869 does not cover those forms.
+
+A UI-only layout-effect helper replaces native fieldset disabling: the initiating supported input/textarea remains enabled+readonly; other editable controls retain their original disabled flags and are temporarily individually disabled; submit buttons remain natively focusable with aria-disabled and guarded form handlers. Unsupported initiating checkbox/select focuses the available submit before becoming disabled. Cleanup restores original disabled/readonly flags. Command construction, captured FormData, original operation references, authorization, receipt handling and synchronous inFlight guard stay unchanged. No data is retained outside existing components.
+
+Candidate labels are already literal and stable; no wording changed. Ready port preserves its source SavingForm selection, moves the selection after the lock guard, and reserves its existing Saving… label with PendingLabel so enabling focus does not reintroduce label jumps. Company failure feedback behavior from21e603b remains intact.
+
+Patch creates `src/components/payroll/pending-fields.ts`, intentionally reusable by the separate IS-B33 Runs patch. Apply this completion before IS-B33. No app trees changed and no test/runtime executed. Mandatory implementation proof: both engines390/100 +320/200; Company/Exception/Access field focus, readonly+captured payload, repeated Enter/requestSubmit→one intercepted command, focusable submit, settled failure/retry identity. A textarea Enter must retain multiline behavior; use Ctrl+Enter-independent requestSubmit from the focused Access reason for that subcase.

@@ -1,0 +1,11 @@
+{
+  "finding": "AL-P3-13",
+  "base": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/alignment.md:879 on227150b",
+  "files": [
+    "src/app/app/schedule/employee-schedule.css"
+  ],
+  "scope": "Completes existing chosen40px tile+12px gap alternative: top-align tile and actual40px tile box. Current portal column already40px but phone icon retained32px and aligncenter on copy. Local phone/landscape CSS only.",
+  "applicationFilesEdited": false,
+  "testsOrRuntimeRun": false
+}

@@ -1,0 +1,47 @@
+--- a/src/components/presentation-context.tsx
++++ b/src/components/presentation-context.tsx
+@@ -6,11 +6,11 @@
+ 
+ /** Company modules and words (B2) for client components inside the portal.
+  * Only hides entry points; pages, actions and APIs enforce on the server. */
+-type Presentation = { modules: EnabledModules; words: WordSlots };
+-const PresentationContext = createContext<Presentation>({ modules: ALL_MODULES_ON, words: DEFAULT_WORDS.en });
++type Presentation = { modules: EnabledModules; words: WordSlots; settingsBackAvailable: boolean };
++const PresentationContext = createContext<Presentation>({ modules: ALL_MODULES_ON, words: DEFAULT_WORDS.en, settingsBackAvailable: false });
+ 
+-export function PresentationProvider({ modules, words, children }: { modules?: EnabledModules; words?: WordSlots; children: ReactNode }) {
+-  return <PresentationContext.Provider value={{ modules: modules ?? ALL_MODULES_ON, words: words ?? DEFAULT_WORDS.en }}>{children}</PresentationContext.Provider>;
++export function PresentationProvider({ modules, words, settingsBackAvailable = false, children }: { modules?: EnabledModules; words?: WordSlots; settingsBackAvailable?: boolean; children: ReactNode }) {
++  return <PresentationContext.Provider value={{ modules: modules ?? ALL_MODULES_ON, words: words ?? DEFAULT_WORDS.en, settingsBackAvailable }}>{children}</PresentationContext.Provider>;
+ }
+ 
+ export const usePresentation = () => useContext(PresentationContext);
+--- a/src/components/app-shell.tsx
++++ b/src/components/app-shell.tsx
+@@ -261,7 +261,7 @@
+           </div>
+         </header>
+ 
+-        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></main>
++        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words} settingsBackAvailable={navigation.some(item => item.href === "/app/settings")}>{children}</PresentationProvider></main>
+ 
+         <nav className="mobile-nav" aria-label="Mobile navigation">
+           {employee ? (
+--- a/src/app/app/settings/wave-c-recovery-loading.tsx
++++ b/src/app/app/settings/wave-c-recovery-loading.tsx
+@@ -2,12 +2,14 @@
+ 
+ import { useSearchParams } from "next/navigation";
+ import { SettingsLoading } from "./wave-c-loading";
++import { usePresentation } from "@/components/presentation-context";
+ 
+ /** The recovery placeholders name the same Back as the page will: the employee, Settings or Home. */
+ export function RecoveryLoading({ title, summary, label, cards }: { title: string; summary: string; label: string; cards: number[] }) {
+   const params = useSearchParams();
++  const { settingsBackAvailable } = usePresentation();
+   const employee = params.get("employee")?.trim();
+   const back = employee ? { href: `/app/employees/${encodeURIComponent(employee.slice(0, 200))}`, label: employee.length <= 16 ? employee : "Employee" }
+-    : params.get("from") === "settings" ? { href: "/app/settings", label: "Settings" } : { href: "/app", label: "Home" };
++    : params.get("from") === "settings" && settingsBackAvailable ? { href: "/app/settings", label: "Settings" } : { href: "/app", label: "Home" };
+   return <SettingsLoading back={back} title={title} summary={summary} label={label} cards={cards} />;
+ }

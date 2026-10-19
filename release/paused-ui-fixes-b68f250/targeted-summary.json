@@ -1,0 +1,8 @@
+{
+  "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "completed": 20,
+  "passed": 20,
+  "total": 20,
+  "assertions": 100,
+  "failures": []
+}

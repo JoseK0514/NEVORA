@@ -1,0 +1,43 @@
+{
+  "checkpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "sourceHead": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "trackedStatus": "",
+  "home": {
+    "completed": 80,
+    "passed": 80,
+    "chromiumMaxCls": 0.006441482671099032,
+    "chromiumMaxHeldDelta": 0.006441482671099032,
+    "webkitClsSupported": false
+  },
+  "more": {
+    "completed": 20,
+    "passed": 20
+  },
+  "payrollFonts": {
+    "completed": 4,
+    "passed": 4
+  },
+  "timecards503Baseline": {
+    "completed": 8,
+    "missingRetryReproduced": 8,
+    "isProductPass": false
+  },
+  "checker": {
+    "cells": 0,
+    "deferredByCoordinator": true
+  },
+  "closedVerified": true,
+  "harnessSha256": {
+    "close.mjs": "5a8aac12daece7d807de01c2bbba38fdea9c14461207409da47b95763f33f521",
+    "timecards-503.mjs": "d14374563e8bf9a0dd6be09a08c9566316faf51013f2f20d2363978879575287",
+    "capture-payroll.mjs": "e371b9fde13bc70a8fd1822ba98ac5f147eee60975b02f4144b000ae45b1c333",
+    "home-responsive.mjs": "1add4ccb34de7cfc65b831a4a5d106e3c1dc26d0adc2bfbce2f26ed0ef0c09d3",
+    "extra-cases.mjs": "9e6c736b4bf3625c2122f6b74dda1f7612616772ccbcc587adfa5d4c5b90dbed",
+    "guidance-fonts.mjs": "2a085bda04f04d2cb59d9e797f3b07832d772e74574ac537735b5f8d01fedaf1",
+    "checks.mjs": "66e42a9f2c494b276a757647158fc357d06e8cee2df5e3bc04fef1179f2d490d",
+    "verify-actual-more.mjs": "9677287d7cab633e1ca2304bd5f20cc4d3cf5f5129a3e746512c61d975deaa1f",
+    "verify.mjs": "9677287d7cab633e1ca2304bd5f20cc4d3cf5f5129a3e746512c61d975deaa1f",
+    "home-causal.mjs": "dd4614a75e7e1cfb96c6be92e649ae8916a89284cbeaa988a1e26fc30f338b16",
+    "checker-guard.mjs": "43b92e7a0ad2e78a152be02806853ee8a1565f9ed2cd76d349de310a31b3022a"
+  }
+}

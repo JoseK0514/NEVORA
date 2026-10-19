@@ -1,0 +1,19 @@
+--- a/src/components/manager-inbox.tsx
++++ b/src/components/manager-inbox.tsx
+@@ -2,6 +2,7 @@
+ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
+ 
+ import Link from "next/link";
++import { keepWhole } from "../lib/keep-whole";
+ import { useToday } from "./manager-today";
+ import { useState, type ReactNode } from "react";
+ import { useSearchParams } from "next/navigation";
+@@ -88,7 +89,7 @@
+   const condition = running ? "Not clocked in" : `No ${CLOCK_IN}`;
+   return <KitRow href={href} label={`${action} for ${shift.employeeName}: ${condition}`} urgent
+     leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName}
+-    meta={<><span className="nv-nowrap">{when}</span> · <span className="nv-nowrap">{shift.locationName}</span></>} action={action}
++    meta={<><span>{keepWhole(when)}</span> · <span className="nv-nowrap">{shift.locationName}</span></>} action={action}
+     status={<Status tone="urgent">{condition}</Status>} />;
+ }
+ 
