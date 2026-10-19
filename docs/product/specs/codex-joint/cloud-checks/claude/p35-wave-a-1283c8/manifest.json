@@ -6310,6 +6310,29 @@
       "code": 1,
       "passed": 11,
       "failed": 5
+    },
+    {
+      "name": "00275-matrix-QAOWNER-chromium-844x390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T23-54-03-568Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00275-matrix-QAOWNER-chromium-844x390.log",
+      "args": [
+        "--routes",
+        "/app/updates,/app/updates/618fdeae-273f-4de1-9745-5204f2f16069,/app/updates/compose",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "844x390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "96f2cda512705c39c9b6a00accfbd14159092d631985d959db189b865de0e061",
+      "code": 1,
+      "passed": 9,
+      "failed": 3
     }
   ],
   "planned": 12580,

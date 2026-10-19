@@ -8793,6 +8793,75 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00383-matrix-payroll-qa-b-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T23-54-01-918Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00383-matrix-payroll-qa-b-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app/schedule/coverage,/app/timecards,/app/updates,/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
+        "--accounts",
+        "payroll-qa-b",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "8814b3c53e32b55f3710f2c94594c76e4d458c08290aec8c480dee2488cb91cb",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00384-matrix-payroll-qa-b-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T23-54-16-487Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00384-matrix-payroll-qa-b-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app/updates/compose",
+        "--accounts",
+        "payroll-qa-b",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "bc14ef2518735be9735ba265c24af1d7c9fea2fdb536cca06737eb9d59f5ab82",
+      "code": 1,
+      "passed": 0,
+      "failed": 4
+    },
+    {
+      "name": "00385-matrix-ANONYMOUS-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T23-54-30-555Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00385-matrix-ANONYMOUS-chromium-768.log",
+      "args": [
+        "--routes",
+        "/login",
+        "--accounts",
+        "ANONYMOUS",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "769ae37c70b5bcd2ff5586560a9f918421f58f50603867f6478406293f5daad1",
+      "code": 1,
+      "passed": 0,
+      "failed": 4
     }
   ],
   "planned": 12716,
