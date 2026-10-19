@@ -99,6 +99,14 @@ export function Field(props: FieldProps) {
   );
 }
 
+/** Locks page scroll behind a dialog (the root element, so it also holds in landscape where html clips). */
+export function lockPageScroll() {
+  const root = document.documentElement, body = document.body;
+  const previous = [root.style.overflow, body.style.overflow];
+  root.style.overflow = "hidden"; body.style.overflow = "hidden";
+  return () => { root.style.overflow = previous[0]; body.style.overflow = previous[1]; };
+}
+
 /** A button label that swaps to its pending words without changing the button's width. */
 export function ButtonLabel({ pending, idle, busy }: { pending: boolean; idle: ReactNode; busy: ReactNode }) {
   return <span className="wc-swap" data-state={pending ? "pending" : "idle"}><span>{idle}</span><span>{busy}</span></span>;

@@ -14,7 +14,7 @@ import type { ClockerDeviceView, ClockerLocationView, ClockerOwnerResult } from 
 import { Status, type KitTone } from './kit/kit';
 import { toast } from './toaster';
 import { EmptyState, GuideCard, Notice, SettingsFrame } from '../app/app/settings/wave-c-kit';
-import { ButtonLabel, Field, FieldErrors, FormActions, useFieldErrors } from '../app/app/settings/wave-c-form';
+import { ButtonLabel, Field, FieldErrors, FormActions, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 
 type Operation = 'REGISTER' | 'RENAME' | 'ROTATE' | 'REVOKE';
 type Selection = { operation: Operation; device?: ClockerDeviceView };
@@ -68,7 +68,8 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     const element = dialog.current;
     element?.showModal();
     element?.querySelector<HTMLElement>('input[name="name"], button[type="submit"]')?.focus({ preventScroll: true });
-    return () => { if (element?.open) element.close(); };
+    const unlock = lockPageScroll();
+    return () => { unlock(); if (element?.open) element.close(); };
   }, [selection]);
   useEffect(() => {
     if (!setup) return;

@@ -102,9 +102,9 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       </ul>
     </section>
 
-    {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? "Not saved" : undefined}>{notice.text}</Notice></div> : null}
     <p className="nv-sr" role="status">{busy ? "Saving…" : ""}</p>
     <FormActions sticky>
+      {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? "Not saved" : undefined}>{notice.text}</Notice></div> : null}
       <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={busy || !changed}><ButtonLabel pending={busy} idle="Save changes" busy="Saving…" /></button>
       {changed ? <span className="wc-save-state">You have unsaved changes.</span> : <span className="wc-save-state wc-save-state--done"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" />All changes saved</span>}
     </FormActions>

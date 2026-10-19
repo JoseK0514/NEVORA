@@ -15,7 +15,7 @@ import { toast } from './toaster';
 import { breakCategories, type BreakType } from '../lib/clocker/break-types';
 import type { BreakTypeResult } from '../app/app/settings/breaks/actions';
 import { EmptyState, GuideCard, Notice, SettingsFrame } from '../app/app/settings/wave-c-kit';
-import { ButtonLabel, Field, FieldErrors, FormActions, useFieldErrors } from '../app/app/settings/wave-c-form';
+import { ButtonLabel, Field, FieldErrors, FormActions, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 
 type Selection = { operation: 'CREATE' | 'EDIT' | 'ARCHIVE' | 'REACTIVATE'; type?: BreakType };
 type Filter = 'All' | 'Active' | 'Archived';
@@ -49,13 +49,12 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     if (!selection) return;
     const element = dialog.current;
     const fallback = addButton.current;
-    const previous = document.body.style.overflow;
     element?.showModal();
     element?.querySelector<HTMLElement>('input[name="name"], button[type="submit"]')?.focus({ preventScroll: true });
-    document.body.style.overflow = 'hidden';
+    const unlock = lockPageScroll();
     return () => {
       if (element?.open) element.close();
-      document.body.style.overflow = previous;
+      unlock();
       const target = trigger.current;
       (target?.isConnected ? target : fallback)?.focus({ preventScroll: true });
     };
