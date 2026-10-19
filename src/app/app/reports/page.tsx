@@ -5,8 +5,7 @@ import {getWorkspace} from '@/lib/data/workspaces';
 import {parsePeriod} from '@/lib/timecards/project';
 import {Reports} from '@/components/reports';
 import {ReportsEntrance} from '@/components/reports-entrance';
-import {ChartBarIcon} from '@phosphor-icons/react/dist/ssr/ChartBar';
-import styles from '@/components/reports.module.css';
+import {PageBand} from '@/components/kit/kit';
 import {redirect} from 'next/navigation';
 export default async function ReportsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
@@ -15,6 +14,6 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
-  return <ReportsEntrance><header className={styles.pageHeader} data-report-entrance=""><span className={styles.headerIcon}><ChartBarIcon size={26} weight="regular" aria-hidden="true"/></span><div><h1>Insights</h1><p>Hours, attendance and schedule changes for any period.</p></div></header>
-    <Reports key={session.id} initialPeriod={period}/></ReportsEntrance>;
+  return <ReportsEntrance><PageBand title="Insights" summary="Hours, attendance and schedule changes for any period."/>
+    <div className="nv-content"><Reports key={session.id} initialPeriod={period}/></div></ReportsEntrance>;
 }

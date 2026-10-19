@@ -1,15 +1,28 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { PlusIcon, TrashIcon } from '@phosphor-icons/react/ssr';
+import { createContext, useContext, useEffect, useState, type FormEvent } from 'react';
+import { PlusIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollPreferences, PayrollRule, PayrollSettingsResponse } from '@/lib/payroll/contracts';
 import { readSettings } from './api';
 import { dollarsToMinor, minorToDollars } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
-import { OperationFeedback, PayrollFrame, PayrollPanel, PayrollState, PrivacyNote } from './payroll-ui';
+import type { ReactNode } from 'react';
+import { OperationFeedback, PayrollFrame, PayrollState, PrivacyNote } from './payroll-ui';
+import { KeepFocusClear } from '../wave-b-forms';
 import { noticeReadiness, reminderWindow } from './workflow-status';
-import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
+import { formatDateRange } from '@/lib/date-utils';
+import { keepWhole } from '@/lib/keep-whole';
 
+/** IS-B27: which form sent the running save, so only its button says "Saving…". */
+const SavingForm = createContext<[string | null, (id: string) => void]>([null, () => {}]);
+
+/** A kit card for one group of payroll settings (Phase 3.5 Wave B). Wording stays as approved. */
+function SettingsCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+  return <section className="nv-card"><div className="nv-card__head"><h2 className="nv-card__title">{title}</h2></div><div className="wb-body">{description && <p className="wb-note">{description}</p>}{children}</div></section>;
+}
+/* TC-B-03: dates read whole and with their year; the wording around them is unchanged. */
+function effectiveDate(date: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`))).replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), /, '$1,\u00a0'); }
+function recordedAt(at: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(at))); }
 function today() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
 const defaults: PayrollPreferences = {
   companyName: '', language: 'en', currency: 'USD',
@@ -41,17 +54,25 @@ function rulesFromForm(values: FormData, rules: PayrollRule[]): PayrollRule[] {
 export function PayrollSettings({ recoveryScope }: { recoveryScope: string }) {
   const resource = usePayrollResource('/api/payroll/settings', readSettings);
   const operation = usePayrollOperation('/api/payroll/settings', resource.reload, recoveryScope);
+  const savingForm = useState<string | null>(null);
+  const savingId = savingForm[0];
+  // IS-B12: when a save ends, focus returns to that form's button instead of the page.
+  useEffect(() => { if (!operation.busy && savingId && (!document.activeElement || document.activeElement === document.body)) document.querySelector<HTMLElement>(`form[data-form="${savingId}"] button[type="submit"]`)?.focus(); }, [operation.busy, savingId]);
   const revision = resource.data?.revisions.reduce((latest, item) => item.revision > (latest?.revision ?? 0) ? item : latest, resource.data.revisions[0]);
   return <PayrollFrame title="Payroll settings" description="Set company defaults, effective dates and authorized employee exceptions.">
-    <OperationFeedback operation={operation} />
+    <SavingForm.Provider value={savingForm}><div className="wb-page wb-payroll-settings"><div className="wb-auto wb-payroll-settings">
+    {/* IS-B10: progress and failures of a save float above the tab bar, so they show wherever the form was submitted. */}
+    <KeepFocusClear />
+    <div className="wb-payroll-feedback"><OperationFeedback operation={operation} /></div>
     {resource.loading && !resource.data ? <PayrollState title="Loading payroll settings">Checking current owner access and configuration revisions.</PayrollState> : resource.error ? <PayrollState title="Settings unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : resource.data && <>
       {!revision && <PayrollState title="Configure payroll before preparing runs">These are unsaved starting preferences. Choose your company settings and an effective date; imported provider amounts remain the authority.</PayrollState>}
       <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={resource.data} operation={operation} />
       <EmployeeException data={resource.data} preferences={revision?.preferences ?? defaults} operation={operation} />
       <PayrollAccess data={resource.data} operation={operation} />
-      <PayrollPanel title="Settings history" description="Saved revisions record their effective date and reason.">{resource.data.revisions.length ? <div className="pw-history">{[...resource.data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {formatDisplayDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {new Date(item.createdAt).toLocaleString()}</small></div>)}</div> : <p className="pw-small">No settings revisions have been saved.</p>}</PayrollPanel>
+      <SettingsCard title="Settings history" description="Saved revisions record their effective date and reason.">{resource.data.revisions.length ? <div className="wb-history">{[...resource.data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</SettingsCard>
       <PrivacyNote>Only the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. {noticeReadiness(resource.data.capabilities)}</PrivacyNote>
     </>}
+    </div></div></SavingForm.Provider>
   </PayrollFrame>;
 }
 
@@ -60,8 +81,9 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
   const [error, setError] = useState('');
   const [noticesEnabled, setNoticesEnabled] = useState(preferences.automation.reminders);
   const locked = operation.locked;
+  const [savingId, setSaving] = useContext(SavingForm);
   const save = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
+    event.preventDefault(); setSaving('company'); setError(''); const values = new FormData(event.currentTarget);
     try {
       const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), 'Preparation reminder window', 0, 31)] : [];
       const next: PayrollPreferences = {
@@ -78,34 +100,34 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       void operation.submit({ action: 'SAVE_SETTINGS', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), preferences: next });
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Check payroll preferences.'); }
   };
-  return <PayrollPanel title="Company defaults" description={`Revision ${revision} · Currency USD`}><form className="pw-form" onSubmit={save}><fieldset disabled={locked}>
-    <section className="pw-section pw-section-first"><h3>Company and documents</h3><div className="pw-fields">
+  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form className="wb-form" data-form="company" onSubmit={save}><fieldset disabled={locked} className="wb-form">
+    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Company and documents</h3></div><div className="wb-body"><div className="wb-grid">
       <label>Company name on documents<input name="companyName" defaultValue={preferences.companyName} maxLength={160} required /></label>
       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
       <label>Payroll provider preference<select aria-label="Payroll provider preference" name="sourceProvider" defaultValue={preferences.sourceProvider ?? ''}><option value="">No provider preference saved</option><option value="ADP_RUN">ADP RUN</option><option value="QUICKBOOKS_PAYROLL">QuickBooks Payroll</option><option value="PAYCHEX">Paychex</option><option value="GUSTO">Gusto</option><option value="OTHER">Other provider or accountant</option></select></label>
-    </div><p className="pw-small">Provider selection records a preference. It does not connect an account or verify a provider format. All sources currently use the neutral payroll import.</p></section>
-    <section className="pw-section"><h3>Pay schedule</h3><div className="pw-fields">
+    </div><p className="wb-note">Provider selection records a preference. It does not connect an account or verify a provider format. All sources currently use the neutral payroll import.</p></div></section>
+    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Pay schedule</h3></div><div className="wb-body"><div className="wb-grid">
       <label>Frequency<select aria-label="Frequency" name="frequency" defaultValue={preferences.schedule.frequency}><option value="WEEKLY">Weekly</option><option value="BIWEEKLY">Every two weeks</option><option value="SEMIMONTHLY">Twice a month</option><option value="MONTHLY">Monthly</option></select></label>
       <label>Schedule anchor date<input type="date" name="anchorDate" required defaultValue={preferences.schedule.anchorDate} /></label>
-      <label>Payday after period end<input type="number" name="paydayOffset" min={0} max={31} required defaultValue={preferences.schedule.paydayOffsetDays} /><small>Days after the period ends.</small></label>
-    </div><p className="pw-small">Weekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days 1–15 and 16–month end; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.</p></section>
-    <section className="pw-section"><h3>Deductions and contributions</h3><p className="pw-small">These rules record company policy and employee elections. Actual amounts must come from the provider import. Missing configuration is not a zero tax or an exemption.</p><RuleEditor rules={rules} onChange={setRules} /><button className="pw-button pw-secondary" type="button" onClick={() => setRules(items => [...items, newRule()])}><PlusIcon size={18} aria-hidden />Add rule</button></section>
-    <section className="pw-section"><h3>Automation</h3><p className="pw-small">Preparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.</p><label className="pw-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label><label className="pw-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Publish statements after an authorized approval</span></label><label className="pw-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>Queue private payroll notices</span></label><label>Preparation reminder window<input aria-label="Preparation reminder window" aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small id="payroll-notice-window-help">Remind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.</small></label><p className="pw-small">The notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.</p><p className="pw-small">{noticeReadiness(data.capabilities)}</p></section>
-    <section className="pw-section"><h3>Payment instructions</h3><div className="pw-fields">
+      <label>Payday after period end<input type="number" name="paydayOffset" min={0} max={31} required defaultValue={preferences.schedule.paydayOffsetDays} /><small className="wb-help">Days after the period ends.</small></label>
+    </div><p className="wb-note">Weekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days <span className="nv-nowrap">1–15</span> and <span className="nv-nowrap">16–month end</span>; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.</p></div></section>
+    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Deductions and contributions</h3></div><div className="wb-body"><p className="wb-note">These rules record company policy and employee elections. Actual amounts must come from the provider import. Missing configuration is not a zero tax or an exemption.</p><RuleEditor rules={rules} onChange={setRules} /><button className="nv-btn" data-kind="secondary" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule()])}><PlusIcon size={18} aria-hidden />Add rule</button></div></section>
+    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Automation</h3></div><div className="wb-body"><p className="wb-note">Preparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.</p><label className="wb-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label><label className="wb-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Publish statements after an authorized approval</span></label><label className="wb-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>Queue private payroll notices</span></label><label>Preparation reminder window<input aria-label="Preparation reminder window" aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small className="wb-help" id="payroll-notice-window-help">Remind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.</small></label><p className="wb-note">The notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.</p><p className="wb-note">{noticeReadiness(data.capabilities)}</p></div></section>
+    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Payment instructions</h3></div><div className="wb-body"><div className="wb-grid">
       <label>Output profile<select aria-label="Output profile" name="bankProfile" defaultValue={preferences.bankProfile ?? ''}><option value="">No payment output configured</option><option value="NEUTRAL_UNVERIFIED">Neutral instructions · compatibility unverified</option></select></label>
       <label>Desired bank channel<select aria-label="Desired bank channel" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No channel preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or channel</option></select></label>
-    </div><p className="pw-small">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p></section>
-    <section className="pw-section"><h3>Review the change</h3><div className="pw-fields"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="pw-small">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="pw-error" role="alert">{error}</p>}<button type="submit" className="pw-button">Save company preferences</button></section>
-  </fieldset></form></PayrollPanel>;
+    </div><p className="wb-note">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p></div></section>
+    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}<button type="submit" className="nv-btn" data-kind="primary">{operation.busy && savingId === 'company' ? 'Saving…' : 'Save company preferences'}</button></div></section>
+  </fieldset></form></section>;
 }
 
 function newRule(): PayrollRule { return { id: crypto.randomUUID(), name: '', kind: 'EMPLOYEE_DEDUCTION', method: 'FIXED', amountMinor: null, basisPoints: null, base: 'GROSS', applicability: 'ALL', effectiveFrom: today(), effectiveTo: null, capMinor: null, remittance: 'EMPLOYER' }; }
 function RuleEditor({ rules, onChange }: { rules: PayrollRule[]; onChange: (rules: PayrollRule[]) => void }) {
-  return <div className="pw-rules">{rules.length === 0 && <p className="pw-small">No rules configured. Imported payroll amounts are still required.</p>}{rules.map((rule, index) => {
+  return <div className="wb-rule-list">{rules.length === 0 && <p className="wb-note">No rules configured. Imported payroll amounts are still required.</p>}{rules.map((rule, index) => {
     const name = (key: string) => `rule-${rule.id}-${key}`;
-    return <fieldset className="pw-rule" key={rule.id}>
+    return <fieldset className="wb-rule" key={rule.id}>
       <legend>Rule {index + 1}</legend>
-      <div className="pw-fields">
+      <div className="wb-grid">
         <label>Rule name<input name={name('name')} defaultValue={rule.name} required maxLength={100} /></label>
         <label>Type<select name={name('kind')} defaultValue={rule.kind}><option value="EMPLOYEE_DEDUCTION">Employee deduction</option><option value="EMPLOYER_CONTRIBUTION">Employer contribution</option></select></label>
         <label>Method<select name={name('method')} value={rule.method} onChange={event => onChange(rules.map(item => item.id === rule.id ? { ...item, method: event.target.value === 'PERCENTAGE' ? 'PERCENTAGE' : 'FIXED' } : item))}><option value="FIXED">Fixed USD amount</option><option value="PERCENTAGE">Percentage of gross</option></select></label>
@@ -116,54 +138,58 @@ function RuleEditor({ rules, onChange }: { rules: PayrollRule[]; onChange: (rule
         <label>Effective through · optional<input name={name('to')} type="date" defaultValue={rule.effectiveTo ?? ''} /></label>
         <label>USD cap · optional<input name={name('cap')} inputMode="decimal" defaultValue={rule.capMinor === null ? '' : minorToDollars(rule.capMinor)} placeholder="No cap configured" /></label>
       </div>
-      <button type="button" className="pw-button pw-secondary" onClick={() => onChange(rules.filter(item => item.id !== rule.id))}><TrashIcon size={18} aria-hidden />Remove rule {index + 1}</button>
+      <button type="button" className="nv-btn" data-kind="secondary" onClick={event => { const form = event.currentTarget.form; onChange(rules.filter(item => item.id !== rule.id)); requestAnimationFrame(() => form?.querySelector<HTMLElement>("[data-add-rule]")?.focus()); }}><TrashIcon size={18} aria-hidden />Remove rule {index + 1}</button>
     </fieldset>;
   })}</div>;
 }
 function ImpactPreview({ data }: { data: PayrollSettingsResponse }) {
-  return <div className="pw-impact"><strong>Future draft impact</strong>{data.futureDraftImpact.length ? <ul>{data.futureDraftImpact.map(item => <li key={item.runId}>{formatDateRange(item.period.startDate, item.period.endDate)}: {item.reason}</li>)}</ul> : <p>No affected future drafts were returned by the server.</p>}</div>;
+  return <div className="wb-box wb-impact"><strong>Future draft impact</strong>{data.futureDraftImpact.length ? <ul>{data.futureDraftImpact.map(item => <li key={item.runId}>{keepWhole(formatDateRange(item.period.startDate, item.period.endDate))}: {item.reason}</li>)}</ul> : <p>No affected future drafts were returned by the server.</p>}</div>;
 }
 
 function EmployeeException({ data, preferences, operation }: { data: PayrollSettingsResponse; preferences: PayrollPreferences; operation: ReturnType<typeof usePayrollOperation> }) {
   const [employeeId, setEmployeeId] = useState(data.employees.find(employee => employee.active)?.id ?? '');
   const exception = data.exceptions.filter(item => item.exception.employeeId === employeeId).sort((a, b) => b.revision - a.revision)[0];
-  return <PayrollPanel title="Employee exceptions" description="Employees inherit company defaults unless an authorized exception takes effect."><label>Employee<select aria-label="Employee" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option value={employee.id} key={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <ExceptionForm key={`${employeeId}:${exception?.revision ?? 0}`} employeeId={employeeId} revision={exception?.revision ?? 0} language={exception?.exception.language ?? null} initialRules={exception?.exception.rules ?? null} preferences={preferences} data={data} operation={operation} />}</PayrollPanel>;
+  return <SettingsCard title="Employee exceptions" description="Employees inherit company defaults unless an authorized exception takes effect."><label>Employee<select aria-label="Employee" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option value={employee.id} key={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <ExceptionForm key={`${employeeId}:${exception?.revision ?? 0}`} employeeId={employeeId} revision={exception?.revision ?? 0} language={exception?.exception.language ?? null} initialRules={exception?.exception.rules ?? null} preferences={preferences} data={data} operation={operation} />}</SettingsCard>;
 }
 function ExceptionForm({ employeeId, revision, language, initialRules, preferences, data, operation }: { employeeId: string; revision: number; language: 'en' | 'es' | null; initialRules: PayrollRule[] | null; preferences: PayrollPreferences; data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const [inherit, setInherit] = useState(initialRules === null);
   const [rules, setRules] = useState(initialRules ?? preferences.rules);
   const [error, setError] = useState('');
-  return <form className="pw-form" onSubmit={event => {
+  const [savingId, setSaving] = useContext(SavingForm);
+  return <form className="wb-form" data-form="exception" onSubmit={event => {
+    setSaving('exception');
     event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
     try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: inherit ? null : rulesFromForm(values, rules) } }); }
     catch (failure) { setError(failure instanceof Error ? failure.message : 'Check this employee exception.'); }
-  }}><fieldset disabled={operation.locked}>
-    <p className="pw-small">Exception revision {revision} · Provider imports continue to determine actual gross and net pay.</p>
+  }}><fieldset disabled={operation.locked} className="wb-form">
+    <p className="wb-note">Exception revision {revision} · Provider imports continue to determine actual gross and net pay.</p>
     <label>Statement language<select aria-label="Statement language" name="exceptionLanguage" defaultValue={language ?? ''}><option value="">Inherit company language</option><option value="en">English</option><option value="es">Español</option></select></label>
-    <label className="pw-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>Inherit company deduction and contribution rules</span></label>
-    {!inherit && <><RuleEditor rules={rules} onChange={setRules} /><button className="pw-button pw-secondary" type="button" onClick={() => setRules(items => [...items, newRule()])}><PlusIcon size={18} aria-hidden />Add employee rule</button></>}
-    <div className="pw-fields"><label>Exception effective date<input name="effectiveFrom" type="date" required defaultValue={today()} /></label><label>Exception reason<input name="reason" required maxLength={300} /></label></div>
-    <ImpactPreview data={data} />{error && <p role="alert" className="pw-error">{error}</p>}
-    <button className="pw-button" type="submit">Save employee exception</button>
+    <label className="wb-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>Inherit company deduction and contribution rules</span></label>
+    {!inherit && <><RuleEditor rules={rules} onChange={setRules} /><button className="nv-btn" data-kind="secondary" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule()])}><PlusIcon size={18} aria-hidden />Add employee rule</button></>}
+    <div className="wb-grid"><label>Exception effective date<input name="effectiveFrom" type="date" required defaultValue={today()} /></label><label>Exception reason<input name="reason" required maxLength={300} /></label></div>
+    <ImpactPreview data={data} />{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}
+    <button className="nv-btn" data-kind="primary" type="submit">{operation.busy && savingId === 'exception' ? 'Saving…' : 'Save employee exception'}</button>
   </fieldset></form>;
 }
 
 function PayrollAccess({ data, operation }: { data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const [employeeId, setEmployeeId] = useState('');
   const grant = data.grants.find(item => item.employeeId === employeeId);
-  return <PayrollPanel title="Payroll access" description="Manager time-review permission does not grant access to financial records."><label>Grant recipient<select aria-label="Grant recipient" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option key={employee.id} value={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <GrantForm key={`${employeeId}:${grant?.revision ?? 0}`} employeeId={employeeId} revision={grant?.revision ?? 0} review={grant?.review ?? false} approve={grant?.approve ?? false} operation={operation} />}</PayrollPanel>;
+  return <SettingsCard title="Payroll access" description="Manager time-review permission does not grant access to financial records."><label>Grant recipient<select aria-label="Grant recipient" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option key={employee.id} value={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <GrantForm key={`${employeeId}:${grant?.revision ?? 0}`} employeeId={employeeId} revision={grant?.revision ?? 0} review={grant?.review ?? false} approve={grant?.approve ?? false} operation={operation} />}</SettingsCard>;
 }
 function GrantForm({ employeeId, revision, review, approve, operation }: { employeeId: string; revision: number; review: boolean; approve: boolean; operation: ReturnType<typeof usePayrollOperation> }) {
   const [canReview, setReview] = useState(review);
   const [canApprove, setApprove] = useState(approve);
-  return <form className="pw-form" onSubmit={event => {
+  const [savingId, setSaving] = useContext(SavingForm);
+  return <form className="wb-form" data-form="access" onSubmit={event => {
+    setSaving('access');
     event.preventDefault(); const values = new FormData(event.currentTarget);
     void operation.submit({ action: 'SET_GRANT', expectedRevision: revision, reason: String(values.get('reason')).trim(), grant: { employeeId, review: canReview, approve: canApprove } });
-  }}><fieldset disabled={operation.locked}>
-    <label className="pw-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>Review payroll amounts and documents</span></label>
-    <label className="pw-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
+  }}><fieldset disabled={operation.locked} className="wb-form">
+    <label className="wb-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>Review payroll amounts and documents</span></label>
+    <label className="wb-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
     <label>Access change reason<textarea name="reason" required maxLength={300} rows={3} /></label>
-    <p className="pw-small">Approval requires review access. Clear both permissions to revoke this grant. The server checks the current grant on every action.</p>
-    <button type="submit" className="pw-button">Save payroll access</button>
+    <p className="wb-note">Approval requires review access. Clear both permissions to revoke this grant. The server checks the current grant on every action.</p>
+    <button type="submit" className="nv-btn" data-kind="primary">{operation.busy && savingId === 'access' ? 'Saving…' : 'Save payroll access'}</button>
   </fieldset></form>;
 }

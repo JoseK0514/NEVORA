@@ -19,8 +19,8 @@ describe('period insights', () => {
   it('answers from the loaded report only', () => {
     const i = byId(base());
     expect(i.hours).toMatchObject({ value: '20h', detail: '2 people · breaks included' });
-    expect(i.plan).toMatchObject({ value: '+2h', detail: '16h scheduled · 18h worked' });
-    expect(i.requests).toMatchObject({ value: '3', detail: '2 time-off requests · 1 Unable to work request' });
+    expect(i.plan).toMatchObject({ value: '+2h', detail: '16h scheduled · 18h recorded' });
+    expect(i.requests).toMatchObject({ value: '3', detail: '2 time-off requests · 1 unable to work' });
     expect(i.coverage.value).toBe('1 of 2');
     expect(i.approvals).toMatchObject({ value: '1', tone: 'attention' });
     expect(i.attendance).toMatchObject({ value: '0', detail: 'Nothing to note' });

@@ -21,7 +21,7 @@ it('puts writing before delivery and requires audience review before any publica
  expect(html).toContain('Set an expiration');
 });
 it('keeps employee authorship limited to today’s team without management requirements',()=>{
- const html=render({context:{...context,management:false},mode:'employee'});expect(html).toContain('Today&#x27;s team');
+ const html=render({context:{...context,management:false},mode:'employee'});expect(html).toContain('Today’s team');
  expect(html).not.toContain('id="communication-type"');expect(html).not.toContain('id="communication-requirement"');
  expect(html).toContain('id="communication-location"');expect(html).toContain('Preview audience');
 });

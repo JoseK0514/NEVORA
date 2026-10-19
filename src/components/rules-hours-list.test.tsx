@@ -13,7 +13,7 @@ it("keeps every row's fields and names for the shared save, and offers find and 
   for (const name of ["target-A1", "maximum-A1", "target-B2", "maximum-B2"]) expect(html).toContain(`name="${name}"`);
   expect(html).toContain('id="target-A1"');
   expect(html).toContain('placeholder="Find a person"');
-  expect(html).toMatch(/aria-pressed="false"[^>]*>Missing target<span class="rules-hours-count">1<\/span>/);
+  expect(html).toMatch(/aria-pressed="false"[^>]*>No target<span class="rules-hours-count">1<\/span>/);
   expect(html).not.toMatch(/ hidden=""/);
   expect(html).toContain('value="40"');
 });

@@ -2,7 +2,7 @@
 
 import { PayrollStepper } from './payroll-stepper';
 import { useState, type FormEvent } from 'react';
-import { ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, FileArrowUpIcon } from '@phosphor-icons/react/ssr';
+import { ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, FileArrowUpIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import type { PayrollCapabilities, PayrollRun } from '@/lib/payroll/contracts';
 import { parsePayrollImport, readRuns } from './api';
 import { formatPayrollMoney } from './money';
@@ -11,6 +11,9 @@ import { DocumentLink, OperationFeedback, PayrollFrame, PayrollPanel, PayrollSta
 import { BacklogReview } from './backlog-review';
 import { noticeOutcome, noticeReadiness, payrollExceptionMessage, payrollReviewNotes } from './workflow-status';
 import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
+import { keepWhole as keepWholeBase } from '@/lib/keep-whole';
+/** WR-B-11: also keeps a weekday with its date ("Mon, Oct 19"); the shared keepWhole doesn't yet. */
+const keepWhole = (text: string) => keepWholeBase(text).replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), /g, '$1,\u00a0');
 
 const statusLabels = { WAITING_FOR_AMOUNTS: 'Waiting for amounts', REVIEW_REQUIRED: 'Review required', APPROVED: 'Approved' };
 const jobLabels = { PREPARE: 'Draft preparation', PDF: 'PDF generation', PUBLISH: 'Statement publication', REMINDER: 'Private payroll notice' };
@@ -23,7 +26,8 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
   const run = resource.data?.runs.find(item => item.id === selectedId) ?? resource.data?.runs[0];
   const locked = operation.busy || (!!operation.pending && !operation.resuming);
   return <PayrollFrame title="Payroll" description="Prepare a draft, review provider amounts and publish approved pay statements.">
-    <OperationFeedback operation={operation} />
+    {/* IS-B33: progress and failures float in view on phones, as on Payroll settings (premium-wave-b.css). */}
+    <div className="wb-payroll-feedback"><OperationFeedback operation={operation} /></div>
     {resource.loading && !resource.data ? <PayrollState title="Loading payroll">Checking your current access and payroll runs.</PayrollState> : resource.error ? <PayrollState title="Payroll unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : resource.data && <>
       <div className="pw-toolbar"><p><CalendarDotsIcon size={18} aria-hidden />{resource.data.runs.length} payroll {resource.data.runs.length === 1 ? 'run' : 'runs'}</p><div className="pw-actions"><button className="pw-button pw-secondary" onClick={() => void resource.reload()} disabled={resource.loading || locked}>Refresh</button><button className="pw-button" onClick={() => setPrepareOpen(value => !value)} disabled={locked}>Prepare a draft<ArrowRightIcon size={18} aria-hidden /></button></div></div>
       {prepareOpen && <PayrollPanel title="New payroll draft" description="Draft preparation checks finalized time. It does not finalize timecards or approve payroll."><form className="pw-form" onSubmit={event => {
@@ -33,7 +37,7 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
       <BacklogReview data={resource.data} operation={operation} />
       {resource.data.runs.length === 0 ? <PayrollState title="No payroll runs yet">Start with company payroll settings, then prepare a draft for the period you want to review.</PayrollState> : <div className="pw-review-layout">
         <PayrollPanel title="Pay periods" description="Each approval belongs to one exact revision."><div className="pw-run-list">{resource.data.runs.map(item => <button key={item.id} type="button" className={`pw-run-option${item.id === run?.id ? ' selected' : ''}`} aria-pressed={item.id === run?.id} onClick={() => setSelectedId(item.id)} disabled={locked}>
-          <span><strong>{formatDateRange(item.period.startDate, item.period.endDate)}</strong><small>Payday {formatDisplayDate(item.payday)} · Revision {item.revision}</small></span><span className={`pw-badge ${item.status === 'APPROVED' ? 'pw-badge-success' : ''}`} data-status={item.status}>{statusLabels[item.status]}</span>
+          <span><strong>{keepWhole(formatDateRange(item.period.startDate, item.period.endDate))}</strong><small>Payday {keepWhole(formatDisplayDate(item.payday))} · Revision {item.revision}</small></span><span className={`pw-badge ${item.status === 'APPROVED' ? 'pw-badge-success' : ''}`} data-status={item.status}>{statusLabels[item.status]}</span>
         </button>)}</div></PayrollPanel>
         {run && <div className="pw-review-current"><p className="pw-workflow-guidance" role="status"><strong>Next step:</strong> {run.status==='WAITING_FOR_AMOUNTS'?'Import amounts from your payroll provider or accountant.':run.status==='REVIEW_REQUIRED'?'Review discrepancies and employee amounts before approving.':'Generate and review the approved documents, then publish statements when ready.'}</p>
         <RunReview key={`${run.id}:${run.revision}:${run.reviewToken}`} run={run} capabilities={resource.data.capabilities} operation={operation} /></div>}
@@ -42,7 +46,7 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
         <div className="pw-job-list">{resource.data.jobs.map(job => <div className="pw-job" key={job.id}>
           <div><strong>{jobLabels[job.kind]}</strong><small>{job.status.toLowerCase().replaceAll('_', ' ')} · {job.attempts} {job.attempts === 1 ? 'attempt' : 'attempts'}</small>
             {job.kind === 'REMINDER' && <p className="pw-small">{noticeOutcome(job.outcome)}</p>}
-            {job.error && <p className="pw-error">{job.error}</p>}
+            {job.error && <p className="pw-error"><WarningCircleIcon size={18} aria-hidden="true" /><span>{job.error}</span></p>}
           </div>
           {job.status === 'FAILED' && resource.data?.capabilities.canApprove && <button className="pw-button pw-secondary" type="button" disabled={locked} onClick={() => void operation.submit({ action: 'RETRY_JOB', jobId: job.id })}>Retry {job.kind === 'REMINDER' ? 'notice queue' : jobLabels[job.kind].toLowerCase()}</button>}
         </div>)}</div>
@@ -74,7 +78,7 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
       } else void operation.submit({ action: 'IMPORT', runId: run.id, expectedRevision: run.revision, amounts });
     } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'Check the payroll import.'); }
   };
-  return <PayrollPanel title={formatDateRange(run.period.startDate, run.period.endDate)} description={`Payday ${formatDisplayDate(run.payday)} · Revision ${run.revision}`} aside={<span className={`pw-badge ${run.status === 'APPROVED' ? 'pw-badge-success' : ''}`} data-status={run.status}>{statusLabels[run.status]}</span>}>
+  return <PayrollPanel title={keepWhole(formatDateRange(run.period.startDate, run.period.endDate))} description={keepWhole(`Payday ${formatDisplayDate(run.payday)} · Revision ${run.revision}`)} aside={<span className={`pw-badge ${run.status === 'APPROVED' ? 'pw-badge-success' : ''}`} data-status={run.status}>{statusLabels[run.status]}</span>}>
     <PayrollStepper run={run} />
     {run.correctionOf && <p className="pw-notice">Correction linked to payroll run <code>{run.correctionOf}</code>.</p>}
     {notes.corrections.map((reason, index) => <p className="pw-notice" key={index}><strong>Correction reason:</strong> {reason}</p>)}
@@ -91,7 +95,7 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
       const file = event.target.files?.[0]; if (!file) return;
       setImportError('');
       try { if (file.size > 524288) throw new Error('Choose an import smaller than 512 KB.'); setImportText(await file.text()); } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'The import file could not be read.'); }
-    }} /></label><details className="pw-import-format"><summary>Import format and contents</summary><p className="pw-small">Required: schema NEVORA_PAYROLL_IMPORT_V1, currency USD, sourceName, sourceReference, period, payday and rows. Each row includes employeeId, grossMinor, employeeDeductions, employerContributions and netMinor. Each amount is a whole-cent string; each line includes code, label and amountMinor.</p><label>Import JSON<textarea rows={8} value={importText} onChange={event => setImportText(event.target.value)} spellCheck={false} /></label></details>{importText && <p className="pw-small">Import loaded in this page. Review employee amounts after the server validates it.</p>}{correctionOpen && <label>Correction reason<textarea name="correctionReason" required maxLength={300} rows={3} /></label>}{importError && <p className="pw-error" role="alert">{importError}</p>}<button className="pw-button" type="submit" disabled={!importText}>{correctionOpen ? 'Create correction draft' : 'Validate and import amounts'}<ArrowRightIcon size={18} aria-hidden /></button></fieldset></form></section>}
+    }} /></label><details className="pw-import-format"><summary>Import format and contents</summary><p className="pw-small">Required: schema NEVORA_PAYROLL_IMPORT_V1, currency USD, sourceName, sourceReference, period, payday and rows. Each row includes employeeId, grossMinor, employeeDeductions, employerContributions and netMinor. Each amount is a whole-cent string; each line includes code, label and amountMinor.</p><label>Import JSON<textarea rows={8} value={importText} onChange={event => setImportText(event.target.value)} spellCheck={false} /></label></details>{importText && <p className="pw-small">Import loaded in this page. Review employee amounts after the server validates it.</p>}{correctionOpen && <label>Correction reason<textarea name="correctionReason" required maxLength={300} rows={3} /></label>}{importError && <p className="pw-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{importError}</span></p>}<button className="pw-button" type="submit" disabled={!importText}>{correctionOpen ? 'Create correction draft' : 'Validate and import amounts'}<ArrowRightIcon size={18} aria-hidden /></button></fieldset></form></section>}
     {run.status === 'REVIEW_REQUIRED' && <section className="pw-section">
       <h3>Approve this revision</h3>
       <p className="pw-small">Approval freezes the reviewed amounts, finalized time, settings and employee exceptions. A changed source requires a fresh review.</p>
@@ -101,7 +105,7 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
       </> : <p className="pw-notice">An authorized payroll approver must approve this revision.</p>}
     </section>}
     {run.status === 'APPROVED' && <section className="pw-section pw-approved">
-      <div className="pw-approved-heading"><CheckCircleIcon size={28} weight="duotone" aria-hidden="true" /><div><h3>Approval recorded</h3><p className="pw-small">Revision {run.revision} for {formatDateRange(run.period.startDate, run.period.endDate)} is approved. Next, publish statements so employees can see their pay.</p></div></div><p className="pw-small">Approved {run.approvedAt ? new Date(run.approvedAt).toLocaleString() : ''} · Approver reference <code>{run.approvedBy}</code></p>
+      <div className="pw-approved-heading"><CheckCircleIcon size={28} weight="duotone" aria-hidden="true" /><div><h3>Approval recorded</h3><p className="pw-small">Revision {run.revision} for {keepWhole(formatDateRange(run.period.startDate, run.period.endDate))} is approved. Next, publish statements so employees can see their pay.</p></div></div><p className="pw-small">Approved {run.approvedAt ? new Date(run.approvedAt).toLocaleString() : ''} · Approver reference <code>{run.approvedBy}</code></p>
       {run.documents.length ? <div className="pw-documents">{run.documents.map(document => <DocumentLink key={document.id} document={document} />)}</div> : <PayrollState title="Documents are being prepared">Check PDF generation below. Documents appear when generation succeeds.</PayrollState>}
       {run.documents.some(document => document.kind === 'EMPLOYEE_STATEMENT' && !document.published) && (capabilities.canApprove ? <div className="pw-publication">
         <label className="pw-check"><input type="checkbox" checked={publishConfirmed} onChange={event => setPublishConfirmed(event.target.checked)} disabled={locked} /><span>Make the approved statements available to their employees.</span></label>
