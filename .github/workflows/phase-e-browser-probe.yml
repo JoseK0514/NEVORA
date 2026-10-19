@@ -17,13 +17,13 @@ jobs:
       matrix:
         suite: [navigation, calendar, communications]
     env:
-      PHASE_E_EXPECTED_SHA: c8752f2bab60f1a85da5d408dfc8537cebc50007
+      PHASE_E_EXPECTED_SHA: 388531d47cbbd4787d6ff8cd6c9a6f27878d18bc
     steps:
       - name: Select owned evidence directory
         run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-browser-probe" >> "$GITHUB_ENV"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: c8752f2bab60f1a85da5d408dfc8537cebc50007
+          ref: 388531d47cbbd4787d6ff8cd6c9a6f27878d18bc
           persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -31,6 +31,12 @@ jobs:
           node-version: 24.19.0
           cache: npm
       - run: npm ci
+      - name: Check updated browser suites
+        run: |
+          node --check scripts/phase-e-navigation-browser-scenarios.mjs
+          node --check scripts/phase-e-calendar-browser-scenarios.mjs
+          node --check scripts/phase-e-communications-browser-scenarios.mjs
+          npm exec eslint -- scripts/phase-e-navigation-browser-scenarios.mjs scripts/phase-e-calendar-browser-scenarios.mjs scripts/phase-e-communications-browser-scenarios.mjs
       - name: Install pinned browser runtime
         shell: bash
         run: |
@@ -59,6 +65,8 @@ jobs:
             ${{ runner.temp }}/phase-e-browser-probe/calendar-case-*.json
             ${{ runner.temp }}/phase-e-browser-probe/navigation-*.json
             ${{ runner.temp }}/phase-e-browser-probe/updates-*-failure.json
+            ${{ runner.temp }}/phase-e-browser-probe/navigation-*.png
+            ${{ runner.temp }}/phase-e-browser-probe/updates-*.png
             ${{ runner.temp }}/phase-e-browser-probe/source-manifest.json
             ${{ runner.temp }}/phase-e-browser-probe/owned-postgres-*/ownership.json
             ${{ runner.temp }}/phase-e-browser-probe/owned-next-*/ownership.json
