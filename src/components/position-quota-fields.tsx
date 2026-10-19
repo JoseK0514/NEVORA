@@ -1,3 +1,4 @@
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import type { Position } from "@/lib/domain";
 export function PositionQuotaFields({
   positions,
@@ -6,25 +7,25 @@ export function PositionQuotaFields({
   positions: Position[];
   requirements?: readonly { positionId: string; quantity: number }[];
 }) {
+  const shown = positions.filter(
+    (p) => p.active || requirements.some((r) => r.positionId === p.id),
+  );
   return (
-    <fieldset className="position-quota-fields">
-      <legend>
-        Position quantities <span>Optional</span>
+    <fieldset className="wb-quota">
+      <legend className="wb-label">
+        Position quantities <span className="wb-optional">Optional</span>
       </legend>
-      <p>
+      <p className="wb-help">
         Enter a whole number from 1 to 100. Leave blank to remove only that
         position quota.
       </p>
-      {positions
-        .filter(
-          (p) => p.active || requirements.some((r) => r.positionId === p.id),
-        )
-        .map((p) => (
-          <label key={p.id}>
-            {p.name}
+      {shown.length ? <div className="wb-grid">
+      {shown.map((p) => (
+          <label key={p.id} className="wb-field">
+            <span>{p.name}</span>
             {!p.active
-              ? " (Inactive — setup needs attention; clear this quota or reactivate the position)"
-              : ""}
+              ? <span className="wb-error"><WarningCircleIcon size={16} aria-hidden="true" /><span>Inactive. Clear this quota or reactivate the position.</span></span>
+              : null}
             <input type="hidden" name="quotaPositionId" value={p.id} />
             <input
               type="number"
@@ -39,6 +40,7 @@ export function PositionQuotaFields({
             />
           </label>
         ))}
+      </div> : null}
     </fieldset>
   );
 }

@@ -61,21 +61,23 @@ beforeEach(() => {
 
 it("keeps every rule group and native fragment destination available from section navigation", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
-  expect(html).toContain('<h1>Scheduling rules</h1>');
+  expect(html).toMatch(/<h1[^>]*>Sched\u00aduling rules<\/h1>/);
   expect(html).toContain('aria-label="Scheduling rule sections"');
-  for (const id of ["coverage-staffing", "target-hours", "coverage-windows", "rules-policy"]) {
+  for (const id of ["rules-staffing", "rules-hours", "rules-coverage", "rules-policy"]) {
     expect(html).toContain(`href="#${id}"`);
     expect(html).toContain(`id="${id}"`);
   }
+  // Sections keep the ids other pages link to (Owner setup, Team member detail).
+  for (const id of ["coverage-staffing", "target-hours", "coverage-windows"]) expect(html).toContain(`id="${id}"`);
   expect(html).toContain('id="staffing-loc-1"');
-  expect(html).toContain('Save staffing &amp; hours');
+  expect(html).toContain('Save staffing and hours');
   expect(html).toContain('href="/app/schedule"');
 });
 
 it("labels staffing and Lead controls separately while retaining submitted field names", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toContain('aria-label="FUEL – 2 minimum staff per shift"');
-  expect(html).toContain('aria-label="FUEL – 2 designated Lead required"');
+  expect(html).toContain('aria-label="FUEL – 2 designated lead required"');
   expect(html).toContain('name="lead-configured-loc-1"');
   expect(html).not.toMatch(/<label[^>]*class="[^"]*rules-staffing-row/);
 });
@@ -106,13 +108,13 @@ it("retains editable zero and blank hour values and an employee fragment destina
 
 it("exposes route validation and success feedback with alert/status semantics", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({error: "duplicate_window", windowDeleted: "1"})}));
-  expect(html).toMatch(/role="alert"[^>]*>That coverage window already exists/);
-  expect(html).toMatch(/role="status"[^>]*>Coverage window removed/);
+  expect(html).toMatch(/role="alert"[^>]*>(?:<svg[\s\S]*?<\/svg><span>)?That coverage period already exists/);
+  expect(html).toMatch(/role="status"[^>]*>(?:<svg[\s\S]*?<\/svg><span>)?Coverage period removed/);
 });
 
 it("retains Owner policy editing and Manager read-only policy access", async () => {
   const manager = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
-  expect(manager).toContain('Shift trade &amp; coverage policy');
+  expect(manager).toContain('How trades and coverage work');
   expect(manager).not.toContain('Save trade policy');
   vi.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"OWNER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
   const owner = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
@@ -275,7 +277,7 @@ it("keeps FUEL – 2 staff isolated from FUEL – 110 during the confirmed weeke
   expect(health.hourBalances.map((b) => b.scheduledHours)).toEqual([7, 7]);
 });
 
-it('unconfigured staffing displays a blank explicit required Lead choice',async()=>{vi.mocked(listLocationStaffingSettings).mockResolvedValue([{locationId:'new',locationName:'New',minimumStaffPerShift:null,requiresDesignatedLead:null}]);const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toMatch(/select[^>]*name="lead-choice-new"[^>]*required/);expect(html).toContain('Choose a Lead rule');expect(html).not.toMatch(/name="staffing-new"[^>]*value="[0-9]/);});
+it('unconfigured staffing displays a blank explicit required Lead choice',async()=>{vi.mocked(listLocationStaffingSettings).mockResolvedValue([{locationId:'new',locationName:'New',minimumStaffPerShift:null,requiresDesignatedLead:null}]);const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toMatch(/select[^>]*name="lead-choice-new"[^>]*required/);expect(html).toContain('Choose a lead rule');expect(html).not.toMatch(/name="staffing-new"[^>]*value="[0-9]/);});
 
 it("preserves configured customer location names without Fuel-specific normalization", async () => {
   vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(l => ({...l, updatedAt: '2030-10-01 00:00:00+00', shortName: l.id === "loc-1" ? "FUEL - 2" : "Northside West"})));

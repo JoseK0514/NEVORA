@@ -11,7 +11,7 @@ it('keeps manager editing and withdrawal available after a personal acknowledgem
  const html=await render({read:{...read,canWithdraw:true,ownAcknowledgedAt:'2026-10-08T12:01:00Z',management:{draft:{type:read.type,scope:{kind:'LOCATION',locationId:'loc-1'},title:read.title,body:read.body,acknowledgement:read.acknowledgement,expiresAt:null},recipients:[{name:'Fictional Recipient',acknowledgedAt:null}]}}});
  expect(html).toContain('/app/updates/compose?update='+read.id);
  expect(html).toContain('Withdraw update');
- expect(html).toContain('<details>');
+ expect(html).toMatch(/<details[\s>]/);
  expect(html).toContain('Fictional Recipient');
 });
 it('keeps required acknowledgement separate from an earlier read receipt',async()=>{
@@ -26,12 +26,12 @@ it('offers Mark read only for informational content and renders a stored read re
 });
 it('retains manager editing and withdrawal with a native recipient disclosure',async()=>{
  const html=await render({read:{...read,canWithdraw:true,sentCount:2,management:{draft:{},recipients:[{name:'Recipient one',acknowledgedAt:'2026-10-08T12:01:00Z'},{name:'Recipient two',acknowledgedAt:null}]}}});
- expect(html).toContain('<details>');expect(html).toContain('<summary>');expect(html).toContain('Recipient one');expect(html).toContain('Recipient two');
+ expect(html).toMatch(/<details[\s>]/);expect(html).toMatch(/<summary[\s>]/);expect(html).toContain('Recipient one');expect(html).toContain('Recipient two');
  expect(html).toContain('/app/updates/compose?update='+read.id);expect(html).toContain('Withdraw update');expect(html).not.toContain('type="checkbox"');
 });
 it('shows useful unavailable states without exposing the message or review action',async()=>{
  for(const state of ['withdrawn','unauthorized','unavailable']){
-  const html=await render({read:{state,reason:'read_failed'}});expect(html).not.toContain('Last line');expect(html).not.toContain('Acknowledge update');expect(html).toContain('<h1>');
+  const html=await render({read:{state,reason:'read_failed'}});expect(html).not.toContain('Last line');expect(html).not.toContain('Acknowledge update');expect(html).toMatch(/<h1[\s>]/);
  }
  const denied=await render({read:{state:'unauthorized',reason:'access_denied'}});expect(denied).toContain('href="/login"');
 });
