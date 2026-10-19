@@ -1,0 +1,37 @@
+{
+  "candidateBase": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "targets": [
+    {
+      "owner": "wave-a",
+      "branch": "codex/ready-wave-a",
+      "sha": "1c741fda0abf6312de7e3860be139cb2767c1ff8",
+      "exitStatus": "queued",
+      "zero": false,
+      "published": false
+    },
+    {
+      "owner": "wave-b",
+      "branch": "codex/ready-wave-b",
+      "sha": "eb83869aac75aeae874258c0b3523345d126e7cf",
+      "exitStatus": "queued",
+      "zero": false,
+      "published": false
+    },
+    {
+      "owner": "wave-c",
+      "branch": "codex/ready-wave-c",
+      "sha": "77784e62f8bf5e61ec90642a2302d634ee7f8a65",
+      "exitStatus": "queued",
+      "zero": false,
+      "published": false
+    },
+    {
+      "owner": "desktop",
+      "branch": "codex/ready-desktop",
+      "sha": "28266eb37f9d0865a9581a16083f5699fe5a9467",
+      "exitStatus": "queued",
+      "zero": false,
+      "published": false
+    }
+  ]
+}

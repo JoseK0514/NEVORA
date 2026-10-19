@@ -3,11 +3,24 @@
 Jose explicitly approved item4 in this chat. Review each candidate finding commit below, then have its owner port or replace it. The31 finding fixes are on `codex/release-candidate`; source `claude/*` branches were not edited. Jose’s latest instruction is a merge-ready handoff: isolated `codex/ready-wave-a`, `codex/ready-wave-b`, `codex/ready-wave-c` and `codex/ready-desktop` review targets are being prepared from frozen candidate `b9567ab` plus each owner input. They do not authorize a nonzero merge into the candidate.
 
 - **Merged and preserved:** first-published `8e18a95`, with coordinator `227150b`, backend `da2a4e5`, verified-zero Profile `ea58610`, and separate authorized Profile initial-read `4ff37e5`. The parallel local bootstrap `cbaadbc` is preserved as a checkpoint and was not pushed over published history.
-- **Candidate under validation:** `b9567abc26b977a517b77622a1661b16172f5b16`, **31 finding commits**. Affected tests **58/58 pass** and preflight TypeScript passes. Exact-candidate browser proofs, final full one-worker suite, lint and production build/marker check are pending. No final green or all-six acceptance is claimed. [Commit manifest](release/paused-ui-fixes-b9567ab/fix-commits.json).
+- **Candidate under validation:** `b9567abc26b977a517b77622a1661b16172f5b16`, **31 finding commits**. Affected tests **58/58 pass** and preflight TypeScript passes. Exact-candidate targeted browser proofs pass **152/152** across Chromium and WebKit; the72-cell unchanged checker is running. Final full one-worker suite, lint and production build/marker check are pending. No final green or all-six acceptance is claimed. [Commit manifest](release/paused-ui-fixes-b9567ab/fix-commits.json).
 - **Zero:** Profile's five committed Mac reports at `ea58610` justified its merge. Independent cloud IS-PROFILE-17 is separately repaired; ST-PROFILE-03 is addressed by initial-read `4ff37e5`. No other complete new source zero certificate exists.
 - **Five full exits in preparation:** Phase3 will inspect frozen candidate `b9567ab` (coordinator `227150b` is already included). WaveA input `a05f26a`, WaveB app `9bd265e`/handoff `564d193`, WaveC `5f7c166`, and Desktop `8012d97` are being integrated into separate Codex review targets with existing fixes preserved. Original source exits remain incomplete/nonzero. The actual candidate accepts only exact completed zero targets. Phase3’s required baseline alone is4,480 cases; partial smoke results are not a full exit.
-- **Two remaining repairs in progress:** WaveB IS-B31 (`wave-b-forms.tsx` Enter pending focus) and Desktop ST-P4-13 (passive-effect Inbox opening; measured CLS~0.064) are receiving bounded before/after proofs and separate named commits on the isolated Codex review targets. Both affected implementations are absent from the current candidate. WC overrides remain staged for unmerged UI; source injection proofs are preserved, and the merged review tree still needs its own acceptance. WC dialog centering passes28/28 source cases, bounds delta0px, glyph centering≤0.5px.
+- **Two remaining repairs in progress:** WaveB IS-B31 (`wave-b-forms.tsx` Enter pending focus) and Desktop ST-P4-13 (passive-effect Inbox opening; measured CLS~0.064) now have passing bounded before/after proofs and separate named commits on the isolated Codex review targets: IS-B31 `eb83869` (16/16), ST-P4-13 `5b66aa3` (8 openings +4 behavior checks; Chromium CLS<0.006). Both affected implementations are absent from the current candidate. WC overrides remain staged for unmerged UI; source injection proofs are preserved, and the merged review tree still needs its own acceptance. WC dialog centering passes28/28 source cases, bounds delta0px, glyph centering≤0.5px.
 - **Device access:** reviewed proposal/checklist below is ready; await Jose's phone-access yes/no. No deploy, tunnel or external exposure.
+
+## Isolated integration targets — full exits still required
+
+These targets contain the candidate base and their owner’s source input. They are prepared for verification; none is labeled zero or merged into the release candidate yet. The31-fix candidate remains frozen while final gates run.
+
+| Review branch | Frozen SHA | Status |
+|---|---|---|
+| `codex/ready-wave-a` | `1c741fda0abf6312de7e3860be139cb2767c1ff8` | Approved preservation choices; full exit queued |
+| `codex/ready-wave-b` | `eb83869aac75aeae874258c0b3523345d126e7cf` | IS-B31 separate commit; typecheck and affected lint pass; full exit queued |
+| `codex/ready-wave-c` | `77784e62f8bf5e61ec90642a2302d634ee7f8a65` | Approved preservation ledger; full exit queued |
+| `codex/ready-desktop` | `28266eb37f9d0865a9581a16083f5699fe5a9467` | ST-P4-13 and header shortcut each separate; full exit queued |
+
+[Wave B Enter-focus proof](p35-wave-b/is-b31-preview-proof/README.md) · [Desktop Inbox proof](p4-desktop/st-p4-13-8012d97-proof/README.md). Header `TC-DESKTOP-KBD-01` aliases a different report’s `TC-P4-22` (shortcut) and must not be confused with the existing Availability-label `TC-P4-22` finding. Source inputs and original nonzero reports are retained.
 
 ## Candidate-only UI fixes for Claude to review
 
