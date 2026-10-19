@@ -8,7 +8,9 @@ TCD-01 through -21 remain under the full exit re-check, except items explicitly 
 
 | ID | Screen, role and width | Element | Measured defect | Crop | Likely cause | Specific fix | Severity |
 |---|---|---|---|---|---|---|---|
-| TC-P4-22 (TCD-22) | Desktop header, Owner; 768 and 1440, 100/200%; Chromium/WebKit | `.command-finder-trigger kbd` — Ctrl K | Visible shortcut text stays **12/18px**, below the **14px** desktop floor, while Search is **14/20.3px**. Root text changes **16→32px**, but the hint stays 12px. Judgment: it is `aria-hidden` to avoid duplicate speech, but still conveys a functional shortcut visually; the brief lists no shortcut exception. | [Chromium](crops/TC-P4-22-chromium-1440-t100.png), [WebKit](crops/TC-P4-22-webkit-1440-t100.png) | `src/app/app/portal-desktop.css:116` sets `font-size:12px`. | Use the kit **14/20px** callout role, e.g. `font:var(--nv-t-callout)`, retaining the keycap styling. Let the trigger fit the text; on cramped headers hide the optional hint rather than render it below the floor. | P2 |
+| TC-P4-24 | Desktop header, Owner; 768 and 1440, 100/200%; Chromium/WebKit | `.command-finder-trigger kbd` — Ctrl K | Visible shortcut text stays **12/18px**, below the **14px** desktop floor, while Search is **14/20.3px**. Root text changes **16→32px**, but the hint stays 12px. Judgment: it is `aria-hidden` to avoid duplicate speech, but still conveys a functional shortcut visually; the brief lists no shortcut exception. | [Chromium](crops/TC-P4-24-chromium-1440-t100.png), [WebKit](crops/TC-P4-24-webkit-1440-t100.png) | `src/app/app/portal-desktop.css:116` sets `font-size:12px`. | Use the kit **14/20px** callout role, e.g. `font:var(--nv-t-callout)`, retaining the keycap styling. Let the trigger fit the text; on cramped headers hide the optional hint rather than render it below the floor. | P2 |
+
+The shortcut finding is **TC-P4-24**. An earlier checkpoint called it TC-P4-22; a concurrent independent report already uses that ID for Availability labels. Those are separate defects, so this report reserves -24 for the shortcut.
 
 ## Checked and correct
 

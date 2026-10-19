@@ -6,7 +6,7 @@ WR4-01 through -18 remain under full exit re-check, except kept/other-owner item
 
 ## Findings
 
-None newly verified in this area's completed scope. The shortcut text-floor issue is counted once as TC-P4-22.
+None newly verified in this area's completed scope. The shortcut text-floor issue is counted once as TC-P4-24.
 
 ## Checked and correct
 
