@@ -25,11 +25,34 @@ Claude: wire the Profile session to the exact endpoints and response already spe
 
 ## 3. Dev-only error inspection
 
-Pending implementation and production-build absence check.
+Implemented `src/lib/dev/inspection.server.ts` and strict loopback/request gates. Run a development server bound to `127.0.0.1` with `NEVORA_DEV_FORCE_ERRORS=1`. Set the host-only cookie `nv-force-error` with `Path=/` (DevTools or Playwright), then:
+
+| Value | Open | Boundary |
+|---|---|---|
+| `root` | `/dev-inspect` | Root segment's existing error screen |
+| `portal` | `/app/dev-inspect` while signed in | Existing in-portal error page |
+| `global` | Any page | Root layout/global boundary |
+| `home-read` | `/app` as Owner/Manager | Existing dashboard-read failure |
+
+Remove the cookie before retrying. The two probe pages contain only server logic and no JSX; without the matching enabled cookie they return 404. The only layout hook is a non-JSX line in the root layout. No existing portal page/layout or error-screen JSX was edited. Home's hook is in its backend reader. Next's development error overlay may need dismissal during visual inspection; rendering the existing boundaries in the actual Mac preview remains Claude's joint check.
+
+Gate tests cover every value, no flag, production, exact IPv4/IPv6 loopback hosts, external origins and forwarded requests. `npm run test:dev:production` builds with production NODE_ENV **and both dev flags deliberately set**, scans every generated file (including source maps/cache), and fails on any switch/capture marker. A successful run built and scanned 2,245 artifacts. The initial run correctly failed because Turbopack's filesystem cache retained original erased sources; `next.config.ts` now uses its supported `turbopackFileSystemCacheForBuild:false` option. Fresh output passed. This changes build caching only. The runner preserves tracked Next-generated files and refuses an active dev-build lock. Final verification reruns after the remaining backend changes.
 
 ## 4. Local email and push capture
 
-Pending implementation and gate/capture tests. No real delivery has been attempted.
+Implemented `src/lib/dev/capture.server.ts`, conditionally loaded by the recovery factory and push provider only outside production. Enable a loopback-only development preview with:
+
+```sh
+NEVORA_DEV_CAPTURE_DELIVERY=1
+NEVORA_DEV_CAPTURE_OUT=<absolute PREVIEW_OUT>/captures
+FUEL_PORTAL_ORIGIN=http://127.0.0.1:<preview-port>
+```
+
+Export those variables when launching the preview and its local worker. Recovery uses the real Nodemailer stream transport and writes `email/<random-id>.eml`; push writes `push/<random-id>.json`. Files are created exclusively with mode 0600 under mode-0700 directories. Captured push includes display payload/options and omits endpoint, subscription/VAPID keys and environment contents. Captures can contain private recovery proofs: keep the folder outside the repository and never print or commit it.
+
+Local push workers retain the existing test-environment/account allowlist, enrollment, subscription-encryption and source-authority requirements. With a valid configured local capture folder, `readNotificationConfig` enables outbound capture for an already enabled, explicitly scoped **test** runtime; it never enables a production environment or unscoped worker. Keep normal test enrollment keys and `PUSH_TEST_ACCOUNT_IDS` in the preview's secure runtime configuration. Requested capture with invalid local configuration fails closed instead of falling through to a real transport. Flag-off production delivery is unchanged. No real delivery has been attempted.
+
+Tests capture an actual buffered `.eml` through `recoveryDelivery()` and a JSON push through `createPushSender()`, assert no provider transport call, exercise production/flag/origin/path gates, and preserve the existing provider timeout/status suite. The current targeted run passed 81 tests across eight files (including other projections). Production-erasure verification covers capture markers too. Claude: render the local captured messages like screens; no UI transport wiring is required.
 
 ## 5. Remaining agreed projections
 

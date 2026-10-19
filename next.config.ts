@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // The build cache retains original sources, including erased local-only code.
+  // Keep production artifacts free of that source material as well as bundles.
+  experimental: { turbopackFileSystemCacheForBuild: false },
   logging: {incomingRequests: {ignore: [/^\/api\/calendar\//]}},
   async headers() {
     const portal = ["/fuel-portal-sw.js", "/fuel-portal.webmanifest"].map((source) => ({

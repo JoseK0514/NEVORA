@@ -17,7 +17,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  if(process.env.NODE_ENV!=='production')await (await import('../lib/dev/inspection.server')).forceInspectionError('global');
   return (
     <html lang="en">
       <body>{children}</body>

@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:dev:production": "node scripts/verify-dev-production-absence.mjs",
     "setup:company": "node --import tsx scripts/setup-company.mts",
     "test:company:integration": "node scripts/phase-c-clocker-postgres.mjs --company-setup",
     "bootstrap:owner": "node --import tsx scripts/bootstrap-owner.mjs",

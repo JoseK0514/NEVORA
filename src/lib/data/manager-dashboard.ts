@@ -22,6 +22,7 @@ import type {SqlExecutor} from '../notifications/types';
 import type { SchedulingActionCapture } from '../action-center/canonical-source';
 
 async function loadManagerDashboardDataCore(weekStart:string,proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor(), capture?: (value: SchedulingActionCapture) => void){
+ if(process.env.NODE_ENV!=='production')await (await import('../dev/inspection.server')).forceInspectionError('home-read');
  if(!isValidWeekStart(weekStart))throw Error('Invalid dashboard week');
  const workspace=await getWorkspace(executor);
  const guards=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},...managementSessionStatements(proof,proof.employee.id)];
