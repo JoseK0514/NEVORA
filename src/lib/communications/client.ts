@@ -15,7 +15,7 @@ export async function communicationRequest(mode:CommunicationMode,authority:stri
 }
 export function parseCommunicationLifetime(value:unknown,authority:string):CommunicationLifetime{
  if(!value||typeof value!=='object')throw Error('Update unavailable');const v=value as CommunicationResource;
- if(v.state!=='ready'&&v.state!=='complete'&&v.state!=='partial')return {state:'unavailable',reason:v.state==='unauthorized'?'access_denied':v.state==='withdrawn'?'withdrawn':'read_failed'};
+ if(v.state!=='ready'&&v.state!=='complete'&&v.state!=='partial')return {state:'unavailable',reason:v.state==='unauthorized'?('httpStatus'in v&&v.httpStatus===401?'session_ended':'access_denied'):v.state==='withdrawn'?'withdrawn':'read_failed'};
  if(v.authority!==authority)return {state:'unavailable',reason:'access_denied'};
  if(!Number.isFinite(Date.parse(v.observedAt))||!Number.isFinite(v.validForMs)||v.validForMs<=0||v.validForMs>45000)throw Error('Update unavailable');
  if(JSON.stringify(v).length>1_000_000)throw Error('Update unavailable');
