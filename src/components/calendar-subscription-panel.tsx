@@ -11,6 +11,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
 import {NavIcon} from './nav-icon';
 import './calendar-subscription-panel.css';
+import {PendingLabel} from './employee-submit-button';
 type ViewProps={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
 export function CalendarSubscriptionView({status,url,paused,busy,notice,onCommand,onCopy,onRetry}:ViewProps){
  const link=useRef<HTMLTextAreaElement>(null),feedback=useRef<HTMLDivElement>(null),unknown=notice.includes('unknown');
@@ -24,8 +25,8 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
    <div className="employee-calendar-status-box">
     {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">Calendar settings unavailable. {status.state==='unauthorized'?'Sign in again.':'Retry to check the current link.'}</p>:<>
      <span className={`employee-calendar-state${active?' is-active':''}`}>{active?'Link active':status.state==='revoked'?'Link revoked':'No calendar link'}</span>
-     {!active?<><p>Create a private link, then add it to your calendar app.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ISSUE')}>{busy?'Saving…':'Create link'}</button></>:null}
-     {active&&!currentUrl?<><p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}>{busy?'Saving…':'Replace link'}</button></>:null}
+     {!active?<><p>Create a private link, then add it to your calendar app.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ISSUE')}><PendingLabel pending={busy} pendingText="Saving…">Create link</PendingLabel></button></>:null}
+     {active&&!currentUrl?<><p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button></>:null}
     </>}
     {currentUrl?<div className="employee-calendar-secret">
      <label htmlFor="employee-calendar-link">Your private calendar link</label><textarea ref={link} id="employee-calendar-link" value={currentUrl} readOnly spellCheck={false} autoComplete="off" rows={3} aria-describedby="employee-calendar-link-hint"/>
@@ -45,7 +46,7 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
     <details><summary><MicrosoftOutlookLogoIcon size={22} aria-hidden="true"/><span>Outlook<small>Set up on the web</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>In Outlook on the web, open Calendar. Choose Add calendar, then Subscribe from web.</li><li>Paste the link and complete the import.</li></ol><a href="https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web" target="_blank" rel="noreferrer">Outlook subscription guide</a></div></details>
    </section>
    <p className="profile-supporting-copy">Calendar apps refresh on their own schedule. <Link href="/app/schedule">Check NEVORA</Link> for the latest schedule. Creating or copying a link does not confirm a calendar connection.</p>
-   {active?<details className="employee-calendar-management"><summary>Manage private link<CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><p>Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p><div className="employee-calendar-actions">{currentUrl?<button type="button" className="button secondary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}>{busy?'Saving…':'Replace link'}</button>:null}<button type="button" className="button secondary calendar-revoke" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('REVOKE')}>Revoke link</button></div></details>:null}
+   {active?<details className="employee-calendar-management"><summary>Manage private link<CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><p>Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p><div className="employee-calendar-actions">{currentUrl?<button type="button" className="button secondary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button>:null}<button type="button" className="button secondary calendar-revoke" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('REVOKE')}>Revoke link</button></div></details>:null}
 
   </>}
  </section>;
