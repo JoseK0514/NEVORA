@@ -1572,3 +1572,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame button[type="submit
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .availability-page .av-time-range label > span:not(#nv-kit) { font: var(--nv-t-label); color: var(--nv-ink-2); }
 }
+/* ST-WA-8 (shared): a submit button's idle and sending labels share one cell, so its size never changes mid-send. */
+.nv-label-swap { display: inline-grid; }
+.nv-label-swap > * { grid-area: 1 / 1; }
