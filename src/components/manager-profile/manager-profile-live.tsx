@@ -32,7 +32,7 @@ export type ManagerProfileIdentity = {
 
 export type AlertSave = { pending: boolean; error: null | 'offline' | 'signed_out' | 'failed' };
 type View = {
-  identity: ManagerProfileIdentity; state: PrivatePanelState<ManagerProfileSnapshot>; onRetry: () => void;
+  identity: ManagerProfileIdentity; state: PrivatePanelState<ManagerProfileSnapshot>; onRetry: (from?: 'details' | 'alerts') => void;
   saves?: Record<string, AlertSave>; overrides?: Record<string, boolean>; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void;
   /** A retry the reader asked for is under way (a background re-read never says "Trying again…"). */
   retrying?: boolean;
@@ -180,7 +180,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
             would give it a made-up baseline, so it is left out when an action shows (the alert below speaks for it). */}
         {read.kind === 'failed' || read.kind === 'denied' ? null : <span>{read.head ?? '\u00a0'}</span>}
         {/* Never disabled while busy, so focus stays on it; a second press only restarts the same read. */}
-        {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
+        {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('details')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
         {read.kind === 'denied' ? <Link className="pmp-text-button pmp-head-action" href="/login">Sign in</Link> : null}
       </>} foot={identity.owner
         ? <KitLink href={`/app/employees/${encodeURIComponent(identity.employeeId)}`}>Edit your details</KitLink>
@@ -216,7 +216,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
             : <li><div className="nv-row" data-leading="true"><Tile><DeviceMobileIcon size={20} aria-hidden="true" /></Tile><span className="nv-row__text"><span className="nv-row__meta pmp-note">Alerts on this device aren’t turned on for your workplace yet.</span></span></div></li>}
         </Rows>
         <h3 className="pmp-subhead" id="profile-alerts-title">You’re told about</h3>
-        <ul className="nv-rows pmp-topics" aria-labelledby="profile-alerts-title">
+        <ul className="nv-rows pmp-topics" id="profile-alerts-list" tabIndex={-1} aria-labelledby="profile-alerts-title">
           {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
             : read.kind === 'loading' ? sizing.map(topic => <TopicRow key={topic.id} topic={topic} on={false} skeleton />)
             // Any other state says what happened where the alert rows are, over their hidden copy, so nothing below moves.
@@ -226,7 +226,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
                   <Tile tone={read.kind === 'paused' ? 'neutral' : 'urgent'}>{read.kind === 'paused' ? <PauseCircleIcon size={20} aria-hidden="true" /> : <WarningCircleIcon size={20} weight="fill" aria-hidden="true" />}</Tile>
                   <p>{note}</p>
                   {read.kind === 'denied' ? <Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link> : null}
-                  {read.kind === 'failed' ? <button type="button" className="nv-btn" data-kind="secondary" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
+                  {read.kind === 'failed' ? <button type="button" className="nv-btn" data-kind="secondary" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('alerts')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
                 </div>
               </li>}
         </ul>
@@ -255,7 +255,7 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
   const [rowHeights, setRowHeights] = useState<Record<string, number> | null>(null);
   // A retry the reader asked for: pending until its read answers, then its outcome, tied to that one answer so
   // returning to the window later doesn't announce it again.
-  const [retried, setRetried] = useState<{ pending: boolean; outcome: 'loaded' | 'failed' | null; snapshot: ManagerProfileSnapshot | null }>({ pending: false, outcome: null, snapshot: null });
+  const [retried, setRetried] = useState<{ pending: boolean; outcome: 'loaded' | 'failed' | null; snapshot: ManagerProfileSnapshot | null; from?: 'details' | 'alerts' }>({ pending: false, outcome: null, snapshot: null });
   const retryPending = useRef(false);
   // The switch that had focus when the page was left or a save ended the session: given focus back once, then forgotten.
   const restoreTo = useRef<string | null>(null);
@@ -269,7 +269,7 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
       setState(next);
       if (retryPending.current && (next.paused || (!next.refreshing && next.snapshot))) {
         retryPending.current = false;
-        setRetried(next.paused || !next.snapshot ? { pending: false, outcome: null, snapshot: null } : { pending: false, outcome: next.snapshot.state === 'ready' ? 'loaded' : 'failed', snapshot: next.snapshot });
+        setRetried(current => next.paused || !next.snapshot ? { pending: false, outcome: null, snapshot: null } : { pending: false, outcome: next.snapshot.state === 'ready' ? 'loaded' : 'failed', snapshot: next.snapshot, from: current.from });
       }
       if (next.snapshot?.state === 'ready') { setHeld(next.snapshot); setRowHeights(null); }
       else if (next.snapshot?.state === 'unavailable' && next.snapshot.reason === 'access_denied') {
@@ -319,7 +319,8 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
 
   const retrying = retried.pending && state.refreshing;
   const outcome = retried.outcome && state.snapshot === retried.snapshot ? retried.outcome : null;
-  const retry = () => { retryPending.current = true; setRetried({ pending: true, outcome: null, snapshot: null }); control.current?.refresh(); };
+  const retry = (from: 'details' | 'alerts' = 'details') => { retryPending.current = true; setRetried({ pending: true, outcome: null, snapshot: null, from }); control.current?.refresh(); };
+  const retriedFrom = retried.from;
 
   // Focus never falls to the page: a successful retry moves it to the details it loaded (the button is gone); a switch
   // that had focus when the page was left gets it back once when the list returns; an ended session moves it to Sign in.
@@ -328,13 +329,15 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
   useEffect(() => {
     const lost = !document.activeElement || document.activeElement === document.body;
     if (!lost) { if (ready || denied) restoreTo.current = null; return; }
-    if (outcome === 'loaded') { document.getElementById('profile-details-list')?.focus({ preventScroll: true }); return; }
+    // To what loaded where the reader pressed Try again: the details for the head's button, the alert list for the
+    // panel's (IS-16), so focus is never placed far off screen.
+    if (outcome === 'loaded') { document.getElementById(retriedFrom === 'alerts' ? 'profile-alerts-list' : 'profile-details-list')?.focus({ preventScroll: true }); return; }
     const topic = restoreTo.current;
     if (!topic || !(ready || denied)) return;
     restoreTo.current = null;
     const target = ready ? document.querySelector<HTMLElement>(`[data-topic="${CSS.escape(topic)}"]`) : document.querySelector<HTMLElement>('.pmp-topics-note a');
     target?.focus({ preventScroll: true });
-  }, [outcome, ready, denied]);
+  }, [outcome, ready, denied, retriedFrom]);
 
   async function toggle(topic: ManagerAlertTopic, on: boolean) {
     if (inFlight.current.has(topic.id)) return; // a second tap never sends a second request

@@ -120,5 +120,5 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .pmp-head-action .pmp-label-stack > span { text-align: left; }
 }
 /* The details list takes focus after a successful retry; it shows the ring only for keyboard users, inside the card. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details-list:focus { outline: none; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details-list:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(#profile-details-list, #profile-alerts-list):focus { outline: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(#profile-details-list, #profile-alerts-list):focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
