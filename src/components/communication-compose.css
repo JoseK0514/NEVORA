@@ -109,3 +109,6 @@
  .compose-state { padding: 24px 20px; }
 }
 @media(prefers-reduced-motion:reduce) { .compose-page * { transition: none !important; scroll-behavior: auto; } .compose-page .compose-action:hover { transform: none; } }
+
+/* IS-RC-COMPOSE-01: a guarded pending action retains focus and the kit's disabled appearance. */
+.communication-view.compose-page .compose-form .compose-action[aria-disabled="true"] { background: var(--nv-inset); color: var(--nv-muted); box-shadow: inset 0 0 0 1px var(--nv-hairline); opacity: 1; cursor: progress; transform: none; }
