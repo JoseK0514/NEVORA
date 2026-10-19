@@ -3,7 +3,7 @@
 - **Round:** 3
 - **Exit round:** yes. One full sweep by all five areas, plus a re-check of every open ID.
 - **Commit:** `9f32ca6` on `claude/p35-wave-b-808dfd` (preview synced to it)
-- **Where it runs:** locally (no push yet: Jose's OK for pushing hasn't come in this chat). Codex can run the same round from this file once the branch is pushed.
+- **Where it runs:** pushed for Codex (Jose's yes in the Wave B chat, Oct 19). Five local inspectors are also running this round on the same commit; whichever reports first is used, and both are kept.
 - **status:** open
 
 ## Routes and roles
