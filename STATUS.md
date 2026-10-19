@@ -1,3 +1,12 @@
+## Publication verified — 2026-10-19 21:05 UTC
+
+- **Remote candidate is `8e18a958dfbfd1e5c6d6da44396d82c95d4e18e7`**; final push returned “Everything up-to-date” and the remote SHA was rechecked. This task adopted the first-published candidate, preserving local `c34043b` as `codex/publish-c34043b`. No divergent or forced push.
+- Includes requested coordinator `4d469a4` through newer `227150b`, backend `da2a4e5`, verified-zero Profile `ea58610`, separate Profile initial-read `4ff37e5`, and lint cleanup `9df0f47`. Premium CSS matches coordinator blob `c72c855`. New Wave A `7f75dc4` / `a05f26a` remain excluded.
+- **Verified gates:** raw full application suite **7,352 passed / 0 failed / 801 skipped / 55 pending**,474 files at `0bdaa4d`. Final `8e18a95` changes only one retained Coverage assertion; all application/build/config inputs match. Its Coverage6/6 passes; this task freshly passes typecheck, focused lint and Coverage/Profile22/22 on `8e18a95`. [Provenance and verification](release/publish-c34043b/canonical-8e18a95/README.md). Older local load timeouts and individual one-worker reruns are retained under their actual `c34043b` SHA.
+- **Checks fail92/180; combined confirmed P0 0 / P1 8 / P2 0, partial scope.** All180 responses200 and no nontext checker failure. [Canonical five reports and fix owners](release/merge-4-profile/README.md). No all-six release result or production acceptance.
+- Own supplemental proof:72 settled captures;60/60 More cases;8/8 held Profile reads with0px Sign out movement, wrapping Manager email at320, Chromium CLS0.000547. Those browser measurements remain explicitly `c34043b` evidence. [Five-area supplement](release/merge-6-profile-ea58610/README.md).
+- **This publication task’s owned jobs/services are finished.** Source/mirror verification passes, PostgreSQL stopped, no errors. Remaining source exits stay with the active inspection loop; merge only completed exact-SHA zeros. Wave C cleanup waits for its merge; final every-page/build/full-suite/test:dev:production sweep waits for all six. Device proposal below still awaits Jose; nothing deployed or exposed by this task.
+
 # Claude, start here — published 2026-10-19 20:50 UTC
 
 - **Published `codex/release-candidate` at `8e18a958dfbfd1e5c6d6da44396d82c95d4e18e7`**, a fast-forward from0e01046. Includes coordinator227150b, backendda2a4e5, verified-zero Profileea58610/appcaef395, separate initial-read4ff37e5, and original lint cleanup9df0f47. Premium CSS equals the coordinator’s latest c72c855 blob exactly. No force push; parallel publisher records are preserved below.
@@ -230,3 +239,7 @@ TC-WC-28 adds Account recovery’s verification textarea edge: #D5DAD9 on white 
 2026-10-19 20:41:21 UTC · Phase 3 round 5 on 676358cd1d30c9c8027d4563bf709c434a9cfbe5 · P0 0, P1 4, P2 0 · not zero
 
 2026-10-19 20:41:21 UTC · Profile round 4 on ea58610bf3bdc85319895689c3d88e064f6a76d5 · P0 0, P1 1, P2 1 · not zero
+
+2026-10-19 21:05 UTC · merged Profile at ea58610, backend at da2a4e5, coordinator through227150b · candidate8e18a95 verified/push up-to-date · tests7352/7352 executed (801 skipped,55 pending; final Coverage6/6, fresh Coverage/Profile22/22) · checks fail92/180 · combined P0 0 / P1 8 / P2 0 partial · blocked
+
+2026-10-19 21:05 UTC · candidate-only Profile initial-read4ff37e5 and lint cleanup9df0f47 · canonical gate evidence above; local alternativec34043b retained, not republished · phone proposal pending, no exposure

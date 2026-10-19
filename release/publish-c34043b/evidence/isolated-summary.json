@@ -1,0 +1,35 @@
+[
+  {
+    "file": "planner",
+    "counts": {
+      "passed": 55,
+      "failed": 1
+    },
+    "failed": [
+      {
+        "test": "measures deterministic 50-worker 7-day 20-location planning",
+        "durationMs": 364322.215125,
+        "message": "Error: Test timed out in 300000ms."
+      }
+    ]
+  },
+  {
+    "file": "backfill",
+    "counts": {
+      "passed": 66,
+      "failed": 2
+    },
+    "failed": [
+      {
+        "test": "typed journal original-attempt reconciliation boundaries refuses originating client before SQL and preserves original uncertain result",
+        "durationMs": 5724.662123000002,
+        "message": "Error: Test timed out in 5000ms."
+      },
+      {
+        "test": "typed journal original-attempt reconciliation boundaries does not enroll acknowledged successful or blocked journal results",
+        "durationMs": 5733.01917,
+        "message": "Error: Test timed out in 5000ms."
+      }
+    ]
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-19T21:00:07.597316+00:00",
+  "publishedCandidate": "8e18a958dfbfd1e5c6d6da44396d82c95d4e18e7",
+  "localSnapshotPreserved": "codex/publish-c34043b",
+  "applicationGateCheckpoint": "0bdaa4d1efa4111283e007d777197453942bcbdf",
+  "verifiedFinalDelta": [
+    "src/app/app/schedule/coverage/page.test.tsx"
+  ],
+  "rawFullSuiteVerified": {
+    "passed": 7352,
+    "failed": 0,
+    "skipped": 801,
+    "pending": 55,
+    "files": 474
+  },
+  "freshCanonicalVerification": {
+    "typecheck": "pass",
+    "focusedLint": "pass",
+    "coverageAndProfileTests": {
+      "passed": 22,
+      "failed": 0
+    }
+  },
+  "publishedChecks": {
+    "passed": 92,
+    "failed": 88,
+    "allHttp200": true,
+    "nonTextGateFailures": 0
+  },
+  "publishedCombined": {
+    "P0": 0,
+    "P1": 8,
+    "P2": 0,
+    "scope": "partial"
+  },
+  "additionalC340Evidence": {
+    "settledPageCaptures": 72,
+    "moreCases": 60,
+    "morePassed": 60,
+    "heldProfileReads": 8,
+    "zeroSignoutMovement": 8,
+    "source": "c34043b; supplemental, not a fresh browser gate on 8e18a95"
+  },
+  "deviceAccess": "unapproved; no deployment or exposure"
+}
