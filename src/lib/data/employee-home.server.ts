@@ -150,7 +150,7 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
       if(!detail||!(source==='timeOff'?['PENDING','APPROVED','DENIED','CANCELLED']:['REQUESTED','APPROVED','REJECTED']).includes(String(detail.status)))throw Error('Unknown status');
       const ref:AttentionItem['ref']={kind,id:row.id,version:attentionSourceVersion({kind,id:row.id,version:''},detail)};
       if(refs?.has(JSON.stringify([ref.id,ref.version])))continue;
-      items.push({ref,label:`${source==='timeOff'?'Time off':'Time correction'} ${({PENDING:'waiting',REQUESTED:'waiting',APPROVED:'approved',DENIED:'declined',REJECTED:'declined',CANCELLED:'withdrawn'} as Record<string,string>)[String(detail.status)]}${source==='timeOff'?` · ${timeOffPeriod(detail)}`:''}`,href:homeDestination(ref)!,required:false,actionable:false,deadlineAt:null,changedAt:row.changedAt});
+      items.push({ref,label:`${source==='timeOff'?'Time off':'Time correction'} ${({PENDING:'waiting',REQUESTED:'requested',APPROVED:'approved',DENIED:'declined',REJECTED:'declined',CANCELLED:'withdrawn'} as Record<string,string>)[String(detail.status)]}${source==='timeOff'?` · ${timeOffPeriod(detail)}`:''}`,href:homeDestination(ref)!,required:false,actionable:false,deadlineAt:null,changedAt:row.changedAt});
      }
     }
     if(source==='ownTime'){
