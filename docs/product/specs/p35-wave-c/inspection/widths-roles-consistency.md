@@ -131,3 +131,66 @@ New evidence: `S/r2/` (full-page shots `<browser>-QAOWNER-<route>-<width>-t<100|
 Firefox wasn't run, by decision. Neither was Employee or Lead this round; the role path is unchanged, and WR-06 is decided. Dialogs, the Policies pair and long injected names weren't re-run. The shell was ignored.
 
 Zero open P0–P2 in my area: **no** (WR-21 P1; WR-09, WR-11, WR-13, WR-22, WR-23 and WR-24 P2).
+
+## Round 4 (exit)
+
+October 19, 2026 · preview `http://127.0.0.1:50431` (code `5f7c166`) · Read only.
+
+- **Chromium sweep:** all 19 routes and variants at 320, 390, 844×390, 768, 1024 and 1440, at 100% and 200% text, as Owner.
+- **Save bars, color well, hub rows, Positions, recovery buttons and long-ID Back:** 320, 390 and 844×390.
+- **Roles:** Manager, Lead and Employee at 390.
+- **WebKit:** spot checks at 320.
+
+Evidence: `S/r4/`, data `S/data/r2-chromium-QAOWNER-320_390_844x390_768_1024_1440-*.json` (the round-4 run), logs `S/log-r4-*.txt`, scripts `S/r2.mjs`, `S/r3extra.mjs`, `S/roles.mjs`, `S/r4wk.mjs`.
+
+**Verdict:** ready apart from one P2. The full sweep found nothing off screen, clipped or overflowing a card at any width or text size. Every earlier ID is fixed or decided. The one new item is a hairline inset on the hub that came with round 3's hidden tiles.
+
+**Count: 0 P0, 0 P1, 1 P2.**
+
+### Status of open IDs (ROUND.md)
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-11 | **Fixed** | The first pill is "All" on all four lists ("All 2", "All 1", "All 1", "All 2"). Every count line reads "Showing n of m noun" ("Showing 1 of 1 device"). |
+| WR-13 | **Fixed** (loading placeholder decided in ROUND-3) | The not-found page uses `words.locations` for Back and its button, and `words.location` for its title (`[locationId]/not-found.tsx:8-14`). The empty state reads "Add a {place}, then …" (`locations/page.tsx:147`). |
+| WR-21 | **Fixed** | 64 × 48 with the teal swatch, in Chromium (320, 390, 844×390) and WebKit (320). Codex also confirmed it. |
+| WR-22 | **Fixed** | At 390 / 200%, "Check receipt" is **68px** (it was 140). At 320 / 200% it is 112px, a real 2-line wrap (208px of label room). "Issue recovery code" is 112px at 320 and 390 / 200% (2 lines of its own words) and 68px in landscape. |
+| WR-23 | **Fixed** | The hub's tiles step aside in narrow cards at 200% (0 of 14 visible), so the title column is 218px at 320 and 288px at 390. "Scheduling rules" and "Announcements" stay whole, with no hyphens. At 100% the 14 tiles show. New side effect: WR-25. |
+| WR-24 | **Fixed** | An ID of 16 characters or fewer shows as Back ("AUDIT-E"). A longer one (`EMP-2026-NORTHSIDE-RIVERFRONT-0004812`) shows "Employee". Back is 44px tall at 320, 390 and landscape, at 100% and 200%. |
+| WR-06, WR-09, WR-12, WR-14 | Decided | Not refiled. |
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| WR-25 | Settings hub · Owner · 320 and 390 at 200% (any card narrow enough to hide the tiles), Chromium and WebKit | Row separators (`.wc-hub .nv-rows > li + li > .nv-row::before`) | With the tiles hidden, the row text starts **20px** from the card edge, but the hairline above each row still starts at **72px**: the old inset for a 40px tile and 12px gap. Every separator on the hub begins 52px to the right of the text it divides. Measured: `::before` left 72px, text x 20px, tile `display: none`, on 3 of 3 rows sampled in each engine. | `S/r4/chromium-hub-card-320-t200.png`, `S/r4/webkit-hub-card-320-t200.png`, `S/shots/crops/R4-hub-team-320-t200.png` | `premium-wave-c.css:546` hides `.nv-row > .nv-tile`; the kit's leading-row hairline (`kit.css:201`, `left: calc(20px + 40px + 12px)`) isn't reset | In the same container query as `:546`, add `.wc-hub .nv-rows > li + li > .nv-row[data-leading="true"]::before { left: var(--nv-s-5); }` | P2 |
+
+### Checked and correct (exit)
+
+- **No overflow in the Chromium sweep:** across 19 routes × 6 sizes × 2 text sizes, `scrollWidth − innerWidth` = 0, and nothing is off screen, clipped or outside a card. What remains are single-line inputs scrolling their own value at 200%, and the decided WR-09 select.
+- **Layout by width:**
+  - **320–768:** one column.
+  - **1024:** one 716px column; Features choices 2 × 332; hub two balanced columns; Locations grid 2 × 350.
+  - **1440:** layout 752 / 320; Branding 672 / 400; Locations grid 2 × 536.
+  - **844×390:** Features choices 3 × 249.
+- **Phone save bars (Features, Policies):**
+  - `position: fixed` with the bar's bottom exactly on the tab bar's top (776 at 100%, 761 at 200%).
+  - Scrolled to the end, the last card ends above the bar (597 vs 613 at 320 / 200%).
+  - At 100% the bar is one row (Save changes 16–224 and "Saved" 236–304 at 320).
+  - WebKit matches at 320 / 200% (fixed, 613–761 on the tab bar at 761).
+  - In landscape the bar stays in the page (`static`).
+- **Back:** Settings pages say "Settings"; location detail, new and not-found say "Locations"; recovery says Home, Settings (Owner with `?from=settings` only) or the employee. Every Back is 44px tall.
+- **Roles (390):**
+  - Owner opens every page on the kit.
+  - Manager is sent to Home from Settings (decided). Manager opens both recovery pages on the kit, with Back Home even with `?from=settings`, and Back "AUDIT-E" from the employee.
+  - Lead and Employee are sent to Home from every Wave C route (decided, WR-06).
+  - Manager's entry points are Home's two recovery rows.
+
+### Gaps
+
+- Firefox is out of scope.
+- The shell was ignored.
+- Dialogs and long injected names weren't re-run this round; their code didn't change in round 4.
+- WebKit was spot-checked at 320 only.
+
+Zero open P0–P2 in my area: **no** (WR-25, P2).

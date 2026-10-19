@@ -544,6 +544,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-card, html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-editables { container-type: inline-size; }
 @container (max-width: 17.5rem) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-row > .nv-tile, html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-editables .wc-edit-label { display: none; }
+  /* WR-25: with the tile hidden, row separators start on the text edge. */
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-rows > li + li > .nv-row[data-leading="true"]::before { left: var(--nv-s-5); }
 }
 /* TC-24: date and time fields give the browser's format room beside its calendar button. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page input.wc-control:is([type="datetime-local"], [type="time"]) { padding-right: var(--nv-s-3); }
