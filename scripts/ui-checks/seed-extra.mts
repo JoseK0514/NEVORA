@@ -90,6 +90,17 @@ await shifts('audit-next', next, ['AUDIT-ON', 'AUDIT-BREAK', 'AUDIT-LEAD'], 5);
 // A swap partner: AUDIT-SWAP works only next Saturday and Sunday, so AUDIT-E's weekday shifts and theirs can trade.
 await person('AUDIT-SWAP', 'Riley', 'Rivera', 'EMPLOYEE');
 for (const d of [5, 6]) await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'audit-next','AUDIT-SWAP',$2,'08:00','16:00','qa-pos',false) ON CONFLICT (id) DO NOTHING", [`x-swap-${d}`, addDays(next, d)]);
+// Wave A (Oct 19): a swap AUDIT-E <-> AUDIT-SWAP is allowed only when both people's operational rules have been
+// reviewed (otherwise RULE_UNVERIFIABLE) and each one's availability covers the other's shift (OUTSIDE_AVAILABILITY).
+// Same shape as the fixture's own test people: rules reviewed as not applicable, available 6 AM to 10 PM every day,
+// and next week's availability sent. target_weekly_hours stays unset, so the "no weekly hour target" items remain.
+const reviewed = { status: 'NOT_APPLICABLE', reviewedBy: 'QAOWNER', reviewedAt: '2026-10-01T00:00:00Z' };
+const ruleProfile = JSON.stringify({ version: 1, revision: 1, reviewedBy: 'QAOWNER', reviewedAt: '2026-10-01T00:00:00Z', minimumRest: reviewed, maximumShift: reviewed, maximumDaily: reviewed, breaks: reviewed, projectedOvertime: reviewed });
+for (const id of ['AUDIT-E', 'AUDIT-SWAP']) {
+  await q('INSERT INTO employee_scheduling_settings(employee_id,maximum_weekly_hours,operational_rule_profile) VALUES($1,80,$2::jsonb) ON CONFLICT (employee_id) DO UPDATE SET operational_rule_profile=COALESCE(employee_scheduling_settings.operational_rule_profile,EXCLUDED.operational_rule_profile)', [id, ruleProfile]);
+  for (let day = 0; day < 7; day++) await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES($1,$2,$3,'06:00','22:00') ON CONFLICT (id) DO NOTHING", [`x-av-${id}-${day}`, id, day]);
+  await q('INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES($1,$2,true) ON CONFLICT DO NOTHING', [id, next]);
+}
 await publishScheduleWithRevision({ locationId: 'loc-1', weekStart: week, managerId: 'QAOWNER' }, executor);
 await publishScheduleWithRevision({ locationId: 'loc-1', weekStart: next, managerId: 'QAOWNER' }, executor);
 for (const [id, status, minutes] of [['AUDIT-ON', 'CLOCKED_IN', 120], ['AUDIT-BREAK', 'ON_BREAK', 180]] as const) {
