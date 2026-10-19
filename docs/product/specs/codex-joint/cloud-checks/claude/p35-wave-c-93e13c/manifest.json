@@ -1,0 +1,12 @@
+{
+  "key": "p35-wave-c-93e13c",
+  "branch": "claude/p35-wave-c-93e13c",
+  "source": "/workspace/nevora-sources/p35-wave-c-93e13c",
+  "out": "/workspace/nevora-previews/p35-wave-c-93e13c",
+  "large": false,
+  "commit": "e3a99fe7b6cda3c3b8049ff62f0de376d710b58f",
+  "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
+  "startedAt": "2026-10-19T17:52:56.815Z",
+  "status": "Queued after moving previews off memory-backed /tmp",
+  "batches": []
+}

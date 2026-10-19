@@ -229,3 +229,11 @@ Branch `codex/premium-backend`. Payroll implementation `8de1ba7`; Profile probe 
 ## October 20 release — item 5: phone checklist
 
 `DEVICE-CHECKLIST.md` is a one-hour draft for two real phones, four roles, VoiceOver/TalkBack, sign-in, tabs/More, one send-and-withdraw form per role plus unsent cancellation, offline/retry, maximum text size, landscape and dark-mode legibility. Fictional accounts only, external delivery disabled, credentials supplied privately. **Claude review pending before distribution to Jose.** This session has not claimed Claude’s approval or a completed physical-device test.
+
+## 11. Release merge rehearsal
+
+[Exact scratch SHAs, all conflicts, command results and owners](MERGE-REHEARSAL-2026-10-19.md). Scratch branches were not pushed. All five UI merges conflicted only in portal-premium.css; every resolution kept the exact Phase 3 version as Jose instructed. Initial `61bb34b` completed the full requested matrix: TypeScript/lint/build passed, default suite **7,344 passed / 2 UI failures**, and **1,320 SQL test executions passed** across release, Clocker, payroll, Profile, copy and pool/swap runners.
+
+The initial production scan caught a capture helper retained in a source map. Fixed in `3130f4f` while preserving raw tsx CLI imports (48 targeted tests). `c94d17c` also repairs fresh setup’s missing 0033 with real red/green SQL coverage. Corrected scratch `64193ae` passes TypeScript/lint/build, the actual production erasure scan (**2277 artifacts**) and four targeted SQL cases; the full default run again has only the same two stale Desktop preview assertions. The report distinguishes SQL tested on the initial SHA from targeted rechecks on the corrected SHA; older results are not final-candidate sign-off.
+
+Claude Desktop/coordinator must update the shared preview’s old sidebar expectations (Requests/Employees -> approved Team navigation), retaining role/canonical-navigation assertions. O1 stays unapproved: decisions remain on the full review page. All owned SQL clusters stopped and both scratch trees are clean. The final pushed/merged SHA tonight still needs fresh required checks, hosted verification and independent approval.
