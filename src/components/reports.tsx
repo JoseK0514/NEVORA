@@ -21,6 +21,7 @@ type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost
 const hours=(value:string|null)=>value===null?'Unavailable':value.startsWith('-')?`−${formatRecordedHours(value.slice(1))}`:formatRecordedHours(value);
 const periodLabel=(period:Period)=>formatDateRange(period.startDate,period.endDate);
 const readable=(value:string)=>value.toLowerCase().replaceAll('_',' ');
+const observedLabel=(at:string,timeZone:string)=>{try{return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));}catch{return at;}};
 const sentence=(value:string)=>value.charAt(0).toUpperCase()+value.slice(1);
 const cardTone:Record<string,KitTone>={DRAFT:'neutral',APPROVED:'done',FINALIZED:'done',REOPENED:'review',NEEDS_REVIEW:'review'};
 const requestTone=(status:string):KitTone=>/approv|complet|fill/i.test(status)?'done':/declin|reject|cancel|withdr/i.test(status)?'neutral':/pend|wait|review|open/i.test(status)?'review':'neutral';
@@ -68,7 +69,7 @@ export function ReportsView({report,state}:{report:PeriodReports|null;state:Stat
    <section className="nv-card"><Heading title="Overtime"/><div className="wb-body"><p className="wb-text">{report.overtime.reason}</p></div></section>
   </div>
   <section className="nv-card" id="report-approvals" tabIndex={-1}><Heading title="Approval status" meta={report.approvals.length?`${report.approvals.length} ${report.approvals.length===1?'timecard':'timecards'}`:undefined}/>{report.approvals.length?<ul className="wb-records">{report.approvals.map(c=><li key={c.employeeId}><span className="wb-record__head"><span className="wb-record__title">{c.employeeName}</span><Status tone={cardTone[c.state]??'neutral'}>{sentence(readable(c.state))}</Status></span><span className="wb-record__meta">{c.issueCount} {c.issueCount===1?'item':'items'} to review</span></li>)}</ul>:<Empty>No timecards to review in this period.</Empty>}<div className="nv-card__foot wb-foot-action"><span>Open this period in Timecards to review recorded time and approval details.</span><Link className="nv-link" href={`/app/timecards?start=${report.period.startDate}&end=${report.period.endDate}`}>Review timecards<ArrowRightIcon size={18} aria-hidden="true"/></Link></div></section>
-  <details className="nv-card wb-disclosure"><summary><span>Report definitions</span><CaretDownIcon size={20} aria-hidden="true"/></summary><div className="wb-body"><ul className="wb-definitions">{report.definitions.map(d=><li key={d}>{d}</li>)}</ul><p className="wb-note">Observed {report.observedAt}</p></div></details>
+  <details className="nv-card wb-disclosure"><summary><span>Report definitions</span><CaretDownIcon size={20} aria-hidden="true"/></summary><div className="wb-body"><ul className="wb-definitions">{report.definitions.map(d=><li key={d}>{d}</li>)}</ul><p className="wb-note">Observed <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time></p></div></details>
  </div>;
 }
 export function Reports({initialPeriod}:{initialPeriod:Period}){
