@@ -6,6 +6,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ShiftEditTiming } from "./shift-edit-timing";
 import { DeleteShiftButton } from "./delete-shift-button";
+import { ActionForm } from "@/components/wave-a/action-form";
 import { Card, MetaParts, PageBand } from "@/components/kit/kit";
 import { Field, FormActions, Notice } from "@/components/wave-a/parts";
 import { PendingButton } from "@/components/wave-a/pending-button";
@@ -97,8 +98,8 @@ export default async function EditShiftPage({
 
           <Card title="Notes" id="edit-notes" meta="Optional">
             <div className="wa-fields">
-              <Field label="Notes for the team" help="Everyone on this shift can read them.">
-                <textarea id="edit-shift-notes" name="notes" defaultValue={shift.notes ?? ""} rows={3} placeholder="Anything the team should know" />
+              <Field label="Notes for the team" help="Everyone on this shift can read them." helpId="edit-shift-notes-help">
+                <textarea id="edit-shift-notes" aria-describedby="edit-shift-notes-help" name="notes" defaultValue={shift.notes ?? ""} rows={3} placeholder="Anything the team should know" />
               </Field>
             </div>
           </Card>
@@ -112,11 +113,11 @@ export default async function EditShiftPage({
         <Card title="Delete this shift" id="edit-delete">
           <details className="wa-disclosure">
             <summary className="wa-disclosure__summary">Delete shift</summary>
-            <form id="delete-shift-form" action={deleteShiftAction} className="wa-card-body">
+            <ActionForm action={deleteShiftAction} className="wa-card-body" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
               <input type="hidden" name="shiftId" value={shift.id} />
               <p className="wa-text">{keepWhole(`${shift.employeeName} won’t be scheduled on ${day.weekday}, ${day.day}. This can’t be undone.`)}</p>
               <DeleteShiftButton />
-            </form>
+            </ActionForm>
           </details>
         </Card>
       </div>

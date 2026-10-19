@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { ScheduleCopyForm } from "@/components/schedule-copy-form";
 import Link from "next/link";
 import { requireSessionMutationProof } from "@/lib/auth/session";
+import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
   readScheduleCopyReceipt,
   readScheduleCopyCommand,
@@ -34,6 +35,8 @@ export default async function CopyReceiptPage({
 }: {
   searchParams: Promise<{ operation?: string }>;
 }) {
+  // IS-WA-9: like every other schedule management page, the receipt is for Owners and Managers.
+  await requireRoles(MANAGER_ROLES);
   const { operation } = await searchParams;
   if (!operation || !/^[0-9a-f-]{36}$/i.test(operation))
     return <Frame title="Copy not found" summary="This link doesn’t point to a schedule copy.">

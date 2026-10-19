@@ -24,6 +24,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   /* Fields: label above, field, help 8px under. */
   & .wa-fields { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); }
   & .wa-field, & .wa-select.nevora-field { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
+  & .wa-field__control { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
+  & .wa-field__control > :is(input, select, textarea) { width: 100%; min-width: 0; }
+  & .wa-field__control > input { padding-inline: var(--nv-s-4); }
+  & .wa-field__control > textarea { min-height: 112px; padding: var(--nv-s-3) var(--nv-s-4); resize: vertical; }
+  & .wa-field__control > :is(input, textarea)::placeholder { color: var(--nv-muted); opacity: 1; }
   & .wa-field__label, & .wa-select .nevora-field-label { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--nv-s-2); font: var(--nv-t-label); color: var(--nv-ink-2); }
   & .wa-field__optional { font: var(--nv-t-callout); color: var(--nv-muted); }
   & .wa-field__help, & .wa-select .nevora-field-hint, & .wa-hint { display: block; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
@@ -222,8 +227,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   & .wa-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--nv-s-4); }
   & .wa-foot > span { flex: 1 1 14rem; padding-block: var(--nv-s-1); }
   & .wa-stat-of { font-size: .6em; font-weight: 500; color: var(--nv-muted); }
-  & .wa-chips { display: flex; gap: var(--nv-s-2); overflow-x: auto; scrollbar-width: none; padding: var(--nv-s-1) var(--nv-s-5) var(--nv-s-3); }
-  & .wa-chips::-webkit-scrollbar { display: none; }
+  /* IS-WA-6: the chips wrap instead of scrolling, so none is ever cut off. */
+  & .wa-chips { display: flex; flex-wrap: wrap; gap: var(--nv-s-2); padding: var(--nv-s-1) var(--nv-s-5) var(--nv-s-3); }
   & .wa-chip {
     flex: none; display: inline-flex; align-items: center; gap: var(--nv-s-2); min-height: 44px; padding: 0 var(--nv-s-4); border: 0; border-radius: var(--nv-r-pill);
     background: var(--nv-inset); color: var(--nv-ink-2); font: var(--nv-t-label); white-space: nowrap; cursor: pointer;
@@ -323,3 +328,14 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
 }
 /* A long email or location name in the band wraps instead of running off the edge. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .nv-masthead__summary { overflow-wrap: anywhere; }
+
+/* Inline field errors (shared FormValidation) in the form pattern: urgent ink, Phosphor warning icon, callout role. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .field-error {
+  display: flex; align-items: flex-start; gap: 6px; margin: 0; font: var(--nv-t-callout); font-weight: 500; color: var(--nv-urgent-ink);
+}
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .field-error::before {
+  content: ""; flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 0; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page :is(input, select, textarea)[aria-invalid="true"] { border-color: var(--nv-urgent-ink); }

@@ -38,11 +38,12 @@ export function AvailabilityTeamList({ employees, employeeId }: {
 }) {
   const [filter, setFilter] = useState<Filter>("all");
   const target = useRef<HTMLLIElement>(null);
+  const chips = useRef<HTMLDivElement>(null);
   const visible = employees.filter(employee => matchesAvailabilityFilter(employee, filter));
   useEffect(() => { target.current?.focus(); }, [employeeId]);
 
   return <Card title="Team" id="availability-team" meta={`${visible.length} ${visible.length === 1 ? "person" : "people"}`}>
-    <div className="wa-chips" role="group" aria-label="Show">
+    <div className="wa-chips" role="group" aria-label="Show" ref={chips}>
       {FILTERS.map(item => {
         const count = employees.filter(employee => matchesAvailabilityFilter(employee, item.value)).length;
         return <button type="button" className="wa-chip" aria-pressed={filter === item.value} key={item.value} onClick={() => setFilter(item.value)}>
@@ -67,7 +68,7 @@ export function AvailabilityTeamList({ employees, employeeId }: {
       </li>)}
     </ul> : <div className="wa-card-body">
       <p className="wa-text wa-muted">{employees.length ? "No one matches this filter." : "Employees and Leads show here once they’re added."}</p>
-      {employees.length ? <button className="nv-btn" data-kind="secondary" data-block="true" type="button" onClick={() => setFilter("all")}>Show everyone</button> : null}
+      {employees.length ? <button className="nv-btn" data-kind="secondary" data-block="true" type="button" onClick={() => { setFilter("all"); chips.current?.querySelector<HTMLButtonElement>("button")?.focus(); }}>Show everyone</button> : null}
     </div>}
   </Card>;
 }

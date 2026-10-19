@@ -2,6 +2,7 @@ import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it,vi} from 'vitest';
 vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
+vi.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>({id:'manager',role:'MANAGER'})}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'manager',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/data/schedule-copy',()=>({readScheduleCopyReceipt:async()=>null,readScheduleCopyCommand:async()=>null}));
 vi.mock('@/components/schedule-copy-form',()=>({ScheduleCopyForm:()=>null}));

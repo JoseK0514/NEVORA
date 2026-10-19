@@ -6,6 +6,7 @@ import { formatTime, weekStartFor } from "@/lib/date-utils";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { Card, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, Status, Tile } from "@/components/kit/kit";
 import { Fact, Facts, Notice } from "@/components/wave-a/parts";
+import { ActionForm } from "@/components/wave-a/action-form";
 import { TimeOffReviewDecision } from "@/components/time-off-review-decision";
 import { ManagerIssueFocus } from './manager-issue-focus';
 import { inboxFilter } from "@/lib/action-center/inbox";
@@ -124,11 +125,12 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
                 <Fact label="Length">{lengthLabel(request)}</Fact>
                 {request.reason ? <Fact label="Note">{request.reason}</Fact> : null}
               </Facts>
-              <form action={reviewTimeOffAction} className="wa-card-body wa-decision-form" aria-label={`Review time off for ${request.employeeName}`}>
+              <ActionForm action={reviewTimeOffAction} className="wa-card-body wa-decision-form" label={`Review time off for ${request.employeeName}`}
+                failure={{ title: "Your decision wasn’t saved", body: "Check your connection and try again. Nothing changed." }}>
                 <input type="hidden" name="requestId" value={request.id} />
                 <TimeOffReviewActions name={request.employeeName} />
-                <KitLink href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`} label={`Open the request from ${request.employeeName}`}>Open request and that week’s schedule</KitLink>
-              </form>
+                <KitLink href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`}>Open request and that week’s schedule</KitLink>
+              </ActionForm>
             </Card>
           </div>
         ))}</div> : <Card title="You’re all caught up">

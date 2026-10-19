@@ -52,7 +52,8 @@ export function ReviewedCalloutForm({
             ...reasons.map(([value, label]) => ({ value, label })),
           ]}
         />
-        <label className="wa-field">
+        <div className="wa-field">
+        <label className="wa-field__control">
           <span className="wa-field__label">More details{reason === "OTHER" ? null : <span className="wa-field__optional">Optional</span>}</span>
           <textarea
             ref={noteInput}
@@ -71,6 +72,7 @@ export function ReviewedCalloutForm({
             }}
             placeholder="What should your manager know?"
           />
+        </label>
           <span className="wa-field__help wa-field__help--split">
             <span id={detailsId}>
               {reason === "OTHER"
@@ -79,7 +81,7 @@ export function ReviewedCalloutForm({
             </span>
             <span className="wa-field__count" aria-label={`${note.length} of 300 characters`}>{note.length}/300</span>
           </span>
-        </label>
+        </div>
         {!fields ? (
           <Notice tone="urgent" title="The shift changed">Your reason is kept. Refresh to see the shift as it is now, then send.</Notice>
         ) : null}

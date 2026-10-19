@@ -35,3 +35,7 @@ The UI side (before, pending, failure with the request blocked, double tap, slow
 
 - Operational rules on Team member detail: "Scheduled projections are not worked time, proof of breaks taken, final overtime pay or legal certification…" (legal wording).
 - Team member status hint: "Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved." (unchanged).
+
+## For Codex to review
+
+- **Copy-week receipt role check (IS-WA-9).** `copy-receipt/page.tsx` now calls `requireRoles(MANAGER_ROLES)` first, like every other schedule management page. Before, an Employee or Lead could open the page (the receipt read is scoped to the session, so no other person's copy was exposed). A page guard, not a data change; please confirm.

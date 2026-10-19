@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { OfflineNotice } from "./offline-notice";
 
 /* Wave A building blocks on top of the kit (Phase 3.5). Presentation only: callers pass
  * already-authorized, already-formatted data. Styles live in src/app/app/premium-wave-a.css. */
@@ -40,12 +41,16 @@ export function Field({ label, optional = false, help, helpId, children, classNa
   children: ReactNode;
   className?: string;
 }) {
+  // The help sits outside the <label>, so it isn't part of the field's name (IS-WA-12) or of the inline error (IS-WA-3);
+  // pass helpId and aria-describedby to have it read as the description.
   return (
-    <label className={className ? `wa-field ${className}` : "wa-field"}>
-      <span className="wa-field__label">{label}{optional ? <span className="wa-field__optional">Optional</span> : null}</span>
-      {children}
+    <div className={className ? `wa-field ${className}` : "wa-field"}>
+      <label className="wa-field__control">
+        <span className="wa-field__label">{label}{optional ? <span className="wa-field__optional">Optional</span> : null}</span>
+        {children}
+      </label>
       {help ? <span className="wa-field__help" id={helpId}>{help}</span> : null}
-    </label>
+    </div>
   );
 }
 
@@ -58,6 +63,7 @@ export function FieldPair({ children }: { children: ReactNode }) {
 export function FormActions({ children, note }: { children: ReactNode; note?: ReactNode }) {
   return (
     <div className="wa-actions">
+      <OfflineNotice />
       {note ? <p className="wa-actions__note">{note}</p> : null}
       <div className="wa-actions__buttons">{children}</div>
     </div>
