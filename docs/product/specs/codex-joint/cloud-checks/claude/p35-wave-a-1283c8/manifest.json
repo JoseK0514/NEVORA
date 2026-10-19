@@ -3987,6 +3987,29 @@
       "code": 1,
       "passed": 13,
       "failed": 3
+    },
+    {
+      "name": "00174-matrix-AUDIT-M-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T22-23-18-927Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00174-matrix-AUDIT-M-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app/schedule/copy-receipt?operation=e49187d3-44bf-4e84-96ce-b3261809636e,/app/schedule/coverage,/app/schedule/edit?shiftId=audit-next-0-1,/app/schedule/new",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "0d55cba732358bc838ed2777b37fd019022b8621a225da59d415b0e3ae886694",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
     }
   ],
   "planned": 12580,

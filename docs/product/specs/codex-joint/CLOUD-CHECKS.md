@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T22:22:41.369Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T22:23:30.052Z. premium-phase-1 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,9 +22,9 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1879 | 1957 | 3836 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1894 | 1958 | 3852 / 12580 |
 | claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 2546 | 1282 | 3828 / 12716 |
-| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 1515 | 925 | 2440 / 12580 |
+| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 1531 | 925 | 2456 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / pending inventory |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1879 passed; 1957 failed. Completed checker batches: 275. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1894 passed; 1958 failed. Completed checker batches: 276. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -2561,6 +2561,7 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1879 passed;
 | /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f | AUDIT-LEAD | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 844x390 100% /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f small=span.communication-status.attention «Acknowledgement required» 12px; strong. «Management» 14px |
 | /app/updates/compose | AUDIT-LEAD | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 844x390 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
 | /app/updates/compose | AUDIT-LEAD | 844x390 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 844x390 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
+| /app/exchange/callout?shiftId=audit-next-0-2 | AUDIT-LONG | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LONG 844x390 100% /app/exchange/callout?shiftId=audit-next-0-2 small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · No designat» 12px; strong. «This shift is still assigned t» 13px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -3894,7 +3895,7 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2546 passed;
 
 ## claude/p35-wave-a-1283c8
 
-Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1515 passed; 925 failed. Completed checker batches: 173. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
+Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1531 passed; 925 failed. Completed checker batches: 174. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
