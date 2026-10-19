@@ -25,6 +25,10 @@ Reports branch: `codex/inspections`. Jose's October 19 rolling-merge instruction
 
 ## Conflicts for Claude
 
+**Current integration `98b037b`: resolved under Jose’s explicit instructions.** Root layout follows the coordinator’s supplied resolution. Coverage assertions use Wave A’s on-screen wording (“1 more needed”, “1 more person needed”, “Choose what to fill”); backend nonwording assertions remain. Backend `c6a5954` is integrated locally. There is no unresolved merge conflict in this candidate. The older conflicts below describe retained historical checkpoints only.
+
+### Historical conflict records
+
 **Current backend blocker — candidate `0e01046` (coordinator `e7671e6` + Wave A `c05e0c7`) / backend `1c8254a` (application inputs unchanged from `31ec698`): `src/app/app/schedule/coverage/page.test.tsx`.** Candidate asserts “1 more needed”, “1 more person needed” and “Choose what to fill”; backend asserts “1 needed”, “1 employees needed” and “Choose the requirement”. Both complete sides are in `release/merge-1-wave-a/conflicts/coverage-test-{candidate,backend}.txt`. Merge aborted; no side chosen. Owner: backend / Wave A / coordinator.
 
 **Resolved by coordinator, not applied yet — root layout:** `f691dec` includes `docs/product/specs/codex-joint/RESOLVED-src-app-layout.tsx.txt`, explicitly directing the combined async layout/error hook and text-scale script. This resolves the earlier choice; the backend merge as a whole awaits the separate Coverage test conflict. The supplied resolution is retained with this merge report.
