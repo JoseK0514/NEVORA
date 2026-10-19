@@ -176,3 +176,56 @@ Checked and correct in round 2:
 - WebKit only on three Employee pages at 1440.
 
 Open: 0 P0, 3 P1, 5 P2
+
+## Round 4
+
+October 19, 2026 · Build `a6f009d` on the same preview · Scripts `r4a.mjs` (re-checks), `scan-r4.mjs` (sweep) and `r4b.mjs` (line breaks, cascade, retries). Data and crops are under `S/r4/`.
+
+### How it was measured
+
+- **Re-checks (Chromium):**
+  - Owner Inbox at 1440: one row of each item type selected, pane read.
+  - Time exports names, read through CDP `CSS.getMatchedStylesForNode`.
+  - The account menu.
+  - The header and trail for `AUDIT-LONG` at 768, 1024, 1099 and 1101; Owner at 768; Manager at 1024.
+- **Employee and Lead floor sweep:**
+  - **1440:** `AUDIT-E` and `AUDIT-LEAD` on all 14 URLs; `AUDIT-ON` and `AUDIT-BREAK` on Home.
+  - **768:** `AUDIT-E` on all 14 URLs.
+  - **1024:** `AUDIT-LEAD` on Home, My schedule, My time, Timecards and Time off.
+- **Phones:** 320 and 390, `AUDIT-E` and `AUDIT-M`, on Home, My schedule, My time, Inbox and Team.
+- **Retries.** Two pages failed under load (`AUDIT-E` Requests overview and Shift requests at 1440). I retried each once in a separate run, and both loaded.
+
+### Status of open findings
+
+| ID | Status | Measured now |
+|---|---|---|
+| TCD-02 | Fixed | • "Availability deadline not set" now says "Set when availability is due for this week, on the Schedule." That names the right thing and matches its button (`/app/schedule…#schedule-deadline`).<br>• The coverage gap says "This shift still needs people. Open the coverage gap to fill it." That's true for partly short gaps too. ("Shift" for a time window is a judgment call I accept.)<br>• The other notes are unchanged and still correct. `S/r4/shots/owner-pane-SETUP.png` |
+| TCD-14 | **Not fixed** | • Names on Time exports are still **14/20** at 500 in #16191C; Timecards names are 16/22.<br>• CDP shows three rules setting the legend's size, in cascade order:<br>  1. `.employee-form legend` (12px)<br>  2. the new row-role rule (`premium-desktop.css:323`)<br>  3. the floor rule (`premium-desktop.css:163-174`), which wins. Its `:is(…)` carries the specificity of its heaviest selector.<br>• Fix: take `form.employee-form > fieldset > legend` out of the `:174` list, or move that legend's size into the `:323` rule as `font-size: 1rem` with the same prefix as the floor rule.<br>P2. |
+| TCD-16 | **Partly fixed** | Now 14px at 768, 1024 and 1440:<br>• Home clock notes (14/20, "Refresh" 14/20/500)<br>• My time entries and footer (14/20)<br>• Time off summary (14/20)<br>• Availability hints (14/20)<br>• Timecards labels (14/20/500)<br>• Profile notes (14/20)<br>• My schedule "Today" (14/24/600)<br>• the shift options note<br>• Updates footnote (14/20)<br>One left: **"Review update"** on Updates rows (`AUDIT-LEAD`, 1440) is 12/24 at 500. It shows from 1101px (it's hidden at 1100 and below by `updates-review.css:85`).<br>• Cause: `src/components/updates-review.css:41` (`calc(12 * --type-unit)`), and `.updates-row-action` isn't in the floor list at `premium-desktop.css:398+`.<br>• Fix: add `.updates-row-action` to that list.<br>Now P2 (one label). |
+| TCD-17 | Fixed | • At 768, `AUDIT-LONG`'s name gives way: it's 128px with an ellipsis ("María José River…", scrollWidth 310).<br>• The trail "Home" is whole (40px, nav 216px), and so are "Profile" at 768 and "My schedule" at 1024.<br>• At 1101 the full trail returns and the name is 192px with an ellipsis.<br>• Short names aren't truncated: "Fictional Owner" 105px and "Morgan Rivera" 97px. `S/r4/shots/hdr-AUDIT-LONG-768_app.png` |
+| TCD-18 | Fixed | "Signed in as Fictional Owner" is 14/20 at 400 in #5F666A (5.84:1), above items at 14/20/500. |
+| TCD-19 | Fixed | The Pay tabs read "My pay · My time · Timecards" (`navigation.ts:211-212`), matching the sidebar and h1. The selected tab is white on #1C4A47 (9.91:1); the others are #CFE3E1 (7.42:1). |
+| TCD-20 | Fixed | Home's band says "Scheduled until 4:00 PM." (`AUDIT-E`) and "Scheduled until 5:00 PM." (`AUDIT-ON` clocked in, `AUDIT-BREAK` on break). That's correct next to "Off clock", "Clocked in" and "On break". |
+| TCD-21 | Fixed | The "What changed" line breaks only after "·": "After: Oct 19 · 9:00 AM – 5:00 PM ·" / "Main Office · Customer Support ·" / "Designated lead" (Lead, 1440, 280px column). Place names are joined with NBSP. |
+
+### New findings
+
+None. Checked and correct this round:
+- **Employee and Lead pages, all three widths:**
+  - Sub-14px text left: only the "Review update" label (TCD-16), avatar initials (12), number badges (12) and "Workforce" (13, logo lockup, accepted).
+  - No text is clipped, apart from the Updates preview's intended 2-line clamp at 768.
+- **Wording:**
+  - No "missing", "missed" or straight apostrophe in any Employee, Lead, Manager or Owner text in this sweep.
+  - Tab names, the trail and h1s agree on every Pay and Requests page.
+- **Phones (320, 390):**
+  - Kit text is 15px or more; tab labels 13; badges 12.
+  - No Phase 4 element appears, and nothing is clipped.
+  - The phone bell count is still 10px (the coordinator's phone header, unchanged).
+
+**Not covered:**
+- 200% text on Employee and Lead pages.
+- Lead at 768.
+- `payroll-qa-a` and `payroll-qa-b`.
+- WebKit in this round (round 2's WebKit spot check matched Chromium on the same rules).
+
+Open: 0 P0, 0 P1, 2 P2
