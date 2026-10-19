@@ -70,10 +70,10 @@ export function buildCalloutOutcomeNotification(input: {
   return {
     employeeId: input.employeeId,
     type: approved ? "CALLOUT_APPROVED" : "CALLOUT_DENIED",
-    title: approved ? "Call-out approved" : "Call-out declined",
+    title: approved ? "Unable to work approved" : "Unable to work declined",
     body: approved
-      ? "Your unable-to-work request was approved and coverage is open."
-      : "Your unable-to-work request was declined.",
+      ? "Your Unable to work request was approved and coverage is open."
+      : "Your Unable to work request was declined.",
     actionHref: "/app/exchange?tab=requests",
     eventKey: eventKey(
       "callout",
@@ -144,6 +144,6 @@ export function buildSelfTestNotification(employeeId: string, sourceId: string):
 
 /** Peer invitation uses reviewed shift context only, never an absence reason. */
 export function buildCoverageInvitationNotification(input:{employeeId:string;date:string;startTime:string;endTime:string;locationName:string;positionName?:string;isDesignatedLead?:boolean}):NotificationEvent {
- const context=[input.date,`${input.startTime}–${input.endTime}`,input.locationName,input.positionName,input.isDesignatedLead?'Designated Lead':undefined].filter(Boolean).join(' · ');
+ const context=[input.date,`${input.startTime}–${input.endTime}`,input.locationName,input.positionName,input.isDesignatedLead?'Designated lead':undefined].filter(Boolean).join(' · ');
  return {employeeId:input.employeeId,type:'COVERAGE_INVITATION',title:'Coverage available',body:`${context}. View shift details before volunteering.`,eventKey:''};
 }

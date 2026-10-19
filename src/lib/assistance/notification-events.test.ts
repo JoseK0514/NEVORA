@@ -175,3 +175,10 @@ describe('NEVORA routine notifications', () => {
 it('uses privacy-safe generic swap copy when no requester name is supplied', () => {
   expect(buildSwapResponseRequestedNotification({ employeeId: 'QA-E', exchangeId: 'QA-x', requesterName: '' }).body).toBe('A teammate asked to trade shifts with you.');
 });
+
+it.each(['APPROVED','DENIED'] as const)('persists Unable to work wording for %s notifications',status=>{
+ const event=buildCalloutOutcomeNotification({employeeId:'Fictional',calloutId:'fictional-request',status});
+ expect(event.title).toBe(`Unable to work ${status==='APPROVED'?'approved':'declined'}`);
+ expect(event.body).toContain('Unable to work');
+ expect(event.title+' '+event.body).not.toMatch(/call.?out|denied|rejected/i);
+});

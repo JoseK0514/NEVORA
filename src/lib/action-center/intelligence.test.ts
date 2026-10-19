@@ -597,3 +597,10 @@ describe('EQ-F-FUNC-001 canonical end-of-day coverage boundaries', () => {
     expect(JSON.stringify(result)).not.toContain(facts[0].meta.id);
   });
 });
+
+it('writes readable calendar dates and issue wording before any UI presentation',()=>{
+ const fact=card();fact.meta.id='TIMECARD:employee:2026-10-19:2026-10-25';fact.payload={...fact.payload,employeeName:'Casey Rivera',startDate:'2026-10-19',endDate:'2026-10-25'};
+ const v=input();v.context.timeZone='Pacific/Kiritimati';v.context.weekStart='2026-10-19';for(const section of v.sources)section.binding.weekStart='2026-10-19';
+ const detail=ready(add(v,'timecards',fact)).items.find(i=>i.reason.code==='TIMECARD_RECORDED_EXCEPTIONS')?.reason.text;
+ expect(detail).toBe('Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.');
+});

@@ -1,3 +1,4 @@
+import {formatCalendarRange} from '../date-utils';
 import { Temporal } from '@js-temporal/polyfill';
 import { buildManagerActionItems } from '../assistance/manager-actions';
 import { isDateInWeek, isValidWeekStart } from '../date-utils';
@@ -253,7 +254,7 @@ function projectFact(raw: unknown, source: Extract<IntelligenceSource, { state: 
       if (p.status !== 'PENDING') return { item: null, incomplete: false };
       item = { id: 'TIME_CORRECTION:' + p.id, type: 'HOURS_REVIEW', priority: 'REVIEW',
         title: p.isSelf ? 'Your correction needs another reviewer' : 'Time correction waiting for review',
-        detail: `${subject.employeeName} · ${p.kind === 'MISSING_ENTRY' ? 'Missing recorded entry' : 'Recorded time correction'}.`,
+        detail: `${subject.employeeName} · ${p.kind === 'MISSING_ENTRY' ? 'Recorded entry not sent yet' : 'Recorded time correction'}.`,
         href: '/app?view=attendance#correction-' + encodeURIComponent(p.id) };
       code = 'CORRECTION_' + p.kind; label = p.isSelf ? 'View your correction' : 'Open correction review'; category = 'timekeeping'; break;
     }
@@ -282,7 +283,7 @@ function projectFact(raw: unknown, source: Extract<IntelligenceSource, { state: 
       const self = subject.employeeId === context.actorId;
       item = { id: `TIMECARD:${subject.employeeId}:${start}:${end}`, type: 'HOURS_REVIEW', priority: 'REVIEW',
         title: self ? 'Your timecard needs another reviewer' : p.state === 'APPROVED' ? 'Approved timecard awaits finalization' : 'Period timecard needs review',
-        detail: `${subject.employeeName} · ${start}–${end}${p.issues.length ? ' · Resolve recorded-time exceptions before finalizing.' : '.'}`,
+        detail: `${subject.employeeName} · ${formatCalendarRange(start,end)}${p.issues.length ? ' · Fix recorded-time issues before finalizing.' : '.'}`,
         href: `/app/timecards?start=${start}&end=${end}#timecard-${encodeURIComponent(subject.employeeId)}` };
       code = self ? 'TIMECARD_SECOND_REVIEWER_REQUIRED' : p.state === 'APPROVED' ? 'TIMECARD_AWAITS_FINALIZATION' : p.issues.length ? 'TIMECARD_RECORDED_EXCEPTIONS' : 'TIMECARD_PERIOD_REVIEW';
       label = self ? 'View your timecard' : 'Open timecard review'; category = 'timekeeping'; break;

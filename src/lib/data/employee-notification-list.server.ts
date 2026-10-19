@@ -17,7 +17,7 @@ import {attentionSourceVersion} from './employee-attention-receipts.server';
 
 const LIMIT=25,MAX_READS=64,MAX_BYTES=1_000_000,BUDGET_MS=8000;
 const supported=['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','SELF_TEST','COMMUNICATION'] as const;
-const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Callout update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test',COMMUNICATION:'Team update'};
+const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Unable to work update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test',COMMUNICATION:'Team update'};
 const candidateSql=(actor='$1')=>`SELECT id FROM notifications WHERE employee_id=${actor} ORDER BY created_at DESC,id DESC LIMIT 26`;
 const ownReceiptSql=(p:string[])=>`SELECT source_kind,source_id,source_version FROM employee_attention_receipts WHERE workspace_id=${p[0]} AND employee_id=${p[1]}
  AND (source_kind,source_id,source_version) IN (SELECT * FROM unnest(${p[2]}::text[],${p[3]}::text[],${p[4]}::text[]))`;

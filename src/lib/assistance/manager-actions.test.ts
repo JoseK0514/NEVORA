@@ -176,7 +176,7 @@ describe("buildManagerActionItems", () => {
 
     expect(item).toMatchObject({
       type: "COVERAGE_GAP",
-      title: "Lead coverage missing at FUEL - 2",
+      title: "No lead scheduled at FUEL - 2",
       detail: "Wed, Sep 30 · 8:00 AM–12:00 PM · Designated lead required",
     });
   });
@@ -200,8 +200,8 @@ it('unconfigured staffing prompts setup without invented missing staff or Lead',
 
 it('position-only shortage names the required position without claiming a missing Lead',()=>{
  const [item]=buildManagerActionItems({weekStart:'2026-10-05',coverageGaps:[{key:'position',locationId:'l',locationName:'Shop',date:'2026-10-05',startTime:'08:00',endTime:'12:00',gap:0,requiresLead:false,positionCoverage:[{positionId:'b',positionName:'Barista',missing:1}]}],availabilityDeadlineSet:true,coverageRulesConfigured:true});
- expect(item.title).toBe('Position coverage missing at Shop');
- expect(item.detail).toContain('Barista: 1 missing');
+ expect(item.title).toBe('Position not covered at Shop');
+ expect(item.detail).toContain('Barista: 1 open');
  const url = new URL(item.href, 'http://localhost');
  expect(url.pathname).toBe('/app/schedule/coverage');
  expect(Object.fromEntries(url.searchParams)).toMatchObject({ week: '2026-10-05', locationId: 'l', date: '2026-10-05', start: '08:00', end: '12:00', positionId: 'b' });

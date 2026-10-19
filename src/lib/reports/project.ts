@@ -134,9 +134,9 @@ export function projectReports(value:unknown):PeriodReports{
       definition:'Schedule changes published for this period. No stability score is applied.'},
     approvals:cards.map(c=>({employeeId:c.card.employeeId,employeeName:c.card.employeeName,state:c.state,revision:c.revision,issueCount:c.card.issues.length,sourceHash:c.sourceHash})),cards,schedules,planCoverage:{state:planComplete?'complete':'unpublished',unpublishedWeeks},
     definitions:['Actual time uses D2 canonical effective entries and breaks; finalized cards use their immutable snapshots.',
-      'Scheduled time is elapsed time in the latest published plan at observation, with released callouts excluded. It is not the immutable schedule originally captured on a punch.',
+      'Scheduled time is elapsed time in the latest published plan at observation, with released Unable to work requests excluded. It is not the immutable schedule originally captured on a punch.',
       'Attendance observations use preserved raw punches and their exact captured publication references. They do not recalculate approved time or decide lateness/discipline.',
       'Position labels come from captured punch context; absent labels remain unknown. Location and roster labels are current; finalized snapshot labels are retained.',
-      'Time-off and callout rows reflect current request state; shift-change outcomes use append-only history. Private absence reasons are excluded.',
+      'Time off and Unable to work rows reflect current request state; shift-change outcomes use append-only history. Private absence reasons are excluded.',
       'Unavailable policy and incomplete source evidence never become zero or healthy scores.']};
 }

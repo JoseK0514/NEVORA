@@ -107,3 +107,8 @@ export function formatDateRange(start: string, end: string) {
   if (startYear !== endYear) return `${monthDay.format(utcDate(start))}, ${startYear} – ${monthDay.format(utcDate(end))}, ${endYear}`;
   return `${monthDay.format(utcDate(start))} – ${monthDay.format(utcDate(end))}, ${endYear}`;
 }
+
+/** Workspace calendar dates stay on their written day, independent of server timezone. */
+export function formatCalendarRange(start: string, end: string) {
+  return `${monthDay.format(utcDate(start))} – ${monthDay.format(utcDate(end))}`;
+}
