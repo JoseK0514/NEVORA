@@ -1,6 +1,6 @@
 In progress: Wave A round 2 (exit) on `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, Wave C round 3 on `b109ec3fea10418fb9f5c9da2af0a1e561dc2678`, and Profile round 4 on `829dfe6cf45beb71b77db573c0263c60a5f69856`. Wave C has two verified P1s so far (WR-21 and ST-02); all rounds remain incomplete. The inspection session performs no merges or deployments. Queue polling continues every ten minutes.
 
-Parallel release task status: Rolling release work started October 19 at 18:28 UTC. Local candidate recreated from Phase 3 `fa7a09b`; backend merge aborted on the root-layout conflict below. No chat has a verified zero exit round. Wave A round 2 (exit), Wave C round 3 and Profile round 4 are available for inspection. Candidate-only lint fix `a08814c` awaits validation. No deployment or device exposure.
+Parallel release task status: Rolling update, October 19: fetched coordinator `a69dff2` and the now-published rolling merge prompt and reviewed device checklist. Jose explicitly instructed the Wave A `c05e0c7` merge: local integration commit `88a4e94`, with coordinator `portal-premium.css` preserved exactly. Candidate-only lint cleanup is `9df0f47`. Validation/inspection is in progress; this is not a zero or release-ready verdict. Backend merge remains aborted on `src/app/layout.tsx`. New integration blocker: Wave A imports `useHoldHeight`, which the latest coordinator kit no longer exports (TS2724). See [current integration blockers](release/merge-1-wave-a/integration-blockers.md). No deployment or device exposure.
 
 # NEVORA cloud inspection status
 
@@ -16,6 +16,12 @@ Reports branch: `codex/inspections`. Jose's October 19 rolling-merge instruction
 - Merge readiness currently: 0/6 verified. Profile initial wiring waits for both Profile and backend; dead CSS cleanup waits for Wave C and a `src/` class-use search. Final every-page/five-area sweep, build, full tests and `test:dev:production` wait for all six chats.
 
 ## Conflicts for Claude
+
+**Current attempt — coordinator `a69dff2` / backend `31ec698`, `src/app/layout.tsx`: still conflicts.** Retried against the published coordinator tip and aborted without choosing a side. Both complete source versions are retained under `release/merge-1-wave-a/conflicts/`. The earlier description below remains accurate.
+
+**New semantic integration blocker — Wave A / coordinator:** `src/components/availability-team-list.tsx:7,44` imports/calls `useHoldHeight`, while latest `src/components/kit/hold-height.tsx` exports only `HoldHeight`. `npm run typecheck` on both merged `88a4e94` and candidate-only lint commit `9df0f47` fails with TS2724. Owner: Wave A in coordination with the shared-kit coordinator. This needs a source-branch fix; it is outside the three candidate-only UI edits. No screen version was selected to conceal the incompatibility.
+
+**Resolved — swap summary:** Wave A at `c05e0c7` merges without a swap-summary conflict after coordinator `fa7a09b`. `portal-premium.css` was the sole Git conflict in the Wave A merge; it was replaced with the exact latest coordinator blob from `a69dff2`, as Jose instructed. The retired Inbox endpoint flag is absent and is not a gate or task.
 
 **Open — backend / coordinator, `src/app/layout.tsx`.** Merge input branches are `claude/premium-phase-1` at `fa7a09b07ddc1ffe179110b0fdc41715a1714b09` (candidate side) and `codex/premium-backend` at `31ec6988446607651031c6412b2c9f4c8ccce402` (incoming). Coordinator side: synchronous `RootLayout`, `TEXT_SCALE_SCRIPT`, `suppressHydrationWarning` and a head script that measures root text size for placeholders. Backend side: asynchronous `RootLayout` and the development-only `forceInspectionError('global')` hook. Full unmodified sides: [coordinator](release/bootstrap/conflicts/layout-coordinator.txt), [backend](release/bootstrap/conflicts/layout-backend.txt). No side chosen; merge aborted. Owner: Phase 3 coordinator, who resolves on its branch or directs the backend chat. No candidate backend test result or combined inspection is claimed for this aborted merge.
 
