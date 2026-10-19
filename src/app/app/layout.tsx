@@ -5,6 +5,12 @@ import "./portal-desktop.css";
 import "./portal-motion.css";
 import "@/components/kit/kit.css";
 import "./portal-premium.css";
+// One stylesheet per parallel session (Oct 19), loaded after the shared premium layer.
+import "./premium-profile.css";
+import "./premium-wave-a.css";
+import "./premium-wave-b.css";
+import "./premium-wave-c.css";
+import "./premium-desktop.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
