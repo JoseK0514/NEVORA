@@ -2,15 +2,16 @@ import {ScheduleCopyForm} from '@/components/schedule-copy-form';
 import { randomUUID } from "node:crypto";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import Link from "next/link";
-import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
-import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
 import { StackIcon } from "@phosphor-icons/react/dist/ssr/Stack";
 import { CopySimpleIcon } from "@phosphor-icons/react/dist/ssr/CopySimple";
 import { ArchiveIcon } from "@phosphor-icons/react/dist/ssr/Archive";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
-import { PageHeader } from "@/components/page-header";
+import { PageBand, Tile } from "@/components/kit/kit";
+import { keepWhole } from "@/lib/keep-whole";
 import { TemplateSubmit, TemplateFeedback, TemplateMotion, TemplateNameLink } from "@/components/schedule-template-controls";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
@@ -21,7 +22,6 @@ import {
   archiveTemplateAction,
   saveTemplateAction,
 } from "@/app/app/schedule/templates/actions";
-import "./templates.css";
 
 function templateUrl(week: string) {
   return `/app/schedule/templates?week=${encodeURIComponent(week)}`;
@@ -50,128 +50,136 @@ export default async function ScheduleTemplatesPage({
   const hasFeedback = Boolean(params.error || params.saved || params.archived || params.applied !== undefined);
 
   return (
-    <div className="schedule-templates-page">
-      <PageHeader
-        title="Schedule templates"
-        description="Keep the weeks that work. Reuse them when you plan your next schedule."
-        actions={
-          <Link className="button secondary" href={`/app/schedule?week=${weekStart}`}>
-            <ArrowLeftIcon size={18} aria-hidden="true" /> Back to schedule
-          </Link>
-        }
+    <div className="nv-page wb-page wb-templates" data-nv-page="">
+      <PageBand
+        back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }}
+        title="Templates"
+        summary="Keep the weeks that work. Reuse them when you plan your next schedule."
       />
 
-      <section className="st-week-bar" aria-label="Selected schedule week">
-        <div className="st-week-context">
-          <CalendarBlankIcon size={22} aria-hidden="true" />
-          <div><span>Selected week</span><strong>{weekLabel}, {weekStart.slice(0, 4)}</strong></div>
+      <div className="nv-content">
+      <section className="nv-card" aria-label="Selected schedule week">
+        <div className="wb-week">
+          <div className="wb-week__label">
+            <span className="wb-note">Selected week</span>
+            <strong className="wb-week__value">{keepWhole(`${weekLabel}, ${weekStart.slice(0, 4)}`)}</strong>
+            <span className="wb-note">Save from or apply to this week.</span>
+          </div>
+          <nav className="wb-week__nav" aria-label="Choose schedule week">
+            <Link className="wb-week__arrow" href={templateUrl(addDays(weekStart, -7))} aria-label="Previous week">
+              <CaretLeftIcon size={20} weight="bold" aria-hidden="true" />
+            </Link>
+            <Link className="wb-week__today" href={templateUrl(currentWeek)} aria-current={weekStart === currentWeek ? "date" : undefined}>This week</Link>
+            <Link className="wb-week__arrow" href={templateUrl(addDays(weekStart, 7))} aria-label="Next week">
+              <CaretRightIcon size={20} weight="bold" aria-hidden="true" />
+            </Link>
+          </nav>
         </div>
-        <p>Save from or apply to this week.</p>
-        <nav className="st-week-navigation" aria-label="Choose schedule week">
-          <Link className="st-week-arrow" href={templateUrl(addDays(weekStart, -7))} aria-label="Previous week">
-            <CaretLeftIcon size={18} aria-hidden="true" />
-          </Link>
-          <Link className="st-current-week" href={templateUrl(currentWeek)} aria-current={weekStart === currentWeek ? "date" : undefined}>This week</Link>
-          <Link className="st-week-arrow" href={templateUrl(addDays(weekStart, 7))} aria-label="Next week">
-            <CaretRightIcon size={18} aria-hidden="true" />
-          </Link>
-        </nav>
       </section>
 
       {hasFeedback ? <TemplateFeedback key={JSON.stringify(params)}>
       {params.error ? (
         <p className="form-error" role="alert">
-          {params.error === "save"
+          <WarningCircleIcon size={22} aria-hidden="true" />
+          <span>{params.error === "save"
             ? "That template could not be saved. The name may already be in use."
             : params.error === "unavailable"
               ? "That template is no longer available. Choose an active template."
-              : "Enter a valid template name and schedule week."}
+              : "Enter a valid template name and schedule week."}</span>
         </p>
       ) : null}
-      {params.saved ? <p className="form-success" role="status">Template saved.</p> : null}
-      {params.archived ? <p className="form-success" role="status">Template archived.</p> : null}
+      {params.saved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Template saved.</span></p> : null}
+      {params.archived ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Template archived.</span></p> : null}
       {params.applied !== undefined ? (
         <p role="status" className={Number(params.skipped ?? 0) || Number(params.warnings ?? 0) ? "form-warning" : "form-success"}>
-          Applied {params.applied} shift{params.applied === "1" ? "" : "s"}.
+          {Number(params.skipped ?? 0) || Number(params.warnings ?? 0) ? <WarningCircleIcon size={22} aria-hidden="true" /> : <CheckCircleIcon size={22} weight="fill" aria-hidden="true" />}
+          <span>Applied {params.applied} shift{params.applied === "1" ? "" : "s"}.
           {Number(params.skipped ?? 0)
             ? ` ${params.skipped} skipped because of current conflicts or unavailable employees.`
             : ""}
           {Number(params.warnings ?? 0)
             ? ` ${params.warnings} applied with manager warnings.`
             : ""}
-          {" "}<Link href={`/app/schedule?week=${weekStart}`}>Review schedule</Link>
+          {" "}<Link className="nv-link" href={`/app/schedule?week=${weekStart}`}>Review schedule</Link></span>
         </p>
       ) : null}
       </TemplateFeedback> : null}
 
       <TemplateMotion>
-      <section className="st-layout">
-        <article className="panel st-save-panel" aria-labelledby="st-save-title" data-template-entrance>
-          <div className="st-panel-icon"><CopySimpleIcon size={24} weight="duotone" aria-hidden="true" /></div>
-          <h2 id="st-save-title">Save this week</h2>
-          <p className="st-panel-description">Turn the selected week into a reusable schedule pattern.</p>
+      <div className="wb-templates-layout">
+        <section className="nv-card" aria-labelledby="st-save-title" data-template-entrance>
+          <div className="nv-card__head"><h2 className="nv-card__title" id="st-save-title">Save this week</h2></div>
+          <div className="wb-body">
+            <p className="wb-note">Turn the selected week into a reusable schedule pattern.</p>
+            <form action={saveTemplateAction} className="wb-form">
+              <input type="hidden" name="weekStart" value={weekStart} />
+              <div className="wb-field">
+                <label htmlFor="st-template-name">Template name</label>
+                <input
+                  id="st-template-name"
+                  className="wb-control"
+                  name="name"
+                  placeholder="For example, Regular week"
+                  minLength={3}
+                  maxLength={50}
+                  required
+                  aria-describedby="st-name-hint"
+                />
+                <p id="st-name-hint" className="wb-help">Use 3 to 50 characters.</p>
+              </div>
+              <div className="wb-actions">
+                <TemplateSubmit label="Save template" pendingLabel="Saving template…" className="nv-btn" kind="primary">
+                  <CopySimpleIcon size={20} aria-hidden="true" />
+                </TemplateSubmit>
+              </div>
+            </form>
+            <div className="wb-box"><p className="wb-strong wb-strong--small">What gets saved</p><p className="wb-note">Employee assignments, locations, shift times, notes and designated leads.</p></div>
+          </div>
+        </section>
 
-          <form action={saveTemplateAction} className="st-save-form">
-            <input type="hidden" name="weekStart" value={weekStart} />
-            <label htmlFor="st-template-name">Template name</label>
-              <input
-                id="st-template-name"
-                name="name"
-                placeholder="e.g. Regular working week"
-                minLength={3}
-                maxLength={50}
-                required
-                aria-describedby="st-name-hint"
-              />
-            <span id="st-name-hint" className="st-field-hint">Use 3–50 characters.</span>
-            <TemplateSubmit label="Save template" pendingLabel="Saving template…" className="button primary">
-              <CopySimpleIcon size={18} aria-hidden="true" />
-            </TemplateSubmit>
-          </form>
-          <div className="st-included"><strong>What gets saved</strong><p>Employee assignments, locations, shift times, notes, and designated leads.</p></div>
-        </article>
-
-        <article className="panel st-library-panel" aria-labelledby="st-library-title" data-template-entrance>
-          <div className="st-library-heading">
-            <div><h2 id="st-library-title">Saved templates</h2><p className="st-panel-description">Choose a pattern for {weekLabel}.</p></div>
-            <span className="st-library-count" aria-label={`${templates.length} saved templates`}>{templates.length}</span>
+        <section className="nv-card" aria-labelledby="st-library-title" data-template-entrance>
+          <div className="nv-card__head">
+            <h2 className="nv-card__title" id="st-library-title">Saved templates</h2>
+            <span className="nv-card__meta" aria-label={`${templates.length} saved templates`}>{templates.length} saved</span>
           </div>
 
           {templates.length ? <>
-            <ul className="st-template-list">
+            <p className="wb-note wb-card-lead">Choose a pattern for {keepWhole(weekLabel)}.</p>
+            <ul className="wb-template-list">
               {templates.map((template) => (
-                <li className="st-template-row" key={template.id}>
-                  <div className="st-template-identity">
-                    <div className="st-row-icon"><StackIcon size={22} aria-hidden="true" /></div>
-                    <div><h3>{template.name}</h3><p>
+                <li key={template.id}>
+                  <div className="wb-template-identity">
+                    <Tile tone="neutral"><StackIcon size={22} /></Tile>
+                    <div><h3 className="wb-record__title">{template.name}</h3><p className="wb-record__meta">
                       {template.shiftCount} shift{template.shiftCount === 1 ? "" : "s"}
                     </p></div>
                   </div>
-                  <div className="st-template-actions">
-                    <ScheduleCopyForm actorId={session.id} label="Apply to this week" ariaLabel={`Apply ${template.name} to ${weekLabel}`} className="button st-apply-button" command={{operationId:randomUUID(),kind:"TEMPLATE",weekStart,templateId:template.id}}><ArrowRightIcon size={18} aria-hidden="true" /></ScheduleCopyForm>
+                  <div className="wb-template-actions">
+                    <ScheduleCopyForm actorId={session.id} label="Apply to this week" ariaLabel={`Apply ${template.name} to ${weekLabel}`} className="nv-btn wb-apply" command={{operationId:randomUUID(),kind:"TEMPLATE",weekStart,templateId:template.id}}><ArrowRightIcon size={20} aria-hidden="true" /></ScheduleCopyForm>
                     <form action={archiveTemplateAction}>
                       <input type="hidden" name="weekStart" value={weekStart} />
                       <input type="hidden" name="templateId" value={template.id} />
-                      <TemplateSubmit label="Archive" pendingLabel="Archiving…" ariaLabel={`Archive ${template.name}`} className="button ghost st-archive-button">
-                        <ArchiveIcon size={18} aria-hidden="true" />
+                      <TemplateSubmit label="Archive" pendingLabel="Archiving…" ariaLabel={`Archive ${template.name}`} className="nv-btn" kind="secondary">
+                        <ArchiveIcon size={20} aria-hidden="true" />
                       </TemplateSubmit>
                     </form>
                   </div>
                 </li>
               ))}
             </ul>
-            <div className="st-library-guidance"><p>Each shift is checked before it is added. Conflicts and unavailable employees are skipped.</p><p>Archiving removes a template from this list. Existing shifts stay in your schedule.</p></div>
+            <div className="nv-card__foot wb-foot-stack"><p>Each shift is checked before it’s added. Conflicts and unavailable employees are skipped.</p><p>Archiving removes a template from this list. Existing shifts stay in your schedule.</p></div>
           </> : (
-            <div className="st-empty-state">
-              <div className="st-panel-icon"><StackIcon size={32} weight="duotone" aria-hidden="true" /></div>
-              <h3>Your next week starts here</h3>
-              <p>Save a week you would like to reuse. Your templates will appear here, ready for your next schedule.</p>
-              <TemplateNameLink>Name your first template <ArrowRightIcon size={18} aria-hidden="true" /></TemplateNameLink>
+            <div className="wb-body wb-empty">
+              <Tile tone="neutral"><StackIcon size={22} /></Tile>
+              <h3 className="wb-strong">Your next week starts here</h3>
+              <p className="wb-note">Save a week you’d like to reuse. Your templates appear here, ready for your next schedule.</p>
+              <div className="wb-actions"><TemplateNameLink>Name your first template <ArrowRightIcon size={20} aria-hidden="true" /></TemplateNameLink></div>
             </div>
           )}
-        </article>
-      </section>
+        </section>
+      </div>
       </TemplateMotion>
+      </div>
     </div>
   );
 }

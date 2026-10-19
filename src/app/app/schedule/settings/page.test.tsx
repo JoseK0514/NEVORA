@@ -61,7 +61,7 @@ beforeEach(() => {
 
 it("keeps every rule group and native fragment destination available from section navigation", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
-  expect(html).toContain('<h1>Scheduling rules</h1>');
+  expect(html).toMatch(/<h1[^>]*>Scheduling rules<\/h1>/);
   expect(html).toContain('aria-label="Scheduling rule sections"');
   for (const id of ["coverage-staffing", "target-hours", "coverage-windows", "rules-policy"]) {
     expect(html).toContain(`href="#${id}"`);
@@ -106,8 +106,8 @@ it("retains editable zero and blank hour values and an employee fragment destina
 
 it("exposes route validation and success feedback with alert/status semantics", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({error: "duplicate_window", windowDeleted: "1"})}));
-  expect(html).toMatch(/role="alert"[^>]*>That coverage window already exists/);
-  expect(html).toMatch(/role="status"[^>]*>Coverage window removed/);
+  expect(html).toMatch(/role="alert"[^>]*>(?:<svg[\s\S]*?<\/svg><span>)?That coverage window already exists/);
+  expect(html).toMatch(/role="status"[^>]*>(?:<svg[\s\S]*?<\/svg><span>)?Coverage window removed/);
 });
 
 it("retains Owner policy editing and Manager read-only policy access", async () => {

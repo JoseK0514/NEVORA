@@ -7,11 +7,11 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
-export function TemplateSubmit({ label, pendingLabel, ariaLabel, className, children }: {
-  label: string; pendingLabel: string; ariaLabel?: string; className: string; children?: ReactNode;
+export function TemplateSubmit({ label, pendingLabel, ariaLabel, className, kind, children }: {
+  label: string; pendingLabel: string; ariaLabel?: string; className: string; kind?: "primary" | "secondary"; children?: ReactNode;
 }) {
   const { pending } = useFormStatus();
-  return <button type="submit" className={className} disabled={pending} aria-busy={pending} aria-label={pending ? pendingLabel : ariaLabel}>
+  return <button type="submit" className={className} data-kind={kind} disabled={pending} aria-busy={pending} aria-label={pending ? pendingLabel : ariaLabel}>
     <span aria-live="polite">{pending ? pendingLabel : label}</span>
     {children}
   </button>;
@@ -20,11 +20,11 @@ export function TemplateSubmit({ label, pendingLabel, ariaLabel, className, chil
 export function TemplateFeedback({ children }: { children: ReactNode }) {
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => { container.current?.focus({ preventScroll: true }); }, []);
-  return <div className="st-feedback" tabIndex={-1} ref={container}>{children}</div>;
+  return <div className="wb-feedback" tabIndex={-1} ref={container}>{children}</div>;
 }
 
 export function TemplateNameLink({ children }: { children: ReactNode }) {
-  return <a href="#st-template-name" className="button secondary" onClick={event => {
+  return <a href="#st-template-name" className="nv-btn" data-kind="secondary" onClick={event => {
     const input = document.getElementById("st-template-name");
     if (!(input instanceof HTMLInputElement)) return;
     event.preventDefault();

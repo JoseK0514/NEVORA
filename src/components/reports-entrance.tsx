@@ -3,7 +3,6 @@
 import {useRef,type ReactNode} from 'react';
 import {gsap} from 'gsap';
 import {useGSAP} from '@gsap/react';
-import styles from './reports.module.css';
 
 gsap.registerPlugin(useGSAP);
 
@@ -16,5 +15,5 @@ export function ReportsEntrance({children}:{children:ReactNode}) {
   },container);
   return()=>media.revert();
  },{scope:container});
- return <div ref={container} className={`employee-view ${styles.page}`}>{children}</div>;
+ return <div ref={container} className="nv-page wb-page wb-reports" data-nv-page="">{children}</div>;
 }

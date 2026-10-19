@@ -32,7 +32,7 @@ function tree(){host.scope='reports';host.frames.reports.cursor=0;return Reports
 function commit(scope:'reports'|'view'){for(const slot of host.frames[scope].slots){if(!slot.pending)continue;slot.cleanup?.();const effect=slot.pending;slot.pending=undefined;const cleanup=effect();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;}}
 let focused=true;
 let details:{open:boolean}[],media:EventTarget&{matches:boolean},downloaded:{name:string;blob:Blob}[],urls:Blob[];
-function html(){const root=tree(),view=nodes(root).find(node=>node.type===ReportsView)!;host.scope='view';host.frames.view.cursor=0;host.content=view.props.report?{querySelectorAll:()=>details}:null;const output=renderToStaticMarkup(root);commit('view');return output;}
+function html(){const root=tree(),view=nodes(root).find(node=>node.type===ReportsView)!;host.scope='view';host.frames.view.cursor=0;host.content=view.props.report?{querySelectorAll:()=>details}:null;const output=renderToStaticMarkup(root).replaceAll('\u00a0',' ');commit('view');return output;}
 function control(predicate:(node:ReactElement<Record<string,unknown>>)=>boolean){const node=nodes(tree()).find(predicate);if(!node)throw Error('Missing actual rendered control');return node.props;}
 function button(label:string){return control(node=>node.type==='button'&&(node.props['aria-label']===label||node.props.children===label));}
 function click(label:string){(button(label).onClick as ()=>void)();}
