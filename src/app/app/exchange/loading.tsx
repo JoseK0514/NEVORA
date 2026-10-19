@@ -1,5 +1,5 @@
 import { RouteSkeleton } from "@/components/route-skeleton";
 
 export default function Loading() {
-  return <RouteSkeleton label="shift requests" shape="list" />;
+  return <RouteSkeleton route="exchange" label="shift requests" shape="list" band={236} overlap={false} />;
 }

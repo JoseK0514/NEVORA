@@ -25,7 +25,7 @@ import SchedulePage from '@/app/app/schedule/page';
 beforeEach(()=>{fixture.empty=false;});
 it('employee published shift displays its captured position and explicit overnight end date',async()=>{
  const html=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05'})}));
- expect(html).toContain('10:00 PM');expect(html).toContain('6:00 AM');expect(html).toContain('Fixture location');
+ expect(html).toContain('10:00\u00a0PM');expect(html).toContain('6:00\u00a0AM');expect(html).toContain('Fixture location');
  expect(html).toContain('Fixture Barista at publication');expect(html).toContain('Ends Mon, Oct 12');
 });
 it('relevant canceled-to-empty published week exposes its current-version confirmation',async()=>{

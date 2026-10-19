@@ -65,7 +65,7 @@ export function TimeOffForm({ requestId, draftOwner = "" }: { requestId: string;
           <div className="nto-note-field">
             <label htmlFor="timeoff-note">Note <span className="nto-optional">Optional</span></label>
             <textarea id="timeoff-note" name="reason" maxLength={250} rows={3} placeholder="Anything your manager should know?" value={reason} onChange={event => setReason(event.target.value)} aria-describedby="timeoff-note-hint" />
-            <div className="nto-note-hint"><p id="timeoff-note-hint">Only include details you want to share.</p><span>{reason.length}/250</span></div>
+            <div className="nto-note-hint"><p id="timeoff-note-hint">Only include details you want to share.</p><span>{`${reason.length}/250`}</span></div>
           </div>
         </div>
         <aside className="nto-summary" aria-label="Request summary">

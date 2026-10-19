@@ -78,13 +78,13 @@ function assignedReview(){
  f.reviewed={source:{timeZone:shift.timeZone,termsRevision:shift.termsRevision,shiftId:shift.id,scheduleId:shift.scheduleId,employeeId:shift.employeeId,locationId:shift.locationId,weekStart:shift.weekStart,date:shift.date,startTime:shift.startTime,endTime:shift.endTime,positionId:shift.positionId,isDesignatedLead:shift.isDesignatedLead,assignmentEpisodeId:'episode-current'},sourceTermsFingerprint:'v1:current',target:null,targetTermsFingerprint:null};
 }
 it.each(['unknown coverage policy','elapsed coverage submission cutoff'])('trade builder navigation remains independent of %s',async refusal=>{
- assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('>Swap shift<');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('>Unable to Work<');
+ assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('>Request a swap<');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('>Unable to work<');
 });
 it('builder navigation itself does not declare swap eligibility when only coverage is valid',async()=>{
  assignedReview();f.coverageAllowed=true;const result=await html();expect(result).toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('Eligible to trade');
 });
 it.each<Record<string, string | boolean | number>>([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'10:00',endTime:'18:00'},{locationId:'replacement-site'},{positionId:'replacement-position'},{employeeId:'new-owner'},{date:'2035-10-06'},{scheduleId:'replacement-schedule'},{weekStart:'2035-10-08'},{isDesignatedLead:false}])('inter-read material source change %j refuses undisplayed creation consent',async change=>{
- assignedReview();f.coverageAllowed=true;f.reviewed!.source={...f.reviewed!.source,...change};const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('value="v1:current"');expect(result).not.toContain('>Swap shift<');expect(result).toContain('Stale assignment');
+ assignedReview();f.coverageAllowed=true;f.reviewed!.source={...f.reviewed!.source,...change};const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('value="v1:current"');expect(result).not.toContain('>Request a swap<');expect(result).toContain('Stale assignment');
 });
 it.each(['pending','completed'] as const)('URL result render performs read-only %s lookup rather than cache-invalidating action',async status=>{
  const operationId='11111111-1111-4111-8111-111111111111';f.operation={status,operationId,requestId:'r1',revision:2};const result=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({operationId})}));expect(result).toContain(status==='pending'?'Request recorded':'Completed.');expect(reconcileShiftChangeAction).not.toHaveBeenCalled();expect(readShiftChangeOperationView).toHaveBeenCalledWith(expect.objectContaining({sessionTokenHash:'a'.repeat(64)}),operationId);
@@ -100,5 +100,5 @@ it('H10 explanatory notices stay outside employee action grids while recovery co
  const result=await html();const actions=[...result.matchAll(/<div class="employee-shift-entry-actions"[^>]*>([\s\S]*?)<\/div>/g)].map(match=>match[1]);
  expect(actions.length).toBeGreaterThanOrEqual(3);
  for(const group of actions){expect(group).not.toContain('shift-change-unavailable');expect(group).not.toContain('review current assignment');}
- expect(result).toContain('value="CANCEL"');expect(result).toContain('Unable to Work');expect(result).toContain('Historical approval does not release the current assignment');
+ expect(result).toContain('value="CANCEL"');expect(result).toContain('Unable to work');expect(result).toContain('Historical approval does not release the current assignment');
 });

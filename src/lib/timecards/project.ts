@@ -1,3 +1,4 @@
+import {durationText} from '@/lib/duration-text';
 import { Temporal } from '@js-temporal/polyfill';
 
 export type Period = { startDate: string; endDate: string };
@@ -122,5 +123,5 @@ export function projectTimecard(source: unknown, observedAt: string): Timecard {
 export function formatRecordedHours(nanoseconds: string): string {
   if (!/^\d+$/.test(nanoseconds)) throw new Error('Invalid duration');
   const minutes = BigInt(nanoseconds) / BigInt(60_000_000_000);
-  return `${minutes / BigInt(60)}h ${minutes % BigInt(60)}m`;
+  return durationText(Number(minutes));
 }

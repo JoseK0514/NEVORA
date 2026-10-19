@@ -228,9 +228,9 @@ export default async function ExchangePage({
                     {/* Phase 3: the three shift actions sit behind one "Shift options" disclosure, as on My schedule. */}
                     <details className="premium-shift-options"><summary><span>Shift options</span><NavIcon name="chevronRight" size={16} /></summary>
                     <div className="employee-shift-entry-actions">
-                      <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${encodeURIComponent(shift.id)}`}><span>Unable to Work</span></Link>
+                      <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${encodeURIComponent(shift.id)}`}><span>Unable to work</span></Link>
                       {offerViews.get(shift.id)?.allowed&&offerViews.get(shift.id)?.fields?<ShiftChangeForm fields={{kind:'OFFER_COVERAGE',...offerViews.get(shift.id)!.fields!}}><button className="employee-action" type="submit"><span>Offer for coverage</span></button></ShiftChangeForm>:null}
-                      {offerViews.get(shift.id)?.fields?<Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><span>Swap shift</span></Link>:null}
+                      {offerViews.get(shift.id)?.fields?<Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><span>Request a swap</span></Link>:null}
                     </div>
                     </details>
                   </div>

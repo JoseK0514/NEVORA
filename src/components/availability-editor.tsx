@@ -66,10 +66,10 @@ function AvailabilityFields({ initialAvailability, weekStart, locked }: {
     <p className="av-input-hint">An end time of midnight includes the rest of that day.</p>
     {weekStart && availableDays === 0 ? <p className="av-zero-note">Submitting with every day unavailable tells your manager you cannot work this week.</p> : null}
     <footer className="av-editor-footer">
-      <p role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? "This week is closed for changes." : dirty ? "You have unsaved changes." : weekStart ? "Submit these hours for this week." : "Your saved normal availability."}</p>
+      <p role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? "This week is closed for changes." : dirty ? "You have unsaved changes." : weekStart ? "Submit these hours for this week." : "Your saved usual week."}</p>
       <div className="av-form-actions">
         <button className="av-button secondary" type="button" disabled={disabled || !dirty} onClick={() => setAvailability(initialAvailability)}><ArrowCounterClockwiseIcon size={18} aria-hidden="true" />Reset changes</button>
-        <button className="av-button primary" type="submit" disabled={disabled || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{pending ? "Saving…" : weekStart ? "Submit weekly availability" : "Save normal availability"}{!locked && !pending ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</button>
+        <button className="av-button primary" type="submit" disabled={disabled || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{pending ? "Saving…" : weekStart ? "Submit weekly availability" : "Save usual week"}{!locked && !pending ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</button>
       </div>
     </footer>
   </>;

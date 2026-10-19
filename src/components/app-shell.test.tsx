@@ -37,12 +37,9 @@ it.each(['EMPLOYEE', 'LEAD', 'MANAGER', 'OWNER'] as const)('keeps %s outside the
   }
 });
 
-it.each(['EMPLOYEE','LEAD'] as const)('keeps the approved %s Home outside the remaining mobile-page variant', role => {
-  expect(render(role, '/app').html).not.toContain('data-mobile-workforce="true"');
-});
-// Phase 7 (WR-03, AL-03): Manager and Owner Home share the phone shell of every other tab,
+// Phase 7 (WR-03, AL-03) and Phase 3 (P3-ST-01): every role's Home shares the phone shell of every other tab,
 // so the header and the More sheet don't change when you switch tabs.
-it.each(['MANAGER','OWNER'] as const)('gives %s Home the same phone shell as every other tab', role => {
+it.each(['MANAGER','OWNER','EMPLOYEE','LEAD'] as const)('gives %s Home the same phone shell as every other tab', role => {
   expect(render(role, '/app').html).toContain('data-mobile-workforce="true"');
 });
 it.each(['/app/schedule','/app/availability','/app/requests','/app/settings/locations/loc-1','/app/profile'])('scopes the remaining mobile variant to the actual %s destination', pathname => {

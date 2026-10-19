@@ -23,6 +23,7 @@ import type {PrivatePanelState} from '../lib/private-snapshot-client';
 import type {EmployeeViewSnapshot,NotificationReviewState,NotificationActionState} from '../lib/employee-view';
 import {filterNotifications,groupNotifications,notificationPresentation,type NotificationFilter} from '../lib/notification-inbox-view';
 import styles from './notification-inbox.module.css';
+import {KeepSelectedVisible} from './kit/keep-selected-visible';
 
 const icons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:WarningCircleIcon,device:DeviceMobileIcon,operations:ListChecksIcon,payroll:WalletIcon,statement:ReceiptIcon};
 const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
@@ -62,7 +63,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
   {ready?<>
    {ready.coverage==='partial'?<div className={styles.notice} role="status"><WarningCircleIcon size={20} aria-hidden="true"/><p><strong>Some updates could not be checked.</strong> Some notifications are unavailable or outside this bounded view. Retry to check current access.</p></div>:null}
    <div className={styles.controls}>
-    <div className={styles.filters} role="group" aria-label="Filter notifications">{filters.map(option=><button key={option.value} type="button" aria-pressed={filter===option.value} onClick={()=>setFilter(option.value)}>{option.label}<span className={styles.count}>{counts?.[option.value]}</span></button>)}</div>
+    <div className={styles.filters} role="group" aria-label="Filter notifications">{filters.map(option=><button key={option.value} type="button" aria-pressed={filter===option.value} onClick={()=>setFilter(option.value)}>{option.label}<span className={styles.count}>{counts?.[option.value]}</span></button>)}<KeepSelectedVisible/></div>
     <label className={styles.search}><MagnifyingGlassIcon size={18} aria-hidden="true"/><span className={styles.srOnly}>Search notifications</span><input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search this inbox"/></label>
    </div>
    <p className={styles.viewCount} role="status" aria-live="polite">{items.length} {items.length===1?'notification':'notifications'} in this view{filter==='required'?' · Action required':filter==='unread'?' · Unread':''}</p>
@@ -81,7 +82,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
      </Link>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${item.label} read`}>{pendingRead===item.id?'Marking read…':'Mark read'}</button>:null}</li>;
     })}</ul>
    </section>)}</div>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="regular" aria-hidden="true"/></span>
-    <h3>{search?'No matching notifications':filter==='unread'?'No unread notifications in this view':filter==='required'?'No notifications requiring action in this view':ready.coverage==='complete'?'No notifications in this current view.':'No available notifications to show'}</h3>
+    <h3>{search?'No matching notifications':filter==='unread'?'No unread notifications in this view':filter==='required'?'No notifications requiring action in this view':ready.coverage==='complete'?'No notifications here.':'No available notifications to show'}</h3>
     <p>{search?'Try another search, or clear it to see your updates.':ready.coverage==='partial'?'This view is incomplete. Retry to check what is available.':'Check Requests and Schedule for their current status.'}</p>
     {search?<button type="button" className={styles.secondary} onClick={()=>setSearch('')}>Clear search</button>:filter!=='all'?<button type="button" className={styles.secondary} onClick={()=>setFilter('all')}>View all notifications</button>:null}
    </div>}

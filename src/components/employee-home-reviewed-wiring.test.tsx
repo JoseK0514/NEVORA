@@ -44,9 +44,9 @@ function adapter(state: PrivatePanelState<HomeLifetime>, extra: Partial<Paramete
 
 const html = (state: PrivatePanelState<HomeLifetime>, extra: Partial<Parameters<typeof EmployeeHomeReviewedRenderer>[0]> = {}) => renderToStaticMarkup(adapter(state, extra));
 function suppressPrivate(markup: string) {
-  for (const value of ['PRIVATE_ASSIGNMENT_LOCATION', 'PRIVATE_ACTION', 'private-request', '2030-10-08', '1 action', 'data-home-updated', at]) expect(markup).not.toContain(value);
+  for (const value of ['PRIVATE_ASSIGNMENT_LOCATION', 'PRIVATE_ACTION', 'private-request', '2030-10-08', '1 item', 'data-home-updated', at]) expect(markup).not.toContain(value);
   expect(markup).not.toContain('data-home-group=');
-  expect(markup).not.toContain('Clocked In');
+  expect(markup).not.toContain('Clocked in');
 }
 function clockRegion(markup: string) {
   const region = markup.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/);
@@ -69,8 +69,8 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     expect(slot.props).toEqual({compact: true, authority: timeAuthority});
     const markup = html(state);
     expect(markup).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(markup).toContain('PRIVATE_ACTION');
-    expect(markup).toContain('data-home-group="actions"'); expect(markup).toContain('1 action');
-    expect(markup).toContain('Loading recorded time'); expect(markup).not.toContain('Clocked In');
+    expect(markup).toContain('data-home-group="actions"'); expect(markup).toContain('1 item');
+    expect(markup).toContain('Loading recorded time'); expect(markup).not.toContain('Clocked in');
     expect(markup).not.toContain(authority); expect(markup).not.toContain(timeAuthority);
   });
 
@@ -85,7 +85,7 @@ describe('reviewed Home renderer uses the original release boundary', () => {
   it('suppresses retained ready data and the clock component immediately on pause', () => {
     const state = {...released(), paused: true}, view = adapter(state);
     expect(view.props.home).toBeNull(); expect(view.props.status).toBe('paused'); expect(view.props.ownTimeSlot).toBeNull();
-    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Home paused');
+    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Paused while you’re away');
     expect(clockRegion(markup)).toContain('Updates paused'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
     expect(clockRegion(markup)).toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);
   });
@@ -118,13 +118,13 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     expect(view.props.status).toBe('ready'); expect(view.props.refreshing).toBe(true); expect(view.props.ownTimeSlot).not.toBeNull();
     const markup = html(state); expect(markup).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(markup).toContain('PRIVATE_ACTION');
     expect(markup).toMatch(/data-home-refresh="true"[^>]*disabled/); expect(markup).toContain('Checking');
-    const clock = clockRegion(markup); expect(clock).toContain('Loading recorded time'); expect(clock).not.toContain('Clocked In');
+    const clock = clockRegion(markup); expect(clock).toContain('Loading recorded time'); expect(clock).not.toContain('Clocked in');
   });
 
   it('preserves canonical partial coverage and its clock without promoting known counts to all-clear', () => {
     const input = snapshot(); input.sources.communications = {...input.sources.communications, state: 'partial', reason: 'source_cap'};
     const state = released(input), view = adapter(state); expect(view.props.status).toBe('partial'); expect(view.props.ownTimeSlot).not.toBeNull();
-    const markup = html(state); expect(markup).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(markup).toContain('1 known action');
+    const markup = html(state); expect(markup).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(markup).toContain('1 known item');
     expect(markup).toContain('partially shown — more records are available'); expect(markup).not.toContain('all set');
     expect(markup).toContain('href="/app/updates"'); expect(markup).toContain('Loading recorded time');
   });

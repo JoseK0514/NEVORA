@@ -50,5 +50,5 @@ export async function readEmployeeSchedule(proof:SessionMutationProof,weekStart:
 }
 
 export function emptyScheduleLabel(state:EmployeeScheduleState){
- return state==='published'?'Off — no assignment':state==='unpublished'?'Schedule not published yet':'Schedule unavailable — try again';
+ return state==='published'?'Off — no assignment':state==='unpublished'?'Schedule not published yet':'–';
 }

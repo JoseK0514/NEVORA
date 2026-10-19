@@ -14,8 +14,8 @@ export function RequestHub({ modules = ALL_MODULES_ON }: { modules?: EnabledModu
   const purpose = modules.timeOff && modules.marketplace ? "Ask for time off or change a shift." : modules.timeOff ? "Ask for time off." : modules.marketplace ? "Change one of your shifts." : "Tell your manager when you can work.";
   return (
     <div className="nv-page employee-view request-hub premium-request-hub" data-nv-page="">
-      <PageBand title="Requests" summary={purpose} />
-      <KitStack>
+      <PageBand title="Requests" summary={purpose} overlap={false} />
+      <KitStack className="premium-employee-flat">
         <Card title="Start a request" id="request-hub-start">
           <Rows label="Start a request">
             {modules.timeOff ? <Row href="/app/requests?tab=new" title="Request time off" meta="A full day or a few hours" leading={<Tile><CalendarMinusIcon size={20} /></Tile>} /> : null}

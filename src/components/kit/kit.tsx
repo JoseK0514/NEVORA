@@ -364,16 +364,16 @@ export function Money({ amount, currency = "USD", locale = "en-US" }: { amount: 
   );
 }
 
-/** Hours and minutes with small units: "38h 30m". */
+/** Hours and minutes with small units: "38h 30m", "8h", "45m" (the same as durationText). */
 export function Duration({ minutes }: { minutes: number }) {
   const total = Math.max(0, Math.round(minutes));
   const hours = Math.floor(total / 60);
   const rest = total % 60;
-  const spoken = `${hours} ${hours === 1 ? "hour" : "hours"}${rest ? ` ${rest} ${rest === 1 ? "minute" : "minutes"}` : ""}`;
+  const spoken = [hours || !rest ? `${hours} ${hours === 1 ? "hour" : "hours"}` : "", rest ? `${rest} ${rest === 1 ? "minute" : "minutes"}` : ""].filter(Boolean).join(" ");
   return (
     <span className="nv-figure">
       <span className="nv-sr">{spoken}</span>
-      <span aria-hidden="true">{hours}<span className="nv-figure__unit">h</span>{rest ? <> {rest}<span className="nv-figure__unit">m</span></> : null}</span>
+      <span aria-hidden="true">{hours || !rest ? <>{hours}<span className="nv-figure__unit">h</span></> : null}{rest ? <>{hours ? " " : ""}{rest}<span className="nv-figure__unit">m</span></> : null}</span>
     </span>
   );
 }

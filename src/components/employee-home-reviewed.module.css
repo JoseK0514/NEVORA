@@ -34,8 +34,8 @@
 .arrival h1 { font-size: 1.625rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.25; text-wrap: balance; }
 .arrival p { margin-top: 6px; color: #FFFFFF; font-size: .8125rem; }
 .content { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: -28px; padding-inline: 20px; }
-.primary, .secondary { display: grid; align-content: start; gap: 20px; min-width: 0; }
-.secondary { gap: 24px; }
+.mainColumn, .sideColumn { display: grid; align-content: start; gap: 20px; min-width: 0; }
+.sideColumn { gap: 24px; }
 .assignment { min-width: 0; padding: 18px 20px 10px; border-radius: 12px; background: white; box-shadow: var(--home-card-shadow); }
 .assignmentHeader { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
 .assignmentHeader h2 { color: var(--home-muted); font-size: 1rem; font-weight: 500; line-height: 1.5; }
@@ -111,7 +111,7 @@
 .freshness small { color: var(--home-muted); font-size: .75rem; overflow-wrap: anywhere; }
 .refreshButton { min-height: 44px; padding: 8px 4px; border: 0; border-radius: 4px; color: var(--home-blue); background: transparent; font: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; }
 .refreshButton:disabled { color: var(--home-muted); cursor: default; }
-.recovery { min-height: 96px; padding-block: 8px 16px; font-size: 1rem; }
+.recovery { min-height: 96px; padding-block: 0 24px; font-size: 1rem; }
 .loadingLines { display: grid; gap: 10px; margin-top: 16px; }
 .loadingLines span { display: block; width: 82%; height: 18px; border-radius: 4px; background: #e8eaf0; }
 .loadingLines span:nth-child(2) { width: 60%; height: 32px; }
@@ -129,7 +129,7 @@
   .arrival h1 { font-size: 1.875rem; }
   .arrival p { font-size: .875rem; }
   .content { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 28px; padding-inline: 24px; }
-  .secondary { padding-top: 28px; }
+  .sideColumn { padding-top: 28px; }
   .assignment { padding: 22px 24px 12px; }
   .interval { font-size: 1.875rem; }
   .freshness { grid-column: 1 / -1; }
@@ -159,7 +159,7 @@
   .arrival h1 { font-size: 1.75rem; font-weight: 500; letter-spacing: -.02em; }
   .arrival p { color: var(--home-muted); }
   .content { margin-top: 0; padding-inline: 0; column-gap: 40px; }
-  .secondary { padding-top: 0; }
+  .sideColumn { padding-top: 0; }
   .assignment, .recordedSlot, .actions { box-shadow: none; border: 1px solid var(--home-border); }
 }
 
@@ -306,3 +306,7 @@
 .todoJump { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 4px; color: var(--home-blue); font-size: .9375rem; font-weight: 600; text-decoration: none; }
 .todoJump::after { content: '↓' / ''; }
 .todoJump:focus-visible { outline: 2px solid var(--home-blue); outline-offset: 2px; border-radius: 4px; }
+/* P3-ST-01: on a cold load the pass's real height isn't known until Home is read (a shift, no shift, a partial week),
+ * so the cards under it keep their space but stay invisible until it resolves; nothing visible moves. After a pause
+ * the pass holds its exact height (data-held), so the cards stay visible. */
+.root[data-home-state="loading"]:has([data-pass]:not([data-held])) :is(.recordedSlot, .sideColumn, .freshness) { visibility: hidden; }

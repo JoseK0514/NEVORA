@@ -1,6 +1,7 @@
 'use client';
 
 import {PageBand} from './kit/kit';
+import {KeepSelectedVisible} from './kit/keep-selected-visible';
 import Link from 'next/link';
 import {useState} from 'react';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
@@ -43,10 +44,11 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   <div className="nv-page premium-updates" data-nv-page="">
   <PageBand title="Updates" summary="Workplace news and notes, all in one place." overlap={false}/>
   <div className="premium-employee-content">
-  <Link className="nv-btn updates-compose" data-kind="secondary" href="/app/updates/compose"><NavIcon name={mode === 'manager' ? 'updates' : 'employees'} />{mode === 'manager' ? 'Create update' : "Message today's team"}</Link>
+  <Link className="nv-btn updates-compose" data-kind="secondary" href="/app/updates/compose"><NavIcon name={mode === 'manager' ? 'updates' : 'employees'} />{mode === 'manager' ? 'Create update' : "Message today’s team"}</Link>
   <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
    <div className="updates-toolbar">
-    {current ? <fieldset className="updates-filters"><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{option.count}</span></button>)}</fieldset> : <h2>Your updates</h2>}
+    {/* P3-ST-05: the filters are there from the first frame (disabled, counts "–" until read), so the list never jumps down. */}
+    <fieldset className="updates-filters" disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
     <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : 'Refresh updates'}</span></button>
    </div>
    {current?.state === 'partial' ? <p className="updates-partial" role="status"><NavIcon name="alert" />Some updates are unavailable or outside this view. Refresh to check current information.</p> : null}

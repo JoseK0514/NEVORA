@@ -30,7 +30,7 @@ export default async function ProfilePage(){
     <Link className="profile-setting-row" href="/app/notifications"><span className="profile-setting-copy"><NavIcon name="notifications" size={20}/><span><strong>Notifications</strong><small>Updates about your schedule and requests</small></span></span><CaretRightIcon className="profile-setting-caret" size={18} aria-hidden="true"/></Link>
     {notificationsEnabled
      ? <button type="button" className="profile-setting-row" popoverTarget="portal-device-settings"><span className="profile-setting-copy"><NavIcon name="settings" size={20}/><span><strong>Alerts on this device</strong><small>Choose how this device alerts you</small></span></span><CaretRightIcon className="profile-setting-caret" size={18} aria-hidden="true"/></button>
-     : <p className="profile-setting-note">Alerts on this device aren&apos;t turned on for your workplace yet.</p>}
+     : <p className="profile-setting-note">Alerts on this device aren’t turned on for your workplace yet.</p>}
     <ProfileCalendarDisclosure>
      <CalendarSubscriptionPanel key={calendarAuthority(proof)} authority={calendarAuthority(proof)}/>
     </ProfileCalendarDisclosure>

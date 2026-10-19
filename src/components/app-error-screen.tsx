@@ -3,6 +3,7 @@ import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockw
 import '@/components/kit/kit.css';
 import './app-error-screen.css';
 import { CardBody, KitStack, Masthead } from '@/components/kit/kit';
+import { focusAfterRetry } from '@/components/kit/focus-after-retry';
 
 /** WR-57/58: the screen for failures above the portal's own boundary (app/app/error.tsx).
  * Same words as that boundary, drawn with the kit itself: the teal band with the wordmark, a white card, kit buttons. */
@@ -16,7 +17,7 @@ export function AppErrorScreen({reset}: {reset: () => void}) {
         <CardBody>
           <p className="app-error-screen__text">Try loading the page again before taking an action.</p>
           <div className="app-error-screen__actions">
-            <button type="button" className="nv-btn" data-kind="primary" onClick={reset}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
+            <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry('[data-nv-page] [data-nv-band] h1', '.app-error-screen .nv-btn[data-kind="primary"]'); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
             {/* A plain link: the app shell itself may be what failed, so leave it with a full load. */}
             <a className="nv-btn" data-kind="secondary" href="/app">Back to home</a>
           </div>

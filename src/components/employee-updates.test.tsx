@@ -32,7 +32,7 @@ it('hides private rows and counts on pause, and preserves refresh and compose re
  const html = await render({paused: true});
  expect(html).not.toContain(update.title);
  expect(html).not.toContain(update.id);
- expect(html).not.toContain('updates-filter-count');
+ expect(html).not.toMatch(/updates-filter-count">\d/); expect(html).toContain('updates-filter-count">–');
  expect(html).toContain('Updates paused');
  expect(html).toContain('/app/updates/compose');
 });

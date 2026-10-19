@@ -24,7 +24,7 @@ it.each(['Retry','scheduled revalidation'])('clears source-expired rows without 
  await vi.advanceTimersByTimeAsync(101);
  expect(last().snapshot).toEqual({state:'unavailable',reason:'read_failed'});expect(html()).not.toContain('notificationId=expiring');expect(html()).not.toContain('Sign in');expect(html()).toContain('Retry');
  if(recovery==='Retry'){panel.props.onRetry();await vi.advanceTimersByTimeAsync(0);}else await vi.advanceTimersByTimeAsync(30000);
- expect(request).toHaveBeenCalledTimes(2);expect(last().snapshot).toMatchObject({state:'ready',items:[]});expect(html()).toContain('No notifications in this current view.');expect(host.states.some(state=>state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied')).toBe(false);
+ expect(request).toHaveBeenCalledTimes(2);expect(last().snapshot).toMatchObject({state:'ready',items:[]});expect(html()).toContain('No notifications here.');expect(host.states.some(state=>state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied')).toBe(false);
 });
 
 it.each([401,403])('still clears and denies when current revalidation actually returns HTTP %s',async status=>{

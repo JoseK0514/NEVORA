@@ -14,7 +14,16 @@ const shapes: [string, Shape][] = [
   ["/app/timecards", { route: "timecards", label: "timecards", shape: "list", band: 172, overlap: false }],
   ["/app/payroll-export", { route: "exports", label: "time exports", shape: "cards", band: 152, overlap: false }],
   ["/app/payroll", { route: "payroll", label: "payroll", shape: "cards", band: 152, overlap: false }],
+  ["/app/requests/hub", { route: "hub", label: "requests", shape: "list", band: 104, overlap: false }],
   ["/app/requests", { route: "review", label: "time off", shape: "list", band: 264 }],
+  // Employee and Lead pages (Phase 3): flat bands; the employee shell sets their heights in CSS.
+  ["/app/exchange", { route: "exchange", label: "shift requests", shape: "list", band: 236, overlap: false }],
+  ["/app/availability", { route: "availability", label: "availability", shape: "cards", band: 192, overlap: false }],
+  ["/app/my-time", { route: "mytime", label: "your time", shape: "cards", band: 172, overlap: false }],
+  ["/app/my-pay", { route: "mypay", label: "your pay", shape: "cards", band: 128, overlap: false }],
+  ["/app/profile", { route: "profile", label: "profile", shape: "cards", band: 128, overlap: false }],
+  ["/app/updates", { route: "updates", label: "updates", shape: "list", band: 128, overlap: false }],
+  ["/app/notifications", { route: "notifications", label: "notifications", shape: "list", band: 128, overlap: false }],
 ];
 const home: Shape = { route: "home", label: "your workspace", shape: "cards", band: 220 };
 

@@ -91,7 +91,7 @@ describe('released Home data and navigation', () => {
     expect(denied).not.toContain('Private own recorded-time slot');
     expect(denied).not.toContain('Alexandra');
     const failed = html(props({state: 'unavailable', reason: 'read_failed'}, {status: 'ready'}));
-    expect(failed).toContain('Home unavailable');
+    expect(failed).toContain('Couldn’t load your shift');
     expect(failed).not.toContain('Private own recorded-time slot');
   });
 
@@ -163,7 +163,7 @@ describe('released Home data and navigation', () => {
     expect(actions).toContain('Respond by');
     expect(updates).not.toContain('Respond by');
     expect(updates).toContain('Recorded');
-    expect(markup).toContain('2 actions');
+    expect(markup).toContain('2 items');
     expect(markup).toContain('1 item');
   });
 
@@ -185,7 +185,7 @@ describe('released Home data and navigation', () => {
   it('keeps every projected row and independent native disclosure in each overflow group', () => {
     const rows = Array.from({length: 9}, (_, index) => item(`i${index}`, {actionable: index < 4}));
     const markup = html(props(projectEmployeeHome(snapshot({attention: rows}))));
-    expect(group(markup, 'actions')).toContain('View all actions');
+    expect(group(markup, 'actions')).toContain('View all items');
     expect(group(markup, 'updates')).toContain('View all activity');
     expect(markup.match(/<details /g)).toHaveLength(2);
     for (const row of rows) expect(markup).toContain(row.href.replaceAll('&', '&amp;'));
@@ -201,7 +201,7 @@ describe('truthful source states and refresh intent', () => {
     current.sources.communications = {...current.sources.communications, state: 'partial', reason: 'source_cap'};
     const partial = html(props(projectEmployeeHome(current)));
     expect(partial).not.toContain("You're all set.");
-    expect(partial).toContain('0 known actions');
+    expect(partial).toContain('0 known items');
     expect(partial).toContain('partially shown — more records are available');
     expect(partial).toContain('Open communications');
     expect(partial).toContain('href="/app/updates"');
@@ -275,9 +275,9 @@ describe('original redacted clock recovery preservation',()=>{
   const slot=<EmployeeTimeView compact state={{time,paused:false,refreshing:false}} onRefresh={()=>{}}/>;
   const released=props(projectEmployeeHome(snapshot({attention:[item('privacy-item',{actionable:true})]})),{ownTimeSlot:slot});
   const control=html(released);
-  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 action','data-home-updated',at,'Hi, Alexandra.'])expect(control).toContain(field);
+  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra.'])expect(control).toContain(field);
   const lost=html({...released,status});
-  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 action','data-home-updated',at,'Hi, Alexandra.','Clocked In'])expect(lost).not.toContain(field);
+  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra.','Clocked in'])expect(lost).not.toContain(field);
   const clock=lost.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/)![1];
   expect(clock).toContain('href="/app/my-time"');
   if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign In');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
@@ -316,9 +316,9 @@ describe('Today Home (U2)', () => {
     expect([...order].sort((a, b) => a - b)).toEqual(order);
   });
   it('words the countdown for a glance', () => {
-    expect(untilLabel(25 * 60_000)).toBe('25 min');
-    expect(untilLabel(9 * 3_600_000 + 11 * 60_000)).toBe('9 h 11 min');
-    expect(untilLabel(5 * 3_600_000)).toBe('5 h');
+    expect(untilLabel(25 * 60_000)).toBe('25m');
+    expect(untilLabel(9 * 3_600_000 + 11 * 60_000)).toBe('9h 11m');
+    expect(untilLabel(5 * 3_600_000)).toBe('5h');
     expect(untilLabel(30 * 3_600_000)).toBe('1 day');
     expect(untilLabel(80 * 3_600_000)).toBe('3 days');
   });

@@ -72,7 +72,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
   const targets=useMemo<Target[]>(()=>{
     if(!entry.clockOutAt)return [];
     return [
-      {key:'entry',label:'Clock in / Clock out',kind:'ENTRY_BOUNDARY',startAt:entry.clockInAt,endAt:entry.clockOutAt},
+      {key:'entry',label:'Clock in / clock out',kind:'ENTRY_BOUNDARY',startAt:entry.clockInAt,endAt:entry.clockOutAt},
       ...entry.breaks.filter((item)=>item.endAt!==null).map((item)=>({
         key:`break:${item.id}`,
         label:item.name ? `${item.name} break` : 'Recorded break',
@@ -171,7 +171,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
   const feedback=busy?null:retry?{state:'outcome_unknown' as const,operationId:retry.operationId}:result;
   return <div className="employee-time-correction">
     <button className="employee-time-correction-trigger" type="button" aria-expanded={open} aria-controls={formId} onClick={()=>{setOpen(value=>!value);setStart('');setEnd('');setResult(current=>current?.state==='outcome_unknown'?current:null);}}>
-      {open?'Cancel correction':'Request correction'}
+      {open?'Cancel correction':'Request a correction'}
     </button>
     {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}</p>:null}
     {retry?<button className="employee-time-correction-retry" type="button" disabled={busy} onClick={()=>void send(retry)}>Retry same request</button>:null}
@@ -283,7 +283,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
     <header className="employee-time-section-heading">
       <div><h2 id="employee-corrections-title">Corrections</h2><p>Your manager reviews each request. Your original times are kept.</p></div>
       <button className="employee-time-correction-trigger" type="button" aria-expanded={open} aria-controls="employee-missing-time-correction" onClick={()=>{setOpen(value=>!value);setReplacementTarget(null);setStart('');setEnd('');setReason('');}} disabled={!ready||ready.locations.length===0}>
-        {open?'Cancel':'Report missing time'}
+        {open?'Cancel':'Request a correction'}
       </button>
     </header>
     {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}</p>:null}
@@ -306,7 +306,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
       snapshot?.state==='unavailable'?<p className="employee-time-empty">Correction history is unavailable right now.</p>:
       recent.length?<div className="employee-correction-history">
         {recent.map((item)=><div className="employee-correction-history-row" key={item.id}>
-          <div><strong>{item.kind==='MISSING_ENTRY'?'Missing time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / Clock out'}</strong><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
+          <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
             <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={zone}/>
             <p className="employee-time-correction-note">{item.status==='PENDING'?'Pending proposal':item.status==='APPROVED'?'Approved proposal':'Declined proposal'} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}{item.status==='REJECTED'?' · does not change effective time':''}</p>
             <PriorCorrectionDecisions context={item.context} zone={zone}/>

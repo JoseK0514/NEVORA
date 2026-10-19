@@ -1,3 +1,4 @@
+import {durationText} from './duration-text';
 import {Temporal} from '@js-temporal/polyfill';
 
 export type EmployeeBreak={id:string;startAt:string;endAt:string|null;name:string|null;elapsedSeconds:number};
@@ -84,5 +85,5 @@ export function parseEmployeeTime(source:unknown):EmployeeTime{
 }
 export function formatRecordedDuration(value:number):string{
  if(!integer(value))return fail();const minutes=Math.floor(value/60);
- return value>0&&minutes===0?'<1m':minutes<60?`${minutes}m`:`${Math.floor(minutes/60)}h ${minutes%60}m`;
+ return value>0&&minutes===0?'<1m':durationText(minutes);
 }

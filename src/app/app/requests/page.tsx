@@ -60,7 +60,7 @@ export default async function RequestsPage({
   return (
     <TimeOffMotion><div className="nv-page timeoff-page employee-view employee-timeoff-view nto-page premium-employee-timeoff" data-nv-page="">
       <PageBand title="Time off" overlap={false}
-        summary={waiting ? `${waiting}\u00a0${waiting === 1 ? "request is" : "requests are"} waiting on your manager.` : "Plan your time away. Keep every request in one place."}
+        summary={waiting ? `${waiting}\u00a0${waiting === 1 ? "request" : "requests"} waiting for approval.` : "Plan your time away."}
         extra={<FilterPills label="Time off sections" items={[
           { href: "/app/requests?tab=new", label: "New request", current: activeTab === "new" },
           { href: "/app/requests?tab=my", label: `My requests${mine.length ? ` (${mine.length})` : ""}`, current: activeTab === "my" },

@@ -11,7 +11,7 @@ import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 import {employeeButtonClass} from './employee-corporate-ui';
 import {timeZoneLabel} from '../lib/time-zone-label';
 
-const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off Clock':entry.state==='ON_BREAK'?'On Break':'Clocked In';
+const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off clock':entry.state==='ON_BREAK'?'On break':'Clocked in';
 /** Freshness needs minutes, not seconds: "Oct 15, 7:31 PM". */
 function checked(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));}
 function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at));}
@@ -32,9 +32,9 @@ function EntryDetails({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
    <span className="employee-time-disclosure" aria-hidden="true"><PlusIcon className="entry-expand" size={18}/><MinusIcon className="entry-collapse" size={18}/></span>
   </summary>
   <div className="employee-time-punches">
-   <dl><div><dt>Clock In</dt><dd><time dateTime={entry.clockInAt}>{stamp(entry.clockInAt,zone)}</time></dd></div>
+   <dl><div><dt>Clock in</dt><dd><time dateTime={entry.clockInAt}>{stamp(entry.clockInAt,zone)}</time></dd></div>
    {entry.breaks.map(b=><div className="employee-time-break" key={b.id}><dt>{b.name??'Break'}</dt><dd><time dateTime={b.startAt}>{stamp(b.startAt,zone)}</time><span> → {b.endAt?<time dateTime={b.endAt}>{stamp(b.endAt,zone)}</time>:'In progress'}</span><small>{formatRecordedDuration(b.elapsedSeconds)} recorded break</small></dd></div>)}
-   <div><dt>Clock Out</dt><dd>{entry.clockOutAt?<time dateTime={entry.clockOutAt}>{stamp(entry.clockOutAt,zone)}</time>:'Not recorded yet'}</dd></div></dl>
+   <div><dt>Clock out</dt><dd>{entry.clockOutAt?<time dateTime={entry.clockOutAt}>{stamp(entry.clockOutAt,zone)}</time>:'Not recorded yet'}</dd></div></dl>
    <p>Entry elapsed time: {formatRecordedDuration(entry.elapsedSeconds)} · Breaks: {formatRecordedDuration(entry.breakSeconds)}</p>
    <EmployeeEntryCorrection entry={entry} zone={zone}/>
   </div>
@@ -46,21 +46,26 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
  const ready=!paused&&time?.state==='ready'?time:null;
  const denied=time?.state==='unavailable'&&time.reason==='access_denied';
  const current=ready?.current??null;
+ const placeholder=!ready&&!compact&&!paused&&!denied&&time?.state!=='unavailable';
  const title=paused?'Updates paused':denied?'Sign in again':time?.state==='unavailable'?'Recorded time unavailable':'Loading recorded time';
  const controls=<div className="employee-time-controls">
   {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign In</Link>:<button className={corporate?employeeButtonClass('quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label="Refresh recorded time" onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{refreshing?'Refreshing…':'Refresh'}</button>}
   {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
  </div>;
  const content=<>
-  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:null}</div>
+  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:<span className="employee-time-badge" aria-hidden="true">–</span>}</div>
   {ready?<>
    {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p><time dateTime={current.clockInAt}>{stamp(current.clockInAt,ready.timeZone)}</time> · Clock In</p><p><b>{formatRecordedDuration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<> · <b>{formatRecordedDuration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
-  </>:<div className="employee-time-message" role="status"><strong>{title}</strong><p>{paused?'Return online to check your latest records.':denied?'Your current employee session is required.':time?.state==='unavailable'?'Your latest clock records could not be confirmed. Try refreshing.':'Checking your actual punches and breaks.'}</p></div>}
+  </>:<div className="employee-time-message" role="status"><strong>{title}</strong><p>{paused?'Return online to check your latest records.':denied?'Your current employee session is required.':time?.state==='unavailable'?(compact?'Couldn’t check your records. Try again.':'Your latest clock records could not be confirmed. Try refreshing.'):'Checking your actual punches and breaks.'}</p></div>}
   <p className="employee-time-note">Use your location’s Clocker to record punches.</p>
-  <footer className="employee-time-footer"><small className={corporate&&ready?'employee-corporate-desktop-copy':undefined}>{ready?<>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time>{!compact?<span>{timeZoneLabel(ready.timeZone)} · Updates every 30s while active.</span>:null}</>:'Only recorded punches appear here.'}</small>
+  {/* P3-ST-06: while loading, the full footer has the ready footer's lines (an invisible stand-in for the zone line), so it doesn't change height. */}
+  <footer className="employee-time-footer"><small className={corporate&&(ready||placeholder)?'employee-corporate-desktop-copy':undefined}>{ready?<><span>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time></span>{!compact?<><span>{timeZoneLabel(ready.timeZone)}</span><span>Updates every 30s while active.</span></>:null}</>:placeholder?<><span className="employee-time-footer-placeholder" aria-hidden="true">Updated <time>Oct 00, 0:00 AM</time></span><span className="employee-time-footer-placeholder" aria-hidden="true">Local area time</span><span className="employee-time-footer-placeholder" aria-hidden="true">Updates every 30s while active.</span></>:'Only recorded punches appear here.'}</small>
+   {/* P3-ST-06: the corporate footer keeps its freshness line and Record details row while loading, so it doesn't grow. */}
+   {corporate&&!ready&&!compact&&!paused&&!denied&&time?.state!=='unavailable'?<div className="employee-corporate-freshness" aria-hidden="true"><p>Updated –</p></div>:null}
    {corporate&&ready&&!compact?<div className="employee-corporate-freshness">
     <p>Updated <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(ready.observedAt))}</time></p>
    </div>:null}{controls}
+   {corporate&&!ready&&!compact&&!paused&&!denied&&time?.state!=='unavailable'?<details className="employee-corporate-record-details" aria-hidden="true"><summary tabIndex={-1}>Record details <CaretDownIcon size={16} aria-hidden="true"/></summary></details>:null}
    {corporate&&ready&&!compact?<details className="employee-corporate-record-details"><summary>Record details <CaretDownIcon size={16} aria-hidden="true"/></summary><div><p>Updated <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{timeZoneLabel(ready.timeZone)} · Updates every 30s while active.</p></div></details>:null}</footer>
  </>;
  if(compact)return <div className="employee-clock-compact">{content}</div>;
@@ -79,7 +84,7 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
   {ready?<>
    <section className="employee-view-surface employee-time-recent" aria-labelledby="employee-time-recent-title">
     <header className="employee-time-section-heading"><h2 id="employee-time-recent-title"><span className="my-time-section-icon"><ReceiptIcon size={20} weight="duotone" aria-hidden="true"/></span>Recent entries</h2><span className="my-time-history-count">{ready.recent.total} {ready.recent.total===1?'entry':'entries'}</span></header>
-    {ready.recent.entries.length?<><p className="employee-time-note">Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p><div className="employee-time-entries">{ready.recent.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div></>:<p className="employee-time-empty">No earlier entries.</p>}
+    {ready.recent.entries.length?<><p className="employee-time-note">{ready.recent.entries.length===ready.recent.total?`Showing ${ready.recent.total} earlier ${ready.recent.total===1?'entry':'entries'}`:`Showing ${ready.recent.entries.length} of ${ready.recent.total} earlier entries`} · most recent first.</p><div className="employee-time-entries">{ready.recent.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div></>:<p className="employee-time-empty">No earlier entries.</p>}
    </section>
    <EmployeeCorrectionCenter zone={ready.timeZone}/>
   </>:null}

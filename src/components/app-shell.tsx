@@ -97,9 +97,13 @@ export function AppShell({
     function follow(event: FocusEvent) {
       const target = event.target instanceof HTMLElement ? event.target : null;
       if (!target) return;
-      const sheet = document.getElementById("manager-more-navigation");
-      if (sheet?.matches(":popover-open") && !sheet.contains(target) && !target.closest('[popovertarget="manager-more-navigation"]')) sheet.hidePopover();
-      if (target.closest(".nv-filters, .section-tabs-track, .segmented, .mws-day-navigation")) {
+      // IS-64: the employee More sheet follows the same rule as the manager's.
+      for (const id of ["manager-more-navigation", "employee-more-navigation"]) {
+        const sheet = document.getElementById(id);
+        if (sheet?.matches(":popover-open") && !sheet.contains(target) && !target.closest(`[popovertarget="${id}"]`)) sheet.hidePopover();
+      }
+      // IS-65: every sideways-scrolling pill row follows focus, Notifications' and Updates' filters included.
+      if (target.closest(".nv-filters, .section-tabs-track, .segmented, .mws-day-navigation, .my-week-days, .updates-filters, [class*='notification-inbox-module'][class*='__filters']")) {
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         target.scrollIntoView({ inline: "nearest", block: "nearest", behavior: reduce ? "auto" : "smooth" });
       }
@@ -161,8 +165,8 @@ export function AppShell({
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
-      // Managers and Owners get one phone shell on every tab, Home included (Phase 7, WR-03).
-      data-mobile-workforce={pathname && (pathname !== "/app" || !employee) ? "true" : undefined}
+      // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
+      data-mobile-workforce={pathname ? "true" : undefined}
       data-employee-corporate={user.role === "EMPLOYEE" && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}>
       <aside className="sidebar" data-collapsed={collapsed}>
         <div className="sidebar-heading">

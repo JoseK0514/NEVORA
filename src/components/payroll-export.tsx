@@ -125,7 +125,7 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
       <div className={styles.tableHeading} aria-hidden="true"><span>Employee</span><span>Recorded</span><span>Breaks</span></div>
       {cards?.map(c=><label className={`${styles.employee} ${c.state!=='FINALIZED'?styles.unavailable:''}`} key={c.card.employeeId}>
        <input type="checkbox" aria-label={`Export ${c.card.employeeName}`} disabled={c.state!=='FINALIZED'||locked||(!selected.includes(c.card.employeeId)&&selected.length>=100)} checked={selected.includes(c.card.employeeId)} onChange={e=>{setSelected(ids=>changeExportSelection(cards??[],ids,c.card.employeeId,e.target.checked));setResult(null);}} />
-       <span className={styles.employeeIdentity}><strong>{c.card.employeeName}</strong><small><span className={c.state==='FINALIZED'?styles.finalized:styles.status}>{c.state==='FINALIZED'&&<CheckCircleIcon size={12} weight="fill" aria-hidden="true" />}{c.state.toLowerCase().replaceAll('_',' ')}</span></small></span>
+       <span className={styles.employeeIdentity}><strong>{c.card.employeeName}</strong><small><span className={c.state==='FINALIZED'?styles.finalized:styles.status}>{c.state==='FINALIZED'&&<CheckCircleIcon size={12} weight="fill" aria-hidden="true" />}{c.state==='FINALIZED'?'Finalized':c.state==='DRAFT'?'Draft':c.state.charAt(0)+c.state.slice(1).toLowerCase().replaceAll('_',' ')}</span></small></span>
        <span className={styles.hours}><small>Recorded</small>{formatRecordedHours(c.card.recordedNanoseconds)}</span><span className={styles.hours}><small>Breaks</small>{formatRecordedHours(c.card.breakNanoseconds)}</span>
       </label>)}
      </div>}
