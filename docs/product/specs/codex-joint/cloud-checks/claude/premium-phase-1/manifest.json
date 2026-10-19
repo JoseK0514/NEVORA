@@ -7068,6 +7068,52 @@
       "code": 1,
       "passed": 0,
       "failed": 8
+    },
+    {
+      "name": "00308-matrix-QAOWNER-chromium-844x390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T22-52-20-380Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00308-matrix-QAOWNER-chromium-844x390.log",
+      "args": [
+        "--routes",
+        "/app,/app/account-recovery,/app/availability,/app/clocker-recovery",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "844x390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "952155a42ed2635910e8a11012ffc1d328941f1a0e189ec5a096d48fb305392a",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00309-matrix-QAOWNER-chromium-844x390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T22-53-22-397Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00309-matrix-QAOWNER-chromium-844x390.log",
+      "args": [
+        "--routes",
+        "/app/employees,/app/employees/AUDIT-LONG,/app/employees/AUDIT-LONG/clocker-pin,/app/employees/new",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "844x390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "c627fcf8318e841c81c41273a4b842c38c6ce113e568f7721730015eb9fb90aa",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12580,

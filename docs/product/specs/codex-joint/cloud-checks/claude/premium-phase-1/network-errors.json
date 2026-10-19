@@ -10134,5 +10134,229 @@
   "page": "/app/updates/compose",
   "path": "/api/manager/inbox-count",
   "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:20.827Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:24.050Z",
+  "account": "QAOWNER",
+  "page": "/app/account-recovery",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:27.107Z",
+  "account": "QAOWNER",
+  "page": "/app/availability",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:30.296Z",
+  "account": "QAOWNER",
+  "page": "/app/clocker-recovery",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:34.013Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:38.039Z",
+  "account": "QAOWNER",
+  "page": "/app/account-recovery",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:41.975Z",
+  "account": "QAOWNER",
+  "page": "/app/availability",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:46.107Z",
+  "account": "QAOWNER",
+  "page": "/app/clocker-recovery",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:51.311Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:54.847Z",
+  "account": "QAOWNER",
+  "page": "/app/account-recovery",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:51:58.447Z",
+  "account": "QAOWNER",
+  "page": "/app/availability",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:03.633Z",
+  "account": "QAOWNER",
+  "page": "/app/clocker-recovery",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:06.373Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:10.124Z",
+  "account": "QAOWNER",
+  "page": "/app/account-recovery",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:13.867Z",
+  "account": "QAOWNER",
+  "page": "/app/availability",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:17.498Z",
+  "account": "QAOWNER",
+  "page": "/app/clocker-recovery",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:21.730Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:25.319Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/AUDIT-LONG",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:29.436Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/AUDIT-LONG/clocker-pin",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:33.982Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:37.449Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:41.282Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/AUDIT-LONG",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:45.146Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/AUDIT-LONG/clocker-pin",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:48.767Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:52.557Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:52:56.486Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/AUDIT-LONG",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:53:00.416Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/AUDIT-LONG/clocker-pin",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:53:04.053Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:53:07.825Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:53:11.806Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/AUDIT-LONG",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:53:15.940Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/AUDIT-LONG/clocker-pin",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T22:53:19.541Z",
+  "account": "QAOWNER",
+  "page": "/app/employees/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
  }
 ]

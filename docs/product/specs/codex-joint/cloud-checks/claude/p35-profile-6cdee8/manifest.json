@@ -7183,6 +7183,75 @@
       "code": 0,
       "passed": 16,
       "failed": 0
+    },
+    {
+      "name": "00313-matrix-AUDIT-ON-chromium-844x390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T22-52-07-611Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00313-matrix-AUDIT-ON-chromium-844x390.log",
+      "args": [
+        "--routes",
+        "/app/schedule/coverage,/app/timecards,/app/updates,/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
+        "--accounts",
+        "AUDIT-ON",
+        "--widths",
+        "844x390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "6fe132007361d5a864e67c50908af1fa217e424d29d72234a9ef3008fde4fc34",
+      "code": 1,
+      "passed": 14,
+      "failed": 2
+    },
+    {
+      "name": "00314-matrix-AUDIT-ON-chromium-844x390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T22-52-22-631Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00314-matrix-AUDIT-ON-chromium-844x390.log",
+      "args": [
+        "--routes",
+        "/app/updates/compose",
+        "--accounts",
+        "AUDIT-ON",
+        "--widths",
+        "844x390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "0286e0107d703a185df301608e34cc864401f85b37531f075c11ba2229ff6cac",
+      "code": 1,
+      "passed": 2,
+      "failed": 2
+    },
+    {
+      "name": "00315-matrix-AUDIT-BREAK-chromium-844x390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T22-53-23-250Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00315-matrix-AUDIT-BREAK-chromium-844x390.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=x-audit-next-AUDIT-BREAK-0",
+        "--accounts",
+        "AUDIT-BREAK",
+        "--widths",
+        "844x390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "157fcb143d6d6abc36a845506feb69d07f25bd1ccc519e5ba0ebc7914dd07668",
+      "code": 1,
+      "passed": 14,
+      "failed": 2
     }
   ],
   "planned": 12716,
