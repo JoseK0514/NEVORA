@@ -232,3 +232,21 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
    * the phone's 150, so the setup and week cards don't jump up when what needs you arrives. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home .premium-skeleton--rows .premium-skeleton__row { min-height: 104px; }
 }
+
+/* Round 1, interaction fixes. */
+/* IS-P4-14: a skip link to the page, the first Tab stop on desktop; shown only while focused. Phones don't need it. */
+.app-shell.nevora-portal .portal-skip-link { display: none; }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .portal-skip-link {
+    display: inline-flex; align-items: center; position: fixed; z-index: 100; top: 12px; left: 12px; min-height: 44px; padding: 0 var(--nv-s-4);
+    border-radius: var(--nv-r-control); background: #FFFFFF; color: var(--nv-accent-strong); font: var(--nv-t-label); font-weight: 600; text-decoration: none;
+    box-shadow: var(--nv-e2); transform: translateY(-200%);
+  }
+  html body .app-shell.nevora-portal.nevora-portal .portal-skip-link:focus-visible { transform: none; outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+  /* IS-P4-12: whatever takes focus scrolls clear of the 65px sticky header. */
+  html:has(> body .app-shell.nevora-portal) { scroll-padding-top: calc(65px + var(--nv-s-4)); }
+}
+@media (min-width: 1024px) {
+  /* IS-P4-10: a waiting avatar keeps its disc on the selected row's wash. */
+  .premium-inbox .inbox-row[data-selected] > .nv-row .nv-avatar[data-waiting="true"] { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--nv-hairline); }
+}

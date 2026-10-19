@@ -101,12 +101,16 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
  </section>;
 }
 /** The live, authority-checked action center read shared by Home Tasks and the
- * Inbox. It pauses offline and in background tabs and never keeps stale items. */
+ * Inbox. It pauses offline and in background tabs and never keeps items past their validity. */
 export function useActionCenter(weekStart:string,actorId:string){
  const [snapshot,setSnapshot]=useState<ActionCenter|null>(null),[connection,setConnection]=useState<Connection>('loading');
  const controller=useRef<ReturnType<typeof createPrivateSnapshotController<ActionCenter>>|null>(null);
  useEffect(()=>{
-  const c=createPrivateSnapshotController<ActionCenter>(value=>{setSnapshot(value.refreshing?null:value.snapshot);if(value.paused)setConnection(navigator.onLine?'paused':'offline');else if(value.refreshing)setConnection(previous=>previous==='reconnecting'?'reconnecting':'loading');else if(value.snapshot?.state==='ready')setConnection('ready');else setConnection(value.snapshot?.state==='unavailable'&&value.snapshot.reason==='access_denied'?'access_lost':'unavailable');},async signal=>{
+  const c=createPrivateSnapshotController<ActionCenter>(value=>{
+   // IS-P4-01: a re-read (the 30-second poll or Refresh) keeps the confirmed read on screen until the new one lands. The controller still
+   // clears it when its validity runs out, when a read fails, offline and in the background, so nothing stale outlives its window.
+   if(value.refreshing&&!value.paused&&value.snapshot?.state==='ready')return;
+   setSnapshot(value.refreshing?null:value.snapshot);if(value.paused)setConnection(navigator.onLine?'paused':'offline');else if(value.refreshing)setConnection(previous=>previous==='reconnecting'?'reconnecting':'loading');else if(value.snapshot?.state==='ready')setConnection('ready');else setConnection(value.snapshot?.state==='unavailable'&&value.snapshot.reason==='access_denied'?'access_lost':'unavailable');},async signal=>{
    const response=await fetch('/api/manager/action-center',{method:'POST',credentials:'same-origin',cache:'no-store',signal,headers:{'Content-Type':'application/json','X-Nevora-Action-Center':'1','X-Nevora-Actor':actorId},body:JSON.stringify({weekStart})});
    if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};if(!response.ok)throw Error('Unavailable');return response.json();
   },value=>parseActionCenter(value,weekStart),reason=>({state:'unavailable',reason}),()=> 'read_failed');controller.current=c;

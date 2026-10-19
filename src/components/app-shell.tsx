@@ -4,7 +4,7 @@ import Link from "next/link";
 import { NotificationBell } from "./notification-bell";
 import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
@@ -23,6 +23,9 @@ import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
 import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
+
+/** Home's views share Home's address; the trail names them as their bands do. */
+const HOME_VIEWS = { attendance: "Attendance", team: "Team overview", activity: "Schedule activity" } as const;
 
 export function AppShell({
   children,
@@ -77,8 +80,11 @@ export function AppShell({
   // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
   const activeItem = activeGroup?.items.find(item => item.href === sidebarActive) ?? navigation.find(item => item.href === activeHref);
   const deeper = !!activeItem && pathname !== activeItem.href;
-  // A page whose own entry left the sidebar (Time off under Inbox, Time exports under Timecards) still ends the trail with its own name.
-  const pageItem = activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined;
+  // A page whose own entry left the sidebar (Time off under Inbox, Time exports under Timecards) still ends the trail with its own name,
+  // and so do Home's views (IS-P4-09), which share Home's address.
+  const view = useSearchParams()?.get("view");
+  const homeView = !employee && pathname === "/app" && view && view in HOME_VIEWS ? { href: `/app?view=${view}`, label: HOME_VIEWS[view as keyof typeof HOME_VIEWS] } : undefined;
+  const pageItem = homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined);
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
   // clear of the pinned Workspace group.
@@ -100,7 +106,8 @@ export function AppShell({
       const target = event.target instanceof HTMLElement ? event.target : null;
       if (!target) return;
       // IS-64: the employee More sheet follows the same rule as the manager's.
-      for (const id of ["manager-more-navigation", "employee-more-navigation"]) {
+      // IS-P4-03: the desktop account menu and device settings close the same way, so focus never sits behind them.
+      for (const id of ["manager-more-navigation", "employee-more-navigation", "portal-account-menu", "portal-device-settings"]) {
         const sheet = document.getElementById(id);
         if (sheet?.matches(":popover-open") && !sheet.contains(target) && !target.closest(`[popovertarget="${id}"]`)) sheet.hidePopover();
       }
@@ -170,6 +177,8 @@ export function AppShell({
       // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
       data-mobile-workforce={pathname ? "true" : undefined}
       data-employee-corporate={employee && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}>
+      {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
+      <a className="portal-skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar" data-collapsed={collapsed}>
         <div className="sidebar-heading">
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
@@ -190,7 +199,8 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 className={active ? "nav-link active" : "nav-link"}
-                aria-current={active ? "page" : undefined}
+                // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
+                aria-current={active ? (item.href === activeHref ? "page" : "true") : undefined}
                 aria-label={item.label}
                 title={collapsed ? item.label : undefined}
               >
@@ -235,8 +245,8 @@ export function AppShell({
             <ol className="portal-location">
               <li className="portal-location-workspace" title={workspaceName}>{workspaceName}</li>
               {activeGroup?.label ? <li>{activeGroup.label}</li> : null}
-              <li>{deeper ? <Link href={activeItem.href}>{activeItem.label}</Link> : <span aria-current="page">{activeItem.label}</span>}</li>
-              {pageItem ? <li>{pathname !== pageItem.href ? <Link href={pageItem.href}>{pageItem.label}</Link> : <span aria-current="page">{pageItem.label}</span>}</li> : null}
+              <li>{deeper || homeView ? <Link href={activeItem.href}>{activeItem.label}</Link> : <span aria-current="page">{activeItem.label}</span>}</li>
+              {pageItem ? <li>{!homeView && pathname !== pageItem.href ? <Link href={pageItem.href}>{pageItem.label}</Link> : <span aria-current="page">{pageItem.label}</span>}</li> : null}
             </ol>
           </nav> : null}
           <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>

@@ -69,14 +69,14 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         </section>
         {visibleEmployees.length ? <section className="nv-card" aria-labelledby="team-people-title">
           <div className="nv-card__head"><h2 className="nv-card__title" id="team-people-title">{words.people}</h2></div>
-          {/* Column names for the wide-screen table; each row's own label already says all of this aloud. */}
+          {/* Column names for the wide-screen table; each row's own label says the same four things aloud. */}
           <div className="premium-team-columns" aria-hidden="true"><span>Name</span><span>Role</span><span>{words.location}</span><span>Phone</span></div>
           <ul className="nv-rows" aria-label={words.people} data-row-nav="li">{visibleEmployees.map(employee => {
             const location = locationsById.get(employee.primaryLocationId);
             const name = `${employee.firstName} ${employee.lastName}`;
             const where = location ? `${location.shortName}${location.active ? "" : " (Inactive)"}` : "Location not assigned";
             return <li key={employee.id}>
-              <Link className="nv-row" data-leading="true" href={`/app/employees/${encodeURIComponent(employee.id)}`} aria-label={`${name}, ${employeeRoleLabel(employee.role)}, ${where}${employee.active ? "" : ", inactive"}`}>
+              <Link className="nv-row" data-leading="true" href={`/app/employees/${encodeURIComponent(employee.id)}`} aria-label={`${name}, ${employeeRoleLabel(employee.role)}, ${where}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}`}>
                 <span className="nv-avatar" aria-hidden="true">{employeeInitials(employee.firstName, employee.lastName)}</span>
                 <span className="nv-row__text">
                   <span className="nv-row__title premium-person-name">{name}</span>

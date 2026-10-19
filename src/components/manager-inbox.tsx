@@ -218,6 +218,12 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
     }
     column.style.minHeight = !ready && lastListHeight.current ? `${lastListHeight.current}px` : "";
   }, [showing, ready]);
+  // IS-P4-04: a selected row inside a closed group (a deep link, Back, or the Plan ahead fallback) opens its group, so it shows.
+  const shownKey = wide && current ? current.key : null;
+  useEffect(() => {
+    if (!shownKey) return;
+    document.querySelector<HTMLElement>(`[data-inbox-key="${CSS.escape(shownKey)}"]`)?.closest("details:not([open])")?.setAttribute("open", "");
+  }, [shownKey]);
   useEffect(() => {
     if (!focusPane.current) return;
     focusPane.current = false;
@@ -240,10 +246,11 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         <KeepSelectedVisible />
       </div> : null} />
     <KitStack>
-      <Selection.Provider value={{ selected: wide && current ? current.key : null, select }}>
+      <Selection.Provider value={{ selected: shownKey, select }}>
       {/* The pane's column is there in every state but "all caught up", so the list never changes width. */}
       <div className="inbox-columns" data-detail={!ready || total ? "true" : undefined}>
-      <div className="inbox-list-column" ref={listColumn}>
+      {/* IS-P4-06: Up and Down move between rows and group headings (D6). */}
+      <div className="inbox-list-column" ref={listColumn} data-row-nav=".inbox-row, .premium-group > details > summary">
       {!ready ? <Card><div className="inbox-status nv-card__body">
         {/* ST-26: the status line comes first, so it stays put when the placeholder rows go. */}
         <p role="status">{statusText[connection]}</p>
@@ -307,8 +314,14 @@ function wideSubscribe(change: () => void) {
 function InboxDetail({ entry }: { entry: InboxEntry }) {
   return <section className="nv-card inbox-detail" aria-labelledby="inbox-detail-title"
     onKeyDown={event => {
-      if (event.key !== "Escape") return;
-      document.querySelector<HTMLElement>(`[data-inbox-key="${CSS.escape(entry.key)}"]`)?.focus();
+      // Escape, or Shift+Tab from the heading, goes back to the selected row (IS-P4-06).
+      const back = event.key === "Escape" || (event.key === "Tab" && event.shiftKey && event.target === document.getElementById("inbox-detail-title"));
+      if (!back) return;
+      const row = document.querySelector<HTMLElement>(`[data-inbox-key="${CSS.escape(entry.key)}"]`);
+      if (!row) return;
+      event.preventDefault();
+      row.closest("details")?.setAttribute("open", "");
+      row.focus();
     }}>
     <div className="inbox-detail__head">
       {entry.leading}
