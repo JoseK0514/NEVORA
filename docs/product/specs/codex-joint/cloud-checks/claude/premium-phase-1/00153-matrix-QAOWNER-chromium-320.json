@@ -1,0 +1,287 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 100,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 100,
+  "route": "/app/schedule/copy-receipt?operation=24d80a9d-82e5-4a34-9054-a663a43785d8",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 100,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 100,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Location» 12px",
+   "strong. «Northside Main Office» 14px",
+   "span.nevora-field-label «Employee» 12px",
+   "span.nevora-field-label «Position Optional» 12px",
+   "strong. «Designated shift lead» 13px",
+   "output. «8 hr scheduled» 12px",
+   "span. «Optional» 12px",
+   "summary. «Delete shift» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 125,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1045,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 125,
+  "route": "/app/schedule/copy-receipt?operation=24d80a9d-82e5-4a34-9054-a663a43785d8",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0641,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 125,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1468,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 125,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1219,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 150,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2375,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 150,
+  "route": "/app/schedule/copy-receipt?operation=24d80a9d-82e5-4a34-9054-a663a43785d8",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1855,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 150,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.3025,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 150,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.331,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 200,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.6281,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 200,
+  "route": "/app/schedule/copy-receipt?operation=24d80a9d-82e5-4a34-9054-a663a43785d8",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.6414,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 200,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.7924,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 200,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.7011,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

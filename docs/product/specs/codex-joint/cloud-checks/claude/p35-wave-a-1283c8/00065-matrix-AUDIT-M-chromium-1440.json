@@ -1,0 +1,338 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/employees/AUDIT-LONG",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/employees/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0243,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/employees/AUDIT-LONG",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0161,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.024,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/employees/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0292,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0385,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/employees/AUDIT-LONG",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1147,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0486,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/employees/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.142,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 200,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0673,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 200,
+  "route": "/app/employees/AUDIT-LONG",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.144,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 200,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0996,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "1440",
+  "text": 200,
+  "route": "/app/employees/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.2099,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]

@@ -1,0 +1,292 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 100,
+  "route": "/app/settings/features",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 100,
+  "route": "/app/settings/locations",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «2» 11px",
+   "span. «0» 11px",
+   "span.status-pill.success «Ready» 12px",
+   "span. «13 eligible employees» 12px",
+   "span.location-clocker-label «Clocker link» 12px",
+   "span. «5 eligible employees» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 100,
+  "route": "/app/settings/locations/loc-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Edit» 13px",
+   "strong. «Active location» 14px",
+   "span. «Available for future shift ass» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 100,
+  "route": "/app/settings/locations/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Clocker link Optional» 13px",
+   "span.add-location-optional «Optional» 12px",
+   "span. «Short name» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 125,
+  "route": "/app/settings/features",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1188,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 125,
+  "route": "/app/settings/locations",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «2» 13.75px",
+   "span. «0» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0.0861,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 125,
+  "route": "/app/settings/locations/loc-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0905,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 125,
+  "route": "/app/settings/locations/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1138,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 150,
+  "route": "/app/settings/features",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2902,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 150,
+  "route": "/app/settings/locations",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1939,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 150,
+  "route": "/app/settings/locations/loc-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2256,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 150,
+  "route": "/app/settings/locations/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2724,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 200,
+  "route": "/app/settings/features",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.9629,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 200,
+  "route": "/app/settings/locations",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.6158,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 200,
+  "route": "/app/settings/locations/loc-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.8113,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "320",
+  "text": 200,
+  "route": "/app/settings/locations/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.7498,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]
