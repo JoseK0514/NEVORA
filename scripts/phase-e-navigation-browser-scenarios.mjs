@@ -27,7 +27,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await page.locator('#employee-more-navigation').waitFor({state:'hidden'});assert.equal(await page.locator('#employee-more-navigation').isVisible(),false,`More must close after ${href}`);
  }
  // Profile keeps aria-hidden placeholder rows; inbox controls exist even in a ready empty view.
- async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?e.querySelector('.employee-profile-details:not([aria-hidden="true"]) dd'):e.querySelector('[aria-label="Filter notifications"]'));},kind);}
+ async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?e.querySelector('.employee-profile-details:not([aria-hidden="true"]) dd')&&e.querySelector('footer button')?.disabled===false:e.querySelector('[aria-label="Filter notifications"]')&&e.querySelector('header button')?.disabled===false);},kind);}
  const notifications=()=>page.locator('[data-private-view="notifications"]');
  const refreshNotifications=()=>notifications().locator('header').getByRole('button');
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
@@ -104,12 +104,15 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const refreshed=nextInbox();await page.getByRole('button',{name:'Try again',exact:true}).click();const currentResponse=await refreshed,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.equal(currentView.state,'ready');assert.deepEqual(currentView.items,[]);await page.getByRole('heading',{name:'No notifications here.',exact:true}).waitFor();assert.equal(await page.getByRole('heading',{name:'Your session ended',exact:true}).count(),0);
    expiryRecovery.push({sessionLongLived:session[0].long_lived,sourceLifetimeMs:shortView.validForMs,expiredRowsCleared:true,retryEnabled:true,falseSignIn:false,revalidationStatus:currentResponse.status(),currentItems:currentView.items.length});
    await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '1 day' WHERE id=$1",[noticeId]);await refreshNotifications().click();await ready('notifications');
+   // The shared notification endpoint now supports management roles too, for the same actor.
+   await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[actor]);const managementView=await context.request.get(app.url+'/api/notifications',{headers:{'X-Nevora-Employee-View':headers['/api/notifications']}});assert.equal(managementView.status(),200);const ownManagementItems=(await managementView.json()).items;assert.deepEqual(ownManagementItems.map(item=>item.id),[noticeId]);await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);
+   const refuseBinding=route=>route.continue({headers:{...route.request().headers(),'x-nevora-employee-view':headers['/api/employee/profile']}});
    for(const status of [401,403]){
-    const cookies=await context.cookies();if(status===401)await context.clearCookies();else await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[actor]);
+    const cookies=await context.cookies();if(status===401)await context.clearCookies();else await page.route('**/api/notifications',refuseBinding);
     const refused=nextInbox();await refreshNotifications().click();assert.equal((await refused).status(),status);await page.getByRole('heading',{name:'Your session ended',exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);assert.equal(await page.getByRole('button',{name:'Try again',exact:true}).count(),0);expiryRecovery.push({actualRefusalStatus:status,privateRowsCleared:true,signInRequired:true});
-    if(status===401)await context.addCookies(cookies);else await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');
+    if(status===401)await context.addCookies(cookies);else await page.unroute('**/api/notifications',refuseBinding);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');
    }
-   checks.push('Long-lived actual session plus near-expiry persisted source clears stale rows without false Sign in; Retry reauthorizes current empty state; actual 401/403 still clears and denies');
+   checks.push('Long-lived actual session plus near-expiry persisted source clears stale rows without false Sign in; Retry reauthorizes current empty state; allowed management role retains only own items; actual missing-cookie 401 and cross-view-binding 403 still clear and deny');
    const lock=new Client({connectionString:app.database.connectionString});await lock.connect();
    try{await lock.query('BEGIN');await lock.query('LOCK TABLE notifications IN ACCESS EXCLUSIVE MODE');await refreshNotifications().click();await page.getByRole('heading',{name:'Couldn’t load notifications',exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);}
    finally{await lock.query('ROLLBACK');await lock.end();}
