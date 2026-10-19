@@ -17,13 +17,13 @@ jobs:
       matrix:
         suite: [navigation, calendar, communications]
     env:
-      PHASE_E_EXPECTED_SHA: d9fce44e0ee4ab3c3b2199f17d8eeac8c73b98ee
+      PHASE_E_EXPECTED_SHA: 20b97ab64436a7ff61451c70f044441b55b045da
     steps:
       - name: Select owned evidence directory
         run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-browser-probe" >> "$GITHUB_ENV"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: d9fce44e0ee4ab3c3b2199f17d8eeac8c73b98ee
+          ref: 20b97ab64436a7ff61451c70f044441b55b045da
           persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
