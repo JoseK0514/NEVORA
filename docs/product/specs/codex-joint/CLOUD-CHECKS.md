@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T22:53:23.313Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T22:54:21.714Z. premium-phase-1 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,9 +22,9 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 2194 | 2118 | 4312 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 2194 | 2134 | 4328 / 12580 |
 | claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 2931 | 1365 | 4296 / 12716 |
-| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 1944 | 960 | 2904 / 12580 |
+| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 1959 | 961 | 2920 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / pending inventory |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2194 passed; 2118 failed. Completed checker batches: 309. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2194 passed; 2134 failed. Completed checker batches: 310. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -2761,6 +2761,26 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2194 passed;
 | /app/employees/AUDIT-LONG/clocker-pin | QAOWNER | 844x390 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 200% /app/employees/AUDIT-LONG/clocker-pin small=span. «Employee ID: AUDIT-LONG» 13px; span.clocker-pin-module__hQ40jq__badge.clocker-pin-module__hQ40jq__con «Active employee» 12px; span. «4 digits» 12px; span. «Enter it again» 12px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 | /app/employees/AUDIT-LONG/clocker-pin | QAOWNER | 844x390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 200% /app/employees/AUDIT-LONG/clocker-pin small=span. «Employee ID: AUDIT-LONG» 13px; span.clocker-pin-module__hQ40jq__badge.clocker-pin-module__hQ40jq__con «Active employee» 12px; span. «4 digits» 12px; span. «Enter it again» 12px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 | /app/employees/new | QAOWNER | 844x390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 200% /app/employees/new errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/exchange | QAOWNER | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 100% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px; span.exchange-count «0 requests» 12px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/exchange | QAOWNER | 844x390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 100% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px; span.exchange-count «0 requests» 12px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/inbox | QAOWNER | 844x390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 100% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/my-pay | QAOWNER | 844x390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 100% /app/my-pay errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/notifications | QAOWNER | 844x390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 100% /app/notifications errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/exchange | QAOWNER | 844x390 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 125% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/exchange | QAOWNER | 844x390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 125% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/inbox | QAOWNER | 844x390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 125% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/my-pay | QAOWNER | 844x390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 125% /app/my-pay errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/notifications | QAOWNER | 844x390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 125% /app/notifications errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/exchange | QAOWNER | 844x390 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 150% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/exchange | QAOWNER | 844x390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 150% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/inbox | QAOWNER | 844x390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 150% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/my-pay | QAOWNER | 844x390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 150% /app/my-pay errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/notifications | QAOWNER | 844x390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 150% /app/notifications errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/exchange | QAOWNER | 844x390 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 200% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/exchange | QAOWNER | 844x390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 200% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/inbox | QAOWNER | 844x390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 200% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/my-pay | QAOWNER | 844x390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 200% /app/my-pay errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/notifications | QAOWNER | 844x390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium QAOWNER 844x390 200% /app/notifications errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -4177,7 +4197,7 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2931 passed;
 
 ## claude/p35-wave-a-1283c8
 
-Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1944 passed; 960 failed. Completed checker batches: 207. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
+Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1959 passed; 961 failed. Completed checker batches: 208. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -5158,6 +5178,7 @@ Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1944 passed;
 | /app/updates/compose | payroll-qa-a | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium payroll-qa-a 360 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
 | /app/updates/compose | payroll-qa-a | 360 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium payroll-qa-a 360 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
 | /app | payroll-qa-b | 360 | 100 | chromium | layout shift | UI — claude/premium-phase-1 | FAIL chromium payroll-qa-b 360 100% /app cls=0.0112 |
+| /app/my-time | payroll-qa-b | 360 | 100 | chromium | layout shift | UI — claude/premium-phase-1 | FAIL chromium payroll-qa-b 360 100% /app/my-time cls=0.016 |
 
 ### Timeout and server observations (separate from UI findings)
 

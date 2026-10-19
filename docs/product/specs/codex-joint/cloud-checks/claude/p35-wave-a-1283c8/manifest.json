@@ -4769,6 +4769,29 @@
       "code": 1,
       "passed": 15,
       "failed": 1
+    },
+    {
+      "name": "00208-matrix-payroll-qa-b-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T22-53-28-708Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00208-matrix-payroll-qa-b-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app/exchange/swap?sourceShiftId=cloud-payroll-qa-b,/app/my-pay,/app/my-time,/app/notifications",
+        "--accounts",
+        "payroll-qa-b",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "ab4299a4b4a27b5d052b3aa4b10e30c8f35aa4f7fbdf85d9e88043a7da1caa49",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
     }
   ],
   "planned": 12580,
