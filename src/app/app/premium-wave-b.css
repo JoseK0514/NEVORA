@@ -610,10 +610,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :
 }
 /* AL-B32: the save bar's button keeps its label on one line beside the note. */
 @media (min-width: 761px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > .nv-btn { flex: 0 0 auto; white-space: nowrap; } }
-/* AL-B30: on a landscape phone, page toasts on Wave B pages sit just above the tab bar. */
-@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  html body .app-shell.nevora-portal.nevora-portal:has(.wb-page) .page-frame .form-success[role="status"]:not(form *) { bottom: calc(68px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); }
-}
+/* AL-B30: the landscape toast position comes from the shared fix (62cd033, top of the screen) at the merge. */
 
 /* ---------- Round 3 fixes (type, colour and copy) ---------- */
 /* TC-B-27: Payroll runs (Owner and Manager) at narrow widths and large text: totals stack instead of clipping
