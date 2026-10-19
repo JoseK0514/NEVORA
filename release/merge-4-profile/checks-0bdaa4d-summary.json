@@ -1,0 +1,8 @@
+{
+  "checkpoint": "0bdaa4d1efa4111283e007d777197453942bcbdf",
+  "total": 180,
+  "passed": 92,
+  "failed": 88,
+  "nonTextGateFailures": 0,
+  "note": "The unmodified checker gates CLS at100% only; recorded CLS after intentional root-font changes is preserved but not treated as loading shift."
+}

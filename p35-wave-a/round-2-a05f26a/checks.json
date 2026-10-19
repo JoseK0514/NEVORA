@@ -2,13 +2,20 @@
   "checkpoint": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
   "complete": false,
   "fullMatrixRun": false,
-  "reason": "Early exit blocked by TC-WA-15 active-field edge contrast1.413:1; shared kit/coordinator fix required.",
+  "reason": "Focused pending fixes pass; full exit matrix and five-area sweep remain incomplete. Standalone field contrast comes from older shared CSS and is already3.45:1 on the latest coordinator candidate.",
   "targetedPendingCases": 16,
   "heldPosts": 16,
   "colourPageReads": 10,
   "enabledFieldsMeasured": 46,
   "mutationsReachedServer": 0,
   "P0": 0,
-  "P1": 1,
-  "P2": 0
+  "P1": 0,
+  "P2": 0,
+  "sharedObservation": {
+    "id": "TC-WA-15",
+    "sourceContrast": 1.413,
+    "candidateContrast": 3.45,
+    "resolvedByLatestCoordinator": true,
+    "waveOwned": false
+  }
 }

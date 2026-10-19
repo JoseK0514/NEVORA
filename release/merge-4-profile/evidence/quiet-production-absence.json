@@ -1,0 +1,15 @@
+{
+  "checkpoint": "23fcdc3b748e22bd7c25fce559e56ff934b2aebe",
+  "command": "NEVORA_DEV_FORCE_ERRORS=1 NEVORA_DEV_CAPTURE_DELIVERY=1 npm run build",
+  "artifactsScanned": 2298,
+  "markers": [
+    "nv-force-error",
+    "NEVORA_DEV_FORCE_ERRORS",
+    "NEVORA_DEV_CAPTURE_DELIVERY",
+    "NEVORA_DEV_CAPTURE_OUT",
+    "Local inspection failure:"
+  ],
+  "hits": [],
+  "passed": true,
+  "completedAt": "2026-10-19T20:22:39.196645+00:00"
+}

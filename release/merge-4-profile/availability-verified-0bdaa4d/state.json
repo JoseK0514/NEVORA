@@ -1,0 +1,251 @@
+{
+  "checkpoint": "0bdaa4d1efa4111283e007d777197453942bcbdf",
+  "cases": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "posts": 1,
+      "changed": false,
+      "before": {
+        "x": 36,
+        "y": 550.015625,
+        "width": 318,
+        "height": 88
+      },
+      "pending": {
+        "box": {
+          "x": 36,
+          "y": 586.015625,
+          "width": 318,
+          "height": 52
+        },
+        "disabled": true,
+        "text": "Saving\u2026",
+        "focus": {
+          "tag": "BODY",
+          "isSave": false
+        }
+      },
+      "after": {
+        "button": {
+          "x": 36,
+          "y": 586.015625,
+          "width": 318,
+          "height": 88,
+          "bottom": 674.015625
+        },
+        "alert": {
+          "x": 36,
+          "y": 756.015625,
+          "width": 318,
+          "height": 275,
+          "bottom": 1031.015625
+        },
+        "alertText": "Your availability wasn\u2019t saved. Check your connection and save again. If this keeps happening, sign in again.",
+        "alertLast": true,
+        "focus": "BODY",
+        "focusLabel": "[body]",
+        "mondayChecked": true,
+        "mondayText": "Monday\nUnavailable",
+        "formDataMonday": "on",
+        "documentWidth": 390,
+        "viewportHeight": 844,
+        "scrollY": 2079,
+        "tabBar": {
+          "x": 0,
+          "y": 761,
+          "width": 390,
+          "height": 83,
+          "bottom": 844
+        }
+      },
+      "retained": false,
+      "crop": "crops/chromium-AUDIT-E-failed.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "posts": 1,
+      "changed": true,
+      "before": {
+        "x": 36,
+        "y": 550.015625,
+        "width": 318,
+        "height": 88
+      },
+      "pending": {
+        "box": {
+          "x": 36,
+          "y": 586.015625,
+          "width": 318,
+          "height": 52
+        },
+        "disabled": true,
+        "text": "Saving\u2026",
+        "focus": {
+          "tag": "BODY",
+          "isSave": false
+        }
+      },
+      "after": {
+        "button": {
+          "x": 36,
+          "y": 586.015625,
+          "width": 318,
+          "height": 88,
+          "bottom": 674.015625
+        },
+        "alert": {
+          "x": 36,
+          "y": 756.015625,
+          "width": 318,
+          "height": 275,
+          "bottom": 1031.015625
+        },
+        "alertText": "Your availability wasn\u2019t saved. Check your connection and save again. If this keeps happening, sign in again.",
+        "alertLast": true,
+        "focus": "BODY",
+        "focusLabel": "[body]",
+        "mondayChecked": false,
+        "mondayText": "Monday\nAvailable\nFrom\n\u2013\nUntil",
+        "formDataMonday": null,
+        "documentWidth": 390,
+        "viewportHeight": 844,
+        "scrollY": 1386,
+        "tabBar": {
+          "x": 0,
+          "y": 761,
+          "width": 390,
+          "height": 83,
+          "bottom": 844
+        }
+      },
+      "retained": false,
+      "crop": "crops/chromium-AUDIT-LEAD-failed.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "posts": 1,
+      "changed": false,
+      "before": {
+        "x": 36,
+        "y": 550.015625,
+        "width": 318,
+        "height": 88
+      },
+      "pending": {
+        "box": {
+          "x": 36,
+          "y": 586.015625,
+          "width": 318,
+          "height": 52
+        },
+        "disabled": true,
+        "text": "Saving\u2026",
+        "focus": {
+          "tag": "BODY",
+          "isSave": false
+        }
+      },
+      "after": {
+        "button": {
+          "x": 36,
+          "y": 586.015625,
+          "width": 318,
+          "height": 88,
+          "bottom": 674.015625
+        },
+        "alert": {
+          "x": 36,
+          "y": 756.015625,
+          "width": 318,
+          "height": 315,
+          "bottom": 1071.015625
+        },
+        "alertText": "Your availability wasn\u2019t saved. Check your connection and save again. If this keeps happening, sign in again.",
+        "alertLast": true,
+        "focus": "BODY",
+        "focusLabel": "[body]",
+        "mondayChecked": true,
+        "mondayText": "Monday\nUnavailable",
+        "formDataMonday": "on",
+        "documentWidth": 390,
+        "viewportHeight": 844,
+        "scrollY": 2333,
+        "tabBar": {
+          "x": 0,
+          "y": 761,
+          "width": 390,
+          "height": 83,
+          "bottom": 844
+        }
+      },
+      "retained": false,
+      "crop": "crops/webkit-AUDIT-E-failed.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "posts": 1,
+      "changed": true,
+      "before": {
+        "x": 36,
+        "y": 550.015625,
+        "width": 318,
+        "height": 88
+      },
+      "pending": {
+        "box": {
+          "x": 36,
+          "y": 586.015625,
+          "width": 318,
+          "height": 52
+        },
+        "disabled": true,
+        "text": "Saving\u2026",
+        "focus": {
+          "tag": "BODY",
+          "isSave": false
+        }
+      },
+      "after": {
+        "button": {
+          "x": 36,
+          "y": 586.015625,
+          "width": 318,
+          "height": 88,
+          "bottom": 674.015625
+        },
+        "alert": {
+          "x": 36,
+          "y": 756.015625,
+          "width": 318,
+          "height": 315,
+          "bottom": 1071.015625
+        },
+        "alertText": "Your availability wasn\u2019t saved. Check your connection and save again. If this keeps happening, sign in again.",
+        "alertLast": true,
+        "focus": "BODY",
+        "focusLabel": "[body]",
+        "mondayChecked": false,
+        "mondayText": "Monday\nAvailable\nFrom\n\u2013\nUntil",
+        "formDataMonday": null,
+        "documentWidth": 390,
+        "viewportHeight": 844,
+        "scrollY": 1588,
+        "tabBar": {
+          "x": 0,
+          "y": 761,
+          "width": 390,
+          "height": 83,
+          "bottom": 844
+        }
+      },
+      "retained": false,
+      "crop": "crops/webkit-AUDIT-LEAD-failed.png"
+    }
+  ],
+  "mutationsReachedServer": 0,
+  "completedAt": "2026-10-19T20:47:30.369Z"
+}
