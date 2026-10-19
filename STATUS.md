@@ -3,7 +3,7 @@
 Jose explicitly approved handoff item 4 in this chat. All application changes below are on `codex/release-candidate`; no `claude/*` branch was edited. Review each finding commit, then have its owner port or replace it.
 
 - **Merged and preserved:** first-published candidate `8e18a95`, including coordinator `227150b`, backend `da2a4e5`, Profile `ea58610`, and authorized Profile server initial read `4ff37e5`. The parallel local bootstrap `cbaadbc` is retained as a checkpoint, not pushed over the published history.
-- **Candidate under validation:** `64f15e6193c7d5ac4d564220d7eb399a9c08926d`, twenty separate finding commits on top of `8e18a95`. Focused affected tests **51/51 pass**. Final typecheck/lint/full suite and exact-candidate browser proofs are pending; no final green claim yet.
+- **Candidate under validation:** `64f15e6193c7d5ac4d564220d7eb399a9c08926d`, twenty separate finding commits on top of `8e18a95`. Focused affected tests **51/51 pass**. Final **typecheck and lint pass** (zero warnings); full suite and exact-candidate browser proofs are pending. No final green claim yet.
 - **Zero:** Profile's committed Mac exit at `ea58610` was accepted for its merge. New independent cloud Profile finding IS-PROFILE-17 is separately patched below. No other source exit has a new complete zero certificate.
 - **Open by owner:** Phase 3 round5 `227150b` has 7 P1/2 P2 with targeted proofs complete; Wave A `a05f26a` full matrix incomplete; Wave B `9bd265e` has four measured P2s and incomplete exit; Wave C `5f7c166` has WR-WC-25, TC-WC-28 and ST-13 continuation; Desktop `8012d97` has TC-P4-22/23 and ST-P4-13. Candidate applicability and evidence are listed below. Do not merge these source heads merely because candidate patches exist.
 - **Owner-only code absent from candidate:** Wave B IS-B31 (`wave-b-forms.tsx` pending Enter focus) and Desktop ST-P4-13 (passive-effect Inbox group opening; measured CLS ~0.064) remain source-owner work. WC override commits are staged for its unmerged UI and proved by browser-only source CSS injection, not by a combined-candidate WC runtime claim. Latest coordinator already repairs source TC-WA-15/TC-WC-28 field borders; no duplicate border commit.
@@ -19,7 +19,7 @@ Each row is one finding and one application commit. Validation is in progress; f
 | `2dfc390` | **IS-82** — preserve withdrawal confirmation for the same-operation retry | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
 | `5b9e47e` | **ST-P3-24** — reserve Availability submit labels while saving | [Evidence](premium-phase-3/round-5-227150b/stability.md) |
 | `f57dcb8` | **IS-P3-02** — reveal and focus failed form outcomes above the phone bar | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
-| `fcd72e5` | **IS-PROFILE-17** — reveal user-initiated sign-in recovery before restoring focus | [Evidence](release/paused-initial-cbaadbc/interaction-states.md) |
+| `fcd72e5` | **IS-PROFILE-17** — reveal user-initiated sign-in recovery before restoring focus | [Evidence](p35-profile/round-4/interaction-states.md) |
 | `810c7a3` | **IS-74** — retain the initiating action focus while guarded requests are pending | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
 | `a02aa19` | **IS-77** — replace stale timecard counts with a paused or offline state | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
 | `1c4a65e` | **IS-78** — provide sign-in recovery after denied employee actions | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
@@ -39,6 +39,8 @@ Each row is one finding and one application commit. Validation is in progress; f
 ## Source exit coverage and limits
 
 The paused-handoff workers finished their bounded final proofs and are closing their owned previews for uncontended gates. Phase 3: 15/15 smoke cells and 17 targeted cases, 15 intercepted mutation POSTs. Wave A: smoke and clamp/swap rechecks preserved; full exit incomplete. Wave B: 45/48 smoke plus targeted typography, auth and focus proofs. Wave C: 26/26 smoke plus guarded docked-error and dialog proofs. Desktop: 35 initial cells plus font crops and controlled Inbox CLS attribution. These totals are different scopes, not a combined zero tally. Every report records its missing matrix cases.
+
+ST-PROFILE-03 contact-read movement is addressed by the separately authorized initial read `4ff37e5`; the final candidate proof includes the long Manager fixture at320–360. `IS-PROFILE-17`/`IS-80`/`IS-B12` reuse the reveal helper introduced in `IS-P3-02`; review/port that dependency together. Filename part of `TC-P4-23` is covered once by `TC-B-32`.
 
 The earlier `cbaadbc` full suite had 9 load timeouts; every affected file subsequently passed alone with one worker and unchanged budgets (271 tests). The preserved publisher `8e18a95` reports 7,352 passed/0 failed. Neither result substitutes for the new UI candidate's final gates.
 
