@@ -73,7 +73,9 @@ try {
   const managerOnly=new Set(['/app/account-recovery','/app/clocker-recovery','/app/inbox','/app/reports','/app/payroll-export','/app/schedule/new','/app/schedule/edit','/app/schedule/templates','/app/schedule/settings','/app/schedule/copy-receipt','/app/employees','/app/employees/new','/app/employees/[employeeId]','/app/employees/[employeeId]/clocker-pin']);
   const selfOnly=new Set(['/app/my-time','/app/requests/hub','/app/exchange/swap','/app/exchange/callout']);
   const profileSource=await readFile(join(source,'src/app/app/profile/page.tsx'),'utf8');
-  const managementProfile=!/if\(!\['EMPLOYEE','LEAD'\]\.includes/.test(profileSource);
+  // The self-service fallback guard also appears after the management return.
+  // Its presence alone must never exclude the page's Owner/Manager branch.
+  const managementProfile=/ManagerProfilePage|ManagementProfile/.test(profileSource);
   const jobs=[],excluded=[];
   for(const account of accounts){const person=people.find(p=>p.id===account);assert(person,'Requested account missing: '+account);const manager=['OWNER','MANAGER'].includes(person.role),routes=[];
     for(const pattern of paths.sort()) {

@@ -68,7 +68,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -91,7 +91,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -114,7 +114,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -137,7 +137,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -160,7 +160,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -183,7 +183,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -206,7 +206,7 @@
         "/app/schedule/coverage",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -227,10 +227,11 @@
         "/app/my-pay",
         "/app/notifications",
         "/app/payroll-export",
+        "/app/profile",
         "/app/reports",
         "/app/requests",
         "/app/schedule",
-        "/app/schedule/copy-receipt?operation=3a8ef613-2ed4-4e7e-bdf7-ff248d346b3a",
+        "/app/schedule/copy-receipt?operation=05fe4d95-9264-464a-8fea-cd82c006b767",
         "/app/schedule/coverage",
         "/app/schedule/edit?shiftId=audit-next-0-1",
         "/app/schedule/new",
@@ -238,7 +239,7 @@
         "/app/schedule/templates",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -260,10 +261,11 @@
         "/app/notifications",
         "/app/payroll",
         "/app/payroll-export",
+        "/app/profile",
         "/app/reports",
         "/app/requests",
         "/app/schedule",
-        "/app/schedule/copy-receipt?operation=c932b057-a224-4930-bdf8-64d44c79a4de",
+        "/app/schedule/copy-receipt?operation=5866661b-9c64-4ca0-8c98-adbe95cd3107",
         "/app/schedule/coverage",
         "/app/schedule/edit?shiftId=audit-next-0-1",
         "/app/schedule/new",
@@ -283,7 +285,7 @@
         "/app/settings/workspace",
         "/app/timecards",
         "/app/updates",
-        "/app/updates/a906f447-10cb-4484-8243-bc31a0053e1c",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
         "/app/updates/compose"
       ]
     },
@@ -1263,11 +1265,6 @@
     },
     {
       "account": "AUDIT-M",
-      "pattern": "/app/profile",
-      "reason": "This snapshot redirects management Profile to Home"
-    },
-    {
-      "account": "AUDIT-M",
       "pattern": "/app/requests/hub",
       "reason": "Employee/Lead self service"
     },
@@ -1348,20 +1345,15 @@
     },
     {
       "account": "QAOWNER",
-      "pattern": "/app/profile",
-      "reason": "This snapshot redirects management Profile to Home"
-    },
-    {
-      "account": "QAOWNER",
       "pattern": "/app/requests/hub",
       "reason": "Employee/Lead self service"
     }
   ],
   "fixtures": {
-    "updateId": "a906f447-10cb-4484-8243-bc31a0053e1c",
+    "updateId": "6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
     "copyReceipts": {
-      "AUDIT-M": "3a8ef613-2ed4-4e7e-bdf7-ff248d346b3a",
-      "QAOWNER": "c932b057-a224-4930-bdf8-64d44c79a4de"
+      "AUDIT-M": "05fe4d95-9264-464a-8fea-cd82c006b767",
+      "QAOWNER": "5866661b-9c64-4ca0-8c98-adbe95cd3107"
     },
     "copyReceiptState": "TEMPLATE_UNAVAILABLE",
     "payrollFutureShifts": [

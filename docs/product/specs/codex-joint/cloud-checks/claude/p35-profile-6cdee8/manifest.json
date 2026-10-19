@@ -8,8 +8,135 @@
   "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
   "startedAt": "2026-10-19T17:52:56.808Z",
   "status": "Running matrix",
-  "batches": [],
-  "runtimePid": 10759,
-  "url": "http://127.0.0.1:37881",
-  "planned": 12580
+  "batches": [
+    {
+      "name": "00001-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T18-02-30-360Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00001-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app,/app/account-recovery,/app/availability,/app/clocker-recovery",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "code": 1,
+      "passed": 12,
+      "failed": 4
+    },
+    {
+      "name": "00002-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T18-16-07-869Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00002-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/profile",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "c64318af908807dc350b363d9440ac1b73d617a6ea82d4e86e171056e3d22306",
+      "code": 1,
+      "passed": 0,
+      "failed": 4
+    },
+    {
+      "name": "00003-matrix-AUDIT-M-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T18-16-23-362Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00003-matrix-AUDIT-M-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/profile",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "e23941f07bfb200e93ba81a8f682728c75e5eb9b58d02f6b9c27448a37a41f43",
+      "code": 1,
+      "passed": 0,
+      "failed": 4
+    },
+    {
+      "name": "00004-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T18-17-27-941Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00004-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/employees,/app/employees/AUDIT-LONG,/app/employees/AUDIT-LONG/clocker-pin,/app/employees/new",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "d06741e16d64ee627f7ad181c16705288a7024e6b75d74c72084a285e4afb397",
+      "code": 1,
+      "passed": 10,
+      "failed": 6
+    },
+    {
+      "name": "00005-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T18-18-32-835Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00005-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/exchange,/app/inbox,/app/my-pay,/app/notifications",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "cdab55087c1f1222cac8bc7c386606d69af54cb750c3a734e3b99e8cca58f330",
+      "code": 1,
+      "passed": 14,
+      "failed": 2
+    }
+  ],
+  "planned": 12716,
+  "latestPushedCommit": "be4a232a1e6a26b58314ff549f88e5a8a79e82c6",
+  "runtimeCheckpoint": "be4a232a1e6a26b58314ff549f88e5a8a79e82c6",
+  "sourceTree": "111a51accadb5050d806baae63e44d738cd5ee5e",
+  "sourceManifest": "/workspace/nevora-previews/p35-profile-6cdee8/evidence-2026-10-19T18-14-47-088Z/owned-next-uIsdhy/source-manifest.json",
+  "infrastructureRestarts": [
+    {
+      "reason": "Attached runtime was retired with its controller; fixed with independent process group and direct log descriptors. No new UI failure is inferred from the interrupted loads.",
+      "at": "2026-10-19T18:14:41.923575+00:00",
+      "previousCommit": "be4a232a1e6a26b58314ff549f88e5a8a79e82c6",
+      "retainedCompletedBatches": 1
+    }
+  ],
+  "runtimePid": 42462,
+  "url": "http://127.0.0.1:42423"
 }

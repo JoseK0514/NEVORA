@@ -1,9 +1,11 @@
 // Long-running coordinator. One checks.mjs at a time per isolated preview.
 // Run from the tools checkout after sourcing the non-secret cloud environment.
 import {spawn,execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {createWriteStream} from 'node:fs';
 import {readFile,writeFile,readdir,mkdir,copyFile,access,rename} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
+import {startPreview,previewReady,logOffset,liveProcess} from './cloud-preview-process.mjs';
 
 const repo=resolve(process.env.NEVORA_REPORT_ROOT),tools=resolve(process.env.NEVORA_TOOLS_ROOT);
 const evidence=join(repo,'docs/product/specs/codex-joint/cloud-checks');
@@ -40,7 +42,7 @@ function uiOwner(route,size) {
 }
 const escape=value=>String(value??'').replaceAll('|','\\|').replaceAll('\n',' ');
 function detail(r){return `FAIL ${r.engine} ${r.account} ${r.size} ${r.text}% ${r.route}`+(r.overflow?.length?` overflow=${r.overflow.join('; ')}`:'')+(r.smallText?.length?` small=${r.smallText.slice(0,4).join('; ')}`:'')+(r.targets?.length?` targets=${r.targets.slice(0,4).join('; ')}`:'')+(r.text===100&&r.cls>0.01?` cls=${r.cls}`:'')+(r.errors?.length?` errors=${r.errors.slice(0,2).join('; ')}`:'')+(r.axe?.length?` axe=${r.axe.join(',')}`:'')+(r.status>=400?` status=${r.status}`:'');}
-function checks(r){return [r.overflow?.length&&'overflow',r.smallText?.length&&'small text',r.targets?.length&&'target',r.text===100&&r.cls>0.01&&'layout shift',(r.status>=400||r.errors?.length||r.error)&&'error',r.axe?.length&&'axe'].filter(Boolean);}
+function checks(r){if(serverCandidate(r))return ['error'];return [r.overflow?.length&&'overflow',r.smallText?.length&&'small text',r.targets?.length&&'target',r.text===100&&r.cls>0.01&&'layout shift',(r.status>=400||r.errors?.length||r.error)&&'error',r.axe?.length&&'axe'].filter(Boolean);}
 function classify(r,check,network){
   const matches=network.filter(n=>n.account===r.account&&n.page===r.route.split('?')[0]);
   if(check==='error'&&matches.some(n=>n.path==='/api/manager/inbox-count'&&n.status===404))return 'backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot';
@@ -81,6 +83,7 @@ async function publish(reason) {
         if(batch.log&&await exists(batch.log))await copyFile(batch.log,join(dest,batch.name+'.log'));
       }
       if(await exists(join(m.out,'route-inventory.json')))await copyFile(join(m.out,'route-inventory.json'),join(dest,'route-inventory.json'));
+      if(m.sourceManifest&&await exists(m.sourceManifest))await copyFile(m.sourceManifest,join(dest,'source-manifest.json'));
       if(network.length)await writeFile(join(dest,'network-errors.json'),JSON.stringify(network,null,1));
       if(m.timings)await writeFile(join(dest,'load-times.json'),JSON.stringify(m.timings,null,2));
       await writeFile(join(dest,'manifest.json'),JSON.stringify(m,null,2));
@@ -91,7 +94,7 @@ async function publish(reason) {
       if(m.error)sections.push('Execution blocker: '+escape(m.error),'');
       if(m.timings){sections.push('Browser load times in milliseconds; cold development compilation may be included. Each row also records TTFB and DOMContentLoaded in load-times.json.','', '| Route | Account | Width | Browser | Navigation ms | Status |','|---|---|---:|---|---:|---:|');for(const t of m.timings)sections.push('| '+[t.route,t.account,t.width,t.browser,t.navigationMs,t.status].map(escape).join(' | ')+' |');sections.push('');}
       sections.push('| Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |','|---|---|---|---:|---|---|---|---|');
-      for(const r of fail)for(const check of checks(r))sections.push('| '+[r.route,r.account,r.size,r.text,r.engine,check,classify(r,check,network),detail(r)].map(escape).join(' | ')+' |');
+      for(const r of fail.filter(r=>!serverCandidate(r)))for(const check of checks(r))sections.push('| '+[r.route,r.account,r.size,r.text,r.engine,check,classify(r,check,network),detail(r)].map(escape).join(' | ')+' |');
       if(!fail.length)sections.push('| — | — | — | — | — | — | No failed cells recorded yet | — |');
       sections.push('', '### Timeout and server observations (separate from UI findings)','', '| Route | Account | Width | Text | Browser | Initial detail | Retry outcome |','|---|---|---|---:|---|---|---|');
       for(const {r,pass:p} of initials){const final=records.get(p+key(r));sections.push('| '+[r.route,r.account,r.size,r.text,r.engine,detail(r),final!==r?(final.ok?'Passed on identical retry':detail(final)):'Pending retry'].map(escape).join(' | ')+' |');}
@@ -102,7 +105,14 @@ async function publish(reason) {
     git('add','docs/product/specs/codex-joint/CLOUD-CHECKS.md',...(metas.size?['docs/product/specs/codex-joint/cloud-checks']:[]));
     const changed=git('diff','--cached','--name-only');if(!changed)return;
     git('commit','-m','test: publish cloud screen-check evidence — '+reason);
-    try{git('push','origin','HEAD:refs/heads/codex/premium-backend');console.log('PUBLISHED '+reason);}
+    try{
+      // Other authorized sessions also publish backend fixes. Replay only our
+      // unpublished commits on their latest tip; never create a merge or force.
+      git('fetch','origin','codex/premium-backend');
+      try{git('rebase','origin/codex/premium-backend');}
+      catch(error){try{git('rebase','--abort');}catch{}throw error;}
+      git('push','origin','HEAD:refs/heads/codex/premium-backend');console.log('PUBLISHED '+reason);
+    }
     catch(error){await writeFile(join(stateRoot,'publication-error.txt'),'Push failed; local commits retained. No force push or merge attempted.\n'+error.message);console.error('PUBLICATION_BLOCKED '+error.message);}
   });
   return publications.catch(error=>{console.error('PUBLICATION_ERROR '+error.message);});
@@ -119,13 +129,13 @@ async function batch(meta,job,width,browser,pass,text='100,125,150,200',routes=j
   const file=join(meta.out,'checks',files[0]),values=JSON.parse(await readFile(file,'utf8'));
   const expected=routes.length*text.split(',').length;
   if(values.length!==expected)throw Error(`Incomplete checker batch: ${values.length}/${expected}; see ${log}`);
-  meta.batches.push({name,pass,kind,file,log,args,code:result.code,passed:values.filter(r=>r.ok).length,failed:values.filter(r=>!r.ok).length});
+  meta.batches.push({name,pass,kind,file,log,args,rawSha256:createHash('sha256').update(await readFile(file)).digest('hex'),code:result.code,passed:values.filter(r=>r.ok).length,failed:values.filter(r=>!r.ok).length});
   await save(meta);console.log(`BATCH ${meta.key} ${name}: ${values.filter(r=>r.ok).length}/${values.length}`);
   if(kind!=='retry')for(const r of values.filter(serverCandidate))await batch(meta,{account:r.account,routes:[r.route]},r.size,r.engine,pass,String(r.text),[r.route],'retry');
 }
 async function work(branch,index) {
   const large=branch==='premium-phase-1-large';
-  const keyName=branch,branchName='claude/'+(large?'premium-phase-1':branch),source='/workspace/nevora-sources/'+(large?'premium-phase-1':branch),out='/workspace/nevora-previews/'+branch;
+  const keyName=branch,branchName='claude/'+(large?'premium-phase-1':branch),source='/workspace/nevora-sources/'+branch,out='/workspace/nevora-previews/'+branch;
   const prior=await exists(join(stateRoot,keyName+'.json'))?JSON.parse(await readFile(join(stateRoot,keyName+'.json'),'utf8')):null;
   const meta=prior??{key:keyName,branch:branchName,source,out,large,commit:git('rev-parse','origin/'+branchName),toolsCommit:git('-C',tools,'rev-parse','HEAD'),startedAt:new Date().toISOString(),status:'Starting preview',batches:[]};
   metas.set(keyName,meta);await save(meta);
@@ -133,20 +143,36 @@ async function work(branch,index) {
   if(meta.status==='Complete')return;
   let runtime;
   try{
+    git('fetch','origin',branchName);
+    const requestedCommit=git('rev-parse','origin/'+branchName);
+    if(!await exists(join(out,'route-inventory.json'))&&!meta.batches.length)meta.commit=requestedCommit;
+    else meta.latestPushedCommit=requestedCommit;
     if(!await exists(source)){git('worktree','add','--detach',source,meta.commit);execFileSync('cp',['-al',join(tools,'node_modules'),join(source,'node_modules')]);}
+    else if(!await exists(join(out,'route-inventory.json'))&&git('-C',source,'rev-parse','HEAD')!==meta.commit){
+      if(git('-C',source,'status','--porcelain','--untracked-files=no'))throw Error('Source checkout is not clean');
+      git('-C',source,'checkout','--detach',meta.commit);
+    }
     if(!await exists(join(out,'route-inventory.json'))){
       {
-        const log=join(stateRoot,keyName+'-runtime.log');let readyResolve,readyReject;
-        const ready=new Promise((r,j)=>{readyResolve=r;readyReject=j;});
-        const running=run(join(tools,'scripts/ui-checks/preview-runtime.mjs'),[],{tsx:true,log,env:{PREVIEW_OUT:out,PREVIEW_SOURCE:source},onChild:child=>{runtime=child;meta.runtimePid=child.pid;},onOutput:chunk=>{const match=/PREVIEW_READY (http:\/\/127\.0\.0\.1:\d+)/.exec(chunk);if(match)readyResolve(match[1]);}});
-        running.then(result=>readyReject(Error('Preview stopped before readiness, exit '+result.code+'; '+log))).catch(readyReject);
-        const timeout=setTimeout(()=>readyReject(Error('Preview bootstrap exceeded 5 minutes; '+log)),300000);meta.url=await ready;clearTimeout(timeout);
+        const log=join(stateRoot,keyName+'-runtime.log'),offset=await logOffset(log);
+        runtime=startPreview({script:join(tools,'scripts/ui-checks/preview-runtime.mjs'),args:['--import',join(tools,'node_modules/tsx/dist/loader.mjs')],cwd:tools,env:{...env,PREVIEW_OUT:out,PREVIEW_SOURCE:source},log});
+        meta.runtimePid=runtime.pid;await save(meta);
+        meta.url=await previewReady(runtime,log,offset);
         const seed=await run(join(tools,'scripts/ui-checks/seed-extra.mts'),large?['--large']:[],{tsx:true,log:join(stateRoot,keyName+'-seed.log'),env:{PREVIEW_OUT:out}});if(seed.code)throw Error('seed-extra failed');
         const login=await run(join(tools,'scripts/ui-checks/login.mjs'),['AUDIT-E','AUDIT-LEAD','AUDIT-ON','AUDIT-BREAK','AUDIT-LONG','payroll-qa-a','payroll-qa-b','AUDIT-M','QAOWNER'],{guard:true,log:join(stateRoot,keyName+'-login.log'),env:{PREVIEW_OUT:out,NEVORA_CHECK_ORIGIN:meta.url}});if(login.code)throw Error('Login script failed');
       }
       const inventory=await run(join(repo,'scripts/ui-checks/cloud-inventory.mjs'),[],{tsx:true,log:join(stateRoot,keyName+'-inventory.log'),env:{PREVIEW_OUT:out,PREVIEW_SOURCE:source}});if(inventory.code)throw Error('Route inventory/fixture setup failed');
     }
     if(!meta.url){const ev=(await readdir(out)).filter(n=>n.startsWith('evidence-')).sort().at(-1);meta.url=JSON.parse(await readFile(join(out,ev,'runtime.json'),'utf8')).url;}
+    if(!liveProcess(meta.runtimePid))throw Error('Preview owner is no longer running; retained raw evidence needs a fresh, explicitly identified preview round');
+    const health=await fetch(meta.url+'/login',{signal:AbortSignal.timeout(5000)});if(health.status!==200)throw Error('Preview health check failed');await health.arrayBuffer();
+    const ev=(await readdir(out)).filter(n=>n.startsWith('evidence-')).sort().at(-1);
+    const runtimeIdentity=JSON.parse(await readFile(join(out,ev,'runtime.json'),'utf8'));
+    if(runtimeIdentity.checkpoint!==meta.commit||git('-C',source,'rev-parse','HEAD')!==meta.commit)throw Error('Source SHA differs from runtime checkpoint; no matrix evidence may be attributed to this SHA');
+    meta.runtimeCheckpoint=runtimeIdentity.checkpoint;
+    meta.sourceTree=git('-C',source,'rev-parse','HEAD^{tree}');
+    const owned=(await readdir(join(out,ev))).find(n=>n.startsWith('owned-next-'));
+    meta.sourceManifest=join(out,ev,owned,'source-manifest.json');
     const inventory=JSON.parse(await readFile(join(out,'route-inventory.json'),'utf8'));
     if(large){const wanted=['/app','/app/inbox','/app/schedule','/app/employees','/app/timecards','/app/payroll-export','/app/reports'];inventory.jobs=inventory.jobs.filter(j=>['AUDIT-M','QAOWNER'].includes(j.account)).map(j=>({...j,routes:j.routes.filter(r=>wanted.includes(r))}));}
     meta.planned=inventory.jobs.reduce((n,j)=>n+j.routes.length,0)*68;meta.status='Running matrix';await save(meta);
@@ -154,7 +180,10 @@ async function work(branch,index) {
     const done=new Set(meta.batches.filter(b=>b.kind!=='retry').map(b=>JSON.stringify(b.args)));
     const jobs=[...inventory.jobs].sort((a,b)=>{const priority=branch.includes('profile')||branch.includes('wave')||branch.includes('desktop')?['QAOWNER','AUDIT-M']:['AUDIT-E','AUDIT-LEAD'];return (priority.indexOf(a.account)<0?9:priority.indexOf(a.account))-(priority.indexOf(b.account)<0?9:priority.indexOf(b.account));});
     let lastPublish=Date.now();
-    for(const pass of ['matrix','axe'])for(const browser of ['chromium','webkit'])for(const width of (pass==='axe'?['390','1440']:widths))for(const job of jobs){
+    const profileJobs=branch==='p35-profile-6cdee8'?jobs.filter(j=>['OWNER','MANAGER'].includes(j.role)&&j.routes.includes('/app/profile')).map(j=>({...j,routes:['/app/profile']})):[];
+    const remaining=profileJobs.length?jobs.map(j=>({...j,routes:['OWNER','MANAGER'].includes(j.role)?j.routes.filter(r=>r!=='/app/profile'):j.routes})):jobs;
+    const chunks=[...profileJobs,...remaining.flatMap(job=>Array.from({length:Math.ceil(job.routes.length/4)},(_,i)=>({...job,routes:job.routes.slice(i*4,i*4+4)})))];
+    for(const pass of ['matrix','axe'])for(const browser of ['chromium','webkit'])for(const width of (pass==='axe'?['390','1440']:widths))for(const job of chunks){
       const text=pass==='axe'?'100':'100,125,150,200';const args=['--routes',job.routes.join(','),'--accounts',job.account,'--widths',width,'--text',text,'--browsers',browser,...(pass==='axe'?['--axe']:[])];
       if(done.has(JSON.stringify(args)))continue;
       await batch(meta,job,width,browser,pass,text);
@@ -176,7 +205,7 @@ git('fetch','origin');
 // and limit whole previews, not just individual browser processes.
 const queue=['premium-phase-1','p35-profile-6cdee8','premium-phase-1-large','p35-wave-a-1283c8','p35-wave-b-808dfd','p35-wave-c-93e13c','p4-desktop-240fe0'];
 async function consume(){while(queue.length){const branch=queue.shift();await work(branch,branches.indexOf(branch));}}
-await Promise.allSettled(Array.from({length:6},consume));
+await Promise.allSettled(Array.from({length:3},consume));
 await publish('all branch workers finished');
 console.log('CLOUD_RUN_FINISHED '+new Date().toISOString());
 }
