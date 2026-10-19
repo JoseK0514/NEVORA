@@ -77,17 +77,17 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-switch, .pmp-switch::after) { transition: none; }
 }
 
-/* Loading: the placeholder band for Owner and Manager matches the real flat band (measured Oct 19: 104px on phones,
- * portrait and landscape, at 100% text). In rem, so it follows the reader's text size (212px at 200%). The phone band
+/* Loading: the placeholder band for Owner and Manager matches the real flat band: its padding is fixed (44px) and its two
+ * text lines follow the reader's text size (3.75rem): 104px at 100%, 119 at 125%, 134 at 150% (measured Oct 19, 390). The phone band
  * only shows up to 760px wide (shared rule in portal-premium.css); desktop placeholders are the shell's. */
-html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: 6.5rem; }
+html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: calc(44px + 3.75rem); }
 
 /* Held sizes (ST-02): while paused, offline or failed, the last values keep their space, hidden, under the note. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold { display: grid; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold > * { grid-area: 1 / 1; min-width: 0; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold__value { visibility: hidden; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold__note { align-self: start; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-hold > .pmp-hold__note { align-self: stretch; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold-value { visibility: hidden; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold-note { align-self: start; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-hold > .pmp-hold-note { align-self: stretch; }
 /* Busy labels (ST-05): both words share one cell, so a button keeps the wider width. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack { display: inline-grid; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack > span { grid-area: 1 / 1; text-align: center; }

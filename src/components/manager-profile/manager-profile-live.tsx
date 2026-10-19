@@ -43,6 +43,8 @@ type View = {
   /** The last ready read. While paused, offline or failed it holds each row's size (hidden, under the note), and
    * while re-reading after a return it stays on screen, so the page doesn't collapse and regrow. */
   held?: Ready | null;
+  /** The read rows' last heights, kept only while the session has ended (the values themselves are cleared). */
+  rowHeights?: Record<string, number> | null;
   /** Which switch had focus, so it can get it back when the list returns (null when focus moved elsewhere). */
   onTopicFocus?: (id: string | null) => void;
 };
@@ -148,7 +150,7 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false, onTopicFocus }:
   </li>;
 }
 
-export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, onTopicFocus }: View) {
+export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, onTopicFocus, rowHeights = null }: View) {
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
   const read = readState(state), row = 'row' in read ? read.row : undefined;
   // Approved set: without payroll an Owner isn't told about payroll, even if the read lists the topic (switched off).
@@ -157,11 +159,12 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   const shown = visible(ready ?? (read.kind === 'loading' ? held : null));
   const sized = !shown && read.kind !== 'denied' ? visible(held) : null;
   const cell = (value: (snapshot: Ready) => ReactNode) => shown ? value(shown)
-    : sized ? <span className="pmp-hold"><span className="pmp-hold__value" aria-hidden="true">{value(sized)}</span><span className="pmp-hold__note"><Placeholder text={row} /></span></span>
+    : sized ? <span className="pmp-hold"><span className="pmp-hold-value" aria-hidden="true">{value(sized)}</span><span className="pmp-hold-note"><Placeholder text={row} /></span></span>
     : <Placeholder text={row} />;
   const note = read.kind === 'paused'
     ? read.head === 'You’re offline' ? 'You’re offline. Your alert choices show again when you’re back online.' : 'Updates paused. Your alert choices show again when you come back to this window.'
     : read.kind === 'denied' ? 'Your session ended. Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.';
+  const rowStyle = (row: string) => read.kind === 'denied' && rowHeights?.[row] ? { minHeight: rowHeights[row] } : undefined;
   const said = read.kind === 'failed' && retried === 'failed' ? 'Still couldn’t load your contact details, locations and alert choices.' : 'said' in read ? read.said : '';
   // What sizes the alert list while there is no ready read: the last read, or else the role's expected topics.
   const sizing = visible(held)?.alerts ?? (identity.owner ? identity.payrollAlerts === false ? ALERT_TOPIC_SIZING.manager : ALERT_TOPIC_SIZING.owner : ALERT_TOPIC_SIZING.manager);
@@ -187,9 +190,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
           <div><dt>Company</dt><dd>{identity.company}</dd></div>
           <div><dt>Time zone</dt><dd>{identity.timeZone}</dd></div>
           {/* The read's rows come last, so a value that arrives taller only pushes what is below the card. */}
-          <div><dt>Email</dt><dd>{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
-          <div><dt>Phone</dt><dd>{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
-          <div><dt>Locations</dt><dd>{cell(snapshot => <Locations snapshot={snapshot} owner={identity.owner} />)}</dd></div>
+          <div data-row="email" style={rowStyle('email')}><dt>Email</dt><dd>{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
+          <div data-row="phone" style={rowStyle('phone')}><dt>Phone</dt><dd>{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
+          <div data-row="locations" style={rowStyle('locations')}><dt>Locations</dt><dd>{cell(snapshot => <Locations snapshot={snapshot} owner={identity.owner} />)}</dd></div>
         </dl>
       </Card>
     </div>
@@ -214,8 +217,8 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
             : read.kind === 'loading' ? sizing.map(topic => <TopicRow key={topic.id} topic={topic} on={false} skeleton />)
             // Any other state says what happened where the alert rows are, over their hidden copy, so nothing below moves.
             : <li className="pmp-hold pmp-topics-hold">
-                <ul className="nv-rows pmp-hold__value" aria-hidden="true">{sizing.map(topic => <TopicRow key={topic.id} topic={topic} on={topic.on} />)}</ul>
-                <div className="pmp-topics-note pmp-hold__note">
+                <ul className="nv-rows pmp-hold-value" aria-hidden="true">{sizing.map(topic => <TopicRow key={topic.id} topic={topic} on={topic.on} />)}</ul>
+                <div className="pmp-topics-note pmp-hold-note">
                   <Tile tone={read.kind === 'paused' ? 'neutral' : 'urgent'}>{read.kind === 'paused' ? <PauseCircleIcon size={20} aria-hidden="true" /> : <WarningCircleIcon size={20} weight="fill" aria-hidden="true" />}</Tile>
                   <p>{note}</p>
                   {read.kind === 'denied' ? <Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link> : null}
@@ -240,6 +243,7 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
   const [saves, setSaves] = useState<Record<string, AlertSave>>({});
   const [overrides, setOverrides] = useState<Record<string, { on: boolean; basis: string }>>({});
   const [held, setHeld] = useState<Ready | null>(initial);
+  const [rowHeights, setRowHeights] = useState<Record<string, number> | null>(null);
   // A retry the reader asked for: pending until its read answers, then its outcome, tied to that one answer so
   // returning to the window later doesn't announce it again.
   const [retried, setRetried] = useState<{ pending: boolean; outcome: 'loaded' | 'failed' | null; snapshot: ManagerProfileSnapshot | null }>({ pending: false, outcome: null, snapshot: null });
@@ -257,8 +261,12 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
         retryPending.current = false;
         setRetried(next.paused || !next.snapshot ? { pending: false, outcome: null, snapshot: null } : { pending: false, outcome: next.snapshot.state === 'ready' ? 'loaded' : 'failed', snapshot: next.snapshot });
       }
-      if (next.snapshot?.state === 'ready') setHeld(next.snapshot);
-      else if (next.snapshot?.state === 'unavailable' && next.snapshot.reason === 'access_denied') setHeld(null); // an ended session keeps nothing
+      if (next.snapshot?.state === 'ready') { setHeld(next.snapshot); setRowHeights(null); }
+      else if (next.snapshot?.state === 'unavailable' && next.snapshot.reason === 'access_denied') {
+        // An ended session keeps no values, only how tall their rows were, so the page doesn't jump (ST-02).
+        setRowHeights(current => current ?? Object.fromEntries([...document.querySelectorAll<HTMLElement>('#profile-details [data-row]')].map(row => [row.dataset.row ?? '', row.getBoundingClientRect().height])));
+        setHeld(null);
+      }
     };
     const controller = createPrivateSnapshotController<ManagerProfileSnapshot>(changed, async signal => {
       const response = await fetch(MANAGER_PROFILE_ENDPOINT, { cache: 'no-store', credentials: 'same-origin', redirect: 'error', signal, headers: { Accept: 'application/json' } });
@@ -337,5 +345,5 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
   }
 
   return <ManagerProfileView identity={identity} state={state} onRetry={retry} retrying={retrying} retried={outcome} onTopicFocus={id => { lastTopic.current = id; }} saves={saves} overrides={shownOverrides} onToggle={toggle}
-    held={held} announcement={announced.text ? announced.text + (announced.count % 2 ? '' : '\u00a0') : ''} />;
+    held={held} rowHeights={rowHeights} announcement={announced.text ? announced.text + (announced.count % 2 ? '' : '\u00a0') : ''} />;
 }

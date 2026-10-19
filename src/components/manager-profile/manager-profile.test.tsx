@@ -122,18 +122,18 @@ describe('Owner and Manager Profile', () => {
     const html = render(manager, null, { state: { snapshot: null, paused: true, refreshing: false } });
     expect(html).toMatch(/Updates paused|You’re offline/);
     expect(html).toMatch(/Your alert choices show again when/);
-    expect(html).toMatch(/pmp-hold__value" aria-hidden="true">.*Clock-ins to review/);
+    expect(html).toMatch(/pmp-hold-value" aria-hidden="true">.*Clock-ins to review/);
     expect(html).not.toContain('pmp-topic-placeholder');
   });
 
   it('holds the last read’s size while paused or failed, and shows it while re-reading', () => {
     const last = parseManagerProfile(fixture('owner')) as Extract<ManagerProfileSnapshot, { state: 'ready' }>;
     const paused = render(owner, null, { state: { snapshot: null, paused: true, refreshing: false }, held: last });
-    expect(paused).toMatch(/pmp-hold__value" aria-hidden="true">.*owner/);
+    expect(paused).toMatch(/pmp-hold-value" aria-hidden="true">.*owner/);
     expect(paused.match(/role="switch"/g)).toHaveLength(5);
     expect(paused).not.toContain('style="--pmp-rows');
     const rereading = render(owner, null, { held: last });
-    expect(rereading).not.toContain('pmp-hold__value');
+    expect(rereading).not.toContain('pmp-hold-value');
     expect(rereading).toMatch(/aria-checked="true" class="nv-row pmp-switch-row" data-topic="[a-z-]+" aria-disabled="true"/);
     const denied = render(owner, { state: 'unavailable', reason: 'access_denied' }, { held: last });
     expect(denied).not.toContain('northside-qa');
