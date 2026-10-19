@@ -2,7 +2,9 @@
 
 Base: `claude/premium-phase-1` at `21c4525`. Work branch: `codex/premium-backend`, isolated cloud worktree `/workspace/NEVORA-premium-backend`. Local commits only; no push, PR, merge, deployment, real-person data, or external delivery. The Mac preview, swap and reset work belongs to the separate local session.
 
-## 1. Branch validation
+Latest six-branch snapshot checks: [October 19 validation matrix, failures and exact fixes](SNAPSHOTS-2026-10-19.md). The initial baseline evidence below remains separate from this later push.
+
+## 1. Initial branch validation
 
 A separate detached worktree at `21c4525` keeps shared-branch results independent of backend edits. Node 24.19.0, npm 11.9.0. `npm ci` and `npx tsc --noEmit -p .` passed. `npx eslint src` reproduces the known UI-owned swap-page error at line 51 (`react-hooks/immutability`: “Cannot reassign variable in async function”) and the existing effect-cleanup warning in `employee-weekly-confirmation.tsx`. Wave A owns the error; neither UI file was edited.
 
@@ -10,11 +12,11 @@ A separate detached worktree at `21c4525` keeps shared-branch results independen
 |---|---|---|---|
 | `claude/premium-phase-1` / `21c4525`, unmodified | 7,278 passed, 5 failed, 801 reported skipped | Pass | Known UI error above |
 | `codex/premium-backend` / `22c4320` | 7,328 passed, 0 failed, 801 reported skipped | Pass | Same UI error; changed backend files pass |
-| `claude/p35-profile-6cdee8` | Not pushed; not run | Not run | Not run |
-| `claude/p35-wave-a-1283c8` | Not pushed; not run | Not run | Not run |
-| `claude/p35-wave-b-808dfd` | Not pushed; not run | Not run | Not run |
-| `claude/p35-wave-c-93e13c` | Not pushed; not run | Not run | Not run |
-| `claude/p4-desktop-240fe0` | Not pushed; not run | Not run | Not run |
+| `claude/p35-profile-6cdee8` | Not pushed at the initial run | Not run then | Not run then |
+| `claude/p35-wave-a-1283c8` | Not pushed at the initial run | Not run then | Not run then |
+| `claude/p35-wave-b-808dfd` | Not pushed at the initial run | Not run then | Not run then |
+| `claude/p35-wave-c-93e13c` | Not pushed at the initial run | Not run then | Not run then |
+| `claude/p4-desktop-240fe0` | Not pushed at the initial run | Not run then | Not run then |
 
 The five baseline failures, with ownership/disposition:
 
@@ -135,4 +137,12 @@ Final verification on the backend branch:
 
 The extra database suites use `node scripts/phase-c-clocker-postgres.mjs <config>` with `NEVORA_TEST_PG_BIN` above. **All 1,318 backend-branch PostgreSQL test executions passed.** No existing database was selected; every runner reported its owned cluster stopped. Raw logs/JSON are in `/workspace/nevora-backend-evidence/` outside the repository; the report contains the durable result summary. Two read-only source/contract reviews of `22c4320` found no remaining material findings after the hardening commits.
 
-Coordinator next steps: review these local commits, arrange the backend/migration handoff when Jose requests it, wire the endpoints/fields described above, enable local flags only at each preview's next round break, then run the authenticated/browser/submission inspections. The five UI branches need separate clean cloud checks when pushed. Jose still needs to approve the proposed topic wording and any move of Inbox decisions from the full review. No production release, independent inspection sign-off, or physical-device approval is claimed.
+Coordinator next steps: review these local commits, arrange the backend/migration handoff when Jose requests it, wire the endpoints/fields described above, enable local flags only at each preview's next round break, then run the authenticated/browser/submission inspections. The six newly pushed snapshots are now checked separately below; future snapshots and the merged release candidate need fresh checks. Jose still needs to approve the proposed topic wording and any move of Inbox decisions from the full review. No production release, independent inspection sign-off, or physical-device approval is claimed.
+
+## 8. All six pushed snapshots: October 19
+
+All six exact commits supplied by Jose passed `npm ci`, TypeScript and a production build. Five default suites passed: Profile had 7,298 passing tests; Phase 3 and Waves A/B/C each had 7,283. Desktop had **7,283 passed, 2 failed** in the UI preview's old sidebar-label expectations. A focused rerun confirmed the same two failures while the navigation tests passed; Claude owns that test update.
+
+Wave A has zero lint errors. The other five snapshots retain the known swap-page immutability error already fixed on Wave A; all six have the existing effect-cleanup warning. Each snapshot's PostgreSQL checks executed all five release groups across the original and supplemental runs: **736 passed, 1 failed**. The common catalog-comparison fixture omits migrations `0031`/`0032`; the existing backend fix is in `22c4320`, and the detailed report supplies a fixture-only patch for snapshots that do not yet include Profile migration `0033`.
+
+See [the full report](SNAPSHOTS-2026-10-19.md) for exact commits, every failure and its owner, commands, skipped/pending counts, environment/reaper evidence, supplemental SQL provenance and remaining gates. Snapshot application code and tests stayed unchanged. This task changed only this README and the new snapshot report on the backend branch.
