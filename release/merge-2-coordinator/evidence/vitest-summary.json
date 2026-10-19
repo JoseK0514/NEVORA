@@ -1,0 +1,11 @@
+{
+  "checkpoint": "25dca8de105a9abd2a94bcd459ca3688eecfcb15",
+  "passed": 7282,
+  "failed": 5,
+  "skipped": 801,
+  "pending": 55,
+  "total": 8143,
+  "workers": 1,
+  "timeoutsChanged": false,
+  "scope": "unpublished coordinator-only intermediate; not a published-candidate verdict"
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "file": "/workspace/nevora-rc-current/src/test/phase-e-process.test.ts",
+    "test": "retained Linux marker observation: changed-ancestry",
+    "errors": [
+      "AssertionError: expected 'ANCESTRY_UNAVAILABLE' to match /^(IDENTITY_CHANGED|MEMBER_CONTINUITY_\u2026/\n    at /workspace/nevora-rc-current/src/test/phase-e-process.test.ts:97:52\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2869:63\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1628:35\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2783:26\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3319:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3314:10)\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3299:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3257:10)"
+    ]
+  },
+  {
+    "file": "/workspace/nevora-rc-current/src/lib/tenancy/migrations/journal-contract.test.ts",
+    "test": "original-plan durable journal preparation rejects replacement retry identity for an unknown original operation",
+    "errors": [
+      "Error: Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at chain (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at /workspace/nevora-rc-current/src/lib/tenancy/migrations/journal-contract.test.ts:129:3\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:52\n    at runWithSuite (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3248:8)\n    at Object.collect (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:22)\n    at Object.collect (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2768:51)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"
+    ]
+  },
+  {
+    "file": "/workspace/nevora-rc-current/src/lib/tenancy/migrations/key-comparator-recheck.server.test.ts",
+    "test": "locked current key comparator recheck, genuine pure observations and mocked SQL only rechecks all104 complete metadata under every70 held lock without acquiring locks or issuing effects",
+    "errors": [
+      "Error: Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at chain (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at /workspace/nevora-rc-current/src/lib/tenancy/migrations/key-comparator-recheck.server.test.ts:75:2\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:52\n    at runWithSuite (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3248:8)\n    at Object.collect (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:22)\n    at Object.collect (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2768:51)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"
+    ]
+  },
+  {
+    "file": "/workspace/nevora-rc-current/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "test": "typed journal whole-plan successor fictional transaction regressions rejects applied metadata with journalNOT_STARTED, never retrospectively repairing",
+    "errors": [
+      "Error: Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at Object.chain (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2869:10\n    at Array.forEach (<anonymous>)\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2866:10\n    at /workspace/nevora-rc-current/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:310:40\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:52\n    at runWithSuite (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3248:8)"
+    ]
+  },
+  {
+    "file": "/workspace/nevora-rc-current/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "test": "typed journal original-attempt reconciliation boundaries refuses cloned/serialized/wrapped genuine receipts before SQL",
+    "errors": [
+      "Error: Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at chain (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at /workspace/nevora-rc-current/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:325:2\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:52\n    at runWithSuite (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3248:8)\n    at Object.collect (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:22)\n    at Object.collect (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2768:51)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"
+    ]
+  }
+]

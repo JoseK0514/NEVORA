@@ -6,7 +6,7 @@ In progress, 2026-10-19 19:10 UTC: coordinator `8c4264c` and backend `c6a5954` a
 
 In progress: Phase 3 round 4 on `f691dec` has TC-P3-32 (P1); Wave A round 2 exit on `c05e0c7` has ST-WA-7 (P1). Profile round 4 on `829dfe6` has two P2 remainders (ST-03 at 360px; ST-08 in WebKit 390/150). Wave C round 4 exit on `5f7c166` independently fixes its two reported P1s, but its full sweep is incomplete. Wave B round 3 exit on `9f32ca6` continues; Desktop round 3 on `2250275` is queued. Five matrices are running. No round has a completed zero verdict. This inspection session performs no merges or deployments.
 
-Rolling release task, 2026-10-19 19:10 UTC: preserved published `0e01046`; local coordinator refresh `25dca8d` (input `8c4264c`) now passes install, TypeScript and lint (0 errors/warnings). Full Vitest is running with one worker and no browser preview workload. Backend `1c8254a` retry was aborted on the unchanged Coverage-test conflict; no wording chosen. Wave A’s newer `7679133` awaits its own zero exit and was not merged. [Current candidate work](release/merge-2-coordinator/README.md).
+Verification task, 2026-10-19 19:43 UTC: source-owner instructions now resolve both backend conflicts (Wave A ROUND at `7679133` plus coordinator layout file at `8c4264c`). Local verification snapshot `bf6c030` integrates backend `c6a5954` without the newer Wave A UI commit; install/TypeScript/lint pass, and its full one-worker suite is still running with no failure reported so far. The planner benchmark and all 12 process-cleanup cases pass. Another release task owns publication; this task is verifying to avoid another branch race. [Current verification record](release/merge-3-backend/README.md). The prior unpublished coordinator-only `25dca8d` run completed at 7,282 passed / 5 failed; its results are not current-candidate gates.
 
 Published 2026-10-19 18:57 UTC: `codex/release-candidate` is `0e010464aeb5f532981ac6071c48e1527e9419db` (Wave A `c05e0c7` + coordinator through `e7671e6` + lint cleanup). **Blocked / not zero.** [Validation and five combined reports](release/merge-1-wave-a/README.md). This replaced only rehearsal `bec0ed4` using an exact lease; all parallel inspection/backend-first records are preserved below. No deployment or device access.
 
@@ -29,11 +29,13 @@ Reports branch: `codex/inspections`. Jose's October 19 rolling-merge instruction
 
 ## Conflicts for Claude
 
+Wave A `7679133` ROUND.md explicitly prescribes its Coverage test, whose blob `18e3861` equals the existing candidate test. The coordinator supplies the root-layout file at `8c4264c`. Both prescriptions were applied verbatim to local verification snapshot `bf6c030`; no newer Wave A UI was merged. Publication and complete gates remain pending in the other release task.
+
 **Current integration `98b037b`: resolved under Jose’s explicit instructions.** Root layout follows the coordinator’s supplied resolution. Coverage assertions use Wave A’s on-screen wording (“1 more needed”, “1 more person needed”, “Choose what to fill”); backend nonwording assertions remain. Backend `c6a5954` is integrated locally. There is no unresolved merge conflict in this candidate. The older conflicts below describe retained historical checkpoints only.
 
 ### Historical conflict records
 
-**Current backend blocker — candidate `0e01046` (coordinator `e7671e6` + Wave A `c05e0c7`) / backend `1c8254a` (application inputs unchanged from `31ec698`): `src/app/app/schedule/coverage/page.test.tsx`.** Candidate asserts “1 more needed”, “1 more person needed” and “Choose what to fill”; backend asserts “1 needed”, “1 employees needed” and “Choose the requirement”. Both complete sides are in `release/merge-1-wave-a/conflicts/coverage-test-{candidate,backend}.txt`. Merge aborted; no side chosen. Owner: backend / Wave A / coordinator.
+**Historical backend conflict; both choices now prescribed by source owners — candidate `0e01046` (coordinator `e7671e6` + Wave A `c05e0c7`) / backend `1c8254a` (application inputs unchanged from `31ec698`): `src/app/app/schedule/coverage/page.test.tsx`.** Candidate asserts “1 more needed”, “1 more person needed” and “Choose what to fill”; backend asserts “1 needed”, “1 employees needed” and “Choose the requirement”. Both complete sides are in `release/merge-1-wave-a/conflicts/coverage-test-{candidate,backend}.txt`. Merge aborted; no side chosen. Owner: backend / Wave A / coordinator.
 
 **Resolved by coordinator, not applied yet — root layout:** `f691dec` includes `docs/product/specs/codex-joint/RESOLVED-src-app-layout.tsx.txt`, explicitly directing the combined async layout/error hook and text-scale script. This resolves the earlier choice; the backend merge as a whole awaits the separate Coverage test conflict. The supplied resolution is retained with this merge report.
 
@@ -102,3 +104,5 @@ All page submissions must be answered, held or aborted in the browser. Only fict
 2026-10-19 19:16:45 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 0, P2 0 · not zero
 
 Wave C round 4 has 0 newly verified defects so far, with incomplete coverage. “not zero” above means no completed five-area exit certificate. Confirmed legacy ST-02 and WR-21 are fixed on this commit.
+
+2026-10-19 19:43 UTC · backend source-owner resolutions read and applied to local verification bf6c030 · tests pending · install/type/lint pass · publication remains with the other active release task · no deploy/exposure
