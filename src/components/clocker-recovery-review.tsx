@@ -120,11 +120,12 @@ export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: strin
       <details className="wc-disclosure"><summary>Can others still use the tablet?<CaretDownIcon className="wc-caret" size={16} weight="bold" aria-hidden="true"/></summary>
         <div className="wc-disclosure__body"><p>Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.</p></div></details>
     </GuideCard>}>
-    <form className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
+    <form noValidate className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
       onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the saved reference.' : 'Use the full reference: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
       onSubmit={event => {
         event.preventDefault();
         if (!hydrated || pending) return;
+        if (event.currentTarget?.checkValidity && !event.currentTarget.checkValidity()) return;
         selected.current = reference.trim().toLowerCase();
         setHasSelection(true);
         submitted.current = true;
@@ -164,7 +165,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: strin
       {pending ? <div role="status"><EmptyState headingLevel={3} icon={<SpinnerGapIcon size={22} weight="bold" className="wc-spin"/>} title="Checking the saved receipt">Looking for a recorded action with this reference.</EmptyState></div>
         : ready ? <div ref={feedback} tabIndex={-1} className="wc-feedback nv-card__body wc-fields">
           <div role="status"><Notice tone={ready.receipts.length ? 'done' : 'info'} title={ready.receipts.length ? 'Recorded action found' : 'Action still unconfirmed'}>
-            {ready.receipts.length ? 'Review it with the employee before they finish on the tablet.' : 'No committed receipt was found. The request may still be in progress.'}</Notice></div>
+            {ready.receipts.length ? 'Review it with the employee before they finish on the tablet.' : 'No recorded action was found yet. The request may still be in progress.'}</Notice></div>
           <dl className="wc-facts"><div><dt>Reference checked</dt><dd className="wc-path">{ready.commandId}</dd></div></dl>
           {ready.receipts.length ? <>
             <ul className="wc-receipts">{ready.receipts.map((receipt, index) => <li key={[receipt.employeeId, receipt.performedAt, index].join('-')} className="wc-receipt-item">
@@ -185,7 +186,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: strin
 
     <section className="nv-card" aria-labelledby="recovery-corrections-heading">
       <div className="nv-card__head"><h2 className="nv-card__title" id="recovery-corrections-heading">Time wrong or not recorded?</h2></div>
-      <div className="nv-card__body"><p className="wc-muted">Review the employee’s evidence, then use the time correction workflow. Keep the original action reference.</p></div>
+      <div className="nv-card__body"><p className="wc-muted">Review the employee’s evidence, then correct the time in Timecards. Keep the original action reference.</p></div>
       <div className="wc-card-actions"><Link href="/app/timecards" className="nv-link">Review timecards<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link></div>
     </section>
   </SettingsFrame>;

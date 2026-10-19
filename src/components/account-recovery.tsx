@@ -5,7 +5,7 @@ import {AssistedRecovery} from './assisted-recovery';
 import {RecoveryReset} from './recovery-reset';
 const subscribe=()=>()=>{};
 type Issued={proof:string;expiresAt:string;employeeId:string};
-export function AccountRecovery({kind,actorId,employeeId,from}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings'}){
+export function AccountRecovery({kind,actorId,employeeId,from,timeZone}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string}){
  const hydrated=useSyncExternalStore(subscribe,()=>true,()=>false);
  const [message,setMessage]=useState(''),[busy,setBusy]=useState(false),[done,setDone]=useState(false),[issued,setIssued]=useState<Issued|null>(null);
  const proofInput=useRef<HTMLInputElement>(null);
@@ -34,12 +34,12 @@ export function AccountRecovery({kind,actorId,employeeId,from}:{kind:'request'|'
    if(kind==='request'&&response.status===202&&data.state==='accepted'){setMessage(data.message);setDone(true);}
    else if(kind==='reset'&&response.ok&&data.state==='reset'){setMessage('Password reset. All portal sessions have ended. Sign in with your new password.');setDone(true);}
    else if(kind==='assisted'&&response.ok&&data.state==='issued'&&/^[A-Za-z0-9_-]{43}$/.test(data.proof)&&Number.isFinite(Date.parse(data.expiresAt))&&data.employeeId===(body as {employeeId:string}).employeeId){setIssued(data);}
-   else setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.':response.status===401||response.status===403?'Your access ended. Sign in again.':'Recovery could not be confirmed. Keep your current access and try again.');
+   else setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.':response.status===401||response.status===403?'Your access ended. Sign in again.':kind==='assisted'?'The code wasn’t issued. Try again.':'Recovery could not be confirmed. Keep your current access and try again.');
   }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':kind==='assisted'?'The code could not be issued. Check your connection and try again.':'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }
  if(kind==='request')return <RecoveryRequest hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
- if(kind==='assisted')return <AssistedRecovery hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');}}/>;
+ if(kind==='assisted')return <AssistedRecovery hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} timeZone={timeZone} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');}}/>;
  return <RecoveryReset hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
   proofRef={input=>{proofInput.current=input;if(input&&incomingProof.current){input.value=incomingProof.current;incomingProof.current=null;}}}/>;
 }

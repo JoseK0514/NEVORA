@@ -28,7 +28,7 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(html).toContain('value="Northside Operations"');
   expect(html).toContain('value="America/Puerto_Rico"');
   expect(html).not.toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
-  expect(html).toContain("Monday at 12:00 AM");
+  expect(html).toContain("Monday at 12:00\u00a0AM");
   expect(html).toContain('type="submit"');
   expect(html).toContain("Save changes");
   expect(html).toContain('href="/app/settings"');
@@ -37,7 +37,9 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
 it("explains a protected timezone without locking the workspace name", async () => {
   mocks.locked = true;
   const html = renderToStaticMarkup(await WorkspacePage());
-  expect(html).toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
+  // A protected timezone reads in full as text, not as a disabled field (TC-06); it isn't submitted.
+  expect(html).not.toContain('name="timeZone"');
+  expect(html).toContain(">America/Puerto_Rico</p>");
   expect(html).not.toMatch(/<input(?=[^>]*name="name")(?=[^>]*disabled="")[^>]*>/);
   expect(html).toContain("You can still change your business name.");
   expect(html).toContain("Changing the business timezone requires a separately reviewed conversion because operational records already exist.");

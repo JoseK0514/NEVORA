@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
@@ -12,6 +13,8 @@ import { ButtonLabel, FormActions, SwitchRow } from "@/app/app/settings/wave-c-f
 
 /** Owner editor for company words and modules (B2), Wave C kit layout. The server re-checks
  * every rule; a module with requests still waiting cannot be turned off. */
+/** IS: after a save the page reloads this editor; the fresh one puts focus on its "All changes saved" line. */
+let focusSavedOnMount = false;
 type Command = { operationId: string; expectedRevision: number } & ({ section: "words"; preset: WordPresetId } | { section: "modules"; disabled: ModuleId[] });
 
 export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEnabled }: {
@@ -25,7 +28,9 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
   const pending = useRef<Command[] | null>(null);
   const sending = useRef(false);
   const feedback = useRef<HTMLDivElement>(null);
+  const savedLine = useRef<HTMLSpanElement>(null);
   useEffect(() => { if (notice?.tone === "error") feedback.current?.focus(); }, [notice]);
+  useEffect(() => { if (focusSavedOnMount) { focusSavedOnMount = false; savedLine.current?.focus(); } }, []);
 
   const wordsChanged = words !== preset;
   const sameOff = (a: ModuleId[], b: ModuleId[]) => a.length === b.length && a.every(id => b.includes(id));
@@ -57,6 +62,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       // The page reloads with the saved state ("All changes saved"); the toast confirms it.
       setNotice(null);
       toast("Features saved");
+      focusSavedOnMount = true;
       router.refresh();
     } catch {
       setNotice({ tone: "error", text: "We couldn’t confirm the save. Save again to retry safely, or reload to check." });
@@ -104,9 +110,10 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
 
     <p className="nv-sr" role="status">{busy ? "Saving…" : ""}</p>
     <FormActions sticky>
-      {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? "Not saved" : undefined}>{notice.text}</Notice></div> : null}
+      {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.includes("access ended") ? "Sign in again" : "Not saved") : undefined}
+        action={notice.text.includes("access ended") ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
       <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={busy || !changed}><ButtonLabel pending={busy} idle="Save changes" busy="Saving…" /></button>
-      {changed ? <span className="wc-save-state">You have unsaved changes.</span> : <span className="wc-save-state wc-save-state--done"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" />All changes saved</span>}
+      {changed ? <span className="wc-save-state">You have unsaved changes.</span> : <span className="wc-save-state wc-save-state--done" ref={savedLine} tabIndex={-1}><CheckCircleIcon size={18} weight="fill" aria-hidden="true" />All changes saved</span>}
     </FormActions>
   </div>;
 }

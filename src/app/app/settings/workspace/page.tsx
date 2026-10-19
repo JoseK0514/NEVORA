@@ -4,6 +4,7 @@ import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
 import { requireRoles } from "@/lib/auth/permissions";
+import { keepWhole } from "@/lib/keep-whole";
 import {
   getWorkspace,
   isWorkspaceTimezoneLocked,
@@ -38,17 +39,23 @@ export default async function WorkspacePage() {
         <section className="nv-card" aria-labelledby="workspace-time-title">
           <div className="nv-card__head"><h2 className="nv-card__title" id="workspace-time-title">Time and scheduling</h2></div>
           <div className="nv-card__body wc-fields">
-            <Field label="Business timezone" helpId="timezone-help"
-              labelAside={locked ? <span className="wc-tag"><LockKeyIcon size={14} weight="bold" aria-hidden="true" />Protected</span> : null}
-              help={locked ? <>
-                <p>Operational records exist, so this timezone is protected. You can still change your business name.</p>
+            {locked ? <div className="wc-field">
+              <div className="wc-field__label-row">
+                <span className="wc-label" id="workspace-timezone-label">Business timezone</span>
+                <span className="wc-tag"><LockKeyIcon size={14} weight="bold" aria-hidden="true" />Protected</span>
+              </div>
+              <p className="wc-readonly" id="workspace-timezone" aria-labelledby="workspace-timezone-label" aria-describedby="timezone-help">{workspace.timeZone}</p>
+              <div className="wc-help" id="timezone-help">
+                <p>Schedules and time records already use this timezone, so it’s protected. You can still change your business name.</p>
                 <details className="wc-disclosure">
                   <summary>Why is the timezone protected?<CaretDownIcon className="wc-caret" size={16} weight="bold" aria-hidden="true" /></summary>
                   <div className="wc-disclosure__body"><p>{new WorkspaceTimezoneLockedError().message}</p></div>
                 </details>
-              </> : <p>Enter an IANA timezone, such as America/New_York.</p>}
-              id="workspace-timezone" name="timeZone" defaultValue={workspace.timeZone} disabled={locked} required autoComplete="off" spellCheck={false} autoCapitalize="none" />
-            <Fact icon={<CalendarBlankIcon size={20} aria-hidden="true" />} label="Workweek starts" value="Monday at 12:00 AM" note="In your business timezone" />
+              </div>
+            </div> : <Field label="Business timezone" helpId="timezone-help"
+              help={<p>Enter a timezone name, such as America/New_York.</p>}
+              id="workspace-timezone" name="timeZone" defaultValue={workspace.timeZone} required autoComplete="off" spellCheck={false} autoCapitalize="none" />}
+            <Fact icon={<CalendarBlankIcon size={20} aria-hidden="true" />} label="Workweek starts" value={keepWhole("Monday at 12:00 AM")} note="In your business timezone" />
           </div>
         </section>
       </SettingsForm>

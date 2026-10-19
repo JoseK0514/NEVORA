@@ -169,6 +169,8 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (sending.current || disabled) return;
+    // noValidate keeps the shared validation layer off this form; Wave C checks the declared constraints itself.
+    if (!event.currentTarget.checkValidity()) return;
     const data = new FormData(event.currentTarget);
     if (draftUpdatedAt !== undefined) data.set("expectedUpdatedAt", draftUpdatedAt);
     sending.current = true;
@@ -192,7 +194,7 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
   }
 
   return (
-    <form onSubmit={submit} className={className ? `wc-form ${className}` : "wc-form"} aria-busy={pending} aria-label={label} data-guard={disabled ? "" : undefined} {...handlers}
+    <form noValidate onSubmit={submit} className={className ? `wc-form ${className}` : "wc-form"} aria-busy={pending} aria-label={label} data-guard={disabled ? "" : undefined} {...handlers}
       onInput={() => { if (result.error || result.success) setResult({}); }}>
       <fieldset disabled={pending || disabled} className="wc-fieldset">
         {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}

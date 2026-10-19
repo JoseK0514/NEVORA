@@ -29,7 +29,7 @@ it('keeps archived records and their actions in the initial All view', async () 
   const html = renderToStaticMarkup(await BreakTypesPage());
   expect(html).toContain('data-break-type="rest"');
   expect(html).toContain('Reactivate');
-  expect(html).toContain('No reference duration');
+  expect(html).toContain('No reference time');
   expect(html).toContain('aria-pressed="true"');
 });
 

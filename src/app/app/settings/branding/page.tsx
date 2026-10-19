@@ -14,7 +14,7 @@ export default async function BrandingPage() {
   const latest = history[0];
   const current = storedBrand(latest?.settings);
   return (
-    <SettingsFrame title="Branding" summary="Your colour and logo across NEVORA. Layout, text sizes and status colours stay the same.">
+    <SettingsFrame title="Branding" summary="Your color and logo across NEVORA. Layout, text sizes and status colors stay the same.">
       <BrandEditor key={latest?.revision ?? 0}
         workspaceName={workspace.name}
         revision={latest?.revision ?? 0}

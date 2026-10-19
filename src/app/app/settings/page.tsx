@@ -30,8 +30,8 @@ const groups = [
     items: [
       { id: "profile", title: "Company profile", description: "Business name and timezone.", href: "/app/settings/workspace", icon: BuildingsIcon },
       { id: "locations", title: "Locations", description: "Location details, status, and Clocker links.", href: "/app/settings/locations", icon: MapPinIcon },
-      { id: "branding", title: "Branding", description: "Company colour and logo, kept readable.", href: "/app/settings/branding", icon: PaletteIcon },
-      { id: "features", title: "Features & words", description: "Turn features on or off, and choose your team's words.", href: "/app/settings/features", icon: ToggleRightIcon },
+      { id: "branding", title: "Branding", description: "Company color and logo, kept readable.", href: "/app/settings/branding", icon: PaletteIcon },
+      { id: "features", title: "Features & words", description: "Turn features on or off, and choose your team’s words.", href: "/app/settings/features", icon: ToggleRightIcon },
     ],
   },
   {
@@ -66,7 +66,7 @@ const groups = [
     description: "Help your team get back to work.",
     items: [
       { id: "account-recovery", title: "Account recovery", description: "Verify identity and help restore portal access.", href: "/app/account-recovery?from=settings", icon: KeyIcon },
-      { id: "clocker-recovery", title: "Clocker recovery", description: "Review an employee's saved Clocker action reference.", href: "/app/clocker-recovery?from=settings", icon: ClockCounterClockwiseIcon },
+      { id: "clocker-recovery", title: "Clocker recovery", description: "Review an employee’s saved Clocker action reference.", href: "/app/clocker-recovery?from=settings", icon: ClockCounterClockwiseIcon },
     ],
   },
 ];

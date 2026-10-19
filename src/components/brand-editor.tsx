@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import Link from "next/link";
+import { keepWhole } from "@/lib/keep-whole";
 import { useRouter } from "next/navigation";
 import { CheckCircleIcon, InfoIcon, UploadSimpleIcon, TrashIcon, ArrowCounterClockwiseIcon, DeviceMobileIcon, DesktopIcon, DeviceTabletIcon, CalendarBlankIcon, HouseIcon, TrayIcon, UsersThreeIcon, DotsThreeIcon } from "@phosphor-icons/react/ssr";
 import { AuthBrand } from "./auth-brand";
@@ -18,6 +20,7 @@ const PRESETS = [
   { name: "Rose", hex: "#BE185D" }, { name: "Pine", hex: "#0F766E" },
 ];
 const MAX_LOGO = 262_144;
+const subscribe = () => () => {};
 
 type History = { revision: number; changedAt: string; changedKeys: string[] };
 type Command = { operationId: string; expectedRevision: number; section: "brand"; seed: string | null; logoAssetId: string | null };
@@ -30,13 +33,15 @@ function base64(buffer: ArrayBuffer) {
 const logoUrl = (id: string) => `/api/workspace-presentation/logo/${id}`;
 const changeLabel = (keys: string[]) => {
   const colour = keys.includes("brand.seed"), logo = keys.includes("brand.logoAssetId");
-  return colour && logo ? "Colour and logo changed" : colour ? "Colour changed" : logo ? "Logo changed" : "Saved";
+  return colour && logo ? "Color and logo changed" : colour ? "Color changed" : logo ? "Logo changed" : "Saved";
 };
 
 export function BrandEditor({ workspaceName, revision, seed, logoAssetId, history, timeZone }: {
   workspaceName: string; revision: number; seed: string | null; logoAssetId: string | null; history: History[]; timeZone: string;
 }) {
   const router = useRouter();
+  const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
+  const [hexTouched, setHexTouched] = useState(false);
   const savedSeed = seed ?? DEFAULT_SEED;
   const [draft, setDraft] = useState(savedSeed);
   const [logo, setLogo] = useState<string | null>(logoAssetId);
@@ -66,7 +71,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
     try {
       const response = await fetch("/api/workspace-presentation", { method: "POST", cache: "no-store", headers: { "content-type": "application/json", "x-nevora-presentation": "1" }, body: JSON.stringify(command) });
       if (response.status === 401 || response.status === 403) { retry.current = null; setNotice({ tone: "error", text: "Your access ended. Sign in again to change branding." }); return; }
-      if (response.status === 400) { retry.current = null; setNotice({ tone: "error", text: "Choose a colour like #1D4ED8, then save again." }); return; }
+      if (response.status === 400) { retry.current = null; setNotice({ tone: "error", text: "Choose a color like #1D4ED8, then save again." }); return; }
       if (response.status === 409) { retry.current = null; setNotice({ tone: "error", text: "Branding changed somewhere else. Reload to see the latest before editing." }); return; }
       if (!response.ok) throw Error();
       retry.current = null;
@@ -101,27 +106,27 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
     <img src={logoUrl(logo)} alt="" /></span> : null;
   const passing = checks.filter(c => c.pass).length;
 
-  return <div className="wc-brand">
+  return <div className="wc-brand" data-guard={hydrated ? undefined : ""}>
     <section className="nv-card wc-brand__colour" aria-labelledby="brand-colour-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="brand-colour-title">Brand colour</h2></div>
+      <div className="nv-card__head"><h2 className="nv-card__title" id="brand-colour-title">Brand color</h2></div>
       <div className="nv-card__body wc-fields">
-        <p className="wc-muted">Buttons, links, selected items and the header use this colour. NEVORA adjusts it if needed so text stays readable.</p>
-        <div className="wc-swatches" role="group" aria-label="Suggested colours">
+        <p className="wc-muted">Buttons, links, selected items and the header use this color. NEVORA adjusts it if needed so text stays readable.</p>
+        <div className="wc-swatches" role="group" aria-label="Suggested colors">
           {PRESETS.map(p => <button key={p.hex} type="button" className="wc-swatch" aria-pressed={effectiveSeed === p.hex}
-            aria-label={`${p.name}, ${p.hex}`} title={p.name} onClick={() => choose(p.hex)} style={{ "--swatch": p.hex } as CSSProperties}>
+            aria-label={`${p.name}, ${p.hex}`} title={p.name} disabled={!hydrated} onClick={() => choose(p.hex)} style={{ "--swatch": p.hex } as CSSProperties}>
             {effectiveSeed === p.hex ? <CheckCircleIcon size={22} weight="fill" aria-hidden="true" /> : null}
           </button>)}
         </div>
         <div className="wc-colour-row">
           <div className="wc-field">
-            <label className="wc-label" htmlFor="brand-picker">Colour</label>
-            <input id="brand-picker" className="wc-colour" type="color" value={valid ?? savedSeed} onChange={e => choose(e.target.value.toUpperCase())} />
+            <label className="wc-label" htmlFor="brand-picker">Color</label>
+            <input id="brand-picker" className="wc-colour" type="color" disabled={!hydrated} value={valid ?? savedSeed} onChange={e => choose(e.target.value.toUpperCase())} />
           </div>
           <Field label="Hex code" fieldClassName="wc-hex" helpId="brand-hex-help"
-            error={valid ? undefined : "Enter a colour like #1D4ED8."}
-            help={valid ? "Six digits after #, for example #1D4ED8." : undefined}
-            id="brand-hex" value={draft} onChange={e => { retry.current = null; setDraft(e.target.value.trim()); }} spellCheck={false} autoComplete="off"
-            inputMode="text" maxLength={7} />
+            error={valid || (!hexTouched && draft.length < 7) ? undefined : "Enter a color like #1D4ED8."}
+            help={valid || (!hexTouched && draft.length < 7) ? "Six digits after #, for example #1D4ED8." : undefined}
+            id="brand-hex" value={draft} onChange={e => { retry.current = null; setDraft(e.target.value.trim()); }} onBlur={() => setHexTouched(true)} spellCheck={false} autoComplete="off"
+            inputMode="text" maxLength={7} disabled={!hydrated} />
         </div>
         <div className="wc-adjustments" role="status" aria-live="polite">
           {brand.adjustments.length ? brand.adjustments.map(a => <p key={a.code} className="wc-with-icon"><InfoIcon size={18} aria-hidden="true" />{a.message}</p>)
@@ -137,13 +142,13 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
           {([["phone", "Phone", DeviceMobileIcon], ["desktop", "Desktop", DesktopIcon], ["kiosk", "Clocker", DeviceTabletIcon]] as const).map(([id, label, Icon]) =>
             <button key={id} type="button" className="nv-filter" aria-pressed={view === id} onClick={() => setView(id)}><Icon size={18} aria-hidden="true" />{label}</button>)}
         </div>
-        <p className="nv-sr" aria-live="polite">{`Preview of the ${view === "kiosk" ? "Clocker tablet" : view} with buttons in ${brand.tokens.accent} and a header in ${brand.tokens.masthead}.`}</p>
+        <p className="nv-sr">{`Preview of the ${view === "kiosk" ? "Clocker tablet" : view} with buttons in ${brand.tokens.accent} and a header in ${brand.tokens.masthead}.`}</p>
         <div className="wc-stage" data-view={view} style={previewStyle} aria-hidden="true" inert>
           {view === "phone" ? <div className="wc-bp-phone">
             <div className="wc-bp-masthead"><AuthBrand />{logoChip}</div>
             <div className="wc-bp-body">
               <p className="wc-bp-greeting">Good morning, Avery</p>
-              <div className="wc-bp-pass"><span>Next shift · Tomorrow</span><strong>8:00 AM – 4:00 PM</strong><em>Main Office</em></div>
+              <div className="wc-bp-pass"><span>Next shift · Tomorrow</span><strong>{keepWhole("8:00 AM – 4:00 PM")}</strong><em>Main Office</em></div>
               <div className="wc-bp-row"><span>Swap request approved</span><b>View ›</b></div>
               <div className="wc-bp-chip">Selected</div>
             </div>
@@ -162,7 +167,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
             <span className="wc-bp-kiosk-button">Clock In<small>Marcar entrada</small></span>
           </div> : null}
         </div>
-        <p className="wc-muted">The header, buttons and links follow your colour. Text sizes, layout and the red, amber and green status colours never change.</p>
+        <p className="wc-muted">The header, buttons and links follow your color. Text sizes, layout and the red, amber and green status colors never change.</p>
       </div>
     </section>
 
@@ -191,20 +196,21 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
         <h2 className="nv-card__title" id="brand-checks-title">Readability</h2>
         <span className="nv-card__meta">{passing === checks.length ? `All ${checks.length} checks pass` : `${passing} of ${checks.length} pass`}</span>
       </div>
-      <ul className="nv-rows" aria-label="Contrast for this colour">
+      <ul className="nv-rows" aria-label="Contrast for this color">
         {checks.map(c => <li key={c.id}><div className="nv-row">
           <span className="nv-row__text">
             <span className="nv-row__title">{c.label}</span>
-            <span className="nv-row__meta">{c.ratio.toFixed(1)}:1, needs {c.minimum}:1</span>
+            <span className="nv-row__meta">{(Math.floor(c.ratio * 10) / 10).toFixed(1)}:1, needs {c.minimum}:1</span>
+            <span className="nv-row__status"><Status tone={c.pass ? "done" : "urgent"}>{c.pass ? "Passes" : "Too low"}</Status></span>
           </span>
-          <span className="nv-row__trail"><Status tone={c.pass ? "done" : "urgent"}>{c.pass ? "Passes" : "Too low"}</Status></span>
         </div></li>)}
       </ul>
     </section>
 
     <div className="wc-brand__save">
       {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
-        title={notice.tone === "error" ? "Not saved" : notice.tone === "success" ? "Brand saved" : undefined}>{notice.text}</Notice></div> : null}
+        title={notice.tone === "error" ? (notice.text.includes("access ended") ? "Sign in again" : "Not saved") : notice.tone === "success" ? "Brand saved" : undefined}
+        action={notice.text.includes("access ended") ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
       <p className="nv-sr" role="status">{busy === "save" ? "Saving…" : ""}</p>
       <FormActions>
         <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={!valid || !dirty || busy !== null}>

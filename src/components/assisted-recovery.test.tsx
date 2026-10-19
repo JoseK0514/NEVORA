@@ -27,7 +27,7 @@ describe('Assisted recovery workflow presentation',()=>{
  it('opened from an employee page, prefills their ID and returns to that page (W2)',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER" employeeId="AUDIT-E"/>);
   expect(html).toMatch(/name="employeeId" value="AUDIT-E"/);
-  expect(html).toContain('href="/app/employees/AUDIT-E"');expect(html).toMatch(/href="\/app\/employees\/AUDIT-E"[^>]*>[\s\S]*?Employee<\/a>/);
+  expect(html).toContain('href="/app/employees/AUDIT-E"');expect(html).toMatch(/href="\/app\/employees\/AUDIT-E"[^>]*>[\s\S]*?AUDIT-E<\/a>/);
   expect(html).not.toContain('view=team');
  });
  it('announces pending issuance while all mutation fields are disabled',()=>{

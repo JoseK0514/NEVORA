@@ -67,7 +67,8 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     if (!selection) return;
     const element = dialog.current;
     element?.showModal();
-    element?.querySelector<HTMLElement>('input[name="name"], button[type="submit"]')?.focus({ preventScroll: true });
+    // Destructive confirms (revoke, new code) start on Cancel.
+    element?.querySelector<HTMLElement>('input[name="name"], [data-autofocus], button[type="submit"]')?.focus({ preventScroll: true });
     const unlock = lockPageScroll();
     return () => { unlock(); if (element?.open) element.close(); };
   }, [selection]);
@@ -93,6 +94,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current || !selection) return;
+    if (!event.currentTarget.checkValidity()) return;
     const form = new FormData(event.currentTarget);
     form.set('operation', selection.operation);
     if (selection.device) {
@@ -180,7 +182,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
           {([['ALL', 'All devices', devices.length], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Revoked', revoked]] as const).map(([value, label, count]) =>
             <button key={value} type="button" className="nv-filter" aria-pressed={filter === value} aria-label={`${label}, ${count}`} onClick={() => setFilter(value)}>{label} <span className="wc-count" aria-hidden="true">{count}</span></button>)}
         </div>
-        <p className="wc-count-line" role="status">Showing {visibleDevices.length} of {devices.length} devices</p>
+        <p className="wc-count-line" role="status">Showing {visibleDevices.length} of {devices.length} {devices.length === 1 ? 'device' : 'devices'}</p>
       </div>
     </section> : null}
     <section className="nv-card" aria-labelledby="clocker-devices-title">
@@ -197,13 +199,13 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
             <span className="nv-row__text">
               <span className="nv-row__title">{device.name}</span>
               <span className="nv-row__meta">{location?.name ?? 'Location unavailable'}</span>
-              <span className="nv-row__meta">{device.lastSeenAt ? `Last checked ${date(device.lastSeenAt)}` : 'No tablet has connected yet'}</span>
+              <span className="nv-row__meta">{device.lastSeenAt ? `Last checked ${date(device.lastSeenAt)}` : device.state === 'ACTIVE' ? 'Registered, not checked in yet' : 'No tablet has connected yet'}</span>
               <span className="nv-row__status"><Status tone={tone}>{label}</Status></span>
               {hint ? <span className="nv-row__meta wc-hint">{hint}</span> : null}
               <span className="wc-row-actions">
-                <button className="nv-link" type="button" onClick={event => open({ operation: 'RENAME', device }, event)}>Rename</button>
-                <button className="nv-link" type="button" disabled={!location?.active} onClick={event => open({ operation: 'ROTATE', device }, event)}>{device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'}</button>
-                {device.state !== 'REVOKED' ? <button className="nv-link wc-danger" type="button" onClick={event => open({ operation: 'REVOKE', device }, event)}>Revoke access</button> : null}
+                <button className="nv-link" type="button" aria-label={`Rename ${device.name}`} onClick={event => open({ operation: 'RENAME', device }, event)}>Rename</button>
+                <button className="nv-link" type="button" disabled={!location?.active} aria-label={`${device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'} for ${device.name}`} onClick={event => open({ operation: 'ROTATE', device }, event)}>{device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'}</button>
+                {device.state !== 'REVOKED' ? <button className="nv-link wc-danger" type="button" aria-label={`Revoke access for ${device.name}`} onClick={event => open({ operation: 'REVOKE', device }, event)}>Revoke access</button> : null}
               </span>
             </span>
           </article>
@@ -219,7 +221,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       </div>
     </section>
     <dialog ref={dialog} className="wc-dialog" aria-labelledby="clocker-dialog-title" aria-describedby="clocker-dialog-text" onCancel={event => { event.preventDefault(); close(); }}>
-      {selection ? <form onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} className="wc-dialog__form" {...handlers}>
+      {selection ? <form noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} className="wc-dialog__form" {...handlers}>
         <div className="wc-dialog__head">
           <div>
             <h2 className="wc-dialog__title" id="clocker-dialog-title">{title}</h2>
@@ -247,7 +249,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         <FormActions>
           {error?.refresh ? <button className="nv-btn" data-kind="primary" type="button" onClick={() => window.location.reload()}><ArrowClockwise size={18} aria-hidden="true" />Refresh devices</button>
             : <button className="nv-btn" data-kind={selection.operation === 'REVOKE' ? 'danger' : 'primary'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={submitLabel} busy="Saving…" /></button>}
-          <button className="nv-btn" data-kind="secondary" type="button" disabled={pending} onClick={close}>Cancel</button>
+          <button className="nv-btn" data-kind="secondary" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'REVOKE' || selection.operation === 'ROTATE' ? '' : undefined}>Cancel</button>
         </FormActions>
       </form> : null}
     </dialog>

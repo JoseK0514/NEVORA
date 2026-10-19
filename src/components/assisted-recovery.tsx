@@ -21,15 +21,17 @@ type Props={
  employeeId?:string;
  /** Where the page was opened from, when it wasn't an employee's page. */
  from?:'settings';
+ /** The company's timezone, for the code's expiry. */
+ timeZone?:string;
  onSubmit:(event:FormEvent<HTMLFormElement>)=>void;
  onStartAgain:()=>void;
 };
 
 /** Wave C: assisted account recovery on the kit (Owners and Managers). AccountRecovery keeps the request,
  * the private-data clearing and the lifecycle; this is presentation only. */
-export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,onSubmit,onStartAgain}:Props){
+export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,timeZone,onSubmit,onStartAgain}:Props){
  // The band's Back names where it goes: the employee it was opened from, Settings, or Home.
- const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:'Employee'}:from==='settings'?{href:'/app/settings',label:'Settings'}:{href:'/app',label:'Home'};
+ const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:employeeId}:from==='settings'?{href:'/app/settings',label:'Settings'}:{href:'/app',label:'Home'};
  const feedback=useRef<HTMLDivElement>(null),proof=useRef<HTMLInputElement>(null);
  const previousProof=useRef<AssistedRecoveryProof|null>(null),employee=useRef<HTMLInputElement&HTMLSelectElement&HTMLTextAreaElement>(null);
  const {errors,handlers}=useFieldErrors({employeeId:{missing:'Enter the employee’s ID.'},attestation:{missing:'Describe how you verified their identity.',length:'Write at least 10 characters about how you verified them.'},confirm:{missing:'Confirm you verified their identity yourself.'}});
@@ -38,7 +40,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,o
   else if(previousProof.current)employee.current?.focus();
   previousProof.current=issued;
  },[message,issued]);
- const until=issued?keepWhole(new Date(issued.expiresAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})):'';
+ const until=issued?keepWhole(new Date(issued.expiresAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone,timeZoneName:'short'})):'';
 
  return <SettingsFrame back={back} title="Account recovery"
   summary="Help a verified employee get back into their account."
@@ -80,7 +82,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,o
     <FormActions><button className="nv-btn" data-kind="secondary" type="button" onClick={onStartAgain}>Prepare another code<ArrowRightIcon size={18} aria-hidden="true"/></button></FormActions>
     <p className="wc-muted wc-after-actions">Issuing another code retires any unused earlier code. Preparing the form alone does not cancel this one.</p>
    </div>
-  </section>:<form onSubmit={onSubmit} aria-busy={busy} className="wc-form" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
+  </section>:<form noValidate onSubmit={event=>{if(!event.currentTarget.checkValidity()){event.preventDefault();return;}onSubmit(event);}} aria-busy={busy} className="wc-form" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
    <noscript><Notice tone="info">Enable JavaScript to issue a recovery code. You can still go back with the link above.</Notice></noscript>
    <fieldset disabled={!hydrated||busy} className="wc-fieldset">
     <FieldErrors errors={errors}>

@@ -88,6 +88,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
     addCard.current?.querySelector<HTMLInputElement>('input[name="name"]')?.focus({ preventScroll: true });
   }
   function clearFilters() { setQuery(""); setFilter("all"); }
+  function clearAndFocus() { clearFilters(); requestAnimationFrame(() => document.getElementById("position-search")?.focus()); }
   async function create(data: FormData) {
     const result = await createAction(data);
     if (result.success && !result.error) {
@@ -136,7 +137,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
           <section className="nv-card" aria-labelledby="position-catalog-heading">
             <div className="nv-card__head">
               <h2 className="nv-card__title" id="position-catalog-heading">Position catalog</h2>
-              {positions.length ? <span className="nv-card__meta" role="status" aria-live="polite">{filtered ? `Showing ${shown} of ${positions.length}` : `${positions.length} ${positions.length === 1 ? "position" : "positions"}`}</span> : null}
+              {positions.length ? <span className="nv-card__meta" role="status" aria-live="polite">{`Showing ${shown} of ${positions.length} ${positions.length === 1 ? "position" : "positions"}`}</span> : null}
             </div>
             {positions.length ? <>
               <div className="wc-find">
@@ -152,7 +153,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
               </div>
               <ul className="nv-rows wc-editables" aria-label="Positions">{positions.map(position => <PositionRow key={position.id} position={position} hidden={!matches(position)} ready={ready} action={update} />)}</ul>
               {!shown ? <EmptyState headingLevel={3} icon={<MagnifyingGlassIcon size={22} weight="bold" />} title="No matching positions"
-                action={<button type="button" className="nv-btn" data-kind="secondary" onClick={clearFilters}><XIcon size={18} aria-hidden="true" />Clear filters</button>}>
+                action={<button type="button" className="nv-btn" data-kind="secondary" onClick={clearAndFocus}><XIcon size={18} aria-hidden="true" />Clear filters</button>}>
                 Try a different name, or clear your filters.
               </EmptyState> : null}
             </> : <EmptyState headingLevel={3} icon={<BriefcaseIcon size={22} weight="bold" />} title="No positions yet"

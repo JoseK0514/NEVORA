@@ -13,7 +13,7 @@ const shapes: [RegExp, Props][] = [
   [/^\/app\/settings\/locations\/new/, { back: locations, title: "Add location", summary: "Give your team a new place to work.", label: "the new location form", cards: [2, 1] }],
   [/^\/app\/settings\/locations\/[^/]+/, { back: locations, eyebrow: true, title: <span className="wc-skeleton__title" />, summary: "Names and status your team sees, and this location’s Clocker link.", label: "the location", cards: [2, 1] }],
   [/^\/app\/settings\/locations/, { eyebrow: true, add: "Add location", title: <span className="wc-skeleton__title" />, summary: "Where your team works, each place’s scheduling setup and its Clocker link.", label: "locations", cards: [2, 3, 3], aside: false }],
-  [/^\/app\/settings\/branding/, { title: "Branding", summary: "Your colour and logo across NEVORA. Layout, text sizes and status colours stay the same.", label: "branding", cards: [3, 2, 4] }],
+  [/^\/app\/settings\/branding/, { title: "Branding", summary: "Your color and logo across NEVORA. Layout, text sizes and status colors stay the same.", label: "branding", cards: [3, 2, 4] }],
   [/^\/app\/settings\/features/, { title: "Features & words", summary: "Turn off what your company doesn’t use, and name your team the way you do.", label: "features and words", cards: [4, 5] }],
   [/^\/app\/settings\/company-policies/, { title: "Company policies", summary: "Set attendance review rules for your company and locations.", label: "company policies", cards: [2, 1, 1, 1] }],
   [/^\/app\/settings\/breaks/, { eyebrow: true, add: "Add break type", title: "Break types", summary: "The breaks your team can start at the Clocker.", label: "break types", cards: [2, 3] }],

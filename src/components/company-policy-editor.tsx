@@ -1,5 +1,7 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useSyncExternalStore } from "react";
+import Link from "next/link";
+import { keepWhole } from "@/lib/keep-whole";
 import { useRouter } from "next/navigation";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
 import { formatBusinessDateTimeInput, formatBusinessTimestamp, policyEffectiveInstant } from "@/lib/business-time";
@@ -13,11 +15,12 @@ const fields = [
   ["lateness", "Lateness"],
   ["earlyDeparture", "Early departure"],
   ["longEntry", "Unusually long entry"],
-  ["missingClockIn", "No clock-in recorded"],
-  ["missingClockOut", "No clock-out recorded"],
+  ["missingClockIn", "No clock‑in recorded"],
+  ["missingClockOut", "No clock‑out recorded"],
   ["overtimeRisk", "Actual-time overtime risk"],
 ] as const;
 type Tone = "info" | "done" | "urgent";
+const subscribe = () => () => {};
 
 /** Wave C: Company policies on the kit form pattern. One card per rule; the field names and the
  * command sent to the server are unchanged, and a failed save keeps its retained request for a safe retry. */
@@ -31,6 +34,7 @@ export function CompanyPolicyEditor({
   locations: { id: string; name: string }[];
 }) {
   const router = useRouter();
+  const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
   const submitGate = useRef(false);
   const feedback = useRef<HTMLDivElement>(null);
   const [scope, setScope] = useState(""),
@@ -39,7 +43,10 @@ export function CompanyPolicyEditor({
     [retry, setRetry] = useState<object | null>(null);
   const [modes, setModes] = useState<Record<string, string>>({});
   const current = history.find((h) => h.locationId === (scope || null));
-  const { errors, handlers } = useFieldErrors(Object.fromEntries(fields.map(([key]) => [`${key}.threshold`, { range: "Enter whole minutes, 0 or more." }])));
+  const { errors, handlers } = useFieldErrors(Object.fromEntries(fields.flatMap(([key]) => [
+    [`${key}.threshold`, { missing: "Enter the threshold in minutes.", range: "Enter whole minutes, 0 or more." }],
+    [`${key}.effective`, { missing: "Choose when this rule starts.", fallback: "Choose a date and time when this rule starts." }],
+  ])));
   const say = (tone: Tone, text: string, title?: string) => { setNotice({ tone, text, title }); if (tone !== "info") requestAnimationFrame(() => feedback.current?.focus()); };
 
   async function submit(form: HTMLFormElement) {
@@ -110,7 +117,7 @@ export function CompanyPolicyEditor({
         },
         body: JSON.stringify(command),
       });
-      if (response.status === 401 || response.status === 403) { setRetry(null); say("urgent", "Your access ended. Sign in again to edit policies.", "Not saved"); return; }
+      if (response.status === 401 || response.status === 403) { setRetry(null); say("urgent", "Your access ended. Sign in again to edit policies.", "Sign in again"); return; }
       if (response.status === 400) {
         setRetry(null);
         say("urgent", "Check the thresholds and effective dates, then save again.", "Not saved");
@@ -132,7 +139,7 @@ export function CompanyPolicyEditor({
       setBusy(false);
     }
   }
-  const locked = busy || retry !== null;
+  const locked = busy || retry !== null || !hydrated;
   const scopeHistory = history.filter((h) => h.locationId === (scope || null));
   return (
     <div className="wc-main">
@@ -143,7 +150,7 @@ export function CompanyPolicyEditor({
         </div>
         <div className="nv-card__body wc-fields">
           <Field kind="select" label="Policy scope" id="policy-scope" value={scope} disabled={locked}
-            help={<><p>{scope ? "Location rules use company defaults unless you set an override. Choose Disabled to turn a rule off at this location." : "Set company defaults for attendance and recorded-time review. Disabled rules do not produce comparisons."}</p>
+            help={<><p>{scope ? "Location rules use the company default unless you set their own. Choose Off to turn a rule off at this location." : "Set the company default for each attendance review rule. A rule that’s off flags nothing."}</p>
               <p>Company time: {timeZone.split("/").at(-1)?.replaceAll("_", " ")}</p></>}
             onChange={(e) => { setScope(e.target.value); setModes({}); setNotice(null); }}>
             <option value="">Company default</option>
@@ -152,13 +159,16 @@ export function CompanyPolicyEditor({
         </div>
       </section>
       <form
+        noValidate
         key={scope + ":" + (current?.revision ?? 0)}
         className="wc-form"
+        data-guard={hydrated ? undefined : ""}
         aria-busy={busy}
         aria-label="Attendance rules"
         {...handlers}
         onSubmit={(e) => {
           e.preventDefault();
+          if (!e.currentTarget.checkValidity()) return;
           void submit(e.currentTarget).catch(() => say("urgent", "Choose a valid effective date and time in your company timezone. Times skipped or repeated by daylight saving time need a different selection.", "Check the effective date"));
         }}
       >
@@ -180,18 +190,18 @@ export function CompanyPolicyEditor({
                 <div className="nv-card__body wc-fields">
                   <Field kind="select" label="Rule setting" id={`${id}-mode`} name={`${key}.mode`} value={mode}
                     onChange={event => setModes(value => ({ ...value, [key]: event.target.value }))}>
-                    <option value="inherit">{scope ? "Inherit company default" : "Disabled by default"}</option>
-                    <option value="none">Disabled</option>
+                    <option value="inherit">{scope ? "Use company default" : "Off by default"}</option>
+                    <option value="none">Off</option>
                     <option value="configured">Custom threshold</option>
                   </Field>
                   <div className="wc-rule__fields wc-pair" hidden={mode !== "configured"}>
-                    <Field label="Threshold" unit="min" id={`${id}-threshold`} name={`${key}.threshold`} type="number" min="0" max="525600" inputMode="numeric"
+                    <Field label="Threshold" unit="min" id={`${id}-threshold`} name={`${key}.threshold`} type="number" min="0" max="525600" inputMode="numeric" required={mode === "configured"}
                       defaultValue={rule ? String(rule.thresholdMinutes) : ""} />
                     <Field kind="select" label="Comparison" id={`${id}-comparison`} name={`${key}.comparison`} defaultValue={String(rule?.comparison ?? "GT")}>
                       <option value="GT">Greater than</option>
-                      <option value="GTE">Greater than or equal</option>
+                      <option value="GTE">Greater than or equal to</option>
                     </Field>
-                    <Field label="Effective from" id={`${id}-effective`} name={`${key}.effective`} type="datetime-local"
+                    <Field label="Effective from" id={`${id}-effective`} name={`${key}.effective`} type="datetime-local" required={mode === "configured"}
                       defaultValue={formatBusinessDateTimeInput(rule?.effectiveFrom ? String(rule.effectiveFrom) : undefined, timeZone)} />
                     {key === "longEntry" && <>
                       <Field kind="select" label="Time basis" id={`${id}-basis`} name={`${key}.basis`} defaultValue={String(rule?.basis ?? "RECORDED_ELAPSED")}>
@@ -236,7 +246,7 @@ export function CompanyPolicyEditor({
         </FieldErrors>
         <p className="nv-sr" role="status" aria-live="polite">{busy ? "Saving…" : ""}</p>
         <FormActions sticky>
-          {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "urgent" ? "alert" : "status"}><Notice tone={notice.tone} title={notice.title}>{notice.text}</Notice></div> : null}
+          {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "urgent" ? "alert" : "status"}><Notice tone={notice.tone} title={notice.title} action={notice.title === "Sign in again" ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
           <button className="nv-btn" data-kind="primary" disabled={busy} type="submit"><ButtonLabel pending={busy} idle={retry ? "Retry the same save" : "Save policies"} busy="Saving…" /></button>
         </FormActions>
       </form>
@@ -247,7 +257,7 @@ export function CompanyPolicyEditor({
             <li key={h.operationId}><div className="nv-row">
               <span className="nv-row__text">
                 <span className="nv-row__title">Version {h.revision}</span>
-                <span className="nv-row__meta">{formatBusinessTimestamp(h.changedAt, timeZone)} · {h.changedKeys.map(key => fields.find(([name]) => key.includes(name))?.[1] ?? "Policy setting").join(", ") || "No rule changes"}</span>
+                <span className="nv-row__meta">{keepWhole(formatBusinessTimestamp(h.changedAt, timeZone))} · {h.changedKeys.map(key => fields.find(([name]) => key.includes(name))?.[1] ?? "Policy setting").join(", ") || "No rule changes"}</span>
               </span>
             </div></li>
           ))}

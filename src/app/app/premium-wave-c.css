@@ -10,7 +10,8 @@
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page { --wc-gap: var(--nv-s-4); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-content { gap: var(--wc-gap); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(.wc-layout, .wc-main, .wc-aside) { display: flex; flex-direction: column; gap: var(--wc-gap); min-width: 0; }
-@media (min-width: 1024px) {
+/* WR-04: two columns once the content area (not the window) is wide enough: the desktop sidebar takes 212px. */
+@media (min-width: 1180px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 320px); align-items: start; }
   /* The guidance stays in view beside a long form, below the 65px desktop header (ST-01). */
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-aside { position: sticky; top: calc(65px + var(--nv-s-6)); }
@@ -283,10 +284,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 
 /* ---------- Editable rows (Positions) ---------- */
 /* Before scripts load the form is guarded (disabled) but keeps its finished look, so nothing changes when it wakes. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-form[data-guard] :is(input, select, textarea).wc-control:disabled { background: var(--nv-canvas); border-color: var(--nv-border); color: var(--nv-ink); -webkit-text-fill-color: var(--nv-ink); cursor: default; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-form[data-guard] .nv-btn[data-kind="primary"]:disabled { background: var(--nv-accent); color: #FFFFFF; box-shadow: none; cursor: default; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-form[data-guard] .wc-switch:disabled { background: var(--nv-track); box-shadow: inset 0 0 0 1px #C9D0CE; cursor: default; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-form[data-guard] .wc-switch:checked:disabled { background: var(--nv-accent); box-shadow: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [data-guard] :is(input, select, textarea).wc-control:disabled { background: var(--nv-canvas); border-color: var(--nv-field-border, var(--nv-border)); color: var(--nv-ink); -webkit-text-fill-color: var(--nv-ink); cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [data-guard] .nv-btn[data-kind="primary"]:disabled { background: var(--nv-accent); color: #FFFFFF; box-shadow: none; cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [data-guard] .wc-switch:disabled { cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [data-guard] .wc-switch:checked:disabled { background: var(--nv-accent); box-shadow: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-editables { padding-bottom: var(--nv-s-2); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-editable > summary { list-style: none; cursor: pointer; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-editable > summary::-webkit-details-marker { display: none; }
@@ -326,7 +327,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 
 /* ---------- Branding ---------- */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-brand { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--wc-gap); align-items: start; }
-@media (min-width: 1024px) {
+@media (min-width: 1180px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-brand { grid-template-columns: minmax(0, 1fr) minmax(340px, 400px); }
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-brand > * { grid-column: 1; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-brand > .wc-brand__preview { grid-column: 2; grid-row: 1 / span 5; position: sticky; top: calc(65px + var(--nv-s-6)); }
@@ -352,7 +353,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-adjustments p.wc-ok { background: var(--nv-done-fill); color: var(--nv-done-ink); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-adjustments p.wc-ok svg { color: var(--nv-done-mark); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nv-s-4); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-current { display: grid; place-items: center; width: 140px; height: 64px; padding: var(--nv-s-2); border: 1px dashed var(--nv-border); border-radius: var(--nv-r-control); background: var(--nv-canvas); font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-current { display: grid; place-items: center; box-sizing: border-box; min-width: 140px; max-width: 100%; min-height: 64px; padding: var(--nv-s-2); border: 1px dashed var(--nv-border); border-radius: var(--nv-r-control); background: var(--nv-canvas); font: var(--nv-t-callout); color: var(--nv-muted); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-current img { max-width: 100%; max-height: 44px; object-fit: contain; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nv-s-2) var(--nv-s-4); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-actions label.nv-btn { cursor: pointer; }
@@ -438,8 +439,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page fieldset.wc-rule { min-width: 0; margin: 0; padding: 0; border: 0; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-pair[hidden] { display: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-rule__fields { padding-top: var(--nv-s-1); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page input.wc-control[type="datetime-local"],
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page input.wc-control[type="time"] { -webkit-appearance: none; appearance: none; display: flex; align-items: center; }
+/* TC-24: date and time fields keep the browser's own layout, so the calendar button stays inside the field. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page input.wc-control:is([type="datetime-local"], [type="time"])::-webkit-calendar-picker-indicator { flex: none; margin-left: auto; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page input.wc-control::-webkit-date-and-time-value { text-align: left; min-height: 1.5rem; }
 
 /* ---------- Recovery (account and Clocker) ---------- */
@@ -485,7 +486,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .n
 @media (min-width: 1024px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub { margin-bottom: calc(-1 * var(--wc-gap)); } }
 
 /* ST-01: a guide or preview taller than the window scrolls with the page instead of sticking. */
-@media (min-width: 1024px) and (max-height: 860px) {
+@media (min-width: 1180px) and (max-height: 860px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-aside, html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-brand > .wc-brand__preview { position: static; }
 }
 /* ST-06, ST-07: the save bar docks exactly on the 68px tab bar in portrait; in landscape it stays in the page. */
@@ -496,7 +497,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .n
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar { position: static; margin-inline: 0; padding-inline: 0; background: none; }
 }
 /* ST-08: on phones a page with a save bar shows its guide first, so the bar stays docked to the end of the page. */
-@media (max-width: 1023px) {
+@media (max-width: 1179px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-layout:has(.nv-actionbar) > .wc-aside { order: -1; }
 }
 /* ST-04: a save's outcome shows inside the save bar, in view, so focusing it doesn't scroll the page. */
@@ -507,3 +508,15 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 }
 /* ST-10: the receipt card keeps one height idle, checking and failed. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-result { min-height: 216px; }
+
+/* TC-09: disabled kit buttons keep the kit's 5:1 disabled look (an older shared rule faded them to 55%). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(.nv-btn, .nv-link, .nv-band-control):disabled, html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page label.nv-btn[aria-disabled="true"] { opacity: 1; }
+/* TC-08, TC-10: long words hyphenate or break inside their card; a card head lets its pill drop under the title. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(.nv-row__title, .nv-row__meta, .nv-card__title, .wc-choice__name, .wc-switch-row__label) { hyphens: auto; overflow-wrap: break-word; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-location .nv-card__head { flex-wrap: wrap; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-location .nv-card__title { flex: 1 1 10rem; }
+/* TC-07: an off switch has a 3:1 edge. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch:not(:checked) { background: var(--nv-neutral-fill); box-shadow: inset 0 0 0 1.5px var(--nv-field-border, #858B8F); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [data-guard] .wc-switch:not(:checked):disabled { background: var(--nv-neutral-fill); box-shadow: inset 0 0 0 1.5px var(--nv-field-border, #858B8F); }
+/* TC-06: a protected value reads in full instead of sitting in a disabled field. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-readonly { margin: 0; padding: 13px var(--nv-s-4); border-radius: var(--nv-r-control); background: var(--nv-inset); font: var(--nv-t-body); color: var(--nv-ink); overflow-wrap: anywhere; }
