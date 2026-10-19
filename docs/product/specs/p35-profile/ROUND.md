@@ -1,11 +1,11 @@
-# Profile: round 4 for the cloud inspectors
+# Profile: exit round 4
 
 | | |
 |---|---|
 | Chat | Profile (Phase 3.5), docs folder `docs/product/specs/p35-profile/` |
 | Round | **4** (rounds 1–3 ran locally; reports in `inspection/`) |
-| Commit | the HEAD of `claude/p35-profile-6cdee8` at push time (round 3 fixes end at `b8a3bad`) |
-| Exit round | **No.** Round 4 re-checks the open IDs below. If it comes back at zero, round 5 is the exit round: one full sweep by all five areas. |
+| Commit | the HEAD of `claude/p35-profile-6cdee8` at push time. App code is unchanged since `b8a3bad`; `04dcf3f` takes Codex's pooled test transport (test-only). |
+| Exit round | **Yes (coordinator, October 19, to save a cycle).** One full sweep by all five areas, over the whole matrix in the brief, plus the open IDs below. Codex and the Profile chat's local inspectors run it on the same commit; whichever finishes first counts. |
 | Brief | `docs/product/specs/codex-joint/INSPECTION-BRIEF.md` on `claude/premium-phase-1`, plus `inspection/BRIEF.md` here for this page's states |
 
 ## Route and roles
@@ -22,7 +22,7 @@
 - **Pause and offline:** `context.setOffline(true)`, or dispatch `blur` and then `focus` on `window`.
 - Payroll is on in the Mac previews. Without payroll (an Owner with four topics, no Pay card, summary "Your details and alerts."), check in the code: `manager-profile.tsx`, `manager-profile-live.tsx` (`payrollAlerts`).
 
-## Re-check by ID
+## Full sweep, plus these IDs
 
 | Area | IDs | Expected now |
 |---|---|---|
@@ -37,6 +37,12 @@
 
 - `manager-profile-live.tsx`: focus restore (`restoreTo`, captured on leave or on a save that ended the session, used once, no scroll); kept row heights after an ended session are dropped on resize.
 - `premium-profile.css`: Email and Phone value basis 17rem; placeholder band `calc(44px + 3.75rem)`, plus `calc(44px + 5.25rem)` under two `@container` rules where the summary wraps.
+
+## Don't file
+
+- One console 404 for `/api/manager/inbox-count` per page load (the route is on `codex/premium-backend`; see PARALLEL.md's coordinator notes).
+- A console 404 for `/api/management/profile` when no fixture is served: the route isn't on this branch, and the page shows its failed-read state.
+- Shared-shell items: phone header, tab bar, More sheet, desktop sidebar and header, and the desktop placeholder band.
 
 ## Approved, don't refile
 
