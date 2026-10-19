@@ -41,3 +41,32 @@ export function HoldHeight({ holding, memory, as: Tag = "div", children, style, 
   const held = holding && last ? { ...style, minHeight: `${last}px` } : style;
   return <Tag ref={box as RefObject<HTMLDivElement>} style={held} {...rest}>{children}</Tag>;
 }
+
+/** The ref form, for a block that can't be wrapped in `HoldHeight` (Wave A's Team availability list). It holds in a
+ * layout effect, so prefer `HoldHeight` where the content swap and the scroll position matter. */
+export function useHoldHeight<T extends HTMLElement>(holding: boolean, memory?: string) {
+  const box = useRef<T>(null);
+  const last = useRef(0);
+  useLayoutEffect(() => {
+    const element = box.current;
+    if (!element) return;
+    const key = memory ? `nv-hold:${memory}:${window.innerWidth}x${Math.round(parseFloat(getComputedStyle(document.documentElement).fontSize))}` : null;
+    if (!holding) {
+      element.style.minHeight = "";
+      delete element.dataset.held;
+      const measure = () => {
+        last.current = element.getBoundingClientRect().height;
+        if (key) try { sessionStorage.setItem(key, String(Math.round(last.current))); } catch { /* storage unavailable: hold within this visit only */ }
+      };
+      measure();
+      const observer = new ResizeObserver(measure);
+      observer.observe(element);
+      return () => observer.disconnect();
+    }
+    if (last.current) element.dataset.held = "true"; else delete element.dataset.held;
+    let height = last.current;
+    if (!height && key) try { height = Number(sessionStorage.getItem(key)) || 0; } catch { height = 0; }
+    element.style.minHeight = height ? `${height}px` : "";
+  }, [holding, memory]);
+  return box;
+}
