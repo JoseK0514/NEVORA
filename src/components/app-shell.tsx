@@ -5,7 +5,7 @@ import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
@@ -55,6 +55,7 @@ export function AppShell({
   };
 }) {
   const pathname = usePathname();
+  const search = useSearchParams();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   function toggleSidebar() {
     const next = !collapsed; setCollapsed(next);
@@ -68,7 +69,10 @@ export function AppShell({
   const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
   const mobileMore = mobileMoreForRole(user.role, payrollCapabilities, context);
   const activeTab = activeMobileTab(user.role, pathname ?? "", payrollCapabilities, context);
-  const sectionTabs = pathname ? sectionTabsFor(user.role, pathname, payrollCapabilities, context) : null;
+  // P3-ST-22: a single request's review is one task with no section tabs. Deciding it from the URL means the tabs are
+  // absent from the first frame, placeholder included, instead of disappearing once the review renders.
+  const focusedReview = pathname === "/app/requests" && !!search?.get("requestId");
+  const sectionTabs = pathname && !focusedReview ? sectionTabsFor(user.role, pathname, payrollCapabilities, context) : null;
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
   const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
   const sidebarItems = sidebarNavigation(user.role, navigation);
@@ -257,7 +261,7 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="page-frame" id="main-content" tabIndex={-1}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></main>
+        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></main>
 
         <nav className="mobile-nav" aria-label="Mobile navigation">
           {employee ? (

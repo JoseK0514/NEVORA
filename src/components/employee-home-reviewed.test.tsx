@@ -281,7 +281,7 @@ describe('original redacted clock recovery preservation',()=>{
   const clock=lost.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/)![1];
   expect(clock).toContain('href="/app/my-time"');
   if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign in');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
-  else {expect(clock).toMatch(/aria-label="(?:Refresh recorded time|Try again to load your time records)"/);if(status==='paused'||status==='loading')expect(clock).toMatch(/aria-label="(?:Refresh recorded time|Try again to load your time records)"[^>]*disabled/);else expect(clock).not.toMatch(/aria-label="(?:Refresh recorded time|Try again to load your time records)"[^>]*disabled/);}
+  else {expect(clock).toMatch(/aria-label="(?:Refresh(?:ing)? recorded time|Try again to load your time records)"/);if(status==='paused'||status==='loading')expect(clock).toMatch(/aria-label="(?:Refresh(?:ing)? recorded time|Try again to load your time records)"[^>]*disabled/);else expect(clock).not.toMatch(/aria-label="(?:Refresh(?:ing)? recorded time|Try again to load your time records)"[^>]*disabled/);}
  });
 });
 

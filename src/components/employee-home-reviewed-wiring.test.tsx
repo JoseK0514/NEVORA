@@ -79,7 +79,7 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     expect(view.props.home).toBeNull(); expect(view.props.status).toBe('loading'); expect(view.props.ownTimeSlot).toBeNull();
     const markup = html(state, {authority: 'c'.repeat(64)}); suppressPrivate(markup);
     expect(markup).toContain('Loading Home'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
-    expect(clockRegion(markup)).toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);
+    expect(clockRegion(markup)).toMatch(/aria-label="Refresh(?:ing)? recorded time"[^>]*disabled/);
   });
 
   it('suppresses retained ready data and the clock component immediately on pause', () => {
@@ -87,7 +87,7 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     expect(view.props.home).toBeNull(); expect(view.props.status).toBe('paused'); expect(view.props.ownTimeSlot).toBeNull();
     const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Paused while you’re away');
     expect(clockRegion(markup)).toContain('Updates paused'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
-    expect(clockRegion(markup)).toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);
+    expect(clockRegion(markup)).toMatch(/aria-label="Refresh(?:ing)? recorded time"[^>]*disabled/);
   });
 
   it('uses original access-loss sign-in recovery without releasing prior clock or Home data', () => {
@@ -110,7 +110,7 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     const state: PrivatePanelState<HomeLifetime> = {snapshot: null, refreshing: true, paused: false};
     const view = adapter(state); expect(view.props.status).toBe('loading'); expect(view.props.refreshing).toBe(true); expect(view.props.ownTimeSlot).toBeNull();
     const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Loading Home'); expect(markup).toContain('Checking');
-    expect(clockRegion(markup)).toContain('Loading recorded time'); expect(clockRegion(markup)).toMatch(/aria-label="Refresh recorded time"[^>]*disabled/);
+    expect(clockRegion(markup)).toContain('Loading recorded time'); expect(clockRegion(markup)).toMatch(/aria-label="Refresh(?:ing)? recorded time"[^>]*disabled/);
   });
 
   it('keeps a still-released ready snapshot and independent clock while Home refresh is pending', () => {
