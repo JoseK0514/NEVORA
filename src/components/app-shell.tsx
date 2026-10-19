@@ -113,7 +113,10 @@ export function AppShell({
   // and so do Home's views (IS-P4-09), which share Home's address.
   const view = useSearchParams()?.get("view");
   const homeView = !employee && pathname === "/app" && view && view in HOME_VIEWS ? { href: `/app?view=${view}`, label: HOME_VIEWS[view as keyof typeof HOME_VIEWS] } : undefined;
-  const pageItem = homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined);
+  // WR4-07: a section tab with no navigation entry of its own (Payroll settings) also ends the trail with its name.
+  const currentTab = sectionTabs?.items.find(item => item.href === pathname);
+  const pageItem = homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined)
+    ?? (activeItem && currentTab && currentTab.href !== activeItem.href ? currentTab : undefined);
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
   // clear of the pinned Workspace group.
