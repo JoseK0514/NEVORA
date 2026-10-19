@@ -1337,3 +1337,27 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-week-days[data-overflow="true"][data-start="true"] { -webkit-mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 28px), transparent); }
 /* AL-P3-16: Home's cards are kit cards in landscape and on desktop too: no border under the shadow. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-home :is([data-pass], aside[aria-label="Own recorded time"], [data-home-group]):not(#nv-kit) { border: 0; }
+
+/* ===== Phase 3, automated checks (Oct 19). ===== */
+/* My schedule's swap prompt and feedback sit on the kit roles. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .my-schedule-feedback > strong { display: block; font: var(--nv-t-headline); color: var(--nv-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .my-schedule-feedback > p { font: var(--nv-t-callout); color: var(--nv-muted); }
+/* "This shift can't change" notes on Shift requests are callout text, not 12px. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .shift-change-unavailable { font: var(--nv-t-callout); }
+/* The withdraw confirmation: the whole label is the 44px target, with a 22px checkbox. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .nto-withdrawal form > label { display: flex; align-items: center; gap: var(--nv-s-3); min-height: 44px; font: var(--nv-t-callout); color: var(--nv-ink); cursor: pointer; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .nto-withdrawal form > label > input[type="checkbox"] { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--nv-accent); }
+/* Automated checks, landscape phones and the Phase 2 re-check: the last small labels on the kit roles. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is([class*="employee-home-reviewed-module"][class*="__position"]) { font: var(--nv-t-callout); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is([class*="employee-home-reviewed-module"][class*="__expandLabel"]) { font: var(--nv-t-label); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] [class*="timecards-module"][class*="__periodHeading"] > span { font: var(--nv-t-callout); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .updates-filters > button:not(#nv-kit) { font: var(--nv-t-label); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .updates-filters > button[aria-pressed="true"]:not(#nv-kit) { font-weight: 600; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .mws-shift-meta > span { font: var(--nv-t-callout); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] [class*="timecards-module"][class*="__entrySource"] { font: var(--nv-t-callout); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :has(> [class*="timecards-module"][class*="__entrySource"]) > span > strong { font: var(--nv-t-label); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :has(> [class*="timecards-module"][class*="__entrySource"]) > span > small { font: var(--nv-t-callout); }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger span { font: var(--nv-t-label); }
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header a.brand { display: inline-flex; align-items: center; min-height: 44px; }
+}
