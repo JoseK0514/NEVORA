@@ -126,3 +126,13 @@ it("names who decided a request and when, once the read includes it (Codex C1), 
   const older = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" }));
   expect(older).not.toContain("Approved by");
 });
+
+it("Back to Inbox keeps the Inbox's selected item, and ignores anything that isn't an item id (IS-P4-11)", async () => {
+  const pending = { id: "req-1", employeeId: "e1", employeeName: "Fictional Person", startDate: "2026-10-29", endDate: "2026-10-30", status: "PENDING", createdAt: "2026-10-01T15:00:00.000Z" };
+  vi.mocked(listPendingTimeOffRequests).mockResolvedValueOnce([pending] as never);
+  const kept = renderToStaticMarkup(await ManagerTimeOff({ tab: "pending", requestId: "req-1", filter: "requests", item: "TIME_OFF:req-1" }));
+  expect(kept).toContain('href="/app/inbox?filter=requests&amp;item=TIME_OFF%3Areq-1"');
+  vi.mocked(listPendingTimeOffRequests).mockResolvedValueOnce([pending] as never);
+  const hostile = renderToStaticMarkup(await ManagerTimeOff({ tab: "pending", requestId: "req-1", filter: "requests", item: "javascript:alert(1)" }));
+  expect(hostile).toContain('href="/app/inbox?filter=requests"');
+});

@@ -31,8 +31,17 @@ type PendingRequest = Awaited<ReturnType<typeof listPendingTimeOffRequests>>[num
 
 /** F6: one request on its own page. Back names where the manager came from;
  * the decision returns there (D-5). Dates, length and the note come first (O1). */
-type Origin = { from: "home" | "inbox"; filter: string };
-const backTo = ({ from, filter }: Origin) => from === "home" ? { href: "/app", label: "Home" } : { href: filter === "all" ? "/app/inbox" : `/app/inbox?filter=${filter}`, label: "Inbox" };
+type Origin = { from: "home" | "inbox"; filter: string; item?: string };
+/** IS-P4-11: Back to Inbox keeps the Inbox's selected item (`?item=TIME_OFF:<id>`), as the browser's Back does. */
+const inboxItem = (item?: string) => item && /^[A-Z_]{1,40}:[A-Za-z0-9_.-]{1,120}$/.test(item) ? item : undefined;
+const backTo = ({ from, filter, item }: Origin) => {
+  if (from === "home") return { href: "/app", label: "Home" };
+  const query = new URLSearchParams();
+  if (filter !== "all") query.set("filter", filter);
+  if (item) query.set("item", item);
+  const search = query.toString();
+  return { href: search ? `/app/inbox?${search}` : "/app/inbox", label: "Inbox" };
+};
 
 function FocusedReview({ request, origin, error }: { request: PendingRequest; origin: Origin; error?: string }) {
   const back = backTo(origin);
@@ -92,8 +101,8 @@ function lengthLabel(request: { startDate: string; endDate: string; startTime?: 
 const rangeLabel = (request: { startDate: string; endDate: string }) =>
   request.endDate !== request.startDate ? `${shortDate(request.startDate)}\u00a0– ${shortDate(request.endDate)}` : shortDate(request.startDate);
 
-export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, filter }: {
-  tab?: string; error?: string; reviewed?: string; requestId?: string; from?: string; filter?: string;
+export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, filter, item }: {
+  tab?: string; error?: string; reviewed?: string; requestId?: string; from?: string; filter?: string; item?: string;
 }) {
   await requireRoles(MANAGER_ROLES);
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
@@ -101,7 +110,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
     ? await listPendingTimeOffRequests()
     : await listTeamTimeOffRequests(selected.status);
   const focused = selected.status === "PENDING" && requestId ? requests.find(request => request.id === requestId) : undefined;
-  const origin: Origin = { from: from === "home" ? "home" : "inbox", filter: inboxFilter(filter ?? "requests") };
+  const origin: Origin = { from: from === "home" ? "home" : "inbox", filter: inboxFilter(filter ?? "requests"), item: inboxItem(item) };
   if (focused) return <FocusedReview request={focused as PendingRequest} origin={origin} error={error} />;
   if (selected.status === "PENDING" && requestId && !error) return <DecidedReview origin={origin} />;
 

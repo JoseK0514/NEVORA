@@ -46,7 +46,7 @@ export function Field({ label, optional = false, help, helpId, children, classNa
   return (
     <div className={className ? `wa-field ${className}` : "wa-field"}>
       <label className="wa-field__control">
-        <span className="wa-field__label">{label}{optional ? <span className="wa-field__optional">Optional</span> : null}</span>
+        <span className="wa-field__label">{label}{optional ? <span className="wa-field__optional" aria-hidden="true">Optional</span> : null}</span>
         {children}
       </label>
       {help ? <span className="wa-field__help" id={helpId}>{help}</span> : null}
