@@ -15,6 +15,8 @@
 | TC-B-32 | `payroll-workflow.css:184` (in the candidate) | **Fixed.** Document filenames, the "Corrections and payment instructions" summary and job labels compute to 15px/500 at 390 and 14px at 1440 (measured on injected nodes with the page's classes; the fixture has no approved run with documents) |
 | TC-B-16 | `2e40573` (Codex, in the candidate): an ended session is told apart from changed access | Not re-checked locally (the preview was killed mid-check) |
 
+**Gates on `6861082`:** `tsc --noEmit` clean; `eslint src` clean (0 errors, 0 warnings); full `vitest run`: 7,358 passed, 801 skipped and 4 failed under a load average of 62. The 4 were the process marker, two typed-guarded-backfill and the 50-worker planner timing tests, none in Wave B. Re-run alone, their 3 files pass 136 of 136.
+
 Everything else from round 4 was "pending measurement", not open. It is listed in `round-4-9bd265e/` on `codex/inspections`.
 
 ## Routes and roles
