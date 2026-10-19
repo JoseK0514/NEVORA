@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T18:18:54.166Z. branch workers starting. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T18:19:45.243Z. large-data load times. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -165,6 +165,68 @@ Source: `578748d705b941d14f37c0b01bfcfb1332343e31`. Queued; exact source/runtime
 ## claude/premium-phase-1 (large data)
 
 Source: `672232896b66a520d39939c1ae3e0227c8b1dc90`. Running matrix. 0 passed; 0 failed. Completed checker batches: 0. Raw evidence: [cloud-checks/claude/premium-phase-1/large/](cloud-checks/claude/premium-phase-1/large/).
+
+Browser load times in milliseconds; cold development compilation may be included. Each row also records TTFB and DOMContentLoaded in load-times.json.
+
+| Route | Account | Width | Browser | Navigation ms | Status |
+|---|---|---:|---|---:|---:|
+| /app | AUDIT-M | 390 | chromium | 1616 | 200 |
+| /app/inbox | AUDIT-M | 390 | chromium | 1129 | 200 |
+| /app/schedule | AUDIT-M | 390 | chromium | 3157 | 200 |
+| /app/employees | AUDIT-M | 390 | chromium | 2841 | 200 |
+| /app/timecards | AUDIT-M | 390 | chromium | 995 | 200 |
+| /app/payroll-export | AUDIT-M | 390 | chromium | 997 | 200 |
+| /app/reports | AUDIT-M | 390 | chromium | 1843 | 200 |
+| /app | AUDIT-M | 1440 | chromium | 1564 | 200 |
+| /app/inbox | AUDIT-M | 1440 | chromium | 539 | 200 |
+| /app/schedule | AUDIT-M | 1440 | chromium | 1613 | 200 |
+| /app/employees | AUDIT-M | 1440 | chromium | 1432 | 200 |
+| /app/timecards | AUDIT-M | 1440 | chromium | 461 | 200 |
+| /app/payroll-export | AUDIT-M | 1440 | chromium | 607 | 200 |
+| /app/reports | AUDIT-M | 1440 | chromium | 704 | 200 |
+| /app | QAOWNER | 390 | chromium | 1421 | 200 |
+| /app/inbox | QAOWNER | 390 | chromium | 605 | 200 |
+| /app/schedule | QAOWNER | 390 | chromium | 2241 | 200 |
+| /app/employees | QAOWNER | 390 | chromium | 1947 | 200 |
+| /app/timecards | QAOWNER | 390 | chromium | 546 | 200 |
+| /app/payroll-export | QAOWNER | 390 | chromium | 555 | 200 |
+| /app/reports | QAOWNER | 390 | chromium | 492 | 200 |
+| /app | QAOWNER | 1440 | chromium | 1056 | 200 |
+| /app/inbox | QAOWNER | 1440 | chromium | 460 | 200 |
+| /app/schedule | QAOWNER | 1440 | chromium | 1367 | 200 |
+| /app/employees | QAOWNER | 1440 | chromium | 1741 | 200 |
+| /app/timecards | QAOWNER | 1440 | chromium | 625 | 200 |
+| /app/payroll-export | QAOWNER | 1440 | chromium | 859 | 200 |
+| /app/reports | QAOWNER | 1440 | chromium | 705 | 200 |
+| /app | AUDIT-M | 390 | webkit | 2250 | 200 |
+| /app/inbox | AUDIT-M | 390 | webkit | 592 | 200 |
+| /app/schedule | AUDIT-M | 390 | webkit | 1824 | 200 |
+| /app/employees | AUDIT-M | 390 | webkit | 1840 | 200 |
+| /app/timecards | AUDIT-M | 390 | webkit | 671 | 200 |
+| /app/payroll-export | AUDIT-M | 390 | webkit | 1164 | 200 |
+| /app/reports | AUDIT-M | 390 | webkit | 657 | 200 |
+| /app | AUDIT-M | 1440 | webkit | 1224 | 200 |
+| /app/inbox | AUDIT-M | 1440 | webkit | 650 | 200 |
+| /app/schedule | AUDIT-M | 1440 | webkit | 1852 | 200 |
+| /app/employees | AUDIT-M | 1440 | webkit | 2304 | 200 |
+| /app/timecards | AUDIT-M | 1440 | webkit | 653 | 200 |
+| /app/payroll-export | AUDIT-M | 1440 | webkit | 867 | 200 |
+| /app/reports | AUDIT-M | 1440 | webkit | 929 | 200 |
+| /app | QAOWNER | 390 | webkit | 1306 | 200 |
+| /app/inbox | QAOWNER | 390 | webkit | 513 | 200 |
+| /app/schedule | QAOWNER | 390 | webkit | 3858 | 200 |
+| /app/schedule | QAOWNER | 390 | webkit | 2044 | 200 |
+| /app/employees | QAOWNER | 390 | webkit | 2332 | 200 |
+| /app/timecards | QAOWNER | 390 | webkit | 669 | 200 |
+| /app/payroll-export | QAOWNER | 390 | webkit | 825 | 200 |
+| /app/reports | QAOWNER | 390 | webkit | 608 | 200 |
+| /app | QAOWNER | 1440 | webkit | 1309 | 200 |
+| /app/inbox | QAOWNER | 1440 | webkit | 684 | 200 |
+| /app/schedule | QAOWNER | 1440 | webkit | 2339 | 200 |
+| /app/employees | QAOWNER | 1440 | webkit | 1598 | 200 |
+| /app/timecards | QAOWNER | 1440 | webkit | 510 | 200 |
+| /app/payroll-export | QAOWNER | 1440 | webkit | 558 | 200 |
+| /app/reports | QAOWNER | 1440 | webkit | 666 | 200 |
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
