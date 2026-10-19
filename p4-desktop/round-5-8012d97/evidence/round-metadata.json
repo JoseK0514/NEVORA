@@ -1,0 +1,66 @@
+{
+  "branch": "claude/p4-desktop-240fe0",
+  "checkpoint": "8012d9790e72987140f939c7d70e1df9612ea009",
+  "tree": "4d5f99b6bb1d14f15d4c557c1a3f6f720d4f1a9f",
+  "source": "/workspace/inspect-desktop",
+  "readOnly": true,
+  "requiredWidths": [
+    "320",
+    "360",
+    "390",
+    "430",
+    "844x390",
+    "761",
+    "768",
+    "1023",
+    "1024",
+    "1179",
+    "1180",
+    "1440",
+    "1440 collapsed sidebar"
+  ],
+  "requiredText": [
+    100,
+    125,
+    150,
+    200
+  ],
+  "requiredBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "requiredRoles": [
+    "QAOWNER",
+    "AUDIT-M",
+    "AUDIT-E",
+    "AUDIT-LEAD",
+    "AUDIT-ON",
+    "AUDIT-BREAK",
+    "AUDIT-LONG",
+    "AUDIT-SWAP",
+    "payroll-qa-a",
+    "payroll-qa-b"
+  ],
+  "states": [
+    "loading",
+    "ready",
+    "empty",
+    "partial",
+    "offline",
+    "paused",
+    "failed-read",
+    "no-access",
+    "signed-out",
+    "decided",
+    "large-data"
+  ],
+  "sourceReports": {
+    "alignment.md": "/workspace/inspect-desktop/docs/product/specs/p4-desktop/inspection/alignment.md",
+    "type-colour-copy.md": "/workspace/inspect-desktop/docs/product/specs/p4-desktop/inspection/type-colour-copy.md",
+    "BRIEF.md": "/workspace/inspect-desktop/docs/product/specs/p4-desktop/inspection/BRIEF.md",
+    "ROUND-2.md": "/workspace/inspect-desktop/docs/product/specs/p4-desktop/inspection/ROUND-2.md",
+    "widths-roles.md": "/workspace/inspect-desktop/docs/product/specs/p4-desktop/inspection/widths-roles.md",
+    "interaction-states.md": "/workspace/inspect-desktop/docs/product/specs/p4-desktop/inspection/interaction-states.md",
+    "stability.md": "/workspace/inspect-desktop/docs/product/specs/p4-desktop/inspection/stability.md"
+  }
+}

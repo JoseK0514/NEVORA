@@ -1,0 +1,975 @@
+{
+  "rawCells": 35,
+  "uniqueCells": 35,
+  "rawPassed": 14,
+  "rawFailed": 21,
+  "byEngine": {
+    "chromium": 35
+  },
+  "byAccount": {
+    "AUDIT-E": 14,
+    "QAOWNER": 21
+  },
+  "byWidth": {
+    "1440": 35
+  },
+  "byText": {
+    "100": 35
+  },
+  "observations": [
+    {
+      "category": "smallText",
+      "value": "span. \u00abFrom\u00bb 11px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "AUDIT-E",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-AUDIT-E-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abUntil\u00bb 11px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "AUDIT-E",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-AUDIT-E-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "strong. \u00abpayroll-2026-09-28-ff2d16ed-f4\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "AUDIT-E",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/my-pay",
+          "artifact": "checks-AUDIT-E-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p. \u00abPayday Tue, Sep 29\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "AUDIT-E",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/my-pay",
+          "artifact": "checks-AUDIT-E-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "strong. \u00abpayroll-2026-09-21-63879656-6e\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "AUDIT-E",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/my-pay",
+          "artifact": "checks-AUDIT-E-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "errors",
+      "value": "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "count": 19,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app?view=attendance",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app?view=team",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/inbox",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/inbox?filter=now",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/inbox?filter=requests",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/inbox?filter=planning",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/schedule",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/employees",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/employees?q=zzz",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/employees?status=inactive",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/timecards",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/payroll-export",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/requests",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/exchange",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/updates",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/settings",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "cls",
+      "value": "0.1465",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/inbox?filter=planning",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "a.nto-back-link \u00abAll requests\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/requests",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span.nto-count \u00ab1 request\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/requests",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span.status-pill.warning \u00abPending\u00bb 11px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/requests",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abFull day\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/requests",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p.nto-request-note \u00abFictional family appointment\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/requests",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p.eyebrow \u00abTeam scheduling\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/exchange",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p. \u00abCheck each assignment and the \u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/exchange",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span.exchange-count \u00ab0 requests\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/exchange",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abRequests needing a management \u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/exchange",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p. \u00abSchedule week\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "strong. \u00abAvailability deadline\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p. \u00abNo deadline set\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abSet a cutoff in the schedule t\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "dt. \u00abSubmitted\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "dt. \u00abMissing\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "dt. \u00abUnavailable all week\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p. \u00abReview who can work and who st\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abAll8\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span.av-filter-count \u00ab8\u00bb 11px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abMissing8\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abSubmitted0\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span.av-filter-count \u00ab0\u00bb 11px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abUnavailable0\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p.av-location \u00abMain Office\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span.status-pill.neutral \u00abNot submitted\u00bb 11px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/availability",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p.updates-footnote \u00abOpen an update to review the m\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/updates",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p. \u00abChoose 1 to 31 days\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "label. \u00abFirst day\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "label. \u00abLast day\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "button.reports-module__Iv4GWq__primary \u00abView period\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "button.reports-module__Iv4GWq__secondary \u00abRefresh\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abApplied period\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p.reports-module__Iv4GWq__applied \u00abApplied periodOct 13 \u2013 Oct 19,\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "button.reports-module__Iv4GWq__secondary \u00abDownload CSV\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "button.reports-module__Iv4GWq__secondary \u00abPrint / Save PDF\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p.reports-module__Iv4GWq__exportHint \u00abPDF: choose Save as PDF in you\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p.reports-module__Iv4GWq__period \u00abOct 13 \u2013 Oct 19, 2026 Puerto R\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abPuerto Rico time\u00bb 11px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "dt. \u00abRecorded time\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "dt. \u00abBreaks recorded\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "dt. \u00abTimecards\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "p.reports-module__Iv4GWq__note \u00abRecorded time includes breaks.\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abJump to\u00bb 12px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "a. \u00abHours\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "a. \u00abAttendance\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "a. \u00abChanges\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/reports",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    },
+    {
+      "category": "smallText",
+      "value": "span. \u00abAvailable to Owners. Review an\u00bb 13px",
+      "count": 1,
+      "cells": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "size": "1440",
+          "text": 100,
+          "route": "/app/settings",
+          "artifact": "checks-QAOWNER-chromium-1440-100.json"
+        }
+      ]
+    }
+  ]
+}

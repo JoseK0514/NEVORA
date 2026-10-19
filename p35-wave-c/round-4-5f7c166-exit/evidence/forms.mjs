@@ -1,0 +1,18 @@
+import {chromium,webkit} from '/workspace/nevora-browser-runtime/node_modules/playwright/index.mjs';
+import {readFile,readdir,mkdir,writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+const root='/workspace/paused-previews/wave-c',out=import.meta.dirname;
+const runs=(await readdir(root)).filter(n=>n.startsWith('evidence-')).sort();
+const {url,checkpoint}=JSON.parse(await readFile(join(root,runs.at(-1),'access.json'),'utf8'));
+const records=[];await mkdir(join(out,'forms'),{recursive:true});
+for(const [engine,launcher]of [['chromium',chromium],['webkit',webkit]]){const b=await launcher.launch();
+for(const width of engine==='chromium'?[320,390,1440]:[390]){const c=await b.newContext({storageState:join(root,'state','QAOWNER.json'),viewport:{width,height:width<600?844:900},isMobile:width<600,hasTouch:width<600,serviceWorkers:'block'});let posts=0;await c.route('**/*',r=>{if(r.request().method()==='GET')return r.continue();posts++;return r.abort();});const p=await c.newPage();p.setDefaultTimeout(8000);
+for(const text of [100,200])for(const route of ['settings/workspace','settings/locations/new','settings/locations/loc-1','settings/positions','settings/company-policies','settings/branding']){const key=[engine,width,text,route.replaceAll('/','_')].join('-');try{await p.goto(url+'/app/'+route,{waitUntil:'networkidle',timeout:60000});await p.waitForTimeout(2500);await p.waitForFunction(()=>!document.querySelector('.wc-page [data-guard]'));await p.evaluate(()=>document.fonts.ready);if(text!==100)await p.evaluate(t=>document.documentElement.style.fontSize=t+'%',text);await p.waitForTimeout(100);const before=posts;
+ if(route==='settings/workspace'){await p.getByLabel('Business name',{exact:true}).fill('');await p.getByRole('button',{name:'Save changes',exact:true}).click();}
+ if(route==='settings/locations/new')await p.getByRole('button',{name:'Add location',exact:true}).click();
+ if(route==='settings/locations/loc-1'){await p.getByLabel('Location name',{exact:true}).fill('');await p.getByLabel('Short name',{exact:true}).fill('');await p.getByRole('button',{name:'Save changes',exact:true}).click();}
+ if(route==='settings/positions')await p.getByRole('button',{name:'Add position',exact:true}).click();
+ if(route==='settings/company-policies'){await p.locator('#policy-lateness-mode').selectOption('configured');await p.getByRole('button',{name:'Save policies',exact:true}).click();}
+ if(route==='settings/branding'){await p.getByLabel('Hex code',{exact:true}).fill('#12');await p.keyboard.press('Tab');}
+ await p.waitForTimeout(150);const data=await p.evaluate(()=>{const box=e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};};return{active:{id:document.activeElement.id,tag:document.activeElement.tagName},errors:[...document.querySelectorAll('.wc-error,.field-error')].filter(e=>e.getBoundingClientRect().height>0).map(e=>({text:e.textContent,box:box(e)})),fields:[...document.querySelectorAll('[aria-invalid=true]')].map(e=>({id:e.id,described:e.getAttribute('aria-describedby')})),docWidth:document.documentElement.scrollWidth,width:innerWidth,customFields:[...document.querySelectorAll('.wc-rule__fields:not([hidden]) .wc-control')].map(e=>({id:e.id,box:box(e)})),disabledButtons:[...document.querySelectorAll('.wc-page button:disabled')].map(e=>e.innerText)};});await p.screenshot({path:join(out,'forms',key+'.png'),fullPage:false,style:'nextjs-portal{display:none!important}'});records.push({key,engine,width,text,route,requests:posts-before,...data});}catch(error){records.push({key,error:error.message});}await writeFile(join(out,'forms.json'),JSON.stringify({checkpoint,records},null,2));}
+await c.close();}await b.close();}console.log('FORMS DONE',records.length);

@@ -1,0 +1,28 @@
+{
+  "testedAt": "2026-10-19T20:31:34.830265+00:00",
+  "postgres": "17.11 (Debian 17.11-0+deb13u1)",
+  "postgresLifecycle": [
+    "initdb normal agent",
+    "TCP loopback startup",
+    "SELECT version()",
+    "fast shutdown"
+  ],
+  "playwright": "1.62.1",
+  "axe": "4.11.0",
+  "browserLaunchRenderClose": {
+    "chromium": "151.0.7922.34",
+    "webkit": "26.5"
+  },
+  "nativeDlopen": [
+    "libGLESv2.so.2",
+    "libgtk-4.so.1",
+    "libgraphene-1.0.so.0",
+    "libharfbuzz-icu.so.0",
+    "libmanette-0.2.so.0",
+    "libhyphen.so.0"
+  ],
+  "packageLockSha256": "1fae6b39f58e0277d7dbdbedbcb256066e2e4fdf9214bf46373dd188f74d5b35",
+  "nativeRoot": "/workspace/nevora-native-runtime/root",
+  "libraryResolution": "Signed Debian13 packages extracted unprivileged; linked into WebKit bundle sys/lib because upstream wrapper replaces LD_LIBRARY_PATH",
+  "hostPrecheck": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 only because upstream ldconfig-only GLES probe cannot see unprivileged library path; actual dlopen + engine launch/render/close mandatory and passed"
+}

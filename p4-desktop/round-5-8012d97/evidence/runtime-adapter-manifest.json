@@ -1,0 +1,10 @@
+{
+  "source": "/workspace/inspect-desktop",
+  "checkpoint": "8012d9790e72987140f939c7d70e1df9612ea009",
+  "runtimeMode": "Next dev Turbopack; physical copied dependencies; source branch migrations; fictional executor-only bootstrap; pool12 scratch transport",
+  "helperHashes": {
+    "payroll-preview-fixture.ts": "b377b4cbdbf365e2b2c3eddf66f746c8971eefa21fb9235ed7816d1713601499",
+    "preview-runtime.mjs": "dc9be8b27d7a6294c51f68381197e2391c1ab8df54bd1956e2197ee488ebc092",
+    "owned-preview-app-dev.mts": "4057b152a2a9d67b4234891fcb139271241d42165ec05beed10be12a7bd1a91a"
+  }
+}

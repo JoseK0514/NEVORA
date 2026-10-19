@@ -1,0 +1,71 @@
+{
+  "source": "/workspace/inspect-phase3",
+  "branch": "claude/premium-phase-1 (detached read-only inspection)",
+  "checkpoint": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "tree": "b932405014d8db54439027d855cdcc7b19e35d28",
+  "sourceTrackedClean": true,
+  "browserPath": "Regular Playwright; Browser plugin not available",
+  "reportStatus": "paused interim; not an exit certificate",
+  "previewRoot": "/workspace/paused-previews/phase3",
+  "scope": "Phase3 exit round5; shared phone shell; placeholders; large-data requested; desktop pages owned by separate worker",
+  "historyRead": {
+    "alignment.md": "4133b2c3988ba971aa77913c9ea5960aec8060bf22bce12748695e56a7139993",
+    "interaction-states.md": "abc3715fae9f859e3549e80283a71dc5ba633d3fbadc49c47b382ae7024d7f2f",
+    "stability.md": "44c2cd7994224526fac705c136b593eb674d4eb3f158502660c6333cd0819c74",
+    "type-colour-copy.md": "e6c39ffc65fcfd922b09a7ccbb613cd3505d125b044b682f5e9915b6d25c00ae",
+    "widths-roles-consistency.md": "01f1ca8a40f5c57a97af821277563f183ab50341fdd60402252bfb02e4f28167"
+  },
+  "browserPausedFor": "Coordinator requested uncontended first candidate gates and isolated retries",
+  "smokeCells": 15,
+  "completedInteractionCases": [
+    {
+      "name": "availability",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 320,
+      "text": 200
+    },
+    {
+      "name": "withdraw",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "availability",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "size": 320,
+      "text": 200
+    },
+    {
+      "name": "withdraw",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "timeoff",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 320,
+      "text": 200
+    },
+    {
+      "name": "calendar",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "correction",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    }
+  ]
+}

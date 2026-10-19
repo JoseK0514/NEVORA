@@ -1,0 +1,90 @@
+{
+  "source": "8012d9790e72987140f939c7d70e1df9612ea009",
+  "accounts": {
+    "QAOWNER": [
+      "/app",
+      "/app?view=attendance",
+      "/app?view=team",
+      "/app?view=activity",
+      "/app/inbox",
+      "/app/inbox?filter=now",
+      "/app/inbox?filter=requests",
+      "/app/inbox?filter=planning",
+      "/app/schedule",
+      "/app/employees",
+      "/app/employees?q=zzz",
+      "/app/employees?status=inactive",
+      "/app/timecards",
+      "/app/payroll-export",
+      "/app/requests",
+      "/app/exchange",
+      "/app/availability",
+      "/app/updates",
+      "/app/reports",
+      "/app/payroll",
+      "/app/settings"
+    ],
+    "AUDIT-M": [
+      "/app",
+      "/app?view=attendance",
+      "/app?view=team",
+      "/app?view=activity",
+      "/app/inbox",
+      "/app/inbox?filter=now",
+      "/app/inbox?filter=requests",
+      "/app/inbox?filter=planning",
+      "/app/schedule",
+      "/app/employees",
+      "/app/employees?q=zzz",
+      "/app/employees?status=inactive",
+      "/app/timecards",
+      "/app/payroll-export",
+      "/app/requests",
+      "/app/exchange",
+      "/app/availability",
+      "/app/updates",
+      "/app/reports"
+    ],
+    "AUDIT-E": [
+      "/app",
+      "/app/schedule",
+      "/app/schedule?view=open",
+      "/app/schedule?intent=swap",
+      "/app/requests/hub",
+      "/app/requests",
+      "/app/exchange",
+      "/app/availability",
+      "/app/my-time",
+      "/app/timecards",
+      "/app/my-pay",
+      "/app/profile",
+      "/app/updates",
+      "/app/notifications"
+    ],
+    "AUDIT-LEAD": [
+      "/app",
+      "/app/schedule",
+      "/app/schedule?view=open",
+      "/app/schedule?intent=swap",
+      "/app/requests/hub",
+      "/app/requests",
+      "/app/exchange",
+      "/app/availability",
+      "/app/my-time",
+      "/app/timecards",
+      "/app/my-pay",
+      "/app/profile",
+      "/app/updates",
+      "/app/notifications"
+    ]
+  },
+  "widths": [
+    "1440"
+  ],
+  "engines": [
+    "chromium",
+    "webkit"
+  ],
+  "texts": "100",
+  "startedAt": "2026-10-19T20:37:19.142Z"
+}

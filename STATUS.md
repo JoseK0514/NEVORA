@@ -36,6 +36,19 @@ Current handoff: Jose approved item 4 in chat on October 19. Codex may make name
 - **Open by owner:** Phase 3 interaction IS-74, IS-77–80, IS-82 and prior cloud IDs are being rechecked. Wave A ST-WA-9/10 are being rechecked. Wave B, Wave C and Desktop full exit sweeps are pending.
 - **Device access:** proposal below remains pending Jose’s phone-access yes/no. No deploy, tunnel, or external preview exposure.
 
+## Paused-handoff inspection checkpoint
+
+Browser workers are temporarily idle for uncontended candidate gates. Completed scopes are recorded in each report; **no source exit zero is claimed** from these partial checks.
+
+| Owner | Current evidence | Open findings / next step |
+|---|---|---|
+| Phase 3 | [Round 5](premium-phase-3/round-5-227150b/interaction-states.md); initial checker15/15 | Current measured IS-P3-03, ST-P3-24, IS-74, IS-P3-02, IS-82, IS-78 and IS-80. Candidate fixes queued after initial gates. IS-77/79 still need remaining browser proof. |
+| Wave A | [a05f26a cloud checkpoint](p35-wave-a/round-2-a05f26a/cloud-paused-README.md);4/4 initial cells | Source clamp rechecks progressing; TC-WA-15 pending-label contrast measured in screenshot, computed/WebKit confirmation open. Full exit matrix pending. |
+| Wave B | [Round 4](p35-wave-b/round-4-9bd265e/ROUND.md);45/48 smoke | TC-B-32:15 small payroll labels in three selector groups. Source CLS0.0244 needs attribution. Full exit pending. |
+| Wave C | [Round 4](p35-wave-c/round-4-5f7c166-exit/README.md);26/26 initial | Source TC-WC-28/WR-WC-25 remain; latest candidate coordinator contains border fix, candidate still lacks Wave C dialogs. Failure-bar geometry needs guarded state recheck. |
+| Desktop | [Round 5](p4-desktop/round-5-8012d97/type-colour-copy.md);35 initial cells | TC-P4-22 availability labels, TC-P4-23 My pay text; inherited shell floors RC-CB-TC-01; planning CLS needs controlled reproduction. Full exit pending. |
+| Combined candidate | [cbaadbc initial evidence](release/paused-initial-cbaadbc/README.md) | Profile320:16/16 pass across both roles/text sizes/engines with axe. Incomplete combined batch is excluded from completed totals; shell/type findings remain open. |
+
 ## Candidate-only UI fixes for Claude to review
 
 No new item-4 finding fix committed yet. Separate standing-authorized post-merge change: `cbaadbc` — Profile server initial read (`src/components/manager-profile/manager-profile.tsx`); parse ready snapshots, use null on unavailable/invalid/throw; affected checks pending.

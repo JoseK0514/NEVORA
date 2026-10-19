@@ -1,0 +1,889 @@
+[
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 320,
+    "text": 200,
+    "name": "availability",
+    "errors": [],
+    "initial": true,
+    "before": {
+      "url": "/app/availability?week=2026-10-26",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Submit weekly availability",
+        "disabled": false
+      },
+      "scrollY": 3906,
+      "documentHeight": 4750,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nAvailability\n\nChanges here apply only to Oct 26 – Nov 1.\n\nUsual week\nSpecific week\n\nWeekly submission\n\nOct 26 – Nov 1\nThese hours apply to this schedule week.\nAvailability deadline\n\nNo deadline set\n\nNo deadline has been set for this week.\nSubmitted\n\nManagement can see that your weekly availability is complete.\n\nLast updated Oct 19, 4:33 PM\nYour weekly hours\n\nChoose the days and times you can work.\n\n6 of 7 days available\nAvailability by day\nMonday\nOct 26\nUnavailable\nTuesday\nOct 27\nAvailable\nFrom\n–\nUntil\nWednesday\nOct 28\nAvailable\nFrom\n–\nUntil\nThursday\nOct 29\nAvailable\nFrom\n–\nUntil\nFriday\nOct 30\nAvailable\nFrom\n–\nUntil\nSaturday\nOct 31\nAvailable\nFrom\n–\nUntil\nSunday\nNov 1\nAvailable\nFrom\n–\nUntil\n\nAn end time of midnight includes the rest of that day.\n\nYou have unsaved changes.\n\nReset changes\nSubmit weekly availability",
+      "alerts": [
+        {
+          "role": "status",
+          "text": "You have unsaved changes.",
+          "box": {
+            "x": 36,
+            "y": 357.515625,
+            "width": 248,
+            "height": 96,
+            "top": 357.515625,
+            "right": 284,
+            "bottom": 453.515625,
+            "left": 36
+          }
+        }
+      ],
+      "logins": [],
+      "button": {
+        "x": 36,
+        "y": 469.515625,
+        "width": 248,
+        "height": 132
+      }
+    },
+    "pending": {
+      "url": "/app/availability?week=2026-10-26",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 3826,
+      "documentHeight": 4670,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nAvailability\n\nChanges here apply only to Oct 26 – Nov 1.\n\nUsual week\nSpecific week\n\nWeekly submission\n\nOct 26 – Nov 1\nThese hours apply to this schedule week.\nAvailability deadline\n\nNo deadline set\n\nNo deadline has been set for this week.\nSubmitted\n\nManagement can see that your weekly availability is complete.\n\nLast updated Oct 19, 4:33 PM\nYour weekly hours\n\nChoose the days and times you can work.\n\n6 of 7 days available\nAvailability by day\nMonday\nOct 26\nUnavailable\nTuesday\nOct 27\nAvailable\nFrom\n–\nUntil\nWednesday\nOct 28\nAvailable\nFrom\n–\nUntil\nThursday\nOct 29\nAvailable\nFrom\n–\nUntil\nFriday\nOct 30\nAvailable\nFrom\n–\nUntil\nSaturday\nOct 31\nAvailable\nFrom\n–\nUntil\nSunday\nNov 1\nAvailable\nFrom\n–\nUntil\n\nAn end time of midnight includes the rest of that day.\n\nSaving your availability…\n\nReset changes\nSaving…",
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Saving your availability…",
+          "box": {
+            "x": 36,
+            "y": 437.515625,
+            "width": 248,
+            "height": 96,
+            "top": 437.515625,
+            "right": 284,
+            "bottom": 533.515625,
+            "left": 36
+          }
+        }
+      ],
+      "logins": [],
+      "button": {
+        "x": 36,
+        "y": 549.515625,
+        "width": 248,
+        "height": 52
+      },
+      "disabled": true
+    },
+    "posts": 1,
+    "failure": {
+      "url": "/app/availability?week=2026-10-26",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 3906,
+      "documentHeight": 5132,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nAvailability\n\nChanges here apply only to Oct 26 – Nov 1.\n\nUsual week\nSpecific week\n\nWeekly submission\n\nOct 26 – Nov 1\nThese hours apply to this schedule week.\nAvailability deadline\n\nNo deadline set\n\nNo deadline has been set for this week.\nSubmitted\n\nManagement can see that your weekly availability is complete.\n\nLast updated Oct 19, 4:33 PM\nYour weekly hours\n\nChoose the days and times you can work.\n\n6 of 7 days available\nAvailability by day\nMonday\nOct 26\nUnavailable\nTuesday\nOct 27\nAvailable\nFrom\n–\nUntil\nWednesday\nOct 28\nAvailable\nFrom\n–\nUntil\nThursday\nOct 29\nAvailable\nFrom\n–\nUntil\nFriday\nOct 30\nAvailable\nFrom\n–\nUntil\nSaturday\nOct 31\nAvailable\nFrom\n–\nUntil\nSunday\nNov 1\nAvailable\nFrom\n–\nUntil\n\nAn end time of midnight includes the rest of that day.\n\nYou have unsaved changes.\n\nReset changes\nSubmit weekly availability\n\nYour availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+      "alerts": [
+        {
+          "role": "status",
+          "text": "You have unsaved changes.",
+          "box": {
+            "x": 36,
+            "y": 357.515625,
+            "width": 248,
+            "height": 96,
+            "top": 357.515625,
+            "right": 284,
+            "bottom": 453.515625,
+            "left": 36
+          }
+        },
+        {
+          "role": "alert",
+          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 719.515625,
+            "width": 248,
+            "height": 366,
+            "top": 719.515625,
+            "right": 284,
+            "bottom": 1085.515625,
+            "left": 36
+          }
+        }
+      ],
+      "logins": [
+        {
+          "text": "sign in again",
+          "box": {
+            "x": 52,
+            "y": 976.515625,
+            "width": 201,
+            "height": 92,
+            "top": 976.515625,
+            "right": 253,
+            "bottom": 1068.515625,
+            "left": 52
+          }
+        }
+      ]
+    },
+    "form": {
+      "resets": 1,
+      "checked": true,
+      "row": "Monday\nOct 26\nUnavailable"
+    },
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 320,
+    "text": 200,
+    "name": "timeoff",
+    "errors": [],
+    "before": {
+      "url": "/app/requests?tab=new",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Submit request Submitting request…",
+        "disabled": false
+      },
+      "scrollY": 2462,
+      "documentHeight": 3306,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nRequest time off\n\nChoose when you need to be away.\n\nHow much time do you need?\nFull day\nPartial day\n\nRequest one day or a range of days.\n\nChoose your dates\nStart date\nEnd date\nNote Optional\n\nOnly include details you want to share.\n\n25/250\nYour request at a glance\n2 days away\n\nDec 7, 2026 – Dec 8, 2026\n\nManager review comes next\nTrack the decision in My requests. Time away is confirmed when your request is approved.\n\nCancel\nSubmit request ",
+      "alerts": [],
+      "logins": [],
+      "button": {
+        "x": 36,
+        "y": 567.515625,
+        "width": 248,
+        "height": 88
+      }
+    },
+    "error": "locator.boundingBox: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Submit request', exact: true })\u001b[22m\n\n    at /workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:19:632\n    at async run (/workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:14:1000)\n    at async file:///workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:19:2"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "withdraw",
+    "errors": [],
+    "checkedBefore": true,
+    "pending": {
+      "url": "/app/requests?tab=my",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Withdraw requestWithdrawing…",
+        "disabled": false
+      },
+      "scrollY": 146,
+      "documentHeight": 1692,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nMy requests\n5 requests\nOct 29, 2026 – Oct 30, 2026\nWaiting\nFull day\nNote: Fictional family appointment\nSent Oct 19\nWaiting for approval\nWithdraw this request\nYes, withdraw this request\nWithdrawing…\n\nWithdrawing…\n\nNov 28, 2026\nWithdrawn\nFull day\nNote: Fictional appointment\nSent Oct 14\nWithdrawn · Oct 17\nNov 18, 2026 – Nov 19, 2026\nDeclined\nFull day\nNote: Fictional appointment\nSent Oct 14\nDeclined by Morgan Rivera · Oct 17\nNov 13, 2026\nApproved\nPartial day · 9:00 AM – 1:00 PM\nNote: Fictional appointment\nSent Oct 14\nApproved by Fictional Owner · Oct 17\nNov 8, 2026 – Nov 9, 2026\nApproved\nFull day\nNote: Fictional appointment\nSent Oct 14\nApproved by Morgan Rivera · Oct 17",
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Withdrawing…",
+          "box": {
+            "x": 48,
+            "y": 578,
+            "width": 294,
+            "height": 24,
+            "top": 578,
+            "right": 342,
+            "bottom": 602,
+            "left": 48
+          }
+        }
+      ],
+      "logins": []
+    },
+    "checkedAfter": false,
+    "failure": {
+      "url": "/app/requests?tab=my",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Try againWithdrawing…",
+        "disabled": false
+      },
+      "scrollY": 146,
+      "documentHeight": 1740,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nMy requests\n5 requests\nOct 29, 2026 – Oct 30, 2026\nWaiting\nFull day\nNote: Fictional family appointment\nSent Oct 19\nWaiting for approval\nWithdraw this request\nYes, withdraw this request\nTry again\n\nWe couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.\n\nNov 28, 2026\nWithdrawn\nFull day\nNote: Fictional appointment\nSent Oct 14\nWithdrawn · Oct 17\nNov 18, 2026 – Nov 19, 2026\nDeclined\nFull day\nNote: Fictional appointment\nSent Oct 14\nDeclined by Morgan Rivera · Oct 17\nNov 13, 2026\nApproved\nPartial day · 9:00 AM – 1:00 PM\nNote: Fictional appointment\nSent Oct 14\nApproved by Fictional Owner · Oct 17\nNov 8, 2026 – Nov 9, 2026\nApproved\nFull day\nNote: Fictional appointment\nSent Oct 14\nApproved by Morgan Rivera · Oct 17",
+      "alerts": [
+        {
+          "role": "status",
+          "text": "We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.",
+          "box": {
+            "x": 48,
+            "y": 578,
+            "width": 294,
+            "height": 72,
+            "top": 578,
+            "right": 342,
+            "bottom": 650,
+            "left": 48
+          }
+        }
+      ],
+      "logins": []
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "size": 320,
+    "text": 200,
+    "name": "availability",
+    "errors": [],
+    "initial": true,
+    "before": {
+      "url": "/app/availability?week=2026-10-26",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Submit weekly availability",
+        "disabled": false
+      },
+      "scrollY": 4106,
+      "documentHeight": 4950,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nAvailability\n\nChanges here apply only to Oct 26 – Nov 1.\n\nUsual week\nSpecific week\n\nWeekly submission\n\nOct 26 – Nov 1\nThese hours apply to this schedule week.\nAvailability deadline\n\nNo deadline set\n\nNo deadline has been set for this week.\nSubmitted\n\nManagement can see that your weekly availability is complete.\n\nLast updated Oct 19, 4:33 PM\nYour weekly hours\n\nChoose the days and times you can work.\n\n6 of 7 days available\nAvailability by day\nMonday\nOct 26\nUnavailable\nTuesday\nOct 27\nAvailable\nFrom\n–\nUntil\nWednesday\nOct 28\nAvailable\nFrom\n–\nUntil\nThursday\nOct 29\nAvailable\nFrom\n–\nUntil\nFriday\nOct 30\nAvailable\nFrom\n–\nUntil\nSaturday\nOct 31\nAvailable\nFrom\n–\nUntil\nSunday\nNov 1\nAvailable\nFrom\n–\nUntil\n\nAn end time of midnight includes the rest of that day.\n\nYou have unsaved changes.\n\nReset changes\nSubmit weekly availability",
+      "tabbar": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "You have unsaved changes.",
+          "box": {
+            "x": 36,
+            "y": 309.515625,
+            "width": 248,
+            "height": 144,
+            "top": 309.515625,
+            "right": 284,
+            "bottom": 453.515625,
+            "left": 36
+          }
+        }
+      ],
+      "logins": [],
+      "button": {
+        "x": 36,
+        "y": 469.515625,
+        "width": 248,
+        "height": 132
+      }
+    },
+    "pending": {
+      "url": "/app/availability?week=2026-10-26",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 3978,
+      "documentHeight": 4822,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nAvailability\n\nChanges here apply only to Oct 26 – Nov 1.\n\nUsual week\nSpecific week\n\nWeekly submission\n\nOct 26 – Nov 1\nThese hours apply to this schedule week.\nAvailability deadline\n\nNo deadline set\n\nNo deadline has been set for this week.\nSubmitted\n\nManagement can see that your weekly availability is complete.\n\nLast updated Oct 19, 4:33 PM\nYour weekly hours\n\nChoose the days and times you can work.\n\n6 of 7 days available\nAvailability by day\nMonday\nOct 26\nUnavailable\nTuesday\nOct 27\nAvailable\nFrom\n–\nUntil\nWednesday\nOct 28\nAvailable\nFrom\n–\nUntil\nThursday\nOct 29\nAvailable\nFrom\n–\nUntil\nFriday\nOct 30\nAvailable\nFrom\n–\nUntil\nSaturday\nOct 31\nAvailable\nFrom\n–\nUntil\nSunday\nNov 1\nAvailable\nFrom\n–\nUntil\n\nAn end time of midnight includes the rest of that day.\n\nSaving your availability…\n\nReset changes\nSaving…",
+      "tabbar": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Saving your availability…",
+          "box": {
+            "x": 36,
+            "y": 437.515625,
+            "width": 248,
+            "height": 96,
+            "top": 437.515625,
+            "right": 284,
+            "bottom": 533.515625,
+            "left": 36
+          }
+        }
+      ],
+      "logins": [],
+      "button": {
+        "x": 36,
+        "y": 549.515625,
+        "width": 248,
+        "height": 52
+      },
+      "disabled": true
+    },
+    "posts": 1,
+    "failure": {
+      "url": "/app/availability?week=2026-10-26",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 3978,
+      "documentHeight": 5273,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nAvailability\n\nChanges here apply only to Oct 26 – Nov 1.\n\nUsual week\nSpecific week\n\nWeekly submission\n\nOct 26 – Nov 1\nThese hours apply to this schedule week.\nAvailability deadline\n\nNo deadline set\n\nNo deadline has been set for this week.\nSubmitted\n\nManagement can see that your weekly availability is complete.\n\nLast updated Oct 19, 4:33 PM\nYour weekly hours\n\nChoose the days and times you can work.\n\n6 of 7 days available\nAvailability by day\nMonday\nOct 26\nUnavailable\nTuesday\nOct 27\nAvailable\nFrom\n–\nUntil\nWednesday\nOct 28\nAvailable\nFrom\n–\nUntil\nThursday\nOct 29\nAvailable\nFrom\n–\nUntil\nFriday\nOct 30\nAvailable\nFrom\n–\nUntil\nSaturday\nOct 31\nAvailable\nFrom\n–\nUntil\nSunday\nNov 1\nAvailable\nFrom\n–\nUntil\n\nAn end time of midnight includes the rest of that day.\n\nSaving your availability…\n\nReset changes\nSaving…\n\nYour availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+      "tabbar": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Saving your availability…",
+          "box": {
+            "x": 36,
+            "y": 437.515625,
+            "width": 248,
+            "height": 96,
+            "top": 437.515625,
+            "right": 284,
+            "bottom": 533.515625,
+            "left": 36
+          }
+        },
+        {
+          "role": "alert",
+          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 719.515625,
+            "width": 248,
+            "height": 435,
+            "top": 719.515625,
+            "right": 284,
+            "bottom": 1154.515625,
+            "left": 36
+          }
+        }
+      ],
+      "logins": [
+        {
+          "text": "sign in again",
+          "box": {
+            "x": 52,
+            "y": 1096.515625,
+            "width": 201.9248046875,
+            "height": 41,
+            "top": 1096.515625,
+            "right": 253.9248046875,
+            "bottom": 1137.515625,
+            "left": 52
+          }
+        }
+      ]
+    },
+    "form": {
+      "resets": 1,
+      "checked": true,
+      "row": "Monday\nOct 26\nUnavailable"
+    },
+    "done": true
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "size": 320,
+    "text": 200,
+    "name": "timeoff",
+    "errors": [],
+    "before": {
+      "url": "/app/requests?tab=new",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Submit request Submitting request…",
+        "disabled": false
+      },
+      "scrollY": 2774,
+      "documentHeight": 3618,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nRequest time off\n\nChoose when you need to be away.\n\nHow much time do you need?\nFull day\nPartial day\n\nRequest one day or a range of days.\n\nChoose your dates\nStart date\nEnd date\nNote Optional\n\nOnly include details you want to share.\n\n25/250\nYour request at a glance\nChoose your time away\n\nYour dates will appear here.\n\nManager review comes next\nTrack the decision in My requests. Time away is confirmed when your request is approved.\n\nCancel\nSubmit request ",
+      "tabbar": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": [],
+      "button": {
+        "x": 36,
+        "y": 567.560546875,
+        "width": 248,
+        "height": 88
+      }
+    },
+    "error": "Error: Operation not sent within 15 seconds\n    at Timeout._onTimeout (file:///workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:15:154)\n    at listOnTimeout (node:internal/timers:635:17)\n    at process.processTimers (node:internal/timers:571:7)",
+    "current": {
+      "url": "/app/requests?tab=new",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "INPUT",
+        "text": "",
+        "disabled": false
+      },
+      "scrollY": 895,
+      "documentHeight": 3680,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nRequest time off\n\nChoose when you need to be away.\n\nHow much time do you need?\nFull day\nPartial day\n\nRequest one day or a range of days.\n\nChoose your dates\nStart date\n\nEnter start date\n\nEnd date\nNote Optional\n\nOnly include details you want to share.\n\n25/250\nYour request at a glance\nChoose your time away\n\nYour dates will appear here.\n\nManager review comes next\nTrack the decision in My requests. Time away is confirmed when your request is approved.\n\nCancel\nSubmit request ",
+      "tabbar": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "withdraw",
+    "errors": [],
+    "checkedBefore": true,
+    "pending": {
+      "url": "/app/requests?tab=my",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Withdraw requestWithdrawing…",
+        "disabled": false
+      },
+      "scrollY": 0,
+      "documentHeight": 1692,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nMy requests\n5 requests\nOct 29, 2026 – Oct 30, 2026\nWaiting\nFull day\nNote: Fictional family appointment\nSent Oct 19\nWaiting for approval\nWithdraw this request\nYes, withdraw this request\nWithdrawing…\n\nWithdrawing…\n\nNov 28, 2026\nWithdrawn\nFull day\nNote: Fictional appointment\nSent Oct 14\nWithdrawn · Oct 17\nNov 18, 2026 – Nov 19, 2026\nDeclined\nFull day\nNote: Fictional appointment\nSent Oct 14\nDeclined by Morgan Rivera · Oct 17\nNov 13, 2026\nApproved\nPartial day · 9:00 AM – 1:00 PM\nNote: Fictional appointment\nSent Oct 14\nApproved by Fictional Owner · Oct 17\nNov 8, 2026 – Nov 9, 2026\nApproved\nFull day\nNote: Fictional appointment\nSent Oct 14\nApproved by Morgan Rivera · Oct 17",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Withdrawing…",
+          "box": {
+            "x": 48,
+            "y": 724,
+            "width": 294,
+            "height": 24,
+            "top": 724,
+            "right": 342,
+            "bottom": 748,
+            "left": 48
+          }
+        }
+      ],
+      "logins": []
+    },
+    "checkedAfter": false,
+    "failure": {
+      "url": "/app/requests?tab=my",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Try againWithdrawing…",
+        "disabled": false
+      },
+      "scrollY": 0,
+      "documentHeight": 1740,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nMy requests\n5 requests\nOct 29, 2026 – Oct 30, 2026\nWaiting\nFull day\nNote: Fictional family appointment\nSent Oct 19\nWaiting for approval\nWithdraw this request\nYes, withdraw this request\nTry again\n\nWe couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.\n\nNov 28, 2026\nWithdrawn\nFull day\nNote: Fictional appointment\nSent Oct 14\nWithdrawn · Oct 17\nNov 18, 2026 – Nov 19, 2026\nDeclined\nFull day\nNote: Fictional appointment\nSent Oct 14\nDeclined by Morgan Rivera · Oct 17\nNov 13, 2026\nApproved\nPartial day · 9:00 AM – 1:00 PM\nNote: Fictional appointment\nSent Oct 14\nApproved by Fictional Owner · Oct 17\nNov 8, 2026 – Nov 9, 2026\nApproved\nFull day\nNote: Fictional appointment\nSent Oct 14\nApproved by Morgan Rivera · Oct 17",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.",
+          "box": {
+            "x": 48,
+            "y": 724,
+            "width": 294,
+            "height": 72,
+            "top": 724,
+            "right": 342,
+            "bottom": 796,
+            "left": 48
+          }
+        }
+      ],
+      "logins": []
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 320,
+    "text": 200,
+    "name": "timeoff",
+    "errors": [],
+    "datesBefore": {
+      "start": "2026-12-07",
+      "end": "2026-12-08"
+    },
+    "before": {
+      "url": "/app/requests?tab=new",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Submit request Submitting request…",
+        "disabled": false
+      },
+      "scrollY": 2462,
+      "documentHeight": 3306,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nRequest time off\n\nChoose when you need to be away.\n\nHow much time do you need?\nFull day\nPartial day\n\nRequest one day or a range of days.\n\nChoose your dates\nStart date\nEnd date\nNote Optional\n\nOnly include details you want to share.\n\n25/250\nYour request at a glance\n2 days away\n\nDec 7, 2026 – Dec 8, 2026\n\nManager review comes next\nTrack the decision in My requests. Time away is confirmed when your request is approved.\n\nCancel\nSubmit request ",
+      "tabbar": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": [],
+      "button": {
+        "x": 36,
+        "y": 567.515625,
+        "width": 248,
+        "height": 88
+      }
+    },
+    "pending": {
+      "url": "/app/requests?tab=new",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Submit request Submitting request…",
+        "disabled": false
+      },
+      "scrollY": 2462,
+      "documentHeight": 3306,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nRequest time off\n\nChoose when you need to be away.\n\nHow much time do you need?\nFull day\nPartial day\n\nRequest one day or a range of days.\n\nChoose your dates\nStart date\nEnd date\nNote Optional\n\nOnly include details you want to share.\n\n25/250\nYour request at a glance\n2 days away\n\nDec 7, 2026 – Dec 8, 2026\n\nManager review comes next\nTrack the decision in My requests. Time away is confirmed when your request is approved.\n\nCancel\nSubmitting request…",
+      "tabbar": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": [],
+      "button": {
+        "x": 36,
+        "y": 567.515625,
+        "width": 248,
+        "height": 88
+      }
+    },
+    "posts": 1,
+    "failure": {
+      "url": "/app/requests?tab=new",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Submit request Submitting request…",
+        "disabled": false
+      },
+      "scrollY": 2462,
+      "documentHeight": 3676,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nRequest time off\n\nChoose when you need to be away.\n\nHow much time do you need?\nFull day\nPartial day\n\nRequest one day or a range of days.\n\nChoose your dates\nStart date\nEnd date\nNote Optional\n\nOnly include details you want to share.\n\n25/250\nYour request at a glance\n2 days away\n\nDec 7, 2026 – Dec 8, 2026\n\nManager review comes next\nTrack the decision in My requests. Time away is confirmed when your request is approved.\n\nYour request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again.\n\nCancel\nSubmit request ",
+      "tabbar": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "alert",
+          "text": "Your request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 526.515625,
+            "width": 248,
+            "height": 370,
+            "top": 526.515625,
+            "right": 284,
+            "bottom": 896.515625,
+            "left": 36
+          }
+        }
+      ],
+      "logins": [
+        {
+          "text": "sign in again",
+          "box": {
+            "x": 54,
+            "y": 785.515625,
+            "width": 201,
+            "height": 92,
+            "top": 785.515625,
+            "right": 255,
+            "bottom": 877.515625,
+            "left": 54
+          }
+        }
+      ]
+    },
+    "buttonAfter": {
+      "x": 36,
+      "y": 937.515625,
+      "width": 248,
+      "height": 88
+    },
+    "values": {
+      "start": "2026-12-07",
+      "end": "2026-12-08",
+      "reason": "Fictional inspection only"
+    },
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "calendar",
+    "errors": [],
+    "before": {
+      "url": "/app/profile",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Create link",
+        "disabled": false
+      },
+      "scrollY": 778,
+      "documentHeight": 1960,
+      "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nCalendar subscription\n\nYour shifts, alongside your plans.\n\nView your published shifts in Apple Calendar, Google Calendar, or Outlook.\n\nNo calendar link\n\nCreate a private link, then add it to your calendar app.\n\nCreate link\n\nThis private link includes your shift times and location labels. Anyone with the link can view these details.\n\nSubscribe in your calendar app\nApple Calendar\niPhone, iPad, and Mac\nGoogle Calendar\nSet up on a computer\nOutlook\nSet up on the web\n\nCalendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Creating or copying a link does not confirm a calendar connection.\n\nSign out",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    },
+    "pending": {
+      "url": "/app/profile",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 778,
+      "documentHeight": 1960,
+      "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nCalendar subscription\n\nYour shifts, alongside your plans.\n\nView your published shifts in Apple Calendar, Google Calendar, or Outlook.\n\nNo calendar link\n\nCreate a private link, then add it to your calendar app.\n\nSaving…\n\nThis private link includes your shift times and location labels. Anyone with the link can view these details.\n\nSubscribe in your calendar app\nApple Calendar\niPhone, iPad, and Mac\nGoogle Calendar\nSet up on a computer\nOutlook\nSet up on the web\n\nCalendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Creating or copying a link does not confirm a calendar connection.\n\nSign out",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    },
+    "failure": {
+      "url": "/app/profile",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 778,
+      "documentHeight": 2100,
+      "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nCalendar subscription\n\nYour shifts, alongside your plans.\n\nView your published shifts in Apple Calendar, Google Calendar, or Outlook.\n\nNo calendar link\n\nCreate a private link, then add it to your calendar app.\n\nCreate link\n\nThis private link includes your shift times and location labels. Anyone with the link can view these details.\n\nSubscribe in your calendar app\nApple Calendar\niPhone, iPad, and Mac\nGoogle Calendar\nSet up on a computer\nOutlook\nSet up on the web\n\nCalendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Creating or copying a link does not confirm a calendar connection.\n\nThe result is unknown. Retry the same operation to check it.\n\nTry again\nto load the calendar link\nSign out",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "The result is unknown. Retry the same operation to check it.",
+          "box": {
+            "x": 36,
+            "y": 1013,
+            "width": 318,
+            "height": 72,
+            "top": 1013,
+            "right": 354,
+            "bottom": 1085,
+            "left": 36
+          }
+        }
+      ],
+      "logins": []
+    },
+    "disabled": true,
+    "retry": {
+      "x": 36,
+      "y": 1101,
+      "width": 142,
+      "height": 52
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "correction",
+    "errors": [],
+    "pending": {
+      "url": "/app/my-time",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 926,
+      "documentHeight": 1903,
+      "text": "Statements\nHours\nTimecards\n\nPayday Tue, Oct 27 · for Oct 19 – Oct 25\n\nMy time\n\nYour punches, breaks and correction requests.\n\nCurrent status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUse your location’s Clocker to record punches.\n\nUpdated Oct 19, 4:42 PM\n\nRefresh\nRecord details\nToday\nOctober 19, 2026\nRecorded time\n0h\nBreak time\n0h\n\nToday’s totals. Hours include breaks and aren’t payroll hours.\n\nNo recorded punches today.\n\nRecent entries\n0 entries\n\nNo earlier entries.\n\nCorrections\n\nYour manager reviews each request. Your original times are kept.\n\nCancel\nTry again\nLocation\nMain Office\nWest Office\nStart\nEnd\nReason\n\nMissing time is submitted as a correction record. It does not create a recorded Clocker punch.\n\nSending…\n\nNo correction requests yet.",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    },
+    "failure": {
+      "url": "/app/my-time",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 926,
+      "documentHeight": 1913,
+      "text": "Statements\nHours\nTimecards\n\nPayday Tue, Oct 27 · for Oct 19 – Oct 25\n\nMy time\n\nYour punches, breaks and correction requests.\n\nCurrent status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUse your location’s Clocker to record punches.\n\nUpdated Oct 19, 4:42 PM\n\nRefresh\nRecord details\nToday\nOctober 19, 2026\nRecorded time\n0h\nBreak time\n0h\n\nToday’s totals. Hours include breaks and aren’t payroll hours.\n\nNo recorded punches today.\n\nRecent entries\n0 entries\n\nNo earlier entries.\n\nCorrections\n\nYour manager reviews each request. Your original times are kept.\n\nCancel\n\nWe couldn’t send your correction. Try again. If this keeps happening, sign in again.\n\nLocation\nMain Office\nWest Office\nStart\nEnd\nReason\n\nMissing time is submitted as a correction record. It does not create a recorded Clocker punch.\n\nSend request\n\nNo correction requests yet.",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "We couldn’t send your correction. Try again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 215,
+            "width": 318,
+            "height": 48,
+            "top": 215,
+            "right": 354,
+            "bottom": 263,
+            "left": 36
+          }
+        }
+      ],
+      "logins": []
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "updates",
+    "errors": [],
+    "error": "page.goto: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:34019/app/updates\", waiting until \"networkidle\"\u001b[22m\n\n    at go (/workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:14:888)\n    at /workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:23:83\n    at run (/workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:14:1090)\n    at async file:///workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:23:2",
+    "current": null
+  }
+]
