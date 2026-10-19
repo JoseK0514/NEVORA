@@ -32,15 +32,16 @@ export function PendingButton({ children, pending, kind = "primary", block = fal
     const onSubmit = (event: SubmitEvent) => {
       const submitter = event.submitter;
       sent.current = submitter === button.current || (!submitter && form.querySelectorAll("[type=submit]").length === 1);
-      // ST-WA-7: "Sending…" can be a line shorter than a two-line label (large text); keep the button's height while it shows.
-      if (sent.current && button.current) button.current.style.minHeight = `${button.current.getBoundingClientRect().height}px`;
+      // ST-WA-7, 9, 10: "Sending…" can be a line shorter (large text) or narrower (desktop) than the label; keep the
+      // button's size while it shows. offsetWidth/Height are layout sizes, so the press scale (.98) isn't counted.
+      if (sent.current && button.current) { button.current.style.minHeight = `${button.current.offsetHeight}px`; button.current.style.minWidth = `${button.current.offsetWidth}px`; }
     };
     const sync = () => {
       const formBusy = form.getAttribute("aria-busy") === "true";
       setBusy(formBusy && sent.current);
       if (!formBusy && sent.current) {
         sent.current = false;
-        if (button.current) button.current.style.minHeight = "";
+        if (button.current) { button.current.style.minHeight = ""; button.current.style.minWidth = ""; }
         // IS-WA-2: the result line sits under the form, often under the tab bar or below the fold. Bring it into view and
         // move focus to it, so the outcome is seen and read (the form's own retry control follows it).
         requestAnimationFrame(() => {

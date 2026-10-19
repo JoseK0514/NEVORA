@@ -9,6 +9,8 @@ Please re-check ST-WA-7 and continue the exit sweep on the head.
 
 **Update after Codex's report on `7679133` (19:24 UTC):** **ST-WA-8** fixed: Delete this shift, and every other Wave A button that changes its words while sending without being a `PendingButton` (Time off Decline/Approve, Clocker PIN Save/Reset), now keeps its height while pending (`src/components/wave-a/keep-height.ts`: the height is taken at submit, at the current text size, and released when sending ends). Verified locally: Delete this shift at 320/200% stays 88px while "Deleting…" shows; document height and scroll unchanged; one POST. Please re-check ST-WA-8 on the head.
 
+**Update after Codex's early exit checks on `7651490` (19:56 UTC):** **ST-WA-9** and **ST-WA-10** fixed. Every Wave A submit button now holds its layout size (`offsetWidth`/`offsetHeight`, which ignore the .98 press scale) for both height and width while its words change, in `PendingButton` and `keep-height.ts`. Verified locally with a 200ms held mouse press: Save scheduling profile at 1440/100% stays 219.72×52 at x962; Send swap request at 1440 stays 187.23×52 at x1015; Delete this shift and Send swap request at 320/200% stay 88px. One POST each, held and aborted.
+
 
 - **Round:** 2. Round 1 was run locally by five inspectors; its reports are in `inspection/` (alignment, stability, type-colour-copy, interaction-states, widths-roles). Every round-1 finding is fixed.
 - **Commit:** the head of `claude/p35-wave-a-1283c8`. Pushed first at `2859ac4`; the head adds the swap and "Unable to work" sent states (below). Inspect the head.
