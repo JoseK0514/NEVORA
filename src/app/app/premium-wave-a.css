@@ -37,8 +37,14 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   & .wa-select .nevora-select-shell { display: block; position: relative; }
   & .wa-field textarea { min-height: 112px; padding: var(--nv-s-3) var(--nv-s-4); resize: vertical; }
   & .wa-field input::placeholder, & .wa-field textarea::placeholder { color: var(--nv-muted); opacity: 1; }
-  & .wa-pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nv-s-4); }
-  @media (min-width: 400px) { & .wa-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--nv-s-3); } }
+  /* WR-WA-1: a pair goes side by side only when each field gets 14rem (9rem for short values such as times and PINs),
+     so it follows the field's content and the text size, not the screen width. */
+  & .wa-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--nv-s-4) var(--nv-s-3); }
+  & .wa-pair--short { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+  /* WR-WA-3: a long name in a closed select ends with an ellipsis instead of a cut letter. */
+  & select { text-overflow: ellipsis; }
+  /* WR-WA-2: a status pill wraps its words under the glyph rather than running out of a narrow row. */
+  & .wa-person .nv-status { white-space: normal; max-width: 100%; min-height: 28px; height: auto; padding-block: 4px; }
   & .wa-field__count { font-variant-numeric: tabular-nums; }
 
   /* Checkbox rows: a 44px target, title and help. */

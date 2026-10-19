@@ -20,7 +20,7 @@ export function ShiftEditTiming({ date, startTime, endTime }: { date: string; st
   const label = shiftDurationLabel(date, start, end);
 
   return <>
-    <FieldPair>
+    <FieldPair short>
       <Field label="Starts"><input id="edit-shift-start" type="time" name="startTime" value={start} onChange={event => setStart(event.target.value)} required /></Field>
       <Field label="Ends"><input id="edit-shift-end" type="time" name="endTime" value={end} onChange={event => setEnd(event.target.value)} required /></Field>
     </FieldPair>

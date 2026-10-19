@@ -55,8 +55,8 @@ export function Field({ label, optional = false, help, helpId, children, classNa
 }
 
 /** Two fields side by side from 400px; stacked below. */
-export function FieldPair({ children }: { children: ReactNode }) {
-  return <div className="wa-pair">{children}</div>;
+export function FieldPair({ children, short = false }: { children: ReactNode; short?: boolean }) {
+  return <div className={short ? "wa-pair wa-pair--short" : "wa-pair"}>{children}</div>;
 }
 
 /** The form's own actions: the main action first on phones, full width; side by side from 600px. */

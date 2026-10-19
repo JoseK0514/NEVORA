@@ -63,7 +63,7 @@ export function ClockerPinForm({ employeeId, initialVersion, action }: {
         <input type="hidden" name="expectedVersion" value={version} />
         <fieldset disabled={pending || blocked}>
           <div className="wa-fields">
-            <FieldPair>
+            <FieldPair short>
               <Field label="New PIN"><input id="new-clocker-pin" name="pin" type="password" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{4}" minLength={4} maxLength={4} required aria-describedby="pin-help" /></Field>
               <Field label="Confirm PIN"><input id="confirm-clocker-pin" name="confirmPin" type="password" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{4}" minLength={4} maxLength={4} required aria-describedby="pin-help" /></Field>
             </FieldPair>

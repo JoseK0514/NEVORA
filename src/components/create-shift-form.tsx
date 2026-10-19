@@ -60,7 +60,7 @@ export function CreateShiftForm({ action, employees, locations, positions, weekS
             <Field label="Date" help={`Days in this schedule week: ${keepWhole(formatDayLabel(weekStart).day)} – ${keepWhole(formatDayLabel(weekEnd).day)}.`} helpId="shift-date-help">
               <input type="date" name="date" value={day} onChange={event => setDay(event.target.value)} min={weekStart} max={weekEnd} required aria-describedby="shift-date-help" />
             </Field>
-            <FieldPair>
+            <FieldPair short>
               <Field label="Starts"><input type="time" name="startTime" value={start} onChange={event => setStart(event.target.value)} required /></Field>
               <Field label="Ends"><input type="time" name="endTime" value={end} onChange={event => setEnd(event.target.value)} required /></Field>
             </FieldPair>
