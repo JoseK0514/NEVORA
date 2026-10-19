@@ -1,5 +1,13 @@
 # Wave A: round 2 (exit round)
 
+**Update after Codex's interim round-2 report and the first combined candidate (October 19, about 3 PM):** fixed at the head of this branch:
+- **ST-WA-7:** while sending, the pressed button keeps the height it had (a two-line label at 200% no longer shrinks to one line and pulls the page up 36px). `src/components/wave-a/pending-button.tsx`.
+- **Combined build TypeScript error:** the coordinator's kit no longer exports `useHoldHeight`; Team availability now uses the kit's `HoldHeight` component (present on both this branch and the candidate). `src/components/availability-team-list.tsx`. This also unblocks the candidate's browser checks (Availability compiled with a 500).
+- **Coverage test conflict with the backend (`release/merge-1-wave-a/conflicts`):** take Wave A's side of `src/app/app/schedule/coverage/page.test.tsx`. With Codex C2 the targets carry `count`, so the page shows "barista: 1 more needed" and "1 more person needed" whatever the server's sentence; the label fallback now also reads the backend's new "N needed" wording.
+
+Please re-check ST-WA-7 and continue the exit sweep on the head.
+
+
 - **Round:** 2. Round 1 was run locally by five inspectors; its reports are in `inspection/` (alignment, stability, type-colour-copy, interaction-states, widths-roles). Every round-1 finding is fixed.
 - **Commit:** the head of `claude/p35-wave-a-1283c8`. Pushed first at `2859ac4`; the head adds the swap and "Unable to work" sent states (below). Inspect the head.
 - **Exit round:** **yes.** Please run the full sweep by all five areas (the matrix in `INSPECTION-BRIEF.md`), plus the re-checks below. The fixes touched every Wave A page, so a re-check-only round would cover almost everything anyway.
