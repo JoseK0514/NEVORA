@@ -1,0 +1,2334 @@
+[
+  {
+    "account": "AUDIT-E",
+    "kind": "timeoff",
+    "width": 390,
+    "text": 100,
+    "route": "/app/requests?tab=new",
+    "count": 1,
+    "before": {
+      "scroll": 591,
+      "documentHeight": 1435,
+      "button": {
+        "box": {
+          "x": 99,
+          "y": 619.5,
+          "width": 192,
+          "height": 52,
+          "top": 619.5,
+          "right": 291,
+          "bottom": 671.5,
+          "left": 99
+        },
+        "text": "Submit request ",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "TEXTAREA",
+        "selector": "",
+        "text": "Fictional appointment"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 591,
+      "documentHeight": 1435,
+      "button": {
+        "box": {
+          "x": 89.5,
+          "y": 619.5,
+          "width": 211,
+          "height": 52,
+          "top": 619.5,
+          "right": 300.5,
+          "bottom": 671.5,
+          "left": 89.5
+        },
+        "text": "Submitting request…",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": "true",
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submitting request…"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 591,
+      "documentHeight": 1528,
+      "button": {
+        "box": {
+          "x": 99,
+          "y": 713,
+          "width": 192,
+          "height": 52,
+          "top": 713,
+          "right": 291,
+          "bottom": 765,
+          "left": 99
+        },
+        "text": "Submit request ",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submit request "
+      },
+      "alerts": [
+        {
+          "text": "Your request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 578.5,
+            "width": 318,
+            "height": 93.5,
+            "top": 578.5,
+            "right": 354,
+            "bottom": 672,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    }
+  },
+  {
+    "account": "AUDIT-E",
+    "kind": "timeoff",
+    "width": 320,
+    "text": 200,
+    "route": "/app/requests?tab=new",
+    "count": 1,
+    "before": {
+      "scroll": 2532,
+      "documentHeight": 3376,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 567.515625,
+          "width": 248,
+          "height": 88,
+          "top": 567.515625,
+          "right": 284,
+          "bottom": 655.515625,
+          "left": 36
+        },
+        "text": "Submit request ",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "TEXTAREA",
+        "selector": "",
+        "text": "Fictional appointment"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 2532,
+      "documentHeight": 3376,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 567.515625,
+          "width": 248,
+          "height": 88,
+          "top": 567.515625,
+          "right": 284,
+          "bottom": 655.515625,
+          "left": 36
+        },
+        "text": "Submitting request…",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": "true",
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submitting request…"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 2532,
+      "documentHeight": 3735,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 926.515625,
+          "width": 248,
+          "height": 88,
+          "top": 926.515625,
+          "right": 284,
+          "bottom": 1014.515625,
+          "left": 36
+        },
+        "text": "Submit request ",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submit request "
+      },
+      "alerts": [
+        {
+          "text": "Your request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 526.515625,
+            "width": 248,
+            "height": 359,
+            "top": 526.515625,
+            "right": 284,
+            "bottom": 885.515625,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    }
+  },
+  {
+    "account": "AUDIT-E",
+    "kind": "availability",
+    "width": 390,
+    "text": 100,
+    "route": "/app/availability?week=2026-10-26",
+    "count": 1,
+    "before": {
+      "scroll": 1405,
+      "documentHeight": 2249,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 602,
+          "width": 318,
+          "height": 52,
+          "top": 602,
+          "right": 354,
+          "bottom": 654,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "INPUT",
+        "selector": "",
+        "text": ""
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-2",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-2",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-3",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-3",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-4",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-4",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-5",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-5",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-6",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-6",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-0",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-0",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 1405,
+      "documentHeight": 2249,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 602,
+          "width": 318,
+          "height": 52,
+          "top": 602,
+          "right": 354,
+          "bottom": 654,
+          "left": 36
+        },
+        "text": "Saving…",
+        "disabled": true,
+        "effectiveDisabled": true,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-2",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-2",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-3",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-3",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-4",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-4",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-5",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-5",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-6",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-6",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-0",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-0",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 1510,
+      "documentHeight": 2355,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 602.5,
+          "width": 318,
+          "height": 52,
+          "top": 602.5,
+          "right": 354,
+          "bottom": 654.5,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [
+        {
+          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": -772,
+            "width": 318,
+            "height": 89.5,
+            "top": -772,
+            "right": 354,
+            "bottom": -682.5,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-2",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-2",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-3",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-3",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-4",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-4",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-5",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-5",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-6",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-6",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-0",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-0",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        }
+      ]
+    }
+  },
+  {
+    "account": "AUDIT-E",
+    "kind": "availability",
+    "width": 320,
+    "text": 200,
+    "route": "/app/availability?week=2026-10-26",
+    "count": 1,
+    "before": {
+      "scroll": 3824,
+      "documentHeight": 4668,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 469.515625,
+          "width": 248,
+          "height": 132,
+          "top": 469.515625,
+          "right": 284,
+          "bottom": 601.515625,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "INPUT",
+        "selector": "",
+        "text": ""
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-2",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-2",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-3",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-3",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-4",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-4",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-5",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-5",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-6",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-6",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-0",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-0",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 3744,
+      "documentHeight": 4588,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 549.515625,
+          "width": 248,
+          "height": 52,
+          "top": 549.515625,
+          "right": 284,
+          "bottom": 601.515625,
+          "left": 36
+        },
+        "text": "Saving…",
+        "disabled": true,
+        "effectiveDisabled": true,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-2",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-2",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-3",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-3",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-4",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-4",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-5",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-5",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-6",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-6",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-0",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-0",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 4126,
+      "documentHeight": 5050,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 549.515625,
+          "width": 248,
+          "height": 132,
+          "top": 549.515625,
+          "right": 284,
+          "bottom": 681.515625,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [
+        {
+          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": -2569.484375,
+            "width": 248,
+            "height": 366,
+            "top": -2569.484375,
+            "right": 284,
+            "bottom": -2203.484375,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-2",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-2",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-3",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-3",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-4",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-4",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-5",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-5",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-6",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-6",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-0",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-0",
+          "value": "22:00",
+          "type": "time",
+          "checked": false
+        }
+      ]
+    }
+  },
+  {
+    "account": "AUDIT-LEAD",
+    "kind": "timeoff",
+    "width": 390,
+    "text": 100,
+    "route": "/app/requests?tab=new",
+    "count": 1,
+    "before": {
+      "scroll": 591,
+      "documentHeight": 1435,
+      "button": {
+        "box": {
+          "x": 99,
+          "y": 619.5,
+          "width": 192,
+          "height": 52,
+          "top": 619.5,
+          "right": 291,
+          "bottom": 671.5,
+          "left": 99
+        },
+        "text": "Submit request ",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "TEXTAREA",
+        "selector": "",
+        "text": "Fictional appointment"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 591,
+      "documentHeight": 1435,
+      "button": {
+        "box": {
+          "x": 89.5,
+          "y": 619.5,
+          "width": 211,
+          "height": 52,
+          "top": 619.5,
+          "right": 300.5,
+          "bottom": 671.5,
+          "left": 89.5
+        },
+        "text": "Submitting request…",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": "true",
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submitting request…"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 591,
+      "documentHeight": 1528,
+      "button": {
+        "box": {
+          "x": 99,
+          "y": 713,
+          "width": 192,
+          "height": 52,
+          "top": 713,
+          "right": 291,
+          "bottom": 765,
+          "left": 99
+        },
+        "text": "Submit request ",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submit request "
+      },
+      "alerts": [
+        {
+          "text": "Your request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 578.5,
+            "width": 318,
+            "height": 93.5,
+            "top": 578.5,
+            "right": 354,
+            "bottom": 672,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    }
+  },
+  {
+    "account": "AUDIT-LEAD",
+    "kind": "timeoff",
+    "width": 320,
+    "text": 200,
+    "route": "/app/requests?tab=new",
+    "count": 1,
+    "before": {
+      "scroll": 2484,
+      "documentHeight": 3328,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 567.515625,
+          "width": 248,
+          "height": 88,
+          "top": 567.515625,
+          "right": 284,
+          "bottom": 655.515625,
+          "left": 36
+        },
+        "text": "Submit request ",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "TEXTAREA",
+        "selector": "",
+        "text": "Fictional appointment"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 2484,
+      "documentHeight": 3328,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 567.515625,
+          "width": 248,
+          "height": 88,
+          "top": 567.515625,
+          "right": 284,
+          "bottom": 655.515625,
+          "left": 36
+        },
+        "text": "Submitting request…",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": "true",
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submitting request…"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 2484,
+      "documentHeight": 3687,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 926.515625,
+          "width": 248,
+          "height": 88,
+          "top": 926.515625,
+          "right": 284,
+          "bottom": 1014.515625,
+          "left": 36
+        },
+        "text": "Submit request ",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submit request "
+      },
+      "alerts": [
+        {
+          "text": "Your request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 526.515625,
+            "width": 248,
+            "height": 359,
+            "top": 526.515625,
+            "right": 284,
+            "bottom": 885.515625,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "startDate",
+          "value": "2026-10-27",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "endDate",
+          "value": "2026-10-28",
+          "type": "date",
+          "checked": false
+        },
+        {
+          "name": "reason",
+          "value": "Fictional appointment",
+          "type": "textarea"
+        }
+      ]
+    }
+  },
+  {
+    "account": "AUDIT-LEAD",
+    "kind": "availability",
+    "width": 390,
+    "text": 100,
+    "route": "/app/availability?week=2026-10-26",
+    "count": 1,
+    "before": {
+      "scroll": 990,
+      "documentHeight": 1834,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 601.5,
+          "width": 318,
+          "height": 52,
+          "top": 601.5,
+          "right": 354,
+          "bottom": 653.5,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "INPUT",
+        "selector": "",
+        "text": ""
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 990,
+      "documentHeight": 1834,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 601.5,
+          "width": 318,
+          "height": 52,
+          "top": 601.5,
+          "right": 354,
+          "bottom": 653.5,
+          "left": 36
+        },
+        "text": "Saving…",
+        "disabled": true,
+        "effectiveDisabled": true,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 1095,
+      "documentHeight": 1939,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 602,
+          "width": 318,
+          "height": 52,
+          "top": 602,
+          "right": 354,
+          "bottom": 654,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [
+        {
+          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": -385,
+            "width": 318,
+            "height": 89.5,
+            "top": -385,
+            "right": 354,
+            "bottom": -295.5,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    }
+  },
+  {
+    "account": "AUDIT-LEAD",
+    "kind": "availability",
+    "width": 320,
+    "text": 200,
+    "route": "/app/availability?week=2026-10-26",
+    "count": 1,
+    "before": {
+      "scroll": 3026,
+      "documentHeight": 3870,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 469.515625,
+          "width": 248,
+          "height": 132,
+          "top": 469.515625,
+          "right": 284,
+          "bottom": 601.515625,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "INPUT",
+        "selector": "",
+        "text": ""
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 2946,
+      "documentHeight": 3790,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 549.515625,
+          "width": 248,
+          "height": 52,
+          "top": 549.515625,
+          "right": 284,
+          "bottom": 601.515625,
+          "left": 36
+        },
+        "text": "Saving…",
+        "disabled": true,
+        "effectiveDisabled": true,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 3328,
+      "documentHeight": 4252,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 549.515625,
+          "width": 248,
+          "height": 132,
+          "top": 549.515625,
+          "right": 284,
+          "bottom": 681.515625,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [
+        {
+          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": -1859.484375,
+            "width": 248,
+            "height": 366,
+            "top": -1859.484375,
+            "right": 284,
+            "bottom": -1493.484375,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    }
+  }
+]
