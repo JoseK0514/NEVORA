@@ -566,3 +566,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* AL4-34: the collapsed sidebar shows the wordmark alone. */
   html body .app-shell.nevora-portal.nevora-portal .sidebar[data-collapsed="true"] .login-brand-module { display: none; }
 }
+@media (min-width: 761px) and (max-width: 899px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* WR4-19: on the narrowest desktops the account button is its avatar and chevron, and Search drops its ⌘K hint, so the trail keeps the page's whole name. */
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .portal-account-menu .nevora-action-menu-trigger > span:not(.portal-account-avatar) { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger > kbd { display: none; }
+}

@@ -270,3 +270,87 @@ WR4-06 is still open in three places, so it stays a P2:
 - `/api/manager/inbox-count` returns 404, as expected on this branch.
 
 Open: 0 P0, 3 P1, 2 P2
+
+## Round 5 (exit round)
+
+October 19, 2026. I measured on the preview at `8012d97`, and the preview's source copy matches that commit. Read only: I changed no code or data and pressed nothing that saves. I opened More sheets and followed Profile links, and collapsed the sidebar in my own browser only. Load average was 9–13. Every page loaded on its first or second try.
+
+Evidence: `R5` = `S/r5/` (`data/` holds JSON per account, `shots/` holds screenshots of every flagged state, and `crops/`). Scripts: `r5/big3.mjs` and the analyser `r5/an.py`.
+
+`big3` checks every band in every state:
+- each title word for a break inside the word
+- each band child for running past the band's text edge
+- sideways scroll
+- the band cap at 100% text (200px)
+- each Request pages label and each chip or tab label for a break inside the word
+- each trail crumb for being cut
+
+Coverage:
+
+| Run | Accounts and pages | Text | Widths |
+|---|---|---|---|
+| Full sweep, Chromium | Owner: 16 pages. Manager: 11. AUDIT-E: 14 | 100, 125, 150, 200% | 761, 768, 1023, 1024, 1179, 1180, 1440 (1,120 states) |
+| Lead | AUDIT-LEAD: 11 pages | 100%, 200% | same 7 widths |
+| Home and Profile | AUDIT-ON, AUDIT-BREAK, AUDIT-LONG | 100, 150, 200% | same 7 widths |
+| Sidebar collapsed | Manager: 5 pages. Employee: 4 | 100%, 200% | 1440, 1024, 768 |
+| Header | AUDIT-LONG vs AUDIT-M | 100% | 761–1440 |
+| My schedule and Profile | AUDIT-E | 100% | 1099–1440 |
+| Phones | All four roles | 100% | 320, 390 |
+| WebKit spot checks | Owner: Inbox, Schedule activity, Timecards, Team. Employee: Home, My pay, Shift requests, My schedule | 100%, 200% | 1440, 1024, 768, 761 |
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR4-06 | **Fixed** | Every sibling tab puts its title at **y=181**, at every width from 761 to 1440, in all four tab families:<ul><li>Owner Time and pay (Timecards, Payroll runs, Time exports, Payroll settings).</li><li>Manager Time and pay.</li><li>Employee Requests (Overview, Time off, Shift requests, Availability).</li><li>Employee Pay (My pay, My time, Timecards).</li></ul>Bands are 184px from 1024. At 761–1023 they range from 172 to 200px, all within the cap. |
+| WR4-14 | **Fixed** | My schedule week rows at 1100, 1150, 1180 and 1279: position is on its own line (location y=570, position y=592) and the `::before` is `none`. From 1280 they share one line with the "·" (both at y=581). At 1099 it is stacked with no dot. |
+| WR4-17 | **Fixed** | Home's view chips scroll sideways at every desktop width. At 125% 768 (and 150% 768, 200% 761) the chip row is 420px, exactly the text area; it scrolls and nothing is cut. |
+| WR4-18 | **Fixed** | No Request pages label breaks inside a word in any of the 56 Inbox states (both filters, 4 text sizes, 7 widths). It is a 3-row list (164px) where three across won't fit: 761–1180 except 1023, and from 150% text. It is three across (60px) at 1023 and 1440 at 100%. |
+| WR4-16 | Coordinator's phone fix; not counted | **Still not fixed.** At 320, AUDIT-E and AUDIT-LEAD both show "Mon, October 19, 2026" as a 157×39px span (two lines) in a 157px column, so it breaks inside "2026". At 390 it fits (167px, one line). |
+| WR4-02 | Waiting on the Profile merge; not counted | Manager and Owner More › Profile still land on `/app` at 320 and 390. |
+| WR4-05 | Kept by decision | Unchanged. |
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| WR4-19 | Desktop header · Owner at 100% text (Manager from 125%) · 761–768; Chromium and WebKit | Last crumb of the trail (the page's own name) | Below 1101 the trail shows only the page name. The Owner's header leaves it about 92px before Search (Search at x≈354), so longer page names are cut with an ellipsis:<ul><li>"Team overv…" and "Payroll setti…" at 768 and 761.</li><li>"Schedule activity" cut at 768 and 761 (also in WebKit).</li><li>"Time exports" cut at 761.</li></ul>The Manager ("Morgan Rivera") fits at 100% but is cut the same way at 125%. Nothing is lost, because the band title below repeats the name, but the trail no longer names the page. That's the round-1 rule for D-4. Judgment call: the ellipsis is designed (TCD-17), so this is P2. | `R5/crops/WR4-19-trail-768.png` (first two rows) | `premium-desktop.css:430` (the last crumb ellipsizes) next to Search (`portal-gusto.css:372`, 139px with ⌘K) and the account name (8rem at `:431`) | Below 900px, show the account trigger as avatar and chevron only (hide the name span; the button already has its label), and drop the "⌘K" hint from Search. That frees about 160px, so "Payroll settings" and "Schedule activity" fit at 761. | P2 |
+
+### Full sweep: checked and correct
+
+- **Band titles at 100–200% text:** across all 1,120 Owner, Manager and Employee states, plus Lead, AUDIT-ON, AUDIT-BREAK and AUDIT-LONG:
+  - no title word breaks inside the word
+  - no band child runs past the band's text edge
+  - no page scrolls sideways
+  - no band is over 200px at 100% text
+
+  The highest at 100% are 200px (Owner Payroll runs, Time exports and Payroll settings at 768, Employee Availability and My pay at 768), then 198px (Shift requests at 768) and 196px (Attendance). Controls move under the title at large text and scroll at their own width.
+- **Breakpoints:**
+  - The Home grid switches at 1179/1180.
+  - Inbox list and pane at 1023/1024.
+  - Team table at 1023/1024.
+  - My schedule's side column at 1099/1100.
+  - Profile's two cards at 1023/1024 (card tops 263 and 263 at 1024 and 1440).
+  - Account name cap: 208px for AUDIT-LONG up to 1100, 272px from 1101. Manager 177px. The trail's last crumb is a full 40px for "Home" from 761.
+- **Collapsed sidebar** at 1440, 1024 and 768: every band and tab row starts at x=112, tab text at x=148, the Time off page at x=112. No sideways scroll.
+- **Roles:**
+  - Lead matches Employee on every band.
+  - Owner-only Payroll runs and Payroll settings sit on the shared Time and pay title line.
+  - Manager is sent Home from Payroll (round 1, unchanged).
+- **WebKit spot checks:** same results as Chromium for Owner Inbox, Schedule activity, Timecards and Team, and for Employee Home, My pay, Shift requests and My schedule, at 100% and 200%. The only flags are WR4-19 and workspace-name ellipses.
+- **Phones at 320 and 390, against the pre-Phase 4 capture:** Manager and Owner Home, Inbox, Team, Timecards, Time exports, Attendance and Schedule match apart from the changes already explained:
+  - Plan ahead is 40px shorter.
+  - Team tools is 20px shorter at 390.
+  - Team has the new spans.
+  - The Inbox has one screen-reader-only span.
+  - Schedule's height differs by 3–4px, which is data (seen since round 1).
+
+  Employee and Lead: More sheet 335px, Profile opens, no sideways scroll. Owner More: Close stays in view.
+
+### Gaps
+
+- The trail check also flags the workspace name ("Northside QA Workforce") being ellipsized at large text. It has a `title` and is designed to shorten, so it is not filed.
+- I did not check the trail at 1101–1179 with 125% text and above separately. It shortens the same way as the band repeats the name.
+- `/api/manager/inbox-count` returns 404, as expected on this branch.
+
+Open: 0 P0, 0 P1, 1 P2
