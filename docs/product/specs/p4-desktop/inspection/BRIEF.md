@@ -35,13 +35,15 @@ Employee and Lead desktop is not in this round; it comes after Phase 3 closes.
 - Preview: read the URL from `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS--claude-worktrees-p4-desktop-240fe0/55a133fe-0aa8-4472-a3aa-f939856da789/scratchpad/preview/evidence-2026-10-19T13-09-58-832Z/access.json` (`url`). The password is in the same file; never print it.
 - Signed-in browser states: `…/scratchpad/preview/state/<ACCOUNT>.json` (use as Playwright `storageState`; no need to sign in).
 - Source: `/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/p4-desktop-240fe0`. Phase 4 styles: `src/app/app/premium-desktop.css`; Inbox: `src/components/manager-inbox.tsx`; shell: `src/components/app-shell.tsx`, `src/lib/navigation.ts`.
-- Playwright: `/Users/josek0514/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/index.mjs` (Chromium, Firefox, WebKit).
+- Playwright: `/Users/josek0514/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/index.mjs` (Chromium, WebKit).
 - Put your scripts and screenshots under `…/scratchpad/inspect/<area>/`. Run one browser process at a time against the preview; parallel runs stall the dev server.
 
-## The matrix for this round
+## The matrix for this round (with Jose's cuts of Oct 19)
 
-Widths 768, 1024, 1440 (desktop), plus a regression look at 320, 360, 390, 430 and 844×390: phones and landscape phones must look exactly as before Phase 4. Text size 100, 125, 150 and 200% (`document.documentElement.style.fontSize`) after the page has loaded. Chromium, Firefox and WebKit. States: loading, ready, empty, offline, paused (window blurred), failed read (block `/api/manager/*` in the browser), signed out mid-use (force a 401), large data where the preview has it. Keyboard and focus, reduced motion. Submissions: none in this round; don't press anything that saves.
+`checks.mjs` already swept every width, text size (100–200%) and Chromium and WebKit for overflow, the text floor, target sizes, layout shift, console errors and axe; its results are in `inspection/checks-round-N.txt`. Don't repeat that sweep. Spend your time on judgment: alignment, wording, states, focus, behaviour and consistency, at **768, 1024 and 1440**, plus **320 and 390** to catch phone regressions, in **Chromium**, with **WebKit spot checks**. No Firefox, and no Firefox-only findings. Text size: look at 200% on the pages where layout changes most (Home, Inbox, Team). States: loading, ready, empty, offline, paused (window blurred), failed read (block `/api/manager/*` in the browser), signed out mid-use (force a 401), large data where the preview has it. Keyboard and focus, reduced motion. Submissions: none in this round; don't press anything that saves.
+
+**Shell ownership.** This session inspects the desktop shell for every page and role: the sidebar, the desktop account menu and the desktop header (search, bell, account, trail). Check them on the pages above and on a sample of other pages (`/app/updates`, `/app/reports`, `/app/settings`, and as Employee `AUDIT-E` and Lead `AUDIT-LEAD`: `/app`, `/app/schedule`, `/app/my-time`).
 
 ## Your report
 
-Write `docs/product/specs/p4-desktop/inspection/<area>.md` in this worktree, in the format of `BRIEF.md`: verdict, findings worst first with measurements, screenshots, `file:line` and a specific fix, then what you checked and found correct. Areas: `alignment`, `stability`, `type-colour-copy`, `interaction-states`, `widths-roles`.
+Write `docs/product/specs/p4-desktop/inspection/<area>.md` in this worktree, in the format of `BRIEF.md`: verdict, findings worst first with measurements, screenshots, `file:line` and a specific fix, then a short bullet list of what you checked and found correct. Areas: `alignment`, `stability`, `type-colour-copy`, `interaction-states`, `widths-roles`.

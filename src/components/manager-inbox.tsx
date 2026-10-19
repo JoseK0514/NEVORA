@@ -3,7 +3,7 @@ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import Link from "next/link";
 import { useToday } from "./manager-today";
-import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowsClockwiseIcon, ArrowsLeftRightIcon, CalendarBlankIcon, CalendarMinusIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
@@ -162,6 +162,11 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const wide = useSyncExternalStore(wideSubscribe, () => window.matchMedia(WIDE).matches, () => false);
   const [selectedKey, setSelectedKey] = useState<string | null>(() => typeof window === "undefined" ? null : new URL(window.location.href).searchParams.get("item"));
   const focusPane = useRef(false);
+  // ST-P4-03: once the list has shown, a pause, an offline spell, a refresh or a failed read keeps both columns
+  // and the list's last height on desktop (as Home does), so nothing collapses and the scroll position holds.
+  const listColumn = useRef<HTMLDivElement>(null);
+  const lastListHeight = useRef(0);
+  const [hasShown, setHasShown] = useState(false);
   // Follow the URL when it changes underneath us (Back, a new link).
   const [urlFilter, setUrlFilter] = useState(initialFilter);
   if (urlFilter !== initialFilter) { setUrlFilter(initialFilter); setFilter(initialFilter); }
@@ -198,6 +203,21 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
     url.searchParams.set("item", entry.key);
     window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
   };
+  const showing = !!ready && total > 0;
+  if (showing && !hasShown) setHasShown(true);
+  useLayoutEffect(() => {
+    const column = listColumn.current;
+    if (!column) return;
+    if (showing) {
+      column.style.minHeight = "";
+      const measure = () => { lastListHeight.current = column.getBoundingClientRect().height; };
+      measure();
+      const observer = new ResizeObserver(measure);
+      observer.observe(column);
+      return () => observer.disconnect();
+    }
+    column.style.minHeight = !ready && lastListHeight.current ? `${lastListHeight.current}px` : "";
+  }, [showing, ready]);
   useEffect(() => {
     if (!focusPane.current) return;
     focusPane.current = false;
@@ -221,9 +241,9 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
       </div> : null} />
     <KitStack>
       <Selection.Provider value={{ selected: wide && current ? current.key : null, select }}>
-      {/* The pane's column is there while loading too, so the list doesn't change width when items arrive. */}
-      <div className="inbox-columns" data-detail={(ready && total) || (!ready && (connection === "loading" || connection === "reconnecting")) ? "true" : undefined}>
-      <div className="inbox-list-column">
+      {/* The pane's column is there in every state but "all caught up", so the list never changes width. */}
+      <div className="inbox-columns" data-detail={!ready || total ? "true" : undefined}>
+      <div className="inbox-list-column" ref={listColumn}>
       {!ready ? <Card><div className="inbox-status nv-card__body">
         {/* ST-26: the status line comes first, so it stays put when the placeholder rows go. */}
         <p role="status">{statusText[connection]}</p>
@@ -263,12 +283,12 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         </Card> : null}
         {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
       </>}
+      {/* Desktop only, after the list. It appears once the list has shown, so it never moves down as items arrive. */}
+      {ready || hasShown ? <AllRequests /> : null}
       </div>
       <div className="inbox-side-column">
         {ready && total ? current ? <InboxDetail entry={current} /> : null
-          : !ready && (connection === "loading" || connection === "reconnecting") ? <DetailPlaceholder /> : null}
-        {/* Only once the list is in, so it never moves down as items arrive (narrow desktop shows it under the list). */}
-        {ready ? <AllRequests /> : null}
+          : !ready ? <DetailPlaceholder still={connection !== "loading" && connection !== "reconnecting"} /> : null}
       </div>
       </div>
       </Selection.Provider>
@@ -308,9 +328,9 @@ function InboxDetail({ entry }: { entry: InboxEntry }) {
 }
 
 /** While the Inbox loads, the pane holds its place. */
-function DetailPlaceholder() {
+function DetailPlaceholder({ still = false }: { still?: boolean }) {
   return <section className="nv-card inbox-detail inbox-detail--placeholder" aria-hidden="true">
-    <div className="premium-skeleton"><span className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span></div>
+    <div className={still ? "premium-skeleton premium-skeleton--still" : "premium-skeleton"}><span className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span></div>
   </section>;
 }
 
