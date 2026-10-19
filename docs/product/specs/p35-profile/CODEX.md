@@ -58,9 +58,9 @@ The UI reserves one row per topic while loading, so the count per role must stay
 | id | Label | Detail | Owner | Manager |
 |---|---|---|---|---|
 | `time-off` | Time-off requests | When someone asks for time off | ✓ | ✓ |
-| `shift-changes` | Shift swaps and cover | When someone asks to swap or give up a shift | ✓ | ✓ |
+| `shift-changes` | Shift requests | When someone asks to swap or give up a shift | ✓ | ✓ |
 | `unable-to-work` | Unable to work | When someone can’t make a shift | ✓ | ✓ |
-| `clock-review` | Clock-ins to review | When a punch needs your review | ✓ | ✓ |
+| `clock-review` | Clock-ins to review | When a clock-in needs your review | ✓ | ✓ |
 | `payroll-ready` | Payroll ready to review | When a pay period is ready for you | ✓ (payroll on) | – |
 
 If payroll is off for an Owner, either drop `payroll-ready` and tell the UI session to make the count depend on payroll, or keep it and return `on: false`. The UI already accepts any count; only the loading rows assume 5 and 4.

@@ -23,7 +23,7 @@
     },
     {
       "id": "shift-changes",
-      "label": "Shift swaps and cover",
+      "label": "Shift requests",
       "detail": "When someone asks to swap or give up a shift",
       "on": true
     },
@@ -36,7 +36,7 @@
     {
       "id": "clock-review",
       "label": "Clock-ins to review",
-      "detail": "When a punch needs your review",
+      "detail": "When a clock-in needs your review",
       "on": false
     }
   ]

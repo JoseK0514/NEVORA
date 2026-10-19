@@ -11,9 +11,9 @@ export type ManagerAlertTopic = { id: string; label: string; detail: string; on:
  * text), so they take the ready list's space at every width and text size; what is shown always comes from the read. */
 const TOPICS: ManagerAlertTopic[] = [
   { id: 'time-off', label: 'Time-off requests', detail: 'When someone asks for time off', on: false },
-  { id: 'shift-changes', label: 'Shift swaps and cover', detail: 'When someone asks to swap or give up a shift', on: false },
+  { id: 'shift-changes', label: 'Shift requests', detail: 'When someone asks to swap or give up a shift', on: false },
   { id: 'unable-to-work', label: 'Unable to work', detail: 'When someone can’t make a shift', on: false },
-  { id: 'clock-review', label: 'Clock-ins to review', detail: 'When a punch needs your review', on: false },
+  { id: 'clock-review', label: 'Clock-ins to review', detail: 'When a clock-in needs your review', on: false },
   { id: 'payroll-ready', label: 'Payroll ready to review', detail: 'When a pay period is ready for you', on: false },
 ];
 export const ALERT_TOPIC_SIZING = { owner: TOPICS, manager: TOPICS.slice(0, 4) } as const;
