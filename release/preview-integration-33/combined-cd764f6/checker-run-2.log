@@ -1,0 +1,6 @@
+{"name":"profile","passed":16,"failed":0,"cells":16,"exit":0}
+{"name":"availability","passed":8,"failed":0,"cells":8,"exit":0}
+{"name":"my-pay","passed":16,"failed":0,"cells":16,"exit":0}
+{"name":"payroll","passed":8,"failed":0,"cells":8,"exit":0}
+{"name":"all-role-home","passed":18,"failed":2,"cells":20,"exit":1}
+{"name":"management-inbox","passed":4,"failed":0,"cells":4,"exit":0}

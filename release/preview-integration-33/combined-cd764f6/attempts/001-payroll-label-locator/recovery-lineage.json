@@ -1,0 +1,702 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "preparedAt": "2026-10-19T23:02:06.693792+00:00",
+  "reason": "The name-based locator stopped resolving the existing button when its visible pending label became Saving\u2026; no application assertion had failed. Pin the exact connected DOM node before activation and verify node identity while pending.",
+  "originalScript": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/attempts/001-payroll-label-locator/combined-extra-cases.mjs",
+  "originalSha256": "7fda24f911a49b966725dcbc68d70570e57fcdc0637e0e2358919b34b88ee620",
+  "recoveryScript": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/payroll-locator-recovery/combined-extra-cases.mjs",
+  "recoverySha256": "5bfa141ab7093f32ea64d51825d00ad4af73712653c94f8f324e0e851eaf0072",
+  "coordinator": {
+    "pid": 132422,
+    "signal": "SIGSTOP",
+    "verifiedCmdline": [
+      "node",
+      "/workspace/nevora-inspection-runtime/final-verification/combined-stage.mjs"
+    ],
+    "verifiedCwd": "/workspace/verify-preview-33",
+    "childPid": 132441,
+    "childContinues": true
+  },
+  "coverage": "Replay incomplete payroll-settings-focus engine/size configurations only; retain original raw rows, errors and crops. Exactly152 distinct required cells; replays are not extra successes.",
+  "originalWorkerEndedAt": "2026-10-19T23:10:05.646256+00:00",
+  "originalDistinctCells": 152,
+  "originalCompletedPassCells": 148,
+  "originalIncompleteCells": [
+    {
+      "key": "payroll-settings-focus|chromium|QAOWNER|390|844|100|default",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:34:49)\n    at pending (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:56:236)\n    at async register.accounts (/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs:31:337)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:145:596",
+      "states": {
+        "execution-error": {
+          "path": "/app/settings/payroll",
+          "scrollY": 2719,
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 390,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nv-btn",
+            "text": "Saving\u2026",
+            "box": {
+              "x": 16,
+              "y": 398,
+              "width": 358,
+              "height": 52,
+              "top": 398,
+              "right": 374,
+              "bottom": 450,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": "true"
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Payroll settings",
+              "box": {
+                "x": 16,
+                "y": -2595,
+                "width": 358,
+                "height": 36,
+                "top": -2595,
+                "right": 374,
+                "bottom": -2559,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "payroll-company-defaults",
+              "cls": "wb-section-title",
+              "text": "Company defaults",
+              "box": {
+                "x": 16,
+                "y": -2455,
+                "width": 162.359375,
+                "height": 25,
+                "top": -2455,
+                "right": 178.359375,
+                "bottom": -2430,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Employee exceptions",
+              "box": {
+                "x": 36,
+                "y": 486,
+                "width": 169.15625,
+                "height": 22,
+                "top": 486,
+                "right": 205.15625,
+                "bottom": 508,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Payroll access",
+              "box": {
+                "x": 36,
+                "y": 1312,
+                "width": 114.4375,
+                "height": 22,
+                "top": 1312,
+                "right": 150.4375,
+                "bottom": 1334,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Settings history",
+              "box": {
+                "x": 36,
+                "y": 1530,
+                "width": 122.921875,
+                "height": 22,
+                "top": 1530,
+                "right": 158.921875,
+                "bottom": 1552,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Timecards\nPayroll runs\nTime exports\nPayroll settings\nPayroll settings\n\nSet company defaults, effective dates and authorized employee exceptions.\n\nRecording action\u2026\n\nKeep this reference until the server confirms the result.\n\n4242a5e4-ec72-44c0-b389-ba352e11cd49\nCheck action reference\nCompany defaults\n\nRevision 1 \u00b7 Currency USD\n\nCompany and documents\nCompany name on documents\nDefault statement language\nEnglish\nEspa\u00f1ol\nPayroll provider preference\nNo provider preference saved\nADP RUN\nQuickBooks Payroll\nPaychex\nGusto\nOther provider or accountant\n\nProvider selection records a preference. It does not connect an account or verify a provider format. All sources currently use the neutral payroll import.\n\nPay schedule\nFrequency\nWeekly\nEvery two weeks\nTwice a month\nMonthly\nSchedule anchor date\nPayday after period end\nDays after the period ends.\n\nWeekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days 1\u201315 and 16\u2013month end; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.\n\nDeductions and contributions\n\nThese rules record company policy and employee elections. Actual amounts must come from the provider import. Missing configuration is not a zero tax or an exemption.\n\nNo rules configured. Imported payroll amounts are still required.\n\nAdd rule\nAutomation\n\nPreparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.\n\nPrepare scheduled drafts\nPublish statements after an authorized approval\nQueue private payroll notices\nPreparation reminder window\nRemind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.\n\nThe notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.\n\nNotice delivery is disabled. Private notice requests may be queued, but this environment will not send them.\n\nPayment instructions\nOutput profile\nNo payment output configured\nNeutral instructions \u00b7 compatibility unverified\nDesired bank channel\nNo channel preference saved\nPopular Web Cash Manager \u00b7 text\nPopular Web Cash Manager \u00b7 NACHA\nPopular commercial \u00b7 manual\nOther bank or channel\n\nChannel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.\n\nReview the change\nEffective date\nReason for change\nFuture draft impact\n\nNo affected future drafts were returned by the server.\n\nApproved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.\n\nSaving\u2026\nEmployee exceptions\n\nEmployees inherit company defaults unless an authorized exception takes effect.\n\nEmployee\nChoose an employee\nCasey Rivera\nAlexandra Rivera\nTaylor Rivera\nMar\u00eda Jos\u00e9 Rivera Santiago With A Long Name\nMorgan Rivera\nJordan Rivera\nRiley Rivera\nFictional Owner\nMar\u00eda Jos\u00e9 Fictional QA\nRobin Fictional QA\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\n\nException revision 0 \u00b7 Provider imports continue to determine actual gross and net pay.\n\nStatement language\nInherit company language\nEnglish\nEspa\u00f1ol\nInherit company deduction and contribution rules\nException effective date\nException reason\nFuture draft impact\n\nNo affected future drafts were returned by the server.\n\nSave employee exception\nPayroll access\n\nManager time-review permission does not grant access to financial records.\n\nGrant recipient\nChoose an employee\nCasey Rivera\nAlexandra Rivera\nTaylor Rivera\nMar\u00eda Jos\u00e9 Rivera Santiago With A Long Name\nMorgan Rivera\nJordan Rivera\nRiley Rivera\nFictional Owner\nMar\u00eda Jos\u00e9 Fictional QA\nRobin Fictional QA\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nSettings history\n\nSaved revisions record their effective date and reason.\n\nRevision 1 \u00b7 Effective Thu,\u00a0Jan\u00a01, 2026\n\nFictional test setup\n\nRecorded Oct\u00a019, 2026, 10:52\u00a0PM\n\nOnly the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. Notice delivery is disabled. Private notice requests may be queued, but this environment will not send them.",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-payroll-settings-focus-QAOWNER-390x844-t100-default-execution-error.png"
+        }
+      }
+    },
+    {
+      "key": "payroll-settings-focus|chromium|QAOWNER|320|844|200|default",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:34:49)\n    at pending (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:56:236)\n    at async register.accounts (/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs:31:337)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:145:596",
+      "states": {
+        "execution-error": {
+          "path": "/app/settings/payroll",
+          "scrollY": 8468,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 84.515625,
+            "bottom": 753
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nv-btn",
+            "text": "Saving\u2026",
+            "box": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 52,
+              "top": 379.515625,
+              "right": 304,
+              "bottom": 431.515625,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": "true"
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Payroll settings",
+              "box": {
+                "x": 16,
+                "y": -8328.484375,
+                "width": 288,
+                "height": 144,
+                "top": -8328.484375,
+                "right": 304,
+                "bottom": -8184.484375,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "payroll-company-defaults",
+              "cls": "wb-section-title",
+              "text": "Company defaults",
+              "box": {
+                "x": 16,
+                "y": -7840.484375,
+                "width": 288,
+                "height": 100,
+                "top": -7840.484375,
+                "right": 304,
+                "bottom": -7740.484375,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Employee exceptions",
+              "box": {
+                "x": 36,
+                "y": 467.515625,
+                "width": 248,
+                "height": 88,
+                "top": 467.515625,
+                "right": 284,
+                "bottom": 555.515625,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Payroll access",
+              "box": {
+                "x": 36,
+                "y": 2495.515625,
+                "width": 211.875,
+                "height": 44,
+                "top": 2495.515625,
+                "right": 247.875,
+                "bottom": 2539.515625,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Settings history",
+              "box": {
+                "x": 36,
+                "y": 2963.515625,
+                "width": 232.84375,
+                "height": 44,
+                "top": 2963.515625,
+                "right": 268.84375,
+                "bottom": 3007.515625,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Timecards\nPayroll runs\nTime exports\nPayroll settings\nPayroll settings\n\nSet company defaults, effective dates and authorized employee exceptions.\n\nRecording action\u2026\n\nKeep this reference until the server confirms the result.\n\n8793bbf1-aa85-49b4-843c-f34feb47f55e\nCheck action reference\nCompany defaults\n\nRevision 1 \u00b7 Currency USD\n\nCompany and documents\nCompany name on documents\nDefault statement language\nEnglish\nEspa\u00f1ol\nPayroll provider preference\nNo provider preference saved\nADP RUN\nQuickBooks Payroll\nPaychex\nGusto\nOther provider or accountant\n\nProvider selection records a preference. It does not connect an account or verify a provider format. All sources currently use the neutral payroll import.\n\nPay schedule\nFrequency\nWeekly\nEvery two weeks\nTwice a month\nMonthly\nSchedule anchor date\nPayday after period end\nDays after the period ends.\n\nWeekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days 1\u201315 and 16\u2013month end; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.\n\nDeductions and contributions\n\nThese rules record company policy and employee elections. Actual amounts must come from the provider import. Missing configuration is not a zero tax or an exemption.\n\nNo rules configured. Imported payroll amounts are still required.\n\nAdd rule\nAutomation\n\nPreparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.\n\nPrepare scheduled drafts\nPublish statements after an authorized approval\nQueue private payroll notices\nPreparation reminder window\nRemind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.\n\nThe notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.\n\nNotice delivery is disabled. Private notice requests may be queued, but this environment will not send them.\n\nPayment instructions\nOutput profile\nNo payment output configured\nNeutral instructions \u00b7 compatibility unverified\nDesired bank channel\nNo channel preference saved\nPopular Web Cash Manager \u00b7 text\nPopular Web Cash Manager \u00b7 NACHA\nPopular commercial \u00b7 manual\nOther bank or channel\n\nChannel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.\n\nReview the change\nEffective date\nReason for change\nFuture draft impact\n\nNo affected future drafts were returned by the server.\n\nApproved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.\n\nSaving\u2026\nEmployee exceptions\n\nEmployees inherit company defaults unless an authorized exception takes effect.\n\nEmployee\nChoose an employee\nCasey Rivera\nAlexandra Rivera\nTaylor Rivera\nMar\u00eda Jos\u00e9 Rivera Santiago With A Long Name\nMorgan Rivera\nJordan Rivera\nRiley Rivera\nFictional Owner\nMar\u00eda Jos\u00e9 Fictional QA\nRobin Fictional QA\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\n\nException revision 0 \u00b7 Provider imports continue to determine actual gross and net pay.\n\nStatement language\nInherit company language\nEnglish\nEspa\u00f1ol\nInherit company deduction and contribution rules\nException effective date\nException reason\nFuture draft impact\n\nNo affected future drafts were returned by the server.\n\nSave employee exception\nPayroll access\n\nManager time-review permission does not grant access to financial records.\n\nGrant recipient\nChoose an employee\nCasey Rivera\nAlexandra Rivera\nTaylor Rivera\nMar\u00eda Jos\u00e9 Rivera Santiago With A Long Name\nMorgan Rivera\nJordan Rivera\nRiley Rivera\nFictional Owner\nMar\u00eda Jos\u00e9 Fictional QA\nRobin Fictional QA\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nSettings history\n\nSaved revisions record their effective date and reason.\n\nRevision 1 \u00b7 Effective Thu,\u00a0Jan\u00a01, 2026\n\nFictional test setup\n\nRecorded Oct\u00a019, 2026, 10:52\u00a0PM\n\nOnly the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. Notice delivery is disabled. Private notice requests may be queued, but this environment will not send them.",
+          "layoutShiftObserverSupported": true,
+          "crop": "crops/chromium-payroll-settings-focus-QAOWNER-320x844-t200-default-execution-error.png"
+        }
+      }
+    },
+    {
+      "key": "payroll-settings-focus|webkit|QAOWNER|390|844|100|default",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:34:49)\n    at pending (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:56:236)\n    at async register.accounts (/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs:31:337)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:145:596",
+      "states": {
+        "execution-error": {
+          "path": "/app/settings/payroll",
+          "scrollY": 2405,
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "usable": {
+            "top": 76,
+            "bottom": 768
+          },
+          "documentWidth": 390,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nv-btn",
+            "text": "Saving\u2026",
+            "box": {
+              "x": 16,
+              "y": 712,
+              "width": 358,
+              "height": 52,
+              "top": 712,
+              "right": 374,
+              "bottom": 764,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": "true"
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Payroll settings",
+              "box": {
+                "x": 16,
+                "y": -2281,
+                "width": 358,
+                "height": 36,
+                "top": -2281,
+                "right": 374,
+                "bottom": -2245,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "payroll-company-defaults",
+              "cls": "wb-section-title",
+              "text": "Company defaults",
+              "box": {
+                "x": 16,
+                "y": -2141,
+                "width": 164.1875,
+                "height": 25,
+                "top": -2141,
+                "right": 180.1875,
+                "bottom": -2116,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Employee exceptions",
+              "box": {
+                "x": 36,
+                "y": 800,
+                "width": 170.046875,
+                "height": 22,
+                "top": 800,
+                "right": 206.046875,
+                "bottom": 822,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Payroll access",
+              "box": {
+                "x": 36,
+                "y": 1626,
+                "width": 114.953125,
+                "height": 22,
+                "top": 1626,
+                "right": 150.953125,
+                "bottom": 1648,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Settings history",
+              "box": {
+                "x": 36,
+                "y": 1844,
+                "width": 125.421875,
+                "height": 22,
+                "top": 1844,
+                "right": 161.421875,
+                "bottom": 1866,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Timecards\nPayroll runs\nTime exports\nPayroll settings\nPayroll settings\n\nSet company defaults, effective dates and authorized employee exceptions.\n\nRecording action\u2026\n\nKeep this reference until the server confirms the result.\n\n68e23a3e-bb48-4901-b662-706b07005f66\nCheck action reference\nCompany defaults\n\nRevision 1 \u00b7 Currency USD\n\nCompany and documents\nCompany name on documents\nDefault statement language\nPayroll provider preference\n\nProvider selection records a preference. It does not connect an account or verify a provider format. All sources currently use the neutral payroll import.\n\nPay schedule\nFrequency\nSchedule anchor date\nPayday after period end\nDays after the period ends.\n\nWeekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days 1\u201315 and 16\u2013month end; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.\n\nDeductions and contributions\n\nThese rules record company policy and employee elections. Actual amounts must come from the provider import. Missing configuration is not a zero tax or an exemption.\n\nNo rules configured. Imported payroll amounts are still required.\n\nAdd rule\nAutomation\n\nPreparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.\n\nPrepare scheduled drafts\nPublish statements after an authorized approval\nQueue private payroll notices\nPreparation reminder window\nRemind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.\n\nThe notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.\n\nNotice delivery is disabled. Private notice requests may be queued, but this environment will not send them.\n\nPayment instructions\nOutput profile\nDesired bank channel\n\nChannel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.\n\nReview the change\nEffective date\nReason for change\nFuture draft impact\n\nNo affected future drafts were returned by the server.\n\nApproved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.\n\nSaving\u2026\nEmployee exceptions\n\nEmployees inherit company defaults unless an authorized exception takes effect.\n\nEmployee\n\nException revision 0 \u00b7 Provider imports continue to determine actual gross and net pay.\n\nStatement language\nInherit company deduction and contribution rules\nException effective date\nException reason\nFuture draft impact\n\nNo affected future drafts were returned by the server.\n\nSave employee exception\nPayroll access\n\nManager time-review permission does not grant access to financial records.\n\nGrant recipient\nSettings history\n\nSaved revisions record their effective date and reason.\n\nRevision 1 \u00b7 Effective Thu,\u00a0Jan\u00a01, 2026\n\nFictional test setup\n\nRecorded Oct\u00a019, 2026, 10:52\u00a0PM\n\nOnly the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. Notice delivery is disabled. Private notice requests may be queued, but this environment will not send them.",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-payroll-settings-focus-QAOWNER-390x844-t100-default-execution-error.png"
+        }
+      }
+    },
+    {
+      "key": "payroll-settings-focus|webkit|QAOWNER|320|844|200|default",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:34:49)\n    at pending (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:56:236)\n    at async register.accounts (/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs:31:337)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:145:596",
+      "states": {
+        "execution-error": {
+          "path": "/app/settings/payroll",
+          "scrollY": 8720,
+          "viewport": {
+            "width": 320,
+            "height": 844
+          },
+          "usable": {
+            "top": 84.515625,
+            "bottom": 753
+          },
+          "documentWidth": 320,
+          "active": {
+            "tag": "BUTTON",
+            "id": "",
+            "cls": "nv-btn",
+            "text": "Saving\u2026",
+            "box": {
+              "x": 16,
+              "y": 675.515625,
+              "width": 288,
+              "height": 52,
+              "top": 675.515625,
+              "right": 304,
+              "bottom": 727.515625,
+              "left": 16
+            },
+            "disabled": false,
+            "ariaDisabled": "true"
+          },
+          "statuses": [],
+          "signIn": [],
+          "headings": [
+            {
+              "tag": "H1",
+              "id": "",
+              "cls": "nv-masthead__title",
+              "text": "Payroll settings",
+              "box": {
+                "x": 16,
+                "y": -8580.484375,
+                "width": 288,
+                "height": 144,
+                "top": -8580.484375,
+                "right": 304,
+                "bottom": -8436.484375,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "payroll-company-defaults",
+              "cls": "wb-section-title",
+              "text": "Company defaults",
+              "box": {
+                "x": 16,
+                "y": -8092.484375,
+                "width": 288,
+                "height": 100,
+                "top": -8092.484375,
+                "right": 304,
+                "bottom": -7992.484375,
+                "left": 16
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Employee exceptions",
+              "box": {
+                "x": 36,
+                "y": 763.515625,
+                "width": 248,
+                "height": 88,
+                "top": 763.515625,
+                "right": 284,
+                "bottom": 851.515625,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Payroll access",
+              "box": {
+                "x": 36,
+                "y": 2927.515625,
+                "width": 229.890625,
+                "height": 44,
+                "top": 2927.515625,
+                "right": 265.890625,
+                "bottom": 2971.515625,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "cls": "nv-card__title",
+              "text": "Settings history",
+              "box": {
+                "x": 36,
+                "y": 3435.515625,
+                "width": 248,
+                "height": 88,
+                "top": 3435.515625,
+                "right": 284,
+                "bottom": 3523.515625,
+                "left": 36
+              },
+              "disabled": false,
+              "ariaDisabled": null
+            }
+          ],
+          "text": "Timecards\nPayroll runs\nTime exports\nPayroll settings\nPayroll settings\n\nSet company defaults, effective dates and authorized employee exceptions.\n\nRecording action\u2026\n\nKeep this reference until the server confirms the result.\n\nb852e1c2-8acc-4816-992a-f4e1228a069a\nCheck action reference\nCompany defaults\n\nRevision 1 \u00b7 Currency USD\n\nCompany and documents\nCompany name on documents\nDefault statement language\nPayroll provider preference\n\nProvider selection records a preference. It does not connect an account or verify a provider format. All sources currently use the neutral payroll import.\n\nPay schedule\nFrequency\nSchedule anchor date\nPayday after period end\nDays after the period ends.\n\nWeekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days 1\u201315 and 16\u2013month end; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.\n\nDeductions and contributions\n\nThese rules record company policy and employee elections. Actual amounts must come from the provider import. Missing configuration is not a zero tax or an exemption.\n\nNo rules configured. Imported payroll amounts are still required.\n\nAdd rule\nAutomation\n\nPreparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.\n\nPrepare scheduled drafts\nPublish statements after an authorized approval\nQueue private payroll notices\nPreparation reminder window\nRemind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.\n\nThe notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.\n\nNotice delivery is disabled. Private notice requests may be queued, but this environment will not send them.\n\nPayment instructions\nOutput profile\nDesired bank channel\n\nChannel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.\n\nReview the change\nEffective date\nReason for change\nFuture draft impact\n\nNo affected future drafts were returned by the server.\n\nApproved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.\n\nSaving\u2026\nEmployee exceptions\n\nEmployees inherit company defaults unless an authorized exception takes effect.\n\nEmployee\n\nException revision 0 \u00b7 Provider imports continue to determine actual gross and net pay.\n\nStatement language\nInherit company deduction and contribution rules\nException effective date\nException reason\nFuture draft impact\n\nNo affected future drafts were returned by the server.\n\nSave employee exception\nPayroll access\n\nManager time-review permission does not grant access to financial records.\n\nGrant recipient\nSettings history\n\nSaved revisions record their effective date and reason.\n\nRevision 1 \u00b7 Effective Thu,\u00a0Jan\u00a01, 2026\n\nFictional test setup\n\nRecorded Oct\u00a019, 2026, 10:52\u00a0PM\n\nOnly the owner can configure payroll and access grants. Provider imports supply actual payroll amounts. Notice delivery is disabled. Private notice requests may be queued, but this environment will not send them.",
+          "layoutShiftObserverSupported": false,
+          "crop": "crops/webkit-payroll-settings-focus-QAOWNER-320x844-t200-default-execution-error.png"
+        }
+      }
+    }
+  ],
+  "originalBrowserClosed": true,
+  "coordinatorStillPaused": true,
+  "recoveryStartedAt": "2026-10-19T23:10:05.646310+00:00",
+  "recoveryEndedAt": "2026-10-19T23:10:58.355971+00:00",
+  "replayedCells": [
+    {
+      "key": "payroll-settings-focus|chromium|QAOWNER|390|844|100|default",
+      "completed": true,
+      "passed": true,
+      "sameOriginalButtonVerified": true,
+      "failedAssertions": []
+    },
+    {
+      "key": "payroll-settings-focus|chromium|QAOWNER|320|844|200|default",
+      "completed": true,
+      "passed": false,
+      "sameOriginalButtonVerified": true,
+      "failedAssertions": [
+        {
+          "message": "save: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 88,
+              "top": 379.515625,
+              "right": 304,
+              "bottom": 467.515625,
+              "left": 16
+            },
+            "pending": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 52,
+              "top": 379.515625,
+              "right": 304,
+              "bottom": 431.515625,
+              "left": 16
+            },
+            "delta": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": -36
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "payroll-settings-focus|webkit|QAOWNER|390|844|100|default",
+      "completed": true,
+      "passed": true,
+      "sameOriginalButtonVerified": true,
+      "failedAssertions": []
+    },
+    {
+      "key": "payroll-settings-focus|webkit|QAOWNER|320|844|200|default",
+      "completed": true,
+      "passed": false,
+      "sameOriginalButtonVerified": true,
+      "failedAssertions": [
+        {
+          "message": "save: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 16,
+              "y": 675.515625,
+              "width": 288,
+              "height": 88,
+              "top": 675.515625,
+              "right": 304,
+              "bottom": 763.515625,
+              "left": 16
+            },
+            "pending": {
+              "x": 16,
+              "y": 675.515625,
+              "width": 288,
+              "height": 52,
+              "top": 675.515625,
+              "right": 304,
+              "bottom": 727.515625,
+              "left": 16
+            },
+            "delta": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": -36
+            }
+          }
+        },
+        {
+          "message": "save: pending kit text reaches4.5:1",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 16,
+              "y": 675.515625,
+              "width": 288,
+              "height": 52,
+              "top": 675.515625,
+              "right": 304,
+              "bottom": 727.515625,
+              "left": 16
+            },
+            "focused": true,
+            "disabled": false,
+            "ariaDisabled": "true",
+            "fieldsetDisabled": false,
+            "text": "Saving\u2026",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(211, 226, 225)",
+            "opacity": "1",
+            "visibleText": "Saving\u2026",
+            "textBounds": {
+              "top": 681.015625,
+              "bottom": 722.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        }
+      ]
+    }
+  ],
+  "canonicalDistinctRequiredCells": 152,
+  "canonicalCompletedCells": 152,
+  "canonicalPassedCells": 150,
+  "replayExitCode": 1,
+  "replayExitReason": "Two genuine pending button geometry assertion failures, no remaining setup gaps",
+  "originalCoordinatorExitPreserved": true,
+  "coordinatorResumedAt": "2026-10-19T23:10:58.356017+00:00",
+  "originalBaseLogArchivedAfterCoordinatorDrainAt": "2026-10-19T23:11:08.054538+00:00"
+}

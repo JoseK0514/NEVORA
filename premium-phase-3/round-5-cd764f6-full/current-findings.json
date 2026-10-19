@@ -1,0 +1,167 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "reviewComplete": false,
+  "findings": [
+    {
+      "id": "TC-P3-09",
+      "severity": "P2",
+      "status": "measured-open",
+      "title": "Availability Last updated date still splits month from day",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "textPercent": 200,
+      "route": "/app/availability?week=2026-10-26",
+      "observedAt": "2026-10-19T23:03:54.556Z",
+      "evidence": [
+        "core/passive-geometry/cells/72d6196951ff88173583.json"
+      ],
+      "measurements": {
+        "text": "Oct 19",
+        "month": {
+          "x": 216,
+          "y": 1426.515625,
+          "width": 48,
+          "height": 36
+        },
+        "day": {
+          "x": 36,
+          "y": 1466.515625,
+          "width": 28,
+          "height": 36
+        },
+        "lineTopDelta": 40
+      },
+      "source": "src/app/app/availability/page.tsx:167",
+      "cause": "formatBusinessDateTime(updatedAt,workspace.timeZone) is rendered without keepWhole",
+      "minimalProposal": "Wrap only this reported formatted date-time with existing keepWhole; preserve server data/time zone.",
+      "qualification": "Captured from same loaded page after unchanged checker result. Checker passed; this is manual text-range geometry evidence. Midpage crop pending targeted manual follow-up."
+    },
+    {
+      "id": "TC-P3-34",
+      "severity": "P2",
+      "status": "measured-open",
+      "title": "Notifications title still breaks inside its word at200%",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "textPercent": 200,
+      "route": "/app/notifications",
+      "evidence": [
+        "core/passive-geometry/cells/112274885136645ebdcb.json",
+        "core/passive-geometry/crops/112274885136645ebdcb-top.png"
+      ],
+      "measurements": {
+        "title": "Notifications",
+        "fontSize": 60,
+        "lineHeight": 72,
+        "firstLine": "Notificatio",
+        "secondLine": "ns",
+        "firstLineY": 88.515625,
+        "secondLineY": 160.515625
+      },
+      "sourceScope": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md:1214",
+      "minimalProposal": "Apply the already-prescribed scoped200% title cap or correct hyphenation, after checking current cascade; do not change shared kit tokens.",
+      "qualification": "Actual same loaded page after unchanged checker. Screenshot reviewed; ordinary body words with visible auto-hyphens excluded."
+    },
+    {
+      "id": "TC-P3-32",
+      "severity": "P1",
+      "status": "passive-measured-open; targeted crop pending",
+      "title": "Home date breaks inside the final numeric day",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "textPercent": 200,
+      "route": "/app",
+      "evidence": [
+        "core/passive-geometry/cells/52f8931d41b37e0f4dbb.json"
+      ],
+      "measurements": {
+        "wholeText": "Mon,\u00a0Oct\u00a019",
+        "firstLine": {
+          "x": 88,
+          "y": 2603.515625,
+          "width": 151
+        },
+        "finalDigit": {
+          "x": 88,
+          "y": 2643.515625,
+          "width": 19
+        },
+        "repeatRanges": 5
+      },
+      "sourceScope": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md:1212 TC-P3-32; source ROUND recheck",
+      "sourceCauses": [
+        "src/lib/keep-whole.ts short-weekday WR-B-11 join",
+        "src/components/employee-home-reviewed.tsx:48 dateLabel includes short weekday",
+        "Home narrow row width152px with emergency word wrapping"
+      ],
+      "minimalProposal": "Resolve short-weekday gluing against narrow-row width without ungluing month/day or creating word/number fragments; confirm source decision and targeted crop before selecting a repair.",
+      "qualification": "Actual date text range measurement, not a normal hyphenated body-word signal. Existing P1 ID retained, no new duplicate ID. Targeted midpage crop pending after baseline."
+    },
+    {
+      "id": "AL-P3-13",
+      "severity": "P2",
+      "status": "passive-measured-open; targeted crop pending",
+      "title": "Schedule confirmation icon remains centered over entire copy block",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "textPercent": 100,
+      "route": "/app/schedule",
+      "evidence": [
+        "core/passive-geometry/cells/25b4834473aa221a9fcf.json",
+        "core/passive-geometry/cells/3d19dda1206ad289d9b2.json"
+      ],
+      "measurements": {
+        "gridColumns": "40px 266px",
+        "copy": {
+          "x": 88,
+          "y": 1900.578125,
+          "height": 102
+        },
+        "icon": {
+          "x": 36,
+          "y": 1935.578125,
+          "width": 32,
+          "height": 32
+        },
+        "iconCenter": 1951.578125,
+        "titleFirstLineCenter": 1913.078125,
+        "verticalCenterDelta": 38.5,
+        "at320Text200IconTopMinusCopyTop": 202
+      },
+      "sourceScope": "docs/product/specs/premium-phase-3/inspection/alignment.md:879",
+      "qualification": "Horizontal40px grid/copyx88 already differ from older report; retained issue is actual32px icon and whole-copy vertical centering. Targeted midpage crop pending after baseline.",
+      "minimalProposal": "Use current40px column; bring actual icon/tile into the prescribed20px icon or40px tile system and align it to the first title line without changing action placement."
+    }
+  ],
+  "concerns": [
+    {
+      "provisionalId": "WR-RC-TABS-01",
+      "status": "passive-measured; interactive-text-reflow-proof-pending",
+      "historicalCrosswalk": [
+        "AL-47 alignment.md:233\u2192267 current pill on load",
+        "IS-3 interaction-states.md:42\u2192398 focus-follow",
+        "IS-29 interaction-states.md:267\u2192336 current location chip",
+        "WR-50 widths-roles-consistency.md:310\u2192346 start fade"
+      ],
+      "currentCase": "core/passive-geometry/cells/72d6196951ff88173583.json",
+      "observed": "Current Availability section text x418\u2013584 outside track x16\u2013304 after320/200; current Specific week band pill clipped on right",
+      "scopeNote": "Use historical selected-control visibility contract; no duplicate independent semantic requirement."
+    }
+  ]
+}

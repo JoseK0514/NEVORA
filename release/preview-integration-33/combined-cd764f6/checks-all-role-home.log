@@ -1,0 +1,5 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+FAIL chromium payroll-qa-b 320 100% /app cls=0.0226
+FAIL chromium payroll-qa-a 320 100% /app cls=0.0226
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+18/20 passed · /workspace/paused-previews/combined-cd764f6/checks/2026-10-19T23-17-24-161Z.json

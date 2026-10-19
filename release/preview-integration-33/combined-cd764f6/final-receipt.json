@@ -1,0 +1,15 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "scope": "Fresh bounded combined smoke; complete owner exits separate",
+  "distinctRequiredStateCells": 152,
+  "completedStateCells": 152,
+  "passedStateCells": 150,
+  "checkerCells": 72,
+  "passedCheckerCells": 70,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "postgresStopped": true,
+  "sourceAndMirrorVerified": true,
+  "closureErrors": [],
+  "historicalPassInheritance": false,
+  "later34to45Included": false
+}

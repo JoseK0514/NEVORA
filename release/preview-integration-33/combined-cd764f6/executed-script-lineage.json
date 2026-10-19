@@ -1,0 +1,45 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "scripts": [
+    {
+      "executedPath": "/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/combined-verify.mjs",
+      "sha256": "cf858659a035c7d7e8c3ea12b965e142c5d4f5ce2d6bba809ed72abf3159af95"
+    },
+    {
+      "executedPath": "/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/combined-extra-cases.mjs",
+      "sha256": "7fda24f911a49b966725dcbc68d70570e57fcdc0637e0e2358919b34b88ee620"
+    },
+    {
+      "executedPath": "/workspace/nevora-inspection-runtime/final-verification/combined-stage.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/combined-stage.mjs",
+      "sha256": "1c4cd5e13ae1c22cefc360b15ff858b4368a90ed2aa4261bd7e3330911506303"
+    },
+    {
+      "executedPath": "/workspace/nevora-inspection-runtime/final-verification/checks.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/checks.mjs",
+      "sha256": "66e42a9f2c494b276a757647158fc357d06e8cee2df5e3bc04fef1179f2d490d"
+    },
+    {
+      "executedPath": "/workspace/nevora-inspection-runtime/final-verification/checker-guard.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/checker-guard.mjs",
+      "sha256": "43b92e7a0ad2e78a152be02806853ee8a1565f9ed2cd76d349de310a31b3022a"
+    },
+    {
+      "executedPath": "/workspace/nevora-inspection-runtime/final-verification/close.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/close.mjs",
+      "sha256": "5a8aac12daece7d807de01c2bbba38fdea9c14461207409da47b95763f33f521"
+    },
+    {
+      "executedPath": "/workspace/nevora-inspection-runtime/final-verification/initial-identity.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/initial-identity.mjs",
+      "sha256": "47439eef55122f59c560063fdf2b1c1429b34e67fd0c9d1ee12f252438998a9f"
+    },
+    {
+      "initializerPath": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/initial-own-withdrawals.mts",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/initial-own-withdrawals.mts",
+      "sha256": "73439ac48913955ecf5ecd5865bd35772552774820e946730fceb2878b8a558c"
+    }
+  ]
+}

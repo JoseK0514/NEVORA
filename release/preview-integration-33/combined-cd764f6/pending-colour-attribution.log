@@ -1,0 +1,8 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"engine":"chromium","width":390,"text":100,"position":"natural-focus","completed":true,"minContrast":1.0559855213097247,"lastContrast":5.138948780308894,"belowFloorFrames":5,"visibleBelowFloorFrames":5,"belowFloorSpan":{"first":197.40000000037253,"last":308.09999999962747}}
+{"engine":"chromium","width":320,"text":200,"position":"natural-focus","completed":true,"minContrast":1.0559855213097247,"lastContrast":5.138948780308894,"belowFloorFrames":4,"visibleBelowFloorFrames":0,"belowFloorSpan":{"first":140.80000000074506,"last":225.19999999925494}}
+{"engine":"chromium","width":320,"text":200,"position":"above-feedback","completed":true,"minContrast":1.0559855213097247,"lastContrast":5.138948780308894,"belowFloorFrames":5,"visibleBelowFloorFrames":5,"belowFloorSpan":{"first":83.40000000037253,"last":159.19999999925494}}
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"engine":"webkit","width":390,"text":100,"position":"natural-focus","completed":true,"minContrast":5.138948780308894,"lastContrast":5.138948780308894,"belowFloorFrames":0,"visibleBelowFloorFrames":0,"belowFloorSpan":null}
+{"engine":"webkit","width":320,"text":200,"position":"natural-focus","completed":true,"minContrast":5.138948780308894,"lastContrast":5.138948780308894,"belowFloorFrames":0,"visibleBelowFloorFrames":0,"belowFloorSpan":null}
+{"engine":"webkit","width":320,"text":200,"position":"above-feedback","completed":true,"minContrast":1.6771143596415559,"lastContrast":5.138948780308894,"belowFloorFrames":1,"visibleBelowFloorFrames":1,"belowFloorSpan":{"first":96,"last":96}}

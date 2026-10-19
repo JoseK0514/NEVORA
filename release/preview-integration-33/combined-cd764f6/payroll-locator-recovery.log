@@ -1,0 +1,6 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"name":"payroll-settings-focus","engine":"chromium","account":"QAOWNER","width":390,"height":844,"text":100,"variant":"default","passed":true,"assertions":11,"failed":[]}
+{"name":"payroll-settings-focus","engine":"chromium","account":"QAOWNER","width":320,"height":844,"text":200,"variant":"default","passed":false,"assertions":11,"failed":["save: pending geometry stays within 1px"]}
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"name":"payroll-settings-focus","engine":"webkit","account":"QAOWNER","width":390,"height":844,"text":100,"variant":"default","passed":true,"assertions":11,"failed":[]}
+{"name":"payroll-settings-focus","engine":"webkit","account":"QAOWNER","width":320,"height":844,"text":200,"variant":"default","passed":false,"assertions":11,"failed":["save: pending geometry stays within 1px","save: pending kit text reaches4.5:1"]}

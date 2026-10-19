@@ -1,0 +1,41 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "completed": 148,
+  "passed": 148,
+  "total": 152,
+  "assertions": 1586,
+  "failures": [
+    {
+      "name": "payroll-settings-focus",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:34:49)\n    at pending (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:56:236)\n    at async register.accounts (/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs:31:337)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:145:596",
+      "failed": []
+    },
+    {
+      "name": "payroll-settings-focus",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:34:49)\n    at pending (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:56:236)\n    at async register.accounts (/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs:31:337)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:145:596",
+      "failed": []
+    },
+    {
+      "name": "payroll-settings-focus",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:34:49)\n    at pending (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:56:236)\n    at async register.accounts (/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs:31:337)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:145:596",
+      "failed": []
+    },
+    {
+      "name": "payroll-settings-focus",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n\n    at buttonData (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:34:49)\n    at pending (/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:56:236)\n    at async register.accounts (/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs:31:337)\n    at async file:///workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs:145:596",
+      "failed": []
+    }
+  ]
+}

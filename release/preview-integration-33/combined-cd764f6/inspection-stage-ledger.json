@@ -1,0 +1,23 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "scope": "Combined smoke and bounded scoped inspection; full owner exits remain separately evidenced",
+  "jobs": [
+    {
+      "stage": "base",
+      "startedAt": "2026-10-19T22:53:25.955Z",
+      "script": "/workspace/nevora-inspection-runtime/final-verification/combined-verify.mjs",
+      "signal": null,
+      "exitCode": 1,
+      "completedAt": "2026-10-19T23:10:58.464Z"
+    },
+    {
+      "stage": "checker",
+      "startedAt": "2026-10-19T23:10:58.480Z",
+      "script": "/workspace/nevora-inspection-runtime/final-verification/checks.mjs",
+      "signal": null,
+      "exitCode": 0,
+      "completedAt": "2026-10-19T23:19:39.794Z"
+    }
+  ],
+  "closureExitCode": 0
+}

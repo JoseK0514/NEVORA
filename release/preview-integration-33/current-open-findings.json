@@ -8,8 +8,8 @@
       "id": "ST-RC-PAYROLL-SAVE-01",
       "owner": "WaveB",
       "severity": "P2",
-      "status": "DOM geometry measured oncd; pending-card occlusion means visible impact/severity provisional; same component bytes in15, no fresh15 runtime credit",
-      "measurement": "Company Save88\u219252px while held at320/200, bothengines; focus and one-request guard pass",
+      "status": "P2 confirmed with ordinary-scroll painted hitpoint/sibling trace inbothengines; samecomponentbytes15, nofresh15runtimecredit",
+      "measurement": "CompanySave88\u219252px, visibleEmployeeexceptionsheadingmovesup36px at320/200; originalocclusionkeptseparate, focus/oneheldrequestpass",
       "report": "combined-cd764f6/candidate-findings.md",
       "proposal": "review-proposals/ST-RC-PAYROLL-SAVE-01.patch",
       "proposalStatus": "unapplied; requires owner review and dynamic checks"
@@ -49,13 +49,25 @@
       "status": "passive numeric date-fragment split measured; midpage crop confirmation pending; retain historical ID/severity without new count",
       "measurement": "Employee Chromium320/200 Home To do Mon, Oct19 breaks final9 onto next40px line in5date ranges",
       "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/52f8931d41b37e0f4dbb.json"
+    },
+    {
+      "id": "TC-WA-16",
+      "owner": "Coordinator/sharedKit withWaveBpaint",
+      "severity": "P2 continuation",
+      "status": "confirmedvisiblependingcolourtransition; opacityfixpasses",
+      "measurement": "foregroundswitchimmediate/background160msCSSTransition; visiblemin1.05599:1Chrome5frames and1.67711:1WebKit1frame; settled5.13895:1",
+      "report": "combined-cd764f6/candidate-findings.md"
+    },
+    {
+      "id": "P3-ST-01",
+      "alias": "ST-RC-HOME-TIME-01 evidenceonly",
+      "owner": "Coordinator",
+      "status": "retainedbroaderP1 ownerfinding; currentboundedP2observationdoesnotdowngradeit",
+      "measurement": "bothPayrollfixturesChrome320/100Recordedtimecard12px/CLS0.0226202; band296\u2192296, noST-RC-HOME01charge",
+      "report": "combined-cd764f6/candidate-findings.md"
     }
   ],
   "additionalUnderInvestigation": [
-    {
-      "owner": "WaveB",
-      "observation": "Computed WebKit4.3768:1 may be transitional underlay text occluded by Recordingaction card. Painted-visibility/transition attribution pending; raw failure retained."
-    },
     {
       "id": "WR-WA-3P2",
       "owner": "WaveA",

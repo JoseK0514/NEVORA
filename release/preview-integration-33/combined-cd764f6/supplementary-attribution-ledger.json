@@ -1,0 +1,39 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "checkerCells": 72,
+  "checkerPass": 70,
+  "checkerBrowserEnded": true,
+  "extra152Or72Credit": false,
+  "snapshots": [
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/pending-colour-attribution.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/attribution/pending-colour-attribution.mjs",
+      "sha256": "8e4cbcd5e6581c2da8c563b1337d4e9f48926e636c579eda9bf1cb4f07df2d92"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/home-payroll-attribution.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/attribution/home-payroll-attribution.mjs",
+      "sha256": "e3003f7cecc6a3cf84c4a37edf9bef659caf8ba2214a592e2e256fdef20dbcc4"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/checker-guard.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6/executed-scripts/attribution/checker-guard.mjs",
+      "sha256": "43b92e7a0ad2e78a152be02806853ee8a1565f9ed2cd76d349de310a31b3022a"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "pending-colour-attribution",
+      "startedAt": "2026-10-19T23:18:36.390482+00:00",
+      "exitCode": 0,
+      "completedAt": "2026-10-19T23:19:12.154484+00:00"
+    },
+    {
+      "stage": "home-payroll-attribution",
+      "startedAt": "2026-10-19T23:19:12.165437+00:00",
+      "exitCode": 1,
+      "completedAt": "2026-10-19T23:19:39.767129+00:00"
+    }
+  ],
+  "coordinatorResumedForClosureAt": "2026-10-19T23:19:39.770779+00:00"
+}

@@ -1,0 +1,17 @@
+--- a/scripts/phase-d-attendance-ui-qa.mjs
++++ b/scripts/phase-d-attendance-ui-qa.mjs
+@@ -298,3 +298,3 @@
+     await page.evaluate(() => window.dispatchEvent(new StorageEvent('storage', { key: 'nevora-session-check' })));
+-    await page.getByText('Loading attendance review', { exact: true }).waitFor();
++    await page.getByText('Loading attendance', { exact: true }).waitFor();
+     assert.equal(
+@@ -312,3 +312,3 @@
+     await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+-    await page.getByText('Loading attendance review', { exact: true }).waitFor();
++    await page.getByText('Loading attendance', { exact: true }).waitFor();
+     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+@@ -322,3 +322,3 @@
+     await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
+-    await page.getByText('Loading attendance review', { exact: true }).waitFor();
++    await page.getByText('Loading attendance', { exact: true }).waitFor();
+     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);

@@ -1,0 +1,25 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "sourceRoot": "/workspace/inspect-phase3-final",
+  "resourceRelease": "Root explicitly released full Phase3 worker after combined source/DB/10-role smoke and Desktop first compile",
+  "startedAt": "2026-10-19T22:56:03.469094+00:00",
+  "preview": "/workspace/paused-previews/phase3-combined-cd764f6",
+  "previewSession": 34715,
+  "baselineScope": {
+    "core": 4480,
+    "normalManagement": 480,
+    "large": 320,
+    "allAxe": true,
+    "total": 5280
+  },
+  "manualRows": 1562,
+  "sourceNotApplicable": 16,
+  "priorIDs": 135,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "fixtureExtensionSha256": "1efd142e98f0b3f426c99007ca643ccd36562f81ff4ebc5158f3ada84b4583cf",
+  "writes": "Canonical fictional initial fixtures before listen; login allowed; business browser writes held/answered/blocked",
+  "appEdits": false,
+  "CIRequested": false,
+  "physicalPhoneDecision": "Separate Jose yes/no, no implied approval"
+}

@@ -1,0 +1,49 @@
+{
+  "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "snapshotAt": "2026-10-19T23:19:28.539815+00:00",
+  "status": "in-progress",
+  "reviewComplete": false,
+  "zeroOpenDefects": false,
+  "baseline": {
+    "required": 5280,
+    "coreRequired": 4480,
+    "coreRecorded": 220,
+    "coreRawFailures": 0,
+    "normalManagementPending": 480,
+    "separateLargePending": 320
+  },
+  "manual": {
+    "requiredRows": 1562,
+    "statusCounts": {
+      "pending": 1546,
+      "not-applicable": 16
+    },
+    "placeholderDerivedMeasurements": 1584,
+    "allPriorIDs": 135
+  },
+  "currentFindings": [
+    [
+      "TC-P3-09",
+      "P2",
+      "measured-open"
+    ],
+    [
+      "TC-P3-34",
+      "P2",
+      "measured-open"
+    ],
+    [
+      "TC-P3-32",
+      "P1",
+      "passive-measured-open; targeted crop pending"
+    ],
+    [
+      "AL-P3-13",
+      "P2",
+      "passive-measured-open; targeted crop pending"
+    ]
+  ],
+  "previewClosed": false,
+  "sourceCleanVerifiedAtLaunch": true,
+  "fiveAreaReportsComplete": false
+}

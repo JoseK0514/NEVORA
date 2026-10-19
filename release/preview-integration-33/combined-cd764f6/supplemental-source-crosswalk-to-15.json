@@ -1,0 +1,18 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "comparedSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "unchangedSourceSha256": {
+    "src/components/employee-time-panel.tsx": "caae005cf115af15370738d19829ae693127a61860d177a7dde7006d500f48a5",
+    "src/components/employee-home-reviewed.tsx": "9e64e4319ae71b9eb6808d4b2aafde57dcfd141b96e3c6f66f8ad656d3f6c298",
+    "src/components/employee-home-reviewed.module.css": "8848c4613132eb272037ba487a81941258683112326e815150b264bef0829942",
+    "src/app/app/portal-premium.css": "c0a3a213ba88c7f6c60bcc97f0ef11f8ba5c4760d1dac44e9b40f1ddff5bea70",
+    "src/components/kit/kit.css": "201fa33c2391ef97e2608db06fc3119204cd096b95918a99513fc681984dd945",
+    "src/app/app/premium-wave-b.css": "d6ec1e4b23d31dd658df3dbb21d3b787b8b914c72a52adf2e384d596c2eb5ba3"
+  },
+  "runtimeCreditInheritance": false,
+  "findings": {
+    "recordedTime": "P3-ST-01 continuation; ST-RC-HOME-TIME-01 is evidence alias, not additional finding count",
+    "pendingColour": "TC-WA-16 continuation; settled opacity is correct, transient background cause remains",
+    "saveGeometry": "ST-RC-PAYROLL-SAVE-01 P2 with separately confirmed visible sibling movement"
+  }
+}

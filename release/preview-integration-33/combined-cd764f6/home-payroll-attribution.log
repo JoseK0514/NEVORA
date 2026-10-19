@@ -1,0 +1,6 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"engine":"chromium","account":"payroll-qa-a","width":320,"height":844,"text":100,"passed":false,"cls":0.022620206615978976,"supported":true,"failures":[{"passed":false,"message":"Overall initial navigation CLS stays below0.01","detail":{"before":0,"after":0.022620206615978976}}]}
+{"engine":"chromium","account":"payroll-qa-b","width":320,"height":844,"text":100,"passed":false,"cls":0.022620206615978976,"supported":true,"failures":[{"passed":false,"message":"Overall initial navigation CLS stays below0.01","detail":{"before":0,"after":0.022620206615978976}}]}
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"engine":"webkit","account":"payroll-qa-a","width":320,"height":844,"text":100,"passed":true,"cls":0,"supported":false,"failures":[]}
+{"engine":"webkit","account":"payroll-qa-b","width":320,"height":844,"text":100,"passed":true,"cls":0,"supported":false,"failures":[]}

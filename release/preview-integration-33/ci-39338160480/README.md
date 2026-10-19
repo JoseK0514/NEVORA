@@ -18,3 +18,7 @@ An owned depth-one clone of clean testedcd764f6 reproduced cat-file exit128 for7
 [CI-RC-PINNED-SOURCE-01.patch](CI-RC-PINNED-SOURCE-01.patch) adds fetch-depth:0 to validate's checkout only. It is **unapplied**. No source reader, assertion, timeout, permission or exact-SHA control is weakened. A fresh hosted validate job is required after owner integration; this reproduction is not a full CI result.
 
 [Home failure report](browser-failure-report.json), [browser scope report](browser-report.json), [failure image](home-task11-chromium-320-failure.png), [SQL assertion](sql-home-failures.json). Full original logs and artifacts remain at the custody path, with hashes above. No temporary signed URLs or credentials are published.
+
+## Attendance diagnostic proposal
+
+Current canonical manager-attendance-review.tsx188 says **Loading attendance**, with TC-48’s shorter approved state copy. The old diagnostic expects **Loading attendance review** at three held-read checks. [attendance-loading-diagnostic.patch](attendance-loading-diagnostic.patch) updates only those three exact labels; it retains all held-request, cleared-private-row and reauthorization checks and changes no timeout or app behavior. It is unapplied and syntax-checked only, not a passing browser result. The owning coordinator must run the complete gate after adoption.

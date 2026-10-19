@@ -1,0 +1,28 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "report": "/workspace/nevora-inspections/release/preview-integration-33/combined-cd764f6",
+  "checkedAt": "2026-10-19T23:21:06.054250+00:00",
+  "artifactCount": 828,
+  "totalBytes": 59826254,
+  "actualRuntimePasswordAndSessionCookieLiteralsChecked": true,
+  "secretValuesPrintedOrRecorded": false,
+  "secretLiteralMatches": [],
+  "runtimeAccessAndLoginStateExcluded": true,
+  "databaseFilesExcluded": true,
+  "fictionalInputsOnly": true,
+  "commandEvidencePolicy": "API authority/proof/token/password/credential values recursively hashed; opaque Next action bodies hashed, not persisted; no business write forwarded",
+  "browserCrops": "Actual owned fictional application UI only; login/access credentials excluded from crop scope",
+  "excluded": [
+    "preview.log",
+    "login.log",
+    "runtime access.json",
+    "login storageState/cookies",
+    "runtime.env and other environment files",
+    "PostgreSQL data and authentication material"
+  ],
+  "notes": [
+    "Operation/request UUIDs and fictional emails are fixture/review identities, not session credentials.",
+    "Static source/harness references to password/proof variable names are code, not runtime values.",
+    "Allowlist is explicit by relative path and SHA256; it does not grant permission to publish unrelated workspace/runtime contents."
+  ]
+}

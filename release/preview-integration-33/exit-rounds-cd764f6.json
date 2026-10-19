@@ -1,7 +1,7 @@
 {
   "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "status": "Desktop, Phase3 and WaveA full checkers running oncd; WB/WC resource queued. Fresh targeted152 complete:150pass,2failed cases (Payroll company button height; additional WebKit contrast assertion under attribution); unchanged72checker running.",
+  "status": "Fresh bounded combined check complete and ownedpreview closed:152/152complete,150pass/2heightfail;72/72checkercomplete,70pass/2Recorded-timeCLSfail. Valid colour/scroll/Home attribution supplements preserved. Desktop,Phase3,WaveA full reviews run; WB released/bootstrap setup recovery beforelisten; WC resource queued.",
   "zeroExits": [],
   "reviews": [
     {
@@ -69,5 +69,15 @@
     "status": "Executed documented nine-width v3 continuation,138 exact-input complete rawv2cells imported with1retained failure. Source/checker/guard/collector/fixture unchanged. General360/430/landscape2472extra cells excluded without credit; mandatory bar preserved.",
     "citation": "docs/product/specs/p4-desktop/ROUND.md:22",
     "notYetACompletionClaim": true
+  },
+  "combinedChecker": {
+    "completed": 72,
+    "passed": 70,
+    "failed": 2,
+    "actualFailure": "P3-ST-01 compact Recorded time card CLS0.0226 for bothPayrollfixtures Chromium320/100; Homeband stable",
+    "receipt": "combined-cd764f6/final-receipt.json",
+    "postgresStopped": true,
+    "sourceAndMirrorVerified": true,
+    "closureErrors": []
   }
 }

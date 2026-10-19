@@ -1,0 +1,106 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "frozenAt": "2026-10-19T23:21:36.652965+00:00",
+  "partial": true,
+  "sourceExitComplete": false,
+  "credentialFilesExcluded": true,
+  "cropQualification": "TC34top directly shows title. Date/AL13 findings are proven by raw DOM ranges/geometry; top/bottom context crops may not show midpage target, and no midpage screenshot is claimed.",
+  "files": [
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/type-colour-copy.md",
+      "sha256": "07418713606316b3a44dc5350811aa0ee4dfaa72a7dfc3eac476f42e58699456"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/alignment.md",
+      "sha256": "04c314cf3bb3d243393f2d2d903b62d7271d0e6f49b314b83c50b52c4e6b2b4c"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/stability.md",
+      "sha256": "c790545db6f83b26b0d0c42f5e7415081a415bebe6eb52f8852208d559510a4c"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/widths-roles-consistency.md",
+      "sha256": "02f218780272f9ca23234d09db00b72af193a78f63659c9119e4e13dc50fa80a"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/interaction-states.md",
+      "sha256": "5c6dc120cbefbc270eedf631c49a2227e1cb5e7b0dc18e3b6a98b1a61400f6da"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/current-findings.json",
+      "sha256": "bd9d3591e8933938da74d80632680d17bd3ea3831c94b0c0cf7473e05536604d"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/current-findings.md",
+      "sha256": "0d28c74a10309e5e9a01202b6d4ce4cd091edb669098be5e9aa89418bbf6cea4"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/exit-judgment.json",
+      "sha256": "c2b29e53660c76d7ed9cc2d71d750689cd7e41e71291f0bc8511cc7aeb5029c2"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/execution-start.json",
+      "sha256": "175efd5ea2a60ad2a78fb1bed0a43205f09825111dc050080a1ac7c7193480ba"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/72d6196951ff88173583.json",
+      "sha256": "6a254d7ded9ab97ccafa2078cc2f3ee964f26054d40748571e08a39be17bbdf9"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/72d6196951ff88173583-top.png",
+      "sha256": "586e81a68261d1a0a03fe431894c9a823dac0ce315e8dea0e6486988f154079e"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/72d6196951ff88173583-bottom.png",
+      "sha256": "435e5f121e06b24840f9fda42c674c8f7c34d21b2f65d1cab0559cd8b730dab4"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/112274885136645ebdcb.json",
+      "sha256": "b0c24f2d2671668c2b419e13ce44a0c0d7e2d1dd5db55e5205a3425f90466fa1"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/112274885136645ebdcb-top.png",
+      "sha256": "7c30f5d402ea711a0cfc6e2ece888ac73178cff5fdad6a11df9a406fe90bb6b3"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/112274885136645ebdcb-bottom.png",
+      "sha256": "8957bcd55f6a464d847e2b358c99e77df4973e5a904bf572091da714b5e47f95"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/52f8931d41b37e0f4dbb.json",
+      "sha256": "a7a1f636b221bd5c5beeae588f36128397e109c20a0e5e2d0e8eeb674a2426ba"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/52f8931d41b37e0f4dbb-top.png",
+      "sha256": "8085252efc218387ebc8e873180e82ce41f90b6c7593d8a96e9a6a210366cb81"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/52f8931d41b37e0f4dbb-bottom.png",
+      "sha256": "8402904fd0d1f0e5775d95bb8c1d2b621cd2af2f67593aba5882af476d73fff2"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/25b4834473aa221a9fcf.json",
+      "sha256": "83b12013cd509950c9716da74b263c6c8630153c4b9b49843dcf9f1d29ef616b"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/25b4834473aa221a9fcf-top.png",
+      "sha256": "1f2ba933b02698c48fb625b5ad9435172e119a142342ffc46e82ddaa15958b07"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/25b4834473aa221a9fcf-bottom.png",
+      "sha256": "34a2d3537af1c1bed9edfb71385e7ba0ea2b422c9b54a28ddae2ce285979583f"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/3d19dda1206ad289d9b2.json",
+      "sha256": "3f74c560e45dcc0c39395da993634c910e664120df008f30e2289ff5a28417dc"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/3d19dda1206ad289d9b2-top.png",
+      "sha256": "33214bc8ccee402e0b37e9e76b567d8e74397c62925d3345b96e4a0b2867e248"
+    },
+    {
+      "path": "premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/3d19dda1206ad289d9b2-bottom.png",
+      "sha256": "6281a4cdfc13a759da99c75dca95077d44dbf1c1b6f94ac6eb1734072a7bf9ed"
+    }
+  ]
+}

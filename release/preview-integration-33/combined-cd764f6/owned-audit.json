@@ -1,0 +1,123 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "startedAt": "2026-10-19T22:52:27.976Z",
+  "screens": [],
+  "errors": [],
+  "checks": [
+    {
+      "name": "Canonical own pending UUIDv4 withdrawal fixtures verified before publication/listen",
+      "passed": true
+    },
+    {
+      "name": "Fictional update inserted after all initial actors; every recipient read positively verified before listen",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.",
+    "Viewport emulation is not physical iPhone/iPad testing.",
+    "Automated axe and keyboard checks do not certify a screen-reader audit.",
+    "Route visual inspection is not complete business workflow regression or production verification."
+  ],
+  "runtimeAdapter": {
+    "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+    "source": "/workspace/verify-preview-33",
+    "mode": "PRIVATE external helper; all initial fixture work awaited before listening; no app/shared helper edits",
+    "runtimeAdapterChanges": [
+      "approved owned DB adapter",
+      "approved bounded pool12 scratch transport",
+      "approved generated type refs",
+      "physical dependency copy",
+      "awaited beforeListen fixture callback"
+    ],
+    "inputs": {
+      "runtimeTemplate": {
+        "path": "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/bindings/preview-runtime.private.mjs",
+        "sha256": "f97a0b2c2be4b0c459a81baac67a88222f666bed76f5be448594ade1dd37e4d7"
+      },
+      "ownedTemplate": {
+        "path": "/workspace/nevora-inspection-runtime/helpers/9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7/bee02a7b29a5/scripts/ui-checks/owned-preview-app-dev.mts",
+        "sha256": "4057b152a2a9d67b4234891fcb139271241d42165ec05beed10be12a7bd1a91a"
+      },
+      "initializer": {
+        "path": "/workspace/nevora-inspection-runtime/helpers/cd764f614be8ca5b5215be19d46e07cf968638d7/before-listen-combined-1792450346874361538/bindings/initial-fixture.mts",
+        "sha256": "ce3d02f01a8a2ef524dad9c5e35a469cd995ea067510d482cd91a23650e68765"
+      }
+    },
+    "helperHashes": {
+      "preview-runtime.mjs": "d37925d6e24a95f8669f07468ffdafcb5e5bf8fd466238c42ba3796effccd662",
+      "owned-preview-app-dev.mts": "80abb9020a6a2e217bb7db4cb01beac73f30e7e099a5f0dcbe3fc78b7146c89b"
+    },
+    "initializationOnly": true,
+    "noPreviewStarted": true
+  },
+  "fixtureDate": "2026-10-19",
+  "fixtureWeek": "2026-10-19",
+  "nextWeekSeeded": "2026-10-26",
+  "payrollFixtureSeeded": true,
+  "templateFixture": {
+    "variant": "populated",
+    "seededTemplates": [
+      {
+        "id": "2f59d855-225e-4bd4-b223-3302680554ac",
+        "name": "Fictional support week",
+        "shifts": 42
+      },
+      {
+        "id": "07d5360c-78d9-4ee7-8af1-6adcfb7f06e6",
+        "name": "Fictional operations and customer service week 2",
+        "shifts": 42
+      }
+    ],
+    "initialOnly": true
+  },
+  "supplementalPayroll": null,
+  "initialOwnWithdrawals": {
+    "manifest": "/workspace/paused-previews/combined-cd764f6/evidence-2026-10-19T22-52-27-537Z/initial-own-withdrawal-fixture.json",
+    "initializedBeforeListen": true,
+    "actors": [
+      {
+        "account": "AUDIT-E",
+        "requestId": "dabd1f4d-2d52-4f17-8c3d-7b6f3a49b319",
+        "created": true,
+        "status": "PENDING",
+        "ownActorVerified": true,
+        "canonicalCommandValid": true
+      },
+      {
+        "account": "AUDIT-LEAD",
+        "requestId": "45b58260-bf6d-403d-a299-f38889d58316",
+        "created": true,
+        "status": "PENDING",
+        "ownActorVerified": true,
+        "canonicalCommandValid": true
+      }
+    ]
+  },
+  "initialExtension": {
+    "moduleSha256": "73439ac48913955ecf5ecd5865bd35772552774820e946730fceb2878b8a558c",
+    "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+    "initializedBeforeListen": true
+  },
+  "initialFixture": {
+    "manifest": "/workspace/paused-previews/combined-cd764f6/evidence-2026-10-19T22-52-27-537Z/inspection-initial-fixture.json",
+    "initializedBeforeListen": true,
+    "updateId": "88903069-e312-40b9-8775-4afc9f1b088e",
+    "actors": 12,
+    "readyReads": 12
+  },
+  "bootstrapMethod": "fixture-only executor; no browser publication",
+  "demoAccounts": {
+    "owner": "QAOWNER",
+    "manager": "AUDIT-M",
+    "lead": "AUDIT-LEAD",
+    "employee": "AUDIT-E",
+    "payrollOwner": "payroll-qa-owner",
+    "payrollEmployee": "payroll-qa-a"
+  },
+  "sourceManifest": "/workspace/paused-previews/combined-cd764f6/evidence-2026-10-19T22-52-27-537Z/owned-next-0BHBvr/source-manifest.json",
+  "completedAt": "2026-10-19T23:19:39.859Z",
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true
+}

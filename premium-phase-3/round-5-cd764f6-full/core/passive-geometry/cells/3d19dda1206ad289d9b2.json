@@ -1,0 +1,4782 @@
+{
+ "engine": "chromium",
+ "account": "AUDIT-E",
+ "size": "320",
+ "text": 200,
+ "route": "/app/schedule",
+ "axe": true,
+ "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+ "lineage": "2a1d86c435713134d6e0e5c2d921e6dbe5b1c5040a7564fb141be5e42c629c69",
+ "scriptHash": "12ddd9bf1dc8e0f002a8a217a01d8c07ae8073dc501e48f4c12486c2162141d2",
+ "policy": "primary-role-judgment",
+ "phase": "after-unchanged-checker-cell",
+ "observedAt": "2026-10-19T23:03:03.814Z",
+ "pageUrl": "http://127.0.0.1:39741/app/schedule",
+ "documentWidth": 320,
+ "innerWidth": 320,
+ "innerHeight": 844,
+ "documentHeight": 5682,
+ "scrollY": 0,
+ "main": {
+  "x": 0,
+  "y": 76.515625,
+  "width": 320,
+  "height": 5605.953125,
+  "top": 76.515625,
+  "right": 320,
+  "bottom": 5682.46875,
+  "left": 0
+ },
+ "mainText": "My schedule\n\n7 shifts · 56h scheduled.\n\nMy shifts\nOpen shifts\nOct 19 – Oct 25\n\n2026 · Puerto Rico time\n\nToday\nMon\n19\nTue\n20\nWed\n21\nThu\n22\nFri\n23\nSat\n24\nSun\n25\n\nYour Main Office shifts are published. West Office hasn’t published this week yet.\n\nYour manager asks you to confirm this week\nYour week at a glance\nPublished assignments only\nMon\n19\nToday\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nTue\n20\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nShift options\nfor Oct 20, 8:00 AM\nWed\n21\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nShift options\nfor Oct 21, 8:00 AM\nThu\n22\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nShift options\nfor Oct 22, 8:00 AM\nFri\n23\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nShift options\nfor Oct 23, 8:00 AM\nSat\n24\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nShift options\nfor Oct 24, 8:00 AM\nSun\n25\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nShift options\nfor Oct 25, 8:00 AM\nConfirm you’ve seen your schedule\n\nCheck your shifts for this week, then confirm.\n\nConfirm schedule\nWhat changed in your schedule\nPlanning ahead\nShift requests\nUpdate availability\nRequest time off\nAdd shifts to your calendar",
+ "band": [
+  {
+   "selector": "header.nv-masthead.nv-pageband.nv-pageband--flat",
+   "text": "My schedule7 shifts · 56h scheduled.My shiftsOpen shifts",
+   "box": {
+    "x": 0,
+    "y": 76.515625,
+    "width": 320,
+    "height": 348,
+    "top": 76.515625,
+    "right": 320,
+    "bottom": 424.515625,
+    "left": 0
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "background": "rgb(28, 74, 71)",
+    "backgroundImage": "none",
+    "padding": "0px 16px 24px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(255, 255, 255)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "hidden",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  }
+ ],
+ "heads": [
+  {
+   "selector": "h1.nv-masthead__title",
+   "text": "My schedule",
+   "box": {
+    "x": 16,
+    "y": 88.515625,
+    "width": 288,
+    "height": 144,
+    "top": 88.515625,
+    "right": 304,
+    "bottom": 232.515625,
+    "left": 16
+   },
+   "style": {
+    "font": "600 60px / 72px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "60px",
+    "lineHeight": "72px",
+    "fontWeight": "600",
+    "color": "rgb(255, 255, 255)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(255, 255, 255)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "h2#my-week-title",
+   "text": "Oct 19 – Oct 25",
+   "box": {
+    "x": 68,
+    "y": 460.515625,
+    "width": 216,
+    "height": 112,
+    "top": 460.515625,
+    "right": 284,
+    "bottom": 572.515625,
+    "left": 68
+   },
+   "style": {
+    "font": "550 40px / 56px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "40px",
+    "lineHeight": "56px",
+    "fontWeight": "550",
+    "color": "rgb(28, 28, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(28, 28, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "h2#my-agenda-title",
+   "text": "Your week at a glance",
+   "box": {
+    "x": 36,
+    "y": 1424.3125,
+    "width": 248,
+    "height": 100,
+    "top": 1424.3125,
+    "right": 284,
+    "bottom": 1524.3125,
+    "left": 36
+   },
+   "style": {
+    "font": "600 38px / 50px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "38px",
+    "lineHeight": "50px",
+    "fontWeight": "600",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "h2#my-review-title",
+   "text": "Confirm you’ve seen your schedule",
+   "box": {
+    "x": 88,
+    "y": 4385.46875,
+    "width": 196,
+    "height": 200,
+    "top": 4385.46875,
+    "right": 284,
+    "bottom": 4585.46875,
+    "left": 88
+   },
+   "style": {
+    "font": "600 38px / 50px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "38px",
+    "lineHeight": "50px",
+    "fontWeight": "600",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "h2#my-schedule-more-title",
+   "text": "Planning ahead",
+   "box": {
+    "x": 36,
+    "y": 5067.46875,
+    "width": 248,
+    "height": 100,
+    "top": 5067.46875,
+    "right": 284,
+    "bottom": 5167.46875,
+    "left": 36
+   },
+   "style": {
+    "font": "600 38px / 50px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "38px",
+    "lineHeight": "50px",
+    "fontWeight": "600",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  }
+ ],
+ "cards": [
+  {
+   "selector": "section.my-week-overview.my-schedule-enter",
+   "box": {
+    "x": 16,
+    "y": 440.515625,
+    "width": 288,
+    "height": 815.796875,
+    "top": 440.515625,
+    "right": 304,
+    "bottom": 1256.3125,
+    "left": 16
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgb(255, 255, 255)",
+    "backgroundImage": "none",
+    "padding": "20px",
+    "gap": "normal",
+    "radius": "20px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "rgba(16, 40, 38, 0.05) 0px 1px 2px 0px, rgba(16, 40, 38, 0.06) 0px 8px 24px 0px",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "children": [
+    {
+     "selector": "div.my-week-topline",
+     "box": {
+      "x": 36,
+      "y": 460.515625,
+      "width": 248,
+      "height": 270,
+      "top": 460.515625,
+      "right": 284,
+      "bottom": 730.515625,
+      "left": 36
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "0px",
+      "gap": "14px",
+      "radius": "0px",
+      "border": "0px none rgb(22, 25, 28)",
+      "boxShadow": "none",
+      "display": "flex",
+      "grid": "none",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    },
+    {
+     "selector": "nav.my-week-days",
+     "box": {
+      "x": 16,
+      "y": 738.515625,
+      "width": 288,
+      "height": 129.796875,
+      "top": 738.515625,
+      "right": 304,
+      "bottom": 868.3125,
+      "left": 16
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "6px 10px",
+      "gap": "0px",
+      "radius": "0px",
+      "border": "0px none rgb(22, 25, 28)",
+      "boxShadow": "none",
+      "display": "flex",
+      "grid": "repeat(7, minmax(0px, 1fr))",
+      "overflow": "auto",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    },
+    {
+     "selector": "p.my-week-note",
+     "box": {
+      "x": 36,
+      "y": 880.3125,
+      "width": 248,
+      "height": 356,
+      "top": 880.3125,
+      "right": 284,
+      "bottom": 1236.3125,
+      "left": 36
+     },
+     "style": {
+      "font": "",
+      "fontSize": "30px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(28, 28, 28)",
+      "background": "rgb(246, 247, 248)",
+      "backgroundImage": "none",
+      "padding": "10px 12px",
+      "gap": "8px",
+      "radius": "10px",
+      "border": "0px none rgb(28, 28, 28)",
+      "boxShadow": "none",
+      "display": "flex",
+      "grid": "none",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    }
+   ]
+  },
+  {
+   "selector": "section.employee-view-surface.employee-schedule-agenda.my-schedule-agenda",
+   "box": {
+    "x": 16,
+    "y": 1408.3125,
+    "width": 288,
+    "height": 2941.15625,
+    "top": 1408.3125,
+    "right": 304,
+    "bottom": 4349.46875,
+    "left": 16
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgb(255, 255, 255)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "20px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "rgba(16, 40, 38, 0.05) 0px 1px 2px 0px, rgba(16, 40, 38, 0.06) 0px 8px 24px 0px",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "children": [
+    {
+     "selector": "div.my-agenda-heading",
+     "box": {
+      "x": 16,
+      "y": 1408.3125,
+      "width": 288,
+      "height": 216,
+      "top": 1408.3125,
+      "right": 304,
+      "bottom": 1624.3125,
+      "left": 16
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "16px 20px",
+      "gap": "16px",
+      "radius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "display": "block",
+      "grid": "none",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    },
+    {
+     "selector": "article#schedule-2026-10-19",
+     "box": {
+      "x": 16,
+      "y": 1624.3125,
+      "width": 288,
+      "height": 297.59375,
+      "top": 1624.3125,
+      "right": 304,
+      "bottom": 1921.90625,
+      "left": 16
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "color(srgb 0.948235 0.974118 0.971961)",
+      "backgroundImage": "none",
+      "padding": "18px 20px",
+      "gap": "14px",
+      "radius": "0px",
+      "border": "0px none rgb(22, 25, 28)",
+      "boxShadow": "none",
+      "display": "grid",
+      "grid": "82px 152px",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    },
+    {
+     "selector": "article#schedule-2026-10-20",
+     "box": {
+      "x": 16,
+      "y": 1921.90625,
+      "width": 288,
+      "height": 404.59375,
+      "top": 1921.90625,
+      "right": 304,
+      "bottom": 2326.5,
+      "left": 16
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "18px 20px",
+      "gap": "14px",
+      "radius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "display": "grid",
+      "grid": "80px 154px",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    },
+    {
+     "selector": "article#schedule-2026-10-21",
+     "box": {
+      "x": 16,
+      "y": 2326.5,
+      "width": 288,
+      "height": 404.59375,
+      "top": 2326.5,
+      "right": 304,
+      "bottom": 2731.09375,
+      "left": 16
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "18px 20px",
+      "gap": "14px",
+      "radius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "display": "grid",
+      "grid": "80px 154px",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    },
+    {
+     "selector": "article#schedule-2026-10-22",
+     "box": {
+      "x": 16,
+      "y": 2731.09375,
+      "width": 288,
+      "height": 404.59375,
+      "top": 2731.09375,
+      "right": 304,
+      "bottom": 3135.6875,
+      "left": 16
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "18px 20px",
+      "gap": "14px",
+      "radius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "display": "grid",
+      "grid": "80px 154px",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    }
+   ]
+  },
+  {
+   "selector": "section.my-schedule-review",
+   "box": {
+    "x": 16,
+    "y": 4365.46875,
+    "width": 288,
+    "height": 542,
+    "top": 4365.46875,
+    "right": 304,
+    "bottom": 4907.46875,
+    "left": 16
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgb(255, 255, 255)",
+    "backgroundImage": "none",
+    "padding": "20px",
+    "gap": "12px",
+    "radius": "20px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "rgba(16, 40, 38, 0.05) 0px 1px 2px 0px, rgba(16, 40, 38, 0.06) 0px 8px 24px 0px",
+    "display": "grid",
+    "grid": "40px 196px",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "children": [
+    {
+     "selector": "div.my-review-icon",
+     "box": {
+      "x": 36,
+      "y": 4567.46875,
+      "width": 32,
+      "height": 32,
+      "top": 4567.46875,
+      "right": 68,
+      "bottom": 4599.46875,
+      "left": 36
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(7, 117, 114)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "0px",
+      "gap": "normal",
+      "radius": "0px",
+      "border": "0px none rgb(7, 117, 114)",
+      "boxShadow": "none",
+      "display": "grid",
+      "grid": "32px",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    },
+    {
+     "selector": "div.my-review-copy",
+     "box": {
+      "x": 88,
+      "y": 4385.46875,
+      "width": 196,
+      "height": 396,
+      "top": 4385.46875,
+      "right": 284,
+      "bottom": 4781.46875,
+      "left": 88
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "0px",
+      "gap": "normal",
+      "radius": "0px",
+      "border": "0px none rgb(22, 25, 28)",
+      "boxShadow": "none",
+      "display": "block",
+      "grid": "none",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    },
+    {
+     "selector": "div.my-review-action",
+     "box": {
+      "x": 36,
+      "y": 4793.46875,
+      "width": 248,
+      "height": 94,
+      "top": 4793.46875,
+      "right": 284,
+      "bottom": 4887.46875,
+      "left": 36
+     },
+     "style": {
+      "font": "",
+      "fontSize": "34px",
+      "lineHeight": "48px",
+      "fontWeight": "400",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "padding": "4px 0px 0px",
+      "gap": "normal",
+      "radius": "0px",
+      "border": "0px none rgb(22, 25, 28)",
+      "boxShadow": "none",
+      "display": "block",
+      "grid": "none",
+      "overflow": "visible",
+      "whiteSpace": "normal",
+      "wordBreak": "normal"
+     }
+    }
+   ]
+  }
+ ],
+ "headRows": [],
+ "week": [
+  {
+   "selector": "nav.my-week-days",
+   "text": "Mon19Tue20Wed21Thu22Fri23Sat24Sun25",
+   "box": {
+    "x": 16,
+    "y": 738.515625,
+    "width": 288,
+    "height": 129.796875,
+    "top": 738.515625,
+    "right": 304,
+    "bottom": 868.3125,
+    "left": 16
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "6px 10px",
+    "gap": "0px",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "repeat(7, minmax(0px, 1fr))",
+    "overflow": "auto",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "a.my-week-day.is-today",
+   "text": "Mon19",
+   "box": {
+    "x": 26,
+    "y": 744.515625,
+    "width": 88,
+    "height": 117.796875,
+    "top": 744.515625,
+    "right": 114,
+    "bottom": 862.3125,
+    "left": 26
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "51px",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "background": "rgb(7, 117, 114)",
+    "backgroundImage": "none",
+    "padding": "8px 2px",
+    "gap": "3px",
+    "radius": "10px",
+    "border": "1px solid rgba(0, 0, 0, 0)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "a.my-week-day",
+   "text": "Tue20",
+   "box": {
+    "x": 114,
+    "y": 744.515625,
+    "width": 88,
+    "height": 117.796875,
+    "top": 744.515625,
+    "right": 202,
+    "bottom": 862.3125,
+    "left": 114
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "51px",
+    "fontWeight": "400",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "8px 2px",
+    "gap": "3px",
+    "radius": "10px",
+    "border": "1px solid rgba(0, 0, 0, 0)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "a.my-week-day",
+   "text": "Wed21",
+   "box": {
+    "x": 202,
+    "y": 744.515625,
+    "width": 88,
+    "height": 117.796875,
+    "top": 744.515625,
+    "right": 290,
+    "bottom": 862.3125,
+    "left": 202
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "51px",
+    "fontWeight": "400",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "8px 2px",
+    "gap": "3px",
+    "radius": "10px",
+    "border": "1px solid rgba(0, 0, 0, 0)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "a.my-week-day",
+   "text": "Thu22",
+   "box": {
+    "x": 290,
+    "y": 744.515625,
+    "width": 88,
+    "height": 117.796875,
+    "top": 744.515625,
+    "right": 378,
+    "bottom": 862.3125,
+    "left": 290
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "51px",
+    "fontWeight": "400",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "8px 2px",
+    "gap": "3px",
+    "radius": "10px",
+    "border": "1px solid rgba(0, 0, 0, 0)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "a.my-week-day",
+   "text": "Fri23",
+   "box": {
+    "x": 378,
+    "y": 744.515625,
+    "width": 88,
+    "height": 117.796875,
+    "top": 744.515625,
+    "right": 466,
+    "bottom": 862.3125,
+    "left": 378
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "51px",
+    "fontWeight": "400",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "8px 2px",
+    "gap": "3px",
+    "radius": "10px",
+    "border": "1px solid rgba(0, 0, 0, 0)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "a.my-week-day",
+   "text": "Sat24",
+   "box": {
+    "x": 466,
+    "y": 744.515625,
+    "width": 88,
+    "height": 117.796875,
+    "top": 744.515625,
+    "right": 554,
+    "bottom": 862.3125,
+    "left": 466
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "51px",
+    "fontWeight": "400",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "8px 2px",
+    "gap": "3px",
+    "radius": "10px",
+    "border": "1px solid rgba(0, 0, 0, 0)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "a.my-week-day",
+   "text": "Sun25",
+   "box": {
+    "x": 554,
+    "y": 744.515625,
+    "width": 88,
+    "height": 117.796875,
+    "top": 744.515625,
+    "right": 642,
+    "bottom": 862.3125,
+    "left": 554
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "51px",
+    "fontWeight": "400",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "8px 2px",
+    "gap": "3px",
+    "radius": "10px",
+    "border": "1px solid rgba(0, 0, 0, 0)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "p.my-week-note",
+   "text": "Your Main Office shifts are published. West Office hasn’t published this week yet.",
+   "box": {
+    "x": 36,
+    "y": 880.3125,
+    "width": 248,
+    "height": 356,
+    "top": 880.3125,
+    "right": 284,
+    "bottom": 1236.3125,
+    "left": 36
+   },
+   "style": {
+    "font": "",
+    "fontSize": "30px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(28, 28, 28)",
+    "background": "rgb(246, 247, 248)",
+    "backgroundImage": "none",
+    "padding": "10px 12px",
+    "gap": "8px",
+    "radius": "10px",
+    "border": "0px none rgb(28, 28, 28)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "section.my-schedule-review",
+   "text": "Confirm you’ve seen your scheduleCheck your shifts for this week, then confirm.Confirm schedule",
+   "box": {
+    "x": 16,
+    "y": 4365.46875,
+    "width": 288,
+    "height": 542,
+    "top": 4365.46875,
+    "right": 304,
+    "bottom": 4907.46875,
+    "left": 16
+   },
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgb(255, 255, 255)",
+    "backgroundImage": "none",
+    "padding": "20px",
+    "gap": "12px",
+    "radius": "20px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "rgba(16, 40, 38, 0.05) 0px 1px 2px 0px, rgba(16, 40, 38, 0.06) 0px 8px 24px 0px",
+    "display": "grid",
+    "grid": "40px 196px",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  }
+ ],
+ "availability": [],
+ "profile": [],
+ "shell": [
+  {
+   "selector": "header.mobile-header",
+   "text": "Northside QA WorkforceNorthside QA WorkforceMy scheduleWorkforce3+ARAlexandra RiveraSigned in as Alexandra RiveraYour profileSign outClose",
+   "box": {
+    "x": 0,
+    "y": 0,
+    "width": 320,
+    "height": 76.515625,
+    "top": 0,
+    "right": 320,
+    "bottom": 76.515625,
+    "left": 0
+   },
+   "style": {
+    "font": "28px / 40.6px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "28px",
+    "lineHeight": "40.6px",
+    "fontWeight": "400",
+    "color": "rgb(255, 255, 255)",
+    "background": "rgb(28, 74, 71)",
+    "backgroundImage": "none",
+    "padding": "12px 16px",
+    "gap": "8px 0px",
+    "radius": "0px",
+    "border": "0px none rgb(255, 255, 255)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  },
+  {
+   "selector": "nav.mobile-nav",
+   "text": "HomeScheduleRequestsPayMoreMoreUpdatesNotificationsProfileAlexandra RiveraSign outClose",
+   "box": {
+    "x": 0,
+    "y": 761,
+    "width": 320,
+    "height": 83,
+    "top": 761,
+    "right": 320,
+    "bottom": 844,
+    "left": 0
+   },
+   "style": {
+    "font": "28px / 40.6px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "28px",
+    "lineHeight": "40.6px",
+    "fontWeight": "400",
+    "color": "rgb(28, 28, 28)",
+    "background": "rgba(255, 255, 255, 0.96)",
+    "backgroundImage": "none",
+    "padding": "6px 4px",
+    "gap": "4px",
+    "radius": "0px",
+    "border": "",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "repeat(5, minmax(0px, 1fr))",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  }
+ ],
+ "alerts": [
+  {
+   "selector": "p.my-week-note",
+   "text": "Your Main Office shifts are published. West Office hasn’t published this week yet.",
+   "box": {
+    "x": 36,
+    "y": 880.3125,
+    "width": 248,
+    "height": 356,
+    "top": 880.3125,
+    "right": 284,
+    "bottom": 1236.3125,
+    "left": 36
+   },
+   "style": {
+    "font": "",
+    "fontSize": "30px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(28, 28, 28)",
+    "background": "rgb(246, 247, 248)",
+    "backgroundImage": "none",
+    "padding": "10px 12px",
+    "gap": "8px",
+    "radius": "10px",
+    "border": "0px none rgb(28, 28, 28)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   }
+  }
+ ],
+ "splits": [],
+ "midword": [
+  {
+   "word": "published",
+   "selector": "span.",
+   "rects": [
+    {
+     "x": 160,
+     "y": 1088.3125,
+     "width": 51,
+     "height": 36,
+     "top": 1088.3125,
+     "right": 211,
+     "bottom": 1124.3125,
+     "left": 160
+    },
+    {
+     "x": 211,
+     "y": 1088.3125,
+     "width": 10,
+     "height": 36,
+     "top": 1088.3125,
+     "right": 221,
+     "bottom": 1124.3125,
+     "left": 211
+    },
+    {
+     "x": 74,
+     "y": 1136.3125,
+     "width": 76,
+     "height": 36,
+     "top": 1136.3125,
+     "right": 150,
+     "bottom": 1172.3125,
+     "left": 74
+    }
+   ]
+  },
+  {
+   "word": "confirm",
+   "selector": "a.my-review-jump",
+   "rects": [
+    {
+     "x": 196,
+     "y": 1314.3125,
+     "width": 50,
+     "height": 36,
+     "top": 1314.3125,
+     "right": 246,
+     "bottom": 1350.3125,
+     "left": 196
+    },
+    {
+     "x": 246,
+     "y": 1314.3125,
+     "width": 12,
+     "height": 36,
+     "top": 1314.3125,
+     "right": 258,
+     "bottom": 1350.3125,
+     "left": 246
+    },
+    {
+     "x": 36,
+     "y": 1354.3125,
+     "width": 55,
+     "height": 36,
+     "top": 1354.3125,
+     "right": 91,
+     "bottom": 1390.3125,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "word": "assignments",
+   "selector": "span.",
+   "rects": [
+    {
+     "x": 172,
+     "y": 1529.3125,
+     "width": 84,
+     "height": 36,
+     "top": 1529.3125,
+     "right": 256,
+     "bottom": 1565.3125,
+     "left": 172
+    },
+    {
+     "x": 256,
+     "y": 1529.3125,
+     "width": 10,
+     "height": 36,
+     "top": 1529.3125,
+     "right": 266,
+     "bottom": 1565.3125,
+     "left": 256
+    },
+    {
+     "x": 36,
+     "y": 1569.3125,
+     "width": 81,
+     "height": 36,
+     "top": 1569.3125,
+     "right": 117,
+     "bottom": 1605.3125,
+     "left": 36
+    }
+   ]
+  }
+ ],
+ "clipped": [
+  {
+   "text": "Open shifts",
+   "selector": "a.nv-filter",
+   "clip": "header.nv-masthead.nv-pageband.nv-pageband--flat",
+   "box": {
+    "x": 191,
+    "y": 360.515625,
+    "width": 153,
+    "height": 36,
+    "top": 360.515625,
+    "right": 344,
+    "bottom": 396.515625,
+    "left": 191
+   },
+   "clipbox": {
+    "x": 0,
+    "y": 76.515625,
+    "width": 320,
+    "height": 348,
+    "top": 76.515625,
+    "right": 320,
+    "bottom": 424.515625,
+    "left": 0
+   }
+  }
+ ],
+ "texts": [
+  {
+   "selector": "h1.nv-masthead__title",
+   "text": "My schedule",
+   "style": {
+    "font": "600 60px / 72px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "60px",
+    "lineHeight": "72px",
+    "fontWeight": "600",
+    "color": "rgb(255, 255, 255)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(255, 255, 255)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 16,
+     "y": 88.515625,
+     "width": 82.375,
+     "height": 72,
+     "top": 88.515625,
+     "right": 98.375,
+     "bottom": 160.515625,
+     "left": 16
+    },
+    {
+     "x": 16,
+     "y": 160.515625,
+     "width": 235.453125,
+     "height": 72,
+     "top": 160.515625,
+     "right": 251.453125,
+     "bottom": 232.515625,
+     "left": 16
+    }
+   ]
+  },
+  {
+   "selector": "p.nv-masthead__summary",
+   "text": "7 shifts · 56h scheduled.",
+   "style": {
+    "font": "34px / 48px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "34px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(207, 227, 225)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(207, 227, 225)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 16,
+     "y": 243.515625,
+     "width": 189,
+     "height": 41,
+     "top": 243.515625,
+     "right": 205,
+     "bottom": 284.515625,
+     "left": 16
+    },
+    {
+     "x": 16,
+     "y": 291.515625,
+     "width": 160,
+     "height": 41,
+     "top": 291.515625,
+     "right": 176,
+     "bottom": 332.515625,
+     "left": 16
+    }
+   ]
+  },
+  {
+   "selector": "a.nv-filter",
+   "text": "My shifts",
+   "style": {
+    "font": "600 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "600",
+    "color": "rgb(7, 96, 95)",
+    "background": "rgb(255, 255, 255)",
+    "backgroundImage": "none",
+    "padding": "0px 14px",
+    "gap": "normal",
+    "radius": "999px",
+    "border": "0px none rgb(7, 96, 95)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "nowrap",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 30,
+     "y": 360.515625,
+     "width": 125,
+     "height": 36,
+     "top": 360.515625,
+     "right": 155,
+     "bottom": 396.515625,
+     "left": 30
+    }
+   ]
+  },
+  {
+   "selector": "a.nv-filter",
+   "text": "Open shifts",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(227, 239, 238)",
+    "background": "rgba(255, 255, 255, 0.1)",
+    "backgroundImage": "none",
+    "padding": "0px 14px",
+    "gap": "normal",
+    "radius": "999px",
+    "border": "0px none rgb(227, 239, 238)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "nowrap",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 191,
+     "y": 360.515625,
+     "width": 153,
+     "height": 36,
+     "top": 360.515625,
+     "right": 344,
+     "bottom": 396.515625,
+     "left": 191
+    }
+   ]
+  },
+  {
+   "selector": "h2#my-week-title",
+   "text": "Oct 19 – Oct 25",
+   "style": {
+    "font": "550 40px / 56px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "40px",
+    "lineHeight": "56px",
+    "fontWeight": "550",
+    "color": "rgb(28, 28, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(28, 28, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 68,
+     "y": 463.515625,
+     "width": 138.203125,
+     "height": 49,
+     "top": 463.515625,
+     "right": 206.203125,
+     "bottom": 512.515625,
+     "left": 68
+    },
+    {
+     "x": 68,
+     "y": 519.515625,
+     "width": 118.40625,
+     "height": 49,
+     "top": 519.515625,
+     "right": 186.40625,
+     "bottom": 568.515625,
+     "left": 68
+    }
+   ]
+  },
+  {
+   "selector": "p.",
+   "text": "2026",
+   "style": {
+    "font": "",
+    "fontSize": "30px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 68,
+     "y": 582.515625,
+     "width": 76,
+     "height": 36,
+     "top": 582.515625,
+     "right": 144,
+     "bottom": 618.515625,
+     "left": 68
+    }
+   ]
+  },
+  {
+   "selector": "p.",
+   "text": "Puerto Rico",
+   "style": {
+    "font": "",
+    "fontSize": "30px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 167,
+     "y": 582.515625,
+     "width": 87,
+     "height": 36,
+     "top": 582.515625,
+     "right": 254,
+     "bottom": 618.515625,
+     "left": 167
+    },
+    {
+     "x": 68,
+     "y": 630.515625,
+     "width": 58,
+     "height": 36,
+     "top": 630.515625,
+     "right": 126,
+     "bottom": 666.515625,
+     "left": 68
+    }
+   ]
+  },
+  {
+   "selector": "p.",
+   "text": "time",
+   "style": {
+    "font": "",
+    "fontSize": "30px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 126,
+     "y": 630.515625,
+     "width": 64,
+     "height": 36,
+     "top": 630.515625,
+     "right": 190,
+     "bottom": 666.515625,
+     "left": 126
+    }
+   ]
+  },
+  {
+   "selector": "a.my-week-today",
+   "text": "Today",
+   "style": {
+    "font": "",
+    "fontSize": "34px",
+    "lineHeight": "51px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgb(255, 255, 255)",
+    "backgroundImage": "none",
+    "padding": "0px 14px",
+    "gap": "normal",
+    "radius": "12px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 114.5,
+     "y": 688.015625,
+     "width": 91,
+     "height": 41,
+     "top": 688.015625,
+     "right": 205.5,
+     "bottom": 729.015625,
+     "left": 114.5
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Mon",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(255, 255, 255)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(255, 255, 255)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 40,
+     "y": 755.515625,
+     "width": 60,
+     "height": 36,
+     "top": 755.515625,
+     "right": 100,
+     "bottom": 791.515625,
+     "left": 40
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "19",
+   "style": {
+    "font": "",
+    "fontSize": "36px",
+    "lineHeight": "46.8px",
+    "fontWeight": "600",
+    "color": "rgb(255, 255, 255)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(255, 255, 255)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 47,
+     "y": 797.515625,
+     "width": 46,
+     "height": 44,
+     "top": 797.515625,
+     "right": 93,
+     "bottom": 841.515625,
+     "left": 47
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Tue",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 133.5,
+     "y": 755.515625,
+     "width": 49,
+     "height": 36,
+     "top": 755.515625,
+     "right": 182.5,
+     "bottom": 791.515625,
+     "left": 133.5
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "20",
+   "style": {
+    "font": "",
+    "fontSize": "36px",
+    "lineHeight": "46.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 135,
+     "y": 797.515625,
+     "width": 46,
+     "height": 44,
+     "top": 797.515625,
+     "right": 181,
+     "bottom": 841.515625,
+     "left": 135
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Wed",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 216,
+     "y": 755.515625,
+     "width": 60,
+     "height": 36,
+     "top": 755.515625,
+     "right": 276,
+     "bottom": 791.515625,
+     "left": 216
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "21",
+   "style": {
+    "font": "",
+    "fontSize": "36px",
+    "lineHeight": "46.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 223,
+     "y": 797.515625,
+     "width": 46,
+     "height": 44,
+     "top": 797.515625,
+     "right": 269,
+     "bottom": 841.515625,
+     "left": 223
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Thu",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 307.5,
+     "y": 755.515625,
+     "width": 53,
+     "height": 36,
+     "top": 755.515625,
+     "right": 360.5,
+     "bottom": 791.515625,
+     "left": 307.5
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "22",
+   "style": {
+    "font": "",
+    "fontSize": "36px",
+    "lineHeight": "46.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 311,
+     "y": 797.515625,
+     "width": 46,
+     "height": 44,
+     "top": 797.515625,
+     "right": 357,
+     "bottom": 841.515625,
+     "left": 311
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Fri",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 405,
+     "y": 755.515625,
+     "width": 34,
+     "height": 36,
+     "top": 755.515625,
+     "right": 439,
+     "bottom": 791.515625,
+     "left": 405
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "23",
+   "style": {
+    "font": "",
+    "fontSize": "36px",
+    "lineHeight": "46.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 399,
+     "y": 797.515625,
+     "width": 46,
+     "height": 44,
+     "top": 797.515625,
+     "right": 445,
+     "bottom": 841.515625,
+     "left": 399
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Sat",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 487.5,
+     "y": 755.515625,
+     "width": 45,
+     "height": 36,
+     "top": 755.515625,
+     "right": 532.5,
+     "bottom": 791.515625,
+     "left": 487.5
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "24",
+   "style": {
+    "font": "",
+    "fontSize": "36px",
+    "lineHeight": "46.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 487,
+     "y": 797.515625,
+     "width": 46,
+     "height": 44,
+     "top": 797.515625,
+     "right": 533,
+     "bottom": 841.515625,
+     "left": 487
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Sun",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 571.5,
+     "y": 755.515625,
+     "width": 53,
+     "height": 36,
+     "top": 755.515625,
+     "right": 624.5,
+     "bottom": 791.515625,
+     "left": 571.5
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "25",
+   "style": {
+    "font": "",
+    "fontSize": "36px",
+    "lineHeight": "46.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 575,
+     "y": 797.515625,
+     "width": 46,
+     "height": 44,
+     "top": 797.515625,
+     "right": 621,
+     "bottom": 841.515625,
+     "left": 575
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Your Main Office shifts are published. West Office hasn’t published this week yet.",
+   "style": {
+    "font": "",
+    "fontSize": "30px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(28, 28, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(28, 28, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 74,
+     "y": 896.3125,
+     "width": 133,
+     "height": 36,
+     "top": 896.3125,
+     "right": 207,
+     "bottom": 932.3125,
+     "left": 74
+    },
+    {
+     "x": 74,
+     "y": 944.3125,
+     "width": 154,
+     "height": 36,
+     "top": 944.3125,
+     "right": 228,
+     "bottom": 980.3125,
+     "left": 74
+    },
+    {
+     "x": 74,
+     "y": 992.3125,
+     "width": 185,
+     "height": 36,
+     "top": 992.3125,
+     "right": 259,
+     "bottom": 1028.3125,
+     "left": 74
+    },
+    {
+     "x": 74,
+     "y": 1040.3125,
+     "width": 152,
+     "height": 36,
+     "top": 1040.3125,
+     "right": 226,
+     "bottom": 1076.3125,
+     "left": 74
+    },
+    {
+     "x": 74,
+     "y": 1088.3125,
+     "width": 137,
+     "height": 36,
+     "top": 1088.3125,
+     "right": 211,
+     "bottom": 1124.3125,
+     "left": 74
+    },
+    {
+     "x": 211,
+     "y": 1088.3125,
+     "width": 10,
+     "height": 36,
+     "top": 1088.3125,
+     "right": 221,
+     "bottom": 1124.3125,
+     "left": 211
+    },
+    {
+     "x": 74,
+     "y": 1136.3125,
+     "width": 130,
+     "height": 36,
+     "top": 1136.3125,
+     "right": 204,
+     "bottom": 1172.3125,
+     "left": 74
+    },
+    {
+     "x": 74,
+     "y": 1184.3125,
+     "width": 125,
+     "height": 36,
+     "top": 1184.3125,
+     "right": 199,
+     "bottom": 1220.3125,
+     "left": 74
+    }
+   ]
+  },
+  {
+   "selector": "a.my-review-jump",
+   "text": "Your manager asks you to confirm this week",
+   "style": {
+    "font": "600 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "600",
+    "color": "rgb(138, 83, 0)",
+    "background": "rgb(253, 241, 220)",
+    "backgroundImage": "none",
+    "padding": "0px 20px",
+    "gap": "normal",
+    "radius": "12px",
+    "border": "0px none rgb(138, 83, 0)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 1274.3125,
+     "width": 190,
+     "height": 36,
+     "top": 1274.3125,
+     "right": 226,
+     "bottom": 1310.3125,
+     "left": 36
+    },
+    {
+     "x": 36,
+     "y": 1314.3125,
+     "width": 210,
+     "height": 36,
+     "top": 1314.3125,
+     "right": 246,
+     "bottom": 1350.3125,
+     "left": 36
+    },
+    {
+     "x": 246,
+     "y": 1314.3125,
+     "width": 12,
+     "height": 36,
+     "top": 1314.3125,
+     "right": 258,
+     "bottom": 1350.3125,
+     "left": 246
+    },
+    {
+     "x": 36,
+     "y": 1354.3125,
+     "width": 193,
+     "height": 36,
+     "top": 1354.3125,
+     "right": 229,
+     "bottom": 1390.3125,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "h2#my-agenda-title",
+   "text": "Your week at a glance",
+   "style": {
+    "font": "600 38px / 50px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "38px",
+    "lineHeight": "50px",
+    "fontWeight": "600",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 1426.3125,
+     "width": 174.875,
+     "height": 46,
+     "top": 1426.3125,
+     "right": 210.875,
+     "bottom": 1472.3125,
+     "left": 36
+    },
+    {
+     "x": 36,
+     "y": 1476.3125,
+     "width": 182.734375,
+     "height": 46,
+     "top": 1476.3125,
+     "right": 218.734375,
+     "bottom": 1522.3125,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Published assignments only",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 1529.3125,
+     "width": 220,
+     "height": 36,
+     "top": 1529.3125,
+     "right": 256,
+     "bottom": 1565.3125,
+     "left": 36
+    },
+    {
+     "x": 256,
+     "y": 1529.3125,
+     "width": 10,
+     "height": 36,
+     "top": 1529.3125,
+     "right": 266,
+     "bottom": 1565.3125,
+     "left": 256
+    },
+    {
+     "x": 36,
+     "y": 1569.3125,
+     "width": 145,
+     "height": 36,
+     "top": 1569.3125,
+     "right": 181,
+     "bottom": 1605.3125,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Mon",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(7, 117, 114)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(7, 117, 114)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 1644.3125,
+     "width": 60,
+     "height": 36,
+     "top": 1644.3125,
+     "right": 96,
+     "bottom": 1680.3125,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "19",
+   "style": {
+    "font": "",
+    "fontSize": "54px",
+    "lineHeight": "56.7px",
+    "fontWeight": "500",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 1681.3125,
+     "width": 66.234375,
+     "height": 65,
+     "top": 1681.3125,
+     "right": 102.234375,
+     "bottom": 1746.3125,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "small.",
+   "text": "Today",
+   "style": {
+    "font": "",
+    "fontSize": "30px",
+    "lineHeight": "45px",
+    "fontWeight": "600",
+    "color": "rgb(7, 117, 114)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(7, 117, 114)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 1751,
+     "width": 82,
+     "height": 36,
+     "top": 1751,
+     "right": 118,
+     "bottom": 1787,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "8:00 AM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 132,
+     "y": 1644.3125,
+     "width": 125.40625,
+     "height": 39,
+     "top": 1644.3125,
+     "right": 257.40625,
+     "bottom": 1683.3125,
+     "left": 132
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "4:00 PM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 132,
+     "y": 1689.109375,
+     "width": 123.40625,
+     "height": 39,
+     "top": 1689.109375,
+     "right": 255.40625,
+     "bottom": 1728.109375,
+     "left": 132
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-location",
+   "text": "Main Office",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "5px",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 153,
+     "y": 1739.90625,
+     "width": 65,
+     "height": 36,
+     "top": 1739.90625,
+     "right": 218,
+     "bottom": 1775.90625,
+     "left": 153
+    },
+    {
+     "x": 153,
+     "y": 1779.90625,
+     "width": 78,
+     "height": 36,
+     "top": 1779.90625,
+     "right": 231,
+     "bottom": 1815.90625,
+     "left": 153
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-position",
+   "text": "Customer Support",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 132,
+     "y": 1825.90625,
+     "width": 130,
+     "height": 36,
+     "top": 1825.90625,
+     "right": 262,
+     "bottom": 1861.90625,
+     "left": 132
+    },
+    {
+     "x": 132,
+     "y": 1865.90625,
+     "width": 106,
+     "height": 36,
+     "top": 1865.90625,
+     "right": 238,
+     "bottom": 1901.90625,
+     "left": 132
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Tue",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 1942.90625,
+     "width": 48,
+     "height": 36,
+     "top": 1942.90625,
+     "right": 84,
+     "bottom": 1978.90625,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "20",
+   "style": {
+    "font": "",
+    "fontSize": "54px",
+    "lineHeight": "56.7px",
+    "fontWeight": "500",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 1979.90625,
+     "width": 66.234375,
+     "height": 65,
+     "top": 1979.90625,
+     "right": 102.234375,
+     "bottom": 2044.90625,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "8:00 AM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 1942.90625,
+     "width": 125.40625,
+     "height": 39,
+     "top": 1942.90625,
+     "right": 255.40625,
+     "bottom": 1981.90625,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "4:00 PM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 1987.703125,
+     "width": 123.40625,
+     "height": 39,
+     "top": 1987.703125,
+     "right": 253.40625,
+     "bottom": 2026.703125,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-location",
+   "text": "Main Office",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "5px",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 151,
+     "y": 2038.5,
+     "width": 65,
+     "height": 36,
+     "top": 2038.5,
+     "right": 216,
+     "bottom": 2074.5,
+     "left": 151
+    },
+    {
+     "x": 151,
+     "y": 2078.5,
+     "width": 78,
+     "height": 36,
+     "top": 2078.5,
+     "right": 229,
+     "bottom": 2114.5,
+     "left": 151
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-position",
+   "text": "Customer Support",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 2124.5,
+     "width": 130,
+     "height": 36,
+     "top": 2124.5,
+     "right": 260,
+     "bottom": 2160.5,
+     "left": 130
+    },
+    {
+     "x": 130,
+     "y": 2164.5,
+     "width": 106,
+     "height": 36,
+     "top": 2164.5,
+     "right": 236,
+     "bottom": 2200.5,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Shift options",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 162.125,
+     "y": 2221.5,
+     "width": 62,
+     "height": 36,
+     "top": 2221.5,
+     "right": 224.125,
+     "bottom": 2257.5,
+     "left": 162.125
+    },
+    {
+     "x": 162.125,
+     "y": 2261.5,
+     "width": 100,
+     "height": 36,
+     "top": 2261.5,
+     "right": 262.125,
+     "bottom": 2297.5,
+     "left": 162.125
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Wed",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 2347.5,
+     "width": 60,
+     "height": 36,
+     "top": 2347.5,
+     "right": 96,
+     "bottom": 2383.5,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "21",
+   "style": {
+    "font": "",
+    "fontSize": "54px",
+    "lineHeight": "56.7px",
+    "fontWeight": "500",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 2384.5,
+     "width": 66.234375,
+     "height": 65,
+     "top": 2384.5,
+     "right": 102.234375,
+     "bottom": 2449.5,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "8:00 AM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 2347.5,
+     "width": 125.40625,
+     "height": 39,
+     "top": 2347.5,
+     "right": 255.40625,
+     "bottom": 2386.5,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "4:00 PM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 2392.296875,
+     "width": 123.40625,
+     "height": 39,
+     "top": 2392.296875,
+     "right": 253.40625,
+     "bottom": 2431.296875,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-location",
+   "text": "Main Office",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "5px",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 151,
+     "y": 2443.09375,
+     "width": 65,
+     "height": 36,
+     "top": 2443.09375,
+     "right": 216,
+     "bottom": 2479.09375,
+     "left": 151
+    },
+    {
+     "x": 151,
+     "y": 2483.09375,
+     "width": 78,
+     "height": 36,
+     "top": 2483.09375,
+     "right": 229,
+     "bottom": 2519.09375,
+     "left": 151
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-position",
+   "text": "Customer Support",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 2529.09375,
+     "width": 130,
+     "height": 36,
+     "top": 2529.09375,
+     "right": 260,
+     "bottom": 2565.09375,
+     "left": 130
+    },
+    {
+     "x": 130,
+     "y": 2569.09375,
+     "width": 106,
+     "height": 36,
+     "top": 2569.09375,
+     "right": 236,
+     "bottom": 2605.09375,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Shift options",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 162.125,
+     "y": 2626.09375,
+     "width": 62,
+     "height": 36,
+     "top": 2626.09375,
+     "right": 224.125,
+     "bottom": 2662.09375,
+     "left": 162.125
+    },
+    {
+     "x": 162.125,
+     "y": 2666.09375,
+     "width": 100,
+     "height": 36,
+     "top": 2666.09375,
+     "right": 262.125,
+     "bottom": 2702.09375,
+     "left": 162.125
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Thu",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 2752.09375,
+     "width": 52,
+     "height": 36,
+     "top": 2752.09375,
+     "right": 88,
+     "bottom": 2788.09375,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "22",
+   "style": {
+    "font": "",
+    "fontSize": "54px",
+    "lineHeight": "56.7px",
+    "fontWeight": "500",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 2789.09375,
+     "width": 66.234375,
+     "height": 65,
+     "top": 2789.09375,
+     "right": 102.234375,
+     "bottom": 2854.09375,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "8:00 AM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 2752.09375,
+     "width": 125.40625,
+     "height": 39,
+     "top": 2752.09375,
+     "right": 255.40625,
+     "bottom": 2791.09375,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "4:00 PM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 2796.890625,
+     "width": 123.40625,
+     "height": 39,
+     "top": 2796.890625,
+     "right": 253.40625,
+     "bottom": 2835.890625,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-location",
+   "text": "Main Office",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "5px",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 151,
+     "y": 2847.6875,
+     "width": 65,
+     "height": 36,
+     "top": 2847.6875,
+     "right": 216,
+     "bottom": 2883.6875,
+     "left": 151
+    },
+    {
+     "x": 151,
+     "y": 2887.6875,
+     "width": 78,
+     "height": 36,
+     "top": 2887.6875,
+     "right": 229,
+     "bottom": 2923.6875,
+     "left": 151
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-position",
+   "text": "Customer Support",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 2933.6875,
+     "width": 130,
+     "height": 36,
+     "top": 2933.6875,
+     "right": 260,
+     "bottom": 2969.6875,
+     "left": 130
+    },
+    {
+     "x": 130,
+     "y": 2973.6875,
+     "width": 106,
+     "height": 36,
+     "top": 2973.6875,
+     "right": 236,
+     "bottom": 3009.6875,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Shift options",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 162.125,
+     "y": 3030.6875,
+     "width": 62,
+     "height": 36,
+     "top": 3030.6875,
+     "right": 224.125,
+     "bottom": 3066.6875,
+     "left": 162.125
+    },
+    {
+     "x": 162.125,
+     "y": 3070.6875,
+     "width": 100,
+     "height": 36,
+     "top": 3070.6875,
+     "right": 262.125,
+     "bottom": 3106.6875,
+     "left": 162.125
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Fri",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 3156.6875,
+     "width": 33,
+     "height": 36,
+     "top": 3156.6875,
+     "right": 69,
+     "bottom": 3192.6875,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "23",
+   "style": {
+    "font": "",
+    "fontSize": "54px",
+    "lineHeight": "56.7px",
+    "fontWeight": "500",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 3193.6875,
+     "width": 66.234375,
+     "height": 65,
+     "top": 3193.6875,
+     "right": 102.234375,
+     "bottom": 3258.6875,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "8:00 AM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 3156.6875,
+     "width": 125.40625,
+     "height": 39,
+     "top": 3156.6875,
+     "right": 255.40625,
+     "bottom": 3195.6875,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "4:00 PM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 3201.484375,
+     "width": 123.40625,
+     "height": 39,
+     "top": 3201.484375,
+     "right": 253.40625,
+     "bottom": 3240.484375,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-location",
+   "text": "Main Office",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "5px",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 151,
+     "y": 3252.28125,
+     "width": 65,
+     "height": 36,
+     "top": 3252.28125,
+     "right": 216,
+     "bottom": 3288.28125,
+     "left": 151
+    },
+    {
+     "x": 151,
+     "y": 3292.28125,
+     "width": 78,
+     "height": 36,
+     "top": 3292.28125,
+     "right": 229,
+     "bottom": 3328.28125,
+     "left": 151
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-position",
+   "text": "Customer Support",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 3338.28125,
+     "width": 130,
+     "height": 36,
+     "top": 3338.28125,
+     "right": 260,
+     "bottom": 3374.28125,
+     "left": 130
+    },
+    {
+     "x": 130,
+     "y": 3378.28125,
+     "width": 106,
+     "height": 36,
+     "top": 3378.28125,
+     "right": 236,
+     "bottom": 3414.28125,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Shift options",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 162.125,
+     "y": 3435.28125,
+     "width": 62,
+     "height": 36,
+     "top": 3435.28125,
+     "right": 224.125,
+     "bottom": 3471.28125,
+     "left": 162.125
+    },
+    {
+     "x": 162.125,
+     "y": 3475.28125,
+     "width": 100,
+     "height": 36,
+     "top": 3475.28125,
+     "right": 262.125,
+     "bottom": 3511.28125,
+     "left": 162.125
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Sat",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 3561.28125,
+     "width": 44,
+     "height": 36,
+     "top": 3561.28125,
+     "right": 80,
+     "bottom": 3597.28125,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "24",
+   "style": {
+    "font": "",
+    "fontSize": "54px",
+    "lineHeight": "56.7px",
+    "fontWeight": "500",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 3598.28125,
+     "width": 66.234375,
+     "height": 65,
+     "top": 3598.28125,
+     "right": 102.234375,
+     "bottom": 3663.28125,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "8:00 AM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 3561.28125,
+     "width": 125.40625,
+     "height": 39,
+     "top": 3561.28125,
+     "right": 255.40625,
+     "bottom": 3600.28125,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "4:00 PM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 3606.078125,
+     "width": 123.40625,
+     "height": 39,
+     "top": 3606.078125,
+     "right": 253.40625,
+     "bottom": 3645.078125,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-location",
+   "text": "Main Office",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "5px",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 151,
+     "y": 3656.875,
+     "width": 65,
+     "height": 36,
+     "top": 3656.875,
+     "right": 216,
+     "bottom": 3692.875,
+     "left": 151
+    },
+    {
+     "x": 151,
+     "y": 3696.875,
+     "width": 78,
+     "height": 36,
+     "top": 3696.875,
+     "right": 229,
+     "bottom": 3732.875,
+     "left": 151
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-position",
+   "text": "Customer Support",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 3742.875,
+     "width": 130,
+     "height": 36,
+     "top": 3742.875,
+     "right": 260,
+     "bottom": 3778.875,
+     "left": 130
+    },
+    {
+     "x": 130,
+     "y": 3782.875,
+     "width": 106,
+     "height": 36,
+     "top": 3782.875,
+     "right": 236,
+     "bottom": 3818.875,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Shift options",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 162.125,
+     "y": 3839.875,
+     "width": 62,
+     "height": 36,
+     "top": 3839.875,
+     "right": 224.125,
+     "bottom": 3875.875,
+     "left": 162.125
+    },
+    {
+     "x": 162.125,
+     "y": 3879.875,
+     "width": 100,
+     "height": 36,
+     "top": 3879.875,
+     "right": 262.125,
+     "bottom": 3915.875,
+     "left": 162.125
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Sun",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 3965.875,
+     "width": 53,
+     "height": 36,
+     "top": 3965.875,
+     "right": 89,
+     "bottom": 4001.875,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "25",
+   "style": {
+    "font": "",
+    "fontSize": "54px",
+    "lineHeight": "56.7px",
+    "fontWeight": "500",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 4002.875,
+     "width": 66.234375,
+     "height": 65,
+     "top": 4002.875,
+     "right": 102.234375,
+     "bottom": 4067.875,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "8:00 AM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 3965.875,
+     "width": 125.40625,
+     "height": 39,
+     "top": 3965.875,
+     "right": 255.40625,
+     "bottom": 4004.875,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "strong.",
+   "text": "4:00 PM",
+   "style": {
+    "font": "",
+    "fontSize": "32px",
+    "lineHeight": "44.8px",
+    "fontWeight": "600",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 4010.671875,
+     "width": 123.40625,
+     "height": 39,
+     "top": 4010.671875,
+     "right": 253.40625,
+     "bottom": 4049.671875,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-location",
+   "text": "Main Office",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "5px",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 151,
+     "y": 4061.46875,
+     "width": 65,
+     "height": 36,
+     "top": 4061.46875,
+     "right": 216,
+     "bottom": 4097.46875,
+     "left": 151
+    },
+    {
+     "x": 151,
+     "y": 4101.46875,
+     "width": 78,
+     "height": 36,
+     "top": 4101.46875,
+     "right": 229,
+     "bottom": 4137.46875,
+     "left": 151
+    }
+   ]
+  },
+  {
+   "selector": "span.my-shift-position",
+   "text": "Customer Support",
+   "style": {
+    "font": "30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 130,
+     "y": 4147.46875,
+     "width": 130,
+     "height": 36,
+     "top": 4147.46875,
+     "right": 260,
+     "bottom": 4183.46875,
+     "left": 130
+    },
+    {
+     "x": 130,
+     "y": 4187.46875,
+     "width": 106,
+     "height": 36,
+     "top": 4187.46875,
+     "right": 236,
+     "bottom": 4223.46875,
+     "left": 130
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Shift options",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 162.125,
+     "y": 4244.46875,
+     "width": 62,
+     "height": 36,
+     "top": 4244.46875,
+     "right": 224.125,
+     "bottom": 4280.46875,
+     "left": 162.125
+    },
+    {
+     "x": 162.125,
+     "y": 4284.46875,
+     "width": 100,
+     "height": 36,
+     "top": 4284.46875,
+     "right": 262.125,
+     "bottom": 4320.46875,
+     "left": 162.125
+    }
+   ]
+  },
+  {
+   "selector": "h2#my-review-title",
+   "text": "Confirm you’ve seen your schedule",
+   "style": {
+    "font": "600 38px / 50px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "38px",
+    "lineHeight": "50px",
+    "fontWeight": "600",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 88,
+     "y": 4387.46875,
+     "width": 137.015625,
+     "height": 46,
+     "top": 4387.46875,
+     "right": 225.015625,
+     "bottom": 4433.46875,
+     "left": 88
+    },
+    {
+     "x": 88,
+     "y": 4437.46875,
+     "width": 111.59375,
+     "height": 46,
+     "top": 4437.46875,
+     "right": 199.59375,
+     "bottom": 4483.46875,
+     "left": 88
+    },
+    {
+     "x": 88,
+     "y": 4487.46875,
+     "width": 164.875,
+     "height": 46,
+     "top": 4487.46875,
+     "right": 252.875,
+     "bottom": 4533.46875,
+     "left": 88
+    },
+    {
+     "x": 88,
+     "y": 4537.46875,
+     "width": 152.453125,
+     "height": 46,
+     "top": 4537.46875,
+     "right": 240.453125,
+     "bottom": 4583.46875,
+     "left": 88
+    }
+   ]
+  },
+  {
+   "selector": "p.",
+   "text": "Check your shifts for this week, then confirm.",
+   "style": {
+    "font": "",
+    "fontSize": "30px",
+    "lineHeight": "48px",
+    "fontWeight": "400",
+    "color": "rgb(75, 85, 99)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(75, 85, 99)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 88,
+     "y": 4595.46875,
+     "width": 153,
+     "height": 36,
+     "top": 4595.46875,
+     "right": 241,
+     "bottom": 4631.46875,
+     "left": 88
+    },
+    {
+     "x": 88,
+     "y": 4643.46875,
+     "width": 166,
+     "height": 36,
+     "top": 4643.46875,
+     "right": 254,
+     "bottom": 4679.46875,
+     "left": 88
+    },
+    {
+     "x": 88,
+     "y": 4691.46875,
+     "width": 144,
+     "height": 36,
+     "top": 4691.46875,
+     "right": 232,
+     "bottom": 4727.46875,
+     "left": 88
+    },
+    {
+     "x": 88,
+     "y": 4739.46875,
+     "width": 108,
+     "height": 36,
+     "top": 4739.46875,
+     "right": 196,
+     "bottom": 4775.46875,
+     "left": 88
+    }
+   ]
+  },
+  {
+   "selector": "button.employee-action.primary",
+   "text": "Confirm schedule",
+   "style": {
+    "font": "600 34px / 44px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "34px",
+    "lineHeight": "44px",
+    "fontWeight": "600",
+    "color": "rgb(255, 255, 255)",
+    "background": "rgb(7, 117, 114)",
+    "backgroundImage": "none",
+    "padding": "0px 20px",
+    "gap": "8px",
+    "radius": "12px",
+    "border": "0px none rgb(255, 255, 255)",
+    "boxShadow": "none",
+    "display": "inline-flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 97.5,
+     "y": 4800.46875,
+     "width": 125,
+     "height": 41,
+     "top": 4800.46875,
+     "right": 222.5,
+     "bottom": 4841.46875,
+     "left": 97.5
+    },
+    {
+     "x": 90,
+     "y": 4844.46875,
+     "width": 140,
+     "height": 41,
+     "top": 4844.46875,
+     "right": 230,
+     "bottom": 4885.46875,
+     "left": 90
+    }
+   ]
+  },
+  {
+   "selector": "summary.",
+   "text": "What changed in your schedule",
+   "style": {
+    "font": "500 30px / 40px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "30px",
+    "lineHeight": "40px",
+    "fontWeight": "500",
+    "color": "rgb(17, 24, 39)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "14px 20px",
+    "gap": "8px",
+    "radius": "0px",
+    "border": "0px none rgb(17, 24, 39)",
+    "boxShadow": "none",
+    "display": "flex",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 4939.46875,
+     "width": 226,
+     "height": 36,
+     "top": 4939.46875,
+     "right": 262,
+     "bottom": 4975.46875,
+     "left": 36
+    },
+    {
+     "x": 36,
+     "y": 4979.46875,
+     "width": 187,
+     "height": 36,
+     "top": 4979.46875,
+     "right": 223,
+     "bottom": 5015.46875,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "h2#my-schedule-more-title",
+   "text": "Planning ahead",
+   "style": {
+    "font": "600 38px / 50px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "38px",
+    "lineHeight": "50px",
+    "fontWeight": "600",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 36,
+     "y": 5069.46875,
+     "width": 151,
+     "height": 46,
+     "top": 5069.46875,
+     "right": 187,
+     "bottom": 5115.46875,
+     "left": 36
+    },
+    {
+     "x": 36,
+     "y": 5119.46875,
+     "width": 107,
+     "height": 46,
+     "top": 5119.46875,
+     "right": 143,
+     "bottom": 5165.46875,
+     "left": 36
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Shift requests",
+   "style": {
+    "font": "500 34px / 44px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "34px",
+    "lineHeight": "44px",
+    "fontWeight": "500",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 68,
+     "y": 5172.46875,
+     "width": 68,
+     "height": 41,
+     "top": 5172.46875,
+     "right": 136,
+     "bottom": 5213.46875,
+     "left": 68
+    },
+    {
+     "x": 68,
+     "y": 5216.46875,
+     "width": 134,
+     "height": 41,
+     "top": 5216.46875,
+     "right": 202,
+     "bottom": 5257.46875,
+     "left": 68
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Update availability",
+   "style": {
+    "font": "500 34px / 44px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "34px",
+    "lineHeight": "44px",
+    "fontWeight": "500",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 68,
+     "y": 5261.46875,
+     "width": 112,
+     "height": 41,
+     "top": 5261.46875,
+     "right": 180,
+     "bottom": 5302.46875,
+     "left": 68
+    },
+    {
+     "x": 68,
+     "y": 5305.46875,
+     "width": 155,
+     "height": 41,
+     "top": 5305.46875,
+     "right": 223,
+     "bottom": 5346.46875,
+     "left": 68
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Request time off",
+   "style": {
+    "font": "500 34px / 44px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "34px",
+    "lineHeight": "44px",
+    "fontWeight": "500",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 68,
+     "y": 5350.46875,
+     "width": 126,
+     "height": 41,
+     "top": 5350.46875,
+     "right": 194,
+     "bottom": 5391.46875,
+     "left": 68
+    },
+    {
+     "x": 68,
+     "y": 5394.46875,
+     "width": 114,
+     "height": 41,
+     "top": 5394.46875,
+     "right": 182,
+     "bottom": 5435.46875,
+     "left": 68
+    }
+   ]
+  },
+  {
+   "selector": "span.",
+   "text": "Add shifts to your calendar",
+   "style": {
+    "font": "500 34px / 44px Inter, \"Inter Fallback\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontSize": "34px",
+    "lineHeight": "44px",
+    "fontWeight": "500",
+    "color": "rgb(22, 25, 28)",
+    "background": "rgba(0, 0, 0, 0)",
+    "backgroundImage": "none",
+    "padding": "0px",
+    "gap": "normal",
+    "radius": "0px",
+    "border": "0px none rgb(22, 25, 28)",
+    "boxShadow": "none",
+    "display": "block",
+    "grid": "none",
+    "overflow": "visible",
+    "whiteSpace": "normal",
+    "wordBreak": "normal"
+   },
+   "rects": [
+    {
+     "x": 68,
+     "y": 5439.46875,
+     "width": 151,
+     "height": 41,
+     "top": 5439.46875,
+     "right": 219,
+     "bottom": 5480.46875,
+     "left": 68
+    },
+    {
+     "x": 68,
+     "y": 5483.46875,
+     "width": 105,
+     "height": 41,
+     "top": 5483.46875,
+     "right": 173,
+     "bottom": 5524.46875,
+     "left": 68
+    },
+    {
+     "x": 68,
+     "y": 5527.46875,
+     "width": 131,
+     "height": 41,
+     "top": 5527.46875,
+     "right": 199,
+     "bottom": 5568.46875,
+     "left": 68
+    }
+   ]
+  }
+ ],
+ "topCrop": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/3d19dda1206ad289d9b2-top.png",
+ "bottom": {
+  "scrollY": 4838,
+  "documentHeight": 5682,
+  "nav": {
+   "x": 0,
+   "y": 761,
+   "width": 320,
+   "height": 83,
+   "top": 761,
+   "right": 320,
+   "bottom": 844,
+   "left": 0
+  },
+  "main": {
+   "x": 0,
+   "y": -4761.484375,
+   "width": 320,
+   "height": 5605.953125,
+   "top": -4761.484375,
+   "right": 320,
+   "bottom": 844.46875,
+   "left": 0
+  },
+  "visualViewport": {
+   "height": 844,
+   "offsetTop": 0
+  }
+ },
+ "bottomCrop": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/core/passive-geometry/crops/3d19dda1206ad289d9b2-bottom.png"
+}
