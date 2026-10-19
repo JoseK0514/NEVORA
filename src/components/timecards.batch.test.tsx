@@ -40,13 +40,14 @@ it('shows employee period information and keeps approval controls out of the emp
  expect(html()).not.toContain('Your timecard');
  expect(commands).toHaveLength(0);
 });
-it('clears employee timecard rows after access denial on the native refresh control',async()=>{
+it.each([401,403])('clears employee timecard rows and distinguishes HTTP%i on native refresh',async(status)=>{
  manager=false;employeeCorporate=true;actorId='E1';let denied=false;
- vi.stubGlobal('fetch',async()=>denied?new Response(null,{status:403}):Response.json({...ready(),cards:[card('E1')]}));
+ vi.stubGlobal('fetch',async()=>denied?new Response(null,{status}):Response.json({...ready(),cards:[card('E1')]}));
  await mount();expect(html()).toContain('Your timecard');
  denied=true;
  (control(n=>n.type==='button'&&n.props['aria-label']==='Refresh timecards').onClick as ()=>unknown)();
- await flush();expect(html()).toContain('Sign in again to view your timecards.');
+ await flush();expect(html()).toContain(status===401?'Your session ended. Sign in again to view your timecards.':'Your access changed. Sign in again to check your timecards.');
+ expect(html()).toContain('href="/login"');
  expect(html()).not.toContain('Your timecard');
  expect(html()).not.toContain('Revision 0');
  expect(commands).toHaveLength(0);

@@ -72,7 +72,10 @@ export function CalendarSubscriptionPanel({authority}:{authority:string}){
   if(!visible.current||busyNow.current||pending.current&&!retry||!status||!('generation' in status))return;
   const command=retry&&pending.current?pending.current:{kind,operationId:crypto.randomUUID(),authority,expectedGeneration:status.generation};pending.current=command;
   const at=++generation.current,operation=++work.current,controller=new AbortController();request.current?.abort();request.current=controller;busyNow.current=true;setBusy(true);setUrl(null);setNotice('');
-  try{const response=await fetch('/api/employee/calendar-subscriptions',{method:'POST',headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json','Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal,body:JSON.stringify(command)});const result=await response.json() as CalendarManagementResult;
+  try{const response=await fetch('/api/employee/calendar-subscriptions',{method:'POST',headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json','Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal,body:JSON.stringify(command)});
+   if(at!==generation.current||!visible.current)return;
+   if(response.status===401||response.status===403){pending.current=null;setUrl(null);setStatus({state:'unauthorized',reason:'access_denied'});setNotice(response.status===401?'Your session ended. Sign in again to manage the link.':'Your access changed. Sign in again to check your access.');return;}
+   const result=await response.json() as CalendarManagementResult;
    if(at!==generation.current||!visible.current)return;
    if(result.status==='created'){pending.current=null;setUrl(result.url);setStatus({state:'active',id:result.id,generation:result.generation,issuedAt:new Date().toISOString(),allowedLocationIds:[],authority});setNotice('Link created.');}
    else if(result.status==='active_url_unavailable'){pending.current=null;setNotice('The link is active. Its URL cannot be retrieved; replace the link to create a new one.');await refresh();}

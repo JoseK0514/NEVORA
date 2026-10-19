@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Temporal } from '@js-temporal/polyfill';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { EmployeeTimeEntry } from '@/lib/employee-time';
@@ -46,6 +47,8 @@ function actionMessage(result:CorrectionActionResponse|null){
   if(result.state==='pending')return 'Correction request sent for manager review.';
   if(result.state==='conflict')return 'This record changed or already has a pending correction. Refresh before trying again.';
   if(result.state==='outcome_unknown')return 'The server outcome could not be confirmed. Retry the same request safely.';
+  if(result.state==='unavailable'&&result.httpStatus===401)return 'Your session ended. Sign in again to send your correction.';
+  if(result.state==='unavailable'&&result.httpStatus===403)return 'Your access changed. Sign in again to check your current access.';
   if(result.state==='unavailable')return 'We couldn’t send your correction. Try again. If this keeps happening, sign in again.';
   if(result.state==='invalid')return 'Check the proposed times and reason.';
   if(result.state==='blocked'){
@@ -177,7 +180,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
     <button className="employee-time-correction-trigger" type="button" aria-expanded={open} aria-controls={formId} onClick={()=>{setOpen(value=>!value);setStart('');setEnd('');setResult(current=>current?.state==='outcome_unknown'?current:null);}}>
       {open?'Cancel correction':'Request a correction'}
     </button>
-    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}</p>:null}
+    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
     {retry?<button className="employee-time-correction-retry" type="button" aria-disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
     {open?<form className="employee-time-correction-form" id={formId} onSubmit={submit}>
       <label>What needs correction?
@@ -293,7 +296,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
         {open?'Cancel':'Request a correction'}
       </button>
     </header>
-    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}</p>:null}
+    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
     {retry?<button className="employee-time-correction-retry" type="button" aria-disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
     {open&&ready?<form className="employee-time-correction-form missing" id="employee-missing-time-correction" onSubmit={submit}>
       <label>Location
@@ -310,7 +313,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
       <button className="employee-time-correction-submit" type="submit" aria-disabled={busy} disabled={!busy&&(retry!==null||!location||!reason.trim())}>{busy?'Sending…':'Send request'}</button>
     </form>:null}
     {loading&&!snapshot?<p className="employee-time-empty">Loading correction history…</p>:
-      snapshot?.state==='unavailable'?<p className="employee-time-empty">Correction history is unavailable right now.</p>:
+      snapshot?.state==='unavailable'?<p className="employee-time-empty">Correction history is unavailable right now.{snapshot.reason==='access_denied'?<> <Link href="/login">Sign in</Link></>:null}</p>:
       recent.length?<div className="employee-correction-history">
         {recent.map((item)=><div className="employee-correction-history-row" key={item.id}>
           <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>

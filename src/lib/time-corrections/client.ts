@@ -14,7 +14,7 @@ export type CorrectionActionResponse =
   | {state:'conflict'}
   | {state:'outcome_unknown';operationId:string}
   | {state:'invalid'}
-  | {state:'unavailable'};
+  | {state:'unavailable';httpStatus?:401|403};
 
 const object=(value:unknown):value is Record<string,unknown>=>Boolean(value)&&typeof value==='object'&&!Array.isArray(value);
 const uuid=(value:unknown):value is string=>typeof value==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
@@ -53,7 +53,7 @@ async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCo
     const response=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',headers:{
       Accept:'application/json','Content-Type':'application/json','X-Nevora-Time-Correction':'1',...(actorId?{'X-Nevora-Actor':actorId}:{}),...(authority?{'X-Nevora-Correction-Authority':authority}:{}),
     },body:serialized});
-    if(response.status===401||response.status===403)return {state:'unavailable'};
+    if(response.status===401||response.status===403)return {state:'unavailable',httpStatus:response.status};
     const result=action(await response.json());
     if('operationId' in result&&result.operationId!==body.operationId)return unknown;
     return result;
