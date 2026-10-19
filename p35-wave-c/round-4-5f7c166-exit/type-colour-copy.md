@@ -14,7 +14,7 @@ The coordinator reports that candidate `cbaadbc` already contains the shared-bor
 
 ## Checked and correct
 
-- Unchanged coordinator checker: [26/26 initial samples passed](evidence/checks-initial.json): all 13 Owner routes,320/100, Chromium and WebKit, axe enabled. No sampled text-floor, target, overflow, CLS, console or axe failure. Manual field-edge inspection remains required; axe does not close TC-WC-28.
+- Unchanged coordinator checker: [26/26 initial samples passed](evidence/checks-initial.json): all 13 Owner routes, 320/100, Chromium and WebKit, axe enabled. No sampled text-floor, target, overflow, CLS, console or axe failure. Manual field-edge inspection remains required; axe does not close TC-WC-28.
 - Earlier 141 baseline samples at the same source SHA remain available in `../round-4/baseline.json`; they are sampled evidence, not a completed exit matrix.
 
 ## Gaps

@@ -1,4 +1,4 @@
-**Not zero — source P1 WR-WC-25 remains; full exit evidence incomplete.** Exact `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8`. Fresh recheck confirms the dialog-label collapse and proves the proposed phone flex repair across all seven dialogs. A browser-only repair does not close the source finding or certify combined candidate UI.
+**Not zero — source P1 WR-WC-25 remains; full exit evidence incomplete.** Exact `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8`. Fresh recheck confirms the dialog-label collapse and proves the phone flex and pending-label centering repair across all seven dialogs. A browser-only repair does not close the source finding or certify combined candidate UI.
 
 ## Earlier findings
 
@@ -17,20 +17,25 @@ Exact browser-only rule tested:
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-dialog .wc-actions > .nv-btn {
     flex:0 0 auto;
   }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-dialog .wc-swap > span {
+    align-self:center;
+  }
 }
 ```
 
-One pending-label detail remains within this same finding's state recheck: after the flex repair, a 112px button reserves an 88px swap row, but the shorter Saving… text has 13px top and 58px bottom insets. See [pending proof](evidence/dialog-proof/chromium-320-200-Add_break_type-pending-proof.png). `align-self:center` on `.wc-swap > span` is the proposed completion for centered pending text; that extra rule was **not browser-tested** because the coordinator froze further cases for the final candidate gate. It is not counted again under Alignment.
+The pending-label completion stays within this finding. With flex alone, a 112px button reserves an 88px swap row, leaving shorter Saving… text with 13px top and 58px bottom insets. The coordinator authorized a separate limited [centering proof](evidence/dialog-center-proof.json): the exact dialog-scoped `align-self:center` rule above changes those insets to 35px/36px. [Before](evidence/dialog-center-proof/chromium-320-200-Add_break_type-pending-flex.png) and [after](evidence/dialog-center-proof/chromium-320-200-Add_break_type-pending-center.png) show the same 112px button. The rule is not counted again under Alignment.
 
 ## Checked and correct
 
-- **56 combinations / 280 records:** all seven dialogs,320/390,100/200%,Chromium and WebKit. Add/Edit/Archive break type;Add/Rename/Replace/Revoke device.
-- Exact flex rule: **zero label-box overflow** in 56 ready,56 pending and 56 blocked-failure cases. Source has 10 overflow cases before it. Heights after proof: 52/68/112px, according to text size and wrapping.
+- **56 combinations / 280 records:** all seven dialogs, 320/390, 100/200%,Chromium and WebKit. Add/Edit/Archive break type;Add/Rename/Replace/Revoke device.
+- Exact flex rule: **zero label-box overflow** in 56 ready, 56 pending and 56 blocked-failure cases. Source has 10 overflow cases before it. Heights after proof: 52/68/112px, according to text size and wrapping.
 - **56/56** Escape dismissals return focus to the exact opener; every double activation produces one intercepted request. No request reaches the server.
-- [Unchanged checker initial result](evidence/checks-initial.json): 26/26 samples, all 13 Owner routes,320/100,both engines,axe; no document overflow or undersized targets.
+- [Centering completion summary](evidence/dialog-center-summary.json): **28 cases / 168 records**, all seven dialogs at 320/390 and 200% in both engines. Ready and pending button bounds change by **0px**; all pending primary glyph centers are within **0.5px** of the button center. All ready, pending and blocked-failure labels/text remain within their buttons. Every case returns focus to its opener and sends exactly one held, locally aborted POST despite double activation. No page or hydration errors.
+- [Centering-run closure](evidence/runtime-closure-center.json): owned preview and PostgreSQL stopped; exact source and mirror verified clean. The original flex-only evidence and closure remain unchanged.
+- [Unchanged checker initial result](evidence/checks-initial.json): 26/26 samples, all 13 Owner routes, 320/100, both engines, axe; no document overflow or undersized targets.
 
 ## Gaps
 
-Remaining widths/roles/back and long-name variants,full matrix and earlier WR IDs remain incomplete. Candidate has not merged the Wave C components; future candidate overrides require combined recheck after an eligible merge. Desktop dialog rows and pending-label centering still need their specific checks.
+Remaining widths/roles/back and long-name variants, full matrix and earlier WR IDs remain incomplete. At the initial candidate freeze, candidate-only commit `7c79368` in `64f15e6` staged the flex rule; the coordinator owns its subsequent centering amendment and final commit ledger. Wave C components remain unmerged. Combined recheck follows an eligible merge. Desktop dialog rows remain outside this phone-scoped proof.
 
 Zero open P0–P2 in this area: **no**.

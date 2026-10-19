@@ -1,0 +1,23 @@
+{
+  "checkpoint": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+  "tree": "74eda5fc2d8ea8c14d3633b2cc8f9b755f303c44",
+  "startedAt": "2026-10-19T21:12:13.123Z",
+  "fixtureDate": "2026-10-19",
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true,
+  "errors": [],
+  "completedAt": "2026-10-19T21:14:28.772582+00:00",
+  "ownership": {
+    "source": "/workspace/inspect-wave-c",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "verificationError": null
+  },
+  "substitutedFiles": [
+    "src/lib/db.ts",
+    "src/test/integration/owned-pg-transport.ts",
+    "next-env.d.ts"
+  ],
+  "generatedDependenciesRemoved": true
+}

@@ -1,0 +1,370 @@
+{
+  "checkpoint": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+  "cases": 28,
+  "records": 168,
+  "completedCases": 28,
+  "engines": {
+    "chromium": 14,
+    "webkit": 14
+  },
+  "readyButtonBoundsUnchanged": 28,
+  "pendingButtonBoundsUnchanged": 28,
+  "focusReturns": 28,
+  "oneHeldPost": 28,
+  "centeredPendingPrimary": 28,
+  "maxPendingTextCenterError": 0.5,
+  "maxButtonBoundsDelta": 0,
+  "pendingButtonHeights": {
+    "68": 18,
+    "112": 10
+  },
+  "overflow": [],
+  "errors": [],
+  "consoleErrors": [],
+  "examples": [
+    {
+      "key": "chromium-320-200-Add_break_type",
+      "before": {
+        "button": {
+          "x": 20,
+          "y": 681,
+          "width": 280,
+          "height": 112,
+          "bottom": 793,
+          "right": 300
+        },
+        "text": {
+          "x": 96,
+          "y": 694,
+          "width": 128,
+          "height": 41,
+          "bottom": 735,
+          "right": 224
+        },
+        "top": 13,
+        "bottom": 58
+      },
+      "after": {
+        "button": {
+          "x": 20,
+          "y": 681,
+          "width": 280,
+          "height": 112,
+          "bottom": 793,
+          "right": 300
+        },
+        "text": {
+          "x": 96,
+          "y": 716,
+          "width": 128,
+          "height": 41,
+          "bottom": 757,
+          "right": 224
+        },
+        "top": 35,
+        "bottom": 36
+      }
+    },
+    {
+      "key": "chromium-320-200-Archive_Rest_break",
+      "before": {
+        "button": {
+          "x": 20,
+          "y": 632,
+          "width": 280,
+          "height": 112,
+          "bottom": 744,
+          "right": 300
+        },
+        "text": {
+          "x": 96,
+          "y": 645,
+          "width": 128,
+          "height": 41,
+          "bottom": 686,
+          "right": 224
+        },
+        "top": 13,
+        "bottom": 58
+      },
+      "after": {
+        "button": {
+          "x": 20,
+          "y": 632,
+          "width": 280,
+          "height": 112,
+          "bottom": 744,
+          "right": 300
+        },
+        "text": {
+          "x": 96,
+          "y": 667,
+          "width": 128,
+          "height": 41,
+          "bottom": 708,
+          "right": 224
+        },
+        "top": 35,
+        "bottom": 36
+      }
+    },
+    {
+      "key": "chromium-390-200-Add_break_type",
+      "before": {
+        "button": {
+          "x": 20,
+          "y": 676,
+          "width": 350,
+          "height": 68,
+          "bottom": 744,
+          "right": 370
+        },
+        "text": {
+          "x": 131,
+          "y": 689,
+          "width": 128,
+          "height": 41,
+          "bottom": 730,
+          "right": 259
+        },
+        "top": 13,
+        "bottom": 14
+      },
+      "after": {
+        "button": {
+          "x": 20,
+          "y": 676,
+          "width": 350,
+          "height": 68,
+          "bottom": 744,
+          "right": 370
+        },
+        "text": {
+          "x": 131,
+          "y": 689,
+          "width": 128,
+          "height": 41,
+          "bottom": 730,
+          "right": 259
+        },
+        "top": 13,
+        "bottom": 14
+      }
+    },
+    {
+      "key": "chromium-390-200-Archive_Rest_break",
+      "before": {
+        "button": {
+          "x": 20,
+          "y": 676,
+          "width": 350,
+          "height": 68,
+          "bottom": 744,
+          "right": 370
+        },
+        "text": {
+          "x": 131,
+          "y": 689,
+          "width": 128,
+          "height": 41,
+          "bottom": 730,
+          "right": 259
+        },
+        "top": 13,
+        "bottom": 14
+      },
+      "after": {
+        "button": {
+          "x": 20,
+          "y": 676,
+          "width": 350,
+          "height": 68,
+          "bottom": 744,
+          "right": 370
+        },
+        "text": {
+          "x": 131,
+          "y": 689,
+          "width": 128,
+          "height": 41,
+          "bottom": 730,
+          "right": 259
+        },
+        "top": 13,
+        "bottom": 14
+      }
+    },
+    {
+      "key": "webkit-320-200-Add_break_type",
+      "before": {
+        "button": {
+          "x": 20,
+          "y": 632.015625,
+          "width": 280,
+          "height": 112,
+          "bottom": 744.015625,
+          "right": 300
+        },
+        "text": {
+          "x": 87.7388687133789,
+          "y": 645.515625,
+          "width": 144.50665283203125,
+          "height": 41,
+          "bottom": 686.515625,
+          "right": 232.24552154541016
+        },
+        "top": 13.5,
+        "bottom": 57.5
+      },
+      "after": {
+        "button": {
+          "x": 20,
+          "y": 632.015625,
+          "width": 280,
+          "height": 112,
+          "bottom": 744.015625,
+          "right": 300
+        },
+        "text": {
+          "x": 87.7388687133789,
+          "y": 667.515625,
+          "width": 144.50665283203125,
+          "height": 41,
+          "bottom": 708.515625,
+          "right": 232.24552154541016
+        },
+        "top": 35.5,
+        "bottom": 35.5
+      }
+    },
+    {
+      "key": "webkit-320-200-Archive_Rest_break",
+      "before": {
+        "button": {
+          "x": 20,
+          "y": 632.015625,
+          "width": 280,
+          "height": 112,
+          "bottom": 744.015625,
+          "right": 300
+        },
+        "text": {
+          "x": 87.7388687133789,
+          "y": 645.515625,
+          "width": 144.50665283203125,
+          "height": 41,
+          "bottom": 686.515625,
+          "right": 232.24552154541016
+        },
+        "top": 13.5,
+        "bottom": 57.5
+      },
+      "after": {
+        "button": {
+          "x": 20,
+          "y": 632.015625,
+          "width": 280,
+          "height": 112,
+          "bottom": 744.015625,
+          "right": 300
+        },
+        "text": {
+          "x": 87.7388687133789,
+          "y": 667.515625,
+          "width": 144.50665283203125,
+          "height": 41,
+          "bottom": 708.515625,
+          "right": 232.24552154541016
+        },
+        "top": 35.5,
+        "bottom": 35.5
+      }
+    },
+    {
+      "key": "webkit-390-200-Add_break_type",
+      "before": {
+        "button": {
+          "x": 20,
+          "y": 676.015625,
+          "width": 350,
+          "height": 68,
+          "bottom": 744.015625,
+          "right": 370
+        },
+        "text": {
+          "x": 122.7388687133789,
+          "y": 689.515625,
+          "width": 144.50665283203125,
+          "height": 41,
+          "bottom": 730.515625,
+          "right": 267.24552154541016
+        },
+        "top": 13.5,
+        "bottom": 13.5
+      },
+      "after": {
+        "button": {
+          "x": 20,
+          "y": 676.015625,
+          "width": 350,
+          "height": 68,
+          "bottom": 744.015625,
+          "right": 370
+        },
+        "text": {
+          "x": 122.7388687133789,
+          "y": 689.515625,
+          "width": 144.50665283203125,
+          "height": 41,
+          "bottom": 730.515625,
+          "right": 267.24552154541016
+        },
+        "top": 13.5,
+        "bottom": 13.5
+      }
+    },
+    {
+      "key": "webkit-390-200-Archive_Rest_break",
+      "before": {
+        "button": {
+          "x": 20,
+          "y": 632,
+          "width": 350,
+          "height": 112,
+          "bottom": 744,
+          "right": 370
+        },
+        "text": {
+          "x": 122.7388687133789,
+          "y": 645.5,
+          "width": 144.50665283203125,
+          "height": 41,
+          "bottom": 686.5,
+          "right": 267.24552154541016
+        },
+        "top": 13.5,
+        "bottom": 57.5
+      },
+      "after": {
+        "button": {
+          "x": 20,
+          "y": 632,
+          "width": 350,
+          "height": 112,
+          "bottom": 744,
+          "right": 370
+        },
+        "text": {
+          "x": 122.7388687133789,
+          "y": 667.5,
+          "width": 144.50665283203125,
+          "height": 41,
+          "bottom": 708.5,
+          "right": 267.24552154541016
+        },
+        "top": 35.5,
+        "bottom": 35.5
+      }
+    }
+  ]
+}
