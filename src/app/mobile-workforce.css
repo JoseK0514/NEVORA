@@ -9,7 +9,7 @@ html body .app-shell.nevora-portal .mobile-workforce-action-symbol,
 html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.mobile-home-disclosure-summary,.mobile-home-disclosure-trigger) { display: none; }
 html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.mobile-home-disclosure,.mobile-home-disclosure-content) { display: contents; }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body :is(.app-shell.nevora-portal[data-mobile-workforce="true"], [data-mobile-clocker="true"]) {
     --mobile-masthead: #062959;
     --mobile-masthead-secondary: #DBE8F9;
@@ -223,7 +223,7 @@ html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.mobile-hom
 @media (max-width: 420px) {
   html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.rules-period-fields,.rules-hour-fields,.positions-fields,.add-location-fields,.edit-location-fields,.pw-fields) { grid-template-columns: minmax(0,1fr); }
 }
-@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 760px) and (prefers-reduced-motion: reduce), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.button,.av-button,.pw-button,.shift-action,.positions-button) { transition: none; }
   html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.button,.av-button,.pw-button,.shift-action,.positions-button):active { transform: none; }
 }
