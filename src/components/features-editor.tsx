@@ -2,12 +2,15 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircleIcon, InfoIcon } from "@phosphor-icons/react/ssr";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { toast } from "./toaster";
 import { MODULES, MODULE_IDS, blockerText, type ModuleBlockers, type ModuleId } from "@/lib/workspace-presentation/modules";
 import { WORD_PRESETS, type WordPresetId } from "@/lib/workspace-presentation/words";
+import { Notice } from "@/app/app/settings/wave-c-kit";
+import { ButtonLabel, FormActions, SwitchRow } from "@/app/app/settings/wave-c-form";
 
-/** Owner editor for company words and modules (B2). The server re-checks
+/** Owner editor for company words and modules (B2), Wave C kit layout. The server re-checks
  * every rule; a module with requests still waiting cannot be turned off. */
 type Command = { operationId: string; expectedRevision: number } & ({ section: "words"; preset: WordPresetId } | { section: "modules"; disabled: ModuleId[] });
 
@@ -36,7 +39,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       if (modulesChanged) commands.push({ operationId: crypto.randomUUID(), expectedRevision: expected, section: "modules", disabled: MODULE_IDS.filter(id => off.includes(id)) });
       pending.current = commands;
     }
-    setBusy(true); setNotice({ tone: "info", text: "Saving…" });
+    setBusy(true); setNotice(null);
     try {
       for (const [index, command] of pending.current.entries()) {
         const response = await fetch("/api/workspace-presentation", { method: "POST", cache: "no-store", headers: { "content-type": "application/json", "x-nevora-presentation": "1" }, body: JSON.stringify(command) });
@@ -52,54 +55,54 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       toast("Features saved");
       router.refresh();
     } catch {
-      setNotice({ tone: "error", text: "We couldn't confirm the save. Save again to retry safely, or reload to check." });
+      setNotice({ tone: "error", text: "We couldn’t confirm the save. Save again to retry safely, or reload to check." });
     } finally { setBusy(false); }
   }
 
-  return <div className="features-editor" data-revision={revision}>
-    <section className="brand-card" aria-labelledby="features-words-title">
-      <h2 id="features-words-title">Your team&rsquo;s words</h2>
-      <p className="brand-help">Used in the menu, settings and page titles. Spanish versions are ready for when NEVORA speaks Spanish.</p>
-      <div className="features-presets" role="radiogroup" aria-labelledby="features-words-title">
-        {WORD_PRESETS.map(p => <label key={p.id} className="features-preset" data-checked={words === p.id || undefined}>
-          <input type="radio" name="word-preset" value={p.id} checked={words === p.id} onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} />
-          <span className="features-preset-name">{p.name}</span>
-          <span className="features-preset-words">{p.en.people} · {p.en.locations}</span>
-        </label>)}
+  const changed = wordsChanged || modulesChanged;
+  return <div className="wc-main" data-revision={revision}>
+    <section className="nv-card" aria-labelledby="features-words-title">
+      <div className="nv-card__head"><h2 className="nv-card__title" id="features-words-title">Your team’s words</h2></div>
+      <div className="nv-card__body wc-fields">
+        <p className="wc-muted" id="features-words-help">Used in the menu, settings and page titles. Spanish versions are ready for when NEVORA speaks Spanish.</p>
+        <div className="wc-choices" role="radiogroup" aria-labelledby="features-words-title" aria-describedby="features-words-help">
+          {WORD_PRESETS.map(p => <label key={p.id} className="wc-choice" data-checked={words === p.id || undefined}>
+            <input type="radio" name="word-preset" value={p.id} checked={words === p.id} disabled={busy} onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} />
+            <span className="wc-choice__text">
+              <span className="wc-choice__name">{p.name}</span>
+              <span className="wc-choice__detail">{p.en.people} · {p.en.locations}</span>
+            </span>
+          </label>)}
+        </div>
       </div>
     </section>
 
-    <section className="brand-card" aria-labelledby="features-modules-title" id="features">
-      <h2 id="features-modules-title">Features</h2>
-      <p className="brand-help">Turning a feature off hides it everywhere and stops it on the server. Turn it back on any time; nothing is lost.</p>
-      <ul className="features-modules">
+    <section className="nv-card" aria-labelledby="features-modules-title" id="features">
+      <div className="nv-card__head"><h2 className="nv-card__title" id="features-modules-title">Features</h2></div>
+      <div className="nv-card__body">
+        <p className="wc-muted">Turning a feature off hides it everywhere and stops it on the server. Turn it back on any time; nothing is lost.</p>
+      </div>
+      <ul className="nv-rows wc-switches">
         {MODULES.map(m => {
           const on = !off.includes(m.id), waiting = blockers[m.id] ?? 0;
           const unavailable = m.requires === "payroll" && !payrollEnabled;
           const locked = on && waiting > 0 && !disabled.includes(m.id);
           const noteId = `module-${m.id}-note`;
-          return <li key={m.id} className="features-module" data-on={on && !unavailable}>
-            <div className="features-module-copy">
-              <span className="features-module-name" id={`module-${m.id}-name`}>{m.name}</span>
-              <span className="features-module-description">{m.description}</span>
-              {unavailable ? <span className="features-module-note" id={noteId}><InfoIcon size={16} aria-hidden="true" />Available when payroll is turned on for your company.</span>
-                : locked ? <span className="features-module-note" id={noteId}><InfoIcon size={16} aria-hidden="true" />{blockerText(m.id, waiting)}</span>
-                : !on ? <span className="features-module-note features-module-off" id={noteId}><InfoIcon size={16} aria-hidden="true" />{m.offNote}</span> : null}
-            </div>
-            <button type="button" role="switch" className="features-switch" aria-checked={on && !unavailable} aria-labelledby={`module-${m.id}-name`}
-              aria-describedby={unavailable || locked || !on ? noteId : undefined} disabled={busy || unavailable || locked} onClick={() => toggle(m.id)}>
-              <span className="features-switch-track" aria-hidden="true"><span className="features-switch-thumb" /></span>
-              <span className="features-switch-label" aria-hidden="true">{on && !unavailable ? "On" : "Off"}</span>
-            </button>
+          const note = unavailable ? "Available when payroll is turned on for your company." : locked ? blockerText(m.id, waiting) : !on ? m.offNote : null;
+          return <li key={m.id} className="wc-switch-item" data-on={on && !unavailable}>
+            <SwitchRow id={`module-${m.id}`} label={m.name} description={m.description} checked={on && !unavailable}
+              disabled={busy || unavailable || locked} onChange={() => toggle(m.id)} describedBy={note ? noteId : undefined} />
+            {note ? <p className="wc-switch-note wc-with-icon" id={noteId}><InfoIcon size={16} aria-hidden="true" />{note}</p> : null}
           </li>;
         })}
       </ul>
     </section>
 
-    <div className="brand-actions">
-      <button type="button" className="button primary" onClick={save} disabled={busy || (!wordsChanged && !modulesChanged)} aria-busy={busy || undefined}>{busy ? "Saving…" : "Save changes"}</button>
-      {wordsChanged || modulesChanged ? <span className="features-unsaved">Unsaved changes</span> : <span className="features-unsaved features-saved"><CheckCircleIcon size={16} aria-hidden="true" />All changes saved</span>}
-    </div>
-    {notice ? <p className={`brand-notice brand-notice-${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
+    {notice ? <div role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? "Not saved" : undefined}>{notice.text}</Notice></div> : null}
+    <p className="nv-sr" role="status">{busy ? "Saving…" : ""}</p>
+    <FormActions sticky>
+      <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={busy || !changed}><ButtonLabel pending={busy} idle="Save changes" busy="Saving…" /></button>
+      {changed ? <span className="wc-save-state">You have unsaved changes.</span> : <span className="wc-save-state wc-save-state--done"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" />All changes saved</span>}
+    </FormActions>
   </div>;
 }

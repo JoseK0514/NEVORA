@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { PageHeader } from '@/components/page-header';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { ClockerDeviceManager } from '@/components/clocker-device-manager';
 import { requireRoles } from '@/lib/auth/permissions';
 import { requireSessionMutationProof } from '@/lib/auth/session';
@@ -8,7 +7,7 @@ import { clockerDeviceView, type ClockerDeviceView, type ClockerLocationView } f
 import { listLocations } from '@/lib/data/locations';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { manageClockerDeviceAction } from './actions';
-import './clocker-devices.css';
+import { EmptyState, SettingsFrame } from '../wave-c-kit';
 
 export const dynamic = 'force-dynamic';
 export default async function ClockerDevicesPage() {
@@ -25,13 +24,13 @@ export default async function ClockerDevicesPage() {
       locations: locations.map(({ id, name, clockerKey, active }) => ({ id, name, clockerKey, active })),
     };
   } catch { data = null; }
-  return <div className="configuration-page clocker-devices-page">
-    <PageHeader title="Clocker devices" description="A dedicated tablet for every location. Access you control."
-      actions={<Link className="button secondary" href="/app/settings">Back to Settings</Link>} />
-    {data ? <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone}
-      locations={data.locations} action={manageClockerDeviceAction} />
-      : <section className="panel"><h2>Device setup is unavailable</h2>
-        <p>Clocker device data could not be loaded in this environment. No devices were changed.</p>
-        <Link className="button secondary" href="/app/settings/clocker">Try Again</Link></section>}
-  </div>;
+  if (data) return <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone} locations={data.locations} action={manageClockerDeviceAction} />;
+  return <SettingsFrame title="Clocker devices" summary="A shared tablet at each location, with access you control.">
+    <section className="nv-card" role="alert" aria-labelledby="clocker-unavailable-title">
+      <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="clocker-unavailable-title" title="Devices didn’t load"
+        action={<a className="nv-btn" data-kind="primary" href="/app/settings/clocker">Try again</a>}>
+        Clocker device data couldn’t be read. No devices were changed.
+      </EmptyState>
+    </section>
+  </SettingsFrame>;
 }

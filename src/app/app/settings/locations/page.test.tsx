@@ -18,8 +18,7 @@ vi.mock("@/lib/data/schedule-health", () => ({
   listLocationStaffingSettings: async () => [{ locationId: "west", minimumStaffPerShift: 1, requiresDesignatedLead: false }],
   listCoverageWindows: async () => [{ id: "west-coverage", locationId: "west", dayOfWeek: 1, startTime: "09:00", endTime: "17:00" }],
 }));
-vi.mock("@/components/action-menu", () => import("../../../../components/action-menu"));
-vi.mock("@/components/status-pill", () => import("../../../../components/status-pill"));
+vi.mock("@/components/kit/kit", () => import("../../../../components/kit/kit"));
 vi.mock("@/lib/scheduling/location-readiness", () => import("../../../../lib/scheduling/location-readiness"));
 import LocationsPage from "./page";
 import { LocationsSearch } from "./locations-search";
@@ -49,13 +48,13 @@ it("matches a short name without case sensitivity and preserves the query in sta
 });
 it.each([["setup", "East Office"], ["ready", "West Office"], ["inactive", "Old Office"]])("filters %s using the existing readiness evaluator", async (status, name) => {
   const html = await render(undefined, status);
-  expect(html).toContain(name); expect(html.match(/class="location-card"/g)).toHaveLength(1);
+  expect(html).toContain(name); expect(html.match(/data-location="/g)).toHaveLength(1);
   expect(html).toContain(`name="status" value="${status}"`);
 });
 it("combines filters with search and offers a clear reset for no matches", async () => {
   const html = await render("East", "ready");
   expect(html).toContain("No matching locations"); expect(html).toContain("Clear search and filters");
-  expect(html).not.toContain('class="location-card"');
+  expect(html).not.toContain('data-location="');
 });
 it("handles repeated or unknown URL parameters without crashing or hiding the directory", async () => {
   const html = await render(["East", "West"], ["ready", "inactive"]);
@@ -82,6 +81,6 @@ it("renders a progressive native search form and an unavailable state with recov
   expect(search).toContain('method="get"'); expect(search).toContain('action="/app/settings/locations"');
   expect(search).toContain('value="Office"'); expect(search).toContain('name="status" value="inactive"');
   expect(search).toContain('role="status"'); expect(search).not.toContain('disabled=""');
-  const error = renderToStaticMarkup(createElement(LocationsError, { retry: vi.fn() }));
+  const error = renderToStaticMarkup(createElement(LocationsError, { reset: vi.fn() }));
   expect(error).toContain('role="alert"'); expect(error).toContain("Try again"); expect(error).toContain('href="/app/settings"');
 });

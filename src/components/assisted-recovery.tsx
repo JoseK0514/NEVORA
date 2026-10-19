@@ -2,16 +2,14 @@
 
 import Link from 'next/link';
 import {useEffect,useRef,type FormEvent} from 'react';
-import {gsap} from 'gsap';
-import {ArrowLeftIcon} from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import {ShieldCheckIcon} from '@phosphor-icons/react/dist/ssr/ShieldCheck';
-import {IdentificationCardIcon} from '@phosphor-icons/react/dist/ssr/IdentificationCard';
-import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
-import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
+import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
-import {MinusIcon} from '@phosphor-icons/react/dist/ssr/Minus';
+import {CursorTextIcon} from '@phosphor-icons/react/dist/ssr/CursorText';
+import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import {keepWhole} from '@/lib/keep-whole';
+import {GuideCard,Notice,SettingsFrame} from '@/app/app/settings/wave-c-kit';
+import {ButtonLabel,Field,FieldErrors,FormActions,useFieldErrors} from '@/app/app/settings/wave-c-form';
 
 export type AssistedRecoveryProof={proof:string;expiresAt:string;employeeId:string};
 type Props={
@@ -21,73 +19,93 @@ type Props={
  issued:AssistedRecoveryProof|null;
  /** Prefill from the employee's page; Back then returns there. */
  employeeId?:string;
+ /** Where the page was opened from, when it wasn't an employee's page. */
+ from?:'settings';
  onSubmit:(event:FormEvent<HTMLFormElement>)=>void;
  onStartAgain:()=>void;
 };
 
-export function AssistedRecovery({hydrated,busy,message,issued,employeeId,onSubmit,onStartAgain}:Props){
- const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:'Back to employee'}:{href:'/app/employees',label:'Back to Employees'};
- const root=useRef<HTMLElement>(null),feedback=useRef<HTMLDivElement>(null),proof=useRef<HTMLInputElement>(null);
- const previousProof=useRef<AssistedRecoveryProof|null>(null),employee=useRef<HTMLInputElement>(null);
- useEffect(()=>{
-  const media=gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)',()=>{
-   gsap.from('.assisted-intro',{opacity:0,y:6,duration:0.35,ease:'power2.out',clearProps:'all'});
-  },root);
-  return()=>media.revert();
- },[]);
+/** Wave C: assisted account recovery on the kit (Owners and Managers). AccountRecovery keeps the request,
+ * the private-data clearing and the lifecycle; this is presentation only. */
+export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,onSubmit,onStartAgain}:Props){
+ // The band's Back names where it goes: the employee it was opened from, Settings, or Home.
+ const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:'Employee'}:from==='settings'?{href:'/app/settings',label:'Settings'}:{href:'/app',label:'Home'};
+ const feedback=useRef<HTMLDivElement>(null),proof=useRef<HTMLInputElement>(null);
+ const previousProof=useRef<AssistedRecoveryProof|null>(null),employee=useRef<HTMLInputElement&HTMLSelectElement&HTMLTextAreaElement>(null);
+ const {errors,handlers}=useFieldErrors({employeeId:{missing:'Enter the employee’s ID.'},attestation:{missing:'Describe how you verified their identity.',length:'Write at least 10 characters about how you verified them.'},confirm:{missing:'Confirm you verified their identity yourself.'}});
  useEffect(()=>{
   if(message||issued)feedback.current?.focus();
   else if(previousProof.current)employee.current?.focus();
   previousProof.current=issued;
  },[message,issued]);
+ const until=issued?keepWhole(new Date(issued.expiresAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})):'';
 
- return <section className="assisted-recovery" ref={root} aria-labelledby="assisted-title">
-  <Link className="assisted-back" href={back.href}><ArrowLeftIcon size={18} aria-hidden="true"/>{back.label}</Link>
-  <header className="assisted-intro">
-   <h1 id="assisted-title">Assisted account recovery</h1>
-   <p>Help a verified employee get back to their account.</p>
-  </header>
-  <div className="assisted-layout">
-   <div className="assisted-card">
-    {issued?<>
-     <div className="assisted-receipt" ref={feedback} tabIndex={-1} role="status" aria-labelledby="assisted-receipt-title">
-      <span className="assisted-icon assisted-success"><CheckCircleIcon size={26} weight="regular" aria-hidden="true"/></span>
-      <h2 id="assisted-receipt-title">Recovery code ready</h2>
-      <p>For <strong className="assisted-employee-id">{issued.employeeId}</strong>. Share it directly with the employee you verified.</p>
-      <div className="assisted-proof-meta"><span>Single use</span><span>Valid until <time dateTime={issued.expiresAt}>{new Date(issued.expiresAt).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</time></span></div>
-     </div>
-     <label className="assisted-label" htmlFor="assisted-proof">Issued recovery code</label>
-     <div className="assisted-proof-field"><input ref={proof} id="assisted-proof" readOnly value={issued.proof} autoComplete="off" spellCheck={false} aria-describedby="assisted-proof-hint"/><button type="button" onClick={()=>{proof.current?.focus();proof.current?.select();}}>Select code</button></div>
-     <p className="assisted-hint" id="assisted-proof-hint">Select and copy the code for a private handoff. Never post it in a shared channel.</p>
-     <div className="assisted-next"><h3>What the employee does next</h3><p>Open <Link href="/reset-access">Reset access</Link>, enter this code, and choose a new password. Then sign in again.</p></div>
-     <p className="assisted-hint assisted-private">For privacy, the code is hidden when you leave this page, switch apps, or go offline. It expires after 15 minutes.</p>
-     <button className="assisted-secondary" type="button" onClick={onStartAgain}>Prepare another code<ArrowRightIcon size={18} aria-hidden="true"/></button>
-     <p className="assisted-hint">Issuing another code retires any unused earlier code. Preparing the form alone does not cancel this one.</p>
-    </>:<>
-     <div className="assisted-card-heading"><span className="assisted-icon"><ShieldCheckIcon size={25} weight="regular" aria-hidden="true"/></span><div><h2>Verify the employee</h2><p>Confirm their identity before issuing a code.</p></div></div>
-     <noscript><p className="assisted-error assisted-no-script">Enable JavaScript to issue a recovery code. {back.label} remains available.</p></noscript>
-     <form onSubmit={onSubmit} aria-busy={busy}>
-      <fieldset disabled={!hydrated||busy}>
-       <div className="assisted-field"><label htmlFor="assisted-employee">Employee ID</label><input ref={employee} id="assisted-employee" name="employeeId" defaultValue={employeeId} required maxLength={200} autoComplete="username" aria-describedby="assisted-employee-hint"/><p id="assisted-employee-hint" className="assisted-hint">Use the exact ID in your workplace records.</p></div>
-       <div className="assisted-field"><label htmlFor="assisted-attestation">Identity verification record</label><textarea id="assisted-attestation" name="attestation" required minLength={10} maxLength={500} rows={4} placeholder="Briefly describe how you verified their identity." aria-describedby="assisted-verification-hint"/><p id="assisted-verification-hint" className="assisted-hint">Use an established in-person or trusted workplace process. Do not substitute a newly supplied email or phone number. Omit sensitive documents, codes and personal details.</p></div>
-       <label className="assisted-confirm"><input type="checkbox" required/><span>I independently confirmed this employee’s identity and can transfer this code securely.</span></label>
-       <button className="assisted-submit" type="submit">{busy?'Issuing recovery code…':'Issue recovery code'}{!busy?<ArrowRightIcon size={20} aria-hidden="true"/>:null}</button>
-      </fieldset>
-     </form>
-     {busy?<p className="assisted-hint" role="status">Checking your access and preparing a single-use code.</p>:null}
-     {message?<div className="assisted-error" ref={feedback} tabIndex={-1} role="alert"><h3>{message.includes('access ended')?'Sign in again':message.includes('expired')?'Recovery code expired':'Proof could not be confirmed'}</h3><p>{message}</p>{message.includes('access ended')?<Link className="assisted-error-link" href="/login">Go to sign in<ArrowRightIcon size={18} aria-hidden="true"/></Link>:null}</div>:null}
-    </>}
+ return <SettingsFrame back={back} title="Account recovery"
+  summary="Help a verified employee get back into their account."
+  aside={<GuideCard title="How recovery works">
+   <ol className="wc-steps">
+    <li><strong>Verify identity</strong>Use a trusted workplace process and record how you confirmed it.</li>
+    <li><strong>Share the code privately</strong>The code works once and expires after 15 minutes.</li>
+    <li><strong>The employee resets access</strong>They choose a new password and sign in again.</li>
+   </ol>
+   <details className="wc-disclosure"><summary>What changes after a reset?<CaretDownIcon className="wc-caret" size={16} weight="bold" aria-hidden="true"/></summary>
+    <div className="wc-disclosure__body"><p>Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.</p><p>Issuing another code retires unused earlier codes.</p></div></details>
+  </GuideCard>}>
+  {issued?<section className="nv-card" aria-labelledby="assisted-receipt-title">
+   <div className="wc-receipt" ref={feedback} tabIndex={-1} role="status" aria-labelledby="assisted-receipt-title">
+    <span className="nv-tile" data-tone="done" aria-hidden="true"><CheckCircleIcon size={22} weight="fill"/></span>
+    <div>
+     <h2 className="nv-card__title" id="assisted-receipt-title">Recovery code ready</h2>
+     <p className="wc-muted">For <strong className="wc-strong wc-path">{issued.employeeId}</strong>. Share it directly with the employee you verified.</p>
+    </div>
    </div>
-   <aside className="assisted-guide" aria-labelledby="assisted-guide-title">
-    <h2 id="assisted-guide-title">How recovery works</h2>
-    <ol>
-     <li><span className="assisted-guide-icon"><IdentificationCardIcon size={22} aria-hidden="true"/></span><div><h3>Verify identity</h3><p>Use a trusted workplace process and record how you confirmed it.</p></div></li>
-     <li><span className="assisted-guide-icon"><KeyIcon size={22} aria-hidden="true"/></span><div><h3>Share the code privately</h3><p>The code can be used once and expires after 15 minutes.</p></div></li>
-     <li><span className="assisted-guide-icon"><LockKeyIcon size={22} aria-hidden="true"/></span><div><h3>The employee resets access</h3><p>They choose a new password and sign in again.</p></div></li>
-    </ol>
-    <details className="assisted-details"><summary>What changes after a reset?<PlusIcon className="assisted-plus" size={18} aria-hidden="true"/><MinusIcon className="assisted-minus" size={18} aria-hidden="true"/></summary><p>Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.</p><p>Issuing another code retires unused earlier codes.</p></details>
-   </aside>
-  </div>
- </section>;
+   <div className="nv-card__body wc-fields">
+    <div className="wc-field">
+     <label className="wc-label" htmlFor="assisted-proof">Recovery code</label>
+     <div className="wc-linkbox">
+      <input ref={proof} id="assisted-proof" className="wc-control wc-code-input" readOnly value={issued.proof} autoComplete="off" spellCheck={false} aria-describedby="assisted-proof-hint"/>
+      <button type="button" className="nv-btn" data-kind="secondary" onClick={()=>{proof.current?.focus();proof.current?.select();}}><CursorTextIcon size={18} aria-hidden="true"/>Select</button>
+     </div>
+     <p className="wc-help" id="assisted-proof-hint">Select and copy the code for a private handoff. Never post it in a shared channel.</p>
+    </div>
+    <dl className="wc-facts">
+     <div><dt>Use</dt><dd>Single use</dd></div>
+     <div><dt>Valid until</dt><dd><time dateTime={issued.expiresAt}>{until}</time></dd></div>
+    </dl>
+    <div className="wc-fact"><div><span className="wc-fact__value">What the employee does next</span>
+     <span className="wc-fact__note">Open <Link className="wc-inline-link" href="/reset-access">Reset access</Link>, enter this code, and choose a new password. Then sign in again.</span></div></div>
+    <p className="wc-muted">For privacy, the code is hidden when you leave this page, switch apps, or go offline. It expires after 15 minutes.</p>
+   </div>
+   <div className="nv-card__body">
+    <FormActions><button className="nv-btn" data-kind="secondary" type="button" onClick={onStartAgain}>Prepare another code<ArrowRightIcon size={18} aria-hidden="true"/></button></FormActions>
+    <p className="wc-muted wc-after-actions">Issuing another code retires any unused earlier code. Preparing the form alone does not cancel this one.</p>
+   </div>
+  </section>:<form onSubmit={onSubmit} aria-busy={busy} className="wc-form" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
+   <noscript><Notice tone="info">Enable JavaScript to issue a recovery code. You can still go back with the link above.</Notice></noscript>
+   <fieldset disabled={!hydrated||busy} className="wc-fieldset">
+    <FieldErrors errors={errors}>
+     <section className="nv-card" aria-labelledby="assisted-verify-title">
+      <div className="nv-card__head"><h2 className="nv-card__title" id="assisted-verify-title">Verify the employee</h2></div>
+      <div className="nv-card__body wc-fields">
+       <p className="wc-muted">Confirm their identity before issuing a code.</p>
+       <Field label="Employee ID" help="Use the exact ID in your workplace records." helpId="assisted-employee-hint" inputRef={employee}
+        id="assisted-employee" required maxLength={200} name="employeeId" defaultValue={employeeId} autoComplete="username" autoCapitalize="none" spellCheck={false}/>
+       <Field kind="textarea" label="How you verified them" helpId="assisted-verification-hint"
+        help="Use an established in-person or trusted workplace process. Do not substitute a newly supplied email or phone number. Omit sensitive documents, codes and personal details."
+        id="assisted-attestation" name="attestation" required minLength={10} maxLength={500} rows={4} placeholder="Briefly describe how you verified their identity."/>
+       <div className="wc-field" data-invalid={errors.confirm?'true':undefined}>
+        <label className="wc-check" data-invalid={errors.confirm?'true':undefined}><input type="checkbox" required name="confirm" aria-describedby={errors.confirm?'assisted-confirm-error':undefined}/><span>I independently confirmed this employee’s identity and can transfer this code securely.</span></label>
+        {errors.confirm?<p className="wc-error" id="assisted-confirm-error"><WarningCircleIcon size={18} weight="fill" aria-hidden="true"/>{errors.confirm}</p>:null}
+       </div>
+      </div>
+     </section>
+    </FieldErrors>
+   </fieldset>
+   <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
+   {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('access ended')?'Sign in again':message.includes('expired')?'Recovery code expired':'Code not issued'}
+    action={message.includes('access ended')?<Link className="nv-link" href="/login">Go to sign in</Link>:undefined}>{message}</Notice></div>:null}
+   <FormActions><button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={<>Issue recovery code<ArrowRightIcon size={20} aria-hidden="true"/></>} busy="Issuing recovery code…"/></button></FormActions>
+  </form>}
+ </SettingsFrame>;
 }
+

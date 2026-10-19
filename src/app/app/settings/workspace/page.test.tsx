@@ -30,7 +30,7 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(html).not.toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
   expect(html).toContain("Monday at 12:00 AM");
   expect(html).toContain('type="submit"');
-  expect(html).toContain("Save workspace");
+  expect(html).toContain("Save changes");
   expect(html).toContain('href="/app/settings"');
 });
 
@@ -39,7 +39,7 @@ it("explains a protected timezone without locking the workspace name", async () 
   const html = renderToStaticMarkup(await WorkspacePage());
   expect(html).toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
   expect(html).not.toMatch(/<input(?=[^>]*name="name")(?=[^>]*disabled="")[^>]*>/);
-  expect(html).toContain("You can still update your workspace name.");
+  expect(html).toContain("You can still change your business name.");
   expect(html).toContain("Changing the business timezone requires a separately reviewed conversion because operational records already exist.");
   expect(html).toContain("Why is the timezone protected?");
   expect(html).toContain('aria-describedby="timezone-help"');

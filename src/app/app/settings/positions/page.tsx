@@ -3,7 +3,6 @@ import { listPositions } from "@/lib/data/positions";
 import type { Position } from "@/lib/domain";
 import { createPositionAction, updatePositionAction } from "../actions";
 import { PositionCatalog } from "./position-catalog";
-import "./positions.css";
 
 export default async function PositionsPage() {
   await requireRoles(["OWNER"]);

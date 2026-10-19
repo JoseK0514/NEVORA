@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EditLocationForm } from "@/components/edit-location-form";
 import { requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/locations";
 import { updateLocationAction } from "../../actions";
-import "./edit-location.css";
+import { SettingsFrame } from "../../wave-c-kit";
+
 export default async function EditLocationPage({
   params,
 }: {
@@ -17,19 +17,9 @@ export default async function EditLocationPage({
   );
   if (!location) notFound();
   return (
-    <div className="edit-location-page">
-      <nav className="edit-location-breadcrumb" aria-label="Breadcrumb">
-        <Link href="/app/settings">Settings</Link>
-        <span aria-hidden="true">/</span>
-        <Link href="/app/settings/locations">Locations</Link>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">Edit</span>
-      </nav>
-      <header className="edit-location-heading">
-        <h1>Edit location</h1>
-        <p>Keep your location details up to date for your team.</p>
-      </header>
-      <EditLocationForm key={`${location.id}:${location.updatedAt ?? ''}`} location={location} action={updateLocationAction} />
-    </div>
+    <SettingsFrame back={{ href: "/app/settings/locations", label: "Locations" }} eyebrow="Edit location" title={location.name}
+      summary="Names and status your team sees, and this location’s Clocker link.">
+      <EditLocationForm key={`${location.id}:${location.updatedAt ?? ""}`} location={location} action={updateLocationAction} />
+    </SettingsFrame>
   );
 }

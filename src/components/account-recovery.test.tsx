@@ -63,7 +63,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
  it('keeps assisted identity attestation rather than exposing the employee request form',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER"/>);
   expect(html).toContain('name="attestation"');expect(html).toContain('type="checkbox"');
-  expect(html).toContain('independently confirmed');expect(html).toContain('href="/app/employees"');
+  expect(html).toContain('independently confirmed');expect(html).toContain('href="/app"');
   expect(html).not.toContain('name="email"');expect(html).not.toContain('recovery-help');
  });
 });

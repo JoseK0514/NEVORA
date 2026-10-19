@@ -47,7 +47,7 @@ it("explains optional positions and guards forms before hydration", async () => 
   const html = renderToStaticMarkup(await PositionsPage());
   expect(html).toContain("Positionless shifts remain available.");
   expect(html).toContain("JavaScript is required to add or edit positions.");
-  expect(html).toMatch(/<fieldset(?=[^>]*disabled="")(?=[^>]*class="positions-fields")[^>]*>/);
+  expect(html).toMatch(/<fieldset(?=[^>]*disabled="")(?=[^>]*class="wc-fieldset")[^>]*>/);
   expect(html).toContain("Add your first position");
   expect(html).not.toContain("Positions are unavailable");
 });

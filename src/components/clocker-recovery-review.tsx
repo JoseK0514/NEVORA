@@ -2,56 +2,44 @@
 
 import {useEffect, useId, useRef, useState, useSyncExternalStore} from 'react';
 import Link from 'next/link';
-import gsap from 'gsap';
-import {useGSAP} from '@gsap/react';
-import {ArrowLeftIcon} from '@phosphor-icons/react/dist/ssr/ArrowLeft';
-import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
+import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {DeviceTabletIcon} from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import {MagnifyingGlassIcon} from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
-import {MinusIcon} from '@phosphor-icons/react/dist/ssr/Minus';
-import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
-import {ShieldCheckIcon} from '@phosphor-icons/react/dist/ssr/ShieldCheck';
 import {SpinnerGapIcon} from '@phosphor-icons/react/dist/ssr/SpinnerGap';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import type {RecoveryReview} from '../lib/clocker/recovery-review.server';
-import styles from './clocker-recovery-review.module.css';
+import {keepWhole} from '../lib/keep-whole';
+import {EmptyState, GuideCard, Notice, SettingsFrame} from '../app/app/settings/wave-c-kit';
+import {ButtonLabel, FormActions} from '../app/app/settings/wave-c-form';
 
-gsap.registerPlugin(useGSAP);
 const subscribe = () => () => {};
 const actionNames: Record<string, string> = {
   CLOCK_IN: 'Clock in', CLOCK_OUT: 'Clock out', START_BREAK: 'Start break', END_BREAK: 'End break',
 };
-const iconProps = {size: 20, 'aria-hidden': true, focusable: false} as const;
 
-export function ClockerRecoveryReview({actorId, timeZone}: {actorId: string; timeZone: string}) {
+/** Wave C: Clocker recovery on the kit (Owners and Managers). The private snapshot controller,
+ * its pause-on-blur and the request are unchanged; checking a receipt never changes recorded time. */
+export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: string; timeZone: string; from?: 'settings'}) {
   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
   const [reference, setReference] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
   const [state, setState] = useState<RecoveryReview | null>(null);
   const [loading, setLoading] = useState(true);
-  const root = useRef<HTMLDivElement>(null);
   const feedback = useRef<HTMLDivElement>(null);
   const submitted = useRef(false);
   const selected = useRef('');
   const controller = useRef<ReturnType<typeof createPrivateSnapshotController<RecoveryReview>> | null>(null);
   const inputId = useId();
   const helpId = useId();
+  const [invalid, setInvalid] = useState('');
   const pending = loading && hasSelection;
   const ready = state?.state === 'ready' ? state : null;
   const denied = state?.state === 'unavailable' && state.reason === 'access_denied';
   const unavailable = state?.state === 'unavailable' && state.reason !== 'no_selection';
-
-  useGSAP(() => {
-    const media = gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.from('[data-review-enter]', {y: 6, opacity: 0.65, duration: 0.3, stagger: 0.04, ease: 'power2.out', clearProps: 'transform,opacity'});
-    });
-    return () => media.revert();
-  }, {scope: root});
+  const back = from === 'settings' ? {href: '/app/settings', label: 'Settings'} : {href: '/app', label: 'Home'};
 
   useEffect(() => {
     const c = createPrivateSnapshotController<RecoveryReview>(value => {
@@ -108,6 +96,7 @@ export function ClockerRecoveryReview({actorId, timeZone}: {actorId: string; tim
   function changeReference(value: string) {
     setReference(value);
     setHasSelection(false);
+    setInvalid('');
     selected.current = '';
     submitted.current = false;
     controller.current?.pause();
@@ -116,89 +105,88 @@ export function ClockerRecoveryReview({actorId, timeZone}: {actorId: string; tim
 
   function formattedTime(value: string) {
     if (!Number.isFinite(Date.parse(value))) return 'Time unavailable';
-    return new Intl.DateTimeFormat('en', {timeZone, month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}).format(new Date(value));
+    return keepWhole(new Intl.DateTimeFormat('en-US', {timeZone, month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}).format(new Date(value)));
   }
 
-  return <div ref={root} className={['clocker-review-page', styles.root].join(' ')}>
-    <header className={styles.heading} data-review-enter>
-      <Link href="/app" className={styles.back}><ArrowLeftIcon {...iconProps}/> Home</Link>
-      <h1>Clocker recovery</h1>
-      <p>Check a saved Clocker action and help the employee finish recovery.</p>
-    </header>
-
-    <div className={styles.workspace}>
-      <section className={styles.lookup} aria-labelledby="recovery-lookup-heading" data-review-enter>
-        <div className={styles.sectionHeading}>
-          <span className={styles.iconWell}><ReceiptIcon size={24} aria-hidden="true"/></span>
-          <div><h2 id="recovery-lookup-heading">Check a saved action</h2><p>Enter the reference shown on the employee’s tablet.</p></div>
-        </div>
-        <form onSubmit={event => {
-          event.preventDefault();
-          if (!hydrated || pending) return;
-          selected.current = reference.trim().toLowerCase();
-          setHasSelection(true);
-          submitted.current = true;
-          if (!navigator.onLine) {
-            setLoading(false);
-            setState({state: 'unavailable', reason: 'offline'});
-            return;
-          }
-          controller.current?.refresh();
-        }}>
-          <fieldset disabled={!hydrated || pending} className={styles.fields}>
-            <label htmlFor={inputId}>Saved action reference</label>
-            <input id={inputId} required value={reference} onChange={event => changeReference(event.target.value)}
+  const errorId = `${inputId}-error`;
+  return <SettingsFrame back={back} title="Clocker recovery" summary="Check a saved Clocker action and help the employee finish recovery."
+    aside={<GuideCard title="A clear path to recovery">
+      <ol className="wc-steps">
+        <li><strong>Find the saved reference</strong>It’s on the recovery screen of the registered tablet.</li>
+        <li><strong>Review the receipt together</strong>Check the employee, action, time, tablet and location.</li>
+        <li><strong>Return to the same tablet</strong>The employee enters their PIN and checks the action to finish recovery.</li>
+      </ol>
+      <p>Checking a receipt doesn’t change recorded time or retry a clock action.</p>
+      <details className="wc-disclosure"><summary>Can others still use the tablet?<CaretDownIcon className="wc-caret" size={16} weight="bold" aria-hidden="true"/></summary>
+        <div className="wc-disclosure__body"><p>Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.</p></div></details>
+    </GuideCard>}>
+    <form className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
+      onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the saved reference.' : 'Use the full reference: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
+      onSubmit={event => {
+        event.preventDefault();
+        if (!hydrated || pending) return;
+        selected.current = reference.trim().toLowerCase();
+        setHasSelection(true);
+        submitted.current = true;
+        if (!navigator.onLine) {
+          setLoading(false);
+          setState({state: 'unavailable', reason: 'offline'});
+          return;
+        }
+        controller.current?.refresh();
+      }}>
+      <section className="nv-card" aria-labelledby="recovery-lookup-heading">
+        <div className="nv-card__head"><h2 className="nv-card__title" id="recovery-lookup-heading">Check a saved action</h2></div>
+        <fieldset disabled={!hydrated || pending} className="nv-card__body wc-fields wc-plain-fieldset">
+          <div className="wc-field" data-invalid={invalid ? 'true' : undefined}>
+            <label className="wc-label" htmlFor={inputId}>Saved action reference</label>
+            <input id={inputId} className="wc-control wc-code-input" required value={reference} onChange={event => changeReference(event.target.value)}
               pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-              maxLength={36} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby={helpId}
+              maxLength={36} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
               placeholder="Paste the saved reference"/>
-            <p id={helpId} className={styles.hint}>Example format: 12345678-1234-1234-1234-123456789abc. Include every character and dash.</p>
-            <button className={styles.primary} type="submit" disabled={!hydrated || pending}>
-              {pending ? <SpinnerGapIcon {...iconProps} className={styles.spinner}/> : <MagnifyingGlassIcon {...iconProps}/>}
-              {pending ? 'Checking receipt…' : 'Check receipt'}
+            {invalid ? <p className="wc-error" id={errorId}><WarningCircleIcon size={18} weight="fill" aria-hidden="true"/>{invalid}</p> : null}
+            <p id={helpId} className="wc-help">Shown on the employee’s tablet, like 12345678-1234-1234-1234-123456789abc. Include every character and dash.</p>
+          </div>
+        </fieldset>
+        <div className="nv-card__body">
+          <FormActions>
+            <button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated || pending}>
+              <ButtonLabel pending={pending} idle={<><MagnifyingGlassIcon size={20} aria-hidden="true"/>Check receipt</>} busy={<><SpinnerGapIcon size={20} className="wc-spin" aria-hidden="true"/>Checking receipt…</>}/>
             </button>
-          </fieldset>
-        </form>
-        <noscript><p className={styles.noScript}>Enable JavaScript to check a receipt. You can still review timecards below.</p></noscript>
-
-        <div className={styles.resultArea} aria-busy={pending}>
-          {pending ? <div className={styles.placeholder} role="status"><span className={styles.placeholderIcon}><SpinnerGapIcon size={28} className={styles.spinner} aria-hidden="true"/></span><h3>Checking the saved receipt</h3><p>Looking for a recorded action using this reference.</p></div>
-          : ready ? <div ref={feedback} tabIndex={-1} className={styles.feedback}>
-            <div className={[styles.resultHeading, ready.receipts.length ? styles.confirmed : styles.unconfirmed].join(' ')} role="status">
-              {ready.receipts.length ? <CheckCircleIcon {...iconProps}/> : <WarningCircleIcon {...iconProps}/>}
-              <h3>{ready.receipts.length ? 'Recorded action found' : 'Action still unconfirmed'}</h3>
-            </div>
-            <div className={styles.reference}><span>Reference checked</span><code>{ready.commandId}</code></div>
-            {ready.receipts.length ? <>
-              <div className={styles.receipts}>{ready.receipts.map((receipt, index) => <article key={[receipt.employeeId, receipt.performedAt, index].join('-')} className={styles.receipt}>
-                <div className={styles.receiptTitle}><span className={styles.avatar} aria-hidden="true">{receipt.employeeName.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span><div><h4>{receipt.employeeName}</h4><p>{actionNames[receipt.action] ?? 'Recorded action'}</p></div></div>
-                <dl><div><dt>Recorded at</dt><dd><time dateTime={receipt.performedAt}>{formattedTime(receipt.performedAt)}</time></dd></div><div><dt>Tablet</dt><dd>{receipt.deviceName}</dd></div><div><dt>Location</dt><dd>{receipt.locationName}</dd></div></dl>
-              </article>)}</div>
-              <div className={styles.nextStep}><DeviceTabletIcon {...iconProps}/><div><h4>Finish on the same tablet</h4><p>Review the receipt with the employee. Ask them to enter their PIN on the original tablet and check their action status. The tablet verifies the receipt before clearing their resolved action.</p></div></div>
-            </> : <div className={styles.nextStep}><DeviceTabletIcon {...iconProps}/><div><h4>Keep the original recovery record</h4><p>No committed receipt was observed. The request may still be in progress. Ask the employee to verify their PIN and check the action on the same registered tablet. An absent receipt does not cancel the request.</p></div></div>}
-          </div> : unavailable ? <div ref={feedback} tabIndex={-1} className={styles.feedback} role="alert">
-            <div className={[styles.resultHeading, styles.unconfirmed].join(' ')}><WarningCircleIcon {...iconProps}/><h3>{denied ? 'Sign in to continue' : 'Receipt could not be checked'}</h3></div>
-            <p className={styles.errorCopy}>{denied ? 'Your recovery review access ended. Sign in again before checking this action.' : 'Keep the saved action and its original reference. Try checking again when your connection is available.'}</p>
-            {denied ? <Link href="/login" className={styles.secondary}>Go to sign in <ArrowRightIcon {...iconProps}/></Link> : null}
-          </div> : <div className={styles.placeholder}><span className={styles.placeholderIcon}><ReceiptIcon size={30} weight="duotone" aria-hidden="true"/></span><h3>Your receipt will appear here</h3><p>Enter a saved reference to see whether the action was recorded.</p></div>}
+          </FormActions>
         </div>
+        <noscript><div className="nv-card__body"><Notice tone="info">Enable JavaScript to check a receipt. You can still review timecards below.</Notice></div></noscript>
       </section>
+    </form>
 
-      <aside className={styles.guide} aria-labelledby="recovery-guide-heading" data-review-enter>
-        <div className={styles.guideHeading}><ShieldCheckIcon size={24} weight="duotone" aria-hidden="true"/><h2 id="recovery-guide-heading">A clear path to recovery</h2></div>
-        <ol className={styles.steps}>
-          <li><span aria-hidden="true">1</span><div><h3>Find the saved reference</h3><p>Use the action reference shown on the registered tablet’s recovery screen.</p></div></li>
-          <li><span aria-hidden="true">2</span><div><h3>Review the receipt together</h3><p>Check the employee, action, time, tablet, and location.</p></div></li>
-          <li><span aria-hidden="true">3</span><div><h3>Return to the same tablet</h3><p>The employee verifies their PIN and checks the action status to finish recovery.</p></div></li>
-        </ol>
-        <div className={styles.safety}><ShieldCheckIcon {...iconProps}/><p>Checking a receipt does not change recorded time or retry a clock action.</p></div>
-        <details className={styles.details}><summary>Can others still use the tablet?<span className={styles.disclosure}><PlusIcon {...iconProps} className={styles.plus}/><MinusIcon {...iconProps} className={styles.minus}/></span></summary><p>Other employees can use their own PIN and record their work. If this tablet cannot store recovery data, use another registered tablet at the same location while keeping the original record for review.</p></details>
-      </aside>
-    </div>
-
-    <section className={styles.corrections} aria-labelledby="recovery-corrections-heading" data-review-enter>
-      <span className={styles.correctionIcon}><ClockIcon size={24} aria-hidden="true"/></span>
-      <div><h2 id="recovery-corrections-heading">Time missing or incorrect?</h2><p>Review the employee’s evidence, then use the existing time correction workflow. Keep the original action reference.</p></div>
-      <Link href="/app/timecards" className={styles.secondary}>Review timecards <ArrowRightIcon {...iconProps}/></Link>
+    <section className="nv-card wc-result" aria-labelledby="recovery-result-heading" aria-busy={pending}>
+      <div className="nv-card__head"><h2 className="nv-card__title" id="recovery-result-heading">Receipt</h2></div>
+      {pending ? <div role="status"><EmptyState headingLevel={3} icon={<SpinnerGapIcon size={22} weight="bold" className="wc-spin"/>} title="Checking the saved receipt">Looking for a recorded action with this reference.</EmptyState></div>
+        : ready ? <div ref={feedback} tabIndex={-1} className="wc-feedback nv-card__body wc-fields">
+          <div role="status"><Notice tone={ready.receipts.length ? 'done' : 'info'} title={ready.receipts.length ? 'Recorded action found' : 'Action still unconfirmed'}>
+            {ready.receipts.length ? 'Review it with the employee before they finish on the tablet.' : 'No committed receipt was found. The request may still be in progress.'}</Notice></div>
+          <dl className="wc-facts"><div><dt>Reference checked</dt><dd className="wc-path">{ready.commandId}</dd></div></dl>
+          {ready.receipts.length ? <>
+            <ul className="wc-receipts">{ready.receipts.map((receipt, index) => <li key={[receipt.employeeId, receipt.performedAt, index].join('-')} className="wc-receipt-item">
+              <div className="wc-receipt-item__who"><span className="nv-avatar" aria-hidden="true">{receipt.employeeName.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>
+                <div><h3 className="wc-receipt-item__name">{receipt.employeeName}</h3><p className="wc-muted">{actionNames[receipt.action] ?? 'Recorded action'}</p></div></div>
+              <dl className="wc-facts"><div><dt>Recorded at</dt><dd><time dateTime={receipt.performedAt}>{formattedTime(receipt.performedAt)}</time></dd></div><div><dt>Tablet</dt><dd>{receipt.deviceName}</dd></div><div><dt>Location</dt><dd>{receipt.locationName}</dd></div></dl>
+            </li>)}</ul>
+            <div className="wc-fact"><span className="wc-fact__icon" aria-hidden="true"><DeviceTabletIcon size={20}/></span><div><span className="wc-fact__value">Finish on the same tablet</span><span className="wc-fact__note">Ask the employee to enter their PIN on the original tablet and check their action status. The tablet verifies the receipt before clearing the resolved action.</span></div></div>
+          </> : <div className="wc-fact"><span className="wc-fact__icon" aria-hidden="true"><DeviceTabletIcon size={20}/></span><div><span className="wc-fact__value">Keep the original recovery record</span><span className="wc-fact__note">Ask the employee to enter their PIN and check the action on the same registered tablet. Not finding a receipt doesn’t cancel the request.</span></div></div>}
+        </div>
+        : unavailable ? <div ref={feedback} tabIndex={-1} className="wc-feedback nv-card__body" role="alert">
+          <Notice tone="urgent" title={denied ? 'Sign in to continue' : 'Receipt not checked'}
+            action={denied ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>
+            {denied ? 'Your recovery review access ended. Sign in again before checking this action.' : 'Keep the saved action and its original reference. Check again when your connection is back.'}</Notice>
+        </div>
+        : <EmptyState headingLevel={3} icon={<ReceiptIcon size={22} weight="bold"/>} title="Your receipt will appear here">Enter a saved reference to see whether the action was recorded.</EmptyState>}
     </section>
-  </div>;
+
+    <section className="nv-card" aria-labelledby="recovery-corrections-heading">
+      <div className="nv-card__head"><h2 className="nv-card__title" id="recovery-corrections-heading">Time wrong or not recorded?</h2></div>
+      <div className="nv-card__body"><p className="wc-muted">Review the employee’s evidence, then use the time correction workflow. Keep the original action reference.</p></div>
+      <div className="wc-card-actions"><Link href="/app/timecards" className="nv-link">Review timecards<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link></div>
+    </section>
+  </SettingsFrame>;
 }

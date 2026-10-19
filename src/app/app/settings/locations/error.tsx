@@ -1,14 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { WarningCircle } from "@phosphor-icons/react";
-import "./locations.css";
+import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { focusAfterRetry } from "@/components/kit/focus-after-retry";
+import { EmptyState, SettingsFrame } from "../wave-c-kit";
 
-export default function LocationsError({ retry }: { retry: () => void }) {
-  return <section className="configuration-page locations-page locations-feedback">
-    <WarningCircle size={32} aria-hidden="true" />
-    <h1>Locations unavailable</h1>
-    <p role="alert">We couldn&apos;t load your locations. Try again to get the latest setup and Clocker links.</p>
-    <div className="locations-feedback-actions"><button type="button" className="button primary" onClick={retry}>Try again</button><Link href="/app/settings" className="button secondary">Back to Settings</Link></div>
-  </section>;
+/** Locations couldn't be read: say so, offer one retry, and a way back. Nothing was changed. */
+export default function LocationsError({ reset }: { error?: Error & { digest?: string }; reset: () => void }) {
+  return (
+    <SettingsFrame title="Locations" summary="Where your team works, each place’s scheduling setup and its Clocker link." className="wc-error-page">
+      <p className="nv-sr" role="alert">Locations didn’t load. Try again to see the latest setup and Clocker links.</p>
+      <section className="nv-card" aria-labelledby="locations-error-title">
+        <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="locations-error-title" title="Locations didn’t load"
+          action={<>
+            <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry(".wc-page:not(.wc-error-page) [data-nv-band] h1", ".wc-error-page .nv-btn[data-kind='primary']"); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
+            <Link className="nv-btn" data-kind="secondary" href="/app/settings">Back to Settings</Link>
+          </>}>
+          Try again to see the latest setup and Clocker links. Nothing was changed.
+        </EmptyState>
+      </section>
+    </SettingsFrame>
+  );
 }
