@@ -1,3 +1,10 @@
+<!-- rolling-integration-results-20261019 -->
+## Rolling integration results — 13446e25
+
+All four Claude correction sets and their current ROUND notes are merged and pushed to `codex/verify-preview-33`; PR #13 stays draft/open. Each code-merge snapshot passed install/type/lint, 7,363 full-suite tests (801 skipped), build and production markers. Final `13446e25` adds only two Wave B Markdown lines to tested `15a0fcd7`; all other 2,845 tracked entries match exactly. Targeted browser results and their exact sources are documented separately.
+
+[Current results and remaining exit gaps](release/rolling-integration-20261019/README.md), [raw gate evidence](release/rolling-integration-20261019/gates/), [Phase 3 coordinator handoff](release/rolling-integration-20261019/PHASE3_FOR_CLAUDE.md). **Full five-area exits remain open; these bounded checks grant no zero verdict.** The exact-head CI run is queued/pending, not passing. Existing inspection owners continue the full scope; preserve old-source observations under their actual SHA and justify source reuse. No main merge, deployment, assertion weakening or new policy exception.
+
 <!-- rolling-integration-20261019 -->
 ## Rolling integration update — October 19
 

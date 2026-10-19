@@ -1,0 +1,147 @@
+
+> fuel-scheduler@0.1.0 test:dev:production
+> node scripts/verify-dev-production-absence.mjs
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 29ms
+⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.8s
+  Running TypeScript ...
+  Finished TypeScript in 14.8s ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/46) ...
+  Generating static pages using 9 workers (11/46) 
+  Generating static pages using 9 workers (22/46) 
+  Generating static pages using 9 workers (34/46) 
+✓ Generating static pages using 9 workers (46/46) in 208ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /activate
+├ ƒ /api/auth/recovery
+├ ƒ /api/auth/reset-access
+├ ƒ /api/calendar/[token]/schedule.ics
+├ ƒ /api/clocker/[location]/pin
+├ ƒ /api/clocker/[location]/punch
+├ ƒ /api/clocker/[location]/setup
+├ ƒ /api/company-policies
+├ ƒ /api/employee/calendar-subscriptions
+├ ƒ /api/employee/communications
+├ ƒ /api/employee/communications/[id]
+├ ƒ /api/employee/communications/context
+├ ƒ /api/employee/communications/operations/[id]
+├ ƒ /api/employee/communications/preview
+├ ƒ /api/employee/home
+├ ƒ /api/employee/my-time
+├ ƒ /api/employee/notifications
+├ ƒ /api/employee/profile
+├ ƒ /api/employee/time-corrections
+├ ƒ /api/internal/notifications/dispatch
+├ ƒ /api/internal/notifications/reminders
+├ ƒ /api/management/profile
+├ ƒ /api/management/profile/alerts
+├ ƒ /api/manager/account-recovery
+├ ƒ /api/manager/action-center
+├ ƒ /api/manager/attendance
+├ ƒ /api/manager/calendar-subscriptions/[employeeId]/revoke
+├ ƒ /api/manager/clock-monitor
+├ ƒ /api/manager/clocker-recovery
+├ ƒ /api/manager/communications
+├ ƒ /api/manager/communications/[id]
+├ ƒ /api/manager/communications/context
+├ ƒ /api/manager/communications/operations/[id]
+├ ƒ /api/manager/communications/preview
+├ ƒ /api/manager/finder
+├ ƒ /api/manager/inbox-count
+├ ƒ /api/manager/time-corrections
+├ ƒ /api/manager/timecards
+├ ƒ /api/manager/today
+├ ƒ /api/notifications
+├ ƒ /api/notifications/read
+├ ƒ /api/payroll-export
+├ ƒ /api/payroll-export/profiles
+├ ƒ /api/payroll/documents/[id]
+├ ƒ /api/payroll/receipts
+├ ƒ /api/payroll/runs
+├ ƒ /api/payroll/settings
+├ ƒ /api/payroll/statements
+├ ƒ /api/period-close
+├ ƒ /api/period-close/artifact
+├ ƒ /api/reports
+├ ƒ /api/reports/export
+├ ƒ /api/schedule-copy
+├ ƒ /api/timecards
+├ ƒ /api/workspace-presentation
+├ ƒ /api/workspace-presentation/logo
+├ ƒ /api/workspace-presentation/logo/[assetId]
+├ ƒ /api/workspaces/[locator]/session
+├ ƒ /app
+├ ƒ /app/account-recovery
+├ ƒ /app/api/push/status
+├ ƒ /app/api/push/subscribe
+├ ƒ /app/api/push/test
+├ ƒ /app/api/push/unsubscribe
+├ ƒ /app/availability
+├ ƒ /app/clocker-recovery
+├ ƒ /app/dev-inspect
+├ ƒ /app/employees
+├ ƒ /app/employees/[employeeId]
+├ ƒ /app/employees/[employeeId]/clocker-pin
+├ ƒ /app/employees/new
+├ ƒ /app/exchange
+├ ƒ /app/exchange/callout
+├ ƒ /app/exchange/swap
+├ ƒ /app/inbox
+├ ƒ /app/my-pay
+├ ƒ /app/my-time
+├ ƒ /app/notifications
+├ ƒ /app/notifications/open
+├ ƒ /app/payroll
+├ ƒ /app/payroll-export
+├ ƒ /app/profile
+├ ƒ /app/reports
+├ ƒ /app/requests
+├ ƒ /app/requests/hub
+├ ƒ /app/schedule
+├ ƒ /app/schedule/copy-receipt
+├ ƒ /app/schedule/coverage
+├ ƒ /app/schedule/edit
+├ ƒ /app/schedule/new
+├ ƒ /app/schedule/settings
+├ ƒ /app/schedule/templates
+├ ƒ /app/settings
+├ ƒ /app/settings/branding
+├ ƒ /app/settings/breaks
+├ ƒ /app/settings/clocker
+├ ƒ /app/settings/company-policies
+├ ƒ /app/settings/features
+├ ƒ /app/settings/locations
+├ ƒ /app/settings/locations/[locationId]
+├ ƒ /app/settings/locations/new
+├ ƒ /app/settings/payroll
+├ ƒ /app/settings/positions
+├ ƒ /app/settings/workspace
+├ ƒ /app/timecards
+├ ƒ /app/updates
+├ ƒ /app/updates/[id]
+├ ƒ /app/updates/compose
+├ ƒ /clocker/[location]
+├ ○ /dev-inspect
+├ ƒ /forgot-access
+├ ƒ /fuel-portal.webmanifest
+├ ƒ /login
+├ ƒ /reset-access
+├ ƒ /ui-preview/home
+└ ƒ /ui-preview/kit
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+{"productionBuild":"passed","artifactsScanned":2323,"developmentMarkers":"absent"}

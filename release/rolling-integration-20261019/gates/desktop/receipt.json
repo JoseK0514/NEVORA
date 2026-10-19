@@ -1,0 +1,18 @@
+{
+  "chat": "desktop",
+  "sha": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "install": "passed",
+  "typegen": "passed",
+  "typecheck": "passed",
+  "lint": "passed",
+  "vitest": {
+    "passed": 7363,
+    "skipped": 801,
+    "filesPassed": 447,
+    "filesSkipped": 27,
+    "failures": 0
+  },
+  "build": "passed",
+  "productionMarkers": "absent",
+  "source": "Complete exact-source gate receipt"
+}

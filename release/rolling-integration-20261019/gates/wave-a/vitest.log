@@ -1,0 +1,16 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v5.0.2 /Users/josek0514/Documents/Codex/nevora-rolling-integration-20261019
+
+
+ Test Files  447 passed | 27 skipped (474)
+      Tests  7363 passed | 801 skipped (8219)
+   Start at  18:53:47
+   Duration  337.47s (tests 88%, import 10%, transform 2%)
+
+    Isolate  474 workers spawned · ~52ms startup each (spawn + environment, per file)
+             at least ~24.62s faster with isolate: false — reuses workers across files instead of one per file
+

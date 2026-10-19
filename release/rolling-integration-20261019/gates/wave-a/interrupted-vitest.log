@@ -1,0 +1,13 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v5.0.2 /Users/josek0514/Documents/Codex/nevora-rolling-integration-20261019
+
+ ↓ src/lib/tenancy/migrations/typed-guarded-backfill.postgres.test.ts (58 tests | 58 skipped)
+ ↓ src/lib/tenancy/runtime/portal-source-observation.postgres.test.ts (39 tests | 39 skipped)
+ ↓ src/lib/tenancy/runtime/audited-role-guard.postgres.test.ts (25 tests | 25 skipped)
+ ↓ src/lib/tenancy/runtime/workspace-incarnation-storage.postgres.test.ts (46 tests | 46 skipped)
+ ↓ src/lib/tenancy/runtime/portal-source-dependency.postgres.test.ts (30 tests | 30 skipped)
+ ↓ src/lib/tenancy/runtime/original-runtime-login.postgres.test.ts (40 tests | 40 skipped)

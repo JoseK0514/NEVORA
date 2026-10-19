@@ -17,6 +17,12 @@ Original PR workflow: `https://github.com/JoseK0514/NEVORA/actions/runs/39337044
 
 These are observed CI failures, not conclusions that the product or the test is defective. Exact logs and the original artifact are retained under the integration worktree's ignored `.omo/evidence/rolling-integration-20261019/` directory. No assertions, timeouts, CI configuration or coordinator source have been changed by this task.
 
+## IS-P4-11 shared Inbox remainder at the final head
+
+Final rolling head is `13446e25e509c32c53608d66050d8a2b56a8943e`. Wave A now accepts and validates the `item` parameter in `ManagerTimeOff`, but `src/components/manager-inbox.tsx:73-78` still builds the outgoing request link from the filter alone; `itemEntry` calls it without `item.id`. This is the previously reported IS-P4-11 P2 remainder, not a new independently measured defect. The historical report explicitly calls for both halves of the link contract and assigns the shared side to the Inbox owner/coordinator.
+
+The bounded current-head browser attempt could not replay the complete path: the generic owned fixture had no pending TIME_OFF row in either actor's Inbox. All four Chromium/WebKit actor attempts are retained as fixture gaps, not passes or new failures. The full Desktop exit already specifies actor-bound pending requests and multirow selection. Recheck the outgoing Review URL, the in-page Inbox URL and restored selection on that proper fixture; do not close this ID from the component-only unit test or the generic checker results.
+
 ## Acceptance boundary
 
 The original 33-fix candidate's local gates passed in the existing published report; new rolling merge commits require their own evidence. Targeted browser successes are not full five-area exit verdicts. PR #13 stays draft/open, and neither main merge nor deployment is authorized.

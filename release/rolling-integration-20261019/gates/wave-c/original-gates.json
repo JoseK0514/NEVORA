@@ -1,0 +1,109 @@
+{
+  "sha": "5b938eafd9ae199b0fb3b9340f3edcb9571ebc13",
+  "startedAt": "2026-10-19T23:02:02.188Z",
+  "environment": "Fresh isolated worktree; inherited service credentials excluded; no environment files copied",
+  "steps": [
+    {
+      "name": "install",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "startedAt": "2026-10-19T23:02:02.196Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-wave-c-20261019/.omo/evidence/rolling-integration-20261019/5b938eaf/install.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:02:11.121Z"
+    },
+    {
+      "name": "typegen",
+      "command": [
+        "npm",
+        "exec",
+        "next",
+        "typegen"
+      ],
+      "startedAt": "2026-10-19T23:02:11.132Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-wave-c-20261019/.omo/evidence/rolling-integration-20261019/5b938eaf/typegen.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:02:12.214Z"
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "startedAt": "2026-10-19T23:02:12.223Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-wave-c-20261019/.omo/evidence/rolling-integration-20261019/5b938eaf/typecheck.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:02:21.667Z"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-10-19T23:02:21.678Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-wave-c-20261019/.omo/evidence/rolling-integration-20261019/5b938eaf/lint.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:02:41.939Z"
+    },
+    {
+      "name": "vitest",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "startedAt": "2026-10-19T23:02:41.950Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-wave-c-20261019/.omo/evidence/rolling-integration-20261019/5b938eaf/vitest.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:07:38.486Z"
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "startedAt": "2026-10-19T23:07:38.502Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-wave-c-20261019/.omo/evidence/rolling-integration-20261019/5b938eaf/build.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:07:57.791Z"
+    },
+    {
+      "name": "production-markers",
+      "command": [
+        "npm",
+        "run",
+        "test:dev:production"
+      ],
+      "startedAt": "2026-10-19T23:07:57.804Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-wave-c-20261019/.omo/evidence/rolling-integration-20261019/5b938eaf/production-markers.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:08:20.019Z"
+    }
+  ],
+  "completedAt": "2026-10-19T23:08:20.020Z",
+  "finalSha": "5b938eafd9ae199b0fb3b9340f3edcb9571ebc13",
+  "trackedStatus": ""
+}

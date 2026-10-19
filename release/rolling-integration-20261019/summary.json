@@ -1,0 +1,84 @@
+{
+  "head": "13446e25e509c32c53608d66050d8a2b56a8943e",
+  "publishedAt": "2026-10-19T23:17:44.345Z",
+  "mergeStatus": "All four current owner branches and the Wave B notes are included",
+  "localGates": [
+    {
+      "chat": "wave-a",
+      "sha": "411a42cedaf77cbff3aab9bba6ad3afd652c9b94",
+      "install": "passed",
+      "typegen": "passed",
+      "typecheck": "passed",
+      "lint": "passed",
+      "vitest": {
+        "passed": 7363,
+        "skipped": 801,
+        "filesPassed": 447,
+        "filesSkipped": 27,
+        "failures": 0
+      },
+      "build": "passed",
+      "productionMarkers": "absent",
+      "source": "Composite receipt: original install/type/lint; direct successful Vitest retry and build/marker commands. Original interrupted launcher preserved."
+    },
+    {
+      "chat": "wave-b",
+      "sha": "9d6530bcf3e7ec8cead4a863031bedb1f12276cc",
+      "install": "passed",
+      "typegen": "passed",
+      "typecheck": "passed",
+      "lint": "passed",
+      "vitest": {
+        "passed": 7363,
+        "skipped": 801,
+        "filesPassed": 447,
+        "filesSkipped": 27,
+        "failures": 0
+      },
+      "build": "passed",
+      "productionMarkers": "absent",
+      "source": "Complete exact-source gate receipt"
+    },
+    {
+      "chat": "wave-c",
+      "sha": "5b938eafd9ae199b0fb3b9340f3edcb9571ebc13",
+      "install": "passed",
+      "typegen": "passed",
+      "typecheck": "passed",
+      "lint": "passed",
+      "vitest": {
+        "passed": 7363,
+        "skipped": 801,
+        "filesPassed": 447,
+        "filesSkipped": 27,
+        "failures": 0
+      },
+      "build": "passed",
+      "productionMarkers": "absent",
+      "source": "Complete exact-source gate receipt"
+    },
+    {
+      "chat": "desktop",
+      "sha": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "install": "passed",
+      "typegen": "passed",
+      "typecheck": "passed",
+      "lint": "passed",
+      "vitest": {
+        "passed": 7363,
+        "skipped": 801,
+        "filesPassed": 447,
+        "filesSkipped": 27,
+        "failures": 0
+      },
+      "build": "passed",
+      "productionMarkers": "absent",
+      "source": "Complete exact-source gate receipt"
+    }
+  ],
+  "fullExitStatus": "OPEN: no full five-area zero verdict on this final head",
+  "ciRun": 39339520609,
+  "ciStatus": "pending at last observation",
+  "mainMerge": false,
+  "deployment": false
+}

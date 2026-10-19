@@ -1,0 +1,10 @@
+# Rolling integration verification attempts
+
+- Baseline `cd764f6`: isolated locked install passed. Typecheck, lint and full-suite commands were interrupted when Wave A's new source arrived. Their logs remain at this directory's root and are superseded, not passing evidence for the merges.
+- Wave A merge `411a42ce`: locked install, Next type generation, typecheck and lint passed in `411a42ce/gates.json`. The first gate launcher terminated with signal exit 143 while its full-suite step was active. No full-suite result or cause is inferred from that interruption; the raw `vitest.log` and original receipt remain preserved. A direct full-suite retry writes `411a42ce/vitest-retry-01.log`.
+- Wave A focused browser checker: 16/16 cells passed on `/app/employees/new`, Manager, Chromium/WebKit, widths 320/390/844x390/1440 and text 100/200%, with axe. This is a bounded new-employee check, not the 1792-cell full Wave A exit or all five judgment areas.
+- Wave A Optional-label review: four browser observations (Manager Email and Employee More details, Chromium/WebKit) have exact accessible-name matches, retained keyboard focus, zero page errors and hidden Optional markers. The earlier First-name diagnostic remains separate; only Email and More-details observations directly check the changed Optional naming. No submission was sent.
+- Wave B merge `9d6530bc`: locked install, Next type generation, typecheck and lint passed; the exact-source full suite is running from its separate worktree. The Wave A source remains frozen for its own evidence.
+- The Phase 3 handoff was published on `codex/inspections` at `0f89533b`; its STATUS index is `5931618b`. Those are documentation commits, not source changes, acceptance, or a main merge.
+
+All previews use fresh owned loopback PostgreSQL and fictional data. No production credentials or environment files were copied into these worktrees. PR #13 remains draft/open. Full exits, pending gates, and unpublished corrective branches remain open until their actual evidence exists.

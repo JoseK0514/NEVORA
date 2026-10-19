@@ -1,0 +1,109 @@
+{
+  "sha": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "startedAt": "2026-10-19T23:02:30.516Z",
+  "environment": "Fresh isolated worktree; inherited service credentials excluded; no environment files copied",
+  "steps": [
+    {
+      "name": "install",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "startedAt": "2026-10-19T23:02:30.526Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-desktop-20261019/.omo/evidence/rolling-integration-20261019/15a0fcd7/install.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:02:38.640Z"
+    },
+    {
+      "name": "typegen",
+      "command": [
+        "npm",
+        "exec",
+        "next",
+        "typegen"
+      ],
+      "startedAt": "2026-10-19T23:02:38.653Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-desktop-20261019/.omo/evidence/rolling-integration-20261019/15a0fcd7/typegen.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:02:40.269Z"
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "startedAt": "2026-10-19T23:02:40.279Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-desktop-20261019/.omo/evidence/rolling-integration-20261019/15a0fcd7/typecheck.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:02:52.806Z"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-10-19T23:02:52.825Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-desktop-20261019/.omo/evidence/rolling-integration-20261019/15a0fcd7/lint.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:03:11.757Z"
+    },
+    {
+      "name": "vitest",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "startedAt": "2026-10-19T23:03:11.767Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-desktop-20261019/.omo/evidence/rolling-integration-20261019/15a0fcd7/vitest.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:08:14.423Z"
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "startedAt": "2026-10-19T23:08:14.434Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-desktop-20261019/.omo/evidence/rolling-integration-20261019/15a0fcd7/build.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:08:31.214Z"
+    },
+    {
+      "name": "production-markers",
+      "command": [
+        "npm",
+        "run",
+        "test:dev:production"
+      ],
+      "startedAt": "2026-10-19T23:08:31.226Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-desktop-20261019/.omo/evidence/rolling-integration-20261019/15a0fcd7/production-markers.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T23:08:48.508Z"
+    }
+  ],
+  "completedAt": "2026-10-19T23:08:48.508Z",
+  "finalSha": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "trackedStatus": ""
+}

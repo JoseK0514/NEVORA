@@ -1,0 +1,75 @@
+{
+  "sha": "411a42cedaf77cbff3aab9bba6ad3afd652c9b94",
+  "startedAt": "2026-10-19T22:51:02.244Z",
+  "environment": "Fresh isolated worktree; inherited service credentials excluded; no environment files copied",
+  "steps": [
+    {
+      "name": "install",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "startedAt": "2026-10-19T22:51:02.267Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-integration-20261019/.omo/evidence/rolling-integration-20261019/411a42ce/install.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T22:51:26.538Z"
+    },
+    {
+      "name": "typegen",
+      "command": [
+        "npm",
+        "exec",
+        "next",
+        "typegen"
+      ],
+      "startedAt": "2026-10-19T22:51:26.597Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-integration-20261019/.omo/evidence/rolling-integration-20261019/411a42ce/typegen.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T22:51:28.720Z"
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "startedAt": "2026-10-19T22:51:28.742Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-integration-20261019/.omo/evidence/rolling-integration-20261019/411a42ce/typecheck.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T22:52:07.459Z"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-10-19T22:52:07.482Z",
+      "status": "passed",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-integration-20261019/.omo/evidence/rolling-integration-20261019/411a42ce/lint.log",
+      "code": 0,
+      "signal": null,
+      "completedAt": "2026-10-19T22:52:57.859Z"
+    },
+    {
+      "name": "vitest",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "startedAt": "2026-10-19T22:52:57.892Z",
+      "status": "running",
+      "log": "/Users/josek0514/Documents/Codex/nevora-rolling-integration-20261019/.omo/evidence/rolling-integration-20261019/411a42ce/vitest.log"
+    }
+  ]
+}
