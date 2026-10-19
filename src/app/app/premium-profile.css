@@ -21,7 +21,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li { margin: 0; padding: 0; font: var(--nv-t-row); color: var(--nv-ink); list-style: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li + li { margin-top: var(--nv-s-1); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope + .pmp-locations { margin-top: var(--nv-s-1); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope + .pmp-locations > li { font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd > .pmp-text-button { display: flex; margin-top: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--all > li { font: var(--nv-t-callout); color: var(--nv-muted); }
 
 
 /* Text actions: teal, 44px tall, no box. */
@@ -59,13 +60,17 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch-row:disabled .pmp-switch { opacity: .55; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topic-placeholder .pmp-switch { background: var(--nv-track); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .nv-card__meta { display: inline-flex; align-items: center; gap: var(--nv-s-3); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__meta { height: 1.25rem; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-head-action { margin-block: -12px; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error { color: var(--nv-urgent-ink); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error > svg { margin-right: 6px; vertical-align: -3px; color: var(--nv-urgent-mark); }
 /* Loading rows: the bars sit in the ready row's title and detail line boxes, so a loaded row is the same height. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar { display: inline-block; width: 55%; height: .875em; border-radius: 7px; background: var(--nv-inset); vertical-align: middle; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar--short { width: 80%; height: .75em; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note { display: flex; align-items: center; min-height: 64px; padding: var(--nv-s-3) var(--nv-s-5); }
+/* A failed read keeps the alert rows' space (24px padding plus a title and a detail line each) as an error panel. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--nv-s-3); min-height: calc(var(--pmp-rows, 4) * (24px + 2.625rem + 2px)); padding: var(--nv-s-4) var(--nv-s-5); text-align: center; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note > p { max-width: 22em; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note > .nv-btn { min-width: 10rem; text-decoration: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-empty { margin: 0; padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
 @media (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-switch, .pmp-switch::after) { transition: none; }
@@ -76,4 +81,15 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: 104px; }
 @media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: 108px; }
+}
+
+/* Landscape phones are 768px+ wide, where the kit switches to its desktop type; this page keeps the phone roles there,
+ * so its text stays at the 15px phone floor. */
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile {
+    --nv-t-title-1: 600 1.875rem/2.25rem var(--nv-font); --nv-t-title-3: 600 1.1875rem/1.5625rem var(--nv-font);
+    --nv-t-headline: 600 1.0625rem/1.375rem var(--nv-font); --nv-t-body: 400 1.0625rem/1.5rem var(--nv-font);
+    --nv-t-row: 500 1.0625rem/1.375rem var(--nv-font); --nv-t-callout: 400 .9375rem/1.25rem var(--nv-font);
+    --nv-t-label: 500 .9375rem/1.25rem var(--nv-font);
+  }
 }

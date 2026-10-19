@@ -67,15 +67,24 @@ function Phone({ number }: { number: string }) {
 }
 
 const SHOWN_LOCATIONS = 5;
+/** Assigned locations are listed (five, then Show all). "All locations" is one line, with the names on request,
+ * so the row doesn't grow by a whole list when the details arrive. */
 function Locations({ snapshot, owner }: { snapshot: Extract<ManagerProfileSnapshot, { state: 'ready' }>; owner: boolean }) {
-  const [all, setAll] = useState(false);
+  const [open, setOpen] = useState(false);
   const { scope, names } = snapshot.locations;
   if (!names.length) return <span className="pmp-muted">{owner ? 'No locations yet' : 'None assigned yet'}</span>;
-  const shown = all ? names : names.slice(0, SHOWN_LOCATIONS);
+  if (scope === 'all') {
+    if (names.length === 1) return <>{names[0]}</>;
+    return <>
+      <span className="pmp-locations-scope">All {names.length} locations</span>
+      {open ? <ul className="pmp-locations pmp-locations--all" id="profile-all-locations" aria-label="Locations">{names.map((name, index) => <li key={`${index}-${name}`}>{name}</li>)}</ul> : null}
+      <button type="button" className="pmp-text-button" aria-expanded={open} aria-controls="profile-all-locations" onClick={() => setOpen(value => !value)}>{open ? 'Hide names' : 'Show names'}</button>
+    </>;
+  }
+  const shown = open ? names : names.slice(0, SHOWN_LOCATIONS);
   return <>
-    {scope === 'all' ? <span className="pmp-locations-scope">{names.length === 1 ? 'All locations' : `All ${names.length} locations`}</span> : null}
-    <ul className="pmp-locations" aria-label="Locations">{shown.map((name, index) => <li key={`${index}-${name}`}>{name}</li>)}</ul>
-    {names.length > SHOWN_LOCATIONS ? <button type="button" className="pmp-text-button" aria-expanded={all} onClick={() => setAll(value => !value)}>{all ? 'Show fewer' : `Show all ${names.length}`}</button> : null}
+    <ul className="pmp-locations" id="profile-assigned-locations" aria-label="Locations">{shown.map((name, index) => <li key={`${index}-${name}`}>{name}</li>)}</ul>
+    {names.length > SHOWN_LOCATIONS ? <button type="button" className="pmp-text-button" aria-expanded={open} aria-controls="profile-assigned-locations" onClick={() => setOpen(value => !value)}>{open ? 'Show fewer' : `Show all ${names.length}`}</button> : null}
   </>;
 }
 
@@ -101,7 +110,8 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   return <div className="pmp-grid">
     <div className="pmp-col">
       <Card id="profile-details" title="Your details" meta={<>
-        {read.head ? <span role="status">{read.head}</span> : null}
+        {/* Never empty: the head lines up on this text's baseline in every state. */}
+        <span role="status">{read.head ?? '\u00a0'}</span>
         {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" disabled={state.refreshing} onClick={onRetry} aria-label="Try loading your details again">{state.refreshing ? 'Trying again…' : 'Try again'}</button> : null}
         {read.kind === 'denied' ? <Link className="pmp-text-button pmp-head-action" href="/login">Sign in</Link> : null}
       </>} foot={identity.owner
@@ -153,7 +163,14 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
               </button>
             </li>;
           }) : row
-            ? <li className="pmp-topics-note"><span className="pmp-muted">{read.kind === 'denied' ? 'Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.'}</span></li>
+            // A failed read keeps the rows' space and fills it with what happened and what to do, so Sign out stays put.
+            ? <li className="pmp-topics-note" style={{ ['--pmp-rows' as string]: topicCount }}>
+                <Tile tone="urgent"><WarningCircleIcon size={20} weight="fill" aria-hidden="true" /></Tile>
+                <p>{read.kind === 'denied' ? 'Your session ended. Sign in again to see your alert choices.' : 'Your alert choices couldn’t load. Check your connection, then try again.'}</p>
+                {read.kind === 'denied'
+                  ? <Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link>
+                  : <button type="button" className="nv-btn" data-kind="secondary" disabled={state.refreshing} onClick={onRetry} aria-label="Try loading your alert choices again">{state.refreshing ? 'Trying again…' : 'Try again'}</button>}
+              </li>
             // Placeholder rows use the ready row's two line boxes, so the list keeps its height when the choices arrive.
             : Array.from({ length: topicCount }, (_, index) => <li key={index} aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder"><span className="nv-row__text"><span className="nv-row__title"><span className="pmp-bar" /></span><span className="nv-row__meta"><span className="pmp-bar pmp-bar--short" /></span></span><span className="pmp-switch" data-on="false" /></div></li>)}
         </ul>

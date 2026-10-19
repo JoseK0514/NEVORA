@@ -55,7 +55,8 @@ describe('Owner and Manager Profile', () => {
   it('shows contact, locations and alert switches when ready', () => {
     const html = render(owner, parseManagerProfile(fixture('owner')));
     expect(html).toContain('All 3 locations');
-    expect(html).toContain('Old San Juan Kiosk');
+    expect(html).toContain('Show names');
+    expect(html).not.toContain('Old San Juan Kiosk');
     expect(html).toContain('787-555-0100');
     expect(html.match(/role="switch"/g)).toHaveLength(5);
     expect(html).toContain('aria-checked="false"');
@@ -78,11 +79,14 @@ describe('Owner and Manager Profile', () => {
     expect(html).not.toMatch(/missing|missed/i);
   });
 
-  it('shows five locations, then offers the rest', () => {
-    const html = render(owner, parseManagerProfile(fixture('owner-large')));
-    expect(html).toContain('All 60 locations');
-    expect(html.match(/<li>/g)?.length).toBeGreaterThanOrEqual(5);
-    expect(html).toContain('Show all 60');
+  it('says All N locations in one line for everywhere, and lists five assigned ones before Show all', () => {
+    const all = render(owner, parseManagerProfile(fixture('owner-large')));
+    expect(all).toContain('All 60 locations');
+    expect(all).toContain('aria-expanded="false"');
+    const large = fixture('owner-large');
+    const assigned = render(manager, parseManagerProfile({ ...large, locations: { scope: 'assigned', names: large.locations.names }, alerts: fixture('manager').alerts }));
+    expect(assigned.match(/<ul class="pmp-locations"[^>]*>(.*?)<\/ul>/)?.[1].match(/<li>/g)).toHaveLength(5);
+    expect(assigned).toContain('Show all 60');
   });
 
   it('says a failed read in words in the space it already has, with Try again in the head line', () => {
