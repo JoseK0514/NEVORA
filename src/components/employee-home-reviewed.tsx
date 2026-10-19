@@ -43,10 +43,12 @@ function stamp(at: string, zone: string) {
   }).format(new Date(at)));
 }
 
+/** TC-P3-32: "Mon, Oct 19", with the year only when it isn't this year, so dates fit narrow rows whole. */
 function dateLabel(date: string) {
+  const at = new Date(`${date}T12:00:00Z`);
   return keepWhole(new Intl.DateTimeFormat('en-US', {
-    timeZone: 'UTC', weekday: 'short', month: 'long', day: 'numeric', year: 'numeric',
-  }).format(new Date(`${date}T12:00:00Z`)));
+    timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', ...(at.getUTCFullYear() === new Date().getUTCFullYear() ? {} : {year: 'numeric' as const}),
+  }).format(at));
 }
 
 function businessDate(at: string, zone: string) {
