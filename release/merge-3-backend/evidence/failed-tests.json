@@ -1,0 +1,30 @@
+[
+  {
+    "file": "/workspace/nevora-rc-backend/src/components/employee-home-actions.test.tsx",
+    "test": "late_former_authority_reply_discarded",
+    "errors": [
+      "Error: Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at chain (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at /workspace/nevora-rc-backend/src/components/employee-home-actions.test.tsx:5:1\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at VitestModuleEvaluator._runInlinedModule (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/module-evaluator.js:258:4)\n    at VitestModuleRunner.directRequest (file:///workspace/nevora-rc-backend/node_modules/vite/dist/node/module-runner.js:1272:59)\n    at VitestModuleRunner.cachedRequest (file:///workspace/nevora-rc-backend/node_modules/vite/dist/node/module-runner.js:1179:73)\n    at VitestModuleRunner.import (file:///workspace/nevora-rc-backend/node_modules/vite/dist/node/module-runner.js:1134:10)"
+    ]
+  },
+  {
+    "file": "/workspace/nevora-rc-backend/src/lib/scheduling/generation/planner.test.ts",
+    "test": "measures deterministic 50-worker 7-day 20-location planning",
+    "errors": [
+      "Error: Test timed out in 300000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at Object.chain (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2869:10\n    at Array.forEach (<anonymous>)\n    at file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2866:10\n    at /workspace/nevora-rc-backend/src/lib/scheduling/generation/planner.test.ts:494:17\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at VitestModuleEvaluator._runInlinedModule (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/module-evaluator.js:258:4)"
+    ]
+  },
+  {
+    "file": "/workspace/nevora-rc-backend/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "test": "whole-plan typed executor fictional transport lifecycle identical complete retry does no DML and retains original manifest",
+    "errors": [
+      "Error: Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at chain (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at /workspace/nevora-rc-backend/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:268:2\n    at file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:52\n    at runWithSuite (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3248:8)\n    at Object.collect (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:22)\n    at Object.collect (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2768:51)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"
+    ]
+  },
+  {
+    "file": "/workspace/nevora-rc-backend/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "test": "typed journal whole-plan successor fictional transaction regressions exact applied retry reads durable state and issues no source/control/journal DML",
+    "errors": [
+      "Error: Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at chain (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at /workspace/nevora-rc-backend/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:309:2\n    at file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:52\n    at runWithSuite (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3248:8)\n    at Object.collect (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:22)\n    at Object.collect (file:///workspace/nevora-rc-backend/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2768:51)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"
+    ]
+  }
+]

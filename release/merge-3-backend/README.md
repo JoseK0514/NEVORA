@@ -15,7 +15,9 @@ This is a local verification snapshot; another authorized release task owns publ
 - Locked install: pass, 410 packages.
 - TypeScript: pass.
 - Full lint: pass, 0 errors and 0 warnings.
-- Full default Vitest is running with one worker and existing timeouts. Its 20-location/50-worker deterministic planner benchmark passes at 184,537ms (<300,000ms), and all 12 process-cleanup tests pass within this full run. No full-run failure is reported at this checkpoint; a final result is still required.
+- Full default Vitest, one worker: **7,332 passed / 4 failed / 801 skipped / 55 pending** (8,192 total). All four failures are timeouts: Employee Home's former-authority reply case; the 20-location planner; and two typed-backfill cases. All 12 process-cleanup cases pass. Full raw JSON and each error are preserved in evidence/.
+- Correction to the earlier planning checkpoint: 184,537ms measured the first planning call. The test also repeats the plan for determinism; the complete test exceeded its unchanged 300,000ms limit. The console measurement did not establish a passed test. No green gate is inferred from it.
+- The three affected files are being rerun once, with one worker and the existing limits. No browser preview or build is running alongside this retry.
 - Browser checks follow the full run to avoid CPU interference. Availability plus Home/Inbox/More for all roles and backend reads remain required here; old diagnostic results are not silently transferred.
 
 ## Boundaries and pending work
