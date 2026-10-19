@@ -40,4 +40,4 @@ To be completed at exit.
 
 ## Screens
 
-`screens/signoff-*.png`: 390 and 1440 for each page, posted to Jose for sign-off on October 19.
+`screens/signoff-*.png`: 390 and 1440 for each page, posted to Jose on October 19. **Jose approved all 13 as built on October 19** (relayed by the coordinator: "approved A, B, C"); no design changes requested.
