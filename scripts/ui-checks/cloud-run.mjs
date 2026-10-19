@@ -41,7 +41,7 @@ function uiOwner(route,size) {
 }
 const escape=value=>String(value??'').replaceAll('|','\\|').replaceAll('\n',' ');
 function detail(r){return `FAIL ${r.engine} ${r.account} ${r.size} ${r.text}% ${r.route}`+(r.overflow?.length?` overflow=${r.overflow.join('; ')}`:'')+(r.smallText?.length?` small=${r.smallText.slice(0,4).join('; ')}`:'')+(r.targets?.length?` targets=${r.targets.slice(0,4).join('; ')}`:'')+(r.text===100&&r.cls>0.01?` cls=${r.cls}`:'')+(r.errors?.length?` errors=${r.errors.slice(0,2).join('; ')}`:'')+(r.axe?.length?` axe=${r.axe.join(',')}`:'')+(r.status>=400?` status=${r.status}`:'');}
-function checks(r){return [r.overflow?.length&&'overflow',r.smallText?.length&&'small text',r.targets?.length&&'target',r.text===100&&r.cls>0.01&&'layout shift',(r.status>=400||r.errors?.length||r.error)&&'error',r.axe?.length&&'axe'].filter(Boolean);}
+function checks(r){if(serverCandidate(r))return ['error'];return [r.overflow?.length&&'overflow',r.smallText?.length&&'small text',r.targets?.length&&'target',r.text===100&&r.cls>0.01&&'layout shift',(r.status>=400||r.errors?.length||r.error)&&'error',r.axe?.length&&'axe'].filter(Boolean);}
 function classify(r,check,network){
   const matches=network.filter(n=>n.account===r.account&&n.page===r.route.split('?')[0]);
   if(check==='error'&&matches.some(n=>n.path==='/api/manager/inbox-count'&&n.status===404))return 'backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot';
@@ -93,7 +93,7 @@ async function publish(reason) {
       if(m.error)sections.push('Execution blocker: '+escape(m.error),'');
       if(m.timings){sections.push('Browser load times in milliseconds; cold development compilation may be included. Each row also records TTFB and DOMContentLoaded in load-times.json.','', '| Route | Account | Width | Browser | Navigation ms | Status |','|---|---|---:|---|---:|---:|');for(const t of m.timings)sections.push('| '+[t.route,t.account,t.width,t.browser,t.navigationMs,t.status].map(escape).join(' | ')+' |');sections.push('');}
       sections.push('| Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |','|---|---|---|---:|---|---|---|---|');
-      for(const r of fail)for(const check of checks(r))sections.push('| '+[r.route,r.account,r.size,r.text,r.engine,check,classify(r,check,network),detail(r)].map(escape).join(' | ')+' |');
+      for(const r of fail.filter(r=>!serverCandidate(r)))for(const check of checks(r))sections.push('| '+[r.route,r.account,r.size,r.text,r.engine,check,classify(r,check,network),detail(r)].map(escape).join(' | ')+' |');
       if(!fail.length)sections.push('| — | — | — | — | — | — | No failed cells recorded yet | — |');
       sections.push('', '### Timeout and server observations (separate from UI findings)','', '| Route | Account | Width | Text | Browser | Initial detail | Retry outcome |','|---|---|---|---:|---|---|---|');
       for(const {r,pass:p} of initials){const final=records.get(p+key(r));sections.push('| '+[r.route,r.account,r.size,r.text,r.engine,detail(r),final!==r?(final.ok?'Passed on identical retry':detail(final)):'Pending retry'].map(escape).join(' | ')+' |');}
@@ -178,7 +178,9 @@ async function work(branch,index) {
     const done=new Set(meta.batches.filter(b=>b.kind!=='retry').map(b=>JSON.stringify(b.args)));
     const jobs=[...inventory.jobs].sort((a,b)=>{const priority=branch.includes('profile')||branch.includes('wave')||branch.includes('desktop')?['QAOWNER','AUDIT-M']:['AUDIT-E','AUDIT-LEAD'];return (priority.indexOf(a.account)<0?9:priority.indexOf(a.account))-(priority.indexOf(b.account)<0?9:priority.indexOf(b.account));});
     let lastPublish=Date.now();
-    const chunks=jobs.flatMap(job=>Array.from({length:Math.ceil(job.routes.length/4)},(_,i)=>({...job,routes:job.routes.slice(i*4,i*4+4)})));
+    const profileJobs=branch==='p35-profile-6cdee8'?jobs.filter(j=>['OWNER','MANAGER'].includes(j.role)&&j.routes.includes('/app/profile')).map(j=>({...j,routes:['/app/profile']})):[];
+    const remaining=profileJobs.length?jobs.map(j=>({...j,routes:['OWNER','MANAGER'].includes(j.role)?j.routes.filter(r=>r!=='/app/profile'):j.routes})):jobs;
+    const chunks=[...profileJobs,...remaining.flatMap(job=>Array.from({length:Math.ceil(job.routes.length/4)},(_,i)=>({...job,routes:job.routes.slice(i*4,i*4+4)})))];
     for(const pass of ['matrix','axe'])for(const browser of ['chromium','webkit'])for(const width of (pass==='axe'?['390','1440']:widths))for(const job of chunks){
       const text=pass==='axe'?'100':'100,125,150,200';const args=['--routes',job.routes.join(','),'--accounts',job.account,'--widths',width,'--text',text,'--browsers',browser,...(pass==='axe'?['--axe']:[])];
       if(done.has(JSON.stringify(args)))continue;
