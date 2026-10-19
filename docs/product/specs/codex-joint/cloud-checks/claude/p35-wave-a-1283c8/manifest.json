@@ -6333,6 +6333,29 @@
       "code": 1,
       "passed": 9,
       "failed": 3
+    },
+    {
+      "name": "00276-matrix-AUDIT-M-chromium-844x390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T23-55-05-285Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00276-matrix-AUDIT-M-chromium-844x390.log",
+      "args": [
+        "--routes",
+        "/app,/app/account-recovery,/app/availability,/app/clocker-recovery",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "844x390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "961fa2af72f46e2c505e26702cc764007238099ca65008f23e9b7cc0520e9e83",
+      "code": 1,
+      "passed": 14,
+      "failed": 2
     }
   ],
   "planned": 12580,

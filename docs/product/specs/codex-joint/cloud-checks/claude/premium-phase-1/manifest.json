@@ -8655,6 +8655,29 @@
       "code": 1,
       "passed": 0,
       "failed": 4
+    },
+    {
+      "name": "00377-matrix-AUDIT-LEAD-chromium-1024",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T23-55-26-476Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00377-matrix-AUDIT-LEAD-chromium-1024.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0",
+        "--accounts",
+        "AUDIT-LEAD",
+        "--widths",
+        "1024",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "302397c96dd5ef3ea3f24c41257c52307b4fa9c8a80c2c363dcf60dc7e9a8479",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12580,
