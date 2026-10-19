@@ -36,8 +36,8 @@ it("does not read or render private configuration when authorization fails", asy
 it("keeps an unavailable read distinct from an empty catalog and offers a retry", async () => {
   mocks.listPositions.mockRejectedValue(new Error("Private database details"));
   const html = renderToStaticMarkup(await PositionsPage());
-  expect(html).toContain("Positions are unavailable");
-  expect(html).toContain("Reload positions");
+  expect(html).toContain("Couldn’t load positions.");
+  expect(html).toContain("Try again");
   expect(html).not.toContain("Private database details");
   expect(html).not.toContain('name="name"');
   expect(html).not.toContain("No positions configured.");
@@ -47,7 +47,7 @@ it("explains optional positions and guards forms before hydration", async () => 
   const html = renderToStaticMarkup(await PositionsPage());
   expect(html).toContain("Positionless shifts remain available.");
   expect(html).toContain("JavaScript is required to add or edit positions.");
-  expect(html).toMatch(/<fieldset(?=[^>]*disabled="")(?=[^>]*class="positions-fields")[^>]*>/);
+  expect(html).toMatch(/<fieldset(?=[^>]*disabled="")(?=[^>]*class="wc-fieldset")[^>]*>/);
   expect(html).toContain("Add your first position");
-  expect(html).not.toContain("Positions are unavailable");
+  expect(html).not.toContain("Couldn’t load positions.");
 });

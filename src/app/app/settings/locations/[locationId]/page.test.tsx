@@ -32,7 +32,7 @@ it("renders an inactive location with its stored names, history guidance and tru
   const html = await render();
   expect(html).toContain('value="East office"');
   expect(html).toContain("Unavailable while inactive");
-  expect(html).toContain("Inactive locations keep their history and employee eligibility.");
+  expect(html).toContain("Inactive locations keep their history and eligibility.");
   expect(html).not.toMatch(/id="edit-location-active"[^>]*checked/);
 });
 

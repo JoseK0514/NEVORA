@@ -27,7 +27,7 @@ it("retains the creation contract and automatic optional Clocker key", async () 
   expect(html).toMatch(/<input(?=[^>]*name="shortName")(?=[^>]*required="")(?=[^>]*maxLength="48")[^>]*>/);
   expect(html).toMatch(/<input(?=[^>]*name="clockerKey")(?=[^>]*pattern="\[a-z0-9\]\+\(-\[a-z0-9\]\+\)\*")(?=[^>]*maxLength="64")[^>]*>/);
   expect(html).toContain("Leave blank to generate a key automatically");
-  expect(html).toContain("cannot be changed later");
+  expect(html).toContain("can’t be changed later");
   expect(html).toContain('aria-describedby="location-clocker-help"');
   expect(html).toContain('href="/app/settings/locations"');
   expect(html).toContain("Set staffing &amp; coverage");

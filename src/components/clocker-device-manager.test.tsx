@@ -17,9 +17,7 @@ const render = (devices: ClockerDeviceView[], available = locations) => renderTo
 
 it('keeps overview explanations inside their definition descriptions', () => {
   const summary = render([]).split('aria-label="Device overview">')[1].split('</dl>')[0];
-  expect(summary).toContain('<dd>0<p>Tablet setup completed</p></dd>');
-  expect(summary).toContain('<dd>0<p>Waiting for a tablet</p></dd>');
-  expect(summary).toContain('<dd>0<p>Tablet access disabled</p></dd>');
+  for (const label of ['Registered', 'Needs setup', 'Revoked']) expect(summary).toContain(`<dt class="nv-stat__label">${label}</dt><dd class="nv-stat__value">0</dd>`);
   expect(summary).not.toMatch(/<\/dd><p>/);
 });
 

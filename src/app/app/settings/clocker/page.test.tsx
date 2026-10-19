@@ -24,7 +24,7 @@ it('loads the Owner inventory with live server authority and includes inactive l
   expect(mocks.devices).toHaveBeenCalledWith({ employeeId: 'owner', sessionTokenHash: 'fixture-proof' });
   expect(mocks.locations).toHaveBeenCalledWith({ includeInactive: true });
   expect(html).toContain('href="/app/settings"');
-  expect(html).toContain('class="configuration-page clocker-devices-page"');
+  expect(html).toContain('data-nv-page=""');
 });
 
 it('denies access before loading device or location data', async () => {
