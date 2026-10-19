@@ -1,0 +1,76 @@
+[
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "AUDIT-E",
+    "endpoint": "/api/management/profile",
+    "status": 403,
+    "state": "unavailable",
+    "reason": "access_denied"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "AUDIT-E",
+    "endpoint": "/api/manager/inbox-count",
+    "status": 403,
+    "state": "unavailable"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "AUDIT-LEAD",
+    "endpoint": "/api/management/profile",
+    "status": 403,
+    "state": "unavailable",
+    "reason": "access_denied"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "AUDIT-LEAD",
+    "endpoint": "/api/manager/inbox-count",
+    "status": 403,
+    "state": "unavailable"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "AUDIT-M",
+    "endpoint": "/api/management/profile",
+    "status": 200,
+    "state": "ready",
+    "kind": "management-profile",
+    "topicCount": 4,
+    "scope": "all",
+    "locationCount": 2
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "AUDIT-M",
+    "endpoint": "/api/manager/inbox-count",
+    "status": 200,
+    "state": "ready",
+    "count": 26
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "QAOWNER",
+    "endpoint": "/api/management/profile",
+    "status": 200,
+    "state": "ready",
+    "kind": "management-profile",
+    "topicCount": 5,
+    "scope": "all",
+    "locationCount": 2
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "QAOWNER",
+    "endpoint": "/api/manager/inbox-count",
+    "status": 200,
+    "state": "ready",
+    "count": 26
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "signed out",
+    "endpoint": "/api/management/profile",
+    "status": 401
+  }
+]

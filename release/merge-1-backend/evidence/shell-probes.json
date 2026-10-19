@@ -1,0 +1,5374 @@
+[
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 320,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/home",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/my-time",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "headings": [
+        {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Next shift",
+          "box": {
+            "x": 36,
+            "y": 286,
+            "width": 87,
+            "height": 25
+          },
+          "size": "19px"
+        }
+      ],
+      "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 52.65625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 60.65625,
+            "y": 783,
+            "width": 74.171875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 138.828125,
+            "y": 783,
+            "width": 73.171875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 216,
+            "y": 783,
+            "width": 48,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 268,
+            "y": 783,
+            "width": 48,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-E-320-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 516.5064697265625,
+      "width": 320,
+      "height": 335,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nAlexandra Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 320,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 36,
+            "y": 276,
+            "width": 117.1875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 36,
+            "y": 634,
+            "width": 159.15625,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 52.65625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 60.65625,
+            "y": 783,
+            "width": 74.171875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 138.828125,
+            "y": 783,
+            "width": 73.171875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 216,
+            "y": 783,
+            "width": 48,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 268,
+            "y": 783,
+            "width": 48,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-E-320-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 511.06402587890625,
+      "width": 320,
+      "height": 335,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nAlexandra Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 390,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Home",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Next shift",
+          "box": {
+            "x": 36,
+            "y": 286,
+            "width": 87,
+            "height": 25
+          },
+          "size": "19px"
+        }
+      ],
+      "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-E-390-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 514.1533203125,
+      "width": 390,
+      "height": 335,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nAlexandra Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 390,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 36,
+            "y": 252,
+            "width": 117.1875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 36,
+            "y": 550,
+            "width": 159.15625,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-E-390-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 514.1571655273438,
+      "width": 390,
+      "height": 335,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nAlexandra Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 844,
+    "height": 390,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/home",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/my-time",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 844,
+      "scrollWidth": 844,
+      "headings": [
+        {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Your shifts",
+          "box": {
+            "x": 36,
+            "y": 238,
+            "width": 94,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Clock status",
+          "box": {
+            "x": 36,
+            "y": 947.5,
+            "width": 143,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "To do",
+          "box": {
+            "x": 468.9375,
+            "y": 236,
+            "width": 49,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Quick actions",
+          "box": {
+            "x": 448.9375,
+            "y": 511,
+            "width": 379.0625,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Recent activity",
+          "box": {
+            "x": 468.9375,
+            "y": 754,
+            "width": 136,
+            "height": 25
+          },
+          "size": "19px"
+        }
+      ],
+      "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nOn shift until 4:00 PM.\n\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n8:00 AM\n–\n4:00 PM\n\nMain Office · Customer Support\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 17h 11m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 2:48 PM\nRefresh\nMy time\nTo do\n2 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n5 items\nTime off waiting · Oct 29, 2026 – Oct 30, 2026\nRecorded M",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 172,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 340,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 508,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 676,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-E-844-home.png",
+    "more": {
+      "open": true,
+      "x": 142,
+      "y": 60.16032791137695,
+      "width": 560,
+      "height": 335,
+      "scrollWidth": 560,
+      "clientWidth": 560,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nAlexandra Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 844,
+    "height": 390,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 844,
+      "scrollWidth": 844,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 36,
+            "y": 252,
+            "width": 117.1875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 36,
+            "y": 530,
+            "width": 159.15625,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 172,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 340,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 508,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 676,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-E-844-inbox.png",
+    "more": {
+      "open": true,
+      "x": 142,
+      "y": 62.50809097290039,
+      "width": 560,
+      "height": 335,
+      "scrollWidth": 560,
+      "clientWidth": 560,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nAlexandra Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 1440,
+    "height": 900,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        {
+          "text": "Home",
+          "box": {
+            "x": 312,
+            "y": 149,
+            "width": 1048,
+            "height": 40
+          },
+          "size": "32px"
+        },
+        {
+          "text": "Next shift",
+          "box": {
+            "x": 328,
+            "y": 319,
+            "width": 68,
+            "height": 22.5
+          },
+          "size": "15px"
+        }
+      ],
+      "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n ",
+      "tabs": [],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-E-1440-home.png"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 1440,
+    "height": 900,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 312,
+            "y": 170,
+            "width": 1048,
+            "height": 40
+          },
+          "size": "32px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 312,
+            "y": 302,
+            "width": 108.203125,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 312,
+            "y": 580,
+            "width": 147.921875,
+            "height": 22
+          },
+          "size": "16px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-E-1440-inbox.png"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/home",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/my-time",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "headings": [
+        {
+          "text": "Hi, Taylor.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Your shifts",
+          "box": {
+            "x": 36,
+            "y": 286,
+            "width": 94,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Clock status",
+          "box": {
+            "x": 36,
+            "y": 1173.5,
+            "width": 143,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "To do",
+          "box": {
+            "x": 36,
+            "y": 1370.5,
+            "width": 49,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Quick actions",
+          "box": {
+            "x": 16,
+            "y": 1725.5,
+            "width": 288,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Recent activity",
+          "box": {
+            "x": 36,
+            "y": 2076.5,
+            "width": 136,
+            "height": 25
+          },
+          "size": "19px"
+        }
+      ],
+      "text": "Good afternoon · Monday, October 19\n\nHi, Taylor.\n\nOn shift until 5:00 PM.\n\n2 items need your review\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n9:00 AM\n–\n5:00 PM\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n9:00 AM\n–\n5:00 PM\n\nStarts in 18h 11m\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 2:49 PM\nRefresh\nMy time\nTo do\n2 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n1 item\nTi",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 52.65625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 60.65625,
+            "y": 783,
+            "width": 74.171875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 138.828125,
+            "y": 783,
+            "width": 73.171875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 216,
+            "y": 783,
+            "width": 48,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 268,
+            "y": 783,
+            "width": 48,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-LEAD-320-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 519.5868530273438,
+      "width": 320,
+      "height": 335,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nTaylor Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 36,
+            "y": 276,
+            "width": 117.1875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 36,
+            "y": 634,
+            "width": 159.15625,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 52.65625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 60.65625,
+            "y": 783,
+            "width": 74.171875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 138.828125,
+            "y": 783,
+            "width": 73.171875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 216,
+            "y": 783,
+            "width": 48,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 268,
+            "y": 783,
+            "width": 48,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-LEAD-320-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 514.1674194335938,
+      "width": 320,
+      "height": 335,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nTaylor Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/home",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/my-time",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Hi, Taylor.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Your shifts",
+          "box": {
+            "x": 36,
+            "y": 286,
+            "width": 94,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Clock status",
+          "box": {
+            "x": 36,
+            "y": 1045.5,
+            "width": 143,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "To do",
+          "box": {
+            "x": 36,
+            "y": 1242.5,
+            "width": 49,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Quick actions",
+          "box": {
+            "x": 16,
+            "y": 1517.5,
+            "width": 358,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Recent activity",
+          "box": {
+            "x": 36,
+            "y": 1848.5,
+            "width": 136,
+            "height": 25
+          },
+          "size": "19px"
+        }
+      ],
+      "text": "Good afternoon · Monday, October 19\n\nHi, Taylor.\n\nOn shift until 5:00 PM.\n\n2 items need your review\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n9:00 AM\n–\n5:00 PM\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n9:00 AM\n–\n5:00 PM\n\nStarts in 18h 11m\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 2:49 PM\nRefresh\nMy time\nTo do\n2 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n1 item\nTi",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-LEAD-390-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 514.1564331054688,
+      "width": 390,
+      "height": 335,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nTaylor Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 36,
+            "y": 252,
+            "width": 117.1875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 36,
+            "y": 550,
+            "width": 159.15625,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-LEAD-390-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 516.52001953125,
+      "width": 390,
+      "height": 335,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nTaylor Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 844,
+    "height": 390,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/home",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/my-time",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 844,
+      "scrollWidth": 844,
+      "headings": [
+        {
+          "text": "Hi, Taylor.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Your shifts",
+          "box": {
+            "x": 36,
+            "y": 238,
+            "width": 94,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Clock status",
+          "box": {
+            "x": 36,
+            "y": 1007.5,
+            "width": 143,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "To do",
+          "box": {
+            "x": 468.9375,
+            "y": 236,
+            "width": 49,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Quick actions",
+          "box": {
+            "x": 448.9375,
+            "y": 511,
+            "width": 379.0625,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Recent activity",
+          "box": {
+            "x": 468.9375,
+            "y": 754,
+            "width": 136,
+            "height": 25
+          },
+          "size": "19px"
+        }
+      ],
+      "text": "Good afternoon · Monday, October 19\n\nHi, Taylor.\n\nOn shift until 5:00 PM.\n\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n9:00 AM\n–\n5:00 PM\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n9:00 AM\n–\n5:00 PM\n\nStarts in 18h 10m\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 2:49 PM\nRefresh\nMy time\nTo do\n2 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n1 item\nTime off approved · Nov 10,",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 172,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 340,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 508,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 676,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-LEAD-844-home.png",
+    "more": {
+      "open": true,
+      "x": 142,
+      "y": 60.15995788574219,
+      "width": 560,
+      "height": 335,
+      "scrollWidth": 560,
+      "clientWidth": 560,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nTaylor Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 844,
+    "height": 390,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 844,
+      "scrollWidth": 844,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 36,
+            "y": 252,
+            "width": 117.1875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 36,
+            "y": 530,
+            "width": 159.15625,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 172,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 340,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 508,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 676,
+            "y": 329,
+            "width": 164,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-LEAD-844-inbox.png",
+    "more": {
+      "open": true,
+      "x": 142,
+      "y": 60.171363830566406,
+      "width": 560,
+      "height": 335,
+      "scrollWidth": 560,
+      "clientWidth": 560,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nTaylor Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 1440,
+    "height": 900,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/home",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/my-time",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        {
+          "text": "Hi, Taylor.",
+          "box": {
+            "x": 312,
+            "y": 149,
+            "width": 1048,
+            "height": 40
+          },
+          "size": "32px"
+        },
+        {
+          "text": "Your shifts",
+          "box": {
+            "x": 328,
+            "y": 319,
+            "width": 76,
+            "height": 22.5
+          },
+          "size": "15px"
+        },
+        {
+          "text": "Clock status",
+          "box": {
+            "x": 328,
+            "y": 1012.390625,
+            "width": 118,
+            "height": 22.5
+          },
+          "size": "15px"
+        },
+        {
+          "text": "To do",
+          "box": {
+            "x": 888.75,
+            "y": 317,
+            "width": 47,
+            "height": 24
+          },
+          "size": "18px"
+        },
+        {
+          "text": "Quick actions",
+          "box": {
+            "x": 868.75,
+            "y": 590,
+            "width": 495.25,
+            "height": 24
+          },
+          "size": "18px"
+        },
+        {
+          "text": "Recent activity",
+          "box": {
+            "x": 888.75,
+            "y": 816,
+            "width": 127,
+            "height": 24
+          },
+          "size": "18px"
+        }
+      ],
+      "text": "Good afternoon · Monday, October 19\n\nHi, Taylor.\n\nOn shift until 5:00 PM.\n\n2 items need your review\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n9:00 AM\n–\n5:00 PM\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n9:00 AM\n–\n5:00 PM\n\nStarts in 18h 10m\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 2:49 PM\nRefresh\nMy time\nTo do\n2 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n1 item\nTi",
+      "tabs": [],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-LEAD-1440-home.png"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 1440,
+    "height": 900,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 312,
+            "y": 170,
+            "width": 1048,
+            "height": 40
+          },
+          "size": "32px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 312,
+            "y": 302,
+            "width": 108.203125,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 312,
+            "y": 580,
+            "width": 147.921875,
+            "height": 22
+          },
+          "size": "16px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-LEAD-1440-inbox.png"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "headings": [
+        {
+          "text": "Good afternoon, Morgan",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 72
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 36,
+            "y": 272,
+            "width": 49.734375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "4 shifts with no clock‑in",
+          "box": {
+            "x": 92,
+            "y": 536,
+            "width": 192,
+            "height": 50
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 36,
+            "y": 771,
+            "width": 119.4375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 36,
+            "y": 1368,
+            "width": 79.71875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 36,
+            "y": 1881,
+            "width": 85.453125,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Morgan\n\n26 things need you today.\n\nToday\nUpdated\n2:49 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nSee all 22 in Inbox\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\n29 items for the coming weeks. None are urgent.\nTeam ",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 60.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 64.46875,
+            "y": 783,
+            "width": 82,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 146.46875,
+            "y": 783,
+            "width": 57.59375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 204.0625,
+            "y": 783,
+            "width": 56.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 260.53125,
+            "y": 783,
+            "width": 55.46875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-M-320-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 200.6412811279297,
+      "width": 320,
+      "height": 653,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 36,
+            "y": 348,
+            "width": 99.71875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 36,
+            "y": 5210,
+            "width": 105.96875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 36,
+            "y": 5426,
+            "width": 123.953125,
+            "height": 24
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Updated\n2:49 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Wes",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 60.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 64.46875,
+            "y": 783,
+            "width": 82,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 146.46875,
+            "y": 783,
+            "width": 57.59375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 204.0625,
+            "y": 783,
+            "width": 56.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 260.53125,
+            "y": 783,
+            "width": 55.46875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-M-320-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 205.04833984375,
+      "width": 320,
+      "height": 653,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Good afternoon, Morgan",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 36,
+            "y": 236,
+            "width": 49.734375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "4 shifts with no clock‑in",
+          "box": {
+            "x": 92,
+            "y": 500,
+            "width": 262,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 36,
+            "y": 710,
+            "width": 119.4375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 36,
+            "y": 1241,
+            "width": 79.71875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 36,
+            "y": 1690,
+            "width": 85.453125,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Morgan\n\n26 things need you today.\n\nToday\nUpdated\n2:49 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nSee all 22 in Inbox\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\n29 items for the coming weeks. None are urgent.\nTeam ",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-M-390-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 200.61521911621094,
+      "width": 390,
+      "height": 653,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 36,
+            "y": 324,
+            "width": 99.71875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 36,
+            "y": 4178,
+            "width": 105.96875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 36,
+            "y": 4358,
+            "width": 123.953125,
+            "height": 24
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Updated\n2:49 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Wes",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-M-390-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 200.6209259033203,
+      "width": 390,
+      "height": 653,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 844,
+    "height": 390,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 844,
+      "scrollWidth": 844,
+      "headings": [
+        {
+          "text": "Good afternoon, Morgan",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 36,
+            "y": 236,
+            "width": 49.734375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "4 shifts with no clock‑in",
+          "box": {
+            "x": 92,
+            "y": 480,
+            "width": 292,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 36,
+            "y": 670,
+            "width": 119.4375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 36,
+            "y": 1101,
+            "width": 79.71875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 36,
+            "y": 1498,
+            "width": 85.453125,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Morgan\n\n26 things need you today.\n\nToday\nUpdated\n2:50 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nSee all 22 in Inbox\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\n29 items for the coming weeks. None are urgent.\nTeam ",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 329,
+            "width": 167.1875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 171.1875,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 338.390625,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 505.59375,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 672.796875,
+            "y": 329,
+            "width": 167.1875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-M-844-home.png",
+    "more": {
+      "open": true,
+      "x": 142,
+      "y": 102.6810531616211,
+      "width": 560,
+      "height": 294,
+      "scrollWidth": 560,
+      "clientWidth": 560,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 844,
+    "height": 390,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 844,
+      "scrollWidth": 844,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 36,
+            "y": 324,
+            "width": 99.71875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 36,
+            "y": 3000,
+            "width": 105.96875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 36,
+            "y": 3180,
+            "width": 123.953125,
+            "height": 24
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Updated\n2:50 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Wes",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 329,
+            "width": 167.1875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 171.1875,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 338.390625,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 505.59375,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 672.796875,
+            "y": 329,
+            "width": 167.1875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-M-844-inbox.png",
+    "more": {
+      "open": true,
+      "x": 142,
+      "y": 100.58992767333984,
+      "width": 560,
+      "height": 294,
+      "scrollWidth": 560,
+      "clientWidth": 560,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        {
+          "text": "Good afternoon, Morgan",
+          "box": {
+            "x": 312,
+            "y": 149,
+            "width": 1048,
+            "height": 40
+          },
+          "size": "32px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 953.328125,
+            "y": 265,
+            "width": 46.40625,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "4 shifts with no clock‑in",
+          "box": {
+            "x": 368,
+            "y": 301,
+            "width": 270,
+            "height": 24
+          },
+          "size": "18px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 312,
+            "y": 490,
+            "width": 114.53125,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 953.328125,
+            "y": 487,
+            "width": 75.125,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 953.328125,
+            "y": 879,
+            "width": 81.8125,
+            "height": 22
+          },
+          "size": "16px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Morgan\n\n26 things need you today.\n\nToday\nUpdated\n2:50 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nSee all 22 in Inbox\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\n29 items for the coming weeks. None are urgent.\nTeam ",
+      "tabs": [],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-M-1440-home.png"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 312,
+            "y": 149,
+            "width": 1048,
+            "height": 40
+          },
+          "size": "32px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 312,
+            "y": 353,
+            "width": 97.140625,
+            "height": 24
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 312,
+            "y": 3029,
+            "width": 101.453125,
+            "height": 24
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 312,
+            "y": 3209,
+            "width": 117.1875,
+            "height": 24
+          },
+          "size": "16px"
+        }
+      ],
+      "text": "Updated\n2:50 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Wes",
+      "tabs": [],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-AUDIT-M-1440-inbox.png"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "headings": [
+        {
+          "text": "Good afternoon, Fictional",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 72
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 36,
+            "y": 272,
+            "width": 49.734375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "4 shifts with no clock‑in",
+          "box": {
+            "x": 92,
+            "y": 536,
+            "width": 192,
+            "height": 50
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 36,
+            "y": 771,
+            "width": 119.4375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Finish setting up",
+          "box": {
+            "x": 36,
+            "y": 1368,
+            "width": 248,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 36,
+            "y": 1659,
+            "width": 79.71875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 36,
+            "y": 2172,
+            "width": 85.453125,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Fictional\n\n26 things need you today.\n\nToday\nUpdated\n2:50 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nSee all 22 in Inbox\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 60.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 64.46875,
+            "y": 783,
+            "width": 82,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 146.46875,
+            "y": 783,
+            "width": 57.59375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 204.0625,
+            "y": 783,
+            "width": 56.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 260.53125,
+            "y": 783,
+            "width": 55.46875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-QAOWNER-320-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 118.82965850830078,
+      "width": 320,
+      "height": 741,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Payroll",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "Settings",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nPayroll\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\nSettings\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 320,
+      "scrollWidth": 320,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 288,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 36,
+            "y": 348,
+            "width": 99.71875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 36,
+            "y": 5210,
+            "width": 105.96875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 36,
+            "y": 5426,
+            "width": 123.953125,
+            "height": 24
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Updated\n2:50 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Wes",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 60.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 64.46875,
+            "y": 783,
+            "width": 82,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 146.46875,
+            "y": 783,
+            "width": 57.59375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 204.0625,
+            "y": 783,
+            "width": 56.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 260.53125,
+            "y": 783,
+            "width": 55.46875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-QAOWNER-320-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 118.8289794921875,
+      "width": 320,
+      "height": 741,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Payroll",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "Settings",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nPayroll\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\nSettings\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Good afternoon, Fictional",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 36,
+            "y": 236,
+            "width": 49.734375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "4 shifts with no clock‑in",
+          "box": {
+            "x": 92,
+            "y": 500,
+            "width": 262,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 36,
+            "y": 710,
+            "width": 119.4375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Finish setting up",
+          "box": {
+            "x": 36,
+            "y": 1241,
+            "width": 318,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 36,
+            "y": 1532,
+            "width": 79.71875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 36,
+            "y": 1981,
+            "width": 85.453125,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Fictional\n\n26 things need you today.\n\nToday\nUpdated\n2:50 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nSee all 22 in Inbox\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-QAOWNER-390-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 118.84765625,
+      "width": 390,
+      "height": 741,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Payroll",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "Settings",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nPayroll\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\nSettings\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 36,
+            "y": 324,
+            "width": 99.71875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 36,
+            "y": 4178,
+            "width": 105.96875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 36,
+            "y": 4358,
+            "width": 123.953125,
+            "height": 24
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Updated\n2:50 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Wes",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-QAOWNER-390-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 118.79844665527344,
+      "width": 390,
+      "height": 741,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Payroll",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "Settings",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nPayroll\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\nSettings\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 844,
+      "scrollWidth": 844,
+      "headings": [
+        {
+          "text": "Good afternoon, Fictional",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 36,
+            "y": 236,
+            "width": 49.734375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "4 shifts with no clock‑in",
+          "box": {
+            "x": 92,
+            "y": 480,
+            "width": 292,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 36,
+            "y": 670,
+            "width": 119.4375,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Finish setting up",
+          "box": {
+            "x": 36,
+            "y": 1101,
+            "width": 772,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 36,
+            "y": 1372,
+            "width": 79.71875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 36,
+            "y": 1769,
+            "width": 85.453125,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Fictional\n\n26 things need you today.\n\nToday\nUpdated\n2:50 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nSee all 22 in Inbox\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 329,
+            "width": 167.1875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 171.1875,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 338.390625,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 505.59375,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 672.796875,
+            "y": 329,
+            "width": 167.1875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-QAOWNER-844-home.png",
+    "more": {
+      "open": true,
+      "x": 142,
+      "y": 102.6799087524414,
+      "width": 560,
+      "height": 294,
+      "scrollWidth": 560,
+      "clientWidth": 560,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Payroll",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "Settings",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nPayroll\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\nSettings\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 844,
+      "scrollWidth": 844,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 812,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 36,
+            "y": 324,
+            "width": 99.71875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 36,
+            "y": 3000,
+            "width": 105.96875,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 36,
+            "y": 3180,
+            "width": 123.953125,
+            "height": 24
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Updated\n2:50 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Wes",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 329,
+            "width": 167.1875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 171.1875,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox, 26 need you",
+          "box": {
+            "x": 338.390625,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 505.59375,
+            "y": 329,
+            "width": 167.203125,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 672.796875,
+            "y": 329,
+            "width": 167.1875,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-QAOWNER-844-inbox.png",
+    "more": {
+      "open": true,
+      "x": 142,
+      "y": 100.57752227783203,
+      "width": 560,
+      "height": 294,
+      "scrollWidth": 560,
+      "clientWidth": 560,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Payroll",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "Settings",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nPayroll\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\nSettings\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        {
+          "text": "Good afternoon, Fictional",
+          "box": {
+            "x": 312,
+            "y": 149,
+            "width": 1048,
+            "height": 40
+          },
+          "size": "32px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 953.328125,
+            "y": 265,
+            "width": 46.40625,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "4 shifts with no clock‑in",
+          "box": {
+            "x": 368,
+            "y": 301,
+            "width": 270,
+            "height": 24
+          },
+          "size": "18px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 312,
+            "y": 490,
+            "width": 114.53125,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Finish setting up",
+          "box": {
+            "x": 953.328125,
+            "y": 471,
+            "width": 406.671875,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 953.328125,
+            "y": 742,
+            "width": 75.125,
+            "height": 22
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 953.328125,
+            "y": 1134,
+            "width": 81.8125,
+            "height": 22
+          },
+          "size": "16px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Fictional\n\n26 things need you today.\n\nToday\nUpdated\n2:50 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\n4 shifts with no clock‑in\n\nMorgan Rivera and 3 others · Main Office\n\nReview in Inbox\nAlso needs you\nShowing 3 of 22\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nSee all 22 in Inbox\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and",
+      "tabs": [],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-QAOWNER-1440-home.png"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 312,
+            "y": 149,
+            "width": 1048,
+            "height": 40
+          },
+          "size": "32px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 312,
+            "y": 353,
+            "width": 97.140625,
+            "height": 24
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 312,
+            "y": 3029,
+            "width": 101.453125,
+            "height": 24
+          },
+          "size": "16px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 312,
+            "y": 3209,
+            "width": 117.1875,
+            "height": 24
+          },
+          "size": "16px"
+        }
+      ],
+      "text": "Updated\n2:50 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM · Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Wes",
+      "tabs": [],
+      "textScale": "1"
+    },
+    "screenshot": "chromium-QAOWNER-1440-inbox.png"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 390,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/home",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/my-time",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Hi, Alexandra.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Your shifts",
+          "box": {
+            "x": 36,
+            "y": 286,
+            "width": 97.921875,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Clock status",
+          "box": {
+            "x": 36,
+            "y": 985.5,
+            "width": 144.140625,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "To do",
+          "box": {
+            "x": 36,
+            "y": 1182,
+            "width": 50.84375,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Quick actions",
+          "box": {
+            "x": 16,
+            "y": 1456.5,
+            "width": 358,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Recent activity",
+          "box": {
+            "x": 36,
+            "y": 1787.5,
+            "width": 136.890625,
+            "height": 25
+          },
+          "size": "19px"
+        }
+      ],
+      "text": "Good afternoon · Monday, October 19\n\nHi, Alexandra.\n\nOn shift until 4:00 PM.\n\n2 items need your review\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n8:00 AM\n–\n4:00 PM\n\nMain Office · Customer Support\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n8:00 AM\n–\n4:00 PM\n\nStarts in 17h 9m\n\nMain Office · Customer Support\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 2:50 PM\nRefresh\nMy time\nTo do\n2 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n5 items\nTime off waiting · Oct 29, 2026 –",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 68.21875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 76.21875,
+            "y": 783,
+            "width": 90.140625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 170.359375,
+            "y": 783,
+            "width": 89.703125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 264.0625,
+            "y": 783,
+            "width": 54.3125,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 322.375,
+            "y": 783,
+            "width": 63.625,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "webkit-AUDIT-E-390-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 515.0257568359375,
+      "width": 390,
+      "height": 335,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nAlexandra Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 390,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 36,
+            "y": 252,
+            "width": 117.3125,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 36,
+            "y": 550,
+            "width": 159.15625,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 68.21875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 76.21875,
+            "y": 783,
+            "width": 90.140625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 170.359375,
+            "y": 783,
+            "width": 89.703125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 264.0625,
+            "y": 783,
+            "width": 54.3125,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 322.375,
+            "y": 783,
+            "width": 63.625,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "webkit-AUDIT-E-390-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 514.1209716796875,
+      "width": 390,
+      "height": 335,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nAlexandra Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/home",
+        "status": 200
+      },
+      {
+        "path": "/api/employee/my-time",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Hi, Taylor.",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Your shifts",
+          "box": {
+            "x": 36,
+            "y": 286,
+            "width": 97.921875,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Clock status",
+          "box": {
+            "x": 36,
+            "y": 1045.5,
+            "width": 144.140625,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "To do",
+          "box": {
+            "x": 36,
+            "y": 1242,
+            "width": 50.84375,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Quick actions",
+          "box": {
+            "x": 16,
+            "y": 1516.5,
+            "width": 358,
+            "height": 25
+          },
+          "size": "19px"
+        },
+        {
+          "text": "Recent activity",
+          "box": {
+            "x": 36,
+            "y": 1847.5,
+            "width": 136.890625,
+            "height": 25
+          },
+          "size": "19px"
+        }
+      ],
+      "text": "Good afternoon · Monday, October 19\n\nHi, Taylor.\n\nOn shift until 5:00 PM.\n\n2 items need your review\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n9:00 AM\n–\n5:00 PM\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n9:00 AM\n–\n5:00 PM\n\nStarts in 18h 9m\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 2:50 PM\nRefresh\nMy time\nTo do\n2 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n1 item\nTim",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 68.21875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 76.21875,
+            "y": 783,
+            "width": 90.140625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 170.359375,
+            "y": 783,
+            "width": 89.703125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 264.0625,
+            "y": 783,
+            "width": 54.3125,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 322.375,
+            "y": 783,
+            "width": 63.625,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "webkit-AUDIT-LEAD-390-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 515.3041381835938,
+      "width": 390,
+      "height": 335,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nTaylor Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/requests/hub",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Requests",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Start a request",
+          "box": {
+            "x": 36,
+            "y": 252,
+            "width": 117.3125,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Track your requests",
+          "box": {
+            "x": 36,
+            "y": 550,
+            "width": 159.15625,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 68.21875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 76.21875,
+            "y": 783,
+            "width": 90.140625,
+            "height": 55
+          }
+        },
+        {
+          "name": "Requests",
+          "box": {
+            "x": 170.359375,
+            "y": 783,
+            "width": 89.703125,
+            "height": 55
+          }
+        },
+        {
+          "name": "Pay",
+          "box": {
+            "x": 264.0625,
+            "y": 783,
+            "width": 54.3125,
+            "height": 55
+          }
+        },
+        {
+          "name": "More",
+          "box": {
+            "x": 322.375,
+            "y": 783,
+            "width": 63.625,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "webkit-AUDIT-LEAD-390-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 514.8900146484375,
+      "width": 390,
+      "height": 335,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Updates",
+        "Notifications",
+        "Profile",
+        "Sign out",
+        "Close"
+      ],
+      "text": "More\n\nUpdates\nNotifications\nProfile\nTaylor Rivera\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Good afternoon, Morgan",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 36,
+            "y": 236,
+            "width": 49.078125,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 36,
+            "y": 701,
+            "width": 122.40625,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 36,
+            "y": 1229,
+            "width": 81.21875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 36,
+            "y": 1658,
+            "width": 87.25,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Morgan\n\nChecking what needs you…\n\nToday\nUpdated\n2:51 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 2:41 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 73.921875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 77.921875,
+            "y": 783,
+            "width": 95.84375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox",
+          "box": {
+            "x": 173.765625,
+            "y": 783,
+            "width": 71.546875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 245.3125,
+            "y": 783,
+            "width": 71.359375,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 316.671875,
+            "y": 783,
+            "width": 69.328125,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "webkit-AUDIT-M-390-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 876,
+      "width": 390,
+      "height": 653,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Act now25",
+          "box": {
+            "x": 36,
+            "y": 324,
+            "width": 101.609375,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Requests1",
+          "box": {
+            "x": 36,
+            "y": 4198,
+            "width": 106.5,
+            "height": 24
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Plan ahead29",
+          "box": {
+            "x": 36,
+            "y": 4378,
+            "width": 124.734375,
+            "height": 24
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Updated\n2:51 PM\n\nRefresh\nInbox\n\n4 shifts with no clock‑in, 21 coverage gaps and 1 request need you.\n\nAll\nAct now\nRequests\nPlan ahead\nAct now25\nMR\nMorgan Rivera\nStarted 7:00 AM · Main Office\nNot clocked in\nContact\nAR\nAlexandra Rivera\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nMJ\nMaría José Rivera Santiago With A Long Name\nStarted 8:00 AM · Main Office\nNot clocked in\nContact\nTR\nTaylor Rivera\nStarted 9:00 AM · Main Office\nNot clocked in\nContact\nCoverage gap at Main Office\nMon, Oct 19 · midnight – 7:00 AM ·Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Office\nMon, Oct 19 · all day ·Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nMon, Oct 19 · 5:00 PM – midnight ·Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at Main Office\nTue, Oct 20 · midnight – 7:00 AM ·Need 1 employee\nNot covered\nView coverage gap\nCoverage gap at West Of",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 73.921875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 77.921875,
+            "y": 783,
+            "width": 95.84375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox",
+          "box": {
+            "x": 173.765625,
+            "y": 783,
+            "width": 71.546875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 245.3125,
+            "y": 783,
+            "width": 71.359375,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 316.671875,
+            "y": 783,
+            "width": 69.328125,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "webkit-AUDIT-M-390-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 876,
+      "width": 390,
+      "height": 653,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "route": "/app",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Good afternoon, Fictional",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        },
+        {
+          "text": "Today",
+          "box": {
+            "x": 36,
+            "y": 236,
+            "width": 49.078125,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Also needs you",
+          "box": {
+            "x": 36,
+            "y": 701,
+            "width": 122.40625,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Finish setting up",
+          "box": {
+            "x": 36,
+            "y": 1229,
+            "width": 318,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "This week",
+          "box": {
+            "x": 36,
+            "y": 1520,
+            "width": 81.21875,
+            "height": 22
+          },
+          "size": "17px"
+        },
+        {
+          "text": "Team tools",
+          "box": {
+            "x": 36,
+            "y": 1949,
+            "width": 87.25,
+            "height": 22
+          },
+          "size": "17px"
+        }
+      ],
+      "text": "Monday, October 19\n\nGood afternoon, Fictional\n\nChecking what needs you…\n\nToday\nUpdated\n2:51 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\nChecking what needs you…\nAlso needs you\nLoading…\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nChecking…\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 2:41 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 73.921875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 77.921875,
+            "y": 783,
+            "width": 95.84375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox",
+          "box": {
+            "x": 173.765625,
+            "y": 783,
+            "width": 71.546875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 245.3125,
+            "y": 783,
+            "width": 71.359375,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 316.671875,
+            "y": 783,
+            "width": 69.328125,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "webkit-QAOWNER-390-home.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 876,
+      "width": 390,
+      "height": 741,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Payroll",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "Settings",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nPayroll\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\nSettings\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "route": "/app/inbox",
+    "errors": [],
+    "responses": [
+      {
+        "path": "/api/notifications",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/today",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/action-center",
+        "status": 200
+      },
+      {
+        "path": "/api/manager/inbox-count",
+        "status": 200
+      }
+    ],
+    "status": 200,
+    "metrics": {
+      "path": "/app/inbox",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "headings": [
+        {
+          "text": "Inbox",
+          "box": {
+            "x": 16,
+            "y": 124,
+            "width": 358,
+            "height": 36
+          },
+          "size": "30px"
+        }
+      ],
+      "text": "Checking…\n\nRefresh\nInbox\n\nChecking what needs you…\n\nAll\nAct now\nRequests\nPlan ahead\n\nLoading your Inbox…",
+      "tabs": [
+        {
+          "name": "Home",
+          "box": {
+            "x": 4,
+            "y": 783,
+            "width": 73.921875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Schedule",
+          "box": {
+            "x": 77.921875,
+            "y": 783,
+            "width": 95.84375,
+            "height": 55
+          }
+        },
+        {
+          "name": "Inbox",
+          "box": {
+            "x": 173.765625,
+            "y": 783,
+            "width": 71.546875,
+            "height": 55
+          }
+        },
+        {
+          "name": "Team",
+          "box": {
+            "x": 245.3125,
+            "y": 783,
+            "width": 71.359375,
+            "height": 55
+          }
+        },
+        {
+          "name": "More navigation",
+          "box": {
+            "x": 316.671875,
+            "y": 783,
+            "width": 69.328125,
+            "height": 55
+          }
+        }
+      ],
+      "textScale": "1"
+    },
+    "screenshot": "webkit-QAOWNER-390-inbox.png",
+    "more": {
+      "open": true,
+      "x": 0,
+      "y": 109.62512969970703,
+      "width": 390,
+      "height": 741,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "focusedInside": true,
+      "labels": [
+        "Search",
+        "Timecards",
+        "Payroll",
+        "Time exports",
+        "Insights",
+        "Templates",
+        "Scheduling rules",
+        "Updates",
+        "Settings",
+        "My pay",
+        "Sign out",
+        "Close"
+      ],
+      "text": "Search\n\nTime and reporting\n\nTimecards\nPayroll\nTime exports\nInsights\n\nScheduling tools\n\nTemplates\nScheduling rules\n\nWorkplace\n\nUpdates\nSettings\n\nMy account\n\nMy pay\nSign out\nClose",
+      "closedOnEscape": true,
+      "focusReturned": true
+    }
+  }
+]

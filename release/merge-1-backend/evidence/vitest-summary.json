@@ -1,0 +1,18 @@
+{
+  "success": false,
+  "startTime": 1792435263338,
+  "numTotalTestSuites": 819,
+  "numPassedTestSuites": 809,
+  "numFailedTestSuites": 10,
+  "numTotalTests": 8191,
+  "numPassedTests": 7326,
+  "numFailedTests": 9,
+  "numPendingTests": 801,
+  "numTodoTests": 0,
+  "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+  "executed": 7335,
+  "skipped": 801,
+  "pending": 55,
+  "command": "npm test -- --maxWorkers=2 --reporter=json --outputFile=...",
+  "timingFailures": "8 timeouts plus a process fixture startup timing assertion; not waived as green"
+}

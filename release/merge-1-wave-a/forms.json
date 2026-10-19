@@ -1,0 +1,51 @@
+{
+  "checkpoint": "0e010464aeb5f532981ac6071c48e1527e9419db",
+  "forms": [
+    {
+      "kind": "callout",
+      "posts": 1,
+      "allMutationsBlocked": true,
+      "before": {
+        "x": 36,
+        "y": 657,
+        "width": 318,
+        "height": 52
+      },
+      "pending": "Shift requests\nUnable to work\n\nTell your manager you can’t work this shift.\n\nYour shift\n\nCan’t work\n\nTuesday, Oct 20, 2026\n\n8:00 AM – 4:00 PM\n\nMain Office · Customer Support\n\nTimes in Puerto Rico time\n\nIt’s still your shift\n\nYou’re responsible for it until a manager approves your report.\n\nA manager reviews your report. You can follow it in Shift requests.\nIf they approve it, the shift opens for someone else to pick up.\nSee my requests\nWhy can’t you work it?\nReason\nChoose a reason\nIllness / sick\nFamily emergency\nTransportation issue\nSchool conflict\nPersonal emergency\nOther\nChoose the closest match.\nMore details\nOptional\nShare only what your manager needs to review it.\n36/300\n\nA manager reviews it. If they approve it, the shift opens for someone else to pick up.\n\nSending…\nCancel\n\nProcessing…",
+      "pendingBox": {
+        "x": 36,
+        "y": 657,
+        "width": 318,
+        "height": 52
+      },
+      "after": "Shift requests\nUnable to work\n\nTell your manager you can’t work this shift.\n\nYour shift\n\nCan’t work\n\nTuesday, Oct 20, 2026\n\n8:00 AM – 4:00 PM\n\nMain Office · Customer Support\n\nTimes in Puerto Rico time\n\nIt’s still your shift\n\nYou’re responsible for it until a manager approves your report.\n\nA manager reviews your report. You can follow it in Shift requests.\nIf they approve it, the shift opens for someone else to pick up.\nSee my requests\nWhy can’t you work it?\nReason\nChoose a reason\nIllness / sick\nFamily emergency\nTransportation issue\nSchool conflict\nPersonal emergency\nOther\nChoose the closest match.\nMore details\nOptional\nShare only what your manager needs to review it.\n36/300\n\nA manager reviews it. If they approve it, the shift opens for someone else to pick up.\n\nSend report\nCancel\n\nOutcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.\n\nCheck & retry same request",
+      "focus": {
+        "tag": "P",
+        "text": "Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved."
+      }
+    },
+    {
+      "kind": "swap",
+      "posts": 1,
+      "allMutationsBlocked": true,
+      "before": {
+        "x": 16,
+        "y": 1392,
+        "width": 358,
+        "height": 52
+      },
+      "pending": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nPick a shift to trade for yours, check both, then send.\n\nYour shift\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\n\nMain Office · Customer Support\n\nTimes in Puerto Rico time\n\nHow a swap works\nShifts you can take\n2 shifts\nShifts you can take this week\n\nOct 26 – Nov 1. Choose one to compare.\n\nSat, Oct 31 · 8:00 AM – 4:00 PM\nRiley Rivera\nMain Office · Customer Support\nPuerto Rico time\nSun, Nov 1 · 8:00 AM – 4:00 PM\nRiley Rivera\nMain Office · Customer Support\nPuerto Rico time\nReview your swap\n\nSelected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both shifts below.\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\n\nMain Office · Customer Support\n\nTimes in Puerto Rico time\n\nYou receive\n\nSaturday, Oct 31, 2026\n\n8:00 AM – 4:00 PM\n\nRiley Rivera · Main Office · Customer Support\n\nTimes in Puerto Rico time\n\nSending means you agree to this swap. Your schedule changes only after the other person agrees and any review is done.\n\nSending…\nCancel\n\nProcessing…",
+      "pendingBox": {
+        "x": 16,
+        "y": 640,
+        "width": 358,
+        "height": 52
+      },
+      "after": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nPick a shift to trade for yours, check both, then send.\n\nYour shift\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\n\nMain Office · Customer Support\n\nTimes in Puerto Rico time\n\nHow a swap works\nShifts you can take\n2 shifts\nShifts you can take this week\n\nOct 26 – Nov 1. Choose one to compare.\n\nSat, Oct 31 · 8:00 AM – 4:00 PM\nRiley Rivera\nMain Office · Customer Support\nPuerto Rico time\nSun, Nov 1 · 8:00 AM – 4:00 PM\nRiley Rivera\nMain Office · Customer Support\nPuerto Rico time\nReview your swap\n\nSelected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both shifts below.\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\n\nMain Office · Customer Support\n\nTimes in Puerto Rico time\n\nYou receive\n\nSaturday, Oct 31, 2026\n\n8:00 AM – 4:00 PM\n\nRiley Rivera · Main Office · Customer Support\n\nTimes in Puerto Rico time\n\nSending means you agree to this swap. Your schedule changes only after the other person agrees and any review is done.\n\nSend swap request\nCancel\n\nOutcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.\n\nCheck & retry same request",
+      "focus": {
+        "tag": "P",
+        "text": "Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved."
+      }
+    }
+  ]
+}

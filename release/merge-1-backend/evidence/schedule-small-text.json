@@ -1,0 +1,32 @@
+[
+  {
+    "selector": "P",
+    "text": "2026 · Puerto Rico time",
+    "fontSize": "13px"
+  },
+  {
+    "selector": "SMALL",
+    "text": "Today",
+    "fontSize": "12px"
+  },
+  {
+    "selector": "my-schedule-link",
+    "text": "Request a swap",
+    "fontSize": "13px"
+  },
+  {
+    "selector": "my-schedule-link",
+    "text": "Unable to work",
+    "fontSize": "13px"
+  },
+  {
+    "selector": "my-schedule-link",
+    "text": "Request a swap",
+    "fontSize": "13px"
+  },
+  {
+    "selector": "my-schedule-link",
+    "text": "Unable to work",
+    "fontSize": "13px"
+  }
+]

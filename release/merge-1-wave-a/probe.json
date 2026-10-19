@@ -1,0 +1,5255 @@
+{
+  "checkpoint": "0e010464aeb5f532981ac6071c48e1527e9419db",
+  "startedAt": "2026-10-19T18:48:56.993Z",
+  "screens": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "path": "/app",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Home"
+        ],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": "page",
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55,
+            "right": 73.015625,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55,
+            "right": 167.5625,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": null,
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55,
+            "right": 261.09375,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55,
+            "right": 317.984375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n "
+      },
+      "screenshot": "crops/chromium-AUDIT-E-1.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "path": "/app/inbox",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/requests/hub",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Requests"
+        ],
+        "cards": [
+          {
+            "id": "request-hub-start",
+            "x": 16,
+            "y": 232,
+            "width": 358,
+            "height": 282,
+            "right": 374,
+            "bottom": 514,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "request-hub-track",
+            "x": 16,
+            "y": 530,
+            "width": 358,
+            "height": 214,
+            "right": 374,
+            "bottom": 744,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 760,
+            "width": 358,
+            "height": 56,
+            "right": 374,
+            "bottom": 816,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55,
+            "right": 73.015625,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55,
+            "right": 167.5625,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": "page",
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55,
+            "right": 261.09375,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55,
+            "right": 317.984375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?"
+      },
+      "screenshot": "crops/chromium-AUDIT-E-2.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "path": "/app",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Hi, Taylor."
+        ],
+        "cards": [],
+        "buttons": [
+          {
+            "label": "Refreshing recorded time",
+            "x": 36,
+            "y": 1154.5,
+            "width": 103,
+            "height": 44,
+            "right": 139,
+            "bottom": 1198.5,
+            "font": 15,
+            "radius": "12px"
+          },
+          {
+            "label": "Refresh home",
+            "x": 206,
+            "y": 2119,
+            "width": 120,
+            "height": 44,
+            "right": 326,
+            "bottom": 2163,
+            "font": 17,
+            "radius": "4px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": "page",
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55,
+            "right": 73.015625,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55,
+            "right": 167.5625,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": null,
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55,
+            "right": 261.09375,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55,
+            "right": 317.984375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Good afternoon · Monday, October 19\n\nHi, Taylor.\n\nScheduled until 5:00 PM.\n\n3 items need your review\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n9:00 AM\n–\n5:00 PM\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n9:00 AM\n–\n5:00 PM\n\nStarts in 18h 11m\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nOnly recorded punches appear here.\nRefresh\nMy time\nTo do\n3 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nReview update: This week’s team schedule\nRecorded Mon, Oct 19, 2:48 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n1 item\nTime off approved · Nov 10, 2026 – Nov 11, 2026\nRecorded Sat, Oct 17, 2:48 PM\nUpdated 2:49 PM\nRefresh home"
+      },
+      "screenshot": "crops/chromium-AUDIT-LEAD-3.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "path": "/app/inbox",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/requests/hub",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Requests"
+        ],
+        "cards": [
+          {
+            "id": "request-hub-start",
+            "x": 16,
+            "y": 232,
+            "width": 358,
+            "height": 282,
+            "right": 374,
+            "bottom": 514,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "request-hub-track",
+            "x": 16,
+            "y": 530,
+            "width": 358,
+            "height": 214,
+            "right": 374,
+            "bottom": 744,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 760,
+            "width": 358,
+            "height": 56,
+            "right": 374,
+            "bottom": 816,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55,
+            "right": 73.015625,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55,
+            "right": 167.5625,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": "page",
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55,
+            "right": 261.09375,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55,
+            "right": 317.984375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?"
+      },
+      "screenshot": "crops/chromium-AUDIT-LEAD-4.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Good afternoon, Morgan"
+        ],
+        "cards": [
+          {
+            "id": "home-today",
+            "x": 16,
+            "y": 216,
+            "width": 358,
+            "height": 212,
+            "right": 374,
+            "bottom": 428,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 444,
+            "width": 358,
+            "height": 221,
+            "right": 374,
+            "bottom": 665,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 512,
+            "right": 374,
+            "bottom": 1193,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-week",
+            "x": 16,
+            "y": 1209,
+            "width": 358,
+            "height": 321,
+            "right": 374,
+            "bottom": 1530,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-planning",
+            "x": 16,
+            "y": 1546,
+            "width": 358,
+            "height": 76,
+            "right": 374,
+            "bottom": 1622,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-tools",
+            "x": 16,
+            "y": 1638,
+            "width": 358,
+            "height": 458,
+            "right": 374,
+            "bottom": 2096,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Try again",
+            "x": 36,
+            "y": 593,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 645,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": "page",
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Monday, October 19\n\nGood afternoon, Morgan\n\nCouldn’t load everything.\n\nToday\nUpdated\n2:49 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\nWhat needs you isn’t available right now.\n\nTry again\nAlso needs you\nNot available\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nNot available right now.\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 2:48 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account"
+      },
+      "screenshot": "crops/chromium-AUDIT-M-5.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/inbox",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/inbox",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Inbox"
+        ],
+        "cards": [
+          {
+            "id": "",
+            "x": 16,
+            "y": 304,
+            "width": 358,
+            "height": 124,
+            "right": 374,
+            "bottom": 428,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Refresh",
+            "x": 281,
+            "y": 76,
+            "width": 105,
+            "height": 44,
+            "right": 386,
+            "bottom": 120,
+            "font": 15,
+            "radius": "12px"
+          },
+          {
+            "label": "All",
+            "x": 16,
+            "y": 236,
+            "width": 47,
+            "height": 44,
+            "right": 63,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Act now",
+            "x": 71,
+            "y": 236,
+            "width": 87,
+            "height": 44,
+            "right": 158,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Requests",
+            "x": 166,
+            "y": 236,
+            "width": 95,
+            "height": 44,
+            "right": 261,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Plan ahead",
+            "x": 269,
+            "y": 236,
+            "width": 106,
+            "height": 44,
+            "right": 375,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Try again",
+            "x": 36,
+            "y": 356,
+            "width": 142,
+            "height": 52,
+            "right": 178,
+            "bottom": 408,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": "page",
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Not available\n\nRefresh\nInbox\n\nRequests and problems to resolve.\n\nAll\nAct now\nRequests\nPlan ahead\n\nThe Inbox isn’t available right now.\n\nTry again"
+      },
+      "screenshot": "crops/chromium-AUDIT-M-6.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Good afternoon, Fictional"
+        ],
+        "cards": [
+          {
+            "id": "home-today",
+            "x": 16,
+            "y": 216,
+            "width": 358,
+            "height": 212,
+            "right": 374,
+            "bottom": 428,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 444,
+            "width": 358,
+            "height": 221,
+            "right": 374,
+            "bottom": 665,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 512,
+            "right": 374,
+            "bottom": 1193,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-week",
+            "x": 16,
+            "y": 1500,
+            "width": 358,
+            "height": 321,
+            "right": 374,
+            "bottom": 1821,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-planning",
+            "x": 16,
+            "y": 1837,
+            "width": 358,
+            "height": 76,
+            "right": 374,
+            "bottom": 1913,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-tools",
+            "x": 16,
+            "y": 1929,
+            "width": 358,
+            "height": 458,
+            "right": 374,
+            "bottom": 2387,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Try again",
+            "x": 36,
+            "y": 593,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 645,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": "page",
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Monday, October 19\n\nGood afternoon, Fictional\n\nCouldn’t load everything.\n\nToday\nUpdated\n2:49 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in\n4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\nWhat needs you isn’t available right now.\n\nTry again\nAlso needs you\nNot available\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nNot available right now.\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 2:48 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account"
+      },
+      "screenshot": "crops/chromium-QAOWNER-7.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/inbox",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/inbox",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Inbox"
+        ],
+        "cards": [
+          {
+            "id": "",
+            "x": 16,
+            "y": 304,
+            "width": 358,
+            "height": 124,
+            "right": 374,
+            "bottom": 428,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Refresh",
+            "x": 281,
+            "y": 76,
+            "width": 105,
+            "height": 44,
+            "right": 386,
+            "bottom": 120,
+            "font": 15,
+            "radius": "12px"
+          },
+          {
+            "label": "All",
+            "x": 16,
+            "y": 236,
+            "width": 47,
+            "height": 44,
+            "right": 63,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Act now",
+            "x": 71,
+            "y": 236,
+            "width": 87,
+            "height": 44,
+            "right": 158,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Requests",
+            "x": 166,
+            "y": 236,
+            "width": 95,
+            "height": 44,
+            "right": 261,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Plan ahead",
+            "x": 269,
+            "y": 236,
+            "width": 106,
+            "height": 44,
+            "right": 375,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Try again",
+            "x": 36,
+            "y": 356,
+            "width": 142,
+            "height": 52,
+            "right": 178,
+            "bottom": 408,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": "page",
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Not available\n\nRefresh\nInbox\n\nRequests and problems to resolve.\n\nAll\nAct now\nRequests\nPlan ahead\n\nThe Inbox isn’t available right now.\n\nTry again"
+      },
+      "screenshot": "crops/chromium-QAOWNER-8.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "path": "/app",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Home"
+        ],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": "page",
+            "x": 4,
+            "y": 783,
+            "width": 68.21875,
+            "height": 55,
+            "right": 72.21875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 76.21875,
+            "y": 783,
+            "width": 90.140625,
+            "height": 55,
+            "right": 166.359375,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": null,
+            "x": 170.359375,
+            "y": 783,
+            "width": 89.703125,
+            "height": 55,
+            "right": 260.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 264.0625,
+            "y": 783,
+            "width": 54.3125,
+            "height": 55,
+            "right": 318.375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 322.375,
+            "y": 783,
+            "width": 63.625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Home\n\nChecking your shifts…\n\n \nNext shift\n\nLoading Home…\n\n \n\n \n\n \n\n "
+      },
+      "screenshot": "crops/webkit-AUDIT-E-9.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "path": "/app/inbox",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/requests/hub",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Requests"
+        ],
+        "cards": [
+          {
+            "id": "request-hub-start",
+            "x": 16,
+            "y": 232,
+            "width": 358,
+            "height": 282,
+            "right": 374,
+            "bottom": 514,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "request-hub-track",
+            "x": 16,
+            "y": 530,
+            "width": 358,
+            "height": 214,
+            "right": 374,
+            "bottom": 744,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 760,
+            "width": 358,
+            "height": 56,
+            "right": 374,
+            "bottom": 816,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 68.21875,
+            "height": 55,
+            "right": 72.21875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 76.21875,
+            "y": 783,
+            "width": 90.140625,
+            "height": 55,
+            "right": 166.359375,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": "page",
+            "x": 170.359375,
+            "y": 783,
+            "width": 89.703125,
+            "height": 55,
+            "right": 260.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 264.0625,
+            "y": 783,
+            "width": 54.3125,
+            "height": 55,
+            "right": 318.375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 322.375,
+            "y": 783,
+            "width": 63.625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?"
+      },
+      "screenshot": "crops/webkit-AUDIT-E-10.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "path": "/app",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Hi, Taylor."
+        ],
+        "cards": [],
+        "buttons": [
+          {
+            "label": "Refreshing recorded time",
+            "x": 36,
+            "y": 1154,
+            "width": 101.453125,
+            "height": 44,
+            "right": 137.453125,
+            "bottom": 1198,
+            "font": 15,
+            "radius": "12px"
+          },
+          {
+            "label": "Refresh home",
+            "x": 205.390625,
+            "y": 2117.75,
+            "width": 120.953125,
+            "height": 44,
+            "right": 326.34375,
+            "bottom": 2161.75,
+            "font": 17,
+            "radius": "4px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": "page",
+            "x": 4,
+            "y": 783,
+            "width": 68.21875,
+            "height": 55,
+            "right": 72.21875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 76.21875,
+            "y": 783,
+            "width": 90.140625,
+            "height": 55,
+            "right": 166.359375,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": null,
+            "x": 170.359375,
+            "y": 783,
+            "width": 89.703125,
+            "height": 55,
+            "right": 260.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 264.0625,
+            "y": 783,
+            "width": 54.3125,
+            "height": 55,
+            "right": 318.375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 322.375,
+            "y": 783,
+            "width": 63.625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Good afternoon · Monday, October 19\n\nHi, Taylor.\n\nScheduled until 5:00 PM.\n\n3 items need your review\nYour shifts\nPublished\nScheduled now\n\nClock status below shows whether you’re clocked in.\n\nToday · Mon, October 19, 2026\n\n9:00 AM\n–\n5:00 PM\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\nNext shift\n\nTomorrow · Tue, October 20, 2026\n\n9:00 AM\n–\n5:00 PM\n\nStarts in 18h 11m\n\nMain Office · Customer Support\n\nDesignated lead\n\nView schedule\n\nTimes in Puerto Rico time\n\nWest Office hasn’t published this week yet. Shifts shown are published.\n\nClock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nOnly recorded punches appear here.\nRefresh\nMy time\nTo do\n3 items\nSchedule updated\nWeek of Mon, October 19, 2026\nReview needed\nSchedule updated\nWeek of Mon, October 26, 2026\nReview needed\nReview update: This week’s team schedule\nRecorded Mon, Oct 19, 2:48 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n1 item\nTime off approved · Nov 10, 2026 – Nov 11, 2026\nRecorded Sat, Oct 17, 2:48 PM\nUpdated 2:49 PM\nRefresh home"
+      },
+      "screenshot": "crops/webkit-AUDIT-LEAD-11.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "path": "/app/inbox",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/requests/hub",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Requests"
+        ],
+        "cards": [
+          {
+            "id": "request-hub-start",
+            "x": 16,
+            "y": 232,
+            "width": 358,
+            "height": 282,
+            "right": 374,
+            "bottom": 514,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "request-hub-track",
+            "x": 16,
+            "y": 530,
+            "width": 358,
+            "height": 214,
+            "right": 374,
+            "bottom": 744,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 760,
+            "width": 358,
+            "height": 56,
+            "right": 374,
+            "bottom": 816,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 68.21875,
+            "height": 55,
+            "right": 72.21875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 76.21875,
+            "y": 783,
+            "width": 90.140625,
+            "height": 55,
+            "right": 166.359375,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": "page",
+            "x": 170.359375,
+            "y": 783,
+            "width": 89.703125,
+            "height": 55,
+            "right": 260.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 264.0625,
+            "y": 783,
+            "width": 54.3125,
+            "height": 55,
+            "right": 318.375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 322.375,
+            "y": 783,
+            "width": 63.625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Overview\nTime off\nShift requests\nAvailability\nRequests\n\nAsk for time off or change a shift.\n\nStart a request\nRequest time off\nA full day or a few hours\nSwap a shift\nOr offer it for coverage. Starts in My schedule\nUpdate availability\nWhen you can and can’t work\nTrack your requests\nMy time-off requests\nWaiting, approved and past requests\nMy shift requests\nSwaps, coverage and callouts\nWhich request should I use?"
+      },
+      "screenshot": "crops/webkit-AUDIT-LEAD-12.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Good afternoon, Morgan"
+        ],
+        "cards": [
+          {
+            "id": "home-today",
+            "x": 16,
+            "y": 216,
+            "width": 358,
+            "height": 212,
+            "right": 374,
+            "bottom": 428,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 444,
+            "width": 358,
+            "height": 221,
+            "right": 374,
+            "bottom": 665,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 512,
+            "right": 374,
+            "bottom": 1193,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-week",
+            "x": 16,
+            "y": 1209,
+            "width": 358,
+            "height": 321,
+            "right": 374,
+            "bottom": 1530,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-planning",
+            "x": 16,
+            "y": 1546,
+            "width": 358,
+            "height": 76,
+            "right": 374,
+            "bottom": 1622,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-tools",
+            "x": 16,
+            "y": 1638,
+            "width": 358,
+            "height": 458,
+            "right": 374,
+            "bottom": 2096,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Try again",
+            "x": 36,
+            "y": 593,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 645,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": "page",
+            "x": 4,
+            "y": 783,
+            "width": 73.921875,
+            "height": 55,
+            "right": 77.921875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.921875,
+            "y": 783,
+            "width": 95.84375,
+            "height": 55,
+            "right": 173.765625,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 173.765625,
+            "y": 783,
+            "width": 71.546875,
+            "height": 55,
+            "right": 245.3125,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 245.3125,
+            "y": 783,
+            "width": 71.359375,
+            "height": 55,
+            "right": 316.671875,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.671875,
+            "y": 783,
+            "width": 69.328125,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Monday, October 19\n\nGood afternoon, Morgan\n\nCouldn’t load everything.\n\nToday\nUpdated\n2:49 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\nWhat needs you isn’t available right now.\n\nTry again\nAlso needs you\nNot available\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nNot available right now.\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 2:48 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account"
+      },
+      "screenshot": "crops/webkit-AUDIT-M-13.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/inbox",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/inbox",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Inbox"
+        ],
+        "cards": [
+          {
+            "id": "",
+            "x": 16,
+            "y": 304,
+            "width": 358,
+            "height": 124,
+            "right": 374,
+            "bottom": 428,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Refresh",
+            "x": 282.546875,
+            "y": 76,
+            "width": 103.453125,
+            "height": 44,
+            "right": 386,
+            "bottom": 120,
+            "font": 15,
+            "radius": "12px"
+          },
+          {
+            "label": "All",
+            "x": 16,
+            "y": 236,
+            "width": 46.765625,
+            "height": 44,
+            "right": 62.765625,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Act now",
+            "x": 70.765625,
+            "y": 236,
+            "width": 86.5625,
+            "height": 44,
+            "right": 157.328125,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Requests",
+            "x": 165.328125,
+            "y": 236,
+            "width": 94.5625,
+            "height": 44,
+            "right": 259.890625,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Plan ahead",
+            "x": 267.890625,
+            "y": 236,
+            "width": 107.234375,
+            "height": 44,
+            "right": 375.125,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Try again",
+            "x": 36,
+            "y": 356,
+            "width": 142.578125,
+            "height": 52,
+            "right": 178.578125,
+            "bottom": 408,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 73.921875,
+            "height": 55,
+            "right": 77.921875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.921875,
+            "y": 783,
+            "width": 95.84375,
+            "height": 55,
+            "right": 173.765625,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": "page",
+            "x": 173.765625,
+            "y": 783,
+            "width": 71.546875,
+            "height": 55,
+            "right": 245.3125,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 245.3125,
+            "y": 783,
+            "width": 71.359375,
+            "height": 55,
+            "right": 316.671875,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.671875,
+            "y": 783,
+            "width": 69.328125,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Not available\n\nRefresh\nInbox\n\nRequests and problems to resolve.\n\nAll\nAct now\nRequests\nPlan ahead\n\nThe Inbox isn’t available right now.\n\n\nTry again"
+      },
+      "screenshot": "crops/webkit-AUDIT-M-14.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Good afternoon, Fictional"
+        ],
+        "cards": [
+          {
+            "id": "home-today",
+            "x": 16,
+            "y": 216,
+            "width": 358,
+            "height": 212,
+            "right": 374,
+            "bottom": 428,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 444,
+            "width": 358,
+            "height": 221,
+            "right": 374,
+            "bottom": 665,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 512,
+            "right": 374,
+            "bottom": 1193,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-week",
+            "x": 16,
+            "y": 1500,
+            "width": 358,
+            "height": 321,
+            "right": 374,
+            "bottom": 1821,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-planning",
+            "x": 16,
+            "y": 1837,
+            "width": 358,
+            "height": 76,
+            "right": 374,
+            "bottom": 1913,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "home-tools",
+            "x": 16,
+            "y": 1929,
+            "width": 358,
+            "height": 458,
+            "right": 374,
+            "bottom": 2387,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Try again",
+            "x": 36,
+            "y": 593,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 645,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": "page",
+            "x": 4,
+            "y": 783,
+            "width": 73.921875,
+            "height": 55,
+            "right": 77.921875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.921875,
+            "y": 783,
+            "width": 95.84375,
+            "height": 55,
+            "right": 173.765625,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 173.765625,
+            "y": 783,
+            "width": 71.546875,
+            "height": 55,
+            "right": 245.3125,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 245.3125,
+            "y": 783,
+            "width": 71.359375,
+            "height": 55,
+            "right": 316.671875,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.671875,
+            "y": 783,
+            "width": 69.328125,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Monday, October 19\n\nGood afternoon, Fictional\n\nCouldn’t load everything.\n\nToday\nUpdated\n2:49 PM\nScheduled today\n6\nClocked in now\n2\nNo clock‑in\n4 shifts with no clock-in4\nPublished shifts only · 2 people clocked in after start\n\nNext up\n\nWhat needs you isn’t available right now.\n\nTry again\nAlso needs you\nNot available\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n13 employees have no weekly hour target.\n\nThis week\nOct 19 – Oct 25\nSchedules published\n1 of 2 locations\nWest Office isn’t started yet.\nAvailability received\n0 of 8 people\nEmployees and leads only\n42 shifts planned, drafts included\nOpen schedule\nPlan ahead\nNot available right now.\nTeam tools\nAttendance\nClock-ins today and corrections to review\nTeam overview\nHours and availability by person\nSchedule activity\nLast published Oct 19, 2:48 PM\nClocker recovery\nReconnect a shared clock‑in device\nAccount recovery\nHelp someone get back into their account"
+      },
+      "screenshot": "crops/webkit-QAOWNER-15.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/inbox",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/inbox",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Inbox"
+        ],
+        "cards": [
+          {
+            "id": "",
+            "x": 16,
+            "y": 304,
+            "width": 358,
+            "height": 124,
+            "right": 374,
+            "bottom": 428,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Refresh",
+            "x": 282.546875,
+            "y": 76,
+            "width": 103.453125,
+            "height": 44,
+            "right": 386,
+            "bottom": 120,
+            "font": 15,
+            "radius": "12px"
+          },
+          {
+            "label": "All",
+            "x": 16,
+            "y": 236,
+            "width": 46.765625,
+            "height": 44,
+            "right": 62.765625,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Act now",
+            "x": 70.765625,
+            "y": 236,
+            "width": 86.5625,
+            "height": 44,
+            "right": 157.328125,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Requests",
+            "x": 165.328125,
+            "y": 236,
+            "width": 94.5625,
+            "height": 44,
+            "right": 259.890625,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Plan ahead",
+            "x": 267.890625,
+            "y": 236,
+            "width": 107.234375,
+            "height": 44,
+            "right": 375.125,
+            "bottom": 280,
+            "font": 15,
+            "radius": "999px"
+          },
+          {
+            "label": "Try again",
+            "x": 36,
+            "y": 356,
+            "width": 142.578125,
+            "height": 52,
+            "right": 178.578125,
+            "bottom": 408,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 73.921875,
+            "height": 55,
+            "right": 77.921875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.921875,
+            "y": 783,
+            "width": 95.84375,
+            "height": 55,
+            "right": 173.765625,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": "page",
+            "x": 173.765625,
+            "y": 783,
+            "width": 71.546875,
+            "height": 55,
+            "right": 245.3125,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 245.3125,
+            "y": 783,
+            "width": 71.359375,
+            "height": 55,
+            "right": 316.671875,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.671875,
+            "y": 783,
+            "width": 69.328125,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Not available\n\nRefresh\nInbox\n\nRequests and problems to resolve.\n\nAll\nAct now\nRequests\nPlan ahead\n\nThe Inbox isn’t available right now.\n\n\nTry again"
+      },
+      "screenshot": "crops/webkit-QAOWNER-16.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "path": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/exchange/swap",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Choose a shift"
+        ],
+        "cards": [
+          {
+            "id": "swap-yours",
+            "x": 16,
+            "y": 284,
+            "width": 358,
+            "height": 242,
+            "right": 374,
+            "bottom": 526,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "swap-choices",
+            "x": 16,
+            "y": 542,
+            "width": 358,
+            "height": 384,
+            "right": 374,
+            "bottom": 926,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "swap-review",
+            "x": 16,
+            "y": 942,
+            "width": 358,
+            "height": 98,
+            "right": 374,
+            "bottom": 1040,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Send swap request",
+            "x": 16,
+            "y": 1056,
+            "width": 358,
+            "height": 52,
+            "right": 374,
+            "bottom": 1108,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Cancel",
+            "x": 16,
+            "y": 1120,
+            "width": 358,
+            "height": 52,
+            "right": 374,
+            "bottom": 1172,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [
+          {
+            "name": "targetShiftId",
+            "type": "radio",
+            "x": 52,
+            "y": 664,
+            "width": 22,
+            "height": 22,
+            "right": 74,
+            "bottom": 686,
+            "radius": "50%"
+          },
+          {
+            "name": "targetShiftId",
+            "type": "radio",
+            "x": 52,
+            "y": 806,
+            "width": 22,
+            "height": 22,
+            "right": 74,
+            "bottom": 828,
+            "radius": "50%"
+          }
+        ],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55,
+            "right": 73.015625,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55,
+            "right": 167.5625,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": "page",
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55,
+            "right": 261.09375,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55,
+            "right": 317.984375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nPick a shift to trade for yours, check both, then send.\n\nYour shift\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\n\nMain Office · Customer Support\n\nTimes in Puerto Rico time\n\nHow a swap works\nShifts you can take\n2 shifts\nShifts you can take this week\n\nOct 26 – Nov 1. Choose one to compare.\n\nSat, Oct 31 · 8:00 AM – 4:00 PM\nRiley Rivera\nMain Office · Customer Support\nPuerto Rico time\nSun, Nov 1 · 8:00 AM – 4:00 PM\nRiley Rivera\nMain Office · Customer Support\nPuerto Rico time\nReview your swap\n\nChoose a shift above to see both side by side.\n\nSend swap request\nCancel"
+      },
+      "screenshot": "crops/chromium-AUDIT-E-17.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "path": "/app/exchange/callout?shiftId=audit-shift-1-1",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/exchange/callout",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Unable to work"
+        ],
+        "cards": [
+          {
+            "id": "callout-shift",
+            "x": 16,
+            "y": 240,
+            "width": 358,
+            "height": 470,
+            "right": 374,
+            "bottom": 710,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "callout-reason",
+            "x": 16,
+            "y": 726,
+            "width": 358,
+            "height": 600,
+            "right": 374,
+            "bottom": 1326,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Send report",
+            "x": 36,
+            "y": 1190,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 1242,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Cancel",
+            "x": 36,
+            "y": 1254,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 1306,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [
+          {
+            "name": "reasonCode",
+            "type": "select-one",
+            "x": 36,
+            "y": 812,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 860,
+            "radius": "12px"
+          },
+          {
+            "name": "reasonNote",
+            "type": "textarea",
+            "x": 36,
+            "y": 932,
+            "width": 318,
+            "height": 122,
+            "right": 354,
+            "bottom": 1054,
+            "radius": "12px"
+          }
+        ],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55,
+            "right": 73.015625,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55,
+            "right": 167.5625,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": "page",
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55,
+            "right": 261.09375,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55,
+            "right": 317.984375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Shift requests\nUnable to work\n\nTell your manager you can’t work this shift.\n\nYour shift\n\nCan’t work\n\nTuesday, Oct 20, 2026\n\n8:00 AM – 4:00 PM\n\nMain Office · Customer Support\n\nTimes in Puerto Rico time\n\nIt’s still your shift\n\nYou’re responsible for it until a manager approves your report.\n\nA manager reviews your report. You can follow it in Shift requests.\nIf they approve it, the shift opens for someone else to pick up.\nSee my requests\nWhy can’t you work it?\nReason\nChoose a reason\nIllness / sick\nFamily emergency\nTransportation issue\nSchool conflict\nPersonal emergency\nOther\nChoose the closest match.\nMore details\nOptional\nShare only what your manager needs to review it.\n0/300\n\nA manager reviews it. If they approve it, the shift opens for someone else to pick up.\n\nSend report\nCancel"
+      },
+      "screenshot": "crops/chromium-AUDIT-E-18.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "path": "/app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-2",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/exchange/swap",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "No shifts to swap"
+        ],
+        "cards": [
+          {
+            "id": "swap-yours",
+            "x": 16,
+            "y": 260,
+            "width": 358,
+            "height": 262,
+            "right": 374,
+            "bottom": 522,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "swap-empty",
+            "x": 16,
+            "y": 538,
+            "width": 358,
+            "height": 282,
+            "right": 374,
+            "bottom": 820,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Offer for coverage",
+            "x": 36,
+            "y": 676,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 728,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Back to Shift requests",
+            "x": 36,
+            "y": 748,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 800,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55,
+            "right": 73.015625,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55,
+            "right": 167.5625,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": "page",
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55,
+            "right": 261.09375,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55,
+            "right": 317.984375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Shift requests\n\nSwap a shift\n\nNo shifts to swap\n\nThis shift can’t be swapped right now.\n\nYour shift\n\nYou give\n\nWednesday, Oct 28, 2026\n\n9:00 AM – 5:00 PM\n\nMain Office · Customer Support · Shift lead\n\nTimes in Puerto Rico time\n\nHow a swap works\nWhat you can do\n\nYou can offer it for someone to pick up instead. It stays your shift until someone does.\n\nOffer for coverage\nBack to Shift requests"
+      },
+      "screenshot": "crops/chromium-AUDIT-LEAD-19.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "path": "/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-3",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/exchange/callout",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Unable to work"
+        ],
+        "cards": [
+          {
+            "id": "callout-shift",
+            "x": 16,
+            "y": 240,
+            "width": 358,
+            "height": 490,
+            "right": 374,
+            "bottom": 730,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "callout-reason",
+            "x": 16,
+            "y": 746,
+            "width": 358,
+            "height": 600,
+            "right": 374,
+            "bottom": 1346,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Send report",
+            "x": 36,
+            "y": 1210,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 1262,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Cancel",
+            "x": 36,
+            "y": 1274,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 1326,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [
+          {
+            "name": "reasonCode",
+            "type": "select-one",
+            "x": 36,
+            "y": 832,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 880,
+            "radius": "12px"
+          },
+          {
+            "name": "reasonNote",
+            "type": "textarea",
+            "x": 36,
+            "y": 952,
+            "width": 318,
+            "height": 122,
+            "right": 354,
+            "bottom": 1074,
+            "radius": "12px"
+          }
+        ],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 69.015625,
+            "height": 55,
+            "right": 73.015625,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 77.015625,
+            "y": 783,
+            "width": 90.546875,
+            "height": 55,
+            "right": 167.5625,
+            "bottom": 838
+          },
+          {
+            "label": "Requests",
+            "current": "page",
+            "x": 171.5625,
+            "y": 783,
+            "width": 89.53125,
+            "height": 55,
+            "right": 261.09375,
+            "bottom": 838
+          },
+          {
+            "label": "Pay",
+            "current": null,
+            "x": 265.09375,
+            "y": 783,
+            "width": 52.890625,
+            "height": 55,
+            "right": 317.984375,
+            "bottom": 838
+          },
+          {
+            "label": "More",
+            "current": null,
+            "x": 321.984375,
+            "y": 783,
+            "width": 64.015625,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Shift requests\nUnable to work\n\nTell your manager you can’t work this shift.\n\nYour shift\n\nCan’t work\n\nThursday, Oct 29, 2026\n\n9:00 AM – 5:00 PM\n\nMain Office · Customer Support · Shift lead\n\nTimes in Puerto Rico time\n\nIt’s still your shift\n\nYou’re responsible for it until a manager approves your report.\n\nA manager reviews your report. You can follow it in Shift requests.\nIf they approve it, the shift opens for someone else to pick up.\nSee my requests\nWhy can’t you work it?\nReason\nChoose a reason\nIllness / sick\nFamily emergency\nTransportation issue\nSchool conflict\nPersonal emergency\nOther\nChoose the closest match.\nMore details\nOptional\nShare only what your manager needs to review it.\n0/300\n\nA manager reviews it. If they approve it, the shift opens for someone else to pick up.\n\nSend report\nCancel"
+      },
+      "screenshot": "crops/chromium-AUDIT-LEAD-20.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/schedule/new",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/schedule/new",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Add shift"
+        ],
+        "cards": [
+          {
+            "id": "shift-who",
+            "x": 16,
+            "y": 284,
+            "width": 358,
+            "height": 426,
+            "right": 374,
+            "bottom": 710,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "shift-when",
+            "x": 16,
+            "y": 726,
+            "width": 358,
+            "height": 310,
+            "right": 374,
+            "bottom": 1036,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "shift-summary",
+            "x": 16,
+            "y": 1052,
+            "width": 358,
+            "height": 407,
+            "right": 374,
+            "bottom": 1459,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Save shift",
+            "x": 16,
+            "y": 1475,
+            "width": 358,
+            "height": 52,
+            "right": 374,
+            "bottom": 1527,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Cancel",
+            "x": 16,
+            "y": 1539,
+            "width": 358,
+            "height": 52,
+            "right": 374,
+            "bottom": 1591,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [
+          {
+            "name": "locationId",
+            "type": "select-one",
+            "x": 36,
+            "y": 370,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 418,
+            "radius": "12px"
+          },
+          {
+            "name": "employeeId",
+            "type": "select-one",
+            "x": 36,
+            "y": 462,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 510,
+            "radius": "12px"
+          },
+          {
+            "name": "positionId",
+            "type": "select-one",
+            "x": 36,
+            "y": 554,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 602,
+            "radius": "12px"
+          },
+          {
+            "name": "isDesignatedLead",
+            "type": "checkbox",
+            "x": 36,
+            "y": 622,
+            "width": 22,
+            "height": 22,
+            "right": 58,
+            "bottom": 644,
+            "radius": "0px"
+          },
+          {
+            "name": "date",
+            "type": "date",
+            "x": 36,
+            "y": 812,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 860,
+            "radius": "12px"
+          },
+          {
+            "name": "startTime",
+            "type": "time",
+            "x": 36,
+            "y": 932,
+            "width": 153,
+            "height": 48,
+            "right": 189,
+            "bottom": 980,
+            "radius": "12px"
+          },
+          {
+            "name": "endTime",
+            "type": "time",
+            "x": 201,
+            "y": 932,
+            "width": 153,
+            "height": 48,
+            "right": 354,
+            "bottom": 980,
+            "radius": "12px"
+          }
+        ],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": "page",
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Schedule\n\nOct 19 – Oct 25\n\nAdd shift\n\nChoose who’s working, where and when.\n\nWho and where\nLocation\nChoose a location\nMain Office\nWest Office\nPerson\nChoose someone\nAlexandra Rivera\nCasey Rivera\nFictional Owner\nJordan Rivera\nMaría José Fictional QA\nMaría José Rivera Santiago With A Long Name\nMorgan Rivera\nRiley Rivera\nRobin Fictional QA\nTaylor Rivera\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nPosition\nOptional\nNo position\nShift lead\nOnly an Owner, Manager or Lead can lead a shift.\nWhen\nDate\nDays in this schedule week: Oct 19 – Oct 25.\nStarts\nEnds\n\nTimes are in the workspace’s time zone.\n\nSummary\nDay\nMon, Oct 19\nTime\nChoose times\nPerson\nChoose someone\nLocation\nChoose a location\nPosition\nNone\nShift lead\nNo\n\nAvailability, time off, other shifts and weekly hours are checked when you save.\n\nSave shift\nCancel"
+      },
+      "screenshot": "crops/chromium-AUDIT-M-21.png",
+      "text200": [
+        {
+          "width": 320,
+          "documentWidth": 320,
+          "cards": [
+            {
+              "width": 288,
+              "x": 16
+            },
+            {
+              "width": 288,
+              "x": 16
+            },
+            {
+              "width": 288,
+              "x": 16
+            }
+          ],
+          "columns": [
+            {
+              "class": "wa-split__main",
+              "width": 288
+            },
+            {
+              "class": "wa-split__side",
+              "width": 288
+            }
+          ],
+          "screenshot": "crops/chromium-AUDIT-M-21-320-200.png"
+        },
+        {
+          "width": 844,
+          "documentWidth": 844,
+          "cards": [
+            {
+              "width": 812,
+              "x": 16
+            },
+            {
+              "width": 812,
+              "x": 16
+            },
+            {
+              "width": 812,
+              "x": 16
+            }
+          ],
+          "columns": [
+            {
+              "class": "wa-split__main",
+              "width": 812
+            },
+            {
+              "class": "wa-split__side",
+              "width": 812
+            }
+          ],
+          "screenshot": "crops/chromium-AUDIT-M-21-844-200.png"
+        },
+        {
+          "width": 1440,
+          "documentWidth": 1440,
+          "cards": [
+            {
+              "width": 1088,
+              "x": 291.890625
+            },
+            {
+              "width": 1088,
+              "x": 291.890625
+            },
+            {
+              "width": 1088,
+              "x": 291.890625
+            }
+          ],
+          "columns": [
+            {
+              "class": "wa-split__main",
+              "width": 1088
+            },
+            {
+              "class": "wa-split__side",
+              "width": 1088
+            }
+          ],
+          "screenshot": "crops/chromium-AUDIT-M-21-1440-200.png"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/schedule/edit?shiftId=audit-shift-0-1",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/schedule/edit",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Alexandra Rivera"
+        ],
+        "cards": [
+          {
+            "id": "edit-who",
+            "x": 16,
+            "y": 284,
+            "width": 358,
+            "height": 465,
+            "right": 374,
+            "bottom": 749,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "edit-when",
+            "x": 16,
+            "y": 765,
+            "width": 358,
+            "height": 310,
+            "right": 374,
+            "bottom": 1075,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "edit-notes",
+            "x": 16,
+            "y": 1091,
+            "width": 358,
+            "height": 232,
+            "right": 374,
+            "bottom": 1323,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "edit-delete",
+            "x": 16,
+            "y": 1523,
+            "width": 358,
+            "height": 102,
+            "right": 374,
+            "bottom": 1625,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Save changes",
+            "x": 16,
+            "y": 1391,
+            "width": 358,
+            "height": 52,
+            "right": 374,
+            "bottom": 1443,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Cancel",
+            "x": 16,
+            "y": 1455,
+            "width": 358,
+            "height": 52,
+            "right": 374,
+            "bottom": 1507,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Delete this shift",
+            "x": 36,
+            "y": 1689,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 1741,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [
+          {
+            "name": "employeeId",
+            "type": "select-one",
+            "x": 36,
+            "y": 370,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 418,
+            "radius": "12px"
+          },
+          {
+            "name": "positionId",
+            "type": "select-one",
+            "x": 36,
+            "y": 462,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 510,
+            "radius": "12px"
+          },
+          {
+            "name": "isDesignatedLead",
+            "type": "checkbox",
+            "x": 36,
+            "y": 530,
+            "width": 22,
+            "height": 22,
+            "right": 58,
+            "bottom": 552,
+            "radius": "0px"
+          },
+          {
+            "name": "date",
+            "type": "date",
+            "x": 36,
+            "y": 851,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 899,
+            "radius": "12px"
+          },
+          {
+            "name": "startTime",
+            "type": "time",
+            "x": 36,
+            "y": 971,
+            "width": 153,
+            "height": 48,
+            "right": 189,
+            "bottom": 1019,
+            "radius": "12px"
+          },
+          {
+            "name": "endTime",
+            "type": "time",
+            "x": 201,
+            "y": 971,
+            "width": 153,
+            "height": 48,
+            "right": 354,
+            "bottom": 1019,
+            "radius": "12px"
+          },
+          {
+            "name": "notes",
+            "type": "textarea",
+            "x": 36,
+            "y": 1177,
+            "width": 318,
+            "height": 98,
+            "right": 354,
+            "bottom": 1275,
+            "radius": "12px"
+          }
+        ],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": "page",
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Schedule\n\nEdit shift\n\nAlexandra Rivera\n\nMon, Oct 19 · 8:00 AM – 4:00 PM · Main Office\n\nWho\nPerson\nChoose someone\nAlexandra Rivera\nCasey Rivera\nFictional Owner\nJordan Rivera\nMaría José Fictional QA\nMaría José Rivera Santiago With A Long Name\nMorgan Rivera\nRiley Rivera\nRobin Fictional QA\nTaylor Rivera\nmanager Fictional QA\nowner Fictional QA\nreviewer Fictional QA\nPosition\nOptional\nNo position\nCustomer Support\nShift lead\nOnly an Owner, Manager or Lead can lead a shift.\nLocation\nMain Office\nA shift keeps its location. To move it, delete it and add a new one.\nWhen\nDate\nDays in this schedule week: Oct 19 – Oct 25.\nStarts\nEnds\n8h scheduled\nNotes\nOptional\nNotes for the team\nEveryone on this shift can read them.\n\nAvailability, time off, other shifts and weekly hours are checked when you save.\n\nSave changes\nCancel\nDelete this shift\nDelete shift"
+      },
+      "screenshot": "crops/chromium-AUDIT-M-22.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/schedule/copy-receipt?operation=bad",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/schedule/copy-receipt",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Copy not found"
+        ],
+        "cards": [
+          {
+            "id": "",
+            "x": 16,
+            "y": 284,
+            "width": 358,
+            "height": 186,
+            "right": 374,
+            "bottom": 470,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Back to schedule",
+            "x": 36,
+            "y": 398,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 450,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": "page",
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Schedule\n\nCopy week\n\nCopy not found\n\nThis link doesn’t point to a schedule copy.\n\nNothing to show\n\nOpen the schedule to see the current week.\n\nBack to schedule"
+      },
+      "screenshot": "crops/chromium-AUDIT-M-23.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/requests?tab=pending",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/requests",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Time off"
+        ],
+        "cards": [
+          {
+            "id": "",
+            "x": 16,
+            "y": 296,
+            "width": 358,
+            "height": 322,
+            "right": 374,
+            "bottom": 618,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Decline time off for Alexandra Rivera",
+            "x": 36,
+            "y": 494,
+            "width": 153,
+            "height": 52,
+            "right": 189,
+            "bottom": 546,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Approve time off for Alexandra Rivera",
+            "x": 201,
+            "y": 494,
+            "width": 153,
+            "height": 52,
+            "right": 354,
+            "bottom": 546,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": "page",
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Time off\nShift requests\nAvailability\nTime off\n\n1 request waiting for your review.\n\nPending\nApproved\nDeclined\nAlexandra Rivera\nWaiting\nDates\nThu, Oct 29 – Fri, Oct 30\nLength\n2 full days\nNote\nFictional family appointment\nDecline\nApprove\nOpen request and that week’s schedule"
+      },
+      "screenshot": "crops/chromium-AUDIT-M-24.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/exchange?tab=pending",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/exchange",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Shift requests"
+        ],
+        "cards": [
+          {
+            "id": "",
+            "x": 16,
+            "y": 296,
+            "width": 358,
+            "height": 142,
+            "right": 374,
+            "bottom": 438,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [],
+        "fields": [],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": "page",
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": null,
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Time off\nShift requests\nAvailability\nShift requests\n\nNothing needs your decision.\n\nPending\nOpen coverage\nTeam activity\nYou’re all caught up\n\nSwaps, pick-ups and “Unable to work” reports that need you show up here and in your Inbox."
+      },
+      "screenshot": "crops/chromium-AUDIT-M-25.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/employees/AUDIT-E",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/employees/AUDIT-E",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Alexandra Rivera"
+        ],
+        "cards": [
+          {
+            "id": "member-details",
+            "x": 16,
+            "y": 368,
+            "width": 358,
+            "height": 976,
+            "right": 374,
+            "bottom": 1344,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "",
+            "x": 16,
+            "y": 1360,
+            "width": 358,
+            "height": 234,
+            "right": 374,
+            "bottom": 1594,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Details",
+            "x": 20,
+            "y": 304,
+            "width": 173,
+            "height": 44,
+            "right": 193,
+            "bottom": 348,
+            "font": 15,
+            "radius": "8px"
+          },
+          {
+            "label": "Scheduling",
+            "x": 197,
+            "y": 304,
+            "width": 173,
+            "height": 44,
+            "right": 370,
+            "bottom": 348,
+            "font": 15,
+            "radius": "8px"
+          },
+          {
+            "label": "Save details",
+            "x": 36,
+            "y": 1272,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 1324,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [
+          {
+            "name": "firstName",
+            "type": "text",
+            "x": 36,
+            "y": 568,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 616,
+            "radius": "12px"
+          },
+          {
+            "name": "lastName",
+            "type": "text",
+            "x": 36,
+            "y": 660,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 708,
+            "radius": "12px"
+          },
+          {
+            "name": "phone",
+            "type": "text",
+            "x": 36,
+            "y": 752,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 800,
+            "radius": "12px"
+          },
+          {
+            "name": "email",
+            "type": "email",
+            "x": 36,
+            "y": 844,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 892,
+            "radius": "12px"
+          },
+          {
+            "name": "role",
+            "type": "select-one",
+            "x": 36,
+            "y": 936,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 984,
+            "radius": "12px"
+          },
+          {
+            "name": "primaryLocationId",
+            "type": "select-one",
+            "x": 36,
+            "y": 1028,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 1076,
+            "radius": "12px"
+          },
+          {
+            "name": "active",
+            "type": "select-one",
+            "x": 36,
+            "y": 1120,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 1168,
+            "radius": "12px"
+          }
+        ],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": "page",
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Team\n\nEmployee · Active\n\nAlexandra Rivera\n\nMain Office · 787-555-0101 · audit-e@example.invalid\n\nDetails\nScheduling\nEmployee details\nEmployee ID\nAUDIT-E\nEmployee IDs stay the same after they’re created.\nFirst name\nLast name\nPhone\nEmail\nOptional\nAccess role\nManager\nLead\nEmployee\nPrimary location\nMain Office\nWest Office\nStatus\nActive\nInactive\nDeactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\nSave details\nAccess\nClocker PIN\nFor the shared tablet. Separate from portal sign-in.\nAccount recovery\nHelp them back in after you check who they are."
+      },
+      "screenshot": "crops/chromium-AUDIT-M-26.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/employees/new",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/employees/new",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Add employee"
+        ],
+        "cards": [
+          {
+            "id": "new-person",
+            "x": 16,
+            "y": 240,
+            "width": 358,
+            "height": 598,
+            "right": 374,
+            "bottom": 838,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "new-access",
+            "x": 16,
+            "y": 854,
+            "width": 358,
+            "height": 322,
+            "right": 374,
+            "bottom": 1176,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "new-scheduling",
+            "x": 16,
+            "y": 1192,
+            "width": 358,
+            "height": 427,
+            "right": 374,
+            "bottom": 1619,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "new-next",
+            "x": 16,
+            "y": 1767,
+            "width": 358,
+            "height": 250,
+            "right": 374,
+            "bottom": 2017,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Add employee",
+            "x": 16,
+            "y": 1635,
+            "width": 358,
+            "height": 52,
+            "right": 374,
+            "bottom": 1687,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Cancel",
+            "x": 16,
+            "y": 1699,
+            "width": 358,
+            "height": 52,
+            "right": 374,
+            "bottom": 1751,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [
+          {
+            "name": "firstName",
+            "type": "text",
+            "x": 36,
+            "y": 326,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 374,
+            "radius": "12px"
+          },
+          {
+            "name": "lastName",
+            "type": "text",
+            "x": 36,
+            "y": 418,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 466,
+            "radius": "12px"
+          },
+          {
+            "name": "id",
+            "type": "text",
+            "x": 36,
+            "y": 510,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 558,
+            "radius": "12px"
+          },
+          {
+            "name": "phone",
+            "type": "text",
+            "x": 36,
+            "y": 630,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 678,
+            "radius": "12px"
+          },
+          {
+            "name": "email",
+            "type": "email",
+            "x": 36,
+            "y": 770,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 818,
+            "radius": "12px"
+          },
+          {
+            "name": "role",
+            "type": "select-one",
+            "x": 36,
+            "y": 940,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 988,
+            "radius": "12px"
+          },
+          {
+            "name": "primaryLocationId",
+            "type": "select-one",
+            "x": 36,
+            "y": 1080,
+            "width": 318,
+            "height": 48,
+            "right": 354,
+            "bottom": 1128,
+            "radius": "12px"
+          },
+          {
+            "name": "positionIds",
+            "type": "checkbox",
+            "x": 36,
+            "y": 1334,
+            "width": 22,
+            "height": 22,
+            "right": 58,
+            "bottom": 1356,
+            "radius": "0px"
+          },
+          {
+            "name": "positionIds",
+            "type": "checkbox",
+            "x": 36,
+            "y": 1378,
+            "width": 22,
+            "height": 22,
+            "right": 58,
+            "bottom": 1400,
+            "radius": "0px"
+          },
+          {
+            "name": "eligibleLocationIds",
+            "type": "checkbox",
+            "x": 36,
+            "y": 1515,
+            "width": 22,
+            "height": 22,
+            "right": 58,
+            "bottom": 1537,
+            "radius": "0px"
+          },
+          {
+            "name": "eligibleLocationIds",
+            "type": "checkbox",
+            "x": 36,
+            "y": 1559,
+            "width": 22,
+            "height": 22,
+            "right": 58,
+            "bottom": 1581,
+            "radius": "0px"
+          }
+        ],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": "page",
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Team\nAdd employee\n\nTheir contact, access and scheduling details. Email is optional.\n\nPerson\nFirst name\nLast name\nEmployee ID\nUnique. They use it to sign in.\nPhone\nThey confirm it when they activate their account.\nEmail\nOptional\nAccess\nAccess role\nManager\nLead\nEmployee\nWhat they can do in the app. Separate from job qualifications.\nPrimary location\nChoose a location\nMain Office\nWest Office\nThey can always be scheduled here.\nScheduling\nPositions\n\nWhat they’re qualified to do. This is separate from their access role.\n\nCustomer Support\nOperations\nLocations they can work at\n\nTheir primary location is always included.\n\nMain Office\nWest Office\nAdd employee\nCancel\nWhat happens next\nGive them their Employee ID.\nThey open Activate account and enter their ID and phone number.\nThey create a password and sign in.\n\nThe phone number must match when they activate, so check it carefully."
+      },
+      "screenshot": "crops/chromium-AUDIT-M-27.png",
+      "text200": [
+        {
+          "width": 320,
+          "documentWidth": 320,
+          "cards": [
+            {
+              "width": 288,
+              "x": 16
+            },
+            {
+              "width": 288,
+              "x": 16
+            },
+            {
+              "width": 288,
+              "x": 16
+            },
+            {
+              "width": 288,
+              "x": 16
+            }
+          ],
+          "columns": [],
+          "screenshot": "crops/chromium-AUDIT-M-27-320-200.png"
+        },
+        {
+          "width": 844,
+          "documentWidth": 844,
+          "cards": [
+            {
+              "width": 812,
+              "x": 16
+            },
+            {
+              "width": 812,
+              "x": 16
+            },
+            {
+              "width": 812,
+              "x": 16
+            },
+            {
+              "width": 812,
+              "x": 16
+            }
+          ],
+          "columns": [],
+          "screenshot": "crops/chromium-AUDIT-M-27-844-200.png"
+        },
+        {
+          "width": 1440,
+          "documentWidth": 1440,
+          "cards": [
+            {
+              "width": 720,
+              "x": 475.890625
+            },
+            {
+              "width": 720,
+              "x": 475.890625
+            },
+            {
+              "width": 720,
+              "x": 475.890625
+            },
+            {
+              "width": 720,
+              "x": 475.890625
+            }
+          ],
+          "columns": [],
+          "screenshot": "crops/chromium-AUDIT-M-27-1440-200.png"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/employees/AUDIT-E/clocker-pin",
+      "width": 390,
+      "text": 100,
+      "errors": [],
+      "status": 200,
+      "finalPath": "/app/employees/AUDIT-E/clocker-pin",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [
+          "Clocker PIN"
+        ],
+        "cards": [
+          {
+            "id": "pin-form",
+            "x": 16,
+            "y": 284,
+            "width": 358,
+            "height": 398,
+            "right": 374,
+            "bottom": 682,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          },
+          {
+            "id": "pin-about",
+            "x": 16,
+            "y": 698,
+            "width": 358,
+            "height": 302,
+            "right": 374,
+            "bottom": 1000,
+            "radius": "20px",
+            "border": "0px",
+            "head": null
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Save PIN",
+            "x": 36,
+            "y": 546,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 598,
+            "font": 17,
+            "radius": "12px"
+          },
+          {
+            "label": "Cancel",
+            "x": 36,
+            "y": 610,
+            "width": 318,
+            "height": 52,
+            "right": 354,
+            "bottom": 662,
+            "font": 17,
+            "radius": "12px"
+          }
+        ],
+        "fields": [
+          {
+            "name": "pin",
+            "type": "password",
+            "x": 36,
+            "y": 406,
+            "width": 153,
+            "height": 48,
+            "right": 189,
+            "bottom": 454,
+            "radius": "12px"
+          },
+          {
+            "name": "confirmPin",
+            "type": "password",
+            "x": 201,
+            "y": 406,
+            "width": 153,
+            "height": 48,
+            "right": 354,
+            "bottom": 454,
+            "radius": "12px"
+          }
+        ],
+        "tabs": [
+          {
+            "label": "Home",
+            "current": null,
+            "x": 4,
+            "y": 783,
+            "width": 74.46875,
+            "height": 55,
+            "right": 78.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Schedule",
+            "current": null,
+            "x": 78.46875,
+            "y": 783,
+            "width": 96,
+            "height": 55,
+            "right": 174.46875,
+            "bottom": 838
+          },
+          {
+            "label": "Inbox",
+            "current": null,
+            "x": 174.46875,
+            "y": 783,
+            "width": 71.59375,
+            "height": 55,
+            "right": 246.0625,
+            "bottom": 838
+          },
+          {
+            "label": "Team",
+            "current": "page",
+            "x": 246.0625,
+            "y": 783,
+            "width": 70.46875,
+            "height": 55,
+            "right": 316.53125,
+            "bottom": 838
+          },
+          {
+            "label": "More navigation",
+            "current": null,
+            "x": 316.53125,
+            "y": 783,
+            "width": 69.46875,
+            "height": 55,
+            "right": 386,
+            "bottom": 838
+          }
+        ],
+        "text": "Alexandra Rivera\n\nEmployee ID AUDIT-E\n\nClocker PIN\n\nFor clocking in and out on the shared tablet.\n\nCreate a PIN\n\nGive them access to the shared tablet.\n\nNew PIN\nConfirm PIN\n\nFour digits, the same in both fields. Each person needs a different PIN.\n\nSave PIN\nCancel\nAbout the PIN\nOnly for the shared tablet\nIt’s separate from their portal password.\nPrivate\nNo one can see an existing PIN. If they forget it, make a new one here.\nNothing else changes\nChanging a PIN keeps portal access and recorded time unchanged."
+      },
+      "screenshot": "crops/chromium-AUDIT-M-28.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/availability",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/availability",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-AUDIT-M-29.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/schedule/new",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/new",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-30.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/schedule/edit?shiftId=audit-shift-0-1",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/edit",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-31.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/schedule/copy-receipt?operation=bad",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/copy-receipt",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-32.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/requests?tab=pending",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/requests",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-33.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/exchange?tab=pending",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/exchange",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-34.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/employees/AUDIT-E",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/AUDIT-E",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-35.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/employees/new",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/new",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-36.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/employees/AUDIT-E/clocker-pin",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/AUDIT-E/clocker-pin",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-37.png"
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app/availability",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/availability",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/chromium-QAOWNER-38.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "path": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/exchange/swap",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-E-39.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "path": "/app/exchange/callout?shiftId=audit-shift-1-1",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/exchange/callout",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-E-40.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "path": "/app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-2",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/exchange/swap",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-LEAD-41.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "path": "/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-3",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/exchange/callout",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-LEAD-42.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/schedule/new",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/new",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-43.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/schedule/edit?shiftId=audit-shift-0-1",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/edit",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-44.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/schedule/copy-receipt?operation=bad",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/copy-receipt",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-45.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/requests?tab=pending",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/requests",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-46.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/exchange?tab=pending",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/exchange",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-47.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/employees/AUDIT-E",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/AUDIT-E",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-48.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/employees/new",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/new",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-49.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/employees/AUDIT-E/clocker-pin",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/AUDIT-E/clocker-pin",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-50.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app/availability",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/availability",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-AUDIT-M-51.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/schedule/new",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/new",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-52.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/schedule/edit?shiftId=audit-shift-0-1",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/edit",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-53.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/schedule/copy-receipt?operation=bad",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/schedule/copy-receipt",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-54.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/requests?tab=pending",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/requests",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-55.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/exchange?tab=pending",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/exchange",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-56.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/employees/AUDIT-E",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/AUDIT-E",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-57.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/employees/new",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/new",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-58.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/employees/AUDIT-E/clocker-pin",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/employees/AUDIT-E/clocker-pin",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-59.png"
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/availability",
+      "width": 390,
+      "text": 100,
+      "errors": [
+        "./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } from \"@/components/kit/kit\";\n>  7 | import { useHoldHeight } from \"@/components/kit/hold-height\";\n     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   8 | import type { AvailabilitySubmissionListItem } from \"@/lib/data/availability-submissions\";\n   9 | import type { AvailabilityRec"
+      ],
+      "status": 500,
+      "finalPath": "/app/availability",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "h1": [],
+        "cards": [],
+        "buttons": [],
+        "fields": [],
+        "tabs": [],
+        "text": ""
+      },
+      "screenshot": "crops/webkit-QAOWNER-60.png"
+    }
+  ],
+  "more": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "id": "employee-more-navigation",
+      "opened": true,
+      "focusInside": true,
+      "items": [
+        {
+          "text": "Updates",
+          "height": 48
+        },
+        {
+          "text": "Notifications",
+          "height": 48
+        },
+        {
+          "text": "Profile",
+          "height": 48
+        },
+        {
+          "text": "Sign out",
+          "height": 44
+        },
+        {
+          "text": "Close",
+          "height": 48
+        }
+      ],
+      "screenshot": "crops/chromium-AUDIT-E-more.png",
+      "closed": true,
+      "focusReturned": true,
+      "escapeClosed": true,
+      "escapeFocusReturned": true
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "id": "employee-more-navigation",
+      "opened": true,
+      "focusInside": true,
+      "items": [
+        {
+          "text": "Updates",
+          "height": 48
+        },
+        {
+          "text": "Notifications",
+          "height": 48
+        },
+        {
+          "text": "Profile",
+          "height": 48
+        },
+        {
+          "text": "Sign out",
+          "height": 44
+        },
+        {
+          "text": "Close",
+          "height": 48
+        }
+      ],
+      "screenshot": "crops/chromium-AUDIT-LEAD-more.png",
+      "closed": true,
+      "focusReturned": true,
+      "escapeClosed": true,
+      "escapeFocusReturned": true
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "id": "manager-more-navigation",
+      "opened": true,
+      "focusInside": true,
+      "items": [
+        {
+          "text": "Search",
+          "height": 44
+        },
+        {
+          "text": "Timecards",
+          "height": 44
+        },
+        {
+          "text": "Time exports",
+          "height": 44
+        },
+        {
+          "text": "Insights",
+          "height": 44
+        },
+        {
+          "text": "Templates",
+          "height": 44
+        },
+        {
+          "text": "Scheduling rules",
+          "height": 44
+        },
+        {
+          "text": "Updates",
+          "height": 44
+        },
+        {
+          "text": "My pay",
+          "height": 44
+        },
+        {
+          "text": "Sign out",
+          "height": 44
+        },
+        {
+          "text": "Close",
+          "height": 48
+        }
+      ],
+      "screenshot": "crops/chromium-AUDIT-M-more.png",
+      "closed": true,
+      "focusReturned": true,
+      "escapeClosed": true,
+      "escapeFocusReturned": true
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "id": "manager-more-navigation",
+      "opened": true,
+      "focusInside": true,
+      "items": [
+        {
+          "text": "Search",
+          "height": 44
+        },
+        {
+          "text": "Timecards",
+          "height": 44
+        },
+        {
+          "text": "Payroll",
+          "height": 44
+        },
+        {
+          "text": "Time exports",
+          "height": 44
+        },
+        {
+          "text": "Insights",
+          "height": 44
+        },
+        {
+          "text": "Templates",
+          "height": 44
+        },
+        {
+          "text": "Scheduling rules",
+          "height": 44
+        },
+        {
+          "text": "Updates",
+          "height": 44
+        },
+        {
+          "text": "Settings",
+          "height": 44
+        },
+        {
+          "text": "My pay",
+          "height": 44
+        },
+        {
+          "text": "Sign out",
+          "height": 44
+        },
+        {
+          "text": "Close",
+          "height": 48
+        }
+      ],
+      "screenshot": "crops/chromium-QAOWNER-more.png",
+      "closed": true,
+      "focusReturned": true,
+      "escapeClosed": true,
+      "escapeFocusReturned": true
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "id": "employee-more-navigation",
+      "opened": true,
+      "focusInside": true,
+      "items": [
+        {
+          "text": "Updates",
+          "height": 48
+        },
+        {
+          "text": "Notifications",
+          "height": 48
+        },
+        {
+          "text": "Profile",
+          "height": 48
+        },
+        {
+          "text": "Sign out",
+          "height": 44
+        },
+        {
+          "text": "Close",
+          "height": 48
+        }
+      ],
+      "screenshot": "crops/webkit-AUDIT-E-more.png",
+      "closed": true,
+      "focusReturned": true,
+      "escapeClosed": true,
+      "escapeFocusReturned": true
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "id": "employee-more-navigation",
+      "opened": true,
+      "focusInside": true,
+      "items": [
+        {
+          "text": "Updates",
+          "height": 48
+        },
+        {
+          "text": "Notifications",
+          "height": 48
+        },
+        {
+          "text": "Profile",
+          "height": 48
+        },
+        {
+          "text": "Sign out",
+          "height": 44
+        },
+        {
+          "text": "Close",
+          "height": 48
+        }
+      ],
+      "screenshot": "crops/webkit-AUDIT-LEAD-more.png",
+      "closed": true,
+      "focusReturned": true,
+      "escapeClosed": true,
+      "escapeFocusReturned": true
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "id": "manager-more-navigation",
+      "opened": true,
+      "focusInside": true,
+      "items": [
+        {
+          "text": "Search",
+          "height": 44.00001525878906
+        },
+        {
+          "text": "Timecards",
+          "height": 44
+        },
+        {
+          "text": "Time exports",
+          "height": 44
+        },
+        {
+          "text": "Insights",
+          "height": 44
+        },
+        {
+          "text": "Templates",
+          "height": 44.000030517578125
+        },
+        {
+          "text": "Scheduling rules",
+          "height": 44
+        },
+        {
+          "text": "Updates",
+          "height": 44
+        },
+        {
+          "text": "My pay",
+          "height": 44
+        },
+        {
+          "text": "Sign out",
+          "height": 44
+        },
+        {
+          "text": "Close",
+          "height": 48
+        }
+      ],
+      "screenshot": "crops/webkit-AUDIT-M-more.png",
+      "closed": true,
+      "focusReturned": true,
+      "escapeClosed": true,
+      "escapeFocusReturned": true
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "id": "manager-more-navigation",
+      "opened": true,
+      "focusInside": true,
+      "items": [
+        {
+          "text": "Search",
+          "height": 44
+        },
+        {
+          "text": "Timecards",
+          "height": 44
+        },
+        {
+          "text": "Payroll",
+          "height": 44
+        },
+        {
+          "text": "Time exports",
+          "height": 44
+        },
+        {
+          "text": "Insights",
+          "height": 44
+        },
+        {
+          "text": "Templates",
+          "height": 44
+        },
+        {
+          "text": "Scheduling rules",
+          "height": 44
+        },
+        {
+          "text": "Updates",
+          "height": 44
+        },
+        {
+          "text": "Settings",
+          "height": 44
+        },
+        {
+          "text": "My pay",
+          "height": 44
+        },
+        {
+          "text": "Sign out",
+          "height": 44
+        },
+        {
+          "text": "Close",
+          "height": 48
+        }
+      ],
+      "screenshot": "crops/webkit-QAOWNER-more.png",
+      "closed": true,
+      "focusReturned": true,
+      "escapeClosed": true,
+      "escapeFocusReturned": true
+    }
+  ],
+  "limitations": [
+    "Measured spot inspection, not a complete exit round or full browser matrix.",
+    "Owned fictional database; all browser mutations are blocked.",
+    "No physical-device or screen-reader claim."
+  ],
+  "completedAt": "2026-10-19T18:50:51.429Z"
+}

@@ -1,0 +1,24 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 200,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px",
+   "a.my-schedule-link «Request a swap» 13px",
+   "a.my-schedule-link «Unable to work» 13px",
+   "p. «Your shift stays yours until a» 12px"
+  ],
+  "targets": [],
+  "cls": 0.2463,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]

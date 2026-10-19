@@ -1,0 +1,17 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ }
+]

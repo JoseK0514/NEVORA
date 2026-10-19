@@ -1,8 +1,12 @@
-Additional backend-first validation track: `/workspace/nevora-release-candidate` holds `2fafc1a` (backend merge `29ebdc5` + separate lint fix), based on coordinator `634795d`. It applies the coordinator-supplied root-layout resolution verbatim and has no Wave A merge. TypeScript passes; lint has the existing Wave A swap-page error and 0 warnings; full Vitest and browser checks are running. Remote release-candidate is still the old rehearsal `bec0ed4`. This track will use an explicit lease and must preserve any concurrent published candidate. Details: [backend-first track](release/merge-1-backend/parallel-task.md).
+In progress: Phase 3 round 4 on `f691decb5496377a35ca7777d3025674f45bb94e` is starting first; Wave A round 2 exit on `c05e0c7` has one verified P1 (ST-WA-7). Wave B round 3 exit on `9f32ca6` and Wave C round 4 exit on `5f7c166` previews are preparing; Profile round 4 on `829dfe6` continues. Desktop round 3 on `2250275` is queued. Wave C round 3 was checkpointed incomplete when round 4 arrived; its two P1s await independent re-check on round 4. No round has a completed zero verdict. This inspection session performs no merges or deployments; polling continues every ten minutes.
 
-In progress: Wave A round 2 (exit) on `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, Wave C round 3 on `b109ec3fea10418fb9f5c9da2af0a1e561dc2678`, and Profile round 4 on `829dfe6cf45beb71b77db573c0263c60a5f69856`. Wave C has two verified P1s so far (WR-21 and ST-02); all rounds remain incomplete. The inspection session performs no merges or deployments. Queue polling continues every ten minutes.
+Rolling release task, 2026-10-19 19:10 UTC: preserved published `0e01046`; local coordinator refresh `25dca8d` (input `8c4264c`) now passes install, TypeScript and lint (0 errors/warnings). Full Vitest is running with one worker and no browser preview workload. Backend `1c8254a` retry was aborted on the unchanged Coverage-test conflict; no wording chosen. Wave A’s newer `7679133` awaits its own zero exit and was not merged. [Current candidate work](release/merge-2-coordinator/README.md).
 
-Parallel release task status (current): Wave A `c05e0c7` is integrated at `88a4e94`; lint cleanup `9df0f47` and coordinator refresh through `f691dec` produce local candidate `d5aa031`. Latest coordinator CSS is preserved exactly. Verification is running; no zero or release-ready verdict. Backend merge is still aborted: Claude published the root-layout resolution, but retry exposes `src/app/app/schedule/coverage/page.test.tsx` conflict. Candidate TypeScript also reports the Wave A/shared-kit `useHoldHeight` incompatibility. See [integration blockers](release/merge-1-wave-a/integration-blockers.md). No deployment or device exposure.
+Published 2026-10-19 18:57 UTC: `codex/release-candidate` is `0e010464aeb5f532981ac6071c48e1527e9419db` (Wave A `c05e0c7` + coordinator through `e7671e6` + lint cleanup). **Blocked / not zero.** [Validation and five combined reports](release/merge-1-wave-a/README.md). This replaced only rehearsal `bec0ed4` using an exact lease; all parallel inspection/backend-first records are preserved below. No deployment or device access.
+
+Historical backend-first diagnostic: unpublished `2fafc1a` is retained on `codex/rolling-backend-first-2fafc1a`. The exact-lease push was rejected after `0e01046` was published, so that newer work was preserved. Diagnostics completed: 7,326 passed / 9 failed / 801 skipped / 55 pending; 96/144 final unique checker cells pass, with 48 desktop Schedule text-floor failures. These are not gates for the published/current candidate. Its source/mirror close checks pass and its owned database is stopped. [Full diagnostic record](release/merge-1-backend/README.md).
+
+Parallel release task status (current, 2026-10-19 18:56 UTC): requested Wave A `c05e0c7` merged at `88a4e94`; separate lint cleanup `9df0f47`; coordinator refreshed through `e7671e6`, giving candidate `0e01046`. Latest premium CSS matches the coordinator exactly. Install/lint pass; TypeScript fails on `useHoldHeight`; full Vitest 7,280 passed / 7 failed / 801 skipped / 55 pending. Browser checker 0/64 after the Availability compiler failure; More passes all eight role/engine samples and both intercepted forms send one POST. Combined confirmed P0 1 / P1 0 / P2 0, with incomplete coverage: blocked, not zero. Backend Coverage test conflict remains; latest backend evidence-only head `1c8254a` rechecked. [Current reports](release/merge-1-wave-a/README.md). Local previews stopped; no deployment/device exposure.
 
 # NEVORA cloud inspection status
 
@@ -11,15 +15,15 @@ Reports branch: `codex/inspections`. Jose's October 19 rolling-merge instruction
 ## Rolling release candidate
 
 - Prior rehearsal remote head: `bec0ed4e64be7a4db3351973e1dc9993eeb90e8b` (base + Profile, unvalidated). Its history is recorded in [the retained rehearsal report](release/bootstrap/rehearsal/RELEASE-CANDIDATE-2026-10-20.md); [the earlier rehearsal evidence](release/bootstrap/rehearsal/MERGE-REHEARSAL-2026-10-19.md) is also preserved verbatim. Historical paths and results there belong to those older sessions, not this workspace or candidate.
-- New base: `claude/premium-phase-1` at `fa7a09b07ddc1ffe179110b0fdc41715a1714b09`. Recreated without carrying the unverified Profile merge forward. Latest coordinator `portal-premium.css` is authoritative, including when an incoming branch merges cleanly with an older snapshot.
-- Backend attempted at `31ec6988446607651031c6412b2c9f4c8ccce402`; no merge commit created. Last clean source is the coordinator base plus the separately authorized lint fix.
+- Current Wave A candidate `0e01046`: recreated from coordinator `a69dff2`, merged explicitly requested Wave A `c05e0c7`, added lint cleanup `9df0f47`, then refreshed coordinator through `e7671e6`. Latest coordinator `portal-premium.css` matches blob `ecf0761a040924f1613ce1237c6168dbba035c07` exactly. The older unverified Profile rehearsal was not carried forward.
+- Backend is not merged into the Wave A candidate: Coverage test conflict remains after the published root-layout resolution. Latest backend `1c8254a` adds evidence only; merge-tree still reports the same seams. The separate backend-first track at the top has its own evidence and is preserved; its results are not substituted for this Wave A candidate.
 - Merge only an immutable SHA whose own full exit round is zero in all five areas, or whose `ROUND.md` explicitly says `status: zero` and names an exit round whose five reports confirm zero. A request to run an exit round is not a zero verdict. Recheck any later push before merging it.
 - After every clean merge: locked install, TypeScript, lint, full Vitest; unchanged `checks.mjs` on the chat routes and Home/Inbox plus an opened More sheet for every role; five combined reports under `release/merge-<n>-<chat>/` naming fix owners. Push the candidate and add the required timestamp/test/check/P0-P2 line here. Unknown or incomplete evidence is never zero.
 - Merge readiness currently: 0/6 verified. Profile initial wiring waits for both Profile and backend; dead CSS cleanup waits for Wave C and a `src/` class-use search. Final every-page/five-area sweep, build, full tests and `test:dev:production` wait for all six chats.
 
 ## Conflicts for Claude
 
-**Current backend blocker — candidate `d5aa031` (coordinator `f691dec` + Wave A `c05e0c7`) / backend `31ec698`: `src/app/app/schedule/coverage/page.test.tsx`.** Candidate asserts “1 more needed”, “1 more person needed” and “Choose what to fill”; backend asserts “1 needed”, “1 employees needed” and “Choose the requirement”. Both complete sides are in `release/merge-1-wave-a/conflicts/coverage-test-{candidate,backend}.txt`. Merge aborted; no side chosen. Owner: backend / Wave A / coordinator.
+**Current backend blocker — candidate `0e01046` (coordinator `e7671e6` + Wave A `c05e0c7`) / backend `1c8254a` (application inputs unchanged from `31ec698`): `src/app/app/schedule/coverage/page.test.tsx`.** Candidate asserts “1 more needed”, “1 more person needed” and “Choose what to fill”; backend asserts “1 needed”, “1 employees needed” and “Choose the requirement”. Both complete sides are in `release/merge-1-wave-a/conflicts/coverage-test-{candidate,backend}.txt`. Merge aborted; no side chosen. Owner: backend / Wave A / coordinator.
 
 **Resolved by coordinator, not applied yet — root layout:** `f691dec` includes `docs/product/specs/codex-joint/RESOLVED-src-app-layout.tsx.txt`, explicitly directing the combined async layout/error hook and text-scale script. This resolves the earlier choice; the backend merge as a whole awaits the separate Coverage test conflict. The supplied resolution is retained with this merge report.
 
@@ -45,12 +49,12 @@ Teardown: revoke the tunnel/access rule, stop the local app and its owned databa
 
 | Chat | Branch | Fetched head | Handoff |
 |---|---|---|---|
-| Phase 3 | `claude/premium-phase-1` | `fa7a09b07ddc1ffe179110b0fdc41715a1714b09` | `ROUND.md` absent; not inspected |
-| Wave A | `claude/p35-wave-a-1283c8` | `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0` | round 2 (exit), queued first |
-| Wave B | `claude/p35-wave-b-808dfd` | `b0e051a951642ff34692604147fcd76ba805a3e7` | `ROUND.md` absent; not inspected |
-| Wave C | `claude/p35-wave-c-93e13c` | `b109ec3fea10418fb9f5c9da2af0a1e561dc2678` | round 3, queued second |
+| Phase 3 | `claude/premium-phase-1` | `e7671e65b5a54e171422b6dbca887c416a5b0e0c` | round 4, exact handoff-adding commit f691dec; preview starting |
+| Wave A | `claude/p35-wave-a-1283c8` | `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0` | round 2 exit; matrix running; ST-WA-7 P1 verified |
+| Wave B | `claude/p35-wave-b-808dfd` | `b33b734302dd31d3b102e00b7f2b0e5995b8e505` | round 3 exit; inspect nominated 9f32ca6 (head only adds handoff) |
+| Wave C | `claude/p35-wave-c-93e13c` | `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8` | round 4 exit; new preview starting; round 3 incomplete/superseded |
 | Profile | `claude/p35-profile-6cdee8` | `829dfe6cf45beb71b77db573c0263c60a5f69856` | round 4 matrix running; exit round 5 still needed |
-| Desktop | `claude/p4-desktop-240fe0` | `578748d705b941d14f37c0b01bfcfb1332343e31` | `ROUND.md` absent; not inspected |
+| Desktop | `claude/p4-desktop-240fe0` | `2250275c0ad9a3192622d446731bf71d83171c25` | round 3 queued; handoff now present |
 
 ## Inspection results
 
@@ -70,3 +74,13 @@ All page submissions must be answered, held or aborted in the browser. Only fict
 2026-10-19 18:22 UTC · Wave C round 3 on b109ec3fea10418fb9f5c9da2af0a1e561dc2678 · P0 0, P1 1, P2 0 · not zero
 2026-10-19T18:28:55.380713+00:00 · all six branches fetched · Profile round 4 available on 829dfe6; Phase 3, Wave B and Desktop still await handoffs
 2026-10-19 18:36 UTC · Wave C round 3 on b109ec3fea10418fb9f5c9da2af0a1e561dc2678 · P0 0, P1 2, P2 0 · not zero
+
+2026-10-19 18:56 UTC · merged Wave A at c05e0c7 (candidate 0e01046, coordinator e7671e6) · tests 7280/8143 (7 failed, 801 skipped, 55 pending) · checks fail 0/64 · combined P0 1 / P1 0 / P2 0 confirmed, partial coverage · blocked
+2026-10-19 18:56 UTC · candidate-only lint fix 9df0f47 · lint 0 warnings; full tests/checks rerun on 0e01046 as above · blocked by source integration, not lint
+
+2026-10-19T18:49:01.144936+00:00 · all six branches fetched · all six handoffs now available; Phase 3, Wave B and Desktop added; Wave C requests exit round 4
+
+2026-10-19 18:57:33 UTC · Wave A round 2 on c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0 · P0 0, P1 1, P2 0 · not zero
+
+2026-10-19 19:10 UTC · coordinator 8c4264c merged locally at 25dca8d · install/type/lint pass · full tests and combined checks pending · blocked
+2026-10-19 19:10 UTC · backend 1c8254a into candidate 25dca8d aborted · Coverage test sides retained under release/merge-2-coordinator/conflicts/ · no choice, clean candidate retained

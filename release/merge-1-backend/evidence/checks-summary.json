@@ -1,0 +1,12 @@
+{
+  "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+  "status": "unpublished superseded diagnostic only",
+  "rawExecutions": 146,
+  "uniqueCells": 144,
+  "finalPassed": 96,
+  "finalFailed": 48,
+  "scheduleOriginalPassed": 80,
+  "scheduleOriginalTotal": 128,
+  "statementTimeoutRetry": "HTTP 200; only known small-text flags remain",
+  "actualCandidateResultsNotInferred": true
+}

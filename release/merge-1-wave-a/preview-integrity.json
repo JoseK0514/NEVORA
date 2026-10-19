@@ -1,0 +1,30 @@
+[
+  {
+    "checkpoint": "d5aa0319e691ca5f0184bd513cde66880b9c6aef",
+    "sourceFilesChecked": 1507,
+    "sourceChanges": [],
+    "mirrorDifferencesBeyondApprovedDatabaseAdapter": [
+      "next-env.d.ts"
+    ],
+    "nextEnvMatchesExactDevelopmentTypeDerivation": true,
+    "strictRuntimeCloseErrors": [
+      "Close: Application mirror bytes changed: next-env.d.ts"
+    ],
+    "postgresStopped": true,
+    "interpretation": "Strict preview mirror guard failed; independent post-run hashing found only the exact two generated development type imports beyond the DB adapter. No application/CSS/test bytes changed. Preserve this harness-verification gap."
+  },
+  {
+    "checkpoint": "0e010464aeb5f532981ac6071c48e1527e9419db",
+    "sourceFilesChecked": 1507,
+    "sourceChanges": [],
+    "mirrorDifferencesBeyondApprovedDatabaseAdapter": [
+      "next-env.d.ts"
+    ],
+    "nextEnvMatchesExactDevelopmentTypeDerivation": true,
+    "strictRuntimeCloseErrors": [
+      "Close: Application mirror bytes changed: next-env.d.ts"
+    ],
+    "postgresStopped": true,
+    "interpretation": "Strict preview mirror guard failed; independent post-run hashing found only the exact two generated development type imports beyond the DB adapter. No application/CSS/test bytes changed. Preserve this harness-verification gap."
+  }
+]

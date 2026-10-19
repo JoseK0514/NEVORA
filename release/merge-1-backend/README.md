@@ -1,0 +1,16 @@
+# Backend-first diagnostic snapshot — not the published candidate
+
+Source `2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf` remains local on `codex/rolling-backend-first-2fafc1a` at `/workspace/nevora-release-candidate`. It merged backend `31ec698` into coordinator `634795d` using the coordinator's exact root-layout prescription, followed by the separate authorized lint cleanup. The exact-lease push was rejected because the other authorized release task had published `0e01046`. This snapshot was not pushed over it. Current candidate work continues at `/workspace/nevora-rc-current`, with coordinator refresh `25dca8d`; its evidence is separate in `release/merge-2-coordinator/`.
+
+## Results on the diagnostic SHA
+
+- Locked install: 410 packages, pass. TypeScript: pass. Full lint: 1 known swap-page error, 0 warnings; that error is fixed by Wave A in the published candidate.
+- Full Vitest, two workers: **7,326 passed / 9 failed / 801 skipped / 55 pending**. Eight failures are timeouts; one process fixture timed out before recording its expected two resources. Full unchanged JSON is compressed in `evidence/vitest.json.gz`; all nine errors are readable in `evidence/failed-tests.json`. These are failed gates, not waived results.
+- Original Home/Inbox smoke: 15/16. Its one Employee permission-redirect context race passed the single identical retry. Browser probes independently settle Employee/Lead at Requests and management roles at Inbox.
+- Full Schedule matrix (eight widths, four text sizes, Chromium/WebKit, Employee/Lead): **80/128 original cells pass**. The 48 desktop cells flag small text. The one HTTP 500 was a logged statement timeout and returned HTTP 200 on its one identical retry, still with small-text flags.
+- Combined final observations: **96/144 unique cells pass**, **48 fail** after the two recorded retries; all **146 raw executions** remain in `checks.json` and per-run JSON. The broader Home/Inbox text matrix and other backend routes were not a full combined sweep.
+- 40 role/route/viewport/browser shell probes: no overflow or probe exception. All **32** More samples open, close with Escape and return focus. Four-role Profile/count reads and signed-out Profile response follow the tested authorization boundaries; those backend endpoints are absent from the current published candidate until its backend merge succeeds.
+- Measured diagnostic findings: **P0 0 / P1 1 / P2 1** (Schedule small text; Home/Inbox failed-read wording). They remain attributed to this SHA and require confirmation on later candidates. Both fix owners and exact measurements are in the five area reports.
+- Preview close verifies unchanged source and the approved mirror substitutions, then stops its owned PostgreSQL cluster. `evidence/preview-custody.json` records this. No credentials, access files, storage states or database dumps are included.
+
+The initial broad-POST-block probe was superseded for ready-state claims: action-center reads use POST and are allowed in the ready-state probe. The dedicated failure reproduction aborts that read intentionally. Failed setup attempts and adaptations are recorded in `parallel-task.md`; no production, deployment, notification delivery or real-device acceptance is claimed.

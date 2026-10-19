@@ -2,13 +2,13 @@
 
 This track follows the rolling instruction: recreate from the coordinator, then merge backend before admitting any UI chat without a verified zero exit. A separate explicit Jose request authorizes the Wave A-first integration recorded in `release/merge-1-wave-a/`; that history and its blockers are preserved without treating it as a zero exit.
 
-- Source `/workspace/nevora-release-candidate`, branch `codex/release-candidate` in this workspace.
+- Source `/workspace/nevora-release-candidate`, archive branch `codex/rolling-backend-first-2fafc1a` in this workspace; no longer the active candidate.
 - Base `634795d50e0f82ef6229a94703cea599d5c2d1a9`.
 - Backend input `31ec6988446607651031c6412b2c9f4c8ccce402`; merge `29ebdc5160c86b37c93e99dce5f5459450e28896`.
 - Coordinator's `RESOLVED-src-app-layout.tsx.txt` copied byte for byte after its comment block. No independently chosen layout. CSS equals the coordinator blob at merge time.
 - Separate authorized confirmation cleanup `2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf`. No counter value is captured; both leave events and cleanup call the same increment function. No new behavior or mirrored test introduced.
 - npm ci passes (410 locked packages). TypeScript passes. Full lint: 1 error at `exchange/swap/page.tsx:51` (known Wave A fix), 0 warnings; the authorized confirmation warning is absent.
-- Full default Vitest, unchanged timeouts, maxWorkers=2, running on exact `2fafc1a`; subprocess reaper only prevents leaked test descendants. Browser checks running on an owned loopback fictional database. No green combined or release verdict yet.
+- Full default Vitest completed on exact `2fafc1a`: 7,326 passed, 9 failed, 801 skipped, 55 pending; unchanged timeouts, maxWorkers=2; subprocess reaper only prevents leaked test descendants. Browser diagnostic checks completed and the owned database stopped; details in README.md. No green combined or release verdict yet.
 - Coordinator later advanced through `e7671e6`, including shared UI and a round-4 handoff. That update is queued after this frozen verification cycle; this older SHA will not inherit its new stylesheet or inspection result. The Phase 3 handoff pins the commit adding ROUND.md (`f691dec`), not an arbitrary later head.
 - Old rehearsal records remain under `release/bootstrap/rehearsal/`. Superseded unpublished bootstrap `a08814c` is retained locally; its default test run was stopped and its preview setup failed, so none is claimed as candidate evidence.
 
@@ -20,6 +20,6 @@ A first inspection-preview attempt used an out-of-root node_modules symlink; Tur
 
 ## Publication custody
 
-At the last fetch, remote `codex/release-candidate` remained `bec0ed4e64be7a4db3351973e1dc9993eeb90e8b`. Recreating that rehearsal is explicitly authorized, but this track will not overwrite a different concurrent candidate. On any lease mismatch: fetch, preserve that published head and reconcile according to its actual authorized inputs; never force through a race. Reports from both tasks remain on `codex/inspections`.
+At the initial fetch, remote `codex/release-candidate` remained `bec0ed4e64be7a4db3351973e1dc9993eeb90e8b`. The exact-lease publication attempt was rejected after another authorized task published `0e01046`; that head was preserved. Recreating that rehearsal is explicitly authorized, but this track will not overwrite a different concurrent candidate. On any lease mismatch: fetch, preserve that published head and reconcile according to its actual authorized inputs; never force through a race. Reports from both tasks remain on `codex/inspections`.
 
 Profile initial wiring and dead Settings CSS removal still wait for their respective verified merges. No deployment, tunnel, production change or phone access was performed. Device access remains a proposal in STATUS.md pending Jose.

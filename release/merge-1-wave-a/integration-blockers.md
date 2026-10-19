@@ -1,6 +1,6 @@
 # Wave A rolling integration — blocked, verification in progress
 
-Inputs: coordinator `a69dff2b8370c6c52d1d781c91159fc796577726`, Wave A `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, backend `31ec6988446607651031c6412b2c9f4c8ccce402` (attempted, not merged). Wave A merge commit: `88a4e94`. Candidate-only lint cleanup: `9df0f47`. Coordinator refreshed through `f691dec` at merge `d5aa031`; CSS remains exactly the latest coordinator blob.
+Inputs: coordinator `a69dff2b8370c6c52d1d781c91159fc796577726`, Wave A `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, backend `31ec6988446607651031c6412b2c9f4c8ccce402` (attempted, not merged). Wave A merge commit: `88a4e94`. Candidate-only lint cleanup: `9df0f47`. Coordinator refreshed through `f691dec` at merge `d5aa031`, then `e7671e6` at candidate `0e010464aeb5f532981ac6071c48e1527e9419db`; CSS remains exactly the latest coordinator blob.
 
 Jose explicitly requested the Wave A merge. It is recorded as an integration with open gates, not as a successful exit round. Wave A's `ROUND.md` requests exit round 2; it does not say `status: zero`. The other chat branches have not been admitted without zero exit evidence.
 
@@ -30,3 +30,7 @@ Profile initial data waits for the Profile and backend merges. Dead `.settings-h
 ## Release impact
 
 BLOCKER / NO-GO pending the missing backend integration, source fix, complete browser/combined evidence and remaining zero exit rounds. No deployment, preview publication or tunnel. Local loopback previews use owned disposable PostgreSQL and fictional data only; outbound delivery remains disabled.
+
+## Final validation on 0e01046
+
+Locked install passes; lint passes with 0 warnings; TypeScript fails TS2724. Full Vitest: 7,280 passed, 7 failed, 801 skipped, 55 pending (8,143 total). Four failures are the missing hook; three are process-lifecycle assertions, kept as an independent validation blocker. Browser checker: 0/64, all HTTP 500 from the known compiler failure. The bounded probe measured 60 screens, with 32 HTTP 500s; all eight More checks and both intercepted one-POST form checks pass. Broader matrix/exit certification remains blocked. See validation.json and the five area reports. The latest backend head 1c8254a changes only published evidence; its merge-tree still conflicts in the same Coverage test and root layout (the latter has Claude’s supplied resolution). Preview close guards report automatic generated type-path changes; the complete bounded integrity comparison is retained in preview-integrity.json.

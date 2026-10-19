@@ -1,0 +1,20 @@
+[
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "AUDIT-M",
+    "width": 390,
+    "route": "/app",
+    "selector": ".premium-pending-failed",
+    "intercepted": 1,
+    "text": "Next up\n\nWhat needs you isn’t available right now.\n\nTry again"
+  },
+  {
+    "checkpoint": "2fafc1aa84f43a120d2f8fff4c3855ebf4b15dcf",
+    "account": "AUDIT-M",
+    "width": 390,
+    "route": "/app/inbox",
+    "selector": ".inbox-status",
+    "intercepted": 1,
+    "text": "The Inbox isn’t available right now.\n\nTry again"
+  }
+]
