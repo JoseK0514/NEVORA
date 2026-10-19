@@ -1,0 +1,665 @@
+{
+ "checkpoint": "7679133e5ce239cf5c45b6a890bbd10d35fb2c58",
+ "rows": [
+  {
+   "account": "AUDIT-E",
+   "path": "/app/schedule/new?week=2026-10-19&date=2026-10-23&locationId=loc-1&employeeId=AUDIT-LONG&start=22:00&end=06:30",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Alexandra."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-E",
+   "path": "/app/schedule/edit?shiftId=audit-shift-0-2&error=SHIFT_OVERLAP",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Alexandra."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-E",
+   "path": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Alexandra."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-E",
+   "path": "/app/requests?tab=pending",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "title": [
+    "Time off"
+   ],
+   "expectedPath": "/app/requests",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-E",
+   "path": "/app/employees/AUDIT-LONG",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Alexandra."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-E",
+   "path": "/app/employees/new",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Alexandra."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-E",
+   "path": "/app/employees/AUDIT-E/clocker-pin",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Alexandra."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LEAD",
+   "path": "/app/schedule/new?week=2026-10-19&date=2026-10-23&locationId=loc-1&employeeId=AUDIT-LONG&start=22:00&end=06:30",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Taylor."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LEAD",
+   "path": "/app/schedule/edit?shiftId=audit-shift-0-2&error=SHIFT_OVERLAP",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Taylor."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LEAD",
+   "path": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Taylor."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LEAD",
+   "path": "/app/requests?tab=pending",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "title": [
+    "Time off"
+   ],
+   "expectedPath": "/app/requests",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LEAD",
+   "path": "/app/employees/AUDIT-LONG",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Taylor."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LEAD",
+   "path": "/app/employees/new",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Taylor."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LEAD",
+   "path": "/app/employees/AUDIT-E/clocker-pin",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Taylor."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LONG",
+   "path": "/app/schedule/new?week=2026-10-19&date=2026-10-23&locationId=loc-1&employeeId=AUDIT-LONG&start=22:00&end=06:30",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LONG",
+   "path": "/app/schedule/edit?shiftId=audit-shift-0-2&error=SHIFT_OVERLAP",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LONG",
+   "path": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LONG",
+   "path": "/app/requests?tab=pending",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "title": [
+    "Time off"
+   ],
+   "expectedPath": "/app/requests",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LONG",
+   "path": "/app/employees/AUDIT-LONG",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LONG",
+   "path": "/app/employees/new",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-LONG",
+   "path": "/app/employees/AUDIT-E/clocker-pin",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-ON",
+   "path": "/app/schedule/new?week=2026-10-19&date=2026-10-23&locationId=loc-1&employeeId=AUDIT-LONG&start=22:00&end=06:30",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Jordan."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-ON",
+   "path": "/app/schedule/edit?shiftId=audit-shift-0-2&error=SHIFT_OVERLAP",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Jordan."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-ON",
+   "path": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Jordan."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-ON",
+   "path": "/app/requests?tab=pending",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "title": [
+    "Time off"
+   ],
+   "expectedPath": "/app/requests",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-ON",
+   "path": "/app/employees/AUDIT-LONG",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Jordan."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-ON",
+   "path": "/app/employees/new",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Jordan."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-ON",
+   "path": "/app/employees/AUDIT-E/clocker-pin",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Jordan."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-BREAK",
+   "path": "/app/schedule/new?week=2026-10-19&date=2026-10-23&locationId=loc-1&employeeId=AUDIT-LONG&start=22:00&end=06:30",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Casey."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-BREAK",
+   "path": "/app/schedule/edit?shiftId=audit-shift-0-2&error=SHIFT_OVERLAP",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Casey."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-BREAK",
+   "path": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Casey."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-BREAK",
+   "path": "/app/requests?tab=pending",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "title": [
+    "Time off"
+   ],
+   "expectedPath": "/app/requests",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-BREAK",
+   "path": "/app/employees/AUDIT-LONG",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Casey."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-BREAK",
+   "path": "/app/employees/new",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Casey."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-BREAK",
+   "path": "/app/employees/AUDIT-E/clocker-pin",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Casey."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-SWAP",
+   "path": "/app/schedule/new?week=2026-10-19&date=2026-10-23&locationId=loc-1&employeeId=AUDIT-LONG&start=22:00&end=06:30",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Riley."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-SWAP",
+   "path": "/app/schedule/edit?shiftId=audit-shift-0-2&error=SHIFT_OVERLAP",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Riley."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-SWAP",
+   "path": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Riley."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-SWAP",
+   "path": "/app/requests?tab=pending",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "title": [
+    "Time off"
+   ],
+   "expectedPath": "/app/requests",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-SWAP",
+   "path": "/app/employees/AUDIT-LONG",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Riley."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-SWAP",
+   "path": "/app/employees/new",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Riley."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-SWAP",
+   "path": "/app/employees/AUDIT-E/clocker-pin",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Riley."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-a",
+   "path": "/app/schedule/new?week=2026-10-19&date=2026-10-23&locationId=loc-1&employeeId=AUDIT-LONG&start=22:00&end=06:30",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-a",
+   "path": "/app/schedule/edit?shiftId=audit-shift-0-2&error=SHIFT_OVERLAP",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-a",
+   "path": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-a",
+   "path": "/app/requests?tab=pending",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "title": [
+    "Time off"
+   ],
+   "expectedPath": "/app/requests",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-a",
+   "path": "/app/employees/AUDIT-LONG",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-a",
+   "path": "/app/employees/new",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-a",
+   "path": "/app/employees/AUDIT-E/clocker-pin",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Mar\u00eda Jos\u00e9."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-b",
+   "path": "/app/schedule/new?week=2026-10-19&date=2026-10-23&locationId=loc-1&employeeId=AUDIT-LONG&start=22:00&end=06:30",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Robin."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-b",
+   "path": "/app/schedule/edit?shiftId=audit-shift-0-2&error=SHIFT_OVERLAP",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Robin."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-b",
+   "path": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Robin."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-b",
+   "path": "/app/requests?tab=pending",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "title": [
+    "Time off"
+   ],
+   "expectedPath": "/app/requests",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-b",
+   "path": "/app/employees/AUDIT-LONG",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Robin."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-b",
+   "path": "/app/employees/new",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Robin."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "payroll-qa-b",
+   "path": "/app/employees/AUDIT-E/clocker-pin",
+   "status": 200,
+   "finalPath": "/app",
+   "title": [
+    "Hi, Robin."
+   ],
+   "expectedPath": "/app",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-M",
+   "path": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+   "status": 200,
+   "finalPath": "/app/exchange",
+   "title": [
+    "Shift requests"
+   ],
+   "expectedPath": "/app/exchange",
+   "ok": true
+  },
+  {
+   "account": "AUDIT-M",
+   "path": "/app/exchange/callout?shiftId=audit-shift-1-1&error=details",
+   "status": 200,
+   "finalPath": "/app/exchange",
+   "title": [
+    "Shift requests"
+   ],
+   "expectedPath": "/app/exchange",
+   "ok": true
+  },
+  {
+   "account": "QAOWNER",
+   "path": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+   "status": 200,
+   "finalPath": "/app/exchange",
+   "title": [
+    "Shift requests"
+   ],
+   "expectedPath": "/app/exchange",
+   "ok": true
+  },
+  {
+   "account": "QAOWNER",
+   "path": "/app/exchange/callout?shiftId=audit-shift-1-1&error=details",
+   "status": 200,
+   "finalPath": "/app/exchange",
+   "title": [
+    "Shift requests"
+   ],
+   "expectedPath": "/app/exchange",
+   "ok": true
+  }
+ ]
+}

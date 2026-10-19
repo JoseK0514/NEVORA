@@ -1,0 +1,20 @@
+{
+  "checkpoint": "7679133e5ce239cf5c45b6a890bbd10d35fb2c58",
+  "screenVisits": 282,
+  "textSamples": 564,
+  "documentOverflow": [],
+  "forms": 32,
+  "oneHeldMutationEach": true,
+  "roleCases": 200,
+  "initialRoleNavigationRaces": 60,
+  "resolvedRetries": 60,
+  "filters": 16,
+  "automatedCells": 160,
+  "automatedPass": 160,
+  "fullMatrixComplete": false,
+  "verdict": "NOT_ZERO",
+  "P0": 0,
+  "P1": 1,
+  "P2": 0,
+  "supersedingHeadQueued": "76514905153c906bb76efc45808426e9d484cb64"
+}
