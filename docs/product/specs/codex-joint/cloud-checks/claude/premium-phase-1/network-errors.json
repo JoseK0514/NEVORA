@@ -3666,5 +3666,89 @@
   "page": "/app/timecards",
   "path": "/api/manager/inbox-count",
   "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:02.136Z",
+  "account": "QAOWNER",
+  "page": "/app/updates",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:05.795Z",
+  "account": "QAOWNER",
+  "page": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:08.606Z",
+  "account": "QAOWNER",
+  "page": "/app/updates/compose",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:12.069Z",
+  "account": "QAOWNER",
+  "page": "/app/updates",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:16.116Z",
+  "account": "QAOWNER",
+  "page": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:20.131Z",
+  "account": "QAOWNER",
+  "page": "/app/updates/compose",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:23.963Z",
+  "account": "QAOWNER",
+  "page": "/app/updates",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:28.487Z",
+  "account": "QAOWNER",
+  "page": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:31.809Z",
+  "account": "QAOWNER",
+  "page": "/app/updates/compose",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:35.398Z",
+  "account": "QAOWNER",
+  "page": "/app/updates",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:39.263Z",
+  "account": "QAOWNER",
+  "page": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:51:42.912Z",
+  "account": "QAOWNER",
+  "page": "/app/updates/compose",
+  "path": "/api/manager/inbox-count",
+  "status": 404
  }
 ]
