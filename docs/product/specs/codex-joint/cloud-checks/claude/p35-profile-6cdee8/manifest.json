@@ -4791,6 +4791,75 @@
       "code": 1,
       "passed": 14,
       "failed": 2
+    },
+    {
+      "name": "00209-matrix-AUDIT-BREAK-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T21-19-44-094Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00209-matrix-AUDIT-BREAK-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app/updates/compose",
+        "--accounts",
+        "AUDIT-BREAK",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "b0d9c5c221d921e3c98dbdc6ff1b5ee83dcd3c03f336abf922bfbfd6d4d0fd16",
+      "code": 1,
+      "passed": 2,
+      "failed": 2
+    },
+    {
+      "name": "00210-matrix-payroll-qa-a-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T21-20-46-043Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00210-matrix-payroll-qa-a-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=cloud-payroll-qa-a",
+        "--accounts",
+        "payroll-qa-a",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "1718ceaf74ea286633f9c5df4a7abdb542db7ac557ab9c6f981a6fcf604ed932",
+      "code": 1,
+      "passed": 14,
+      "failed": 2
+    },
+    {
+      "name": "00211-matrix-payroll-qa-a-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T21-21-49-078Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00211-matrix-payroll-qa-a-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app/exchange/swap?sourceShiftId=cloud-payroll-qa-a,/app/my-pay,/app/my-time,/app/notifications",
+        "--accounts",
+        "payroll-qa-a",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "843a85dc9e24035aa9b3672c4e6896f8957de9b0762720363c72a03b62c8d3e3",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
     }
   ],
   "planned": 12716,

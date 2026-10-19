@@ -6781,5 +6781,271 @@
   "page": "/app/payroll",
   "path": "/api/manager/inbox-count",
   "status": 404
+ },
+ {
+  "at": "2026-10-19T21:19:40.385Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:19:44.110Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:19:47.761Z",
+  "account": "QAOWNER",
+  "page": "/app/requests",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:19:51.938Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:19:55.757Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:19:59.364Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:03.050Z",
+  "account": "QAOWNER",
+  "page": "/app/requests",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:07.956Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:10.947Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/copy-receipt",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:15.302Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/coverage",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:16.629Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:17.963Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/edit",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:21.462Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:25.358Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/copy-receipt",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:29.331Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/coverage",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:32.145Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:33.486Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/edit",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:37.526Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:41.143Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/copy-receipt",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:44.890Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/coverage",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:45.778Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:49.031Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/edit",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:53.094Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:20:56.655Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/copy-receipt",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:00.504Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/coverage",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:01.812Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:04.016Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/edit",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:08.165Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:11.600Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/settings",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:14.783Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/templates",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:18.082Z",
+  "account": "QAOWNER",
+  "page": "/app/settings",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:21.695Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:25.987Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/settings",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:29.889Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/templates",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:33.848Z",
+  "account": "QAOWNER",
+  "page": "/app/settings",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:38.059Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:42.141Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/settings",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T21:21:45.722Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule/templates",
+  "path": "/api/manager/inbox-count",
+  "status": 404
  }
 ]
