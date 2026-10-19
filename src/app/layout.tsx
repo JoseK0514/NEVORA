@@ -17,14 +17,14 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const TEXT_SCALE_SCRIPT = `(function(){var d=document.documentElement;function s(){var f=parseFloat(getComputedStyle(d).fontSize)||16;d.style.setProperty('--nv-text-scale',String(f/16));}s();function w(){try{var p=document.createElement('i');p.setAttribute('aria-hidden','true');p.style.cssText='position:absolute;left:0;top:0;width:1rem;height:0;visibility:hidden;pointer-events:none';document.body.appendChild(p);new ResizeObserver(s).observe(p);}catch(e){}}if(document.body)w();else document.addEventListener('DOMContentLoaded',w);})();`;
+const TEXT_SCALE_SCRIPT = `(function(){var d=document.documentElement;function s(){var f=parseFloat(getComputedStyle(d).fontSize)||16;d.style.setProperty('--nv-text-scale',String(f/16));var p=f/16*100,n=[100,125,150,200].reduce(function(a,b){return Math.abs(b-p)<Math.abs(a-p)?b:a;});d.setAttribute('data-text-step',String(n));}s();function w(){try{var p=document.createElement('i');p.setAttribute('aria-hidden','true');p.style.cssText='position:absolute;left:0;top:0;width:1rem;height:0;visibility:hidden;pointer-events:none';document.body.appendChild(p);new ResizeObserver(s).observe(p);}catch(e){}}if(document.body)w();else document.addEventListener('DOMContentLoaded',w);})();`;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* P3-ST-20: loading placeholders grow with the reader's text size like the pages they stand in for. This tells CSS the
-            text scale (root font size ÷ 16) before first paint, and again whenever the text size changes. Nothing else. */}
+            text scale (root font size ÷ 16) and its nearest measured step (100, 125, 150 or 200%) before first paint, and again whenever the text size changes. Nothing else. */}
         <script dangerouslySetInnerHTML={{ __html: TEXT_SCALE_SCRIPT }} />
       </head>
       <body>{children}</body>
