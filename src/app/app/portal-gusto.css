@@ -202,7 +202,7 @@ html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; 
   html body .app-shell.nevora-portal .sidebar { gap: 20px; background: var(--g-canvas); border-right: 1px solid var(--g-hairline); }
   html body .app-shell.nevora-portal .sidebar-nav { gap: 16px; }
   html body .app-shell.nevora-portal .sidebar-nav-group { gap: 2px; }
-  html body .app-shell.nevora-portal .sidebar-group-label { padding: 0 12px 4px; font: 500 12px/1.4 var(--design-font-body); color: var(--g-muted); letter-spacing: 0; }
+  html body .app-shell.nevora-portal .sidebar-group-label { padding: 0 12px 4px; font: var(--nv-t-label); color: var(--g-muted); letter-spacing: 0; }
   html body .app-shell.nevora-portal .sidebar .nav-link { min-height: 40px; padding: 0 12px; gap: 12px; font: 400 14px/1.3 var(--design-font-body); color: var(--g-ink); border-radius: 0 8px 8px 0; }
   html body .app-shell.nevora-portal .sidebar .nav-link .nav-icon { color: var(--g-muted); }
   html body .app-shell.nevora-portal .sidebar .nav-link .nav-icon svg { width: 20px; height: 20px; }
@@ -211,7 +211,7 @@ html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; 
   html body .app-shell.nevora-portal .sidebar .nav-link.active .nav-icon { color: var(--g-accent); }
   html body .app-shell.nevora-portal .sidebar-platform-footer { min-height: 0; }
   html body .app-shell.nevora-portal .sidebar-platform-footer > span { display: none; }
-  html body .app-shell.nevora-portal .sidebar-platform-footer small { font: 500 10px/1.4 var(--design-font-body); letter-spacing: .04em; color: var(--g-muted); }
+  html body .app-shell.nevora-portal .sidebar-platform-footer small { font: var(--nv-t-callout); letter-spacing: 0; color: var(--g-muted); }
   html body .app-shell.nevora-portal .sidebar-toggle { border: 0; color: var(--g-muted); }
   html body .app-shell.nevora-portal .sidebar-toggle:hover { background: var(--g-inset); color: var(--g-ink); }
   html body .app-shell.nevora-portal .sidebar[data-collapsed="true"] .nav-link { border-radius: 8px; box-shadow: none; }
