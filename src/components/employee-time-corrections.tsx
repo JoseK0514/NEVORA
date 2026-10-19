@@ -46,7 +46,7 @@ function actionMessage(result:CorrectionActionResponse|null){
   if(result.state==='pending')return 'Correction request sent for manager review.';
   if(result.state==='conflict')return 'This record changed or already has a pending correction. Refresh before trying again.';
   if(result.state==='outcome_unknown')return 'The server outcome could not be confirmed. Retry the same request safely.';
-  if(result.state==='unavailable')return 'The correction service is unavailable right now.';
+  if(result.state==='unavailable')return 'We couldn’t send your correction. Try again. If this keeps happening, sign in again.';
   if(result.state==='invalid')return 'Check the proposed times and reason.';
   if(result.state==='blocked'){
     if(result.reason==='finalized_period')return 'Ask a manager to reopen the finalized timecard period before requesting a correction.';
@@ -174,7 +174,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
       {open?'Cancel correction':'Request a correction'}
     </button>
     {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}</p>:null}
-    {retry?<button className="employee-time-correction-retry" type="button" disabled={busy} onClick={()=>void send(retry)}>Retry same request</button>:null}
+    {retry?<button className="employee-time-correction-retry" type="button" disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
     {open?<form className="employee-time-correction-form" id={formId} onSubmit={submit}>
       <label>What needs correction?
         <select disabled={busy||retry!==null} value={target.key} onChange={(event)=>choose(event.target.value)}>
@@ -287,7 +287,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
       </button>
     </header>
     {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}</p>:null}
-    {retry?<button className="employee-time-correction-retry" type="button" disabled={busy} onClick={()=>void send(retry)}>Retry same request</button>:null}
+    {retry?<button className="employee-time-correction-retry" type="button" disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
     {open&&ready?<form className="employee-time-correction-form missing" id="employee-missing-time-correction" onSubmit={submit}>
       <label>Location
         <select disabled={busy||retry!==null||replacementTarget!==null} required value={location} onChange={(event)=>setLocation(event.target.value)}>

@@ -15,5 +15,8 @@ export function EmployeeSubmitButton({
   disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
-  return <button type="submit" className={className} disabled={disabled || pending}>{pending ? pendingText : children}</button>;
+  // IS (round 3): while sending, the button stays focusable (aria-disabled) so focus doesn't fall to the page top; a
+  // second click, tap or Enter is refused here, so only one request leaves.
+  return <button type="submit" className={className} disabled={disabled} aria-disabled={pending || undefined}
+    onClick={event => { if (pending) event.preventDefault(); }}>{pending ? pendingText : children}</button>;
 }

@@ -1563,3 +1563,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-s
 /* P3-ST-16: the pass's loading, failed and paused lines take two lines' room, so the placeholder bars under them don't
  * move when one message replaces another (one line at 390, two at 320). */
 html body .app-shell.nevora-portal.nevora-portal .page-frame [data-pass="true"] p[data-recovery]:not(#nv-kit) { min-height: 2lh; }
+/* IS (round 3): rows that run edge to edge inside a card draw their focus ring just inside the row, so the card's
+ * rounded clip never cuts it (Planning ahead, the Requests overview, Profile settings and Sign out). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame :is(.premium-request-hub .nv-card, .premium-employee-schedule [aria-labelledby="my-schedule-more-title"], .premium-employee-profile :is(.profile-settings-list, .profile-signout, .profile-signout-row)) :is(a, button, summary):focus-visible:not(#nv-kit) { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+/* A sending submit button keeps focus (aria-disabled) and looks like the kit's disabled button. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame button[type="submit"][aria-disabled="true"]:not(#nv-kit) { cursor: progress; }
