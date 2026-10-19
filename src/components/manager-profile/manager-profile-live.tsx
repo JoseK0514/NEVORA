@@ -45,8 +45,6 @@ type View = {
   held?: Ready | null;
   /** The read rows' last heights, kept only while the session has ended (the values themselves are cleared). */
   rowHeights?: Record<string, number> | null;
-  /** Which switch had focus, so it can get it back when the list returns (null when focus moved elsewhere). */
-  onTopicFocus?: (id: string | null) => void;
 };
 type Ready = Extract<ManagerProfileSnapshot, { state: 'ready' }>;
 
@@ -133,7 +131,7 @@ function saveMessage(error: AlertSave['error']) {
 }
 
 /** One alert switch. Without onToggle (re-reading, or a size-holding copy) it reads as busy and ignores presses. */
-function TopicRow({ topic, save, on, onToggle, skeleton = false, onTopicFocus }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void; skeleton?: boolean; onTopicFocus?: View['onTopicFocus'] }) {
+function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void; skeleton?: boolean }) {
   const busy = !!save?.pending || !onToggle;
   // Loading rows: the expected words drawn as grey text-shaped bars, so each row is exactly a ready row's size.
   if (skeleton) return <li aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder">
@@ -143,7 +141,6 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false, onTopicFocus }:
   return <li>
     {/* While busy it says so and ignores presses, but stays enabled, so keyboard focus stays on it. */}
     <button type="button" role="switch" aria-checked={on} className="nv-row pmp-switch-row" data-topic={topic.id}
-      onFocus={() => onTopicFocus?.(topic.id)} onBlur={event => { if (event.relatedTarget) onTopicFocus?.(null); }}
       aria-disabled={busy || undefined} aria-busy={save?.pending || undefined} onClick={() => { if (!busy) onToggle?.(topic, !on); }}>
       <span className="nv-row__text"><span className="nv-row__title">{topic.label}</span>
         {/* The detail, "Saving…" and a failed save share one cell sized to the longest, so the row never changes height. */}
@@ -157,7 +154,7 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false, onTopicFocus }:
   </li>;
 }
 
-export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, onTopicFocus, rowHeights = null }: View) {
+export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, rowHeights = null }: View) {
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
   const read = readState(state), row = 'row' in read ? read.row : undefined;
   // Approved set: without payroll an Owner isn't told about payroll, even if the read lists the topic (switched off).
@@ -220,7 +217,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         </Rows>
         <h3 className="pmp-subhead" id="profile-alerts-title">You’re told about</h3>
         <ul className="nv-rows pmp-topics" aria-labelledby="profile-alerts-title">
-          {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} onTopicFocus={onTopicFocus} />)
+          {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
             : read.kind === 'loading' ? sizing.map(topic => <TopicRow key={topic.id} topic={topic} on={false} skeleton />)
             // Any other state says what happened where the alert rows are, over their hidden copy, so nothing below moves.
             : <li className="pmp-hold pmp-topics-hold">
@@ -245,6 +242,11 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
 
 /** `initial`: the same read done on the server (CODEX.md, optional), so the page arrives with its details already
  * in place and nothing moves when the client's first read lands. Without it the client reads after hydration. */
+function focusedTopic(): string | null {
+  const active = document.activeElement;
+  return active instanceof HTMLElement && active.dataset.topic ? active.dataset.topic : null;
+}
+
 export function ManagerProfileLive({ identity, initial = null }: { identity: ManagerProfileIdentity; initial?: Ready | null }) {
   const [state, setState] = useState<PrivatePanelState<ManagerProfileSnapshot>>({ snapshot: null, paused: false, refreshing: true });
   const [saves, setSaves] = useState<Record<string, AlertSave>>({});
@@ -255,7 +257,8 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
   // returning to the window later doesn't announce it again.
   const [retried, setRetried] = useState<{ pending: boolean; outcome: 'loaded' | 'failed' | null; snapshot: ManagerProfileSnapshot | null }>({ pending: false, outcome: null, snapshot: null });
   const retryPending = useRef(false);
-  const lastTopic = useRef<string | null>(null);
+  // The switch that had focus when the page was left or a save ended the session: given focus back once, then forgotten.
+  const restoreTo = useRef<string | null>(null);
   const [announced, setAnnounced] = useState({ text: '', count: 0 });
   const inFlight = useRef(new Set<string>());
   const control = useRef<ReturnType<typeof createPrivateSnapshotController<ManagerProfileSnapshot>> | null>(null);
@@ -285,7 +288,7 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
     let mounted = true, away = true;
     // Leaving (blur, hidden, offline, page hidden) clears the read; coming back starts one. A focus or pageshow while
     // the page never left does nothing, so a finished read isn't thrown away and read twice (ST-01).
-    const leave = () => { away = true; controller.pause(); };
+    const leave = () => { away = true; restoreTo.current = focusedTopic(); controller.pause(); };
     const back = () => {
       if (document.visibilityState === 'hidden' || !navigator.onLine) { leave(); return; }
       if (!away) return;
@@ -318,15 +321,19 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
   const outcome = retried.outcome && state.snapshot === retried.snapshot ? retried.outcome : null;
   const retry = () => { retryPending.current = true; setRetried({ pending: true, outcome: null, snapshot: null }); control.current?.refresh(); };
 
-  // Focus never falls to the page: a successful retry moves it to the details it loaded (the button is gone), a switch
-  // that was focused gets it back when the list returns, and an ended session moves it to Sign in.
+  // Focus never falls to the page: a successful retry moves it to the details it loaded (the button is gone); a switch
+  // that had focus when the page was left gets it back once when the list returns; an ended session moves it to Sign in.
+  // Only when focus would otherwise be nowhere, and without scrolling, so a reader who moved on is never pulled back.
   const denied = state.snapshot?.state === 'unavailable' && state.snapshot.reason === 'access_denied';
   useEffect(() => {
-    if (document.activeElement && document.activeElement !== document.body) return;
-    if (outcome === 'loaded') { document.getElementById('profile-details-list')?.focus(); return; }
-    if (!lastTopic.current) return;
-    if (ready) document.querySelector<HTMLElement>(`[data-topic="${CSS.escape(lastTopic.current)}"]`)?.focus();
-    else if (denied) document.querySelector<HTMLElement>('.pmp-topics-note a')?.focus();
+    const lost = !document.activeElement || document.activeElement === document.body;
+    if (!lost) { if (ready || denied) restoreTo.current = null; return; }
+    if (outcome === 'loaded') { document.getElementById('profile-details-list')?.focus({ preventScroll: true }); return; }
+    const topic = restoreTo.current;
+    if (!topic || !(ready || denied)) return;
+    restoreTo.current = null;
+    const target = ready ? document.querySelector<HTMLElement>(`[data-topic="${CSS.escape(topic)}"]`) : document.querySelector<HTMLElement>('.pmp-topics-note a');
+    target?.focus({ preventScroll: true });
   }, [outcome, ready, denied]);
 
   async function toggle(topic: ManagerAlertTopic, on: boolean) {
@@ -352,9 +359,10 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
     // Each failure is spoken once with its own topic; a repeat of the same words still changes the region.
     if (error) setAnnounced(current => ({ text: `${topic.label}: ${saveMessage(error)}`, count: current.count + 1 }));
     // A saved choice is re-read; an ended session is re-read too, so the card's head offers Sign in.
+    if (error === 'signed_out') restoreTo.current = focusedTopic();
     if (!error || error === 'signed_out') control.current?.refresh();
   }
 
-  return <ManagerProfileView identity={identity} state={state} onRetry={retry} retrying={retrying} retried={outcome} onTopicFocus={id => { lastTopic.current = id; }} saves={saves} overrides={shownOverrides} onToggle={toggle}
+  return <ManagerProfileView identity={identity} state={state} onRetry={retry} retrying={retrying} retried={outcome} saves={saves} overrides={shownOverrides} onToggle={toggle}
     held={held} rowHeights={rowHeights} announcement={announced.text ? announced.text + (announced.count % 2 ? '' : '\u00a0') : ''} />;
 }
