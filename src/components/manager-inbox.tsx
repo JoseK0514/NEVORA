@@ -84,17 +84,35 @@ const categoryNote: Record<ActionItem["category"], string> = {
   requests: requestNote,
 };
 
+/** Codex's optional request facts (arrive with the backend merge): dates, partial-day times, length, location, note. */
+type RequestFacts = { startDate: string; endDate: string; partialDay?: { start: string; end: string }; lengthText: string; locationName: string; note?: string; reviewHref?: string };
+const dayText = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T00:00:00Z`));
+const timeText = (hhmm: string) => { const [h, m] = hhmm.split(":").map(Number); if (h === 24 || (h === 0 && m === 0)) return "midnight"; return `${(h % 12) || 12}:${String(m).padStart(2, "0")}\u00a0${h < 12 ? "AM" : "PM"}`; };
+function requestFacts(facts: RequestFacts): [string, ReactNode][] {
+  const dates = facts.startDate === facts.endDate ? dayText(facts.startDate) : `${dayText(facts.startDate)} – ${dayText(facts.endDate)}`;
+  return [
+    ["Dates", <span key="d" className="nv-keep">{dates}</span>],
+    ...(facts.partialDay ? [["Time", <span key="t" className="nv-nowrap">{timeText(facts.partialDay.start)}&nbsp;– {timeText(facts.partialDay.end)}</span>] as [string, ReactNode]] : []),
+    ["Length", facts.lengthText],
+    ["Works at", facts.locationName],
+    ...(facts.note ? [["Note", facts.note] as [string, ReactNode]] : []),
+  ];
+}
+
 function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
   const urgent = item.priority === "URGENT" && !calm;
   const request = item.category === "requests";
   const Icon = urgent ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : request ? UserCheckIcon : CalendarBlankIcon;
   const action = actionCenterNavigation(item);
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
+  const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
   return { key: item.id, href: withFilter(action.href, filter), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
     leading: request && shown.person ? <Avatar initials={initials(shown.person)} waiting /> : <Tile tone={urgent ? "urgent" : request ? "review" : "neutral"}><Icon size={20} weight="bold" /></Tile>,
     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
     status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
-    note: calm ? "This time has passed. Review it for the record; it doesn’t need action now." : categoryNote[item.category] };
+    note: calm ? "This time has passed. Review it for the record; it doesn’t need action now."
+      : facts ? "Approve or decline it on the full request." : categoryNote[item.category],
+    facts: facts ? requestFacts(facts) : undefined };
 }
 
 function ItemRow({ item, calm = false, filter = "all", timeZone = "UTC" }: { item: ActionItem; /** Past work (C2): no urgent styling. */ calm?: boolean; filter?: InboxFilter; timeZone?: string }) {
@@ -331,7 +349,7 @@ function InboxDetail({ entry }: { entry: InboxEntry }) {
       </div>
     </div>
     {entry.status ? <div className="inbox-detail__status">{entry.status}</div> : null}
-    {entry.facts ? <dl className="inbox-detail__facts">{entry.facts.map(([label, fact]) => <div key={label}><dt>{label}</dt><dd>{fact}</dd></div>)}</dl> : null}
+    {entry.facts ? <dl className="inbox-detail__facts">{entry.facts.map(([label, fact]) => <div key={label} data-fact={label === "Note" ? "note" : undefined}><dt>{label}</dt><dd>{fact}</dd></div>)}</dl> : null}
     {entry.note ? <p className="inbox-detail__note">{entry.note}</p> : null}
     <div className="inbox-detail__actions">
       <Button href={entry.href}>{entry.action}</Button>

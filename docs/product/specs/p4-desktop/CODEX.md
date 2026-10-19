@@ -1,5 +1,7 @@
 # Phase 4 desktop: items for Codex
 
+**Status, Oct 19 evening:** Codex built items 1 and 3 on `codex/premium-backend`. The UI for both is in this branch: the sidebar badge (`app-shell.tsx`, `useInboxCount`, off behind `INBOX_COUNT_ENDPOINT_READY = false` until the merge, so the preview doesn't log a 404 on every page; **set it to `true` in the merge**), and the pane's Dates, Time, Length, Works at and Note facts when an item carries `request` (`manager-inbox.tsx`, `requestFacts`). Joint test after the merge: badge matches Home and the Inbox summary; no badge while unavailable; the pane's facts match the full review.
+
 October 19, 2026. These need server work. The desktop UI is built against today's server behaviour and doesn't depend on them to work; each one is set aside for joint testing.
 
 ## 1. Inbox count on every page (F1, PLAN "Backend or data changes")

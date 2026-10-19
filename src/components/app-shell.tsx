@@ -24,6 +24,34 @@ import { NUVORA_BRAND } from "../lib/brand";
 import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 
+/** F1: the sidebar's Inbox count (Codex's GET /api/manager/inbox-count). Read on each page and every minute while the
+ * window is in front; nothing while offline or hidden, and no badge at all unless the read is ready (never "0" or "–"). */
+// Off until Codex's endpoint is merged (tonight); before then every page would log a 404. Turn on in the merge.
+export const INBOX_COUNT_ENDPOINT_READY = false;
+function useInboxCount(management: boolean, pathname: string | null) {
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
+    if (!management || !INBOX_COUNT_ENDPOINT_READY) return;
+    let controller: AbortController | null = null, timer: ReturnType<typeof setTimeout> | undefined;
+    const read = async () => {
+      controller?.abort(); clearTimeout(timer);
+      if (document.visibilityState !== "visible" || !navigator.onLine) { setCount(null); return; }
+      controller = new AbortController();
+      try {
+        const response = await fetch("/api/manager/inbox-count", { credentials: "same-origin", cache: "no-store", signal: controller.signal });
+        const body = response.ok ? await response.json() as { state?: string; count?: unknown } : null;
+        setCount(body?.state === "ready" && typeof body.count === "number" && Number.isInteger(body.count) && body.count > 0 ? body.count : null);
+      } catch (error) { if (!(error instanceof DOMException && error.name === "AbortError")) setCount(null); return; }
+      timer = setTimeout(read, 60000);
+    };
+    void read();
+    const offline = () => { controller?.abort(); clearTimeout(timer); setCount(null); };
+    document.addEventListener("visibilitychange", read); window.addEventListener("online", read); window.addEventListener("offline", offline);
+    return () => { controller?.abort(); clearTimeout(timer); document.removeEventListener("visibilitychange", read); window.removeEventListener("online", read); window.removeEventListener("offline", offline); };
+  }, [management, pathname]);
+  return count;
+}
+
 /** Home's views share Home's address; the trail names them as their bands do. */
 const HOME_VIEWS = { attendance: "Attendance", team: "Team overview", activity: "Schedule activity" } as const;
 
@@ -57,6 +85,7 @@ export function AppShell({
   };
 }) {
   const pathname = usePathname();
+  const inboxCount = useInboxCount(user.role !== "EMPLOYEE" && user.role !== "LEAD", pathname);
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   function toggleSidebar() {
     const next = !collapsed; setCollapsed(next);
@@ -201,13 +230,14 @@ export function AppShell({
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
                 aria-current={active ? (item.href === activeHref ? "page" : "true") : undefined}
-                aria-label={item.label}
+                aria-label={item.href === "/app/inbox" && inboxCount ? `${item.label}, ${inboxCount} need${inboxCount === 1 ? "s" : ""} you` : item.label}
                 title={collapsed ? item.label : undefined}
               >
                 <span className="nav-icon">
                   <NavIcon name={item.icon} employee={employee} size={employee ? 20 : 18} />
                 </span>
                 <span className="nav-label">{item.label}</span>
+                {item.href === "/app/inbox" && inboxCount ? <span className="nav-count" aria-hidden="true">{inboxCount > 99 ? "99+" : inboxCount}</span> : null}
               </Link>
             );
           })}</div>)}

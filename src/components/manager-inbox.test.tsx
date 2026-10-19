@@ -73,3 +73,12 @@ it('Phase 4: the desktop pane shows the first item and opens its full review; de
   expect(html(ready([]))).not.toContain('inbox-detail__title');
   expect(html(null, 'loading')).toContain('inbox-detail--placeholder');
 });
+it("Codex's optional request facts fill the pane; the decision stays on the full review", () => {
+  const request = {...item('TIME_OFF:r1', 'TIME_OFF', 'requests'), request: {startDate: '2026-10-28', endDate: '2026-10-29', lengthText: '2 days', locationName: 'Main Office', note: 'Fictional family appointment', reviewHref: '/app/requests?tab=pending&requestId=r1&from=inbox'}} as ActionItem;
+  const pane = html(ready([request])).split('class="nv-card inbox-detail"')[1].split('</section>')[0];
+  expect(pane).toContain('<dt>Dates</dt><dd><span class="nv-keep">Wed, Oct 28 – Thu, Oct 29</span></dd>');
+  expect(pane).toContain('<dt>Length</dt><dd>2 days</dd>');
+  expect(pane).toContain('<dt>Works at</dt><dd>Main Office</dd>');
+  expect(pane).toContain('data-fact="note"><dt>Note</dt><dd>Fictional family appointment</dd>');
+  expect(pane).not.toMatch(/Approve<|Decline<|<form/);
+});

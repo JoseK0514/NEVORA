@@ -250,3 +250,16 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* IS-P4-10: a waiting avatar keeps its disc on the selected row's wash. */
   .premium-inbox .inbox-row[data-selected] > .nv-row .nv-avatar[data-waiting="true"] { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--nv-hairline); }
 }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* A request's note reads as a paragraph under its label, not a right-aligned value. */
+  .premium-inbox .inbox-detail__facts > div[data-fact="note"] { flex-direction: column; align-items: stretch; gap: var(--nv-s-1); }
+  .premium-inbox .inbox-detail__facts > div[data-fact="note"] dd { text-align: left; font: var(--nv-t-body); }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* F1: the Inbox count in the sidebar, a 12px number badge (kit badge role). */
+  html body .app-shell.nevora-portal.nevora-portal .sidebar .nav-link .nav-count {
+    display: inline-grid; place-items: center; min-width: 22px; height: 20px; margin-left: auto; padding: 0 6px; box-sizing: border-box;
+    border-radius: 999px; background: var(--nv-accent); color: #FFFFFF; font: var(--nv-t-badge); font-variant-numeric: tabular-nums;
+  }
+  html body .app-shell.nevora-portal.nevora-portal .sidebar[data-collapsed="true"] .nav-link .nav-count { display: none; }
+}
