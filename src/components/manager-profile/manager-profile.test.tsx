@@ -49,13 +49,13 @@ describe('Owner and Manager Profile', () => {
     for (const text of ['Fictional Owner', 'Owner', 'Northside QA Workforce', 'Puerto Rico time', 'Checking…']) expect(html).toContain(text);
     expect(html.match(/Not shown yet/g)).toHaveLength(3);
     expect(html.match(/pmp-topic-placeholder/g)).toHaveLength(ALERT_TOPIC_COUNT.owner);
-    expect(html).toContain('<p class="sr-only" role="alert"></p>');
+    expect(html).toContain('<p class="sr-only" role="alert" id="profile-read-said"></p>');
   });
 
   it('shows contact, locations and alert switches when ready', () => {
     const html = render(owner, parseManagerProfile(fixture('owner')));
     expect(html).toContain('All 3 locations');
-    expect(html).toContain('Show names');
+    expect(html).not.toContain('Show names');
     expect(html).not.toContain('Old San Juan Kiosk');
     expect(html).toContain('787-555-0100');
     expect(html.match(/role="switch"/g)).toHaveLength(5);
@@ -79,14 +79,14 @@ describe('Owner and Manager Profile', () => {
     expect(html).not.toMatch(/missing|missed/i);
   });
 
-  it('says All N locations in one line for everywhere, and lists five assigned ones before Show all', () => {
+  it('says All N locations in one line, and puts Show all before a long assigned list', () => {
     const all = render(owner, parseManagerProfile(fixture('owner-large')));
     expect(all).toContain('All 60 locations');
-    expect(all).toContain('aria-expanded="false"');
+    expect(all).not.toContain('aria-expanded');
     const large = fixture('owner-large');
     const assigned = render(manager, parseManagerProfile({ ...large, locations: { scope: 'assigned', names: large.locations.names }, alerts: fixture('manager').alerts }));
+    expect(assigned).toMatch(/60 locations<\/span><button[^>]*aria-expanded="false"[^>]*>Show all 60<\/button><ul/);
     expect(assigned.match(/<ul class="pmp-locations"[^>]*>(.*?)<\/ul>/)?.[1].match(/<li>/g)).toHaveLength(5);
-    expect(assigned).toContain('Show all 60');
   });
 
   it('says a failed read in words in the space it already has, with Try again in the head line', () => {
@@ -94,27 +94,34 @@ describe('Owner and Manager Profile', () => {
     expect(failed).toContain('We couldn’t load your contact details, locations and alert choices.');
     expect(failed.match(/Couldn’t load</g)).toHaveLength(3);
     expect(failed).toContain('Your alert choices couldn’t load.');
-    expect(failed).toContain('aria-label="Try loading your details again"');
+    // The visible words are the accessible name (WCAG 2.5.3); the sentence describes them. Never disabled while busy.
+    expect(failed.match(/aria-describedby="profile-read-said">Try again</g)).toHaveLength(2);
+    expect(failed).not.toMatch(/<button[^>]*disabled[^>]*>Try again/);
+    expect(render(manager, { state: 'unavailable', reason: 'read_failed' }, { retrying: true })).toContain('aria-busy="true" aria-describedby="profile-read-said">Trying again…');
+    expect(render(manager, { state: 'unavailable', reason: 'read_failed' }, { retried: 'failed' })).toContain('Still couldn’t load');
+    expect(render(manager, parseManagerProfile(fixture('manager')), { retried: 'loaded' })).toContain('Your details loaded.');
     const denied = render(manager, { state: 'unavailable', reason: 'access_denied' });
     expect(denied).toContain('Your session ended.');
     expect(denied).toContain('href="/login"');
     expect(denied).not.toContain('Try again');
   });
 
-  it('pauses with words in the head line and placeholder rows, nothing added', () => {
+  it('pauses with words in the head line and in the alert list’s reserved space', () => {
     const html = render(manager, null, { state: { snapshot: null, paused: true, refreshing: false } });
     expect(html).toMatch(/Updates paused|You’re offline/);
-    expect(html.match(/pmp-topic-placeholder/g)).toHaveLength(ALERT_TOPIC_COUNT.manager);
+    expect(html).toMatch(/Your alert choices show again when/);
+    expect(html).toContain('style="--pmp-rows:4"');
+    expect(html).not.toContain('pmp-topic-placeholder');
   });
 
   it('marks a pending save as Saving… and disabled, and a failed save in the row’s own space', () => {
     const ready = parseManagerProfile(fixture('manager'));
     const pending = render(manager, ready, { saves: { 'time-off': { pending: true, error: null } } });
-    expect(pending).toMatch(/aria-checked="true"[^>]*disabled=""[^>]*aria-busy="true"/);
+    expect(pending).toMatch(/aria-checked="true" class="nv-row pmp-switch-row" aria-disabled="true" aria-busy="true"/);
     expect(pending).toContain('data-shown="true">Saving…');
     const failed = render(manager, ready, { saves: { 'time-off': { pending: false, error: 'failed' } } });
     expect(failed).toMatch(/data-shown="true" class="pmp-save-error">.*Not saved. Try again./);
-    expect(failed).toContain('Time-off requests: Not saved. Try again.');
+    expect(render(manager, ready, { announcement: 'Time-off requests: Not saved. Try again.' })).toContain('role="status">Time-off requests: Not saved. Try again.');
     expect(failed).toContain('data-shown="false">When someone asks for time off');
   });
 

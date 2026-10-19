@@ -42,6 +42,8 @@ Contents: band "Profile"; card **Your details** (Name, Role, Company, Email, Pho
 | The employee and Lead Profile itself, My pay, the Notifications list page and the device alerts sheet | Other sessions own them. File only if this change broke them. |
 | What the server stores or sends after a save, and the real read | Joint testing with Codex |
 | Topic wording ("You’re told about" list) | Proposal awaiting Jose; flag only rule breaks (case, apostrophes, blame words) |
+| Shell pieces flagged by `checks.mjs`: sidebar group labels at 12px, the header "Search" label at 14px on 320–360, the compact brand link 136×38 in landscape, the header actions nudging 4px on hydration | Shared shell (`app-shell.tsx`, `portal-*.css`), owned by other sessions; reported to the coordinator. File only if this page makes them worse. |
+| A console 404 for `/api/management/profile` when no fixture is served | The route isn't built yet (CODEX.md); the page shows its failed-read state |
 | Dark mode | The app has none |
 | On-screen keyboard, Print / PDF | The page has no text fields and no Print |
 | Spanish | Phase 6 |
