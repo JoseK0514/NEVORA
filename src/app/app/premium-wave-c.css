@@ -130,7 +130,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 }
 /* A sticky save bar on long forms. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar { position: sticky; z-index: 3; flex-direction: row; flex-wrap: wrap; align-items: center; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .nv-btn { flex: 1 1 auto; box-shadow: var(--nv-e1); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .nv-btn { flex: 1 1 auto; width: auto; box-shadow: var(--nv-e1); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .nv-btn[data-kind="secondary"] { box-shadow: inset 0 0 0 1px var(--nv-border), var(--nv-e1); }
 
 @media (min-width: 600px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .nv-btn { flex: 0 0 auto; } }

@@ -51,7 +51,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     const fallback = addButton.current;
     element?.showModal();
     // A destructive confirm starts on Cancel; other dialogs start on their first field or action.
-    element?.querySelector<HTMLElement>('input[name="name"], [data-autofocus], button[type="submit"]')?.focus({ preventScroll: true });
+    (element?.querySelector<HTMLElement>('[data-autofocus]') ?? element?.querySelector<HTMLElement>('input[name="name"], button[type="submit"]'))?.focus({ preventScroll: true });
     const unlock = lockPageScroll();
     return () => {
       if (element?.open) element.close();

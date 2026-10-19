@@ -68,7 +68,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     const element = dialog.current;
     element?.showModal();
     // Destructive confirms (revoke, new code) start on Cancel.
-    element?.querySelector<HTMLElement>('input[name="name"], [data-autofocus], button[type="submit"]')?.focus({ preventScroll: true });
+    (element?.querySelector<HTMLElement>('[data-autofocus]') ?? element?.querySelector<HTMLElement>('input[name="name"], button[type="submit"]'))?.focus({ preventScroll: true });
     const unlock = lockPageScroll();
     return () => { unlock(); if (element?.open) element.close(); };
   }, [selection]);
