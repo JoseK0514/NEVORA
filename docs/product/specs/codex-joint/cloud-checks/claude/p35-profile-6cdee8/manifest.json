@@ -7,9 +7,7 @@
   "commit": "be4a232a1e6a26b58314ff549f88e5a8a79e82c6",
   "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
   "startedAt": "2026-10-19T17:52:56.808Z",
-  "status": "Running matrix",
+  "status": "Queued; exact source/runtime SHA will be checked before the first batch",
   "batches": [],
-  "runtimePid": 10759,
-  "url": "http://127.0.0.1:37881",
   "planned": 12580
 }
