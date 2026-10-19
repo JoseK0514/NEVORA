@@ -346,3 +346,12 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* AL4-17: a card holding one row is balanced top and bottom. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home .nv-card > .nv-rows:only-child { padding-block: var(--nv-s-1); }
 }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* The compact Request pages row: one line per link, no chevrons. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests .nv-row__chev { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests .nv-row__title { white-space: nowrap; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests > .nv-rows { grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr)); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests .nv-row { padding-inline: var(--nv-s-5) var(--nv-s-3); }
+  /* The location chips keep their words on one line while the row scrolls. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page .schedule-location-control .segmented > * { flex: none; white-space: nowrap; }
+}
