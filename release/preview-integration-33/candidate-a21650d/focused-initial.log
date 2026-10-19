@@ -1,0 +1,44 @@
+
+ RUN  v5.0.2 /workspace/NEVORA
+
+ ✓ src/components/kit/kit.test.tsx (16 tests) 267ms
+ ❯ src/components/coverage-assistant.test.tsx (8 tests | 1 failed) 183ms
+   ✓ preserves source order and each employee's review destination in native disclosures 65ms
+   ✓ keeps missing targets distinct from zero targets and exposes historical context 19ms
+   ✓ STALE never exposes retained candidate review links 9ms
+   ✓ RESOLVED never exposes retained candidate review links 2ms
+   ✓ CHOOSE never exposes retained candidate review links 10ms
+   ✓ keeps signed replacement review links and selected requirements intact 9ms
+   × labels overnight context and empty results without an assignment action 57ms
+   ✓ names the pending review without changing its destination 11ms
+ ✓ src/components/swap-shift-summary.test.tsx (3 tests) 21ms
+ ✓ src/components/configuration-form.test.tsx (2 tests) 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/coverage-assistant.test.tsx > labels overnight context and empty results without an assignment action
+AssertionError: expected '<div class="nv-page wa-page wa-covera…' to contain '· 8h'
+
+Expected: "· 8h"
+Received: "<div class="nv-page wa-page wa-coverage" data-nv-page=""><header class="nv-masthead nv-pageband" data-nv-band=""><svg class="nv-masthead__mark" viewBox="0 0 240 240" fill="none" aria-hidden="true" focusable="false"><path d="M24 216 120 30l96 186" stroke="currentColor" stroke-width="26" stroke-linejoin="miter"></path><path d="M120 120 154 186H86z" fill="currentColor"></path></svg><div class="nv-pageband__bar"><a href="/app/schedule?week=2026-10-12&amp;location=loc-1" class="nv-masthead__back"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"></path></svg>Schedule</a></div><div class="nv-masthead__body"><div class="nv-pageband__eyebrow-row"><p class="nv-masthead__eyebrow">Coverage</p></div><h1 class="nv-masthead__title">Cover this shift</h1><p class="nv-masthead__summary">Mon, Oct 12 · 10:00 PM – 6:00 AM.</p></div></header><div class="nv-content"><div class="wa-columns"><div class="wa-columns__side"><div class="wa-target" id="coverage-issue" tabindex="-1"><section class="nv-card" id="coverage-shift" aria-labelledby="coverage-shift-title"><div class="nv-card__head"><h2 class="nv-card__title" id="coverage-shift-title">Shift to cover</h2></div><dl class="wa-facts" aria-label="Shift to cover"><div class="wa-fact"><dt>Day</dt><dd>Mon, Oct 12</dd></div><div class="wa-fact"><dt>Time</dt><dd>10:00 PM – 6:00 AM<span class="wa-muted"> ·</span> <span class="wa-muted nv-keep">8h</span><span class="wa-fact__more">Ends Tue, Oct 13</span></dd></div><div class="wa-fact"><dt>Location</dt><dd>Main Office</dd></div></dl></section></div></div><div class="wa-columns__main"><section class="nv-card" id="coverage-people" aria-labelledby="coverage-people-title"><div class="nv-card__head"><h2 class="nv-card__title" id="coverage-people-title">Who can work it</h2><span class="nv-card__meta">0 people</span></div><details class="wa-disclosure wa-disclosure--intro" data-tone="neutral"><summary class="wa-disclosure__summary">How the order is chosen</summary><p class="wa-card-note">People who are qualified and available come first by confirmed weekly availability, then by how far they are under a weekly target, then by fewer scheduled hours. A rotating tie break keeps it fair. Earlier weeks under target are shown for context only. These are planned hours, not recorded time or pay.</p></details><div class="wa-card-body"><p class="wa-text wa-strong">No one can work it</p><p class="wa-text wa-muted">Everyone is unavailable, already working, on approved time off, inactive, or can’t work at this location.</p><a href="/app/schedule?week=2026-10-12&amp;location=loc-1" class="nv-btn" data-kind="secondary" data-block="true">Back to schedule</a></div></section></div></div></div></div>"
+
+ ❯ src/components/coverage-assistant.test.tsx:56:60
+     54|   // Dates and times are kept whole with no-break spaces; compare the …
+     55|   const html = render({ startTime: "22:00", endTime: "06:00", candidat…
+     56|   expect(html).toContain("Ends Tue, Oct 13"); expect(html).toContain("…
+       |                                                            ^
+     57|   expect(html).toContain("0 people"); expect(html).not.toContain("/app…
+     58|   expect(html).toContain(props.backHref.replaceAll("&", "&amp;"));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 28 passed (29)
+   Start at  23:36:51
+   Duration  6.84s (transform 48%, import 38%, tests 11%, worker 3%)
+
+  Transform  transforming modules took 2.20s · 48% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+

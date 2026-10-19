@@ -1,0 +1,17 @@
+
+ RUN  v5.0.2 /workspace/NEVORA
+
+ ✓ src/components/coverage-assistant.test.tsx (8 tests) 348ms
+ ✓ src/components/kit/kit.test.tsx (16 tests) 248ms
+ ✓ src/components/swap-shift-summary.test.tsx (3 tests) 28ms
+ ✓ src/components/configuration-form.test.tsx (2 tests) 10ms
+
+ Test Files  4 passed (4)
+      Tests  29 passed (29)
+   Start at  23:37:05
+   Duration  9.08s (transform 70%, import 20%, tests 9%, worker 1%)
+
+  Transform  transforming modules took 4.98s · 70% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
