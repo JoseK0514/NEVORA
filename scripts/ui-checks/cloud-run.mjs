@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {createWriteStream} from 'node:fs';
 import {readFile,writeFile,readdir,mkdir,copyFile,access,rename} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
+import {startPreview,previewReady,logOffset,liveProcess} from './cloud-preview-process.mjs';
 
 const repo=resolve(process.env.NEVORA_REPORT_ROOT),tools=resolve(process.env.NEVORA_TOOLS_ROOT);
 const evidence=join(repo,'docs/product/specs/codex-joint/cloud-checks');
@@ -134,7 +135,7 @@ async function batch(meta,job,width,browser,pass,text='100,125,150,200',routes=j
 }
 async function work(branch,index) {
   const large=branch==='premium-phase-1-large';
-  const keyName=branch,branchName='claude/'+(large?'premium-phase-1':branch),source='/workspace/nevora-sources/'+(large?'premium-phase-1':branch),out='/workspace/nevora-previews/'+branch;
+  const keyName=branch,branchName='claude/'+(large?'premium-phase-1':branch),source='/workspace/nevora-sources/'+branch,out='/workspace/nevora-previews/'+branch;
   const prior=await exists(join(stateRoot,keyName+'.json'))?JSON.parse(await readFile(join(stateRoot,keyName+'.json'),'utf8')):null;
   const meta=prior??{key:keyName,branch:branchName,source,out,large,commit:git('rev-parse','origin/'+branchName),toolsCommit:git('-C',tools,'rev-parse','HEAD'),startedAt:new Date().toISOString(),status:'Starting preview',batches:[]};
   metas.set(keyName,meta);await save(meta);
@@ -144,7 +145,7 @@ async function work(branch,index) {
   try{
     git('fetch','origin',branchName);
     const requestedCommit=git('rev-parse','origin/'+branchName);
-    if(!await exists(join(out,'route-inventory.json')))meta.commit=requestedCommit;
+    if(!await exists(join(out,'route-inventory.json'))&&!meta.batches.length)meta.commit=requestedCommit;
     else meta.latestPushedCommit=requestedCommit;
     if(!await exists(source)){git('worktree','add','--detach',source,meta.commit);execFileSync('cp',['-al',join(tools,'node_modules'),join(source,'node_modules')]);}
     else if(!await exists(join(out,'route-inventory.json'))&&git('-C',source,'rev-parse','HEAD')!==meta.commit){
@@ -153,17 +154,18 @@ async function work(branch,index) {
     }
     if(!await exists(join(out,'route-inventory.json'))){
       {
-        const log=join(stateRoot,keyName+'-runtime.log');let readyResolve,readyReject;
-        const ready=new Promise((r,j)=>{readyResolve=r;readyReject=j;});
-        const running=run(join(tools,'scripts/ui-checks/preview-runtime.mjs'),[],{tsx:true,log,env:{PREVIEW_OUT:out,PREVIEW_SOURCE:source},onChild:child=>{runtime=child;meta.runtimePid=child.pid;},onOutput:chunk=>{const match=/PREVIEW_READY (http:\/\/127\.0\.0\.1:\d+)/.exec(chunk);if(match)readyResolve(match[1]);}});
-        running.then(result=>readyReject(Error('Preview stopped before readiness, exit '+result.code+'; '+log))).catch(readyReject);
-        const timeout=setTimeout(()=>readyReject(Error('Preview bootstrap exceeded 5 minutes; '+log)),300000);meta.url=await ready;clearTimeout(timeout);
+        const log=join(stateRoot,keyName+'-runtime.log'),offset=await logOffset(log);
+        runtime=startPreview({script:join(tools,'scripts/ui-checks/preview-runtime.mjs'),args:['--import',join(tools,'node_modules/tsx/dist/loader.mjs')],cwd:tools,env:{...env,PREVIEW_OUT:out,PREVIEW_SOURCE:source},log});
+        meta.runtimePid=runtime.pid;await save(meta);
+        meta.url=await previewReady(runtime,log,offset);
         const seed=await run(join(tools,'scripts/ui-checks/seed-extra.mts'),large?['--large']:[],{tsx:true,log:join(stateRoot,keyName+'-seed.log'),env:{PREVIEW_OUT:out}});if(seed.code)throw Error('seed-extra failed');
         const login=await run(join(tools,'scripts/ui-checks/login.mjs'),['AUDIT-E','AUDIT-LEAD','AUDIT-ON','AUDIT-BREAK','AUDIT-LONG','payroll-qa-a','payroll-qa-b','AUDIT-M','QAOWNER'],{guard:true,log:join(stateRoot,keyName+'-login.log'),env:{PREVIEW_OUT:out,NEVORA_CHECK_ORIGIN:meta.url}});if(login.code)throw Error('Login script failed');
       }
       const inventory=await run(join(repo,'scripts/ui-checks/cloud-inventory.mjs'),[],{tsx:true,log:join(stateRoot,keyName+'-inventory.log'),env:{PREVIEW_OUT:out,PREVIEW_SOURCE:source}});if(inventory.code)throw Error('Route inventory/fixture setup failed');
     }
     if(!meta.url){const ev=(await readdir(out)).filter(n=>n.startsWith('evidence-')).sort().at(-1);meta.url=JSON.parse(await readFile(join(out,ev,'runtime.json'),'utf8')).url;}
+    if(!liveProcess(meta.runtimePid))throw Error('Preview owner is no longer running; retained raw evidence needs a fresh, explicitly identified preview round');
+    const health=await fetch(meta.url+'/login',{signal:AbortSignal.timeout(5000)});if(health.status!==200)throw Error('Preview health check failed');await health.arrayBuffer();
     const ev=(await readdir(out)).filter(n=>n.startsWith('evidence-')).sort().at(-1);
     const runtimeIdentity=JSON.parse(await readFile(join(out,ev,'runtime.json'),'utf8'));
     if(runtimeIdentity.checkpoint!==meta.commit||git('-C',source,'rev-parse','HEAD')!==meta.commit)throw Error('Source SHA differs from runtime checkpoint; no matrix evidence may be attributed to this SHA');
