@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T19:20:01.863Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T19:20:23.483Z. premium-phase-1 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,7 +22,7 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 441 | 535 | 976 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 441 | 551 | 992 / 12580 |
 | claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 622 | 370 | 992 / 12716 |
 | claude/p35-wave-a-1283c8 | `157e25f7dab7a21542f54722746b237dc7b52afc` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 441 passed; 535 failed. Completed checker batches: 70. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 441 passed; 551 failed. Completed checker batches: 71. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -666,6 +666,22 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 441 passed; 
 | /app/my-pay | AUDIT-ON | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 200% /app/my-pay small=small. «Powered by VELANI LLC» 10px |
 | /app/my-time | AUDIT-ON | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 200% /app/my-time small=small. «Powered by VELANI LLC» 10px; p.employee-time-note «Use your location’s Clocker to» 13px; span. «Updated Oct 19, 3:19 PM» 12px; time. «Oct 19, 3:19 PM» 12px |
 | /app/notifications | AUDIT-ON | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 200% /app/notifications small=small. «Powered by VELANI LLC» 10px |
+| /app/profile | AUDIT-ON | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 100% /app/profile small=small. «Powered by VELANI LLC» 10px; p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px; small. «Updates about your schedule an» 13px; p.profile-setting-note «Alerts on this device aren’t t» 13px |
+| /app/requests | AUDIT-ON | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 100% /app/requests small=small. «Powered by VELANI LLC» 10px; p. «Your dates will appear here.» 13px; strong. «Manager review comes next» 12px; span. «Track the decision in My reque» 12px |
+| /app/requests/hub | AUDIT-ON | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 100% /app/requests/hub small=small. «Powered by VELANI LLC» 10px |
+| /app/schedule | AUDIT-ON | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 100% /app/schedule small=small. «Powered by VELANI LLC» 10px; p. «2026 · Puerto Rico time» 13px; small. «Today» 12px; a.my-schedule-link «Request a swap» 13px |
+| /app/profile | AUDIT-ON | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 125% /app/profile small=small. «Powered by VELANI LLC» 10px; p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px; small. «Updates about your schedule an» 13px; p.profile-setting-note «Alerts on this device aren’t t» 13px |
+| /app/requests | AUDIT-ON | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 125% /app/requests small=small. «Powered by VELANI LLC» 10px; p. «Your dates will appear here.» 13px; strong. «Manager review comes next» 12px; span. «Track the decision in My reque» 12px |
+| /app/requests/hub | AUDIT-ON | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 125% /app/requests/hub small=small. «Powered by VELANI LLC» 10px |
+| /app/schedule | AUDIT-ON | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 125% /app/schedule small=small. «Powered by VELANI LLC» 10px; p. «2026 · Puerto Rico time» 13px; small. «Today» 12px; a.my-schedule-link «Request a swap» 13px |
+| /app/profile | AUDIT-ON | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 150% /app/profile small=small. «Powered by VELANI LLC» 10px; p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px; small. «Updates about your schedule an» 13px; p.profile-setting-note «Alerts on this device aren’t t» 13px |
+| /app/requests | AUDIT-ON | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 150% /app/requests small=small. «Powered by VELANI LLC» 10px; p. «Your dates will appear here.» 13px; strong. «Manager review comes next» 12px; span. «Track the decision in My reque» 12px |
+| /app/requests/hub | AUDIT-ON | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 150% /app/requests/hub small=small. «Powered by VELANI LLC» 10px |
+| /app/schedule | AUDIT-ON | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 150% /app/schedule small=small. «Powered by VELANI LLC» 10px; p. «2026 · Puerto Rico time» 13px; small. «Today» 12px; a.my-schedule-link «Request a swap» 13px |
+| /app/profile | AUDIT-ON | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 200% /app/profile small=small. «Powered by VELANI LLC» 10px; p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px; small. «Updates about your schedule an» 13px; p.profile-setting-note «Alerts on this device aren’t t» 13px |
+| /app/requests | AUDIT-ON | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 200% /app/requests small=small. «Powered by VELANI LLC» 10px; p. «Your dates will appear here.» 13px; strong. «Manager review comes next» 12px; span. «Track the decision in My reque» 12px |
+| /app/requests/hub | AUDIT-ON | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 200% /app/requests/hub small=small. «Powered by VELANI LLC» 10px |
+| /app/schedule | AUDIT-ON | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-ON 1440 200% /app/schedule small=small. «Powered by VELANI LLC» 10px; p. «2026 · Puerto Rico time» 13px; small. «Today» 12px; a.my-schedule-link «Request a swap» 13px |
 
 ### Timeout and server observations (separate from UI findings)
 

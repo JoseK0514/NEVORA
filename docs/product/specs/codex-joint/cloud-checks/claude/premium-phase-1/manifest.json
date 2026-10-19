@@ -1617,6 +1617,29 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00071-matrix-AUDIT-ON-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T19-20-23-459Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00071-matrix-AUDIT-ON-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app/profile,/app/requests,/app/requests/hub,/app/schedule",
+        "--accounts",
+        "AUDIT-ON",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "72ea4dfc1a1366f03aef3e5bd51f31c031100e1a5940945ac0dd79ead26fc8c1",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12580,

@@ -7250,5 +7250,47 @@
   "page": "/app/inbox",
   "path": "/api/manager/action-center",
   "status": 503
+ },
+ {
+  "at": "2026-10-19T19:20:02.444Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:07.680Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:13.983Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:17.564Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:17.980Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:20:21.697Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
  }
 ]
