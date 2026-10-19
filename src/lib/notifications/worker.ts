@@ -21,14 +21,14 @@ export type WorkerDeps = ReminderDeps & {
 };
 export type WorkerCommand = 'dispatch' | 'reminders';
 const emptyReport = (): WorkerReport => ({ claimed: 0, accepted: 0, retried: 0, failed: 0, expired: 0, cancelled: 0, noSubscription: 0, disabled: false });
-export function createWorkerDeps(config: NotificationConfig, clock: () => Date = () => new Date()): WorkerDeps {
+export function createWorkerDeps(config: NotificationConfig, clock: () => Date = () => new Date(),localContext?:import('../dev/local-only').LocalCaptureContext): WorkerDeps {
     const raw = neonNotificationExecutor();
     const bind = (signal?: AbortSignal): WorkerDeps => {
         const executor: SqlExecutor = {
             query: (statement, callerSignal) => raw.query(statement, signal && callerSignal ? AbortSignal.any([signal, callerSignal]) : signal ?? callerSignal),
             transaction: (statements, callerSignal) => raw.transaction(statements, signal && callerSignal ? AbortSignal.any([signal, callerSignal]) : signal ?? callerSignal),
         };
-        return { config, clock, executor, state: sqlNotificationStateRepository(executor,config.workspace), deliveries: sqlDeliveryRepository(config.environment, executor), subscriptions: sqlSubscriptionRepository(executor), sender: createPushSender(config), withSignal: bind };
+        return { config, clock, executor, state: sqlNotificationStateRepository(executor,config.workspace), deliveries: sqlDeliveryRepository(config.environment, executor), subscriptions: sqlSubscriptionRepository(executor), sender: createPushSender(config,undefined,localContext), withSignal: bind };
     };
     return bind();
 }

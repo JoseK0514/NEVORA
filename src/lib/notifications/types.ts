@@ -54,6 +54,8 @@ export type NotificationPolicy = {
 };
 export type PushRuntimeConfig = Omit<NotificationConfig, 'policy'>;
 export type NotificationConfig = {
+  /** Development-only transport binding, never a credential or browser field. */
+  localCapture?:{directory:string;origin:string};
   workspace?: import('../domain').Workspace;
   featureEnabled: boolean; deliveryEnabled: boolean; testDeliveryEnabled: boolean;
   testAccountIds: readonly string[]; environment: PushEnvironment; portalOrigin: string; policy: NotificationPolicy;

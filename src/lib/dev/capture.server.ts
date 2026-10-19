@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer';
 import type {RecoveryDelivery} from '../auth/recovery.server';
 import type {PushSender} from '../notifications/provider';
 import type {PushRuntimeConfig} from '../notifications/types';
-import {localDevEnabled,loopbackOrigin} from './local-only';
+import {localDevEnabled,loopbackOrigin,localRequest,type LocalCaptureContext} from './local-only';
 
 function captureDirectory(env:Record<string,string|undefined>):string|null|undefined {
   if(!localDevEnabled(env,'NEVORA_DEV_CAPTURE_DELIVERY'))return undefined;
@@ -18,7 +18,7 @@ function captureDirectory(env:Record<string,string|undefined>):string|null|undef
 export function captureNotificationRuntime(config:PushRuntimeConfig,env:Record<string,string|undefined>):PushRuntimeConfig {
   const directory=captureDirectory(env);
   return directory&&config.environment==='test'&&config.featureEnabled&&config.testAccountIds.length
-    ?{...config,deliveryEnabled:true,testDeliveryEnabled:true}:config;
+    ?{...config,deliveryEnabled:true,testDeliveryEnabled:true,localCapture:{directory,origin:env.FUEL_PORTAL_ORIGIN!}}:config;
 }
 async function record(directory:string,kind:'email'|'push',extension:string,value:Buffer|string) {
   const folder=join(directory,kind);
@@ -27,9 +27,10 @@ async function record(directory:string,kind:'email'|'push',extension:string,valu
 }
 /** undefined means capture was not requested; null is an invalid requested mode.
  * Requested capture fails closed and never falls through to SMTP. */
-export function devRecoveryDelivery(env:Record<string,string|undefined>):RecoveryDelivery|null|undefined {
+export function devRecoveryDelivery(env:Record<string,string|undefined>,headers?:Pick<Headers,'get'>):RecoveryDelivery|null|undefined {
   const directory=captureDirectory(env);
   if(directory===undefined||directory===null)return directory;
+  if(!headers||!localRequest(headers))return null;
   const origin=new URL(env.FUEL_PORTAL_ORIGIN!).origin;
   const transport=nodemailer.createTransport({streamTransport:true,buffer:true,newline:'unix',disableFileAccess:true,disableUrlAccess:true});
   return {async send(email,proof){
@@ -40,10 +41,12 @@ export function devRecoveryDelivery(env:Record<string,string|undefined>):Recover
     await record(directory,'email','.eml',message.message);
   }};
 }
-export async function capturePush(input:Parameters<PushSender['send']>[0],env:Record<string,string|undefined>=process.env):Promise<Awaited<ReturnType<PushSender['send']>>|undefined> {
-  const directory=captureDirectory(env);
-  if(directory===undefined)return undefined;
-  if(directory===null)return {kind:'failed',errorClass:'local_capture_configuration'};
+export async function capturePush(input:Parameters<PushSender['send']>[0],config:Pick<PushRuntimeConfig,'localCapture'>,context?:LocalCaptureContext):Promise<Awaited<ReturnType<PushSender['send']>>|undefined> {
+  if(process.env.NODE_ENV==='production')return undefined;
+  const binding=config.localCapture;
+  if(!binding)return localDevEnabled(process.env,'NEVORA_DEV_CAPTURE_DELIVERY')?{kind:'failed',errorClass:'local_capture_configuration'}:undefined;
+  const {directory,origin}=binding;
+  if(!isAbsolute(directory)||!loopbackOrigin(origin)||!context||(context.kind==='request'&&!localRequest(context.headers)))return {kind:'failed',errorClass:'local_capture_configuration'};
   if(input.signal.aborted)return {kind:'retry',errorClass:'transport_timeout'};
   try {
     // Capture the display payload and delivery options, never subscription keys,

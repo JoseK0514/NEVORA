@@ -3,9 +3,9 @@ import nodemailer from 'nodemailer';
 import type {RecoveryDelivery} from './recovery.server';
 const developmentCapture=process.env.NODE_ENV!=='production'?await import('../dev/capture.server'):null;
 /** Explicit existing SMTP account configuration; no vendor preset or activation. */
-export function recoveryDelivery(env:Record<string,string|undefined>=process.env):RecoveryDelivery|null{
+export function recoveryDelivery(env:Record<string,string|undefined>=process.env,requestHeaders?:Pick<Headers,'get'>):RecoveryDelivery|null{
  if(process.env.NODE_ENV!=='production'&&developmentCapture){
-  const captured=developmentCapture.devRecoveryDelivery(env);if(captured!==undefined)return captured;
+  const captured=developmentCapture.devRecoveryDelivery(env,requestHeaders);if(captured!==undefined)return captured;
  }
  try{
   const host=env.NEVORA_RECOVERY_SMTP_HOST?.trim(),port=Number(env.NEVORA_RECOVERY_SMTP_PORT??465),from=env.NEVORA_RECOVERY_FROM?.trim(),origin=new URL(env.FUEL_PORTAL_ORIGIN??'');

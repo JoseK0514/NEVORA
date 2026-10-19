@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const config = readNotificationConfig(process.env);
   const headers = { 'Cache-Control': 'no-store' };
   if (!authorizeWorker(request, config.workerSecret)) return Response.json({ error: 'unauthorized' }, { status: 401, headers });
-  try { return Response.json(await runWorker('dispatch', createWorkerDeps(await loadWorkspaceNotificationConfig(process.env))), { headers }); }
+  try { return Response.json(await runWorker('dispatch', createWorkerDeps(await loadWorkspaceNotificationConfig(process.env),undefined,{kind:'request',headers:request.headers})), { headers }); }
   catch { return Response.json({ error: 'worker_unavailable' }, { status: 503, headers }); }
 }
 export const POST = GET;

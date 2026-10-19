@@ -3,6 +3,7 @@ import type { ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'node:h
 import webPush from 'web-push';
 import { validatePushEndpoint, type ValidatedSubscription } from './subscription-service';
 import type { NotificationConfig, ProviderResult, PushEnvelope } from './types';
+import type {LocalCaptureContext} from '../dev/local-only';
 const developmentCapture=process.env.NODE_ENV!=='production'?await import('../dev/capture.server'):null;
 export type PushSender = {
     send(input: {
@@ -103,10 +104,10 @@ function resultFor(response: TransportResponse): ProviderResult {
 }
 /** Maintained encryption/VAPID request generation; credentials/options are per call.
  * Optional transport is the test boundary: tests never contact a push provider. */
-export function createPushSender(config: NotificationConfig, transport: PushTransport = nodeHttpsTransport): PushSender {
+export function createPushSender(config: NotificationConfig, transport: PushTransport = nodeHttpsTransport,localContext?:LocalCaptureContext): PushSender {
     return { async send(input) {
             if(process.env.NODE_ENV!=='production'&&developmentCapture){
-                const captured=await developmentCapture.capturePush(input);
+                const captured=await developmentCapture.capturePush(input,config,localContext);
                 if(captured!==undefined)return captured;
             }
             if (input.signal.aborted)
