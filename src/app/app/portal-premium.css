@@ -1417,3 +1417,28 @@ html body .app-shell.nevora-portal.nevora-portal .mobile-nav .mobile-nav-link .m
 /* Kit buttons are never faded when disabled: the kit's disabled look (no brand fill, muted label) carries it.
  * portal-gusto's blanket 55% opacity made them 2.2:1 (Wave C, Oct 19). */
 html body .app-shell.nevora-portal.nevora-portal .page-frame :is(.nv-btn, .nv-band-control):is(:disabled, [aria-disabled="true"]):not(#nv-kit) { opacity: 1; }
+/* TC-P3-18: toasts and page messages read at the kit's 15px roles on phones, landscape included (they were 12–14px).
+ * TC-P3-29: Availability's context lines use a kit role, so they grow with text size. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html:root body .nevora-toast,
+  html:root body .app-shell.nevora-portal .page-frame .form-success[role="status"]:not(form *):not([popover] *):not(dialog *) { font: var(--nv-t-label); }
+  html:root body .app-shell.nevora-portal .page-frame :is(.nto-page, .employee-timeoff-view, .employee-availability-view, .availability-page) :is(.form-error, .form-warning, .form-success:not([role="status"])),
+  html:root body .app-shell.nevora-portal .availability-page .av-feedback { font: var(--nv-t-callout); }
+  html:root body .app-shell.nevora-portal .availability-page :is(.av-week-context p, .av-week-context span:not(.av-icon-tile), .av-upcoming-banner :is(p, span), .av-deadline :is(p, span), .av-submission-detail :is(p, small)) { font: var(--nv-t-callout); }
+  html:root body .app-shell.nevora-portal .availability-page :is(.av-deadline strong, .av-submission-detail strong) { font: var(--nv-t-label); font-weight: 600; }
+}
+/* ST-04 for the redirect toast too: in landscape it sits at the top, clear of the tab bar. */
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html:root body .app-shell.nevora-portal .page-frame .form-success[role="status"]:not(form *):not([popover] *):not(dialog *) { top: calc(76px + env(safe-area-inset-top, 0px)); bottom: auto; }
+}
+/* TC-P3-28: employee section titles and text actions on kit roles, one role per level (the legacy page h2 at 550 and
+ * the 17/25.5 link set still reached them). Section titles 19/25/600, sub-sections 17/22/600, text actions 15/20/500. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html:root body .app-shell.nevora-portal .page-frame [data-nv-page] :is(.employee-time-current-heading, .employee-time-section-heading, .profile-section-heading) h2:not(#nv-kit),
+  html:root body .app-shell.nevora-portal .page-frame .premium-employee-home[data-nv-page] :is(section, header, nav) > h2:not(#nv-kit) { font: var(--nv-t-title-3); letter-spacing: normal; }
+  html:root body .app-shell.nevora-portal .page-frame .premium-employee-home[data-nv-page] section > h3:not(#nv-kit),
+  html:root body .app-shell.nevora-portal .page-frame [data-nv-page] :is(.nto-summary > h3, .updates-empty > h2):not(#nv-kit) { font: var(--nv-t-headline); letter-spacing: normal; }
+  html:root body .app-shell.nevora-portal .page-frame [data-nv-page] .employee-clock-compact :is(.employee-time-link, .employee-time-refresh:not(.nv-btn)):not(#nv-kit) { font: var(--nv-t-label); }
+}
+/* TC-P3-30: Home's row titles are never cut at large text, as on the Inbox (TC-07). */
+html body .app-shell.nevora-portal .page-frame .premium-home-view .nv-row__title:not(#nv-kit) { -webkit-line-clamp: unset; display: block; }

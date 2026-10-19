@@ -16,20 +16,20 @@ export function TimeOffWithdrawal({requestId,dateLabel}:{requestId:string;dateLa
  },{outcome:'idle'} as WithdrawalActionState);
  useEffect(()=>{if(state.outcome==='withdrawn'||state.outcome==='conflict')router.refresh();},[state.outcome,router]);
  const complete=state.outcome==='withdrawn'||state.outcome==='conflict'||state.outcome==='denied';
- return <form action={action} aria-label={`Withdraw pending request for ${dateLabel}`} aria-busy={pending}>
+ return <form action={action} aria-label={`Withdraw request for ${dateLabel}`} aria-busy={pending}>
   <input type="hidden" name="requestId" value={requestId}/>
   <input type="hidden" name="operationId" value={withdrawalIdentity(requestId)}/>
   {!complete?<>
-   <label><input type="checkbox" name="confirmed" value="yes" required disabled={pending}/> I confirm withdrawal of this pending request.</label>
-   <EmployeeSubmitButton className="button secondary" pendingText="Withdrawing…">{state.outcome==='unavailable'?'Retry same withdrawal':'Withdraw pending request'}</EmployeeSubmitButton>
+   <label><input type="checkbox" name="confirmed" value="yes" required disabled={pending}/> Yes, withdraw this request</label>
+   <EmployeeSubmitButton className="button secondary" pendingText="Withdrawing…">{state.outcome==='unavailable'?'Try again':'Withdraw request'}</EmployeeSubmitButton>
   </>:null}
   <p role="status" aria-live="polite">
-   {pending?'Checking current request and permission…':
-    state.outcome==='withdrawn'?'Your request was withdrawn. History is refreshing.':
-    state.outcome==='conflict'?'This request is no longer pending or available to you. History is refreshing.':
-    state.outcome==='unavailable'?'The outcome could not be confirmed. Retry the same withdrawal to check its original result.':
-    state.outcome==='denied'?'Your permission is no longer current. Sign in again before checking request history.':
-    state.outcome==='invalid'?'Confirm this pending request before withdrawing.':null}
+   {pending?'Withdrawing…':
+    state.outcome==='withdrawn'?'Your request was withdrawn. Your list is updating.':
+    state.outcome==='conflict'?'This request can no longer be withdrawn. Your list is updating.':
+    state.outcome==='unavailable'?'We couldn’t confirm the withdrawal. Try again. It won’t withdraw twice.':
+    state.outcome==='denied'?'Your session ended. Sign in again to see your requests.':
+    state.outcome==='invalid'?'Check the box to confirm, then withdraw.':null}
   </p>
  </form>;
 }

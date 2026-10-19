@@ -1,5 +1,6 @@
 'use client';
 
+import {keepWhole} from '@/lib/keep-whole';
 import {PageBand} from './kit/kit';
 import {KeepSelectedVisible} from './kit/keep-selected-visible';
 import Link from 'next/link';
@@ -51,14 +52,14 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
     <fieldset className="updates-filters" disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
     <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : 'Refresh updates'}</span></button>
    </div>
-   {current?.state === 'partial' ? <p className="updates-partial" role="status"><NavIcon name="alert" />Some updates are unavailable or outside this view. Refresh to check current information.</p> : null}
-   {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : unavailableReason === 'access_denied' ? 'Sign in again to view updates' : unavailableReason ? 'Updates unavailable' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : unavailableReason === 'access_denied' ? 'Your session needs to be checked before updates can be shown.' : unavailableReason ? 'Refresh to check current information.' : 'Checking for current workplace updates.'}</p></div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
-    <h2>{date}</h2><ul className="updates-list">{rows.map(item => {
+   {current?.state === 'partial' ? <p className="updates-partial" role="status"><NavIcon name="alert" />Some updates couldn’t load. Try again to check for the rest.</p> : null}
+   {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : unavailableReason === 'access_denied' ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : unavailableReason === 'access_denied' ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.'}</p></div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
+    <h2>{keepWhole(date)}</h2><ul className="updates-list">{rows.map(item => {
      const reviewed = isReviewed(item);
      const status = mode === 'manager' ? item.acknowledgement === 'REQUIRED' ? 'Acknowledgement required' : 'Optional update' : item.ownAcknowledgedAt ? 'Acknowledged' : item.acknowledgement === 'REQUIRED' ? 'Review needed' : item.ownReadAt ? 'Read' : 'Not read';
      return <li key={item.id}><Link className={`updates-row${reviewed ? ' is-reviewed' : ''}`} href={'/app/updates/' + item.id} prefetch={false}>
       <UpdateKind type={item.type} iconOnly />
-      <div className="updates-row-copy"><div className="updates-row-meta"><UpdateKind type={item.type} /><span className={`updates-status${reviewed ? ' is-reviewed' : ''}`}>{reviewed ? <CheckCircleIcon size={14} aria-hidden="true" /> : <span className="updates-status-dot" aria-hidden="true" />}{status}</span></div><h3>{item.title}</h3><p className="updates-preview">{item.body}</p><time dateTime={item.publishedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt))}</time></div>
+      <div className="updates-row-copy"><div className="updates-row-meta"><UpdateKind type={item.type} /><span className={`updates-status${reviewed ? ' is-reviewed' : ''}`}>{reviewed ? <CheckCircleIcon size={14} aria-hidden="true" /> : <span className="updates-status-dot" aria-hidden="true" />}{status}</span></div><h3>{item.title}</h3><p className="updates-preview">{item.body}</p><time dateTime={item.publishedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt)))}</time></div>
       <span className="updates-row-action"><span>Review update</span><NavIcon name="arrowRight" /></span>
      </Link></li>;
     })}</ul>

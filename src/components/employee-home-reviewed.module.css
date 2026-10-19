@@ -203,7 +203,8 @@
 }
 /* 94% white: 4.5:1 or more at the gradient's lightest corner (82% measured 4.44:1; J1). */
 .root.root.root .assignment[data-pass] .assignmentHeader h2 { color: rgb(255 255 255 / .94); }
-.assignment[data-pass] .published { color: #ffffff; background: rgb(255 255 255 / .16); }
+/* TC-P3-21: a dark tint under the white label keeps it 4.5:1 or more over the glow (the 16% white fill measured 4.06:1). */
+.assignment[data-pass] .published { color: #ffffff; background: rgb(0 0 0 / .18); }
 .assignment[data-pass] .published::before { background: #ffffff; }
 .assignment[data-pass] :is(.assignmentDate, .position, .zone, .currentNote, .notice, .intervalDash) { color: rgb(255 255 255 / .94); }
 .assignment[data-pass] .assignmentDate strong { color: #ffffff; font-weight: 600; }

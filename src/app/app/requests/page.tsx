@@ -1,3 +1,4 @@
+import { keepWhole } from "@/lib/keep-whole";
 import { TimeOffWithdrawal } from "@/components/time-off-withdrawal";
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import { randomUUID } from "node:crypto";
@@ -91,18 +92,18 @@ export default async function RequestsPage({
             {mine.map((request) => (
               <li className="premium-timeoff-row" id={`request-${request.id}`} tabIndex={-1} data-employee-status={request.status} key={request.id}>
                 <div className="premium-timeoff-row__head">
-                  <span className="nv-row__title">{request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`}</span>
+                  <span className="nv-row__title">{keepWhole(request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`)}</span>
                   <Status tone={request.status === "APPROVED" ? "done" : request.status === "PENDING" ? "review" : "neutral"}>
                     {request.status === "DENIED" ? "Declined" : request.status === "CANCELLED" ? "Withdrawn" : request.status === "PENDING" ? "Waiting" : statusLabel(request.status)}
                   </Status>
                 </div>
-                <span className="nv-row__meta">{request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)}\u00a0– ${formatTime(request.endTime)}` : "Full day"}</span>
+                <span className="nv-row__meta">{request.startTime && request.endTime ? keepWhole(`Partial day · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}`) : "Full day"}</span>
                 {request.reason ? <span className="nv-row__meta premium-timeoff-note">Note: {request.reason}</span> : null}
                 {/* Request timeline: when it was sent, then who decided it and when (Jose, 2026-10-19). */}
                 <ol className="premium-timeline" aria-label="Request timeline">
-                  <li data-done="true">Sent {sentOn(request.createdAt)}</li>
-                  <li data-done={request.status !== "PENDING" ? "true" : undefined}>{request.status === "PENDING" ? "Waiting for your manager"
-                    : `${request.status === "APPROVED" ? "Approved" : request.status === "DENIED" ? "Declined" : "Withdrawn"}${request.reviewerName && request.status !== "CANCELLED" ? ` by ${request.reviewerName}` : ""}${request.reviewedAt ? ` · ${sentOn(request.reviewedAt)}` : ""}`}</li>
+                  <li data-done="true">{keepWhole(`Sent ${sentOn(request.createdAt)}`)}</li>
+                  <li data-done={request.status !== "PENDING" ? "true" : undefined}>{request.status === "PENDING" ? "Waiting for approval"
+                    : keepWhole(`${request.status === "APPROVED" ? "Approved" : request.status === "DENIED" ? "Declined" : "Withdrawn"}${request.reviewerName && request.status !== "CANCELLED" ? ` by ${request.reviewerName}` : ""}${request.reviewedAt ? ` · ${sentOn(request.reviewedAt)}` : ""}`)}</li>
                 </ol>
                 {request.employeeId === session.id && request.status === "PENDING" ? <details className="nto-withdrawal"><summary>Withdraw this request <NavIcon name="chevronRight" size={16} /></summary><TimeOffWithdrawal requestId={request.id} dateLabel={request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`} /></details> : null}
               </li>
