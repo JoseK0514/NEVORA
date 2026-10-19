@@ -1,0 +1,110 @@
+{
+  "candidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "branch": "codex/release-candidate",
+  "published": true,
+  "base": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "repairsCheckpoint": "081595204b219868fb1cd2899af84a16a21193e7",
+  "srcTreeAtRepairsCheckpoint": "5451dde42619a1d6c0af2e72ca0f931fd680bb24",
+  "srcTreeAtCandidate": "5451dde42619a1d6c0af2e72ca0f931fd680bb24",
+  "rollingCIInput": "c8752f2bab60f1a85da5d408dfc8537cebc50007",
+  "savedOldCandidate": "codex/paused-followups-14c9ccc",
+  "savedOldCandidateSha": "14c9cccac9c2171f206046e6f2be8397c8c922ce",
+  "immutable33": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "sourceCleanAtPreparation": true,
+  "changedFilesFrom15": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "240a407c5609b9020f43842a775317149829f4b3155ba5e69a1dc82df316408d"
+    },
+    {
+      "path": "docs/product/specs/p35-wave-b/ROUND.md",
+      "sha256": "3b58bd05fdcadbe4916f83e97c0f4d268d68f75f44fc8014a469a8f9bc7f2836"
+    },
+    {
+      "path": "scripts/phase-d-attendance-ui-qa.mjs",
+      "sha256": "1ffccfaa2cbfff375a65c8e61f949b0f2600d6e33112527b4e619085b1efcb2d"
+    },
+    {
+      "path": "scripts/phase-e-home-browser-scenarios.mjs",
+      "sha256": "392f70e00577d55f43990dbcd06dce1c11c81eb5cdb269d85612e3c0474e41b8"
+    },
+    {
+      "path": "src/app/app/schedule/new/page.tsx",
+      "sha256": "317bba6436b474aea5c68ed1d63b001c4a76996035f36acc734d08a8cec5e7ca"
+    },
+    {
+      "path": "src/components/coverage-assistant.test.tsx",
+      "sha256": "65d3806e9e52dfa62325ea67e0fb4052c9762f9ab887f7ae272b1dea53a1c8ed"
+    },
+    {
+      "path": "src/components/coverage-assistant.tsx",
+      "sha256": "e77349d6f976a467e1363df2dae433f5419d98f05e59956c27e7f629fe9f5b4f"
+    },
+    {
+      "path": "src/components/create-shift-form.tsx",
+      "sha256": "c00e0eb877379ede200b1526dd247279ab11e737fd211b0c62ef8ffc01e12a24"
+    },
+    {
+      "path": "src/components/kit/kit.css",
+      "sha256": "de9b411f6d722abe85a07c702dc50472bc8a7a7c845e22efec87110980811cf2"
+    },
+    {
+      "path": "src/components/payroll/payroll-settings.tsx",
+      "sha256": "6e53c923651e955e57186f78dd4f201ad07570b8b84b59cef4e725b9d1549e4f"
+    },
+    {
+      "path": "src/components/wave-a/shift-block.tsx",
+      "sha256": "58de8dd616e51618bfc062232dd933cc4bc79bd84b46cb6745a6cee7eb1e91e5"
+    }
+  ],
+  "findings": [
+    {
+      "commit": "0caadb3505342ef331e2adeb141c02eafcc13f96",
+      "finding": "AL-WA-10",
+      "change": "Review replacement gutters",
+      "patch": "AL-WA-10.patch",
+      "patchSha256": "0f68a30a8d58a7db69e9c55cb57d9e4579e2cd7dfb93aad235764051813b6fc5",
+      "status": "candidate fix; fresh dynamic proof pending; no independent closure"
+    },
+    {
+      "commit": "2ddb833f7fa34d4aa4ff62403aca51cbeaced287",
+      "finding": "TC-WA-16",
+      "change": "Pending colour transition contrast",
+      "patch": "TC-WA-16.patch",
+      "patchSha256": "6dc9617245918049a4973b8a419d107f3651a6695aa2595f1f57bcd29cf5b4fd",
+      "status": "candidate fix; fresh dynamic proof pending; no independent closure"
+    },
+    {
+      "commit": "e7ee28a23347f20c54bb7dafa5c2cb6ee271884b",
+      "finding": "ST-RC-PAYROLL-SAVE-01",
+      "change": "Company save reserved label height",
+      "patch": "ST-RC-PAYROLL-SAVE-01.patch",
+      "patchSha256": "3a4540e1c03754d5c7fe413cf2e03c69602f2ab6ec4d0438ab243e565755df5a",
+      "status": "candidate fix; fresh dynamic proof pending; no independent closure"
+    },
+    {
+      "commit": "081595204b219868fb1cd2899af84a16a21193e7",
+      "finding": "TC-WA-3",
+      "change": "Time separators after line wrapping",
+      "patch": "TC-WA-3.patch",
+      "patchSha256": "3cba3e8bb75ad156fc384e93a2ce6649a2e24cbd67e1d0e97dbc6f3942360015",
+      "status": "candidate fix; fresh dynamic proof pending; no independent closure"
+    }
+  ],
+  "validation": {
+    "existingFocusedTests": {
+      "passed": 29,
+      "failed": 0,
+      "files": 4
+    },
+    "changedTsxESLint": "pass",
+    "wholeCurrentCodeGates": "running; no pass yet",
+    "freshBrowserProof": "queued after15 bounded run"
+  },
+  "controls": {
+    "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+    "premiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+    "premiumCssEquals15": true,
+    "lockEquals15": true
+  }
+}

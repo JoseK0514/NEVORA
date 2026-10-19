@@ -1,0 +1,164 @@
+{
+  "id": "TC-WA-3",
+  "severity": "P2",
+  "status": "Measured retained existing finding; visual crop pending later manual phase",
+  "sourceSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "route": "/app/schedule/new?review=<private actor-bound hint>",
+  "originalCitation": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:27",
+  "sourceLine": "src/app/app/schedule/new/page.tsx:82",
+  "createdAt": "2026-10-19T23:31:08.951150+00:00",
+  "measurements": [
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00018/passive-geometry/cells/2bbc395298c490c1b22f.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "390",
+      "text": 200,
+      "sourceSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+      "timeFactTextPieces": [
+        {
+          "text": "8:00\u00a0AM\u00a0\u2013 4:00\u00a0PM",
+          "selector": "dd.",
+          "rects": [
+            {
+              "x": 76,
+              "y": 871.015625,
+              "width": 294,
+              "height": 41,
+              "top": 871.015625,
+              "right": 370,
+              "bottom": 912.015625,
+              "left": 76
+            }
+          ]
+        },
+        {
+          "text": "\u00b7",
+          "selector": "span.wa-muted.nv-keep",
+          "rects": [
+            {
+              "x": 315,
+              "y": 915.015625,
+              "width": 16,
+              "height": 41,
+              "top": 915.015625,
+              "right": 331,
+              "bottom": 956.015625,
+              "left": 315
+            }
+          ]
+        },
+        {
+          "text": "8h",
+          "selector": "span.wa-muted.nv-keep",
+          "rects": [
+            {
+              "x": 331,
+              "y": 915.015625,
+              "width": 39,
+              "height": 41,
+              "top": 915.015625,
+              "right": 370,
+              "bottom": 956.015625,
+              "left": 331
+            }
+          ]
+        }
+      ],
+      "cropGap": "Existing viewport top/bottom crops skip this middle Time fact at200%; capture planned after mandatory matrix."
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00026/passive-geometry/cells/b9077c92fe6efb8c9c56.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "390",
+      "text": 200,
+      "sourceSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+      "timeFactTextPieces": [
+        {
+          "text": "8:00\u00a0AM\u00a0\u2013 4:00\u00a0PM",
+          "selector": "dd.",
+          "rects": [
+            {
+              "x": 76,
+              "y": 871.015625,
+              "width": 294,
+              "height": 41,
+              "top": 871.015625,
+              "right": 370,
+              "bottom": 912.015625,
+              "left": 76
+            }
+          ]
+        },
+        {
+          "text": "\u00b7",
+          "selector": "span.wa-muted.nv-keep",
+          "rects": [
+            {
+              "x": 315,
+              "y": 915.015625,
+              "width": 16,
+              "height": 41,
+              "top": 915.015625,
+              "right": 331,
+              "bottom": 956.015625,
+              "left": 315
+            }
+          ]
+        },
+        {
+          "text": "8h",
+          "selector": "span.wa-muted.nv-keep",
+          "rects": [
+            {
+              "x": 331,
+              "y": 915.015625,
+              "width": 39,
+              "height": 41,
+              "top": 915.015625,
+              "right": 370,
+              "bottom": 956.015625,
+              "left": 331
+            }
+          ]
+        }
+      ],
+      "cropGap": "Existing viewport top/bottom crops skip this middle Time fact at200%; capture planned after mandatory matrix."
+    }
+  ],
+  "newId": false,
+  "sourceChanges": false,
+  "additionalBrowser": false,
+  "candidateAtPatch": "14c9cccac9c2171f206046e6f2be8397c8c922ce",
+  "candidateFileBlobs": {
+    "src/app/app/schedule/new/page.tsx": {
+      "candidate": "ad0ff222c298ef0f8bcc7d565cdb751cb3d6b947",
+      "review": "8880ede81152b0827e7c4567758f141e1f4d2daa",
+      "sha256": "88920e7ee033a8996d45b2c5d17d435b214cc26000b87767d4527bd1cdf502ed",
+      "onlyOnePatternReplaced": true
+    },
+    "src/components/create-shift-form.tsx": {
+      "candidate": "3bf0ef3c0364d0423081ef1bc6b6d0d2b38414d3",
+      "review": "3bf0ef3c0364d0423081ef1bc6b6d0d2b38414d3",
+      "sha256": "ad171ef56cd1c7cbc3769dbfe52906729fb49b664797830d39a50731eac28c4c",
+      "onlyOnePatternReplaced": true
+    },
+    "src/components/coverage-assistant.tsx": {
+      "candidate": "3e38de453a168eb26cbdbe97101a23e082fc6464",
+      "review": "3e38de453a168eb26cbdbe97101a23e082fc6464",
+      "sha256": "3c5fb3f092631c684c94f226d75aebc5403d3622dca5b71c378d74c5c42d4278",
+      "onlyOnePatternReplaced": true
+    },
+    "src/components/wave-a/shift-block.tsx": {
+      "candidate": "a053e6c10879b42cef76c7171c1b69a106d114d2",
+      "review": "a053e6c10879b42cef76c7171c1b69a106d114d2",
+      "sha256": "97881add245f26591e5235d5dd431f2dd9404d0a502a100341a2eeddb960d3c9",
+      "onlyOnePatternReplaced": true
+    }
+  },
+  "proposedPatch": "TC-WA-3.patch",
+  "patchSha256": "4b8da1d1ee6bed97e208cc2f049775d4b9914578de3170f1cf7c3ad09a87f06d",
+  "patchApplied": false,
+  "behavior": "Attach separator to preceding time with NBSP; keep the duration in its own nonbreaking muted span; preserve visible wording/color/action/hidden fields."
+}

@@ -1,0 +1,44 @@
+{
+  "checkpoint": "aa24f6aa70b69de6cb99130304a42c9bf8fe5b25",
+  "tree": "cb24c53c4d3c78dbee6f68658b720cf5eed8c61d",
+  "sourceClean": true,
+  "ownerId": "6683875331733ca8cdfefaae6589e903",
+  "ownershipFile": "/home/runner/work/_temp/nevora-phase-e-browser-evidence/owned-postgres-HMdhxS/ownership.json",
+  "ownershipClosed": true,
+  "suites": [
+    "home",
+    "communications",
+    "calendar",
+    "navigation",
+    "attention"
+  ],
+  "status": "failed",
+  "executions": [
+    {
+      "suite": "home",
+      "engine": "chromium",
+      "width": 320,
+      "status": "failed",
+      "checks": []
+    }
+  ],
+  "errors": [
+    "Required browser execution failed"
+  ],
+  "runtime": {
+    "playwright": "1.62.1",
+    "axe": "4.11.0"
+  },
+  "launches": [
+    {
+      "engine": "chromium"
+    }
+  ],
+  "sourceManifest": "/home/runner/work/_temp/nevora-phase-e-browser-evidence/owned-next-cOToMA/source-manifest.json",
+  "limitations": [
+    "Owned local Next/SQL mirror is not hosted verification.",
+    "Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance."
+  ],
+  "appRoot": "/home/runner/work/_temp/nevora-phase-e-browser-evidence/owned-next-cOToMA",
+  "appOwnerId": "2f776cba-4be7-4d66-8581-60a9075f0494"
+}

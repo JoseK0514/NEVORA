@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-19T23:13:08.357076+00:00",
+  "updatedAt": "2026-10-19T23:39:01.163047+00:00",
   "inspectedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "newerBoundedProbeSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
   "fullExitZeroCount": 0,
@@ -12,7 +12,10 @@
       "measurement": "CompanySave88\u219252px, visibleEmployeeexceptionsheadingmovesup36px at320/200; originalocclusionkeptseparate, focus/oneheldrequestpass",
       "report": "combined-cd764f6/candidate-findings.md",
       "proposal": "review-proposals/ST-RC-PAYROLL-SAVE-01.patch",
-      "proposalStatus": "unapplied; requires owner review and dynamic checks"
+      "proposalStatus": "applied as e7ee28a2 onRC; fresh dynamic proof pending",
+      "candidateCommit": "e7ee28a23347f20c54bb7dafa5c2cb6ee271884b",
+      "candidateFixStatus": "committed/published onRC; fresha21650de browser proof pending; no independent closure",
+      "candidateFixReceipt": "candidate-a21650d/source-and-findings.json"
     },
     {
       "id": "ST-P4-13",
@@ -56,7 +59,10 @@
       "severity": "P2 continuation",
       "status": "confirmedvisiblependingcolourtransition; opacityfixpasses",
       "measurement": "foregroundswitchimmediate/background160msCSSTransition; visiblemin1.05599:1Chrome5frames and1.67711:1WebKit1frame; settled5.13895:1",
-      "report": "combined-cd764f6/candidate-findings.md"
+      "report": "combined-cd764f6/candidate-findings.md",
+      "candidateCommit": "2ddb833f7fa34d4aa4ff62403aca51cbeaced287",
+      "candidateFixStatus": "committed/published onRC; fresha21650de browser proof pending; no independent closure",
+      "candidateFixReceipt": "candidate-a21650d/source-and-findings.json"
     },
     {
       "id": "P3-ST-01",
@@ -73,8 +79,19 @@
       "status": "measuredopenoncd; sourcefilebyteidentical15. Candidate-only06be59arepairswrapper; focused14tests/lint/typecheckpass; freshfixed-sourcebrowserpending",
       "measurement": "Reviewreplacement at320/390 card/actionsx0..viewport ratherthan16pxgutters; desktop752vs720; missingband-overlap",
       "report": "../../p35-wave-a/combined-cd764f6-cloud-full/alignment.md",
-      "candidateFixReceipt": "AL-WA-10-candidate-06be59a/receipt.json",
-      "patch": "later-unpublished-patches/46-AL-WA-10.patch"
+      "candidateFixReceipt": "candidate-a21650d/source-and-findings.json",
+      "patch": "later-unpublished-patches/46-AL-WA-10.patch",
+      "candidateCommit": "0caadb3505342ef331e2adeb141c02eafcc13f96",
+      "candidateFixStatus": "committed/published onRC; fresha21650de browser proof pending; no independent closure"
+    },
+    {
+      "id": "TC-WA-3",
+      "owner": "WaveA",
+      "severity": "P2 retained",
+      "status": "current DOM time/dot split measured; original ID retained; middlecrop pending",
+      "report": "../../p35-wave-a/combined-cd764f6-cloud-full/findings/TC-WA-3/measurement.json",
+      "candidateCommit": "081595204b219868fb1cd2899af84a16a21193e7",
+      "candidateFixStatus": "committed/published onRC; fresha21650de four-site browser proof pending; no independent closure"
     }
   ],
   "additionalUnderInvestigation": [
@@ -83,5 +100,7 @@
       "owner": "WaveA",
       "observation": "WebKit native Add Location select truncation390/200; original ID retained, final disposition pending"
     }
-  ]
+  ],
+  "repairCandidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "repairCandidateReport": "candidate-a21650d/README.md"
 }

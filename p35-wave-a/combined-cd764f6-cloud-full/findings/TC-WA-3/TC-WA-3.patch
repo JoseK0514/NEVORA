@@ -1,0 +1,46 @@
+--- a/src/app/app/schedule/new/page.tsx
++++ b/src/app/app/schedule/new/page.tsx
+@@ -80,7 +80,7 @@
+         <Facts label="Replacement shift">
+           <Fact label="Person">{selected.employeeName}</Fact>
+           <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}, ${locator.date.slice(0, 4)}`)}</Fact>
+-          <Fact label="Time">{keepWhole(`${formatTime(locator.startTime)} – ${formatTime(locator.endTime)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(locator.startTime, locator.endTime))}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
++          <Fact label="Time">{keepWhole(`${formatTime(locator.startTime)} – ${formatTime(locator.endTime)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(durationMinutes(locator.startTime, locator.endTime))}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
+           <Fact label="Location">{selected.locationName}</Fact>
+           <Fact label="Position">{selected.positionName ?? "None needed"}</Fact>
+           <Fact label="Shift lead">{selected.isDesignatedLead ? "Yes, needed" : "Not needed"}</Fact>
+--- a/src/components/create-shift-form.tsx
++++ b/src/components/create-shift-form.tsx
+@@ -72,7 +72,7 @@
+         <Card title="Summary" id="shift-summary">
+           <Facts label="Shift summary">
+             <Fact label="Day">{selectedDay ? keepWhole(`${selectedDay.weekday},\u00a0${selectedDay.day}`) : <span className="wa-muted">Choose a date</span>}</Fact>
+-            <Fact label="Time">{start && end ? <>{keepWhole(`${formatTime(start)} – ${formatTime(end)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(start, end))}</span></> : <span className="wa-muted">Choose times</span>}</Fact>
++            <Fact label="Time">{start && end ? <>{keepWhole(`${formatTime(start)} – ${formatTime(end)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(durationMinutes(start, end))}</span></> : <span className="wa-muted">Choose times</span>}</Fact>
+             <Fact label="Person">{employee ? `${employee.firstName} ${employee.lastName}` : <span className="wa-muted">Choose someone</span>}</Fact>
+             <Fact label="Location">{selectedLocation?.shortName ?? <span className="wa-muted">Choose a location</span>}</Fact>
+             <Fact label="Position">{position?.name ?? <span className="wa-muted">None</span>}</Fact>
+--- a/src/components/coverage-assistant.tsx
++++ b/src/components/coverage-assistant.tsx
+@@ -95,7 +95,7 @@
+             <Card title="Shift to cover" id="coverage-shift">
+               <Facts label="Shift to cover">
+                 <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</Fact>
+-                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
++                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
+                 <Fact label="Location">{props.locationName}</Fact>
+                 {props.positionName ? <Fact label="Position">{props.positionName}</Fact> : null}
+                 {props.designatedLead ? <Fact label="Shift lead">Needed</Fact> : null}
+--- a/src/components/wave-a/shift-block.tsx
++++ b/src/components/wave-a/shift-block.tsx
+@@ -29,8 +29,8 @@
+     {label ? <p className="wa-shift__label">{label}</p> : null}
+     <p className="wa-shift__when">
+       <span className="nv-keep">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</span>{" "}
+-      <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span>{" "}
+-      <span className="wa-shift__length nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(shift.startTime, shift.endTime))}</span>
++      <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span><span className="wa-shift__length">{"\u00a0·"}</span>{" "}
++      <span className="wa-shift__length nv-keep">{keepDuration(durationMinutes(shift.startTime, shift.endTime))}</span>
+     </p>
+     <p className="wa-shift__where"><MetaParts text={where.join(" · ")} /></p>
+     {ends ? <p className="wa-shift__where">{keepWhole(`Ends ${ends.weekday},\u00a0${ends.day}`)}</p> : null}

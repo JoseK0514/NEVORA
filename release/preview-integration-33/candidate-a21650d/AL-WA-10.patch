@@ -1,0 +1,38 @@
+From 0caadb3505342ef331e2adeb141c02eafcc13f96 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 23:25:18 +0000
+Subject: [PATCH] AL-WA-10: restore replacement review content gutters
+
+(cherry picked from commit 06be59aee4ab8869656209fa65dc04b3dc912449)
+---
+ src/app/app/schedule/new/page.tsx | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/app/app/schedule/new/page.tsx b/src/app/app/schedule/new/page.tsx
+index 8880ede8..ad0ff222 100644
+--- a/src/app/app/schedule/new/page.tsx
++++ b/src/app/app/schedule/new/page.tsx
+@@ -70,7 +70,8 @@ export default async function NewShiftPage({
+     return <div className="nv-page wa-page wa-shift" data-nv-page="">
+       <PageBand back={{ href: refreshHref, label: "Coverage" }} eyebrow={keepWhole(formatWeekRange(locator.weekStart))} title="Review replacement"
+         summary={`${selected.employeeName} for ${keepWhole(`${day.weekday},\u00a0${day.day}`)}.`} />
+-      <ConfigurationForm action={createShiftAction} className="nv-content wa-narrow wa-form">
++      <div className="nv-content wa-narrow">
++      <ConfigurationForm action={createShiftAction} className="wa-form">
+       <input type="hidden" name="coverageRepairReview" value={params.review} />
+       {Object.entries({ weekStart: locator.weekStart, employeeId: selected.employeeId, locationId: locator.locationId,
+         date: locator.date, startTime: locator.startTime, endTime: locator.endTime, positionId: locator.positionId ?? '',
+@@ -90,7 +91,9 @@ export default async function NewShiftPage({
+         <PendingButton pending="Saving…" block>Save replacement</PendingButton>
+         <Link className="nv-btn" data-kind="secondary" data-block="true" href={refreshHref}>Back to coverage</Link>
+       </FormActions>
+-    </ConfigurationForm></div>;
++    </ConfigurationForm>
++      </div>
++    </div>;
+   }
+   const workspace = await getWorkspace();
+   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
+-- 
+2.52.0
+

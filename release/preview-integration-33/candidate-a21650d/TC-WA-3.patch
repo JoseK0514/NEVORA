@@ -1,0 +1,83 @@
+From 081595204b219868fb1cd2899af84a16a21193e7 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 23:37:26 +0000
+Subject: [PATCH] TC-WA-3: keep time separators off the start of wrapped lines
+
+---
+ src/app/app/schedule/new/page.tsx          | 2 +-
+ src/components/coverage-assistant.test.tsx | 2 +-
+ src/components/coverage-assistant.tsx      | 2 +-
+ src/components/create-shift-form.tsx       | 2 +-
+ src/components/wave-a/shift-block.tsx      | 4 ++--
+ 5 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/app/app/schedule/new/page.tsx b/src/app/app/schedule/new/page.tsx
+index ad0ff222..c0418ba7 100644
+--- a/src/app/app/schedule/new/page.tsx
++++ b/src/app/app/schedule/new/page.tsx
+@@ -80,7 +80,7 @@ export default async function NewShiftPage({
+         <Facts label="Replacement shift">
+           <Fact label="Person">{selected.employeeName}</Fact>
+           <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}, ${locator.date.slice(0, 4)}`)}</Fact>
+-          <Fact label="Time">{keepWhole(`${formatTime(locator.startTime)} – ${formatTime(locator.endTime)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(locator.startTime, locator.endTime))}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
++          <Fact label="Time">{keepWhole(`${formatTime(locator.startTime)} – ${formatTime(locator.endTime)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(durationMinutes(locator.startTime, locator.endTime))}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
+           <Fact label="Location">{selected.locationName}</Fact>
+           <Fact label="Position">{selected.positionName ?? "None needed"}</Fact>
+           <Fact label="Shift lead">{selected.isDesignatedLead ? "Yes, needed" : "Not needed"}</Fact>
+diff --git a/src/components/coverage-assistant.test.tsx b/src/components/coverage-assistant.test.tsx
+index b4240c29..ed6ad110 100644
+--- a/src/components/coverage-assistant.test.tsx
++++ b/src/components/coverage-assistant.test.tsx
+@@ -53,7 +53,7 @@ it("keeps signed replacement review links and selected requirements intact", ()
+ it("labels overnight context and empty results without an assignment action", () => {
+   // Dates and times are kept whole with no-break spaces; compare the words.
+   const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/\u00a0/g, " ");
+-  expect(html).toContain("Ends Tue, Oct 13"); expect(html).toContain("· 8h");
++  expect(html).toContain("Ends Tue, Oct 13"); expect(html.replace(/<[^>]*>/g, "")).toContain("· 8h");
+   expect(html).toContain("0 people"); expect(html).not.toContain("/app/schedule/new?");
+   expect(html).toContain(props.backHref.replaceAll("&", "&amp;"));
+ });
+diff --git a/src/components/coverage-assistant.tsx b/src/components/coverage-assistant.tsx
+index 3e38de45..8c229533 100644
+--- a/src/components/coverage-assistant.tsx
++++ b/src/components/coverage-assistant.tsx
+@@ -95,7 +95,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
+             <Card title="Shift to cover" id="coverage-shift">
+               <Facts label="Shift to cover">
+                 <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</Fact>
+-                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
++                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
+                 <Fact label="Location">{props.locationName}</Fact>
+                 {props.positionName ? <Fact label="Position">{props.positionName}</Fact> : null}
+                 {props.designatedLead ? <Fact label="Shift lead">Needed</Fact> : null}
+diff --git a/src/components/create-shift-form.tsx b/src/components/create-shift-form.tsx
+index 3bf0ef3c..259ccbc3 100644
+--- a/src/components/create-shift-form.tsx
++++ b/src/components/create-shift-form.tsx
+@@ -72,7 +72,7 @@ export function CreateShiftForm({ action, employees, locations, positions, weekS
+         <Card title="Summary" id="shift-summary">
+           <Facts label="Shift summary">
+             <Fact label="Day">{selectedDay ? keepWhole(`${selectedDay.weekday},\u00a0${selectedDay.day}`) : <span className="wa-muted">Choose a date</span>}</Fact>
+-            <Fact label="Time">{start && end ? <>{keepWhole(`${formatTime(start)} – ${formatTime(end)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(start, end))}</span></> : <span className="wa-muted">Choose times</span>}</Fact>
++            <Fact label="Time">{start && end ? <>{keepWhole(`${formatTime(start)} – ${formatTime(end)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(durationMinutes(start, end))}</span></> : <span className="wa-muted">Choose times</span>}</Fact>
+             <Fact label="Person">{employee ? `${employee.firstName} ${employee.lastName}` : <span className="wa-muted">Choose someone</span>}</Fact>
+             <Fact label="Location">{selectedLocation?.shortName ?? <span className="wa-muted">Choose a location</span>}</Fact>
+             <Fact label="Position">{position?.name ?? <span className="wa-muted">None</span>}</Fact>
+diff --git a/src/components/wave-a/shift-block.tsx b/src/components/wave-a/shift-block.tsx
+index a053e6c1..de4c43d2 100644
+--- a/src/components/wave-a/shift-block.tsx
++++ b/src/components/wave-a/shift-block.tsx
+@@ -29,8 +29,8 @@ export function ShiftBlock({ shift, label, showPerson = false }: { shift: ShiftB
+     {label ? <p className="wa-shift__label">{label}</p> : null}
+     <p className="wa-shift__when">
+       <span className="nv-keep">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</span>{" "}
+-      <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span>{" "}
+-      <span className="wa-shift__length nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(shift.startTime, shift.endTime))}</span>
++      <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span><span className="wa-shift__length">{"\u00a0·"}</span>{" "}
++      <span className="wa-shift__length nv-keep">{keepDuration(durationMinutes(shift.startTime, shift.endTime))}</span>
+     </p>
+     <p className="wa-shift__where"><MetaParts text={where.join(" · ")} /></p>
+     {ends ? <p className="wa-shift__where">{keepWhole(`Ends ${ends.weekday},\u00a0${ends.day}`)}</p> : null}
+-- 
+2.52.0
+

@@ -30,3 +30,7 @@ The bounded current-head browser attempt could not replay the complete path: the
 ## Acceptance boundary
 
 The original 33-fix candidate's local gates passed in the existing published report; new rolling merge commits require their own evidence. Targeted browser successes are not full five-area exit verdicts. PR #13 stays draft/open, and neither main merge nor deployment is authorized.
+
+## Latest CI update — actual PR mergeaa24f6a
+
+[Workflow39339520609](../preview-integration-33/ci-39339520609/README.md) has finished. All10SQL suites now pass, Home40/40 including the prior source-cap case, plus both Release/Clocker PostgreSQL gates. The original39/40 failure is retained with cause unresolved. Validate repeats59missing-history migration failures; the same Home My Time loading visibility and old Attendance loading-label browser assertions repeat. Actual tested mergeaa24f6a/treecb24c53 differs frozen15a0fcd7 only in Wave B ROUND.md across2,846 manifest entries. Hosted aggregate remains failed; review proposals remain unapplied.

@@ -1,0 +1,119 @@
+{
+  "workflow": "https://github.com/JoseK0514/NEVORA/actions/runs/39339520609",
+  "head": "13446e25e509c32c53608d66050d8a2b56a8943e",
+  "testedPRMerge": "aa24f6aa70b69de6cb99130304a42c9bf8fe5b25",
+  "testedTree": "cb24c53c4d3c78dbee6f68658b720cf5eed8c61d",
+  "status": "failed",
+  "jobs": {
+    "validate": {
+      "id": 118360062938,
+      "status": "failed",
+      "testsPassed": 7296,
+      "testsFailed": 59,
+      "testsSkipped": 809,
+      "filesFailed": 4,
+      "cause": "pinned historical migration commit absent from shallow checkout",
+      "missingCommit": "7c628e374f03c9025b2c0cfd3568be033f07238d"
+    },
+    "phase-e-ui": {
+      "id": 118360062695,
+      "status": "failed",
+      "at": "phase-e-home-browser-scenarios.mjs:37:155",
+      "assertion": "My Time link visible within Own recorded time during loading"
+    },
+    "phase-d-attendance-ui": {
+      "id": 118360062524,
+      "status": "failed",
+      "at": "phase-d-attendance-ui-qa.mjs:299:72",
+      "assertion": "visible exact Loading attendance review",
+      "currentCanonicalCopy": "Loading attendance"
+    },
+    "phase-e-postgres": {
+      "id": 118360062780,
+      "status": "passed",
+      "suites": 10,
+      "homePassed": 40,
+      "homeFailed": 0,
+      "artifactId": 12228553393
+    },
+    "release-postgres": {
+      "id": 118360062811,
+      "status": "passed"
+    },
+    "clocker-postgres": {
+      "id": 118360062823,
+      "status": "passed"
+    },
+    "aggregate": {
+      "id": 118364616246,
+      "status": "failed"
+    }
+  },
+  "priorSQLFailure": {
+    "workflow": 39338160480,
+    "homePassed": 39,
+    "homeFailed": 1,
+    "cause": "unresolved",
+    "notErasedByLaterPass": true
+  },
+  "browserArtifactId": 12228562970,
+  "originalLogs": [
+    {
+      "path": "/workspace/paused-evidence/ci-13446e25/validate.log",
+      "sha256": "a86ec1e9fbe5b3adc1766f8939b704d2c100b09102325554b06e0db18986066e",
+      "bytes": 285278
+    },
+    {
+      "path": "/workspace/paused-evidence/ci-13446e25/phase-e-ui.log",
+      "sha256": "8b1d99922eb193f29bda237910effc7e09e2783e840a27402db709fbe29720c5",
+      "bytes": 154289
+    },
+    {
+      "path": "/workspace/paused-evidence/ci-13446e25/phase-d-attendance-ui.log",
+      "sha256": "8f39b91256254cd3f2c10d83db759430562ba8b2504627d0c1aa09f8662f140d",
+      "bytes": 157069
+    }
+  ],
+  "publishedEvidence": [
+    {
+      "path": "source-comparison-and-home.json",
+      "sha256": "ac2025789dd88efbf9b76d878c709d0c2e30e5f507675a1bd7ebfde907ed2f64",
+      "bytes": 552
+    },
+    {
+      "path": "sql-report.json",
+      "sha256": "c373b6b68639390be0d3e01fca48d756991a11bbf63ea70ba11ef1416d53df00",
+      "bytes": 27595
+    },
+    {
+      "path": "sql-home.json",
+      "sha256": "d577fc0c1474c95540f1aa4b05ee6881c87c5595cbf0f981544f32a13c820749",
+      "bytes": 13792
+    },
+    {
+      "path": "source-manifest.json",
+      "sha256": "677e7de036c1b11320b4c4f593a90b929bc14da9b08525006add589b1789d284",
+      "bytes": 375143
+    },
+    {
+      "path": "browser-failure-report.json",
+      "sha256": "8844f315803463b2fb7ea827717a8563327b9fa2364a5fb59136f54c87c90362",
+      "bytes": 515
+    },
+    {
+      "path": "browser-report.json",
+      "sha256": "977770b7c434e285469fd89c76beb929b176f1166ace73dce09eea013e5f8520",
+      "bytes": 1253
+    },
+    {
+      "path": "owned-browser-report.json",
+      "sha256": "5bd7fafae905ab436f814f8f4f9520adcca7634b868c101d0bab558be2479563",
+      "bytes": 2454
+    },
+    {
+      "path": "home-task11-chromium-320-failure.png",
+      "sha256": "836cbcd458dbcabfa5bfdead4a8b51218a34615bb5b3469d001c2e56a2275666",
+      "bytes": 63479
+    }
+  ]
+}

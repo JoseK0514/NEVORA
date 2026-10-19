@@ -1,0 +1,19 @@
+{
+  "checkedCheckpoint": "aa24f6aa70b69de6cb99130304a42c9bf8fe5b25",
+  "checkedTree": "cb24c53c4d3c78dbee6f68658b720cf5eed8c61d",
+  "comparedWorkingSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "hashEntries": 2846,
+  "differentFiles": [
+    "docs/product/specs/p35-wave-b/ROUND.md"
+  ],
+  "missingFiles": [],
+  "homePassed": 40,
+  "homeFailed": 0,
+  "sourceCapCase": [
+    {
+      "fullName": "communication cap sentinel retains known rows and never claims complete",
+      "status": "passed",
+      "duration": 13002.006844000003
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+From 2ddb833f7fa34d4aa4ff62403aca51cbeaced287 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 23:32:53 +0000
+Subject: [PATCH] TC-WA-16: preserve contrast through pending colour changes
+
+(cherry picked from commit 14c9cccac9c2171f206046e6f2be8397c8c922ce)
+---
+ src/components/kit/kit.css | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/components/kit/kit.css b/src/components/kit/kit.css
+index 4d40cb01..0dafcf7b 100644
+--- a/src/components/kit/kit.css
++++ b/src/components/kit/kit.css
+@@ -240,7 +240,8 @@ a.nv-row:active { background: var(--nv-inset); }
+   display: inline-flex; align-items: center; justify-content: center; gap: var(--nv-s-2);
+   min-height: 52px; padding: 0 var(--nv-s-5); border: 0; border-radius: var(--nv-r-control);
+   font: var(--nv-t-headline); text-decoration: none; cursor: pointer;
+-  transition: background-color var(--nv-m-quick) var(--nv-ease-out), transform var(--nv-m-press) linear;
++  /* TC-WA-16: foreground and background must change together to retain pending contrast. */
++  transition: transform var(--nv-m-press) linear;
+ }
+ .nv-btn:active:not(:disabled) { transform: scale(.98); }
+ .nv-btn[data-kind="primary"] { background: var(--nv-accent); color: #FFFFFF; }
+-- 
+2.52.0
+

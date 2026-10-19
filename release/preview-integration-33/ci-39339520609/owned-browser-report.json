@@ -1,0 +1,85 @@
+{
+  "checkpoint": "aa24f6aa70b69de6cb99130304a42c9bf8fe5b25",
+  "tree": "cb24c53c4d3c78dbee6f68658b720cf5eed8c61d",
+  "sourceClean": true,
+  "ownerId": "6683875331733ca8cdfefaae6589e903",
+  "ownershipFile": "/home/runner/work/_temp/nevora-phase-e-browser-evidence/owned-postgres-HMdhxS/ownership.json",
+  "ownershipClosed": true,
+  "suites": [
+    "home",
+    "communications",
+    "calendar",
+    "navigation",
+    "attention"
+  ],
+  "mode": "browser",
+  "status": "failed",
+  "results": [
+    {
+      "suite": "all",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "--import",
+        "tsx",
+        "scripts/phase-e-browser-qa.mjs",
+        "--suite",
+        "all"
+      ],
+      "exitCode": 1,
+      "checks": [],
+      "resources": [
+        {
+          "pid": 5406,
+          "ppid": 5385,
+          "pgid": 5385,
+          "started": "Mon Oct 19 23:16:26 2026",
+          "commandHash": "f181377bd37b68df49ccce530f06a61d07c3b79574827ba5f52ed01f82649982",
+          "kind": "owned-descendant",
+          "stopped": true
+        },
+        {
+          "pid": 5492,
+          "ppid": 5385,
+          "pgid": 5385,
+          "started": "Mon Oct 19 23:16:29 2026",
+          "commandHash": "cb8524c6bfcff760a0a26a5e181d19f4d92c37318512b83bde1e06a927488b3d",
+          "kind": "owned-descendant",
+          "stopped": true
+        },
+        {
+          "pid": 5529,
+          "ppid": 5385,
+          "pgid": 5529,
+          "started": "Mon Oct 19 23:16:32 2026",
+          "commandHash": "fe13177294b4331500508f5ccbb32b62f911accc2eed881d70f3ee0846d5aaab",
+          "kind": "next",
+          "stopped": true
+        },
+        {
+          "pid": 5546,
+          "ppid": 5529,
+          "pgid": 5529,
+          "started": "Mon Oct 19 23:16:32 2026",
+          "commandHash": "db7603f72e4a66bc43b1c37f4f0e409d942e075d5dfe59db453563f510a3235b",
+          "kind": "owned-descendant",
+          "stopped": true
+        },
+        {
+          "pid": 5738,
+          "ppid": 5385,
+          "pgid": 5738,
+          "started": "Mon Oct 19 23:16:39 2026",
+          "commandHash": "109296180de0c6f75bb82f0bd1bbec06364ccd0af503951f9f2c5fdeaf48b217",
+          "kind": "browser-chromium",
+          "stopped": true
+        }
+      ]
+    }
+  ],
+  "errors": [
+    "Phase E child failed: all (exit 1)"
+  ],
+  "limitations": [
+    "Owned local foundation verification is not hosted, client or independent phase acceptance."
+  ]
+}
