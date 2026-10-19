@@ -110,7 +110,7 @@
       "chromium",
       "webkit"
     ],
-    "cells": 160,
+    "cells": 320,
     "checks": [
       "placeholders",
       "bands",
@@ -228,6 +228,22 @@
         ]
       },
       {
+        "name": "My pay",
+        "route": "/app/my-pay",
+        "read": "GET /api/payroll/statements",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
         "name": "Notifications",
         "route": "/app/notifications",
         "read": "GET /api/employee/notifications",
@@ -268,8 +284,8 @@
       "chromium",
       "webkit"
     ],
-    "sequences": 338,
-    "maximumStateObservations": 3442,
+    "sequences": 384,
+    "maximumStateObservations": 3856,
     "method": "All seven role/state fixtures, every named state where its exact response contract supports it; browser-only interception, fresh context for denied cases. 360/430 and125/150 remain full automated/geometry cells, plus expand a state immediately where a measured defect depends on them. Unsupported model states require source/contract rationale, not a silently passed case.",
     "cases": [
       {
@@ -5789,6 +5805,880 @@
           "401",
           "403",
           "expired",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-E",
+        "size": "320",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-E",
+        "size": "320",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-E",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-E",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-E",
+        "size": "844x390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-E",
+        "size": "844x390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LONG",
+        "size": "320",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LONG",
+        "size": "320",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LONG",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LONG",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LONG",
+        "size": "844x390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LONG",
+        "size": "844x390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-ON",
+        "size": "320",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-ON",
+        "size": "320",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-ON",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-ON",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-ON",
+        "size": "844x390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-ON",
+        "size": "844x390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-BREAK",
+        "size": "320",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-BREAK",
+        "size": "320",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-BREAK",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-BREAK",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-BREAK",
+        "size": "844x390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-BREAK",
+        "size": "844x390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-a",
+        "size": "320",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-a",
+        "size": "320",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-a",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-a",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-a",
+        "size": "844x390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-a",
+        "size": "844x390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LEAD",
+        "size": "320",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LEAD",
+        "size": "320",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LEAD",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LEAD",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LEAD",
+        "size": "844x390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "AUDIT-LEAD",
+        "size": "844x390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-b",
+        "size": "320",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-b",
+        "size": "320",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-b",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-b",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-b",
+        "size": "844x390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "chromium",
+        "account": "payroll-qa-b",
+        "size": "844x390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "webkit",
+        "account": "AUDIT-E",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "webkit",
+        "account": "AUDIT-E",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "webkit",
+        "account": "AUDIT-LEAD",
+        "size": "390",
+        "text": 100,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
+          "return-and-retry"
+        ]
+      },
+      {
+        "engine": "webkit",
+        "account": "AUDIT-LEAD",
+        "size": "390",
+        "text": 200,
+        "family": "My pay",
+        "route": "/app/my-pay",
+        "states": [
+          "loading",
+          "ready",
+          "empty",
+          "offline",
+          "paused",
+          "503-read",
+          "401",
+          "403",
           "return-and-retry"
         ]
       },

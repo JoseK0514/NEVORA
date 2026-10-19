@@ -1,0 +1,95 @@
+{
+  "scope": "Only regenerable generated dependencies and Next caches from five verified-closed owned previews; source mirrors and evidence retained",
+  "removed": [
+    {
+      "path": "/workspace/paused-previews/final-b9567ab/evidence-2026-10-19T21-21-43-289Z/owned-next-9xUAuP/app/node_modules",
+      "bytes": 532538839,
+      "ownership": "/workspace/paused-previews/final-b9567ab/evidence-2026-10-19T21-21-43-289Z/owned-next-9xUAuP/ownership.json",
+      "audit": "/workspace/paused-previews/final-b9567ab/evidence-2026-10-19T21-21-43-289Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:35.266404+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-b9567ab/evidence-2026-10-19T21-21-43-289Z/owned-next-9xUAuP/app/.next",
+      "bytes": 870117665,
+      "ownership": "/workspace/paused-previews/final-b9567ab/evidence-2026-10-19T21-21-43-289Z/owned-next-9xUAuP/ownership.json",
+      "audit": "/workspace/paused-previews/final-b9567ab/evidence-2026-10-19T21-21-43-289Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:35.823864+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-9ec3adc/evidence-2026-10-19T21-43-18-499Z/owned-next-nqE8ue/app/node_modules",
+      "bytes": 532538839,
+      "ownership": "/workspace/paused-previews/final-9ec3adc/evidence-2026-10-19T21-43-18-499Z/owned-next-nqE8ue/ownership.json",
+      "audit": "/workspace/paused-previews/final-9ec3adc/evidence-2026-10-19T21-43-18-499Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:36.363980+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-9ec3adc/evidence-2026-10-19T21-43-18-499Z/owned-next-nqE8ue/app/.next",
+      "bytes": 292897555,
+      "ownership": "/workspace/paused-previews/final-9ec3adc/evidence-2026-10-19T21-43-18-499Z/owned-next-nqE8ue/ownership.json",
+      "audit": "/workspace/paused-previews/final-9ec3adc/evidence-2026-10-19T21-43-18-499Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:37.025763+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-2906c72/evidence-2026-10-19T21-49-17-859Z/owned-next-ePnrtq/app/node_modules",
+      "bytes": 532538839,
+      "ownership": "/workspace/paused-previews/final-2906c72/evidence-2026-10-19T21-49-17-859Z/owned-next-ePnrtq/ownership.json",
+      "audit": "/workspace/paused-previews/final-2906c72/evidence-2026-10-19T21-49-17-859Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:37.162079+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-2906c72/evidence-2026-10-19T21-49-17-859Z/owned-next-ePnrtq/app/.next",
+      "bytes": 207190556,
+      "ownership": "/workspace/paused-previews/final-2906c72/evidence-2026-10-19T21-49-17-859Z/owned-next-ePnrtq/ownership.json",
+      "audit": "/workspace/paused-previews/final-2906c72/evidence-2026-10-19T21-49-17-859Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:37.786440+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-7d50f3d/evidence-2026-10-19T21-56-06-674Z/owned-next-wChx6w/app/node_modules",
+      "bytes": 532538839,
+      "ownership": "/workspace/paused-previews/final-7d50f3d/evidence-2026-10-19T21-56-06-674Z/owned-next-wChx6w/ownership.json",
+      "audit": "/workspace/paused-previews/final-7d50f3d/evidence-2026-10-19T21-56-06-674Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:37.908991+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-7d50f3d/evidence-2026-10-19T21-56-06-674Z/owned-next-wChx6w/app/.next",
+      "bytes": 210429654,
+      "ownership": "/workspace/paused-previews/final-7d50f3d/evidence-2026-10-19T21-56-06-674Z/owned-next-wChx6w/ownership.json",
+      "audit": "/workspace/paused-previews/final-7d50f3d/evidence-2026-10-19T21-56-06-674Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:38.570157+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-b68f250/evidence-2026-10-19T22-00-47-634Z/owned-next-k8GY1i/app/node_modules",
+      "bytes": 532538838,
+      "ownership": "/workspace/paused-previews/final-b68f250/evidence-2026-10-19T22-00-47-634Z/owned-next-k8GY1i/ownership.json",
+      "audit": "/workspace/paused-previews/final-b68f250/evidence-2026-10-19T22-00-47-634Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:38.684760+00:00"
+    },
+    {
+      "path": "/workspace/paused-previews/final-b68f250/evidence-2026-10-19T22-00-47-634Z/owned-next-k8GY1i/app/.next",
+      "bytes": 294087880,
+      "ownership": "/workspace/paused-previews/final-b68f250/evidence-2026-10-19T22-00-47-634Z/owned-next-k8GY1i/ownership.json",
+      "audit": "/workspace/paused-previews/final-b68f250/evidence-2026-10-19T22-00-47-634Z/audit.json",
+      "sourceAndMirrorVerifiedBeforeRemoval": true,
+      "postgresStoppedBeforeRemoval": true,
+      "removedAt": "2026-10-19T22:27:39.448548+00:00"
+    }
+  ]
+}

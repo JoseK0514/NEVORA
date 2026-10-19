@@ -1,0 +1,398 @@
+{
+  "sourceSha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "areas": {
+    "alignment": [
+      {
+        "id": "AL-WA-1",
+        "severity": "P0",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:15",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "AL-WA-2",
+        "severity": "P0",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:16",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "AL-WA-3",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:17",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "AL-WA-4",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:18",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "AL-WA-5",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:19",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "AL-WA-6",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:20",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "AL-WA-7",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:21",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "AL-WA-8",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:22",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "AL-WA-9",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/alignment.md:23",
+        "implementationTrail": "70bc122",
+        "status": "unmeasured on8640247; no historical closure credited"
+      }
+    ],
+    "stability": [
+      {
+        "id": "ST-WA-1",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/stability.md:19",
+        "implementationTrail": "24d0704",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-2",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/stability.md:20",
+        "implementationTrail": "62cd033",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-3",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/stability.md:21",
+        "implementationTrail": "7679133",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-4",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/stability.md:22",
+        "implementationTrail": "62cd033",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-5",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/stability.md:23",
+        "implementationTrail": "aae87e4",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-6",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/stability.md:24",
+        "implementationTrail": "aae87e4",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-7",
+        "severity": "P1",
+        "originalReport": "p35-wave-a/round-2/history/c05e0c7/stability.md",
+        "implementationTrail": "0e29e38",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-8",
+        "severity": "P1",
+        "originalReport": "p35-wave-a/round-2-7679133/stability.md",
+        "implementationTrail": "6e67193",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-9",
+        "severity": "P2",
+        "originalReport": "p35-wave-a/round-2-7651490/stability.md",
+        "implementationTrail": "7f75dc4",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-10",
+        "severity": "P1",
+        "originalReport": "p35-wave-a/round-2-7651490/stability.md",
+        "implementationTrail": "7f75dc4",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "ST-WA-11",
+        "severity": "P1",
+        "originalReport": "p35-wave-a/round-2-7f75dc4/stability.md",
+        "implementationTrail": "a05f26a",
+        "status": "unmeasured on8640247; no historical closure credited"
+      }
+    ],
+    "type-colour-copy": [
+      {
+        "id": "TC-WA-1",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:25",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-2",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:26",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-3",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:27",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-4",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:28",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-5",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:29",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-6",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:30",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-7",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:31",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-8",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:32",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-9",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:33",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-10",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:34",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-11",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:35",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-12",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:36",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-13",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:37",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-14",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:38",
+        "implementationTrail": "f3eb334",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-15",
+        "severity": "P1",
+        "originalReport": "p35-wave-a/round-2-a05f26a/type-colour-copy.md",
+        "implementationTrail": "227150b",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "TC-WA-16",
+        "severity": "P2",
+        "originalReport": "p35-wave-a/round-2-a05f26a/cloud-paused-type-colour-copy.md",
+        "implementationTrail": "fe77095",
+        "status": "unmeasured on8640247; no historical closure credited"
+      }
+    ],
+    "interaction-states": [
+      {
+        "id": "IS-WA-1",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:17",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-2",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:18",
+        "implementationTrail": "536dfe6",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-3",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:19",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-4",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:20",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-5",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:21",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-6",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:22",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-7",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:23",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-8",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:24",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-9",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:25",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-10",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:26",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-11",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:27",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "IS-WA-12",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/interaction-states.md:28",
+        "implementationTrail": "cdf714d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      }
+    ],
+    "widths-roles": [
+      {
+        "id": "WR-WA-1",
+        "severity": "P1",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/widths-roles.md:19",
+        "implementationTrail": "113fb9d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "WR-WA-2",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/widths-roles.md:20",
+        "implementationTrail": "113fb9d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      },
+      {
+        "id": "WR-WA-3",
+        "severity": "P2",
+        "originalReport": "docs/product/specs/p35-wave-a/inspection/widths-roles.md:21",
+        "implementationTrail": "113fb9d",
+        "status": "unmeasured on8640247; no historical closure credited"
+      }
+    ]
+  },
+  "all51IdsRetained": 51,
+  "fiveAreaExitCertified": false,
+  "crossOwnerSupplement": [
+    "IS-P4-11 selected Inbox item restoration; literal link vs browser Back. It remains a separate shared Desktop/WaveA cause, to be measured if encountered and coordinated, not silently closed."
+  ],
+  "reportDirectory": "/workspace/nevora-inspections/p35-wave-a/combined-8640247-cloud-full",
+  "manualWidths": [
+    "320",
+    "390",
+    "844x390",
+    "1440"
+  ],
+  "manualTexts": [
+    100,
+    125,
+    150,
+    200
+  ],
+  "browserRule": "Chromium full judgment grid, WebKit spots/critical states; full automated matrix Chromium+WebKit",
+  "criteria": {
+    "alignment": "container/rem reflow, field/help gaps, first-line icon/checkbox/radio alignment, reading width and action baselines",
+    "stability": "all own route placeholders/ready bands, font readiness/CLS, filter height, chip visibility, canvas/tab clearance, held pending dimensions and rotation",
+    "type-colour-copy": "full role tokens and contrast, long names, wrapping dates/durations, no clipped content, consistent approved wording, actual busy contrast",
+    "interaction-states": "all field names/descriptions, failure/notice focus, validation/required controls, keyboard and offline, role gates, sent/copied states, all actual forms with intercepted mutations",
+    "widths-roles": "all matrix widths/texts, name/field/native-select overflow, portrait/landscape pointer context and each actor-specific route; shell flags separated per brief"
+  }
+}

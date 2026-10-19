@@ -15,12 +15,15 @@
     "separateLarge": 320,
     "total": 5280
   },
-  "manualRowsExpected": 1500,
+  "manualRowsExpected": 1546,
   "priorIDs": 135,
   "previewStarted": false,
   "browserStarted": false,
   "runtimeTestsRun": false,
   "resourceRelease": "not yet granted",
   "previousProofProvenance": "b956152 andb6880Home retain original checkpoints; all current required cells/states remain fresh review obligations",
-  "createdAt": "2026-10-19T22:25:45.481092+00:00"
+  "createdAt": "2026-10-19T22:25:45.481092+00:00",
+  "manualLedgerRows": 1546,
+  "addedMyPayReadStateConfigurations": 46,
+  "all1500EarlierManualIDsPreserved": true
 }

@@ -1,0 +1,88 @@
+{
+  "sha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "source": "/workspace/exit-wave-b-8640247",
+  "sourceClean": true,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "fixtureImportsExactAndUnchanged": {
+    "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+    "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/test/integration/management-api.ts": "8575a34686d72c0d0d9f569034781915ba722e45d1ae6ec9fc3eb7eacc4891b3",
+    "src/lib/communications/service.server.ts": "22d302752a77c76fcf60b492330e8db6008a66f8bf64efbf00c319980c1457b0",
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
+    "src/lib/data/schedule-templates.ts": "3d2f42c02304b1ea49b394810854c1ddfd41b974b8235aaf59fedeceb2a0067d",
+    "src/lib/data/schedule-health.ts": "1d4599d0bfdcd71092ee8aab9770aecadfc316648d5df4b9a632bb37ada22bef"
+  },
+  "runtimeExecuted": false,
+  "syntaxOrTestsExecutedOnNewPlan": false,
+  "sourceRefCreationOnly": "authorized own codex/exit-wave-b-8640247 at immutable864",
+  "noAppSourceEdits": true,
+  "historicalPreparationReceipt": "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/historical-preparation/preparation-receipt.json",
+  "fileHashes": {
+    "joblist.json": "c9ade0e372090f97c29b8f36f59c93fac35605c8f6c93f24fb9325ed4c48c32d",
+    "completed-source-manual-index.json": "2d81f368d19293a8add8a62838c341a83e7060e9a1df8ce5dcbb630e0229b2f6",
+    "JOBLIST.md": "5ef20848964c3349a2202203e807b1190fc037c2c9d29ca9592b9b4b7bf18484",
+    "manual/insights-expiry-cases.mjs": "08c2dadceedc521dbe3338d57bde5210c1937d09610b2785989a0790ff2522c3",
+    "manual/scoped-wave-b.mjs": "c52378620c06edf9caa68b8f2196405ac7092c0b59b80f40155e3492a15ac7ab",
+    "manual/retained-source-cases.pre-split.mjs": "a62694cd4d4b9f9ebe0637f1b51892000d9436fba4466859a86bc0bf9462f281",
+    "manual/positive-payroll-cases.mjs": "5808c46c46f41274334c4955793f99fd088aac6df622ded797e0af14499a7763",
+    "manual/verify-wave-b.mjs": "c6fbdc9e8b6f25bdadab3753e5fb17956803804336a6ed2d093b3fe5036fe162",
+    "manual/scoped-wave-b.pre-864.mjs": "810e65d4fbee431f9ac2a1fccb9ebb09d03c738fcc7d582384884438c5aa8215",
+    "bindings/fixture-bindings.json": "18aad328cfd2b8d312aa1b09d2c6f4fa533100ee43b8da1812a105e623ffde50",
+    "bindings/preview-runtime.before-listen.patch": "ff38efd0a33c4fdbb11919178ec398c7632a57d7465d5d1eff846ff5a62510e6",
+    "bindings/state-action-bindings.json": "e05de3f5af11ff7e08a463cf8323e0320f11406c4078e9028c1750ebc2b2312e",
+    "bindings/supplemental-payroll.mts": "94058e4275290f7341367928f818852b577baa073cd8e11c069817ea38e1489c",
+    "bindings/preview-runtime.private.mjs": "f97a0b2c2be4b0c459a81baac67a88222f666bed76f5be448594ade1dd37e4d7",
+    "bindings/README.md": "fda22051fe60de1224d5d2998dda8cac359aa0f59775e855113417adb0f46b63",
+    "bindings/initial-fixture.mts": "9215bec95956ee0c9f7dd367bc136ae09cb253a9ff40e97e00dbbf0f66020d23",
+    "bindings/selector-bindings.json": "ed44be8d8eacf6f8365bb2688747d7348ae3388ed122bfa8c6495b1027dee8ec",
+    "bindings/owned-preview.before-listen.patch": "30ab6571be9328424d64f6ae333631f29bacb2018b4c401cce8a49d438afa57d",
+    "scripts/passive-close-core.mjs": "34ef5a6d8a34b20ae29790c130dcfa75a04ce067190c0aa1df3b1c5fdd5934a4",
+    "scripts/collection-policy.mjs": "421a76c1abe762d567c1ec89bf41e3f1ca717e163e28bd362b7cff534af49125",
+    "scripts/stage-private-before-listen.py": "75843fb0b3485e4d33ae0cf1cbf7c56494cd712aeb8013156034296346384554",
+    "scripts/after-check-collector.mjs": "a03fc76cad2af3f25bba2465db98446397cf0c5b7cf5685df459f10c796236b8",
+    "scripts/serial-matrix.mjs": "696ee768bfdfadd88500c4f239e4f825ef1db40dd5cef8cbfa60b3b403378fc9",
+    "scripts/geometry-measure.mjs": "35f752c299f63da032739c8c017e906d72429858cd609a1cdb734a07080961f1",
+    "scripts/static-selfcheck.mjs": "f1b39e9bfc0a7ad6d6c09d25db63bedbf9e57fc9a5bcde23f262bcb2f4a2d6d8",
+    "scripts/state-contracts.mjs": "41c546691cb62bd8bc16ec47119525a050f455e9c6ee6522d2f42d5113fa7886"
+  },
+  "fixtureImports": {
+    "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+    "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/test/integration/management-api.ts": "8575a34686d72c0d0d9f569034781915ba722e45d1ae6ec9fc3eb7eacc4891b3",
+    "src/lib/communications/service.server.ts": "22d302752a77c76fcf60b492330e8db6008a66f8bf64efbf00c319980c1457b0",
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
+    "src/lib/data/schedule-templates.ts": "3d2f42c02304b1ea49b394810854c1ddfd41b974b8235aaf59fedeceb2a0067d",
+    "src/lib/data/schedule-health.ts": "1d4599d0bfdcd71092ee8aab9770aecadfc316648d5df4b9a632bb37ada22bef",
+    "src/lib/payroll/service.ts": "28e8a0286b533aa31638f6b4d6da2a33df056693bb7e168272556f5ca3d220d8",
+    "src/lib/payroll/worker.ts": "3a8bef47ac894b414bb0f83f55b9a5614f2908744abb55f347c989f52effe640",
+    "src/lib/timecards/service.ts": "fdd405b6ede4a102fcd0d480a02835c2914f11d6eab8d43b996b0ae9d3aaac39",
+    "src/lib/period-close/service.ts": "496582db2f13a761c997f440b9c6ea5e918135fc9480a15fe66665a1b43a2512"
+  },
+  "supplementalPayrollPreparationOnly": {
+    "enabledBy": "WB_SUPPLEMENTAL_PAYROLL=yes before listen",
+    "helper": "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/bindings/supplemental-payroll.mts",
+    "runtimeVerified": false,
+    "states": [
+      "REVIEW_REQUIRED with real review token, provider rows/totals/no blocking exception",
+      "APPROVED with actual unpublished employee PDF",
+      "FAILED PREPARE job via actual canonical SCHEDULE_CHANGED worker failure"
+    ],
+    "directStatusForcing": false,
+    "positiveActors": [
+      "QAOWNER",
+      "payroll-qa-owner",
+      "payroll-qa-reviewer"
+    ]
+  },
+  "manualPreparedCases": {
+    "scopedSharedBothEngines": 96,
+    "positivePayrollBothEngines": 18,
+    "insightsExpiryBothEngines": 24,
+    "ordinaryAndReducedTotal": 276,
+    "executed": 0
+  },
+  "runtimeTemplateHash": "f97a0b2c2be4b0c459a81baac67a88222f666bed76f5be448594ade1dd37e4d7",
+  "preparationStaticFreeze": "Complete new864 plan snapshot; all runtime/test/transpile checks pending explicit root release"
+}

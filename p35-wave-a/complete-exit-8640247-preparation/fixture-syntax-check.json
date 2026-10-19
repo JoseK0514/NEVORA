@@ -1,0 +1,18 @@
+{
+  "kind": "Static syntax/transpile diagnostics only; emitted output discarded",
+  "sourceSha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "results": [
+    {
+      "file": "initial-fixture.mts",
+      "syntaxErrors": [],
+      "applicationImportsExecuted": false
+    },
+    {
+      "file": "initial-positive-fixture.mts",
+      "syntaxErrors": [],
+      "applicationImportsExecuted": false
+    }
+  ],
+  "databaseInitialized": false,
+  "browserExecuted": false
+}

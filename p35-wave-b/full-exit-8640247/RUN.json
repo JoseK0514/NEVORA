@@ -1,0 +1,38 @@
+{
+  "sha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "branch": "codex/exit-wave-b-8640247",
+  "source": "/workspace/exit-wave-b-8640247",
+  "status": "prepared-runtime-held",
+  "previewOut": "/workspace/paused-previews/wave-b-exit-8640247",
+  "workers": 1,
+  "previewInstancesMax": 1,
+  "matrix": {
+    "required": 3008,
+    "completedBasic": 0,
+    "completedAxe": 0,
+    "axeEveryCell": true
+  },
+  "manualAreas": [
+    "alignment",
+    "stability",
+    "type-colour-copy",
+    "interaction-states",
+    "widths-roles"
+  ],
+  "appFrozen": true,
+  "currentExactSHAFailures": [],
+  "currentGaps": [
+    "Root runtime release pending",
+    "Fresh initial fixture not executed/read-back verified",
+    "No current exact-SHA browser measurements yet"
+  ],
+  "noZeroClaim": true,
+  "initialFixtureSupplementalPayrollRequiredForPositiveActionScope": true,
+  "manualPreparedCases": {
+    "scopedSharedBothEngines": 96,
+    "positivePayrollBothEngines": 18,
+    "insightsExpiryBothEngines": 24,
+    "ordinaryAndReducedTotal": 276,
+    "executed": 0
+  }
+}

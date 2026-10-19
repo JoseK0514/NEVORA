@@ -1,7 +1,7 @@
 {
   "sourceSHA": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
   "candidateReviewedSHA": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
-  "createdAt": "2026-10-19T22:26:46.301363+00:00",
+  "createdAt": "2026-10-19T22:29:00.897008+00:00",
   "scope": "All135 named ledger IDs on combinedClaude4aaa+exact33; static survivor audit, never a zero/exit judgment",
   "rules": [
     "Original report table matching is exact on first ID cell; latest explanatory paragraphs are considered for IS65/66 and aliases.",
@@ -3449,7 +3449,7 @@
       "historicalRows": [],
       "staticStatus": "candidate-repair-present",
       "candidateCommit": "4b041f7",
-      "assessment": "pending focus all five measured submit surfaces; independent Desktop recorded-time/HomeRefresh alias later repaired4314266",
+      "assessment": "pending focus all five measured submit surfaces; independent Desktop recorded-time/HomeRefresh issue was repaired only after33 in4314266 and remains a separate overlap to measure on combined33",
       "codeCommentPointers": [],
       "finalMeasurementStatus": "pending-final-frozen-source",
       "currentDynamicPassClaimed": false
@@ -3632,7 +3632,7 @@
       "severity": "P2",
       "sourceAlias": null,
       "status": "external-repair-ready-static-only",
-      "findingFile": "candidate-findings.md",
+      "findingFile": "candidate-findings-8640247.md",
       "patch": "IS-RC-UPDATES-AUTH-01.patch",
       "noCurrentBrowserClaim": true
     }

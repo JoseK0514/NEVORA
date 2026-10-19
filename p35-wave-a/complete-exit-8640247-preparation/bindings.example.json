@@ -1,0 +1,36 @@
+{
+  "fixtureProfile": "wave-a-complete-v3-combined864-initial-before-listen",
+  "coverage": {
+    "QAOWNER": "REPLACE_WITH_OWN_OWNER_INBOX_COVERAGE_HREF",
+    "AUDIT-M": "REPLACE_WITH_OWN_MANAGER_INBOX_COVERAGE_HREF"
+  },
+  "reviewReplacement": {
+    "QAOWNER": "REPLACE_WITH_OWNER_BOUND_REVIEW_HREF",
+    "AUDIT-M": "REPLACE_WITH_MANAGER_BOUND_REVIEW_HREF"
+  },
+  "fixturesReady": false,
+  "actions": {},
+  "note": "Write populated bindings only under owned PREVIEW_OUT/private-state-jobs, mode600. Do not commit capabilities, passwords, browser storage or PIN values.",
+  "fixtureFingerprint": "REPLACE_WITH_NON_SECRET_BASELINE_FIXTURE_HASH",
+  "needsInboxDiscovery": true,
+  "coveragePositive": {
+    "QAOWNER": "REPLACE_WITH_SEEDED_OWNER_POSITIVE_COVERAGE",
+    "AUDIT-M": "REPLACE_WITH_SEEDED_MANAGER_POSITIVE_COVERAGE"
+  },
+  "copyFull": {
+    "QAOWNER": "REPLACE_WITH_OWN_ACTOR_SPECIFIC_INITIAL_ROUTE",
+    "AUDIT-M": "REPLACE_WITH_OWN_ACTOR_SPECIFIC_INITIAL_ROUTE"
+  },
+  "copyPartial": {
+    "QAOWNER": "REPLACE_WITH_OWN_ACTOR_SPECIFIC_INITIAL_ROUTE",
+    "AUDIT-M": "REPLACE_WITH_OWN_ACTOR_SPECIFIC_INITIAL_ROUTE"
+  },
+  "copyUnavailable": {
+    "QAOWNER": "REPLACE_WITH_OWN_ACTOR_SPECIFIC_INITIAL_ROUTE",
+    "AUDIT-M": "REPLACE_WITH_OWN_ACTOR_SPECIFIC_INITIAL_ROUTE"
+  },
+  "copyUnconfirmed": {
+    "QAOWNER": "REPLACE_WITH_OWN_ACTOR_SPECIFIC_INITIAL_ROUTE",
+    "AUDIT-M": "REPLACE_WITH_OWN_ACTOR_SPECIFIC_INITIAL_ROUTE"
+  }
+}

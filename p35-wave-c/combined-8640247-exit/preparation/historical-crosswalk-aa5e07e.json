@@ -1,0 +1,895 @@
+{
+  "sourceReportsRef": "aa5e07e",
+  "sourceSha": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+  "readySha": "de8b15851d6280fd31fba3db63dcbe976a19584a",
+  "candidateCrosswalkSha": "56570fd0fc5e23503dbb50550af9dfcd965861ec",
+  "historicalIds": 95,
+  "currentAdditionalIds": 2,
+  "exitListIds": 28,
+  "retainedSourceRemainders": [
+    "WR-10",
+    "ST-14"
+  ],
+  "crossOwnerPending": [
+    "WR-14"
+  ],
+  "measuredSourceFindingsAlreadyCodeAddressed": [
+    "TC-WC-28",
+    "WR-WC-25",
+    "ST-13"
+  ],
+  "acceptedLoadingException": "ROUND-3.md:45, Locations/Add location placeholders. WR-13 alert retracted; no patch.",
+  "browserExecutionDuringCrosswalk": false,
+  "previewStarted": false,
+  "testsRun": false,
+  "appEdits": false,
+  "records": [
+    {
+      "finding": "AL-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 62,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 63,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 64,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 65,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 66,
+      "latestSourceTableCell": "Fixed, with the regression AL-14",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 67,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 68,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 69,
+      "latestSourceTableCell": "Partly fixed",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 70,
+      "latestSourceTableCell": "Fixed, with the new AL-15",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 71,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 72,
+      "latestSourceTableCell": "Fixed (by code, not re-measured)",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 73,
+      "latestSourceTableCell": "Closed (decided)",
+      "sourceReportRound": 2,
+      "disposition": "ROUND-2.md:62 shared 48px field size; source closed decided",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 79,
+      "latestSourceTableCell": "Settings hub \u00b7 O \u00b7 1024 and up (measured at 1440, 100% and 200%)",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 80,
+      "latestSourceTableCell": "Account recovery, Clocker recovery \u00b7 O and M \u00b7 320 and 390 at 200%",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 81,
+      "latestSourceTableCell": "Break types, Locations, Clocker devices \u00b7 O \u00b7 320 and 390 at 200% (wherever Add drops under Back)",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "AL-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "latestTableLine": 82,
+      "latestSourceTableCell": "Positions (320, 390 and 1440 at 200%), Clocker devices and Company profile (320 at 200%), Clocker recovery (320 at 200%)",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 104,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 105,
+      "latestSourceTableCell": "**Not fixed (phones)**",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 106,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 107,
+      "latestSourceTableCell": "Fixed (scroll), see ST-13",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 108,
+      "latestSourceTableCell": "**Partly fixed**",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 109,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 110,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 111,
+      "latestSourceTableCell": "**Partly fixed**",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 112,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 113,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 114,
+      "latestSourceTableCell": "Fixed as far as measured",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 115,
+      "latestSourceTableCell": "Handed on",
+      "sourceReportRound": 2,
+      "disposition": "ROUND-2.md:66 desktop placeholder, transferred to Desktop",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 121,
+      "latestSourceTableCell": "Company policies, Owner, 390\u00d7844 (Chromium)",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 122,
+      "latestSourceTableCell": "Company policies, Owner, 1440\u00d7900",
+      "sourceReportRound": 2,
+      "disposition": "retained source-confirmed P2: idle retry label replaced by shorter Save policies while busy; external snapshot patch proposed; browser pending",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 123,
+      "latestSourceTableCell": "Features and Policies, Owner, 390\u00d7844 at 200% text",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 124,
+      "latestSourceTableCell": "Branding, Owner, 390\u00d7844, before hydration",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "ST-17",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "latestTableLine": 125,
+      "latestSourceTableCell": "Break types, Edit dialog after a blocked save, Owner, 844\u00d7390",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 218,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 219,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 220,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 221,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 222,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 223,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 224,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 225,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 226,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 227,
+      "latestSourceTableCell": "**Not fixed**",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 228,
+      "latestSourceTableCell": "Partly fixed",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 229,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 230,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 231,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 232,
+      "latestSourceTableCell": "Partly fixed",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 233,
+      "latestSourceTableCell": "Partly fixed",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-17",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 234,
+      "latestSourceTableCell": "Partly fixed",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-18",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 235,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-19",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 236,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-20",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 237,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-21",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 238,
+      "latestSourceTableCell": "Fixed (non-policy)",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-22",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 239,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-23",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 240,
+      "latestSourceTableCell": "Fixed (shared `a62cc79`)",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-24",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 241,
+      "latestSourceTableCell": "Partly fixed",
+      "sourceReportRound": 2,
+      "disposition": "ROUND-3.md:43 native datetime format remainder accepted",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-25",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 242,
+      "latestSourceTableCell": "Partly fixed",
+      "sourceReportRound": 2,
+      "disposition": "ROUND-3.md:44 shared coordinator spelling remainder accepted",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-26",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 248,
+      "latestSourceTableCell": "Hub (and every `.nv-row__meta` on Wave C) \u00b7 Owner \u00b7 390@100, 320@100, 844\u00d7390@200, 1440@200",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-27",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "latestTableLine": 249,
+      "latestSourceTableCell": "Account recovery from an employee \u00b7 Owner \u00b7 390",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-1",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 104,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-2",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 105,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-3",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 106,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-4",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 107,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-5",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 108,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-6",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 109,
+      "latestSourceTableCell": "**Not fixed**",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-7",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 110,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-8",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 111,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-9",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 112,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 113,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 114,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 115,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 116,
+      "latestSourceTableCell": "Fixed",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 117,
+      "latestSourceTableCell": "Decided",
+      "sourceReportRound": 2,
+      "disposition": "ROUND-2.md:65 and CODEX.md \u00a72b no-access redirect/band flash accepted for this UI round",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "IS-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "latestTableLine": 123,
+      "latestSourceTableCell": "Features & words \u00b7 Owner \u00b7 390",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 94,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 95,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 96,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 97,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 98,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 99,
+      "latestSourceTableCell": "Decided (Codex)",
+      "sourceReportRound": 2,
+      "disposition": "ROUND-2.md:65 and CODEX.md \u00a72b no-access redirect/band flash accepted for this UI round",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 100,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 101,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 102,
+      "latestSourceTableCell": "**Partly fixed**",
+      "sourceReportRound": 2,
+      "disposition": "ROUND-3.md:42 native select remainder accepted",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 103,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "retained source-confirmed P2: Manager from-settings loading Back is still Settings; ready Back fixed; external patch proposed; browser pending",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 104,
+      "latestSourceTableCell": "**Partly fixed** (rest decided)",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 105,
+      "latestSourceTableCell": "Pills decided; band control **Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "ROUND-2.md:64 wrapping filter pills accepted; band Add fix present",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 106,
+      "latestSourceTableCell": "**Partly fixed**",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 107,
+      "latestSourceTableCell": "Decided (sent on)",
+      "sourceReportRound": 2,
+      "disposition": "retained exact misleading Home copy in candidate and ready-wave-c; originally transferred to Desktop, whose isolated Home replacement must supply closure",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 108,
+      "latestSourceTableCell": "**Changed; see WR-24**",
+      "sourceReportRound": 2,
+      "disposition": "Superseded by WR-24/TC-27; 16-character ID cap source repair present",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 109,
+      "latestSourceTableCell": "**Fixed**",
+      "sourceReportRound": 2,
+      "disposition": "historically closed or superseded in source round 2; merged regression check remains",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-21",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 115,
+      "latestSourceTableCell": "Branding \u00b7 Owner \u00b7 every width, Chromium and WebKit (**regression**)",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-22",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 116,
+      "latestSourceTableCell": "Clocker recovery, Account recovery \u00b7 Owner, Manager \u00b7 320 and 390 at 200%",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-23",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 117,
+      "latestSourceTableCell": "Settings hub \u00b7 Owner \u00b7 320 at 200%",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-24",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "latestTableLine": 118,
+      "latestSourceTableCell": "Account recovery from an employee \u00b7 Owner, Manager \u00b7 all widths",
+      "sourceReportRound": 2,
+      "disposition": "source repair present or historically sampled; exact merged browser recheck required",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "TC-WC-28",
+      "sourceReport": "p35-wave-c/round-4/type-colour-copy.md",
+      "disposition": "measured source P1; exact coordinator/candidate repair present in ready-wave-c, merged browser proof pending",
+      "mergedBrowserVerified": false
+    },
+    {
+      "finding": "WR-WC-25",
+      "sourceReport": "p35-wave-c/round-4/widths-roles.md",
+      "disposition": "measured source P1; exact coordinator/candidate repair present in ready-wave-c, merged browser proof pending",
+      "mergedBrowserVerified": false
+    }
+  ]
+}

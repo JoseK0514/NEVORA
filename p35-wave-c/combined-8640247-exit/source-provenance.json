@@ -1,0 +1,29 @@
+{
+  "checkpoint": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "source": "/workspace/inspect-wave-c-combined-8640247",
+  "branch": "codex/exit-wave-c-8640247",
+  "claudeIntegration": "4aaa79383f82a3c6023f9d2a2c2f492ba3152fce",
+  "candidate33": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "oldReadyComparisonOnly": "de8b15851d6280fd31fba3db63dcbe976a19584a",
+  "runtimeReleased": false,
+  "previewStarted": false,
+  "browserStarted": false,
+  "staticProtocolRunOnNewSha": false,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "initializationBinding": {
+    "reusedFrom": "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation",
+    "sourceImports": {
+      "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+      "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+      "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+      "src/test/integration/management-api.ts": "8575a34686d72c0d0d9f569034781915ba722e45d1ae6ec9fc3eb7eacc4891b3",
+      "src/lib/communications/service.server.ts": "22d302752a77c76fcf60b492330e8db6008a66f8bf64efbf00c319980c1457b0",
+      "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
+      "src/lib/data/schedule-templates.ts": "3d2f42c02304b1ea49b394810854c1ddfd41b974b8235aaf59fedeceb2a0067d",
+      "src/lib/data/schedule-health.ts": "1d4599d0bfdcd71092ee8aab9770aecadfc316648d5df4b9a632bb37ada22bef",
+      "src/lib/workspace-presentation/service.ts": "289d83b388a83ae05df40f62fe2b94f70a8a900c9688c7a8e66eae7332690c2e"
+    },
+    "fixtureSha256": "7dee458286676f0b0b7e8bb7d3f36bfbfbfa88a6cda0b7df3a8761e320a76cb5"
+  },
+  "laterProposalsApplied": []
+}

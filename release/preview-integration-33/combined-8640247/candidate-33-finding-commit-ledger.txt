@@ -1,0 +1,33 @@
+6229ad4b IS-P3-03: retain the controlled availability draft after a failed save
+2dfc390c IS-82: preserve withdrawal confirmation for the same-operation retry
+74b527db ST-P3-24: reserve Availability submit labels while saving
+db48fb36 IS-P3-02: reveal and focus failed form outcomes above the phone bar
+69338fda IS-PROFILE-17: reveal user-initiated sign-in recovery before restoring focus
+4b041f7b IS-74: retain the initiating action focus while guarded requests are pending
+ac265b97 IS-77: replace stale timecard counts with a paused or offline state
+6990234e IS-78: provide sign-in recovery after denied employee actions
+f16da255 IS-79: announce pending review and distinguish a signed-out acknowledgement
+ab7d8660 IS-80: reveal calendar recovery beside the initiating action and reuse its command
+21e603bb IS-B12: restore update retry focus and retain the payroll save focus
+ed62b429 TC-B-32: use kit labels for payroll filenames and workflow labels
+3918350e TC-P4-23: raise the statement payday line to the kit callout floor
+7386c45a TC-P4-22: use the desktop kit label role for availability times
+b176ff5c RC-CB-TC-01: use readable kit roles for desktop sidebar labels and credit
+fe77095e TC-WA-16: retain kit text contrast on pending actions
+2e405733 TC-B-16: distinguish an ended session from changed update access
+31f87cd4 TCD-16: apply the reported Employee and Lead desktop text floor
+22ea160b WR-WC-25: preserve dialog action label height on narrow phones
+6dacbe0a ST-13: bound failed-save feedback inside the Wave C phone bar
+0e29e388 ST-WA-7: reserve both labels in the responsive swap submit button
+6e671935 ST-WA-8: reserve the delete shift label while its action is pending
+22f0ba72 IS-RC-DELETE-01: retain guarded delete action focus while pending
+58e100a3 ST-RC-CALENDAR-01: reserve calendar action labels while saving
+e05d6618 ST-RC-ACK-01: reserve update review action labels while pending
+e2d21fb2 ST-RC-CORRECTION-01: hold correction actions steady during the first send
+35c2c0a4 TC-RC-ASSISTED-01: use the kit field edge on legacy assisted recovery
+536dfe62 IS-WA-2: reveal failed action notices after React mounts each outcome
+04430302 IS-WB-34: reveal publication recovery and focus its actual next step
+980e823e ST-WB-15: preserve publication action labels while publishing
+b9567abc IS-RC-COMPOSE-01: retain guarded publication focus while pending
+9ec3adcf TC-RC-PAYROLL-01: use desktop kit roles for payroll next-step guidance
+b68f2501 ST-RC-HOME-01: reserve Home band rows while its private read loads

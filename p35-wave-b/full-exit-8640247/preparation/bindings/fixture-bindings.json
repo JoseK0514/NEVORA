@@ -1,0 +1,138 @@
+{
+  "sourceSHA": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "mode": "static preparation for combined864; no runtime/preview/CI executed",
+  "imports": {
+    "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+    "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/test/integration/management-api.ts": "8575a34686d72c0d0d9f569034781915ba722e45d1ae6ec9fc3eb7eacc4891b3",
+    "src/lib/communications/service.server.ts": "22d302752a77c76fcf60b492330e8db6008a66f8bf64efbf00c319980c1457b0",
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
+    "src/lib/data/schedule-templates.ts": "3d2f42c02304b1ea49b394810854c1ddfd41b974b8235aaf59fedeceb2a0067d",
+    "src/lib/data/schedule-health.ts": "1d4599d0bfdcd71092ee8aab9770aecadfc316648d5df4b9a632bb37ada22bef",
+    "src/lib/payroll/service.ts": "28e8a0286b533aa31638f6b4d6da2a33df056693bb7e168272556f5ca3d220d8",
+    "src/lib/payroll/worker.ts": "3a8bef47ac894b414bb0f83f55b9a5614f2908744abb55f347c989f52effe640",
+    "src/lib/timecards/service.ts": "fdd405b6ede4a102fcd0d480a02835c2914f11d6eab8d43b996b0ae9d3aaac39",
+    "src/lib/period-close/service.ts": "496582db2f13a761c997f440b9c6ea5e918135fc9480a15fe66665a1b43a2512"
+  },
+  "actors": [
+    {
+      "id": "QAOWNER",
+      "role": "OWNER",
+      "seedStage": "base",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "AUDIT-M",
+      "role": "MANAGER",
+      "seedStage": "base",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "AUDIT-LEAD",
+      "role": "LEAD",
+      "seedStage": "base",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "AUDIT-E",
+      "role": "EMPLOYEE",
+      "seedStage": "base",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "AUDIT-LONG",
+      "role": "EMPLOYEE",
+      "seedStage": "base",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "payroll-qa-owner",
+      "role": "OWNER",
+      "seedStage": "payroll",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "payroll-qa-reviewer",
+      "role": "MANAGER",
+      "seedStage": "payroll",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "payroll-qa-b",
+      "role": "LEAD",
+      "seedStage": "payroll",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "payroll-qa-a",
+      "role": "EMPLOYEE",
+      "seedStage": "payroll",
+      "originalLauncherDetailReady": true,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "AUDIT-ON",
+      "role": "EMPLOYEE",
+      "seedStage": "extra",
+      "originalLauncherDetailReady": false,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "AUDIT-BREAK",
+      "role": "EMPLOYEE",
+      "seedStage": "extra",
+      "originalLauncherDetailReady": false,
+      "freshBeforeListenProof": "required"
+    },
+    {
+      "id": "AUDIT-SWAP",
+      "role": "EMPLOYEE",
+      "seedStage": "extra",
+      "originalLauncherDetailReady": false,
+      "freshBeforeListenProof": "required"
+    }
+  ],
+  "sourceProofs": {
+    "audienceMembership": "service.server.ts:52-53",
+    "persistedRecipientGrant": "service.server.ts:190",
+    "initialPublicationOrder": "shared prepare-launcher.py publishes before seed-extra",
+    "basePayrollReviewer": "payroll-fixture.ts:119 review=true approve=true"
+  },
+  "unresolved": [
+    "Before-listen adapter must be applied only in a private external helper, combined with shared bounded transport/dependency substitutions and full provenance.",
+    "Payroll review-only vs approval fixture must be browser-local capabilities response; source reviewer can approve.",
+    "Large seed uses separate new preview before listen and records a different fixture lineage; never add data to an already inspected preview."
+  ],
+  "artifacts": {
+    "initial-fixture.mts": "0366ea23c1dfda9287608e7e0fdd261789438e62afff6d2064183e54756bf6c5",
+    "preview-runtime.private.mjs": "8962b30d3ede7960594e2e3d03ba2590c092103980ac1f8116251f910e60eadb",
+    "preview-runtime.before-listen.patch": "ce6d006f3699ad4f970d0772657b2c9776c231ded0661cbdd4d860cb1baa8f34",
+    "owned-preview.before-listen.patch": "30ab6571be9328424d64f6ae333631f29bacb2018b4c401cce8a49d438afa57d"
+  },
+  "reviewSHA": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "supplementalPayroll": {
+    "enabledBy": "WB_SUPPLEMENTAL_PAYROLL=yes before listen",
+    "helper": "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/bindings/supplemental-payroll.mts",
+    "runtimeVerified": false,
+    "states": [
+      "REVIEW_REQUIRED with real review token, provider rows/totals/no blocking exception",
+      "APPROVED with actual unpublished employee PDF",
+      "FAILED PREPARE job via actual canonical SCHEDULE_CHANGED worker failure"
+    ],
+    "directStatusForcing": false,
+    "positiveActors": [
+      "QAOWNER",
+      "payroll-qa-owner",
+      "payroll-qa-reviewer"
+    ]
+  }
+}

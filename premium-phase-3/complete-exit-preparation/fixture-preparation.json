@@ -98,5 +98,11 @@
       "timeEntries": "One year of weekdays for AUDIT-E and ten large-data people",
       "proof": "Verify intended location and displayed data, not just a seed count"
     }
+  },
+  "ignoredDependencyLink": {
+    "path": "/workspace/inspect-phase3-final/node_modules",
+    "target": "/workspace/NEVORA/node_modules",
+    "sourcePackageLockSha256": "eb022d968acfd69c7c44d5df1ecca537e987e01ef0a945b52645fad6ed1f670c",
+    "rule": "Ignored source link only; approved launcher must dereference physical node_modules inside owned Turbopack mirror. No app files changed."
   }
 }

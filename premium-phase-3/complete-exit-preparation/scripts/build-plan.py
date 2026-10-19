@@ -16,6 +16,8 @@ for file,(prefix,numbers) in areas.items():
   ledger.append({'id':id,'area':file,'sourceReport':str(root/'docs/product/specs/premium-phase-3/inspection'/file),'sourceLine':ref[0] if ref else None,'lastPriorTableRow':ref[1] if ref else None,'status':'pending-final-source-measurement','evidence':[]})
 for id,area,alias in [('IS-P3-01','interaction-states.md','IS-74 Availability surface'),('IS-P3-02','interaction-states.md',None),('IS-P3-03','interaction-states.md',None),('ST-P3-24','stability.md','distinct from P3-ST-24 loading-band finding'),('ST-RC-CALENDAR-01','stability.md',None),('ST-RC-ACK-01','stability.md',None),('ST-RC-CORRECTION-01','stability.md',None)]:
  ledger.append({'id':id,'area':area,'aliasOrDistinction':alias,'status':'pending-final-source-measurement','evidence':[]})
+for row in ledger:
+ if row['id']=='IS-76':row['aliasOrDistinction']='Authoritative ROUND maps IS76 to P3-ST14; separate candidate auth regression IS-RC-UPDATES-AUTH-01 does not redefine it.'
 (out/'prior-findings-ledger.json').write_text(json.dumps({'source':sha,'count':len(ledger),'rules':'Source inspection only. A candidate fix or source-only proof cannot close an owner finding. Every ID needs final-source measured evidence, or remains a gap/open. Payroll wording is suggestions, excluded from defect counts.','findings':ledger},indent=2))
 route_pages=sorted(str(p.relative_to(root/'src/app/app')).removesuffix('/page.tsx') for p in (root/'src/app/app').rglob('page.tsx'))
 route_pages=['/app' if p=='page.tsx' else '/app/'+p for p in route_pages]
@@ -27,6 +29,7 @@ read_families=[
  {'name':'Profile work details','route':'/app/profile','read':'GET /api/employee/profile','states':['loading','ready','offline','paused','503-read','401','403','expired','return-and-retry']},
  {'name':'Calendar disclosure','route':'/app/profile#employee-calendar-title','read':'GET /api/employee/calendar-subscriptions','states':['loading','ready-none','ready-active','offline','paused','503-read','401','403','return-and-retry']},
  {'name':'Updates','route':'/app/updates','read':'GET /api/employee/communications','states':['loading','ready','empty','partial-if-contract-supported','offline','paused','503-read','401','403','expired','return-and-retry']},
+ {'name':'My pay','route':'/app/my-pay','read':'GET /api/payroll/statements','states':['loading','ready','empty','offline','paused','503-read','401','403','return-and-retry']},
  {'name':'Notifications','route':'/app/notifications','read':'GET /api/employee/notifications','states':['loading','ready','empty','partial','offline','paused','503-read','401','403','expired','return-and-retry']},
 ]
 actions=[
@@ -85,7 +88,7 @@ plan['executionOrder'][5]='unchanged checker finishes each cell, external Page.c
 fixes=json.loads((out/'candidate-fix-ledger.json').read_text())
 assert fixes['validationSource']==sha and len(fixes['commits'])==33
 plan['acceptedFixBase']={'candidate':fixes['candidate'],'validationSource':sha,'findingCommits':33,'ledger':'candidate-fix-ledger.json','previousTargetedProofsCheckpoint':'b9567abc26b977a517b77622a1661b16172f5b16','provenanceAssessment':'freeze-update-8640247.json','fullCurrentBaselineRequired':True}
-plan['largeData'].update({'texts':[100,125,150,200],'requiredBriefCellsAt100And200':160,'legacyAdditionalCellsAt125And150':160,'totalCells':320})
+plan['largeData'].update({'cells':320,'texts':[100,125,150,200],'requiredBriefCellsAt100And200':160,'legacyAdditionalCellsAt125And150':160,'totalCells':320})
 plan['sharedManagementNormalSupplement']={'scopeFile':'normal-shared-scope.json','cells':480,'axe':True}
 plan['reconciledPhoneBaselineCells']=5280
 plan['staticCandidateAudit']={'sha':sha,'all135Crosswalk':'historical-all-135-crosswalk-8640247.json','extraCandidateFindings':['IS-RC-UPDATES-AUTH-01']}

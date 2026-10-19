@@ -1,0 +1,60 @@
+{
+  "source": "/workspace/exit-desktop-8640247",
+  "ref": "codex/exit-desktop-8640247",
+  "sha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "tree": "fc83886c2f3d2d7a2f2d6ef6894aedf469f01ac1",
+  "sourceClean": true,
+  "scope": {
+    "baseline": 9888,
+    "supplementalNormal": 1656,
+    "normalUnique": 11544,
+    "separateLarge": 192,
+    "automatedUniqueIncludingLarge": 11736,
+    "manual": "all original five-area/state/keyboard/focus/reduced-motion/font/collapsed/selected-item obligations preserved"
+  },
+  "oldReadySHA": "724b430f3693bc5a9d37677ad250581e33d0f866",
+  "acceptanceInheritance": false,
+  "executedOnThisSHA": 0,
+  "runtimeReleased": false,
+  "missingOwnFixes": [
+    "ST-P4-13 5b66aa3",
+    "TC-DESKTOP-KBD-01/TC-P4-24 28266eb",
+    "IS-P4-19 4314266+compiler correction",
+    "IS-P4-11 c841b33"
+  ],
+  "original8012RemainsNonzero": true,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "currentSourcePriorIDs": 111,
+  "dependencies": {
+    "sourceIgnoredSymlink": "/workspace/verify-preview-33/node_modules",
+    "ownerVerifiedStable": true,
+    "materializedMirrorRequired": true
+  },
+  "beforeListenAdapter": "/workspace/nevora-inspection-runtime/prepare-before-listen.py",
+  "scriptHashes": {
+    "collection-policy.mjs": "ce39d6da6dc2a04b27c27d1eaaf69ca028b192566cc7f9310de11f1e7499adf2",
+    "read-guard.cjs": "1e92a1e114bc7aaf7f5b7fb872008e80ba3315423255355fbce9af44a54f5227",
+    "after-check-collector.mjs": "604df032d9af6b2645add473556734e8e3dd0f79044c6019a22c9513d81a3890",
+    "geometry-measure.mjs": "648390bfabcc3960755086917ece3dbf01c290ff8a232de26fd33041fc4ed0bb",
+    "serial-baseline.mjs": "74260cbe016bb0592ad900281c9ef22b023dfdf4890c26b0d59f772a370f5008",
+    "recheck-inbox.mjs": "2792271493ccf85833c7ad9c7a0f72f9919f36193c61b9366554c00144dcf662",
+    "recheck-header.mjs": "dbf47fb133efc1bfacc128bd6f73f90170679f424eaade8eb6fa511ce2c82acf"
+  },
+  "preparationChecks": "Static source/plan generation only; no browser/runtime/CI or tests executed.",
+  "boundedCombinedSupplement": {
+    "cells": 62,
+    "module": "combined-scoped-desktop.mjs",
+    "executed": 0,
+    "scope": "IS19,IS11,TC28actualScheduleToday,TC34footer,TC25failedwording,ST13ordinaryopening+heldread/privatefocus; exact current source, negative assertions preserved"
+  },
+  "beforeListenWrapper": "/workspace/nevora-inspection-runtime/launch-before-listen.sh",
+  "beforeListenReceiptSchema": {
+    "file": "inspection-initial-fixture.json",
+    "checkpoint": "sourceImportSHA",
+    "prelisten": "initializedBeforeListen",
+    "mode": "fixtureMode",
+    "sourceHelperHash": "extraSeedSha256",
+    "counts": "fixtureCounts",
+    "identity": "fixtureIdentity"
+  }
+}
