@@ -1,3 +1,5 @@
+2026-10-19 20:16 UTC · requested ordered merges complete locally: coordinator4d469a4 →9a35168, backendda2a4e5 →cf066dc, Profileea58610 →b444813; separate initial-read commit **c34043b**. Candidate frozen for full gates. npmci/typecheck/lint pass (0 warnings), full one-worker tests running, browser checks pending. [Exact candidate and evidence](release/publish-c34043b/README.md). New Wave A7f75dc4 remains excluded. This task will publish after recording the gates; earlier verification-only stop is superseded.
+
 **Publishing now — Jose’s explicit instruction, 2026-10-19 20:09 UTC.** This task owns the requested publication sequence from remote candidate `0e01046`: coordinator `4d469a4`, backend `da2a4e5`, verified-zero Profile `ea58610`, then a separate authorized `manager-profile.tsx` initial-read commit. Run locked install, typecheck, lint, full tests and merged browser checks before pushing `codex/release-candidate`. Previously observed planner/backfill timeouts must be rerun file-by-file with one worker. New Wave A `7f75dc4` is excluded unless its exact exit becomes zero. This supersedes this task’s earlier verification-only stop/handoff. Device access remains a proposal: no deploy or exposure.
 
 **This independent verification task stopped at 2026-10-19 20:06 UTC.** All owned tests/previews are stopped; results and exact resume inputs are saved in [the checkpoint](release/verification-checkpoint-2026-10-19/queue.json). Publication remains with the existing parallel release task; local `bf6c030` is preserved as `codex/verification-bf6c030` and was not pushed over its work. Remote candidate is still `0e010464aeb5f532981ac6071c48e1527e9419db` at the last successful fetch. This is **not the all-six release result**.
@@ -40,6 +42,8 @@ Reports branch: `codex/inspections`. Jose's October 19 rolling-merge instruction
 - Merge readiness currently: 1/6 verified (Profile `ea58610`, Mac exit round 4). Profile initial wiring waits for both Profile and backend; dead CSS cleanup waits for Wave C and a `src/` class-use search. Final every-page/five-area sweep, build, full tests and `test:dev:production` wait for all six chats.
 
 ## Conflicts for Claude
+
+Current requested backend mergecf066dc: both recurrent conflicts resolved from existing source-owner directions. Coverage stays byte-identical to Wave A’s prescribed test. Layout preserves coordinator4d469a4’s current script/data-text-step plus the prescribed async/error hook. [Complete sides and rationale](release/merge-5-backend-da2a4e5/resolution.md). No unresolved conflict in frozenc34043b.
 
 Wave A `7679133` ROUND.md explicitly prescribes its Coverage test, whose blob `18e3861` equals the existing candidate test. The coordinator supplies the root-layout file at `8c4264c`. Both prescriptions were applied verbatim to local verification snapshot `bf6c030`; no newer Wave A UI was merged. Publication and complete gates remain pending in the other release task.
 
@@ -129,3 +133,5 @@ Wave C round 4 has 0 newly verified defects so far, with incomplete coverage. �
 2026-10-19 20:14 UTC · Phase 3 round 4 on f691decb5496377a35ca7777d3025674f45bb94e · P0 0, P1 5, P2 0 · not zero
 
 ID cross-reference: this cloud report’s **TC-P3-32 means Availability’s From/Until labels** (the chat calls those TC-P3-33 in round 5). The chat’s separate TC-P3-32 concerns dates. Cloud **ST-P3-24** means the Availability pending-button jump; the chat’s **P3-ST-24** is a placeholder item. Preserve these distinct IDs when re-checking.
+
+2026-10-19 20:16 UTC · post-merge Profile initial-read c34043b · install/type/lint pass; full tests/checks running · publication pending
