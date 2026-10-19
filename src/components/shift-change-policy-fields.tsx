@@ -79,7 +79,7 @@ export function ShiftChangePolicyFields({
                 <div><dt>How requests are approved</dt>
                 <dd>
                   {current?.mode === "AUTOMATIC_WHEN_VALID"
-                    ? "Automatically, when valid"
+                    ? "Automatically when valid"
                     : current?.mode === "MANAGER_REVIEW"
                       ? "A manager reviews each one"
                       : "Unknown"}

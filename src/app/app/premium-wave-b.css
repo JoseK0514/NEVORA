@@ -560,7 +560,9 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .wb-search > input:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u):not(.wb-t) { height: auto; min-height: 3rem; padding-block: var(--nv-s-2); }
 /* AL-B23: At a glance takes two, three or six columns by the card's own width, so no row is left with holes. */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card:has(> .wb-glance) { container-type: inline-size; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: minmax(0, 1fr); }
+/* TC-B-02: two columns only once a cell can hold its value at this text size. */
+@container (min-width: 21rem) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @container (min-width: 34rem) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @container (min-width: 62rem) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-glance__label, .wb-glance__detail) { hyphens: manual; }
@@ -612,3 +614,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :
 @media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal.nevora-portal:has(.wb-page) .page-frame .form-success[role="status"]:not(form *) { bottom: calc(68px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* ---------- Round 3 fixes (type, colour and copy) ---------- */
+/* TC-B-27: Payroll runs (Owner and Manager) at narrow widths and large text: totals stack instead of clipping
+ * whole amounts; amount lines and names wrap at word boundaries; the import schema name may break. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-totals { grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-lines > div { flex-wrap: wrap; column-gap: var(--nv-s-3); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :is(.pw-employee-amount summary strong, .pw-run-option strong) { overflow-wrap: break-word; word-break: normal; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-import-format .pw-small { overflow-wrap: anywhere; }

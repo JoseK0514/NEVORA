@@ -84,7 +84,7 @@ export default async function ScheduleTemplatesPage({
         <p className="form-error" role="alert">
           <WarningCircleIcon size={22} aria-hidden="true" />
           <span>{params.error === "save"
-            ? "That template could not be saved. The name may already be in use."
+            ? "Couldn’t save that template. The name may already be in use."
             : params.error === "unavailable"
               ? "That template is no longer available. Choose an active template."
               : "Enter a valid template name and schedule week."}</span>

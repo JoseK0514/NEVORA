@@ -184,9 +184,9 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
       const next = await action(data);
       if (next.status === "saved") { setRevision(next.revision); setMessage({ tone: "saved", text: "Policy saved." }); router.refresh(); }
       else if (next.status === "invalid") setMessage({ tone: "error", text: next.fieldErrors.map(item => plain(item.message)).join(" ") });
-      else setMessage({ tone: "conflict", text: "This policy changed. Reload and review the current values before saving again." });
+      else setMessage({ tone: "conflict", text: "This policy changed. Reload to see the current values, then enter your changes again." });
     } catch {
-      setMessage({ tone: "conflict", text: "Couldn’t save the policy. Reload it before saving again; your entries are kept." });
+      setMessage({ tone: "conflict", text: "Couldn’t save the policy. Reload to see the current values, then enter your changes again if they’re missing." });
     } finally { busy.current = false; setPending(false); }
   }
   return <form onSubmit={send} className="wb-form" aria-busy={pending || undefined} data-order-error={orderError || undefined}>

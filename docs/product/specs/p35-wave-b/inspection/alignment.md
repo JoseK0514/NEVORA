@@ -148,3 +148,68 @@ October 19, 2026 · build `2e7495c` on the frozen preview · same accounts. Chro
 - **Toast (shared).** On desktop the toast's right edge (1000 at 1024) sits 24 px past the content column (976).
 
 Zero open P0, P1 and P2 in alignment and geometry: **no** (2 P1: AL-B05, AL-B22; 9 P2: AL-B16, AL-B17, AL-B20, AL-B23 to AL-B28).
+
+## Round 3 (exit)
+
+October 19, 2026 · build `9f32ca6` on the frozen preview · same accounts, plus `AUDIT-LONG`, `payroll-qa-owner` and `payroll-qa-reviewer`. One Chromium sweep of every Wave B page and role: 109 loads at 320, 390, 844×390, 768, 1024 and 1440 for Owner and Manager pages, and 320, 390 and 844×390 for Lead and Employee pages (cut 5). The sweep included the Templates and Scheduling rules states, both redirects (Employee on Insights and Manager on Payroll settings both land on `/app`), and Payroll runs for the payroll reviewer and the Owner. Separate runs covered 150% and 200% text, the toasts, the section jumps, the Withdraw and Remove confirms, and a failed Acknowledge. WebKit spot checks covered 13 loads (Insights 390 and 1024, Scheduling rules 390 and 1440 for Owner and Manager, Payroll settings 320 and 1440, Update detail 390 and 1440, Employee Update detail 390, Compose 390, Templates 390 and 1440). One browser ran at a time. Every non-GET request was aborted, except the read-only `POST /api/reports`; the one Acknowledge POST was aborted. Nothing was saved. Shared shell elements were skipped. Crops are in `crops/r3/`, JSON in `out/r3/`, and scripts (`r3-sweep.mjs`, `toast3.mjs`, `selects.js`, `facts.js`, `vshot.mjs`) are in the same folder as before. Landscape geometry comes from measurements at 844×390. A full-page capture resizes the viewport, so it drops the landscape layout and isn't used as evidence.
+
+**Verdict.** 10 of the 11 open IDs are fixed. AL-B16 is still open: the fix loses a specificity contest, and its padding now pulls the values 20 px in. The full pass found one P1. On Payroll settings (Wave B's `.wb-auto` selects), the chevron sits on the text, because the select's 40 px right padding is overridden by 14 px. It found three P2s: Scheduling rules row names don't line up with their fields from 1180, the landscape toast floats mid-screen or covers the tab bar, and the 768 save bar button wraps. Count: **0 P0, 1 P1, 4 P2 open.**
+
+### Status of open IDs
+
+| ID | Status | Measured now | Where |
+|---|---|---|---|
+| AL-B05 | Fixed | The wrapper is `display: contents`. "Scheduling rules saved.", "Coverage period added.", "Template saved." and "Template archived." all show as the toast, at full opacity for about 4.5 s, at 390, 844×390, 1024 and 1440. Gaps stay at 16 (Templates: week card 413 → next card 429; Scheduling rules: band 269 → navigation 285). | `premium-wave-b.css:441` |
+| AL-B06 | Fixed (now visible) | The toast sits 8 px above the save bar: 390, toast 636–692 and bar from 700; 1024 and 1440, toast 744–800 and bar from 808. Landscape: see AL-B30. | `:443-448` |
+| AL-B16 | **Not fixed** (P2) | The policy facts divider is still inset 20 on **both** sides (Manager, 390 and 1440). The new `margin-right` at `:555` computes to 0. `:11`, `.wb-page…×7 .nv-content :is(…, dl, …){margin:0}`, has specificity (0,8,1) and beats `.wb-facts` (0,8,0). `:556` still applies, so the values now end **40 px** from the card edge (they were at 20). Every other right-aligned item in the card ends at 20–23. Crop: `crops/r3/rules-facts-390-m.png`. | `:11, 555-556` |
+| AL-B17 | Fixed | "Name a template" fits on 1 line at 320 (248 px), and its arrow is on the line's centre (1143 = 1143). "Save company preferences" (2 lines at 320) is payroll wording, deferred and not counted. | `templates/page.tsx` |
+| AL-B20 | Fixed | The chevron grows with text: 27 px at 150% and 36 px at 200%. "Find a person" now matches the fields beside it: 72 px at 150% and 96 at 200%, with 8 px padding. A related defect at 100% is filed as AL-B31. | `:558-560` |
+| AL-B22 | Fixed | Section links put the card top at 84 (16 under the 68 px header) on phones, and at 84 (19 under the 65 px header) at 1024 and 1440. The heading lands at 104 and takes focus. Landscape: card at 96. `#rules-coverage` and `#rules-policy` stop at the end of the page. | `:310-312` |
+| AL-B23 | Fixed | At a glance shows 2 + 2 + 2 at 320, 390 and 768, 3 + 3 at 844×390 and 1024, and 6 at 1440 (Owner and Manager; WebKit the same). Value baselines in a row differ by 0. No empty cells. | `:561-565` |
+| AL-B24 | Fixed | At 768 the label and note are at 260, on the pill edge, as on phones. At 1024 and 1440 they're at the link text (280, 318). | `:550-553` |
+| AL-B25 | Fixed | Report period and Export have equal heights: 282 / 282 at 1024 and 274 / 274 at 1440 (WebKit 282 / 282). | `:126` |
+| AL-B26 | Fixed (different fix) | At 320, Remove wraps onto its own line at the end of the row. Its text ends 20 px from the card edge, as at every other width. Nothing sits off the text edge. Crop: `crops/r3/rules-period-320.png`. | `:568` |
+| AL-B27 | Fixed | Withdraw's confirm spans the card's text width: 280–956 at 1024, 458–1226 at 1440 and 280–700 at 768 (20 / 20). On phones it's 36–354. The buttons are 192 px, matching "Edit update" above. | `:570` |
+| AL-B28 | Fixed | Insights jumps put the card at 84 on phones and desktop (16 and 19 under the header), and at 96 in landscape, the same as Scheduling rules. | `:153-154` |
+
+### New findings, worst first
+
+| ID | Page · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL-B31 | Payroll settings · O · 320, 390 and every width at 150–200%; Scheduling rules (Owner's location, day and approval selects) at 125%+ on 320 | Selects inside `.wb-auto` | The chevron (18 px, 14 px from the right edge) is drawn **on the text**: each select's right padding computes to **14 px**, not 40. At 320 and 100%, "No provider preference saved", "Neutral instructions · compatible…" and "No channel preference saved" run 18 px under the chevron. At 390 "Neutral instructions…" does too. At 150% on 390, four selects collide by 27 px. At 1440 and 200%, the bank profile select collides by 36 px. WebKit is the same, and worse: it has no ellipsis, so the chevron covers a letter. The Scheduling rules selects clear by 5 px at 320 and collide from 125%. | `crops/r3/pay-sel1-320.png`, `crops/r3/pay-sel3-320.png`, `crops/r3/pay-sel3-320-webkit.png` | `premium-wave-b.css:280` sets `padding-inline:14px` with specificity (0,14,1): `:is()` takes its most specific argument (`input:not()×4`). That beats the select rules at `:284` `padding-right:40px` and `:558` `calc(1.125rem + 22px)`, which are (0,13,1). | Add `.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto select:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u):not(.wb-t) { padding-right: calc(1.125rem + 22px); }` (0,15,1). Text then ends 8 px before the chevron at every text size. Or change `:280` to `:where(input:not(…), select, textarea)`. | P1 |
+| AL-B29 | Scheduling rules · O, M · 1180 and up (1440 measured) | Setting rows in Location staffing and Weekly hours | The name block is centred on the whole row, label included, not on the field. At 1440: name 399–443 (centre 421), the field's label 383–403, field 411–459 (centre 435). "Main Office" and "Fictional Owner" sit between the label line and the field, **14 px** above the field's centre and 16 px below the label's top. They line up with neither. The checkbox and suffixes centre on the field. WebKit is the same. | `crops/r3/rules-staff-1440.png`, `crops/r3/rules-hours-1440.png` | `:373` `.wb-setting{…align-items:center}` | In the 1180 block, set `.wb-setting{align-items:end}` and add `.wb-setting__name{min-height:3rem;justify-content:center}`. The name block then centres on the 48 px field (its centre lands on 435). | P2 |
+| AL-B30 | Scheduling rules and Templates · O · landscape 844×390 | Success toast | **Scheduling rules:** the toast is lifted for a save bar that's static in landscape (AL-B21), so it floats at **182–238** of 390, over the band summary, 84 px above the tab bar. **Templates:** the toast sits at **310–366** and covers the tab bar (322–390) by **44 px**, hiding "Team" and "More" for about 5 s. | `crops/r3/toast-844x390-_app_schedule_settings_saved_1.png`, `crops/r3/toast-844x390-_app_schedule_templates_saved_1.png` | Scheduling rules: `premium-wave-b.css:443-444` includes the landscape query in the save-bar lift. Templates: the shared `portal-motion.css:185` (`bottom:24px`) applies, because the phone rule at `:199` is `max-width:760px` only. | Drop the landscape clause from `:443`. Add `@media (max-height:430px) and (orientation:landscape) and (pointer:coarse){ html body .app-shell.nevora-portal.nevora-portal:has(.wb-page) .page-frame .form-success[role="status"]{ bottom:calc(68px + var(--nv-s-2) + env(safe-area-inset-bottom,0px)); } }`. The toast then sits 8 px above the tab bar (258–314) on both pages. Also tell the coordinator about the shared `:199` landscape gap. | P2 |
+| AL-B32 | Scheduling rules · O, M · 768 (761 to about 900) | Save bar button "Save staffing and hours" | The note and the button each get **208 px** (`flex:1 1 12rem`). The button label wraps to **2 lines** ("Save staffing and / hours") inside the 52 px button. At 1024 it's 231 px and fits on 1 line. Phones hide the note. | `crops/r3/rules-savebar-768.png` | `:335-336`; label at `wave-b-forms.tsx:108` | `:336` → `.wb-savebar > .nv-btn{flex:0 0 auto}` and `:335` → `flex:1 1 0`, so the button keeps its 1-line width (about 240) and the note takes the rest. Or hide the note below 1024, as phones do. | P2 |
+
+### Checked and correct this round
+
+- **Frame, on every page and role:** cards at 16 / W−16 on phones, 16 px gaps (16 + bar + 16 around the sticky bar), and card radius 20 / 16. Band overlap is −72 on phones, −56 from 761 and −32 in landscape. Flat bands sit 16 above the first card. The band text sits on the card text at every desktop width. Measured for Owner and Manager at all six widths, and for Lead, Employee and AUDIT-LONG at 320, 390 and 844×390.
+- **Insights:** tables overflow 0 and names take 2 lines at most. Period summary: values on 1 line at every width, with shared baselines from 768 (1317 / 1317 / 1317). The icon sits on the first line's centre (0.5; WebKit 0). Paired desktop cards have equal heights. The date fields are 16 apart, with tops equal.
+- **Templates (all five states):** the notices are 16 under the week card, with text at 54. The 44 px "Review schedule" target holds. The stepper and columns are as in round 2. Templates' last row ends ragged at 1440 (629 against 749). There's no card below it, and stretching it would only add blank space inside the empty state, so it isn't filed.
+- **Scheduling rules:**
+  - Rows stack until 1180.
+  - The period's day tile is centred within 0.5, and Remove is 1.7 px off the title's cap centre on desktop.
+  - The Remove confirm is inset 20 / 20 at 320 and starts at the text edge (76) at 1440.
+  - The `?error=invalid_hours` notice is 16 under the band, and the navigation and first card share a top (357).
+  - The landscape bar is static, 16 from the cards.
+- **Update detail:** the confirm is covered above. After a failed Acknowledge, the "Result not yet confirmed" notice is 16 under the review card at 390 and 1440, on the card edges, with its button on the text column (72). Recipients and the managing note are as in round 2.
+- **Compose:** fields are 16 apart, with the counters on the label row. All selects at 100% clear the chevron, and at 200% the ellipsis ends before it. The Lead and Employee views at 320, 390 and landscape match the Owner's frame.
+- **Payroll settings (QAOWNER and payroll-qa-owner):** fields share tops in every row at 844, 1024 and 1440 (dFieldTop 0, 16 px apart). Fields are 48 px, 72 at 150% and 96 at 200%. The section head is on the band text.
+- **Payroll runs (payroll reviewer and Owner):** identical geometry at every width. No regression.
+- **WebKit:** matches Chromium within 1 px on every spot-checked load. The 0.9 px head-baseline difference is font metrics, as before.
+
+### Not covered
+
+- Saved template rows: there are no saved templates, and creating one would be a write.
+- Loading placeholders: stability's area.
+- Employee and Lead pages from 768 up: cut 5.
+- Firefox: cut 6.
+
+### Outside my area, noticed in passing
+
+- **Interaction:** after a failed Acknowledge (POST aborted), focus ends on `BODY` at 390 and 1440. It doesn't move to the "Result not yet confirmed" notice.
+- **Type:** on Insights, "Time off and unable to work" says "No requests in this period." in small muted text, while the card beside it, "Shift changes and coverage", sets its empty sentence in the 17 px lead.
+- **Coordinator:** the shared page toast (`portal-motion.css:199`) treats landscape phones as desktop. See AL-B30.
+- **Dev only:** both redirects log a Next dev `Performance.measure` negative-timestamp page error.
+
+Zero open P0, P1 and P2 in alignment and geometry: **no** (1 P1: AL-B31; 4 P2: AL-B16, AL-B29, AL-B30, AL-B32).
