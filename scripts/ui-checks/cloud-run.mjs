@@ -114,7 +114,7 @@ async function batch(meta,job,width,browser,pass,text='100,125,150,200',routes=j
 }
 async function work(branch,index) {
   const large=branch==='premium-phase-1-large';
-  const keyName=branch,branchName='claude/'+(large?'premium-phase-1':branch),source='/workspace/nevora-sources/'+(large?'premium-phase-1':branch),out=index===0?'/tmp/nv-phase1-debug':'/tmp/nv-'+branch;
+  const keyName=branch,branchName='claude/'+(large?'premium-phase-1':branch),source='/workspace/nevora-sources/'+(large?'premium-phase-1':branch),out='/workspace/nevora-previews/'+branch;
   const prior=await exists(join(stateRoot,keyName+'.json'))?JSON.parse(await readFile(join(stateRoot,keyName+'.json'),'utf8')):null;
   const meta=prior??{key:keyName,branch:branchName,source,out,large,commit:git('rev-parse','origin/'+branchName),toolsCommit:git('-C',tools,'rev-parse','HEAD'),startedAt:new Date().toISOString(),status:'Starting preview',batches:[]};
   metas.set(keyName,meta);await save(meta);
@@ -124,7 +124,7 @@ async function work(branch,index) {
   try{
     if(!await exists(source)){git('worktree','add','--detach',source,meta.commit);execFileSync('cp',['-al',join(tools,'node_modules'),join(source,'node_modules')]);}
     if(!await exists(join(out,'route-inventory.json'))){
-      if(index!==0){
+      {
         const log=join(stateRoot,keyName+'-runtime.log');let readyResolve,readyReject;
         const ready=new Promise((r,j)=>{readyResolve=r;readyReject=j;});
         const running=run(join(tools,'scripts/ui-checks/preview-runtime.mjs'),[],{tsx:true,log,env:{PREVIEW_OUT:out,PREVIEW_SOURCE:source},onChild:child=>{runtime=child;meta.runtimePid=child.pid;},onOutput:chunk=>{const match=/PREVIEW_READY (http:\/\/127\.0\.0\.1:\d+)/.exec(chunk);if(match)readyResolve(match[1]);}});
@@ -157,7 +157,10 @@ async function work(branch,index) {
 console.log('CLOUD_RUN_STARTED '+new Date().toISOString());
 // Refresh all remote tips in one git operation, then freeze them per preview.
 git('fetch','origin');
-const workers=branches.map(work);
-await Promise.allSettled(workers);
+// /tmp is memory-backed in this executor. Keep app/dependency mirrors on disk
+// and limit whole previews, not just individual browser processes.
+const queue=['premium-phase-1','p35-profile-6cdee8','premium-phase-1-large','p35-wave-a-1283c8','p35-wave-b-808dfd','p35-wave-c-93e13c','p4-desktop-240fe0'];
+async function consume(){while(queue.length){const branch=queue.shift();await work(branch,branches.indexOf(branch));}}
+await Promise.allSettled(Array.from({length:3},consume));
 await publish('all branch workers finished');
 console.log('CLOUD_RUN_FINISHED '+new Date().toISOString());
