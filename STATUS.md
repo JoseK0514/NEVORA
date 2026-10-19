@@ -1,7 +1,7 @@
-## Claude, start here — 2026-10-19 20:28 UTC
+## Claude, start here — 2026-10-19 20:35 UTC
 
-- Current publishing task has integrated latest coordinator `c9d58d5` (app676358c), backend `da2a4e5`, verified-zero Profile `ea58610` (appcaef395), and separate authorized Profile server-initial-read commit `4ff37e5`, at local candidate **23fcdc3**. Latest premium CSS matches the coordinator exactly. npmci/typecheck/lint pass; the full one-worker suite and fresh combined checks are running. Build/production-absence scan passes:2298 artifacts, all5 markers absent. The parallel publisher’s separate `c34043b` checkpoint and all its records are preserved; no branch is force-pushed. At publication, fetch and preserve any first-published remote candidate.
-- **Wave A7f75dc4 is not zero / not merged.** ST-WA-7/8/9/10 targeted rechecks pass. New **ST-WA-11 P1**: a pending Delete button held at844 retains min-width772px after narrowing to320, inside a248px card; its label is clipped in both browsers at100/200. Abort clears the hold and restores248px. [Five explicit-scope reports and16 held cases](p35-wave-a/round-2-7f75dc4/README.md). Strict source/mirror guard and owned PostgreSQL shutdown pass.
+- Publishing target is now **8e18a95**, with application gates on0bdaa4d: latest fetched coordinator227150b, backendda2a4e5, verified-zero Profileea58610/appcaef395 and separate initial-read4ff37e5. Latest premium CSS equals coordinator blobc72c855 exactly.8e18a95 only explicitly retains the original backend Coverage locator assertion; focused Coverage6/6, TypeScript and focused lint pass; application/build/config bytes match0bdaa4d. npmci/type/lint/build and2298-artifact/5-marker absence pass. Full one-worker suite and180-cell merged checker are running;40 fresh settled page captures and8 More cases pass. Earlier23fcdc3 full run7351 pass/1 backfill timeout; affected file68/68 passes alone without changing limits. The parallel publisher’sc34043b record is preserved; remote RC was still0e01046 at20:31. No force push; preserve any first-published remote candidate at publication.
+- Latest Wave A **a05f26a is not zero / not merged**. All16 pending rechecks pass, including ST-WA-11’s844→320 width clamp (Delete248px;Swap288px, both engines/100/200). New **TC-WA-15P1**:46 enabled fields acrossAdd/Edit shift,New employee,PIN andUnable to work use#D5DAD9 on white,1.413:1 against the required3:1. Coordinator/shared-kit owner; Wave A coordinates its screens. This cross-references Wave C’s relatedTC-WC-28 shared-style symptom. [Five explicit-scope reports](p35-wave-a/round-2-a05f26a/README.md). No full zero sweep is claimed. Earlier7f75dc4’s ST-WA-11 report is preserved; its fix now passes. Strict source/mirror guard and owned PostgreSQL shutdown pass on a05f26a.
 - Profile is the only verified zero source exit available to this publishing task. Phase3, WaveB, WaveC and Desktop exits remain with the independent inspection loop; their incomplete results are not zero. Candidate shared-shell type-floor findings remain open; fresh current-source combined reports will name each owner.
 - Candidate-only UI commits are the already authorized lint ref cleanup9df0f47 and Profile initial read4ff37e5. No additional UI-fix permission is inferred from the paused-Claude plan. Device setup uses DEVICE-CHECKLIST-REVIEWED.md and still waits for Jose’s explicit approval; nothing deployed or exposed.
 
@@ -40,6 +40,12 @@ Parallel release task status (current, 2026-10-19 18:56 UTC): requested Wave A `
 Reports branch: `codex/inspections`. Jose's October 19 rolling-merge instruction authorizes merges and pushes to `codex/release-candidate`, plus exactly the three listed candidate-only UI fixes. Source branches remain read only. No `main` or `claude/*` merge/push, deployment, tunnel or device exposure is authorized. This supersedes the earlier inspection-only boundary and rehearsal order.
 
 ## Rolling release candidate
+
+Current local publishing target8e18a95 integrates coordinator227150b, backendda2a4e5 and verified-zero Profileea58610. [Current exact-source evidence](release/merge-4-profile/README.md). Source readiness is1/6 verified (Profile); the explicitly requested old Wave Ac05e0c7 remains in the candidate. Every newer Wave A candidate failed its measured exit. Other source exits remain incomplete/not zero. The backend merge conflicts are resolved under Jose’s wording instruction and the supplied coordinator layout. The current source has no unresolved Git merge conflict.
+
+The final gate uses build plus the production artifact marker scan. The retired Inbox flag and absent test:dev:production script are not gates. Device setup uses the reviewed checklist and remains a proposal pending Jose’s approval.
+
+### Historical published0e01046 checkpoint
 
 - Prior rehearsal remote head: `bec0ed4e64be7a4db3351973e1dc9993eeb90e8b` (base + Profile, unvalidated). Its history is recorded in [the retained rehearsal report](release/bootstrap/rehearsal/RELEASE-CANDIDATE-2026-10-20.md); [the earlier rehearsal evidence](release/bootstrap/rehearsal/MERGE-REHEARSAL-2026-10-19.md) is also preserved verbatim. Historical paths and results there belong to those older sessions, not this workspace or candidate.
 - Current Wave A candidate `0e01046`: recreated from coordinator `a69dff2`, merged explicitly requested Wave A `c05e0c7`, added lint cleanup `9df0f47`, then refreshed coordinator through `e7671e6`. Latest coordinator `portal-premium.css` matches blob `ecf0761a040924f1613ce1237c6168dbba035c07` exactly. The older unverified Profile rehearsal was not carried forward.
@@ -82,18 +88,18 @@ Teardown: revoke the tunnel/access rule, stop the local app and its owned databa
 
 ## Queue (priority order)
 
-| Chat | Branch | Fetched head | Handoff |
-|---|---|---|---|
-| Phase 3 | `claude/premium-phase-1` | `5f6ed19b10127158bc4f4b3fc1fe1af8e3913309` | round4 non-exit handoff; newer coordinator/CSS sync needed |
-| Wave A | `claude/p35-wave-a-1283c8` | `76514905153c906bb76efc45808426e9d484cb64` | round 2 exit recheck pending on new ST-WA-8 fix; not zero |
-| Wave B | `claude/p35-wave-b-808dfd` | `564d19380e933278c73bb79cb1ea239465e0ab89` | round4 exit; status open; exact target9bd265e |
-| Wave C | `claude/p35-wave-c-93e13c` | `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8` | round 4 exit full sweep incomplete; not zero |
-| Profile | `claude/p35-profile-6cdee8` | `ea58610bf3bdc85319895689c3d88e064f6a76d5` | status zero; exit round 4 Mac five-area reports verified; exact SHA ready |
-| Desktop | `claude/p4-desktop-240fe0` | `8012d9790e72987140f939c7d70e1df9612ea009` | round 5 exit requested; not zero yet |
+| Chat | Source / nominated app commit | Current gate |
+|---|---|---|
+| Phase3 | coordinator227150b, exit round5 | Integrated; independent source exit open |
+| Wave A |a05f26a, exit round2 | Not zero:TC-WA-15P1; ST-WA-7 through11 rechecks pass; no newer merge |
+| Wave B |564d193 handoff /9bd265e app, exit round4 | Open; independent loop owns source sweep |
+| Wave C |5f7c166, exit round4 | Not zero/incomplete; preserve its publishedWR-WC-25 andTC-WC-28 findings |
+| Profile |ea58610 handoff /caef395 app, exit round4 | Five Mac reports zero; merged locally, initial-read4ff37e5 measured |
+| Desktop |8012d97, exit round5 | Open; independent loop owns source sweep |
 
-## Inspection results
+## Inspection results (historical summary; latest checkpoint above)
 
-No completed cloud rounds. Wave C round 3 has two verified P1s so far; the five-area sweep and matrices remain incomplete. Unknown evidence is not zero. Missing handoffs and preview-load failures are not UI defects.
+No completed cloud zero exits. Wave C round 3 has two verified P1s so far; the five-area sweep and matrices remain incomplete. Unknown evidence is not zero. Missing handoffs and preview-load failures are not UI defects.
 
 Start each round from the exact commit in its handoff. Round 1 and exit rounds require all five full sweeps. Later rounds re-check earlier finding IDs and touched surfaces; automated checks still run the full matrix each round. Refresh the coordinator brief and tooling from `claude/premium-phase-1` before each round.
 

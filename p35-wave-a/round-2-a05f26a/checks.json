@@ -1,0 +1,14 @@
+{
+  "checkpoint": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+  "complete": false,
+  "fullMatrixRun": false,
+  "reason": "Early exit blocked by TC-WA-15 active-field edge contrast1.413:1; shared kit/coordinator fix required.",
+  "targetedPendingCases": 16,
+  "heldPosts": 16,
+  "colourPageReads": 10,
+  "enabledFieldsMeasured": 46,
+  "mutationsReachedServer": 0,
+  "P0": 0,
+  "P1": 1,
+  "P2": 0
+}
