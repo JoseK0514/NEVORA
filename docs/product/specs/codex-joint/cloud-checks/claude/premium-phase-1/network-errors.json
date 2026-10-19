@@ -334,5 +334,159 @@
   "page": "/app/notifications",
   "path": "/api/manager/inbox-count",
   "status": 404
+ },
+ {
+  "at": "2026-10-19T18:49:32.021Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:49:36.802Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:49:40.442Z",
+  "account": "AUDIT-M",
+  "page": "/app/requests",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:49:45.173Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:49:48.645Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:49:52.563Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:49:56.256Z",
+  "account": "AUDIT-M",
+  "page": "/app/requests",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:00.982Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:04.502Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:07.984Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:11.654Z",
+  "account": "AUDIT-M",
+  "page": "/app/requests",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:15.552Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:19.132Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:23.012Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:26.470Z",
+  "account": "AUDIT-M",
+  "page": "/app/requests",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:30.858Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:36.615Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule/copy-receipt",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:39.894Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule/coverage",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:41.725Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:44.228Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule/edit",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:48.583Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T18:50:51.457Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule/copy-receipt",
+  "path": "/api/manager/inbox-count",
+  "status": 404
  }
 ]

@@ -881,6 +881,29 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00039-matrix-AUDIT-M-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T18-50-33-570Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00039-matrix-AUDIT-M-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/payroll-export,/app/reports,/app/requests,/app/schedule",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "f7bba9f7335bd520136384f03622a0b008b8c26419094f59148d4dbfbed3b64f",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12580,
