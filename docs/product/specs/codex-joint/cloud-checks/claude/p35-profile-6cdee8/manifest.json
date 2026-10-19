@@ -4860,6 +4860,29 @@
       "code": 1,
       "passed": 15,
       "failed": 1
+    },
+    {
+      "name": "00212-matrix-payroll-qa-a-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T21-22-52-806Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00212-matrix-payroll-qa-a-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app/profile,/app/requests,/app/requests/hub,/app/schedule",
+        "--accounts",
+        "payroll-qa-a",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "8156ad7dc39ba29c5a5ab0c05b98208be1c1b6e856f4f640e7f65543cd829cb3",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
     }
   ],
   "planned": 12716,

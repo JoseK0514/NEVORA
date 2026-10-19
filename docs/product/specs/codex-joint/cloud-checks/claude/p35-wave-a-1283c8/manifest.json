@@ -2446,6 +2446,29 @@
       "code": 1,
       "passed": 0,
       "failed": 4
+    },
+    {
+      "name": "00107-matrix-QAOWNER-chromium-320",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T21-22-13-773Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00107-matrix-QAOWNER-chromium-320.log",
+      "args": [
+        "--routes",
+        "/app,/app/account-recovery,/app/availability,/app/clocker-recovery",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "320",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "94973cc07f9ccc8f45c2a1fe29ae73b29e947d729b343ee6639dcbafd379e4a9",
+      "code": 1,
+      "passed": 14,
+      "failed": 2
     }
   ],
   "planned": 12580,
