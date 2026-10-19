@@ -38,6 +38,8 @@ export type CopyOutcome = {
   reason: string | null;
   warnings: { code: string; message: string }[];
   shiftId: string | null;
+  /** Optional for receipts persisted before this additive display projection. */
+  employeeName?: string|null;date?: string;startTime?: string;endTime?: string;locationName?: string|null;
 };
 export type CopyReceipt = {
   operationId: string;
@@ -57,6 +59,11 @@ type SourceRow = {
   isDesignatedLead: boolean;
 };
 type CopySource = { version: unknown; rows: SourceRow[] };
+export function describeCopyRow(row:Pick<SourceRow,'employeeId'|'locationId'|'dayOffset'|'startTime'|'endTime'>,weekStart:string,source:Pick<GenerationSource,'employees'|'locations'>) {
+  const employee=source.employees.find(e=>e.id===row.employeeId),location=source.locations.find(l=>l.id===row.locationId);
+  return {employeeName:employee?[employee.first_name,employee.last_name].filter(Boolean).join(' ')||null:null,
+    locationName:typeof location?.short_name==='string'?location.short_name:typeof location?.name==='string'?location.name:null,date:addDays(weekStart,row.dayOffset),startTime:row.startTime,endTime:row.endTime};
+}
 type Operation = {
   command_hash: string;
   command: CopyCommand;
@@ -311,6 +318,7 @@ export async function executeScheduleCopy(
       });
       for (const row of operation.source.rows) {
         const outcome: CopyOutcome = {
+          ...describeCopyRow(row,command.weekStart,read.source),
           sourceId: row.id,
           status: "SKIPPED",
           reason: null,

@@ -60,6 +60,7 @@ it('does not silently substitute another position when several are missing', () 
   const result = deriveCoverageRepair(r.source, { ...r.locator, target: 'CHOOSE', positionId: undefined }, true);
   expect(result.status).toBe('CHOOSE'); expect(result.candidates).toEqual([]);
   expect(result.targets.filter(t => t.target === 'POSITION').map(t => t.positionId)).toEqual(['barista', 'cashier']);
+  expect(result.targets.filter(t=>t.target==='POSITION').every(t=>typeof t.count==='number'&&typeof t.positionName==='string')).toBe(true);
 });
 
 it('returns a resolved gap without an Add or Save candidate when the interval is already covered', () => {
@@ -127,7 +128,7 @@ it('a known position/Lead save returns an explicit chooser for the remaining sta
   expect(deriveCoverageRepair(r.source, r.locator).status).toBe('STALE');
   const current = deriveCoverageRepair(r.source, r.locator, true);
   expect(current.status).toBe('CHOOSE'); expect(current.locator.target).toBe('CHOOSE'); expect(current.locator.positionId).toBeUndefined();
-  expect(current.targets).toEqual([{ target: 'STAFFING', label: '1 employees missing' }]); expect(current.candidates).toEqual([]);
+  expect(current.targets).toEqual([{ target: 'STAFFING', count:1,label: '1 employees needed' }]); expect(current.candidates).toEqual([]);
   expect(current.locator.reported).toEqual({ missingStaff: 1, requiresLead: false, positions: [] });
 });
 

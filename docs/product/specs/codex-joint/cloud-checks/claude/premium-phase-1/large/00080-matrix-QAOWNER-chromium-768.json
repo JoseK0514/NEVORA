@@ -1,0 +1,434 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0114,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 100,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0006,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 100,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "legend. «Casey Rivera · Active account» 12px",
+   "legend. «Alexandra Rivera · Active acco» 12px",
+   "legend. «Taylor Rivera · Active account» 12px",
+   "legend. «María José Rivera Santiago Wit» 12px",
+   "legend. «Morgan Rivera · Active account» 12px",
+   "legend. «Jordan Rivera · Active account» 12px",
+   "legend. «Riley Rivera · Active account» 12px",
+   "legend. «Juan Carlos Rodríguez de la To» 12px",
+   "legend. «Ana Ortiz · Active account» 12px",
+   "legend. «Luis Alberto Martínez Colón · » 12px",
+   "legend. «Carmen Vázquez · Active accoun» 12px",
+   "legend. «José Hernández Figueroa-Quiñon» 12px",
+   "legend. «Gabriela Cruz · Active account» 12px",
+   "legend. «Pedro López · Active account» 12px",
+   "legend. «Yolanda Rivera Santiago · Acti» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0888,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 125,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.031,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 125,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.2022,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 125,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0083,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 125,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "legend. «Casey Rivera · Active account» 12px",
+   "legend. «Alexandra Rivera · Active acco» 12px",
+   "legend. «Taylor Rivera · Active account» 12px",
+   "legend. «María José Rivera Santiago Wit» 12px",
+   "legend. «Morgan Rivera · Active account» 12px",
+   "legend. «Jordan Rivera · Active account» 12px",
+   "legend. «Riley Rivera · Active account» 12px",
+   "legend. «Juan Carlos Rodríguez de la To» 12px",
+   "legend. «Ana Ortiz · Active account» 12px",
+   "legend. «Luis Alberto Martínez Colón · » 12px",
+   "legend. «Carmen Vázquez · Active accoun» 12px",
+   "legend. «José Hernández Figueroa-Quiñon» 12px",
+   "legend. «Gabriela Cruz · Active account» 12px",
+   "legend. «Pedro López · Active account» 12px",
+   "legend. «Yolanda Rivera Santiago · Acti» 12px"
+  ],
+  "targets": [],
+  "cls": 0.1358,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 150,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0575,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 150,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1775,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 150,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0201,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 150,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "legend. «Casey Rivera · Active account» 12px",
+   "legend. «Alexandra Rivera · Active acco» 12px",
+   "legend. «Taylor Rivera · Active account» 12px",
+   "legend. «María José Rivera Santiago Wit» 12px",
+   "legend. «Morgan Rivera · Active account» 12px",
+   "legend. «Jordan Rivera · Active account» 12px",
+   "legend. «Riley Rivera · Active account» 12px",
+   "legend. «Juan Carlos Rodríguez de la To» 12px",
+   "legend. «Ana Ortiz · Active account» 12px",
+   "legend. «Luis Alberto Martínez Colón · » 12px",
+   "legend. «Carmen Vázquez · Active accoun» 12px",
+   "legend. «José Hernández Figueroa-Quiñon» 12px",
+   "legend. «Gabriela Cruz · Active account» 12px",
+   "legend. «Pedro López · Active account» 12px",
+   "legend. «Yolanda Rivera Santiago · Acti» 12px"
+  ],
+  "targets": [],
+  "cls": 0.1889,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 200,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1464,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 200,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1312,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 200,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0499,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 200,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "legend. «Casey Rivera · Active account» 12px",
+   "legend. «Alexandra Rivera · Active acco» 12px",
+   "legend. «Taylor Rivera · Active account» 12px",
+   "legend. «María José Rivera Santiago Wit» 12px",
+   "legend. «Morgan Rivera · Active account» 12px",
+   "legend. «Jordan Rivera · Active account» 12px",
+   "legend. «Riley Rivera · Active account» 12px",
+   "legend. «Juan Carlos Rodríguez de la To» 12px",
+   "legend. «Ana Ortiz · Active account» 12px",
+   "legend. «Luis Alberto Martínez Colón · » 12px",
+   "legend. «Carmen Vázquez · Active accoun» 12px",
+   "legend. «José Hernández Figueroa-Quiñon» 12px",
+   "legend. «Gabriela Cruz · Active account» 12px",
+   "legend. «Pedro López · Active account» 12px",
+   "legend. «Yolanda Rivera Santiago · Acti» 12px"
+  ],
+  "targets": [],
+  "cls": 0.3174,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

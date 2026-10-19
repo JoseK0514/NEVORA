@@ -1,0 +1,20 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "844x390",
+  "text": 125,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0227,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

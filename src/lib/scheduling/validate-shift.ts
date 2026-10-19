@@ -129,7 +129,7 @@ const messages: Record<ValidationIssueCode, string> = {
   APPROVED_TIME_OFF: "Employee has approved time off during this shift.",
   OUTSIDE_AVAILABILITY: "Employee is not available for the complete shift.",
   WEEKLY_AVAILABILITY_CONFLICT:
-    "This shift conflicts with the employee's availability exception.",
+    "This shift conflicts with the employee's availability change.",
   AVAILABILITY_NOT_SUBMITTED:
     "This week's availability has not been confirmed; normal availability was used.",
   MULTIPLE_SHIFTS_SAME_DAY:

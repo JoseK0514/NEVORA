@@ -86,8 +86,8 @@ try{
   await publishScheduleWithRevision({locationId:'loc-1',weekStart:next,managerId:'QAOWNER'},app.database.executor);report.nextWeekSeeded=next;}
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('audit-timeoff','AUDIT-E',$1,$2,'PENDING','Fictional family appointment')",[addDays(today,10),addDays(today,11)]);
  const hook=registerHooks({resolve(specifier,ctx,next){return next(specifier==='server-only'?new URL('../../node_modules/next/dist/compiled/server-only/empty.js',import.meta.url).href:specifier,ctx);}});
- const {seedPayrollFixture}=await import('../../src/test/integration/payroll-fixture.ts');hook.deregister();
- const payroll=await seedPayrollFixture(app.database.executor);report.payrollFixtureSeeded=true;
+ const {seedPayrollPreviewFixture}=await import('../../src/test/integration/payroll-preview-fixture.ts');hook.deregister();
+ const payroll=await seedPayrollPreviewFixture(app.database.executor);report.payrollFixtureSeeded=true;
  const boot=await pw.chromium.launch({headless:true});browsers.push(boot);const bc=await context(boot,1440);await login(bc,'QAOWNER');const bp=await bc.newPage();
  const updateTitle='This week’s team schedule',updateBody='Please review your upcoming shifts and contact your manager if you need a change. This is fictional audit content.';
  await bp.goto(app.url+'/app/updates/compose');await bp.getByLabel('Title',{exact:true}).fill(updateTitle);await bp.getByLabel('Message',{exact:true}).fill(updateBody);await bp.getByLabel('Review requirement',{exact:true}).selectOption('REQUIRED');await bp.getByRole('button',{name:'Preview audience',exact:true}).click();

@@ -1,0 +1,34 @@
+[
+  {
+    "page": "before-login-1440.png",
+    "dimensions": [
+      1440,
+      900
+    ],
+    "changedPixels": 0
+  },
+  {
+    "page": "before-login-390.png",
+    "dimensions": [
+      390,
+      900
+    ],
+    "changedPixels": 0
+  },
+  {
+    "page": "before-ui-preview-home-390.png",
+    "dimensions": [
+      390,
+      1991
+    ],
+    "changedPixels": 0
+  },
+  {
+    "page": "before-ui-preview-home-1440.png",
+    "dimensions": [
+      1440,
+      1763
+    ],
+    "changedPixels": 0
+  }
+]

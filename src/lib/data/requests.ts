@@ -126,9 +126,12 @@ export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "
     `SELECT r.id, r.employee_id,
        e.first_name || ' ' || e.last_name AS employee_name,
        r.start_date, r.end_date, r.start_time, r.end_time,
-       r.reason, r.status, r.created_at
+       r.reason, r.status, r.created_at, r.reviewed_at,
+       CASE WHEN r.reviewed_by IS NOT NULL AND r.reviewed_by <> r.employee_id
+         THEN rv.first_name || ' ' || rv.last_name END AS reviewer_name
      FROM time_off_requests r
      JOIN employees e ON e.id = r.employee_id
+     LEFT JOIN employees rv ON rv.id = r.reviewed_by
      WHERE r.status = $1
      ORDER BY r.start_date DESC, r.created_at DESC`,
     [status],

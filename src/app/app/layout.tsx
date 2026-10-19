@@ -39,7 +39,7 @@ export async function generateViewport(): Promise<Viewport> {
 
 export default async function PlatformLayout({ children }: { children: ReactNode }) {
   // Wave C ST-11: fetch Inter with the page, so the first visit doesn't paint in a fallback font and then rewrap.
-  preload("/fonts/typeface/inter/variable.ttf", { as: "font", type: "font/ttf", crossOrigin: "anonymous" });
+  preload("/fonts/typeface/inter/variable.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const session = await requireSession();
   const workspace = await getWorkspace();
   const payrollCapabilities = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;

@@ -23,3 +23,9 @@ it("has no period before the schedule starts", () => {
   expect(openPeriod({ frequency: "WEEKLY", anchorDate: "2026-11-02", paydayOffsetDays: 5 }, "2026-10-19")).toBeNull();
   expect(openPeriod({ frequency: "MONTHLY", anchorDate: "2026-11-01", paydayOffsetDays: 5 }, "2026-10-19")).toBeNull();
 });
+it.each(['MONTHLY','SEMIMONTHLY'] as const)('honors the %s rollout boundary inside the current calendar period',frequency=>{
+  const schedule={frequency,anchorDate:'2026-10-20',paydayOffsetDays:3};
+  expect(openPeriod(schedule,'2026-10-19')).toBeNull();
+  expect(openPeriod(schedule,'2026-10-21')).toBeNull();
+  expect(openPeriod(schedule,'2026-11-01')?.period.startDate).toBe('2026-11-01');
+});

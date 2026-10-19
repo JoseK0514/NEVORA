@@ -12,6 +12,6 @@ export async function POST(request:Request){
  const {employeeId,email}=body;
  // Work happens after the identical response: SMTP/account lookup latency is
  // never an account-existence timing signal in this request.
- after(()=>requestPasswordRecovery(employeeId,email,recoveryDelivery()));
+ after(()=>requestPasswordRecovery(employeeId,email,recoveryDelivery(undefined,request.headers)));
  return correctionJson({state:'accepted',message:recoveryMessage},202);
 }

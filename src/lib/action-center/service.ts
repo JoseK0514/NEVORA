@@ -1,4 +1,5 @@
 import 'server-only';
+import {withActionRequestFacts} from '../data/action-request-facts.server';
 import {readActivePresentation} from '../workspace-presentation/service';
 import {requestTypeAllowed} from '../workspace-presentation/modules';
 import {combineManagerActions,type ActionCenter} from './project';
@@ -29,7 +30,7 @@ export async function readActionCenter(proof:SessionMutationProof,weekStart:stri
   if(attendance.state!=='ready'||corrections.state!=='ready'||timecards.state!=='ready')throw Error('Incomplete sources');
   // Company modules (B2): requests in a module that is off are not shown.
   const modules=(await readActivePresentation(workspace.id,executor)).modules;
-  const items=combineManagerActions(scheduling,attendance,corrections,timecards,proof.employee.id).filter(item=>requestTypeAllowed(item.type,modules));
+  const items=await withActionRequestFacts(proof,workspace,combineManagerActions(scheduling,attendance,corrections,timecards,proof.employee.id).filter(item=>requestTypeAllowed(item.type,modules)),executor);
   const authority=await executor.query<{observedAt:string;remaining:number}>({text:`SELECT clock_timestamp()::text AS "observedAt",floor(LEAST(45000,EXTRACT(epoch FROM (s.expires_at-clock_timestamp()))*1000))::integer AS remaining FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role IN ('OWNER','MANAGER') AND s.expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id]});
   if(!authority[0])return {state:'unavailable',reason:'access_denied'};
   const validForMs=Math.floor(Math.min(authority[0].remaining,attendance.validForMs,corrections.validForMs,timecards.validForMs,45000)-(performance.now()-started));if(validForMs<1)throw Error('Sources expired');

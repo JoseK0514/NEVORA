@@ -101,7 +101,7 @@ it('own correction event revision resurfaces without private decision notes or a
  const detail=await readEmployeeAttentionDetail(proof,{kind:'TIME_CORRECTION',id,version:''},db.executor);if(detail.state!=='ready'||!detail.intent)throw Error('Missing detail');await recordEmployeeAttentionReceipt(proof,{kind:'MARK_READ',ref:detail.ref,...detail.intent},db.executor);
  r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.some(i=>i.ref.id===id)).toBe(false);
  await q("INSERT INTO time_correction_events(id,request_id,revision,event_kind,actor_employee_id,operation_hash,result,decision_note) VALUES('33333333-3333-4333-8333-333333333333',$1,2,'REJECTED','QAOWNER',repeat('e',64),'{}','PRIVATE MANAGER DECISION')",[id]);
- r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.find(i=>i.ref.id===id)).toMatchObject({ref:{version:'r:2'},label:'Time correction rejected'});expect(JSON.stringify(r)).not.toMatch(/PRIVATE MANAGER|PRIVATE CORRECTION/);
+ r=await home();if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.find(i=>i.ref.id===id)).toMatchObject({ref:{version:'r:2'},label:'Time correction declined'});expect(JSON.stringify(r)).not.toMatch(/PRIVATE MANAGER|PRIVATE CORRECTION/);
 });
 it('multiple persisted future weeks remain in the acknowledgement source; no convenient current-week cut-off',async()=>{
  const {addDays}=await import('../../lib/date-utils');const week=addDays(fixture.week,70);

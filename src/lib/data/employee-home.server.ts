@@ -136,7 +136,7 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
        if(!participant||exchange.status==='EXPIRED')continue;
        const ref={kind:'EXCHANGE' as const,id:row.id,version:`r:${row.version}`};
        const seen=await readReceipts('EXCHANGE');if(seen.has(JSON.stringify([ref.id,ref.version])))continue;
-       items.push({ref,label:`${exchange.kind==='SWAP'?'Swap':'Coverage'} ${exchange.status.toLowerCase()}`,href:homeDestination(ref,'history')!,required:false,actionable:false,deadlineAt:null,changedAt:row.changedAt});continue;
+       items.push({ref,label:`${exchange.kind==='SWAP'?'Swap':'Coverage'} ${exchange.status==='DENIED'?'declined':exchange.status==='CANCELLED'?'withdrawn':exchange.status.toLowerCase()}`,href:homeDestination(ref,'history')!,required:false,actionable:false,deadlineAt:null,changedAt:row.changedAt});continue;
       }
       if(row.detail?.legacy){partial=true;continue;}
       const responds=exchange.status==='OPEN'&&exchange.requestedByEmployeeId!==proof.employee.id||exchange.status==='EMPLOYEE_PENDING'&&exchange.targetEmployeeId===proof.employee.id;
@@ -144,13 +144,13 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
       if(!exchange.actionable&&exchange.attention==='CONFIGURATION_REQUIRED'||'refusal' in allowed&&(allowed.refusal==='review'||!!allowed.reasons?.includes('unconfirmed')))partial=true;
       if(!participant&&!allowed.allowed)continue;
       const ref={kind:'EXCHANGE' as const,id:row.id,version:`r:${row.version}`};
-      items.push({ref,label:allowed.allowed?(exchange.kind==='SWAP'?'Review swap request':'Review coverage offer'):exchange.status==='MANAGER_PENDING'?'Shift request awaiting manager review':'Shift request pending',href:homeDestination(ref,participant?'requests':'available')!,required:false,actionable:allowed.allowed,deadlineAt:allowed.allowed?exchange.effectiveCompletionDeadline??null:null,changedAt:row.changedAt});
+      items.push({ref,label:allowed.allowed?(exchange.kind==='SWAP'?'Review swap request':'Review coverage offer'):exchange.status==='MANAGER_PENDING'?'Shift request awaiting manager review':'Shift request waiting',href:homeDestination(ref,participant?'requests':'available')!,required:false,actionable:allowed.allowed,deadlineAt:allowed.allowed?exchange.effectiveCompletionDeadline??null:null,changedAt:row.changedAt});
      }else{
       const kind=source==='timeOff'?'TIME_OFF':'TIME_CORRECTION',detail=row.detail;
       if(!detail||!(source==='timeOff'?['PENDING','APPROVED','DENIED','CANCELLED']:['REQUESTED','APPROVED','REJECTED']).includes(String(detail.status)))throw Error('Unknown status');
       const ref:AttentionItem['ref']={kind,id:row.id,version:attentionSourceVersion({kind,id:row.id,version:''},detail)};
       if(refs?.has(JSON.stringify([ref.id,ref.version])))continue;
-      items.push({ref,label:`${source==='timeOff'?'Time off':'Time correction'} ${String(detail.status).toLowerCase()}${source==='timeOff'?` · ${timeOffPeriod(detail)}`:''}`,href:homeDestination(ref)!,required:false,actionable:false,deadlineAt:null,changedAt:row.changedAt});
+      items.push({ref,label:`${source==='timeOff'?'Time off':'Time correction'} ${({PENDING:'waiting',REQUESTED:'requested',APPROVED:'approved',DENIED:'declined',REJECTED:'declined',CANCELLED:'withdrawn'} as Record<string,string>)[String(detail.status)]}${source==='timeOff'?` · ${timeOffPeriod(detail)}`:''}`,href:homeDestination(ref)!,required:false,actionable:false,deadlineAt:null,changedAt:row.changedAt});
      }
     }
     if(source==='ownTime'){

@@ -19,7 +19,8 @@ export const viewport: Viewport = {
 
 const TEXT_SCALE_SCRIPT = `(function(){var d=document.documentElement;function s(){var f=parseFloat(getComputedStyle(d).fontSize)||16;d.style.setProperty('--nv-text-scale',String(f/16));}s();function w(){try{var p=document.createElement('i');p.setAttribute('aria-hidden','true');p.style.cssText='position:absolute;left:0;top:0;width:1rem;height:0;visibility:hidden;pointer-events:none';document.body.appendChild(p);new ResizeObserver(s).observe(p);}catch(e){}}if(document.body)w();else document.addEventListener('DOMContentLoaded',w);})();`;
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  if(process.env.NODE_ENV!=='production')await (await import('../lib/dev/inspection.server')).forceInspectionError('global');
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

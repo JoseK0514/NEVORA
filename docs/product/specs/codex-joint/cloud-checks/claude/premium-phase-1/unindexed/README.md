@@ -1,0 +1,1 @@
+Raw checker output retained across a coordinator restart, before its batch receipt was saved. Source: 51f731d399e9b94306f5d98556151933efe2ac7a. These observations are not added to the unique-cell matrix totals; the coordinator reruns an uncheckpointed batch and retains its final receipt.

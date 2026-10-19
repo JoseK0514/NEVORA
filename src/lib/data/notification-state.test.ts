@@ -89,7 +89,7 @@ it('configured_coverage_uses_health_lead_rules_and_never_invents_location_window
  windows=[{ positionRequirements: [], locationId:'110',dayOfWeek:1,startTime:'08:00',endTime:'12:00',minimumStaff:1}];
  expect(await repo.readSource(ref)).toMatchObject({items:[]});
  f.state.shifts[0].isDesignatedLead=false;
- expect(await repo.readSource(ref)).toMatchObject({items:[{type:'COVERAGE_GAP',title:'Lead coverage missing at FUEL – 110'}]});
+ expect(await repo.readSource(ref)).toMatchObject({items:[{type:'COVERAGE_GAP',title:'No lead scheduled at FUEL – 110'}]});
 });
 it('bounded_candidates_use_only_actual_configured_records',async()=>{
  const s=setup([]);
@@ -146,7 +146,7 @@ it('position-only configured coverage reaches the manager summary with position 
  f.state.shifts=[{...f.state.revisions[0].shifts[0],sourceShiftId:'s',scheduleId:'a',weekStart:'2030-10-07',hasExchangeHistory:false,locationId:'110',date:'2030-10-07',startTime:'08:00',endTime:'12:00',employeeId:'F',isDesignatedLead:true}];
  f.executor.query=async <T>(s:SqlStatement)=>(s.text.includes('AS state')?[{state:f.state}]:s.text.includes('location_staffing_settings')?[{id:'110',name:'Shop',minimumStaffPerShift:1,requiresDesignatedLead:true}]:s.text.includes('FROM employees e')?[{id:'F',name:'Sam',role:'LEAD',active:true,eligibleLocationIds:['110'],positionIds:['b']}]:s.text.includes('FROM positions')?[{id:'b',name:'Barista',workspaceId:'w',active:true}]:[{locationId:'110',dayOfWeek:1,startTime:'08:00',endTime:'12:00',positionRequirements:[{positionId:'b',quantity:1}]}]) as T[];
  const source=await sqlNotificationStateRepository(f.executor).readSource({kind:'MANAGER_SUMMARY',id:'2030-10-07',version:'configured'});
- expect(source).toMatchObject({items:[{title:'Position coverage missing at Shop',detail:expect.stringContaining('Barista: 1 missing')}]});
+ expect(source).toMatchObject({items:[{title:'Position not covered at Shop',detail:expect.stringContaining('Barista: 1 open')}]});
 });
 
 it.each([['2026-03-08','02:30','04:00'],['2026-11-01','01:30','03:00'],['2026-11-01','00:30','01:30']])('invalid legacy DST boundaries suppress even publication events: %s %s–%s',(date,startTime,endTime)=>{

@@ -1,0 +1,12 @@
+{
+  "checkpoint": "17d8089935d5988e4581092f2b84b78b8ac2c143",
+  "filesChecked": 1539,
+  "mirrorChangesBeyondDeclaredDbSubstitution": [
+    "next-env.d.ts"
+  ],
+  "postgresStopped": true,
+  "closureErrors": [
+    "Close: Tracked application source differs from HEAD"
+  ],
+  "limitation": "Source closure check failed after expectation-only test commits changed the source checkout. The tested app mirror has only the separately enumerated generated changes; all other captured file hashes match."
+}

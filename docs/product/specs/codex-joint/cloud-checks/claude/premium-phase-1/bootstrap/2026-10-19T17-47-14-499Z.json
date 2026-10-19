@@ -1,0 +1,76 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.employee-home-reviewed-module__k4entG__currentNote «Clock status below shows wheth» 13px",
+   "p.employee-home-reviewed-module__k4entG__zone.employee-home-reviewed-m «Times in Puerto Rico time» 12px",
+   "p.employee-time-empty «No open time entry was recorde» 13px",
+   "button.employee-time-refresh «Refresh» 13px",
+   "a.employee-time-link «My time» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.employee-home-reviewed-module__k4entG__currentNote «Clock status below shows wheth» 13px",
+   "p.employee-home-reviewed-module__k4entG__zone.employee-home-reviewed-m «Times in Puerto Rico time» 12px",
+   "p.employee-time-empty «No open time entry was recorde» 13px",
+   "button.employee-time-refresh «Refresh» 13px",
+   "a.employee-time-link «My time» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]

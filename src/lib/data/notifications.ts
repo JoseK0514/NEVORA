@@ -81,6 +81,7 @@ export async function listNotifications(
          created_at
        FROM notifications
        WHERE employee_id = $1
+         AND (to_jsonb(notifications)->>'management_alert_suppressed') IS DISTINCT FROM 'true'
        ORDER BY created_at DESC, id DESC
        LIMIT $2`,
       [employeeId, safeLimit],
@@ -97,6 +98,7 @@ export async function countUnreadNotifications(employeeId: string) {
       `SELECT count(*) AS unread_count
        FROM notifications
        WHERE employee_id = $1
+         AND (to_jsonb(notifications)->>'management_alert_suppressed') IS DISTINCT FROM 'true'
          AND read_at IS NULL`,
       [employeeId],
     ),
