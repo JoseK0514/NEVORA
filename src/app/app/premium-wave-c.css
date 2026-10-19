@@ -507,6 +507,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .n
 @media (max-width: 760px) and (not ((max-height: 430px) and (orientation: landscape))) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar { position: fixed; left: 0; right: 0; bottom: var(--wc-tabbar, 68px); margin: 0; padding-inline: var(--nv-gutter); padding-bottom: var(--nv-s-3); }
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page:has(.wc-actions.nv-actionbar) { padding-bottom: calc(var(--wc-tabbar, 68px) + var(--wc-bar, 76px) + var(--nv-s-4) + env(safe-area-inset-bottom, 0px)); }
+  /* ST-02: the toast sits 8px above the save bar's measured height, so it never covers Save at large text. */
+  html body:has(.wc-page.wc-page .wc-actions.nv-actionbar) .nevora-toaster.nevora-toaster { bottom: calc(var(--wc-tabbar, 68px) + var(--wc-bar, 76px) + 8px); }
 }
 @media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar { position: static; margin-inline: 0; padding-inline: 0; background: none; }
