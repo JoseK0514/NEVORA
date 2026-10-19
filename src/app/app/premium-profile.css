@@ -20,6 +20,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations { margin: 0; padding: 0; list-style: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li { margin: 0; padding: 0; font: var(--nv-t-row); color: var(--nv-ink); list-style: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li + li { margin-top: var(--nv-s-1); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li { display: inline-block; max-width: 100%; vertical-align: top; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li + li { margin-top: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li:not(:last-child)::after { content: "\00a0·"; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li:not(:last-child) { margin-right: .3em; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd > .pmp-text-button { display: flex; margin-top: 0; }
 
 

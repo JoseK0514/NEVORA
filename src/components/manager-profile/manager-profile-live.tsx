@@ -95,8 +95,9 @@ function Locations({ snapshot, owner }: { snapshot: Extract<ManagerProfileSnapsh
   const { scope, names } = snapshot.locations;
   if (!names.length) return <span className="pmp-muted">{owner ? 'No locations yet' : 'None assigned yet'}</span>;
   if (scope === 'all') return <>{names.length === 1 ? names[0] : `All ${names.length} locations`}</>;
-  const list = (items: string[]) => <ul className="pmp-locations" id="profile-assigned-locations" aria-label="Locations">{items.map((name, index) => <li key={`${index}-${name}`}>{name}</li>)}</ul>;
-  if (names.length <= SHOWN_LOCATIONS) return list(names);
+  const list = (items: string[], inline = false) => <ul className={inline ? 'pmp-locations pmp-locations--inline' : 'pmp-locations'} id="profile-assigned-locations" aria-label="Locations">{items.map((name, index) => <li key={`${index}-${name}`}>{name}</li>)}</ul>;
+  // A short list reads as one line ("Main Office · West Office") and wraps only between names.
+  if (names.length <= SHOWN_LOCATIONS) return list(names, true);
   return <>
     <span className="pmp-locations-scope">{names.length} locations</span>
     <button type="button" className="pmp-text-button" aria-expanded={open} aria-controls="profile-assigned-locations" onClick={() => setOpen(value => !value)}>{open ? 'Show fewer' : `Show all ${names.length}`}</button>
@@ -161,7 +162,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
     <div className="pmp-col">
       <Card id="profile-details" title="Your details" meta={<>
         {/* Never empty: the head lines up on this text's baseline in every state. */}
-        <span role="status">{read.head ?? (read.kind === 'failed' || read.kind === 'denied' ? '' : '\u00a0')}<span className="sr-only">{read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</span></span>
+        {/* The head lines up on the first text in it: the state word, a non-breaking space, or the action. An empty span
+            would give it a made-up baseline, so it is left out when an action shows (the alert below speaks for it). */}
+        {read.kind === 'failed' || read.kind === 'denied' ? null : <span role="status">{read.head ?? '\u00a0'}<span className="sr-only">{read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</span></span>}
         {/* Never disabled while busy, so focus stays on it; a second press only restarts the same read. */}
         {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
         {read.kind === 'denied' ? <Link className="pmp-text-button pmp-head-action" href="/login">Sign in</Link> : null}
