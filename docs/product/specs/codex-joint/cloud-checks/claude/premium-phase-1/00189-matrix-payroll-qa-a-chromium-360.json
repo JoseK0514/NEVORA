@@ -1,0 +1,70 @@
+[
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-a",
+  "size": "360",
+  "text": 100,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.compose-status «Unpublished» 12px",
+   "span. «Plain text · Line breaks suppo» 11px",
+   "strong. «Today's team» 13px",
+   "span. «2026-10-19» 11px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-a",
+  "size": "360",
+  "text": 125,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Plain text · Line breaks suppo» 13.75px",
+   "span. «2026-10-19» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0.0888,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-a",
+  "size": "360",
+  "text": 150,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2388,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-a",
+  "size": "360",
+  "text": 200,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.667,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ }
+]
