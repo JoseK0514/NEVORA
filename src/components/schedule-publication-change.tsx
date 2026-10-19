@@ -2,9 +2,12 @@ import type { PublicationChange, PublishedShiftSnapshot } from '../lib/assistanc
 import { keepWhole } from '@/lib/keep-whole';
 import { formatDayLabel, formatTime } from '../lib/date-utils';
 const labels: Record<PublicationChange['type'], string> = { ADDED: 'Shift added', REMOVED: 'Shift removed', TIME_CHANGED: 'Time changed', EMPLOYEE_REASSIGNED: 'Assignment changed', LOCATION_CHANGED: 'Location changed', POSITION_CHANGED: 'Position changed', LEAD_CHANGED: 'Lead assignment changed', CALLOUT_CHANGED: 'Call-out changed' };
+/** TCD-21: a short place name ("Main Office") never breaks inside itself; a long one may. */
+const placeName=(name:string)=>name.length<=24?name.replace(/ /g,'\u00a0'):name;
+
 function shiftDescription(shift: PublishedShiftSnapshot | undefined, locationNames: Readonly<Record<string, string>>) {
   if (!shift) return 'No shift';
-  return `${formatDayLabel(shift.date).day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${locationNames[shift.locationId]?.trim() || 'Location unavailable'}${shift.positionName ? ` · ${shift.positionName}` : ''}${shift.isDesignatedLead ? ' · Designated lead' : ''}${shift.isCalloutApproved ? ' · Call-out approved' : ''}`;
+  return `${formatDayLabel(shift.date).day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${placeName(locationNames[shift.locationId]?.trim() || 'Location unavailable')}${shift.positionName ? ` · ${shift.positionName}` : ''}${shift.isDesignatedLead ? ' · Designated lead' : ''}${shift.isCalloutApproved ? ' · Call-out approved' : ''}`;
 }
 export function SchedulePublicationChange({ changes, locationNames = {} }: { changes: readonly PublicationChange[]; locationNames?: Readonly<Record<string, string>> }) {
   if (!changes.length) return null;

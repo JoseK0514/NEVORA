@@ -248,7 +248,7 @@ html body .app-shell.nevora-portal.nevora-portal #manager-more-navigation .nevor
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-team-form { display: flex; flex-direction: column; gap: var(--nv-s-3); padding: 0 var(--nv-s-5) var(--nv-s-5); margin: 0; background: transparent; box-shadow: none; border-radius: 0; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-field :is(input, select) {
-  box-sizing: border-box; width: 100%; min-height: 48px; padding: 0 var(--nv-s-3); border: 1px solid var(--nv-border); border-radius: var(--nv-r-control);
+  box-sizing: border-box; width: 100%; min-height: 48px; padding: 0 var(--nv-s-3); border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control);
   background: var(--nv-canvas); color: var(--nv-ink); font: var(--nv-t-body); text-overflow: ellipsis;
 }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-field--search { position: relative; }
@@ -275,7 +275,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-legacy-pag
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-legacy-page [class*="__managerRoot"] :is(dt, dd) { overflow-wrap: normal; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-legacy-page [class*="__managerRoot"] [class$="__toolbar"] label { font: var(--nv-t-label); color: var(--nv-ink-2); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-legacy-page [class*="__managerRoot"] [class$="__toolbar"] input[type="date"] {
-  min-height: 48px; padding: 0 var(--nv-s-3); border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background: var(--nv-canvas); font: var(--nv-t-body); color: var(--nv-ink);
+  min-height: 48px; padding: 0 var(--nv-s-3); border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background: var(--nv-canvas); font: var(--nv-t-body); color: var(--nv-ink);
 }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-legacy-page [class*="__managerRoot"] :is(.button.primary, .button.secondary) {
   min-height: 48px; padding: 0 var(--nv-s-4); border-radius: var(--nv-r-control); font: var(--nv-t-label); font-weight: 600; box-shadow: none;
@@ -796,14 +796,14 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-exports [class*="payroll-export-module"] :is(h2, h3) { font: var(--nv-t-headline); color: var(--nv-ink); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-exports [class*="payroll-export-module"][class$="__count"] { display: inline-flex; align-items: center; min-height: 28px; padding: 0 var(--nv-s-3); border-radius: var(--nv-r-pill); background: var(--nv-neutral-fill); color: var(--nv-neutral-ink); font: var(--nv-t-label); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-exports [class*="payroll-export-module"] :is(button, a[class$="__button"], a[class$="__download"]) { min-height: 44px; border-radius: var(--nv-r-control); font: var(--nv-t-label); font-weight: 600; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-exports [class*="payroll-export-module"] :is(input, select) { min-height: 48px; border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background: var(--nv-canvas); font: var(--nv-t-body); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-exports [class*="payroll-export-module"] :is(input, select) { min-height: 48px; border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background: var(--nv-canvas); font: var(--nv-t-body); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-exports [class*="payroll-export-module"]:is([class$="__notice"], [class$="__periodHint"], [class$="__receipt"], [class$="__totals"], [class$="__selectionBar"]) { border: 0; border-radius: var(--nv-r-control); background: var(--nv-inset); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-exports [class*="payroll-export-module"][class$="__hours"] { display: flex; flex-wrap: wrap; column-gap: 16px; row-gap: 4px; }
 /* WR-49: one form field style on every Manager and Owner page: white, 1px border, 12px corners, 48px tall. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]), select) {
-  min-height: 48px; box-sizing: border-box; border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background-color: var(--nv-canvas);
+  min-height: 48px; box-sizing: border-box; border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background-color: var(--nv-canvas);
 }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .manager-schedule-page.premium-legacy-page .mws-search { border: 1px solid var(--nv-border); background: var(--nv-canvas); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .manager-schedule-page.premium-legacy-page .mws-search { border: 1px solid var(--nv-field-border, var(--nv-border)); background: var(--nv-canvas); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .manager-schedule-page.premium-legacy-page .mws-search input { min-height: 46px; border: 0; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-team .premium-field--search input { background: var(--nv-canvas); border-color: var(--nv-border); }
 
@@ -844,7 +844,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-home-view 
 html body .app-shell.nevora-portal .premium-exports [class*="payroll-export-module"][class$="__selectionBar"] { flex-wrap: wrap; row-gap: var(--nv-s-2); }
 html body .app-shell.nevora-portal .premium-exports [class*="payroll-export-module"][class$="__selectionBar"] > :first-child { flex: 1 1 100%; min-width: 0; }
 /* WR-49: text areas join the shared field style. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea { border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background-color: var(--nv-canvas); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea { border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background-color: var(--nv-canvas); }
 /* WR-51 (regression): Schedule's search is one field; the inner input has no box of its own. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page].manager-schedule-page .mws-search input { min-height: 46px; border: 0; border-radius: 0; background: transparent; padding: 0; }
 /* WR-52: rows scrolled away from their start fade on both sides. */
@@ -855,7 +855,7 @@ html body .app-shell.nevora-portal .page-frame [data-nv-page] .nv-masthead .nv-f
   html body .app-shell.nevora-portal .manager-schedule-page.premium-legacy-page .mws-week-navigation { flex: 1 1 100%; }
 }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .manager-schedule-page.premium-legacy-page .schedule-period-control strong { white-space: nowrap; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-team .premium-field--search input { min-height: 48px; border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-team .premium-field--search input { min-height: 48px; border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); }
 
 /* Phase 7 type round 4 */
 /* TC-42: the count badge goes under the heading on phones, so the date range keeps the line width. */
@@ -867,7 +867,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-team .prem
 /* TC-44: the selection count meets 4.5:1 on its inset. */
 html body .app-shell.nevora-portal .premium-exports [class*="payroll-export-module"] :is([class$="__selectionBar"], [class$="__totals"]) :is(small, span) { color: var(--nv-muted); }
 /* Team's search field joins the shared field style (the old 8px/52px rule was stronger). */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page].premium-team .premium-field--search input[type="search"] { min-height: 48px; border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background: var(--nv-canvas); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page].premium-team .premium-field--search input[type="search"] { min-height: 48px; border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background: var(--nv-canvas); }
 
 /* AL-37: room after the last day so the strip can still start on a whole day (width set by the roster). */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .manager-schedule-page.premium-legacy-page .mws-day-navigation .mws-day-tail { flex: none; height: 1px; align-self: center; }
@@ -876,7 +876,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .manager-schedule-p
 /* WR-49 (round 6): textareas and the search fields outside Schedule take the shared field style too.
    Doubled attribute and the :not() chain beat mobile-workforce.css:73 (0,7,3). Schedule's search keeps its borderless input inside its wrapper. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type="search"]):not(.mws-search input):not([class*="__search"] input):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) {
-  min-height: 48px; box-sizing: border-box; border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background-color: var(--nv-canvas);
+  min-height: 48px; box-sizing: border-box; border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background-color: var(--nv-canvas);
 }
 /* AL (cross-area, IS round 5): the footer column centres its children, so the freshness block shrank 4px in from the card's text edge. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-home-view .attendance-review-footer > div { align-self: stretch; }

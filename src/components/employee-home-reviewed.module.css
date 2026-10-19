@@ -24,7 +24,7 @@
 
 .root *, .root *::before, .root *::after { box-sizing: border-box; }
 .root h1, .root h2, .root h3, .root p { margin: 0; }
-.root p, .root h1, .root h2, .root h3 { overflow-wrap: anywhere; }
+.root p, .root h1, .root h2, .root h3 { overflow-wrap: break-word; } /* WR4-16: break inside a word only when it cannot fit a line, so dates move whole */
 .root a { text-decoration: none; }
 .root :is(a, button, summary) { touch-action: manipulation; scroll-margin-block: 24px; }
 .root :is(a, button, summary):focus-visible { outline: 3px solid var(--home-blue); outline-offset: 3px; }
@@ -85,7 +85,7 @@
 .itemList { margin: 0; padding: 0; list-style: none; }
 .itemLink { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 72px; padding-block: 14px; border-bottom: 1px solid var(--home-line); color: var(--home-ink); text-align: left; }
 .itemList li:last-child .itemLink { border-bottom: 0; }
-.itemCopy { min-width: 0; overflow-wrap: anywhere; }
+.itemCopy { min-width: 0; overflow-wrap: break-word; }
 .itemCopy strong { display: block; font-size: .9375rem; line-height: 1.45; font-weight: 500; }
 .updates .itemCopy strong { font-weight: 400; }
 .itemCopy small { display: block; margin-top: 4px; color: var(--home-muted); font-size: .8125rem; line-height: 1.5; }

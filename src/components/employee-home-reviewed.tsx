@@ -280,7 +280,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   const summary = paused ? (online ? 'Paused while you’re away.' : 'You’re offline.') : denied ? 'Sign in again to view Home.' : loading ? 'Checking your shifts…'
     : !snapshot ? 'Couldn’t load Home.'
     : snapshot.publicationState === 'unavailable' ? 'Your schedule couldn’t be checked.'
-    : underWay ? keepWhole(`On shift until ${clock(underWay.endAt)}.`)
+    : underWay ? keepWhole(`Scheduled until ${clock(underWay.endAt)}.`)
     : snapshot.nextShift ? keepWhole(`Next shift ${(relativeDay(snapshot.nextShift.date, snapshot.observedAt, snapshot.timeZone) ?? formatDisplayDate(snapshot.nextShift.date)).replace(/^(Today|Tomorrow)$/, word => word.toLowerCase())} at ${clock(snapshot.nextShift.startAt)}.`)
     : 'No published shifts coming up.';
 
