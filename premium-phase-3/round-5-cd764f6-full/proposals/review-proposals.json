@@ -1,0 +1,36 @@
+{
+  "createdAt": "2026-10-19T23:43:55.555792+00:00",
+  "status": "External proposals only; not applied, no browser/source closure",
+  "baseSource": "a21650de50374683d52e32b883d7f419d7344f22",
+  "baseTree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "measuredFrozenSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "sourceNote": "The two edited source files are byte-identical between measured cd and proposal base a216. Full cd sweep continues untouched.",
+  "proposals": {
+    "TC-P3-09": {
+      "file": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/proposals/TC-P3-09-availability-date-atoms.patch",
+      "sha256": "7fbeb6bb61fdb7ad6b608527c4683e8193241cb3a301351d2a92e4a633f4e18d",
+      "files": [
+        {
+          "path": "src/app/app/availability/page.tsx",
+          "beforeSha256": "41fda3cc837897587748984d0b2fbddc3779be7b053d52b42cf77e80a8117971",
+          "afterSha256": "b8a2e0603614f1d68f49cf3678bff0df8abd2d9683176b65297e1cc6dd7e57c3"
+        }
+      ]
+    },
+    "TC-P3-34": {
+      "file": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/proposals/TC-P3-34-notifications-title-break.patch",
+      "sha256": "fa92c9b2740ae0ce3f9552098cb9f0e2ebbbca7d583c93ee916bbd1c11769601",
+      "files": [
+        {
+          "path": "src/app/app/notifications/page.tsx",
+          "beforeSha256": "dc7b5ba1285b448ceadd1edad2a9eead0295cdee81c4da2a137c6431780204ef",
+          "afterSha256": "8943a34366c0c25e0fb755eb0590e61601dbeec0338f7c25843d1cba1a73170c"
+        }
+      ]
+    }
+  },
+  "appFilesWritten": false,
+  "previewLaunched": false,
+  "testsRun": false,
+  "approvalOrClosureClaimed": false
+}
