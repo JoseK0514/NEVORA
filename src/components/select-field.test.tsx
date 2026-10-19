@@ -46,3 +46,20 @@ it("renders an explicit visible label and a 44px shared field contract", async (
   expect(html).toContain('required=""');
   expect(html).toContain('class="nevora-select"');
 });
+
+it("names the select by its label alone and describes it with the hint (IS-WA-12)", async () => {
+  const { SelectField } = await import("./select-field");
+  const html = renderToStaticMarkup(
+    createElement(SelectField, {
+      id: "position",
+      name: "positionId",
+      label: "Position",
+      hint: "Existing inactive values may be retained.",
+      options: [{ value: "active", label: "Active position" }],
+    }),
+  );
+
+  expect(html).toContain('<span id="position-label" class="nevora-field-label">Position</span>');
+  expect(html).toMatch(/<select[^>]*aria-labelledby="position-label"[^>]*aria-describedby="position-hint"/);
+  expect(html).toContain('<span id="position-hint" class="nevora-field-hint">');
+});
