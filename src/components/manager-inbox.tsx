@@ -17,6 +17,7 @@ import { KeepSelectedVisible } from "./kit/keep-selected-visible";
 import { CLOCK_IN, groupHeading, presentItem } from "@/lib/action-center/present";
 import { groupInboxItems, inboxFilter, type InboxFilter } from "@/lib/action-center/inbox";
 import { needsYou, needsYouDetail } from "@/lib/action-center/needs-you";
+import { keepWhole } from "@/lib/keep-whole";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 
@@ -105,7 +106,7 @@ function requestFacts(facts: RequestFacts): [string, ReactNode][] {
   const dates = facts.startDate === facts.endDate ? dayText(facts.startDate) : `${dayText(facts.startDate)} – ${dayText(facts.endDate)}`;
   return [
     ["Dates", <span key="d" className="nv-keep">{dates}</span>],
-    ...(facts.partialDay ? [["Time", <span key="t" className="nv-nowrap">{timeText(facts.partialDay.start)}&nbsp;– {timeText(facts.partialDay.end)}</span>] as [string, ReactNode]] : []),
+    ...(facts.partialDay ? [["Time", <span key="t" className="nv-keep">{keepWhole(`${timeText(facts.partialDay.start)} – ${timeText(facts.partialDay.end)}`)}</span>] as [string, ReactNode]] : []),
     ["Length", facts.lengthText],
     ["Works at", facts.locationName],
     ...(facts.note ? [["Note", facts.note] as [string, ReactNode]] : []),
@@ -141,11 +142,12 @@ function shiftEntry(shift: TodayShift, timeZone: string): InboxEntry {
   const condition = running ? "Not clocked in" : `No ${CLOCK_IN}`;
   return { key: `shift:${shift.id}`, href, label: `${action} for ${shift.employeeName}: ${condition}`, urgent: true,
     leading: <Avatar initials={initials(shift.employeeName)} />, title: shift.employeeName,
-    meta: <><span className="nv-nowrap">{when}</span> · <span className="nv-nowrap">{shift.locationName}</span></>, action,
+    // P3-WR-11: each part stays whole and moves to the next line as a unit, so nothing is clipped at large text.
+    meta: <MetaParts text={`${keepWhole(when)} · ${shift.locationName}`} />, action,
     status: <Status tone="urgent">{condition}</Status>,
     // TCD-08: the pane says each thing once: the pill is the condition, the facts are when and where, the note is what to do.
     paneMeta: false,
-    facts: [["Shift", <span key="t" className="nv-nowrap">{clock(shift.startAt, timeZone)}&nbsp;– {clock(shift.endAt, timeZone)}</span>], ["Location", shift.locationName]],
+    facts: [["Shift", <span key="t" className="nv-keep">{keepWhole(`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}`)}</span>], ["Location", shift.locationName]],
     note: running ? "Check in with them, or look at the Clocker." : "Check the timecard before you approve it.",
     secondary: running ? { href: `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`, label: "Open timecard" } : undefined };
 }
