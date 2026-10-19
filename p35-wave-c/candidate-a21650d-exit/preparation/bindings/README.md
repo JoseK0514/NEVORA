@@ -1,0 +1,13 @@
+# Wave C current generic before-listen binding
+
+Exact frozen source `/workspace/inspect-wave-c-candidate-a21650d` at `a21650de50374683d52e32b883d7f419d7344f22`. No runtime has launched and no old runtime pass is inherited. Root/runtime_setup explicitly control capacity/start.
+
+The active helper is runtime_setup's generic `launch-before-listen.sh` → `prepare-before-listen.py`, with `INSPECTION_INITIAL_EXTENSION` pointing to this directory's `initial-extension.mts` and `INSPECTION_INITIAL_EXTENSION_EXPORT=seedInitialWaveCBrandHistory`. The old copied Wave B private launcher is not used. The generic helper owns all base/AUDIT/payroll/source seed-extra/custom normal or large bootstrap; it validates exact source/ancestor/fixture hashes and actual DB name/OID/marker, and awaits every initial operation before Next spawn.
+
+The Wave C-only extension runs after base/extras/templates and before publication/listen. It verifies clean exact source, pinned module hashes and actual owned database identity, creates canonical Branding history through the exact-source service, reads it back and restores default brand/standard words. This exposes TC-28 history during normal baseline. A fresh marker prevents reinitialization. It exports no private hints or generation-bound browser payload; no finalizer slot is needed. No fixture mutation may occur after inspection begins.
+
+[Runtime configuration hashes](../runtime-config-hashes.json) pin the current helper, upstream fixture/stager templates, bounded transport and extension. [Dry-run derivation](../stager-dry-run.json) records all source fixture hashes and the extension slot without materializing or starting anything. Source/backend/checker/config files have a separate frozen-input inventory.
+
+Use [launch-approved.sh](launch-approved.sh) only after runtime_setup explicitly releases CPU/RAM, with `WC_RESOURCE_RELEASE=runtime-setup-released` and exact `READY_REVIEW_RELEASED_SHA=a21650de50374683d52e32b883d7f419d7344f22`. The wrapper validates every pinned helper/extension hash and source cleanliness, then invokes the current generic launcher with this source and owned disk preview. `INSPECTION_FIXTURE_MODE` is normal or large; use a fresh separate PREVIEW_OUT for large only after normal ownership has closed. One preview and one worker at a time.
+
+Read the initialization/source/mirror receipts before logging in locally using the protected access.json. Start the unchanged full axe checker before active UI state probes. The preview fixture password never enters reports, command arguments or URLs. Do not run seed-extra on a listening preview, mutate an inspected database, or use current shared live previews owned by another worker.

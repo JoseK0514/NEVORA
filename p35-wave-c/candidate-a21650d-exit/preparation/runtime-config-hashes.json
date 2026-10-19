@@ -1,0 +1,18 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "helperInputs": {
+    "/workspace/nevora-inspection-runtime/launch-before-listen.sh": "096da05d5d76902f30b1981a51c252bf52c1b96987ba01b911457b130faa96c0",
+    "/workspace/nevora-inspection-runtime/prepare-before-listen.py": "3a72d7014b01e30dbedb5fef51207458046f40e501410a6d8b58b95d85d89f1f",
+    "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/bindings/initial-fixture.mts": "9215bec95956ee0c9f7dd367bc136ae09cb253a9ff40e97e00dbbf0f66020d23",
+    "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/bindings/preview-runtime.private.mjs": "f97a0b2c2be4b0c459a81baac67a88222f666bed76f5be448594ade1dd37e4d7",
+    "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/scripts/stage-private-before-listen.py": "75843fb0b3485e4d33ae0cf1cbf7c56494cd712aeb8013156034296346384554",
+    "/workspace/nevora-inspection-runtime/owned-pg-transport.ts": "14616fb666beb3864abf1227d4088bd3b6530170fc4dd1184a701c177852b4e6"
+  },
+  "extension": {
+    "path": "/workspace/nevora-inspections/p35-wave-c/candidate-a21650d-exit/preparation/bindings/initial-extension.mts",
+    "sha256": "dc0b21bc1aed2a8c8832bf528de995e41be1c13c47f32479b5212e4ced51776a",
+    "export": "seedInitialWaveCBrandHistory",
+    "generationBoundHints": false
+  },
+  "materialized": false
+}

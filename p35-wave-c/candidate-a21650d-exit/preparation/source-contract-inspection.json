@@ -1,0 +1,118 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "mode": "read-only source string/hash inspection; no application execution",
+  "files": [
+    {
+      "path": "src/components/assisted-recovery.tsx",
+      "sha256": "a343002a4b8a04a0feff1887cad2aa63c93dec988c01eff68e5c78936b9b61a0",
+      "needles": [
+        "id=\"assisted-employee\"",
+        "id=\"assisted-attestation\"",
+        "wc-icon-after",
+        "Issue recovery code"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/components/account-recovery.tsx",
+      "sha256": "1e5993e242705cb038e037f1943318f1af305374f8fc435326d1e37aee506010",
+      "needles": [
+        "'/api/manager/account-recovery'",
+        "data.state==='issued'"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/components/clocker-recovery-review.tsx",
+      "sha256": "75f69e610cbed44fe7e5779ed6f03316ab0040f92c0a7308f19c7a616602ff67",
+      "needles": [
+        "'/api/manager/clocker-recovery'",
+        "Saved action reference",
+        "wc-icon-before"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/components/brand-editor.tsx",
+      "sha256": "53e30f2b4aead5ab21d020a869ebc056826d75d43f0a291921ee15bd6ec124c0",
+      "needles": [
+        "brand-hex",
+        "brand-logo-file",
+        "wc-brand__history",
+        "nv-row__meta"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/components/features-editor.tsx",
+      "sha256": "1f1356b07c04df875e42d3b16c1fa4f915b3ea8c95815e06c0b025eaf0106fef",
+      "needles": [
+        "name=\"word-preset\"",
+        "wc-wide-state",
+        "Not saved yet"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/components/company-policy-editor.tsx",
+      "sha256": "174e48694bc9f86e4c1c8fa6410b80b19558f411aa38f967f737d08b9422356e",
+      "needles": [
+        "id=\"policy-scope\"",
+        "Retry the same save",
+        "retry && !busy",
+        "/api/company-policies"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/app/app/settings/wave-c-recovery-loading.tsx",
+      "sha256": "70a1876d8ec854adc5eef55d75baf89f7338ef50acdb1450bd42d9af0b1303fd",
+      "needles": [
+        "params.get(\"from\") === \"settings\"",
+        "useSearchParams"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/app/app/premium-wave-c.css",
+      "sha256": "077118872d9be4642f440a41d0c251f3afccc4f0bd663d6de75db5d8fa58fb8c",
+      "needles": [
+        "-webkit-line-clamp: 2",
+        "max-height: min(28dvh, 12rem)",
+        "flex: 0 0 auto",
+        "align-self: center",
+        "padding-inline: 0",
+        "vertical-align: -0.2em"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/app/app/portal-premium.css",
+      "sha256": "c0a3a213ba88c7f6c60bcc97f0ef11f8ba5c4760d1dac44e9b40f1ddff5bea70",
+      "needles": [
+        "border: 1px solid var(--nv-field-border, var(--nv-border))"
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/app/app/settings/workspace/page.tsx",
+      "sha256": "afa2792a842112fe473702fb736f9b0c4c4f0862e062548b47912367f2ab9ec1",
+      "needles": [
+        "timeZoneLabel(workspace.timeZone)",
+        "id=\"workspace-timezone\""
+      ],
+      "missing": []
+    },
+    {
+      "path": "src/lib/time-zone-label.ts",
+      "sha256": "baa45f8c91f8481dbe1fd660653c3d80f6007e7617598e16235764d19d325412",
+      "needles": [
+        "Puerto Rico time"
+      ],
+      "missing": []
+    }
+  ],
+  "browserStarted": false,
+  "previewStarted": false,
+  "dataWrites": 0
+}

@@ -1,0 +1,199 @@
+{
+  "summary": {
+    "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+    "accounts": 10,
+    "routeRolePairs": 15,
+    "earlierFindingIds": 39,
+    "historicalFindingIds": 104,
+    "stages": {
+      "matrix": {
+        "jobs": 128,
+        "cells": 960
+      },
+      "loading": {
+        "jobs": 150,
+        "cells": 150
+      },
+      "loading-back": {
+        "jobs": 40,
+        "cells": 40
+      },
+      "variants": {
+        "jobs": 117,
+        "cells": 117
+      },
+      "forms": {
+        "jobs": 124,
+        "cells": 124
+      },
+      "dialogs": {
+        "jobs": 70,
+        "cells": 70
+      },
+      "recovery": {
+        "jobs": 130,
+        "cells": 130
+      },
+      "auth": {
+        "jobs": 56,
+        "cells": 56
+      },
+      "access": {
+        "jobs": 345,
+        "cells": 345
+      },
+      "motion": {
+        "jobs": 45,
+        "cells": 45
+      },
+      "large": {
+        "jobs": 9,
+        "cells": 9
+      },
+      "signed-out": {
+        "jobs": 39,
+        "cells": 39
+      }
+    },
+    "passiveFacts": 960,
+    "passiveJudgmentCells": 240,
+    "duplicateJudgmentVisits": 0,
+    "totalJobs": 1253,
+    "additionalManualWorkstreams": 5
+  },
+  "manualStateJobs": [
+    {
+      "id": "server-lists-empty-failed-partial",
+      "areas": [
+        "IS",
+        "TC",
+        "WR"
+      ],
+      "routes": [
+        "/app/settings/locations",
+        "/app/settings/breaks",
+        "/app/settings/positions",
+        "/app/settings/clocker"
+      ],
+      "needs": "Browser-only RSC response fixtures for first-run empty, unavailable read and partial/configuration states; no server data mutation. Query no-match is a separate state."
+    },
+    {
+      "id": "brand-preview-and-word-presets",
+      "areas": [
+        "AL",
+        "TC",
+        "IS",
+        "WR"
+      ],
+      "routes": [
+        "/app/settings/branding",
+        "/app/settings/features"
+      ],
+      "needs": "Exercise Phone/Desktop/Clocker preview tabs, keyboard, every word preset in browser before local interception; compare company words on Locations from response fixtures."
+    },
+    {
+      "id": "policies-revealed-fields-history",
+      "areas": [
+        "AL",
+        "TC",
+        "IS",
+        "WR"
+      ],
+      "routes": [
+        "/app/settings/company-policies"
+      ],
+      "needs": "Every policy scope/mode and custom threshold; invalid limits, disabled/locked cases, history dates and empty/large history response fixtures."
+    },
+    {
+      "id": "upload-and-issued-setup-code",
+      "areas": [
+        "ST",
+        "TC",
+        "IS",
+        "WR"
+      ],
+      "routes": [
+        "/app/settings/branding",
+        "/app/settings/clocker"
+      ],
+      "needs": "Fictional local image upload validation/intercepted success and failure; mocked exact Clocker owner-result setup code, expiry/select/back paths. Do not send upload or setup-code actions."
+    },
+    {
+      "id": "manual-five-area-review",
+      "areas": [
+        "AL",
+        "ST",
+        "TC",
+        "IS",
+        "WR"
+      ],
+      "routes": [
+        "/app/settings",
+        "/app/settings/workspace",
+        "/app/settings/locations",
+        "/app/settings/locations/loc-1",
+        "/app/settings/locations/new",
+        "/app/settings/branding",
+        "/app/settings/features",
+        "/app/settings/company-policies",
+        "/app/settings/breaks",
+        "/app/settings/positions",
+        "/app/settings/clocker",
+        "/app/account-recovery",
+        "/app/clocker-recovery"
+      ],
+      "needs": "Read every captured measurement and image, measure crops; recheck all 104 historical/current finding IDs plus accepted dispositions; priority IDs include all local round-4 repairs and retained WR-10/ST-14; new findings get WC IDs. Captured is not a pass."
+    }
+  ],
+  "earlierIds": {
+    "AL": [
+      "AL-08",
+      "AL-13",
+      "AL-14",
+      "AL-15",
+      "AL-16",
+      "AL-17",
+      "AL-18"
+    ],
+    "ST": [
+      "ST-02",
+      "ST-05",
+      "ST-08",
+      "ST-13",
+      "ST-14",
+      "ST-15",
+      "ST-16",
+      "ST-17",
+      "ST-18"
+    ],
+    "TC": [
+      "TC-10",
+      "TC-11",
+      "TC-15",
+      "TC-16",
+      "TC-17",
+      "TC-26",
+      "TC-27",
+      "TC-WC-28",
+      "TC-28",
+      "TC-29",
+      "TC-30"
+    ],
+    "IS": [
+      "IS-6",
+      "IS-15"
+    ],
+    "WR": [
+      "WR-10",
+      "WR-14",
+      "WR-11",
+      "WR-13",
+      "WR-21",
+      "WR-22",
+      "WR-23",
+      "WR-24",
+      "WR-WC-25",
+      "WR-25"
+    ]
+  }
+}
