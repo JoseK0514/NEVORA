@@ -11,6 +11,7 @@ import {EmployeeCorrectionCenter,EmployeeCorrectionRecoveryContext,EmployeeEntry
 import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 import {employeeButtonClass} from './employee-corporate-ui';
 import {timeZoneLabel} from '../lib/time-zone-label';
+import {HoldHeight} from './kit/hold-height';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off clock':entry.state==='ON_BREAK'?'On break':'Clocked in';
 /** Freshness needs minutes, not seconds: "Oct 15, 7:31 PM". */
@@ -59,14 +60,14 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
  const unavailable=!denied&&time?.state==='unavailable';
  const title=paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load your time records':'Loading recorded time';
  const controls=<div className="employee-time-controls">
-  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass(unavailable?'primary':'quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label={unavailable?'Try again to load your time records':'Refresh recorded time'} onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{refreshing?'Refreshing…':unavailable?'Try again':'Refresh'}</button>}
+  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass(unavailable?'primary':'quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{unavailable?'Try again':'Refresh'}</button>}
   {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
  </div>;
  const content=<>
   <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:<span className="employee-time-badge" aria-hidden="true">–</span>}</div>
   {ready?<>
    {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p>Clocked in at <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></p><p><b>{duration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<>{'\u00a0· '}<b>{duration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
-  </>:<div className="employee-time-message" role="status"><strong>{title}</strong><p>{paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</p></div>}
+  </>:<div className="employee-time-message" role="status"><strong>{title}</strong>{/* P3-ST-02: on Home the band already says updates are paused, so the clock card keeps its ready height. */}{compact&&paused?null:<p>{paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</p>}</div>}
   <p className="employee-time-note">Use your location’s Clocker to record punches.</p>
   {/* P3-ST-06: while loading, the full footer has the ready footer's lines (an invisible stand-in for the zone line), so it doesn't change height. */}
   <footer className="employee-time-footer"><small className={corporate&&(ready||placeholder)?'employee-corporate-desktop-copy':undefined}>{ready?<><span>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time></span>{!compact?<><span>{timeZoneLabel(ready.timeZone)}</span><span>Updates every 30s while active.</span></>:null}</>:placeholder?<><span className="employee-time-footer-placeholder" aria-hidden="true">Updated <time>Oct 00, 0:00 AM</time></span><span className="employee-time-footer-placeholder" aria-hidden="true">Local area time</span><span className="employee-time-footer-placeholder" aria-hidden="true">Updates every 30s while active.</span></>:'Only recorded punches appear here.'}</small>
@@ -91,7 +92,9 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
  </>;
  // While loading, what sits under the status keeps its space but stays hidden: a clocked-in status is taller than the
  // loading line, so anything visible under it would jump when it arrives.
- return <div className="employee-time-panel" data-time-loading={placeholder?'true':undefined}>
+ // P3-ST-14: paused, offline, a failed refresh or an ended session keep the page at its last ready height, so the
+ // cards below don't vanish from under the reader and the scroll position holds.
+ return <HoldHeight className="employee-time-panel" holding={!ready} data-time-loading={placeholder?'true':undefined}>
   {corporate?<div className="employee-time-overview">{overview}</div>:overview}
   {ready?<>
    <section className="employee-view-surface employee-time-recent" aria-labelledby="employee-time-recent-title">
@@ -100,7 +103,7 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
    </section>
    <EmployeeCorrectionCenter zone={ready.timeZone}/>
   </>:null}
- </div>;
+ </HoldHeight>;
 }
 
 export function EmployeeTimePanel({compact=false,corporate=false,authority}:{compact?:boolean;corporate?:boolean;authority?:string}){

@@ -155,6 +155,11 @@ function attentionLabel(item: AttentionItem) {
     .replace(/ — review required$/, item.required ? '' : ' — review required');
 }
 
+function placeholderEyebrow() {
+  const now = new Date(), zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return `${greeting(now.toISOString(), zone)}\u00a0· ${keepWhole(new Intl.DateTimeFormat('en-US', {weekday: 'long', month: 'long', day: 'numeric'}).format(now))}`;
+}
+
 function AttentionRow({item, zone, celebrate = false}: {item: AttentionItem; zone: string; celebrate?: boolean}) {
   const moment = celebrate ? approvalCelebration(item) : null;
   const Icon = kindIcons[item.ref.kind] ?? ChatTextIcon;
@@ -281,7 +286,10 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
 
   return <div className={`nv-page premium-employee-home ${styles.root}`} data-nv-page="" data-home-state={viewState} aria-busy={refreshing || loading}>
     <PageBand
-      eyebrow={snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)}{'\u00a0· '}<time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time></> : '\u00a0'}
+      eyebrow={snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)}{'\u00a0· '}<time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time></>
+        // P3-ST-17: while loading, an invisible greeting and date of the same shape hold the eyebrow's lines (two or three
+        // at 200% text), so the band doesn't grow when Home arrives. Local time is close enough for its length.
+        : <span aria-hidden="true" style={{visibility: 'hidden'}} suppressHydrationWarning>{placeholderEyebrow()}</span>}
       title={name ? `Hi, ${name}.` : 'Home'}
       summary={summary}
       // Codex mobile review M8: required work is noticed on the first screen; the full list stays below.
@@ -320,7 +328,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
             {snapshot.publicationState === 'partial' ? <p className={styles.notice} role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
           </> : <div className={`${styles.recovery} premium-pass-placeholder`} role="status">
             {/* P3-ST-01/12: the placeholder has the pass's own lines (date, time, countdown, place, footer), so it's the same height. */}
-            <p className={styles.assignmentDate}>{recovery}</p>
+            <p className={styles.assignmentDate} data-recovery="">{recovery}</p>
             <p className={styles.interval} aria-hidden="true">&nbsp;</p>
             <p className={styles.countdown} aria-hidden="true"><HourglassMediumIcon size={16} weight="bold"/>&nbsp;</p>
             <p className={styles.location} aria-hidden="true">&nbsp;</p>
