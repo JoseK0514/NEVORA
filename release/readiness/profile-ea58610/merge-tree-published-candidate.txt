@@ -1,0 +1,14 @@
+Base: 0e010464aeb5f532981ac6071c48e1527e9419db
+Input: ea58610bf3bdc85319895689c3d88e064f6a76d5
+Read-only merge-tree exit: 1
+
+99b3c3ff0e207388130df84620e68151f469b2fd
+100644 9a1a0eb795ae0ff71358c1745a269c851af1210a 1	src/app/app/portal-premium.css
+100644 ecf0761a040924f1613ce1237c6168dbba035c07 2	src/app/app/portal-premium.css
+100644 1a26d955501a331c82e9a6a74400f9ad22d80ba8 3	src/app/app/portal-premium.css
+
+Auto-merging src/app/app/portal-premium.css
+CONFLICT (content): Merge conflict in src/app/app/portal-premium.css
+Auto-merging src/app/typeface-theme.css
+Auto-merging src/components/employee-home-reviewed.module.css
+Auto-merging src/components/kit/kit.css
