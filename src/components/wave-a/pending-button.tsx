@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { guardSingleSubmit } from "./single-submit";
 
 /* Wave A form pattern: the submit button says what it is doing while its form is busy.
  * The shared forms (ConfigurationForm, ShiftChangeForm) mark themselves aria-busy and disable their
@@ -27,6 +28,7 @@ export function PendingButton({ children, pending, kind = "primary", block = fal
   useEffect(() => {
     const form = button.current?.form;
     if (!form) return;
+    guardSingleSubmit(form);
     const onSubmit = (event: SubmitEvent) => {
       const submitter = event.submitter;
       sent.current = submitter === button.current || (!submitter && form.querySelectorAll("[type=submit]").length === 1);

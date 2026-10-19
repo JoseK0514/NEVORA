@@ -362,3 +362,22 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page :i
 
 /* TC-WA-1, TC-WA-2: names and labels in Wave A rows are never cut off; they wrap. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .nv-row__title { display: block; -webkit-line-clamp: unset; overflow: visible; overflow-wrap: break-word; }
+
+/* ST-WA-1: each Wave A page's placeholder band at that page's real band height (measured October 19 at 320 / 390 / 844×390).
+   The shared rules draw the band only on phones; these set its height. */
+html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-add"], [data-route="wa-edit"], [data-route="wa-pin"], [data-route="wa-swap"]) { --route-band: 288px; }
+html body .app-shell.nevora-portal .route-skeleton[data-route="wa-coverage"] { --route-band: 312px; }
+html body .app-shell.nevora-portal .route-skeleton[data-route="wa-copy"] { --route-band: 212px; }
+html body .app-shell.nevora-portal .route-skeleton[data-route="wa-member"] { --route-band: 216px; }
+html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [data-route="wa-callout"]) { --route-band: 244px; }
+@media (max-width: 359px) {
+  html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-edit"], [data-route="wa-coverage"]) { --route-band: 312px; }
+  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-copy"] { --route-band: 288px; }
+  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-new"] { --route-band: 268px; }
+}
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-add"], [data-route="wa-edit"], [data-route="wa-coverage"], [data-route="wa-pin"], [data-route="wa-swap"]) { --route-band: 228px; }
+  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-copy"] { --route-band: 140px; }
+  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-member"] { --route-band: 196px; }
+  html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [data-route="wa-callout"]) { --route-band: 184px; }
+}

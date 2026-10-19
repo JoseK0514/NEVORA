@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { Avatar, Card, Status } from "@/components/kit/kit";
+import { useHoldHeight } from "@/components/kit/hold-height";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
 
@@ -39,6 +40,8 @@ export function AvailabilityTeamList({ employees, employeeId }: {
   const [filter, setFilter] = useState<Filter>("all");
   const target = useRef<HTMLLIElement>(null);
   const chips = useRef<HTMLDivElement>(null);
+  // ST-WA-3: a filter keeps the list at the full team's height, so the chips never jump under the finger.
+  const list = useHoldHeight<HTMLDivElement>(filter !== "all");
   const visible = employees.filter(employee => matchesAvailabilityFilter(employee, filter));
   useEffect(() => { target.current?.focus(); }, [employeeId]);
 
@@ -52,6 +55,7 @@ export function AvailabilityTeamList({ employees, employeeId }: {
       })}
     </div>
     <p className="nv-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
+    <div ref={list}>
     {visible.length ? <ul className="wa-people">
       {visible.map(employee => <li ref={employee.employeeId === employeeId ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} className="wa-person" data-selected={employee.employeeId === employeeId ? "true" : undefined} key={employee.employeeId} aria-label={`${employee.employeeName} availability`}>
         <div className="wa-person__head">
@@ -70,5 +74,6 @@ export function AvailabilityTeamList({ employees, employeeId }: {
       <p className="wa-text wa-muted">{employees.length ? "No one matches this filter." : "Employees and Leads show here once they’re added."}</p>
       {employees.length ? <button className="nv-btn" data-kind="secondary" data-block="true" type="button" onClick={() => { setFilter("all"); chips.current?.querySelector<HTMLButtonElement>("button")?.focus(); }}>Show everyone</button> : null}
     </div>}
+    </div>
   </Card>;
 }

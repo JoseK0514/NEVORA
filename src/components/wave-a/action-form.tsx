@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { guardSingleSubmit } from "./single-submit";
 import { unstable_rethrow } from "next/navigation";
 import { Notice } from "./parts";
 
@@ -15,18 +16,24 @@ export function ActionForm({ action, children, className, label, failure }: {
   failure: { title: string; body: string };
 }) {
   const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState(false);
   const notice = useRef<HTMLDivElement>(null);
+  const form = useRef<HTMLFormElement>(null);
+  useEffect(() => { if (form.current) guardSingleSubmit(form.current); }, []);
   async function run(data: FormData) {
     setFailed(false);
+    setBusy(true);
     try {
       await action(data);
+      setBusy(false);
     } catch (error) {
+      setBusy(false);
       unstable_rethrow(error);
       setFailed(true);
       requestAnimationFrame(() => { notice.current?.scrollIntoView({ block: "center" }); notice.current?.focus({ preventScroll: true }); });
     }
   }
-  return <form action={run} className={className} aria-label={label}>
+  return <form ref={form} action={run} className={className} aria-label={label} aria-busy={busy}>
     {children}
     {failed ? <div ref={notice} tabIndex={-1} className="wa-target"><Notice tone="urgent" title={failure.title}>{failure.body}</Notice></div> : null}
   </form>;

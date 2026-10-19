@@ -1,6 +1,6 @@
 import { RouteSkeleton } from "@/components/route-skeleton";
 
-/** Wave A: this page's own placeholder, with its band at the height it renders at 390. */
+/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route="wa-edit"). */
 export default function Loading() {
-  return <RouteSkeleton label="the shift" shape="cards" band={288} />;
+  return <RouteSkeleton route="wa-edit" label="the shift" shape="cards" band={288} />;
 }
