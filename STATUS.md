@@ -1,4 +1,6 @@
-Rolling release work started October 19 at 18:28 UTC. Local candidate recreated from Phase 3 `fa7a09b`; backend merge aborted on the root-layout conflict below. No chat has a verified zero exit round. Wave A round 2 (exit), Wave C round 3 and Profile round 4 are available for inspection. Candidate-only lint fix `a08814c` awaits validation. No deployment or device exposure.
+In progress: Wave A round 2 (exit) on `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, Wave C round 3 on `b109ec3fea10418fb9f5c9da2af0a1e561dc2678`, and Profile round 4 on `829dfe6cf45beb71b77db573c0263c60a5f69856`. Wave C has two verified P1s so far (WR-21 and ST-02); all rounds remain incomplete. The inspection session performs no merges or deployments. Queue polling continues every ten minutes.
+
+Parallel release task status: Rolling release work started October 19 at 18:28 UTC. Local candidate recreated from Phase 3 `fa7a09b`; backend merge aborted on the root-layout conflict below. No chat has a verified zero exit round. Wave A round 2 (exit), Wave C round 3 and Profile round 4 are available for inspection. Candidate-only lint fix `a08814c` awaits validation. No deployment or device exposure.
 
 # NEVORA cloud inspection status
 
@@ -35,12 +37,12 @@ Teardown: revoke the tunnel/access rule, stop the local app and its owned databa
 | Wave A | `claude/p35-wave-a-1283c8` | `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0` | round 2 (exit), queued first |
 | Wave B | `claude/p35-wave-b-808dfd` | `b0e051a951642ff34692604147fcd76ba805a3e7` | `ROUND.md` absent; not inspected |
 | Wave C | `claude/p35-wave-c-93e13c` | `b109ec3fea10418fb9f5c9da2af0a1e561dc2678` | round 3, queued second |
-| Profile | `claude/p35-profile-6cdee8` | `829dfe6cf45beb71b77db573c0263c60a5f69856` | round 4 recheck; exit round 5 still needed |
+| Profile | `claude/p35-profile-6cdee8` | `829dfe6cf45beb71b77db573c0263c60a5f69856` | round 4 matrix running; exit round 5 still needed |
 | Desktop | `claude/p4-desktop-240fe0` | `578748d705b941d14f37c0b01bfcfb1332343e31` | `ROUND.md` absent; not inspected |
 
 ## Inspection results
 
-No completed cloud rounds. Severity counts are unknown until inspection; missing handoffs are not UI defects and are not a zero verdict.
+No completed cloud rounds. Wave C round 3 has two verified P1s so far; the five-area sweep and matrices remain incomplete. Unknown evidence is not zero. Missing handoffs and preview-load failures are not UI defects.
 
 Start each round from the exact commit in its handoff. Round 1 and exit rounds require all five full sweeps. Later rounds re-check earlier finding IDs and touched surfaces; automated checks still run the full matrix each round. Refresh the coordinator brief and tooling from `claude/premium-phase-1` before each round.
 
@@ -54,3 +56,5 @@ All page submissions must be answered, held or aborted in the browser. Only fict
 2026-10-19T18:08:18.138164+00:00 · all six branches fetched · Wave A round 2 and Wave C round 3 available; others await handoffs
 2026-10-19 18:18:49 UTC · queue fetched · Wave A round 2 explicitly retargeted to c05e0c7; prior preview stopped and preliminary checks superseded · other handoffs unchanged
 2026-10-19 18:22 UTC · Wave C round 3 on b109ec3fea10418fb9f5c9da2af0a1e561dc2678 · P0 0, P1 1, P2 0 · not zero
+2026-10-19T18:28:55.380713+00:00 · all six branches fetched · Profile round 4 available on 829dfe6; Phase 3, Wave B and Desktop still await handoffs
+2026-10-19 18:36 UTC · Wave C round 3 on b109ec3fea10418fb9f5c9da2af0a1e561dc2678 · P0 0, P1 2, P2 0 · not zero
