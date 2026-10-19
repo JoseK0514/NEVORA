@@ -1,0 +1,19 @@
+{
+  "source": "/workspace/inspect-combined-15a0fcd",
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "tree": "392617eed660df624f13fa30f450bf8116354f1a",
+  "parentInitializer": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/initial-own-withdrawals.mts",
+  "parentInitializerSha256": "73439ac48913955ecf5ecd5865bd35772552774820e946730fceb2878b8a558c",
+  "reboundInitializer": "/workspace/nevora-inspection-runtime/final-verification/combined-15a0fcd-preparation/initial-own-withdrawals.mts",
+  "reboundInitializerSha256": "85fed3e46bdcd9bc5a378065f7cf7ef8c761333e7ff65ce349cf14df32d670d1",
+  "onlyInitializerChange": "SHA/tree exact-source guard constants; all canonical operations and source hashes unchanged",
+  "verifiedSourceInputs": {
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/lib/data/requests.ts": "ceea9c1bf919eb071acab558cb59c4c85a0c33ac719e56ff7b8d4580ae155ca1",
+    "src/lib/time-off-withdrawal.ts": "41d4fe907058a831043db9a16851b54b9c01de9008a2912bdb53cc6b984b2734",
+    "src/lib/date-utils.ts": "4e4545d0a4a70df78fde730fb3bd99823c47ec5758e12d2e471142f8454a1e41"
+  },
+  "runtimeStarted": false,
+  "currentCdPreviewUnchanged": true,
+  "fullGateCredit": false
+}

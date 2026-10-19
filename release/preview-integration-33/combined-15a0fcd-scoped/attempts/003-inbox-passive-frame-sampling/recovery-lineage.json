@@ -1,0 +1,11 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "preparedAt": "2026-10-19T23:39:15.852643+00:00",
+  "previousModule": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-desktop.natural-text-v2.mjs",
+  "previousSha256": "d4d1cbc1b463c0de406d7e660f98f2427f0d2380b5752c8dd6eef186b02cc157",
+  "derivedModule": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-desktop.natural-text-v3.mjs",
+  "derivedSha256": "157bc71191b92f59fe5bf0b2b71c44d01aa141214fade57ebe787003d40e199d",
+  "difference": "Passive sampling only: retain the actual first ready animation frame, then wait bounded5000ms for at least a second real ready animation frame before the same500ms settling observation. No input, DOM, source, style or selected-state mutation. All CLS/geometry/focus/scroll assertions unchanged.",
+  "classification": "Single ready frame lacks temporal comparison evidence; preserve raw negative assertion as incomplete sampling, not a product finding",
+  "extraConfigurationCredit": 0
+}

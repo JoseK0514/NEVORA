@@ -1,0 +1,41 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "archivedAt": "2026-10-19T23:35:34.874901+00:00",
+  "originalRequiredCells": 28,
+  "originalCompleted": 16,
+  "originalPassed": 13,
+  "retryKeyCount": 18,
+  "distinctCanonicalRequiredCells": 28,
+  "reason": "12 Rules idle-name form lookup gaps; six 200-percent Inbox cells replay as genuine cold openings rather than filter transitions",
+  "outerCoordinator": {
+    "pid": 191592,
+    "state": "verified paused",
+    "priorChild": 191619,
+    "childEnded": true
+  },
+  "sha256": {
+    "targeted-priority-states.json": "33f65c3b38a3f4ba5e0a190b8c80173c3553e4d560206b65ee9b2c6b41d8a229",
+    "targeted-priority-summary.json": "273990a83398d573ae68d94996f3fe39bc8c0e9e1be3f6e020071be65fdb1395",
+    "priority.log": "d40e20e35177e4f5dc63e0e07c3702db600c4b93394147ae1b89ff63ae347f7d"
+  },
+  "replayKeys": [
+    "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|staffing",
+    "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|trade",
+    "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|coverage",
+    "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|staffing",
+    "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|trade",
+    "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|coverage",
+    "scoped-desktop-inbox-natural-eight|chromium|AUDIT-M|1440|900|200|opening-only",
+    "scoped-desktop-inbox-natural-eight|chromium|AUDIT-M|1024|900|200|opening-only",
+    "scoped-desktop-inbox-native-four|chromium|AUDIT-M|1024|900|200|native-guards",
+    "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|staffing",
+    "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|trade",
+    "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|coverage",
+    "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|staffing",
+    "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|trade",
+    "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|coverage",
+    "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1440|900|200|opening-only",
+    "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1024|900|200|opening-only",
+    "scoped-desktop-inbox-native-four|webkit|AUDIT-M|1024|900|200|native-guards"
+  ]
+}

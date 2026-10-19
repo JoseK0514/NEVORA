@@ -1,0 +1,9 @@
+# Priority Rules and Inbox repair verification
+
+Exact source `15a0fcd70d49060bb21738de67f4d8feb9b96d58`: **28 distinct configurations completed, 28 passed**. Rules16 covers all four native Enter forms in Chromium/WebKit at390/100% and320/200%, with original readonly field focus, unchanged value, one intercepted command and settled failure focus. Inbox12 covers eight natural openings and four native focus/scroll/privacy configurations at1440 and1024 widths in both engines.
+
+The selected native group was open at the actual first ready frame and retained its measured height. Chromium natural-opening CLS stayed at or below0.01; WebKit records unsupported CLS as null and uses actual frame geometry. Two WebKit500ms windows had only one ready frame; their raw negative sampling assertions remain archived. The exact two keys were replayed with a bounded5000ms wait for at least two real passive ready frames, preserving the actual first frame and every geometry/focus/CLS threshold.
+
+Original12 Rules idle-label locator gaps and six200% Inbox filter-setup rows are preserved with all original crops. Replacements keep the same required keys:18 replacement observations, followed by two sampling replays, supply **no extra configuration credit**. The original Chromium1024/200 Now-to-Plan-Ahead pane transition measured CLS0.010901292165120443 and remains a separate observed flow result. Its selected group was already open, so it does not establish ST13 late opening.
+
+`priority-completion.json` maps each original key to its retained/replayed canonical result and hashes. The original coordinator stage exit1 remains unchanged; this independent completion receipt records the repaired harness coverage. Business writes were intercepted and answered locally. Source/mirror/PostgreSQL closure is pending the remaining bounded stages and will be reported independently.

@@ -1,0 +1,19 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "originalSnapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/attempts/002-inbox-natural-text-setup/scoped-desktop.original.mjs",
+  "originalSha256": "29a700688d2ac38a77a6af7ad9a7756bac53a806bdd29294b588dd058f832aa6",
+  "recoverySnapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-desktop.natural-text-v2.mjs",
+  "recoverySha256": "d4d1cbc1b463c0de406d7e660f98f2427f0d2380b5752c8dd6eef186b02cc157",
+  "originalFlow": "200% cases used actual Now\u2192Plan ahead filter change after text-size application; observed selected-pane content/layout changes are retained as filter-flow observations, not charged as natural-opening late native-group failures",
+  "correctedRequiredFlow": "Apply only requested root text size before first paint; source inline script computes scale/step. Direct planning URL cold navigation at requested scale; no filter click, no artificial recent-input exemption, no app UI/style/token/height adjustment apart from authorized text-scale emulation",
+  "unchangedCriteria": [
+    "first-ready native selected group open/stable",
+    "Chromium overall natural CLS<=0.01",
+    "WebKit CLSnull +geometry",
+    "native open/closed user state survives fresh source",
+    "pending focus/dedupe/scroll/private retirement guards"
+  ],
+  "replayKeys": "All6 Inbox200 configurations; original100 cases remain actualnatural rows",
+  "originalMetricsPreserved": true,
+  "noExtraRequiredCellCounts": true
+}

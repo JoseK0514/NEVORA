@@ -1,0 +1,31 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "preparedAt": "2026-10-19T23:42:03.614228+00:00",
+  "scope": "Priority28 only: Rules16 +Inbox12 on exact15; remaining106, full code gates, full source exits and preview closure are separate",
+  "distinctRequired": 28,
+  "completed": 28,
+  "passed": 28,
+  "originalSetupAndSamplingAttemptsPreserved": true,
+  "originalFilterTransitionCLSSeparate": 0.010901292165120443,
+  "credentialLiteralScan": {
+    "actualRuntimePasswordChecked": true,
+    "allActualSessionCookiesChecked": true,
+    "privateFixtureHintFilesChecked": 0,
+    "rawAndEncodedLiteralMatches": [],
+    "secretValuesPrintedOrRecorded": false
+  },
+  "exclusions": [
+    "Access/session/state/env/database files",
+    "All login/preview logs",
+    "Private fixture hint bindings",
+    "Unfinished remaining106 stage data",
+    "All unallowlisted workspace artifacts"
+  ],
+  "commandEvidence": "API private authority values hashed; opaque Next action payloads hashed; no browser business write forwarded",
+  "artifactCount": 34,
+  "bytes": 2621684,
+  "representativeCrops": 4,
+  "remainingOriginalAndReplayCropsRetained": true,
+  "ownedPreviewStillRunningForRemaining106": true,
+  "fullExitOrFullGateClaim": false
+}

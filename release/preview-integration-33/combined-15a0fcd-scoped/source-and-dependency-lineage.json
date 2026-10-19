@@ -1,0 +1,38 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "tree": "392617eed660df624f13fa30f450bf8116354f1a",
+  "source": "/workspace/inspect-combined-15a0fcd",
+  "preparedAt": "2026-10-19T23:07:36.312611+00:00",
+  "comparedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "changedFiles": [
+    "docs/product/specs/p35-wave-a/ROUND.md",
+    "docs/product/specs/p35-wave-b/CODEX-IS-B31.md",
+    "docs/product/specs/p35-wave-b/ROUND.md",
+    "docs/product/specs/p35-wave-c/ROUND.md",
+    "docs/product/specs/p4-desktop/README.md",
+    "docs/product/specs/p4-desktop/ROUND.md",
+    "src/app/app/premium-desktop.css",
+    "src/app/app/settings/foundation-pages.test.tsx",
+    "src/app/app/settings/workspace/page.test.tsx",
+    "src/app/app/settings/workspace/page.tsx",
+    "src/components/manager-inbox.tsx",
+    "src/components/manager-time-off.tsx",
+    "src/components/manager-workflows.test.tsx",
+    "src/components/reviewed-callout-form.tsx",
+    "src/components/wave-a/parts.tsx",
+    "src/components/wave-b-forms.tsx"
+  ],
+  "unchangedInputSha256": {
+    "package-lock.json": "eb022d968acfd69c7c44d5df1ecca537e987e01ef0a945b52645fad6ed1f670c",
+    "package.json": "42820710e425e91e278b63d2129098d32e4a80f5def3b5344c77909457bb2eaf",
+    "scripts/ui-checks/checks.mjs": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+    "src/app/api/period-close/route.ts": "8c8cc02685becbcba8272784b987c6ead39a5deaa092239ddc39ab17941bd17d",
+    "src/app/api/reports/route.ts": "79f8d959abb37808f27ab14141f2310b400bc3bd57751dbde6c5373aad08f66c",
+    "src/app/api/timecards/route.ts": "0786b28f20ac463d78209174f4896e53c917394d438cd6cb03e9d7c2b91064cf",
+    "src/app/api/manager/action-center/route.ts": "05335689f252f18cb5bec8068f5e2bb762d604e8693f7f8c5262398cd8adda68"
+  },
+  "dependencies": "Ignored source symlink to cd validated node_modules with unchanged exact package/lock bytes; owned mirror will physically copy dependencies",
+  "ciGateInheritance": false,
+  "browserCreditInheritance": false,
+  "runtimeStarted": false
+}

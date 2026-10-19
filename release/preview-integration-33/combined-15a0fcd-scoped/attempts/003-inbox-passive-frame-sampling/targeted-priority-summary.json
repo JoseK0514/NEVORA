@@ -1,0 +1,59 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "completed": 28,
+  "passed": 26,
+  "total": 28,
+  "assertions": 304,
+  "failures": [
+    {
+      "name": "scoped-desktop-inbox-natural-eight",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "opening-only",
+      "failed": [
+        {
+          "message": "Opening captures first-ready and settled native group geometry",
+          "passed": false,
+          "detail": [
+            {
+              "at": 6517,
+              "rootFont": "32px",
+              "textStep": "200",
+              "textScale": "2",
+              "key": "HOURS:AUDIT-BREAK",
+              "selectedGroup": true,
+              "open": true,
+              "height": 2726,
+              "scrollY": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoped-desktop-inbox-natural-eight",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "opening-only",
+      "failed": [
+        {
+          "message": "Opening captures first-ready and settled native group geometry",
+          "passed": false,
+          "detail": [
+            {
+              "at": 10223,
+              "rootFont": "32px",
+              "textStep": "200",
+              "textScale": "2",
+              "key": "HOURS:AUDIT-BREAK",
+              "selectedGroup": true,
+              "open": true,
+              "height": 4662,
+              "scrollY": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

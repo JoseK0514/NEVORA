@@ -1,0 +1,17 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "source": "/workspace/nevora-inspection-runtime/final-verification/combined-15a0fcd-preparation/scoped-stage.mjs",
+  "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/scoped-stage.executed.mjs",
+  "sha256": "14f50b636e76376aa05e3b19dc6e47eac5a33431ae75f203927b6dd3a7375e45",
+  "stages": [
+    "priority Rules16+Inbox12",
+    "recorded cold8",
+    "Timecards cold6",
+    "Home80",
+    "Payroll fonts4",
+    "Timecards503recovery8"
+  ],
+  "oneBrowserWorker": true,
+  "noApplicationSourceChanges": true,
+  "noFullCIGateInheritance": true
+}

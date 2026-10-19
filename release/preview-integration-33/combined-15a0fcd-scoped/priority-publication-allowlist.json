@@ -1,0 +1,183 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "root": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped",
+  "files": [
+    {
+      "path": "attempts/001-rules-idle-label-lookup/initial-targeted-priority-states.json",
+      "sha256": "33f65c3b38a3f4ba5e0a190b8c80173c3553e4d560206b65ee9b2c6b41d8a229",
+      "bytes": 553274
+    },
+    {
+      "path": "attempts/001-rules-idle-label-lookup/initial-targeted-priority-summary.json",
+      "sha256": "273990a83398d573ae68d94996f3fe39bc8c0e9e1be3f6e020071be65fdb1395",
+      "bytes": 13767
+    },
+    {
+      "path": "attempts/001-rules-idle-label-lookup/recovery-lineage.json",
+      "sha256": "3dbbdc37b9b4f0f523306436076344120b5e1b53e775ac092ad74bfa0bd83773",
+      "bytes": 1620
+    },
+    {
+      "path": "attempts/002-inbox-natural-text-setup/recovery-lineage.json",
+      "sha256": "d5aaf28e4cf04fc8e6f77db5cc310beecbf92d60d4f3d908120355c168614468",
+      "bytes": 1594
+    },
+    {
+      "path": "attempts/003-inbox-passive-frame-sampling/completed-attempt.json",
+      "sha256": "42199a53eea786e31bf28e4e89a2018b88cc93544f555e0e393547bae48718f6",
+      "bytes": 575
+    },
+    {
+      "path": "attempts/003-inbox-passive-frame-sampling/recovery-lineage.json",
+      "sha256": "28cf06710730aa26d6c8dadc4f8ae0340609cf443a7c04a2324a72f45b41a36d",
+      "bytes": 1112
+    },
+    {
+      "path": "attempts/003-inbox-passive-frame-sampling/retry-keys.json",
+      "sha256": "fbb5ce4cfc0c9d972bff102c2bc3da0804cea705794ee0089a9ac2d46ae7f20d",
+      "bytes": 165
+    },
+    {
+      "path": "attempts/003-inbox-passive-frame-sampling/targeted-priority-states.json",
+      "sha256": "17914f8cb8f23c393f926402ee3d2c1114c37bc53953ec88dfaea9daecd11e27",
+      "bytes": 650655
+    },
+    {
+      "path": "attempts/003-inbox-passive-frame-sampling/targeted-priority-summary.json",
+      "sha256": "24d1d6a08c2f85839c6687a12bafd59950691851034a1437adc0f9859dfbe155",
+      "bytes": 1480
+    },
+    {
+      "path": "attempts/priority-replay-keys.json",
+      "sha256": "99dcb2c3228e20ee5ebb549ae962934847937cfb461b47aba741b7bcf2f7146d",
+      "bytes": 1249
+    },
+    {
+      "path": "attempts/priority-replay-plan.json",
+      "sha256": "b12c4355d46e86456079fd7ab46b554080afad43b3c9e1ccc0c66e1296cdfcdc",
+      "bytes": 2153
+    },
+    {
+      "path": "before-listen-static-derivation.json",
+      "sha256": "98ac6ee22d6e81eb3afa905c1dbff27c332c8ec3fe2c195dd4bedc3d2961e62b",
+      "bytes": 2613
+    },
+    {
+      "path": "crops/chromium-scoped-desktop-inbox-natural-eight-AUDIT-M-1024x900-t200-opening-only-natural-opening.png",
+      "sha256": "bc01029526d1c7049613df8631317086bd4e7b7818ecb9f870a6a3ae1a3f35f4",
+      "bytes": 161615
+    },
+    {
+      "path": "crops/chromium-scoped-wb-rules-enter-QAOWNER-320x844-t200-staffing-held.png",
+      "sha256": "3359ec46d85d049c0c973fcc2f3888aa630b246e18b49451c35e1af6e681fc2a",
+      "bytes": 52277
+    },
+    {
+      "path": "crops/webkit-scoped-desktop-inbox-natural-eight-AUDIT-M-1024x900-t200-opening-only-natural-opening.png",
+      "sha256": "9eddd113d6b3d96cc13c172c3ddbcc7590d1e8a9a23073af954a8587739112a7",
+      "bytes": 207941
+    },
+    {
+      "path": "crops/webkit-scoped-wb-rules-enter-QAOWNER-320x844-t200-staffing-held.png",
+      "sha256": "a3cbd33d5927e3fa5ea1711f8d6644f210cfb3f6621d50be2a93f21fa2688fdf",
+      "bytes": 73927
+    },
+    {
+      "path": "driver-lineage.json",
+      "sha256": "0d1e767742b203fa4fb213d9c60097944f59d578439bd89c2c9607b847d1c2ad",
+      "bytes": 649
+    },
+    {
+      "path": "executed-script-lineage.json",
+      "sha256": "b237a06709e6786de4bec901e48e32767bb951aeafc0e3268c74b07d205f41b2",
+      "bytes": 4462
+    },
+    {
+      "path": "executed-scripts/combined-extra-cases.mjs",
+      "sha256": "5bfa141ab7093f32ea64d51825d00ad4af73712653c94f8f324e0e851eaf0072",
+      "bytes": 15398
+    },
+    {
+      "path": "executed-scripts/read-contract-v2.mjs",
+      "sha256": "83f9113881557849a332632dff7a2dda758fc902cd23aa537cd4041ab9535a00",
+      "bytes": 973
+    },
+    {
+      "path": "executed-scripts/scoped-desktop.mjs",
+      "sha256": "29a700688d2ac38a77a6af7ad9a7756bac53a806bdd29294b588dd058f832aa6",
+      "bytes": 33942
+    },
+    {
+      "path": "executed-scripts/scoped-desktop.natural-text-v2.mjs",
+      "sha256": "d4d1cbc1b463c0de406d7e660f98f2427f0d2380b5752c8dd6eef186b02cc157",
+      "bytes": 34662
+    },
+    {
+      "path": "executed-scripts/scoped-desktop.natural-text-v3.mjs",
+      "sha256": "157bc71191b92f59fe5bf0b2b71c44d01aa141214fade57ebe787003d40e199d",
+      "bytes": 35104
+    },
+    {
+      "path": "executed-scripts/scoped-verify-v2.mjs",
+      "sha256": "df6dda0b909214e30d467bfa812a04a2b35f4be8cdf91479f6633da373219c66",
+      "bytes": 40456
+    },
+    {
+      "path": "executed-scripts/scoped-wave-b.mjs",
+      "sha256": "c52378620c06edf9caa68b8f2196405ac7092c0b59b80f40155e3492a15ac7ab",
+      "bytes": 21627
+    },
+    {
+      "path": "executed-scripts/scoped-wave-b.rules-locators-v2.mjs",
+      "sha256": "c450c6f8ded202742e665ed222a1b839891c034cb31cf352eeb41ff33c2901c7",
+      "bytes": 22343
+    },
+    {
+      "path": "initial-owned-readiness.json",
+      "sha256": "20087aa9525aa26c42194f9f7e80c3e5e2d04ee4097fe03e3c7b0f548a74bd5f",
+      "bytes": 2317
+    },
+    {
+      "path": "priority-completion.json",
+      "sha256": "650ae5ccdaefef3f91f2149705898056174863eb71a11953d7f094086f51921b",
+      "bytes": 14094
+    },
+    {
+      "path": "priority-fixture-custody.json",
+      "sha256": "5f9c5e0e51b4a048149bd01515e41d0962c3250b33748b2d69a574b30a06c670",
+      "bytes": 2434
+    },
+    {
+      "path": "priority-results.md",
+      "sha256": "2acfcd07d42388da99303577d3abdecd4edd7742e5c2d4922f0480fdd3c15690",
+      "bytes": 1872
+    },
+    {
+      "path": "source-and-dependency-lineage.json",
+      "sha256": "e854333044330e6fd9e1eb96f2e675df315839410a76167f60b289bb8195dcde",
+      "bytes": 2051
+    },
+    {
+      "path": "targeted-priority-states.json",
+      "sha256": "cea8f7df1eb29b0b22a4099eb1a1ae40a35777297ace301d9ea71433480de572",
+      "bytes": 661835
+    },
+    {
+      "path": "targeted-priority-summary.json",
+      "sha256": "9e14060a65181abd5c063724845d75e07772df366cdbf7961584249bacf8dad1",
+      "bytes": 151
+    },
+    {
+      "path": "withdrawal-initializer-rebind.json",
+      "sha256": "e41aa94b921cd84e734b9addda07bb0823e248e478d573d83df790d5ba1c7292",
+      "bytes": 1297
+    }
+  ],
+  "exclusions": [
+    "Access/session/state/env/database files",
+    "All login/preview logs",
+    "Private fixture hint bindings",
+    "Unfinished remaining106 stage data",
+    "All unallowlisted workspace artifacts"
+  ]
+}

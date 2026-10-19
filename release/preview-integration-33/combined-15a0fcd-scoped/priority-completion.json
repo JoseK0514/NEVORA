@@ -1,0 +1,387 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "completedAt": "2026-10-19T23:40:56.637740+00:00",
+  "requiredDistinctConfigurations": 28,
+  "completed": 28,
+  "passed": 28,
+  "Rules": {
+    "required": 16,
+    "passed": 16,
+    "nativeEnter": true,
+    "heldFocusReadonlyAndOneRequestVerified": true
+  },
+  "Inbox": {
+    "required": 12,
+    "passed": 12,
+    "naturalOpenings": 8,
+    "nativeFocusScrollPrivacyGuards": 4,
+    "ChromiumMaxNaturalCLS": 0.0005213101704915365,
+    "WebKitCLS": null,
+    "firstReadyGroupOpenAndStable": true,
+    "realFrameCounts": [
+      {
+        "engine": "chromium",
+        "width": 1440,
+        "text": 100,
+        "variant": "opening-only",
+        "frames": 31
+      },
+      {
+        "engine": "chromium",
+        "width": 1024,
+        "text": 100,
+        "variant": "opening-only",
+        "frames": 28
+      },
+      {
+        "engine": "chromium",
+        "width": 1440,
+        "text": 100,
+        "variant": "native-guards",
+        "frames": 21
+      },
+      {
+        "engine": "webkit",
+        "width": 1440,
+        "text": 100,
+        "variant": "opening-only",
+        "frames": 2
+      },
+      {
+        "engine": "webkit",
+        "width": 1024,
+        "text": 100,
+        "variant": "opening-only",
+        "frames": 6
+      },
+      {
+        "engine": "webkit",
+        "width": 1440,
+        "text": 100,
+        "variant": "native-guards",
+        "frames": 5
+      },
+      {
+        "engine": "chromium",
+        "width": 1440,
+        "text": 200,
+        "variant": "opening-only",
+        "frames": 20
+      },
+      {
+        "engine": "chromium",
+        "width": 1024,
+        "text": 200,
+        "variant": "opening-only",
+        "frames": 25
+      },
+      {
+        "engine": "chromium",
+        "width": 1024,
+        "text": 200,
+        "variant": "native-guards",
+        "frames": 29
+      },
+      {
+        "engine": "webkit",
+        "width": 1024,
+        "text": 200,
+        "variant": "native-guards",
+        "frames": 3
+      },
+      {
+        "engine": "webkit",
+        "width": 1440,
+        "text": 200,
+        "variant": "opening-only",
+        "frames": 3
+      },
+      {
+        "engine": "webkit",
+        "width": 1024,
+        "text": 200,
+        "variant": "opening-only",
+        "frames": 11
+      }
+    ]
+  },
+  "replacementRows": 18,
+  "secondSamplingReplayRows": 2,
+  "extraConfigurationCredit": 0,
+  "originalCoordinatorPriorityExitRetained": 1,
+  "originalFilterTransitionObservationPreserved": {
+    "Chromium1024Text200CLS": 0.010901292165120443,
+    "attribution": "Pane note/actions replacement during original Now-to-Plan-Ahead text setup flow; native group already open at first observed ready frame",
+    "classification": "Separate measured filter-flow result, no ST13 late-opening credit or waiver"
+  },
+  "processControl": {
+    "outerPid": 191592,
+    "originalChildPid": 191619,
+    "firstReplayPid": 210188,
+    "secondReplayExecSession": 29084,
+    "replayWorkerEnded": true,
+    "noBrowserOverlapOnThisPreview": true,
+    "resumedAt": "2026-10-19T23:40:56.641901+00:00"
+  },
+  "mapping": [
+    {
+      "key": "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|period",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "b4ac53454caca94b2cbeea2c926b7861070f77550acd8b87cccf20ce3ecfa748"
+    },
+    {
+      "key": "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|period",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "54c614e707c752a44b29b0c6f9f1932c5752a908bec65da20067d199120d4f97"
+    },
+    {
+      "key": "scoped-desktop-inbox-natural-eight|chromium|AUDIT-M|1440|900|100|opening-only",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "f5eed628b2a7b0a517891a549adc7d381f6b893b8207680ee8d34935551028b7"
+    },
+    {
+      "key": "scoped-desktop-inbox-natural-eight|chromium|AUDIT-M|1024|900|100|opening-only",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "ca25c4440f3606b3ce50de55fd0cb749c54115d3929dc20443c7812139e99a7b"
+    },
+    {
+      "key": "scoped-desktop-inbox-native-four|chromium|AUDIT-M|1440|900|100|native-guards",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "8874464ae0360c5996cd212d1a5b28cb1a87a9523c6f029dfe0036c5a7888bf8"
+    },
+    {
+      "key": "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|period",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "0fd8e86c57956c6fb2de1578ef41b85cb31f15535a6eda15dcf7cb4316bfbd2c"
+    },
+    {
+      "key": "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|period",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "7a967699c5c9d6bb26864ef025f3990cece61a2a4aadc7b0b112fdad34aad8af"
+    },
+    {
+      "key": "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1440|900|100|opening-only",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "ef41eb89468a3b52c5426020f5b0d745c9523b921a0b27166201ffa765a794ca"
+    },
+    {
+      "key": "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1024|900|100|opening-only",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "556f8198f62ed12a2f178850d5de54ca1633dffe1fb333bf63ff9bba06829264"
+    },
+    {
+      "key": "scoped-desktop-inbox-native-four|webkit|AUDIT-M|1440|900|100|native-guards",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "retained-valid-original",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "4543595ab789707d9d7a4b37d662177e747332c164388a1d9aa04466bccf74f9"
+    },
+    {
+      "key": "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|staffing",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "db0aecb452372c1f08d5b1e9f330fe5c8e5abcb58173ea31fc9562483066da61"
+    },
+    {
+      "key": "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|trade",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "06e4e33580f5f403cfd404779f7a6b579159067ab35314b0d56c4af9c32b54d6"
+    },
+    {
+      "key": "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|coverage",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "e40bceef717baced77734b5844aa45ddd7374e96f0fc5cd28138e93bc89465e3"
+    },
+    {
+      "key": "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|staffing",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "97dcdebca8ddc3b56c47907b14591d222b03f2f31cf34b21e20caeed1124cadc"
+    },
+    {
+      "key": "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|trade",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "ebe1c70add5f16af059ebcafd2c1f60180921dcc4ad46c97e6700a256cb35af6"
+    },
+    {
+      "key": "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|coverage",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "d10e4fc586de814ad2ebb78dab8910d38279e7a31f0f3c809da979b7c2a902d1"
+    },
+    {
+      "key": "scoped-desktop-inbox-natural-eight|chromium|AUDIT-M|1440|900|200|opening-only",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "52b253850fbdad18931e13a297c488f467afe65af154ff21c4bc9948a579ec21"
+    },
+    {
+      "key": "scoped-desktop-inbox-natural-eight|chromium|AUDIT-M|1024|900|200|opening-only",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": true,
+      "originalPassed": false,
+      "canonicalCaseSha256": "417a799f5b5b680aea37eb1e182070f6274b980c6f217f5217594e43d6fa2485"
+    },
+    {
+      "key": "scoped-desktop-inbox-native-four|chromium|AUDIT-M|1024|900|200|native-guards",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": true,
+      "originalPassed": false,
+      "canonicalCaseSha256": "f5c7f82939cb0f4ecdab782892465ea506b6045364cee2dac3ce7573ed75f427"
+    },
+    {
+      "key": "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|staffing",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "7fdf70cf57c0ea7692b6378e084fb149891d6939b44646ec389db244e5e6fda0"
+    },
+    {
+      "key": "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|trade",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "636f3b445c13682fe1524e4c9403fd476818127983fa8179efbf1db88c0a575a"
+    },
+    {
+      "key": "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|coverage",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "23a66905f6ae9f6590a390e34b51ffc463821cc2564b05d2461eaf2b32a71caf"
+    },
+    {
+      "key": "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|staffing",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "516df4389b545910f08ba9722a687d7b1012538279f0e9455279fc7c26fbe27a"
+    },
+    {
+      "key": "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|trade",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "06e722867a55826bea418ddefa6e34b7c688a9781b16f6727b92cd11dba4a49d"
+    },
+    {
+      "key": "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|coverage",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": false,
+      "originalPassed": false,
+      "canonicalCaseSha256": "44e138ea2152d91aab76cb37938dab4bc12ee5646cbfcf1c8105350918c78e5a"
+    },
+    {
+      "key": "scoped-desktop-inbox-native-four|webkit|AUDIT-M|1024|900|200|native-guards",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "same-key-source-node-or-cold-text-replay-v2",
+      "originalCompleted": true,
+      "originalPassed": false,
+      "canonicalCaseSha256": "5cad254b3bbb682c8b0c837f9ce65ff73fa79825e2417b7d57c3ea0fe239bf98"
+    },
+    {
+      "key": "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1440|900|200|opening-only",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "bounded-passive-frame-replay-v3",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "eb1109c7409c9501f50fc84c19c2457a40a72c47354fed9d39b974db71568630"
+    },
+    {
+      "key": "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1024|900|200|opening-only",
+      "canonicalCompleted": true,
+      "canonicalPassed": true,
+      "provenance": "bounded-passive-frame-replay-v3",
+      "originalCompleted": true,
+      "originalPassed": true,
+      "canonicalCaseSha256": "f7b98e368565510a92d0322c61476598fdcbba98c730fc386fc78daaf987d3bf"
+    }
+  ],
+  "artifacts": {
+    "canonicalStates": "targeted-priority-states.json",
+    "canonicalSummary": "targeted-priority-summary.json",
+    "originalAttempt": "attempts/001-rules-idle-label-lookup",
+    "coldTextDerivation": "attempts/002-inbox-natural-text-setup",
+    "passiveSamplingAttempt": "attempts/003-inbox-passive-frame-sampling"
+  }
+}

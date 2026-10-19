@@ -1,0 +1,71 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "preparedAt": "2026-10-19T23:25:27.124Z",
+  "scripts": [
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/scoped-verify-v2.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs",
+      "sha256": "df6dda0b909214e30d467bfa812a04a2b35f4be8cdf91479f6633da373219c66"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/combined-extra-cases.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/combined-extra-cases.mjs",
+      "sha256": "5bfa141ab7093f32ea64d51825d00ad4af73712653c94f8f324e0e851eaf0072"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/read-contract-v2.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/read-contract-v2.mjs",
+      "sha256": "83f9113881557849a332632dff7a2dda758fc902cd23aa537cd4041ab9535a00"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/checker-guard-v2.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/checker-guard-v2.mjs",
+      "sha256": "ea648114396ab4af29732163b4e7349c14c01420dd64a374be847bd92c987fce"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/owned-read-barrier.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/owned-read-barrier.mjs",
+      "sha256": "33e045da90d9a43de0308974a7b0d5d62419aaf0189d8417c2ddc8b74b36fbc9"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/scoped-wave-b.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs",
+      "sha256": "c52378620c06edf9caa68b8f2196405ac7092c0b59b80f40155e3492a15ac7ab"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/scoped-desktop.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-desktop.mjs",
+      "sha256": "29a700688d2ac38a77a6af7ad9a7756bac53a806bdd29294b588dd058f832aa6"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/cold-timecards.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/cold-timecards.mjs",
+      "sha256": "f8169a64067521e524ccd4f65aaf11c9de40bb9243c0dce73633bf1962f21b78"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/cold-recorded-time.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/cold-recorded-time.mjs",
+      "sha256": "119efc174dbf9125ef7912b4f652f2d4f40eb6404ee6d3c4f0d6e19530233483"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/home-responsive.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/home-responsive.mjs",
+      "sha256": "1add4ccb34de7cfc65b831a4a5d106e3c1dc26d0adc2bfbce2f26ed0ef0c09d3"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/guidance-fonts.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/guidance-fonts.mjs",
+      "sha256": "261763155d903c26bdb9e219111a5cb4d2b2047f4eac97c189a1afd88a79998b"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/timecards-503.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/timecards-503.mjs",
+      "sha256": "106cbf6f1d79ea25a2ea26579a599c91d09f59d84bf5d4b1479d12ebb109cd6f"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/close.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/close.mjs",
+      "sha256": "5a8aac12daece7d807de01c2bbba38fdea9c14461207409da47b95763f33f521"
+    }
+  ]
+}

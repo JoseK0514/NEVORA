@@ -1,0 +1,30 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "originalSnapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/attempts/001-rules-idle-label-lookup/scoped-wave-b.original.mjs",
+  "originalSha256": "c52378620c06edf9caa68b8f2196405ac7092c0b59b80f40155e3492a15ac7ab",
+  "recoverySnapshot": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.rules-locators-v2.mjs",
+  "recoverySha256": "c450c6f8ded202742e665ed222a1b839891c034cb31cf352eeb41ff33c2901c7",
+  "audit": {
+    "staffing": "Idle-name form filter loses its field when Save staffing and hours becomes Saving; pin exact existing form/field before action",
+    "period": "Stable form.wb-period-form; also pin for consistent original-node identity proof",
+    "trade": "Idle-name form filter loses field when Save trade policy changes; pin before action",
+    "coverage": "Idle-name form filter loses field when Save coverage policy changes; pin before action"
+  },
+  "criteriaUnchanged": [
+    "native field Enter",
+    "readOnly/native-enabled focus retention",
+    "captured value retention",
+    "one held command after duplicate Enter/requestSubmit",
+    "settled original field focus"
+  ],
+  "uiStylesNamesRolesOrCommandPayloadChanged": false,
+  "distinctRequiredPriorityCells": 28,
+  "replaysAreNotAdditionalCells": true,
+  "coordinatorPause": {
+    "pid": 191592,
+    "verifiedCwd": "/workspace/inspect-combined-15a0fcd",
+    "activePriorityChild": 191619,
+    "at": "2026-10-19T23:27:19.344253+00:00",
+    "childContinues": true
+  }
+}

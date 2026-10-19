@@ -1,0 +1,19 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "endedAt": "2026-10-19T23:40:05.147609+00:00",
+  "workerPid": 210188,
+  "workerEnded": true,
+  "workerExitCode": 1,
+  "outerPid": 191592,
+  "outerRemainsVerifiedPaused": true,
+  "recorded": 28,
+  "completed": 28,
+  "passed": 26,
+  "incompletePassiveSampling": 2,
+  "newProductFailures": 0,
+  "retryKeys": [
+    "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1440|900|200|opening-only",
+    "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1024|900|200|opening-only"
+  ],
+  "extraConfigurationCredit": 0
+}

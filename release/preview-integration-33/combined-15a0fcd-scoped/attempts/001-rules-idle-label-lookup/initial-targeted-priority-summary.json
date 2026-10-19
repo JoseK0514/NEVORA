@@ -1,0 +1,271 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "completed": 16,
+  "passed": 13,
+  "total": 28,
+  "assertions": 232,
+  "failures": [
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "staffing",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save staffing and hours', exact: true }) }).locator('input[type=number]').first()\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "trade",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save trade policy', exact: true }) }).locator('input[name=submissionAdvanceMinutes]')\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "coverage",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save coverage policy', exact: true }) }).locator('input[name=submissionAdvanceMinutes]')\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "staffing",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save staffing and hours', exact: true }) }).locator('input[type=number]').first()\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "trade",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save trade policy', exact: true }) }).locator('input[name=submissionAdvanceMinutes]')\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "coverage",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save coverage policy', exact: true }) }).locator('input[name=submissionAdvanceMinutes]')\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-desktop-inbox-natural-eight",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "opening-only",
+      "failed": [
+        {
+          "message": "Chromium natural opening CLS is at most0.01",
+          "passed": false,
+          "detail": {
+            "cls": 0.010901292165120443,
+            "shifts": [
+              {
+                "at": 4813.5999999996275,
+                "value": 0.010901292165120443,
+                "recent": false,
+                "sources": [
+                  {
+                    "element": "P",
+                    "class": "inbox-detail__note",
+                    "before": {
+                      "x": 681,
+                      "y": 839,
+                      "width": 275,
+                      "height": 61,
+                      "top": 839,
+                      "right": 956,
+                      "bottom": 900,
+                      "left": 681
+                    },
+                    "after": {
+                      "x": 681,
+                      "y": 665,
+                      "width": 275,
+                      "height": 144,
+                      "top": 665,
+                      "right": 956,
+                      "bottom": 809,
+                      "left": 681
+                    }
+                  },
+                  {
+                    "element": "DIV",
+                    "class": "inbox-detail__actions",
+                    "before": {
+                      "x": 0,
+                      "y": 0,
+                      "width": 0,
+                      "height": 0,
+                      "top": 0,
+                      "right": 0,
+                      "bottom": 0,
+                      "left": 0
+                    },
+                    "after": {
+                      "x": 681,
+                      "y": 829,
+                      "width": 275,
+                      "height": 71,
+                      "top": 829,
+                      "right": 956,
+                      "bottom": 900,
+                      "left": 681
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoped-desktop-inbox-native-four",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "native-guards",
+      "failed": [
+        {
+          "message": "Chromium natural opening CLS is at most0.01",
+          "passed": false,
+          "detail": {
+            "cls": 0.010901292165120443,
+            "shifts": [
+              {
+                "at": 3093,
+                "value": 0.010901292165120443,
+                "recent": false,
+                "sources": [
+                  {
+                    "element": "P",
+                    "class": "inbox-detail__note",
+                    "before": {
+                      "x": 681,
+                      "y": 839,
+                      "width": 275,
+                      "height": 61,
+                      "top": 839,
+                      "right": 956,
+                      "bottom": 900,
+                      "left": 681
+                    },
+                    "after": {
+                      "x": 681,
+                      "y": 665,
+                      "width": 275,
+                      "height": 144,
+                      "top": 665,
+                      "right": 956,
+                      "bottom": 809,
+                      "left": 681
+                    }
+                  },
+                  {
+                    "element": "DIV",
+                    "class": "inbox-detail__actions",
+                    "before": {
+                      "x": 0,
+                      "y": 0,
+                      "width": 0,
+                      "height": 0,
+                      "top": 0,
+                      "right": 0,
+                      "bottom": 0,
+                      "left": 0
+                    },
+                    "after": {
+                      "x": 681,
+                      "y": 829,
+                      "width": 275,
+                      "height": 71,
+                      "top": 829,
+                      "right": 956,
+                      "bottom": 900,
+                      "left": 681
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "staffing",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save staffing and hours', exact: true }) }).locator('input[type=number]').first()\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "trade",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save trade policy', exact: true }) }).locator('input[name=submissionAdvanceMinutes]')\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "coverage",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save coverage policy', exact: true }) }).locator('input[name=submissionAdvanceMinutes]')\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "staffing",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save staffing and hours', exact: true }) }).locator('input[type=number]').first()\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "trade",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save trade policy', exact: true }) }).locator('input[name=submissionAdvanceMinutes]')\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-wb-rules-enter",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "coverage",
+      "executionError": "locator.evaluate: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form').filter({ has: getByRole('button', { name: 'Save coverage policy', exact: true }) }).locator('input[name=submissionAdvanceMinutes]')\u001b[22m\n\n    at register.accounts (/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-wave-b.mjs:153:32)\n    at async file:///workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs:146:596",
+      "failed": []
+    },
+    {
+      "name": "scoped-desktop-inbox-native-four",
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "variant": "native-guards",
+      "failed": [
+        {
+          "message": "Opening captures first-ready and settled native group geometry",
+          "passed": false,
+          "detail": [
+            {
+              "at": 9506,
+              "key": "HOURS:AUDIT-BREAK",
+              "selectedGroup": true,
+              "open": true,
+              "height": 4662,
+              "scrollY": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

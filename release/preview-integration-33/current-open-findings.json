@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-19T23:39:01.163047+00:00",
+  "updatedAt": "2026-10-19T23:42:50.306187+00:00",
   "inspectedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "newerBoundedProbeSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
   "fullExitZeroCount": 0,
@@ -20,9 +20,10 @@
     {
       "id": "ST-P4-13",
       "owner": "Desktop",
-      "status": "retained open oncd; owner repair adopted15; fresh15 bounded verification pending",
+      "status": "retained failed oncd; adopted15 repair freshly passes Inbox12 (eight natural openings/four guards); remaining full exit open",
       "measurement": "guard-v2 planning Inbox CLS0.0639 at1440/100 vsbar0.01",
-      "report": "../../p4-desktop/exit-cd764f6/evidence/full-exit-cd764f6-guard-v2/"
+      "report": "../../p4-desktop/exit-cd764f6/evidence/full-exit-cd764f6-guard-v2/",
+      "newerBoundedEvidence": "combined-15a0fcd-scoped/priority-results.md"
     },
     {
       "id": "TC-P3-09",
@@ -102,5 +103,14 @@
     }
   ],
   "repairCandidate": "a21650de50374683d52e32b883d7f419d7344f22",
-  "repairCandidateReport": "candidate-a21650d/README.md"
+  "repairCandidateReport": "candidate-a21650d/README.md",
+  "currentRepairProbePriority": {
+    "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+    "completed": 28,
+    "passed": 28,
+    "rules": 16,
+    "inbox": 12,
+    "fullExitZero": false,
+    "report": "combined-15a0fcd-scoped/priority-results.md"
+  }
 }

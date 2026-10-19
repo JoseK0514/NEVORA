@@ -1,7 +1,7 @@
 {
   "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "status": "Fresh bounded combined check complete and ownedpreview closed:152/152complete,150pass/2heightfail;72/72checkercomplete,70pass/2Recorded-timeCLSfail. Valid colour/scroll/Home attribution supplements preserved. Desktop,Phase3,WaveA full reviews run; WB released/bootstrap setup recovery beforelisten; WC resource queued.",
+  "status": "Frozen combinedcd boundedcheck complete, ownedpreview closed; Desktop,Phase3,WaveA andWaveB fullreviews active, WaveC resourcequeued. Separate exact15priorityRules/Inbox28/28pass; remaining106boundedcells and newRCa216fullgates/repairproofinprogress. No full exit zero.",
   "zeroExits": [],
   "reviews": [
     {
@@ -54,7 +54,12 @@
   "additionalCurrentRepairProbe": {
     "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
     "checkpointRef": "codex/checkpoint-preview33-15a0fcd7",
-    "scope": "next separate bounded Rules16/Inbox12 then other scoped/cold; no full code/exit credit inherited fromcd"
+    "scope": "next separate bounded Rules16/Inbox12 then other scoped/cold; no full code/exit credit inherited fromcd",
+    "priority": {
+      "completed": 28,
+      "passed": 28,
+      "report": "combined-15a0fcd-scoped/priority-results.md"
+    }
   },
   "combinedTargeted": {
     "completed": 152,
@@ -79,5 +84,6 @@
     "postgresStopped": true,
     "sourceAndMirrorVerified": true,
     "closureErrors": []
-  }
+  },
+  "currentRepairCandidate": "a21650de50374683d52e32b883d7f419d7344f22"
 }

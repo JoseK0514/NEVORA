@@ -1,0 +1,20 @@
+[
+  "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|staffing",
+  "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|trade",
+  "scoped-wb-rules-enter|chromium|QAOWNER|390|844|100|coverage",
+  "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|staffing",
+  "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|trade",
+  "scoped-wb-rules-enter|chromium|QAOWNER|320|844|200|coverage",
+  "scoped-desktop-inbox-natural-eight|chromium|AUDIT-M|1440|900|200|opening-only",
+  "scoped-desktop-inbox-natural-eight|chromium|AUDIT-M|1024|900|200|opening-only",
+  "scoped-desktop-inbox-native-four|chromium|AUDIT-M|1024|900|200|native-guards",
+  "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|staffing",
+  "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|trade",
+  "scoped-wb-rules-enter|webkit|QAOWNER|390|844|100|coverage",
+  "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|staffing",
+  "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|trade",
+  "scoped-wb-rules-enter|webkit|QAOWNER|320|844|200|coverage",
+  "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1440|900|200|opening-only",
+  "scoped-desktop-inbox-natural-eight|webkit|AUDIT-M|1024|900|200|opening-only",
+  "scoped-desktop-inbox-native-four|webkit|AUDIT-M|1024|900|200|native-guards"
+]
