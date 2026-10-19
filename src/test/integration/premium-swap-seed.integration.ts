@@ -40,7 +40,7 @@ beforeAll(async () => {
   }
   await publishScheduleWithRevision({ locationId: 'loc-1', weekStart: week, managerId: 'QAOWNER' }, db.executor);
 });
-afterAll(async () => { await db?.dispose(); });
+afterAll(async () => { await transport?.close(); await db?.dispose(); });
 
 it('A1 diagnoses missing inputs, then offers both weekend targets and completes a real consented swap', async () => {
   const proof = await fixtureProof(db.executor, 'AUDIT-E');
