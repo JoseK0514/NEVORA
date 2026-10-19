@@ -1,20 +1,18 @@
-**Zero in the completed re-check scope — 0 P0, 0 P1, 0 P2.** Round 4 on `829dfe6cf45beb71b77db573c0263c60a5f69856`, a re-check round. The complete matrix is still running; this is not an exit certificate.
+**Incomplete — 0 P0, 0 P1, 0 P2 newly verified in this area; no zero certificate.** Exit round 4 on `ea58610bf3bdc85319895689c3d88e064f6a76d5`. The sampled page text meets the floor; remaining TC exit checks are incomplete.
 
 ## Status of earlier findings
 
-No type/copy IDs were open. The changed stacked contact rows were checked at 100–200%.
+No TC ID was open in the handoff. Prior reports are retained under [history](history/829dfe6/type-colour-copy.md).
 
 ## Findings
 
-None in the measured scope.
+None newly verified in this area's completed scope. Approved payroll wording is not counted or changed.
 
 ## Checked and correct
 
-- Empty contact labels and “Not added”: kit callout **15/20px**, scaling to **30/40px** at 200%.
-- Contact values use the row role **17/22px**, scaling to **34/44px**.
-- Muted text **#5F666A** on white: **5.84:1**. Ink **#1C1C1C** on white: **17.04:1**.
-- Email parts remain copyable; both empty contact values use “Not added”. Approved payroll/topic wording is not counted as a finding.
+- Eight live page probes (both roles/browsers; 390/100 and 320/200) contain **0 Profile text nodes below 15px**. [Baseline evidence](baseline.json).
+- The shorter band summary matches its authentic placeholder height in **32/32** sampled phone cells; ST-08 records that repair.
 
 ## Gaps
 
-Automation/axe are still running. Desktop shell text-floor flags belong to the Desktop chat and are not counted here.
+All remaining contrast/state-wording combinations, other fixtures and desktop type checks are incomplete. Shared shell typography is owned by the coordinator/Desktop and is not counted again here.

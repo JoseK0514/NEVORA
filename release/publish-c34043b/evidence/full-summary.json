@@ -1,0 +1,29 @@
+{
+  "candidate": "c34043b4349633275b2ca75368564178c99c33dc",
+  "exitCode": 1,
+  "counts": {
+    "passed": 7350,
+    "skipped": 801,
+    "failed": 2,
+    "pending": 55
+  },
+  "files": 474,
+  "failed": [
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "name": "typed journal whole-plan successor fictional transaction regressions lost COMMIT acknowledgement never issues secondary SQL and retains original plan reconciliation",
+      "durationMs": 10866.883249000006,
+      "failureMessages": [
+        "Error: Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at chain (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at /workspace/nevora-rc-current/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:315:2\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:52\n    at runWithSuite (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3248:8)\n    at Object.collect (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2763:22)\n    at Object.collect (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2768:51)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"
+      ]
+    },
+    {
+      "file": "src/lib/scheduling/generation/planner.test.ts",
+      "name": "measures deterministic 50-worker 7-day 20-location planning",
+      "durationMs": 357051.04141099995,
+      "failureMessages": [
+        "Error: Test timed out in 300000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n    at task (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2681:43)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2698:16)\n    at Object.<anonymous> (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2471:28)\n    at Object.chain (file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1859:14)\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2869:10\n    at Array.forEach (<anonymous>)\n    at file:///workspace/nevora-rc-current/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2866:10\n    at /workspace/nevora-rc-current/src/lib/scheduling/generation/planner.test.ts:494:17\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at VitestModuleEvaluator._runInlinedModule (file:///workspace/nevora-rc-current/node_modules/vitest/dist/module-evaluator.js:258:4)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,322 @@
+[
+  {
+    "case": "webkit-AUDIT-LEAD-availability-320-t200-before",
+    "labels": [
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      }
+    ]
+  },
+  {
+    "case": "chromium-AUDIT-LEAD-availability-320-t200-before",
+    "labels": [
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      }
+    ]
+  },
+  {
+    "case": "webkit-AUDIT-E-availability-320-t200-before",
+    "labels": [
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      }
+    ]
+  },
+  {
+    "case": "chromium-AUDIT-E-availability-320-t200-before",
+    "labels": [
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "From",
+        "size": "30px",
+        "lineHeight": "40px"
+      },
+      {
+        "text": "Until",
+        "size": "30px",
+        "lineHeight": "40px"
+      }
+    ]
+  },
+  {
+    "case": "webkit-AUDIT-LEAD-availability-390-t100-before",
+    "labels": [
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      }
+    ]
+  },
+  {
+    "case": "webkit-AUDIT-E-availability-390-t100-before",
+    "labels": [
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      }
+    ]
+  },
+  {
+    "case": "chromium-AUDIT-LEAD-availability-390-t100-before",
+    "labels": [
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      }
+    ]
+  },
+  {
+    "case": "chromium-AUDIT-E-availability-390-t100-before",
+    "labels": [
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "From",
+        "size": "15px",
+        "lineHeight": "20px"
+      },
+      {
+        "text": "Until",
+        "size": "15px",
+        "lineHeight": "20px"
+      }
+    ]
+  }
+]

@@ -1,15 +1,17 @@
-**Incomplete — no additional interaction finding verified.** Exact `a05f26a74b2979ce0efe1532f7f70d7064261bb9`. No exit zero.
+# Wave A Interaction and states — incomplete
+
+Exact sourcea05f26a, Wave A exit round2. This is a failed early exit, with measured P0 0 / P1 1 / P2 0. The full checker matrix and five-area exit sweep are incomplete after the active-field contrast failure; this is not zero and the SHA is not merged. Fictional local fixtures only.16 submitted requests were held/aborted; no mutation reached the server.10 further colour-probe pages use reads only.
 
 ## Earlier findings / findings
 
-No blanket closure of IS-WA-1–12. Three current Swap before/pending/failure cases are retained in [raw evidence](stability.json).
+All16 held cases produce exactly one intercepted request; failure paths do not mutate the server. Full offline/empty/partial/signed-out/sent/large-data and focus/keyboard scope is incomplete.
+
+No additional finding is inferred from unmeasured scope. The confirmed P1 is counted once in [type-colour-copy.md](type-colour-copy.md).
 
 ## Checked and correct
 
-- Held Swap failures stay on `/app/exchange/swap` and focus the result paragraph: “Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.”
-- The320/200 and1440/100 cases each intercept one POST. The resize case has two aggregate non-GETs; path/action classification is pending, so it is not reported as either a passing double-submit check or a defect.
-- All non-GET requests are held and aborted in the browser. No mutation reaches the server. The initial checker is read only; later full runs also use a preload that blocks non-GETs.
+[Focused raw results](rotation/judgment.json) and[colour evidence](colour/colour.json) retain their exact checkpoint and all probe cases.
 
 ## Gaps
 
-The full eight-width/four-text-size/two-engine/two-management-role matrix has not started. Browser work paused at the coordinator’s request so the candidate’s full suite and isolated load retries have uncontended CPU. Three complete Chromium Swap probe cases are saved; the interrupted case is not counted. Delete/Scheduling and both-engine rotation rechecks, the remaining normal-state five-area judgment, server-read failure/partial/paused states, successful receipts/submissions, large data, physical devices and screen readers remain unverified. This exact SHA has no zero exit verdict.
+This is not a completed five-area exit or a zero verdict.

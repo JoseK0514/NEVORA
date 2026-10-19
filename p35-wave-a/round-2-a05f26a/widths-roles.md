@@ -1,14 +1,17 @@
-**Incomplete — no additional width/role finding verified.** Exact `a05f26a74b2979ce0efe1532f7f70d7064261bb9`. No zero verdict.
+# Wave A Widths, roles and consistency — incomplete
+
+Exact sourcea05f26a, Wave A exit round2. This is a failed early exit, with measured P0 0 / P1 1 / P2 0. The full checker matrix and five-area exit sweep are incomplete after the active-field contrast failure; this is not zero and the SHA is not merged. Fictional local fixtures only.16 submitted requests were held/aborted; no mutation reached the server.10 further colour-probe pages use reads only.
 
 ## Earlier findings / findings
 
-WR-WA-1–3 and the full role matrix remain outstanding on this exact SHA.
+Focused320/200,1440/100 and pending844→320 at100/200 cover Employee Swap and Manager Delete/Scheduling in both engines. Full eight-width/four-text-size/role matrix remains incomplete.
+
+No additional finding is inferred from unmeasured scope. The confirmed P1 is counted once in [type-colour-copy.md](type-colour-copy.md).
 
 ## Checked and correct
 
-- Manager Add shift at320,100/200%, Chromium/WebKit:4/4 unchanged checker cells pass overflow, targets, text floor, CLS and axe.
-- Employee Swap: document width320 at320/200 and1440 at1440/100 and200. After resize mid-send to320, the action is x16/width288/right304 within its available288px.
+[Focused raw results](rotation/judgment.json) and[colour evidence](colour/colour.json) retain their exact checkpoint and all probe cases.
 
 ## Gaps
 
-The full eight-width/four-text-size/two-engine/two-management-role matrix has not started. Browser work paused at the coordinator’s request so the candidate’s full suite and isolated load retries have uncontended CPU. Three complete Chromium Swap probe cases are saved; the interrupted case is not counted. Delete/Scheduling and both-engine rotation rechecks, the remaining normal-state five-area judgment, server-read failure/partial/paused states, successful receipts/submissions, large data, physical devices and screen readers remain unverified. This exact SHA has no zero exit verdict.
+This is not a completed five-area exit or a zero verdict.
