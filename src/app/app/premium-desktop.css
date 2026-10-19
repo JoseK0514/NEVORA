@@ -571,3 +571,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal .mobile-header .portal-account-menu .nevora-action-menu-trigger > span:not(.portal-account-avatar) { display: none; }
   html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger > kbd { display: none; }
 }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* TC-DESKTOP-KBD-01 / TC-P4-24: the visible shortcut uses the desktop callout floor and scales with text. */
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger kbd { font: var(--nv-t-callout); }
+}
