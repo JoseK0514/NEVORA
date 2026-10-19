@@ -197,3 +197,17 @@ Tests: new actual-Postgres regression **1 passed**, TypeScript passed, targeted 
 The fix is in `src/test/integration/owned-pg-transport.ts`, used only by owned local test/preview apps; production Neon HTTP behavior is unchanged. New reproducible load tooling: `scripts/lib/premium-owned-runtime.mts`, `scripts/premium-load-probe.mts`, dedicated probe/config. Coordinator: apply the pool change to shared preview tooling only at each chat’s next round break and restart its runtime then. Do not modify running preview imports.
 
 Jose’s remaining production risk: Manager Schedule p95 **10.6 s** and inbox-count p95 **3.0 s** at concurrency 20. No missing index was proved; recent-time lookup used its existing index. Production storage failures can still surface the same workspace message, and mutation statement/lock timeouts are real production controls. Hosted Neon/Vercel load and main-query/CPU profiles remain required to set a production SLO. See the report for exact scope; this is local production-runtime evidence, not hosted certification.
+
+## October 20 release — item 1: smaller Inter
+
+Branch `codex/premium-backend`, implementation commit `2cc9a9f`. Based on latest pushed Phase 1 `62cd033` (merged without conflicts, preserving prior backend commits).
+
+Inter TTF: **876,576 bytes**. WOFF2: **174,464 bytes**, **80.1% smaller**. FontTools `pyftsubset` with Brotli retained Latin/Latin Extended (`0000–024F`, `1E00–1EFF`), General Punctuation, currency, trademark, arrows and minus. All requested Spanish/punctuation characters were checked in the cmap. Both original variable axes remain: weight **100–900**, optical size **14–32**. Reproduce:
+
+```sh
+pyftsubset public/fonts/typeface/inter/variable.ttf --output-file=public/fonts/typeface/inter/variable.woff2 --flavor=woff2 --unicodes='U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2122,U+2190-21FF,U+2212,U+FEFF,U+FFFD' --layout-features='*' --name-IDs='*' --name-languages='*'
+```
+
+Only the two authorized UI files changed: Inter sources list WOFF2 then TTF; portal layout preloads `font/woff2`. Inter Fallback is byte-for-byte unchanged. Actual Chromium before/after captures at 390 and 1440, reduced motion, fonts ready, same fictional `/login` and `/ui-preview/home`: **zero changed pixels in all four pairs**. Network entries confirm WOFF2 loaded after the change. [Captures, metrics and pixel comparison](font-evidence/) are committed. Browser emulation does not replace real-device testing.
+
+Font verification used FontTools 4.x/Brotli and Chromium 151. Initial WOFF2 generation needed the Brotli extension; it was installed before the successful generation/captures. No failed setup attempt is counted as visual evidence.
