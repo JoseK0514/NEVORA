@@ -1,0 +1,1028 @@
+# Phase 7 inspection: widths, roles and cross-screen consistency
+
+October 18, 2026 · Inspector: widths, roles and consistency (prefix WR-) · Preview `http://127.0.0.1:51346`, fictional data · Manager `AUDIT-M`, Owner `QAOWNER` · Read-only: no app code, CSS, tests or data changed; nothing approved, declined, saved or sent.
+
+Screenshots: `S` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/shots/`. Every screen has `<role>-<screen>-<width>-first.png` and `-full.png` (Inbox also `-open.png` with every group expanded). Measurements are in `.../widths-roles/data/*.json`. Scripts: `shots.mjs`, `land.mjs`, `large.mjs`, `kitprobe.mjs`, `more.mjs` and `compose.mjs` in the same folder.
+
+## Verdict
+
+**Not ready for Jose.** At 390 the kit screens (Home, Inbox, review) look finished, and both roles get the same counts, bands and Back labels. The problems start at other widths and below the band:
+
+- **Two P0s.** At 768 the Timecards buttons break into one letter per line. In landscape, the Schedule week toolbar slides over the header and covers Search and the bell.
+- **Home runs on a different shell from every other tab** (`app-shell.tsx:147`). Its header is 8px taller with a 4px wider inset. Its More menu is a different component: a corner popover with 14px items, where every other tab opens a bottom sheet with 17px items. Kit buttons and links also change size between Home and the other tabs: Approve is 44px tall where Home's button is 52px.
+- **Schedule, Team, Timecards and Payroll** have the new band, but the content below it is still the old styling. That leaves seven radii, five greys and three pill sizes. These screens have approved comps (`p2-Schedule`, `p2-Team`, `p2-Timecards`, `p3-Payroll-Owner`) that were never built.
+- **Landscape is broken.** It has no wordmark, a rounded desktop band runs into the screen edge, and about 50px of content shows above the tab bar.
+- **Desktop has three visible faults.** The grey canvas sits in a box on white, the breadcrumbs overlap Search at 768, and Schedule scrolls sideways by 95px at 1024.
+
+Nearly all of these are Phase 2 defects by the strict rule. Only WR-34 and WR-35 belong to Phase 4.
+
+**Count: 2 P0, 20 P1, 13 P2 (35 findings).**
+
+## Findings, worst first
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-01 | Timecards · both · 768 (any column under ~600px between 761 and 1180) | `View period`, `Refresh timecards` in `.managerRoot .toolbar` | The toolbar grid is `180px 180px 35px 35px` inside a 460px panel. Each button is 35px wide: `View period` is 184px tall and `Refresh` is 278px tall, one letter per line. At 1024 and 1440 they're fine (115 and 158px wide). | `S/crops/WR-tc768-toolbar.png`, `S/manager-timecards-768-first.png` | `src/components/timecards.module.css:100` (`.managerRoot .toolbar { grid-template-columns: 180px 180px auto auto }`) beats the 2-column rule at `:81` | `@media (max-width: 1180px) { .managerRoot .toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); } .managerRoot .toolbar button { width: 100%; } }` | P0 | 2 |
+| WR-02 | Schedule · both · 844×390 landscape, scrolled 260px | `.schedule-operations-shell` (week pager, This week, Templates, More) | It is `position: sticky; top: 0; z-index: 30`, the same z-index as the sticky header (64px). Scrolled, it sits on top of the header: Templates covers the Search icon, and the teal "More ▾" overlaps the bell. Header controls can't be reached. | `S/manager-schedule-land-s260.png` | `src/app/globals.css:5387-5392` (sticky at `min-width: 761px`, which includes landscape phones) | Add `top: 64px` for the landscape phone query, or exclude it: `@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse)))`. Header `z-index: 40`. | P0 | 2 |
+| WR-03 | All tabs · both · 361–760 | Shell around Home vs every other tab | Home has no `data-mobile-workforce`, so it gets a different shell:<br>(a) Header is 76px tall with 20px inset (wordmark x=20), vs 68px and 16px elsewhere (x=16). Switching Home ↔ Inbox moves the wordmark 4px sideways and the band 8px down. On Home itself the wordmark (x=20) and the band text (x=16) don't line up.<br>(b) More on Home is a 300px popover anchored top-right (x=69–369 at 390) with no scrim and 14px items. More on Inbox, Schedule, Team and Timecards is a bottom sheet with grabber, scrim and 17px items (x=32–358). | `S/cmp-bands-390.png`, `S/crops/WR-more-home-vs-inbox.png` | `src/components/app-shell.tsx:147` (`pathname !== "/app"`); `src/app/app/portal-refinement.css:122`; `src/app/app/portal-gusto.css:357` (`:not([data-mobile-workforce])` popover) | Set `data-mobile-workforce="true"` on `/app` too, or make Home and the rest share one header rule: 68px, 16px inset, the same More bottom sheet. Re-check WR-04 after. | P1 | 2 |
+| WR-04 | Inbox, review, Schedule, Team, Timecards · both · ≤760 (buttons at all widths) | Kit `.nv-btn`, `.nv-link`, `.nv-filter` | Legacy rules override the kit on every page except Home:<br>Approve and Decline are **44px** tall at 390 and 1440, while Home's `Review in Inbox` is **52px** (kit `min-height: 52px`).<br>`.nv-link` is 17/25.5 on the review and 15/20 on Home.<br>Inbox filter chips are 17px instead of 15px. The chip row needs 400px, so `Planning` is cut to "Pla" at 320 and "Plannin" at 360. | `S/crops/WR-review-buttons.png`, `S/crops/WR-kit-buttons.png`, `S/crops/WR-inbox-chips.png` | `src/app/app/portal-design-system.css:50` (`.page-frame :is(button,.button) { min-height: 44px }`, 0-3-1); `src/app/mobile-workforce.css:70-71` (`font-size: var(--mobile-body)` on every `a` and `button`) | In `portal-premium.css`, re-assert the kit inside `[data-nv-page]`:<br>`html body .app-shell.nevora-portal .page-frame [data-nv-page] .nv-btn { min-height: 52px; font: var(--nv-t-headline); }`<br>`… [data-nv-page] :is(.nv-link, .nv-filter, .nv-band-control) { font: var(--nv-t-label); }` | P1 | 2 |
+| WR-05 | All screens · both · 844×390 landscape | Header, band, review action bar | (a) No NEVORA wordmark: `.mobile-header > .brand` is `display: none`, so the header is a 64px empty teal bar with only Search and bell.<br>(b) The band gets the desktop treatment (`border-radius: 20px`, 32px inset) while it runs edge to edge (x=0, w=844). Its rounded corners show page canvas at the screen edge and a notch under the header.<br>(c) Header 64 + band 208 + tab bar 68 leaves about 50px for content on Home's first screen.<br>(d) The review scrolls sideways by 8px (scrollWidth 852). The action bar sits at x=−8, w=860. | `S/manager-home-land-s0.png`, `S/cmp-land.png`, `S/manager-review-land-s260.png` | `src/app/app/portal-design-system.css:37` (brand hidden; restored only for `max-width: 760px`); `src/app/app/portal-premium.css:48-52` (`min-width: 761px` also matches landscape phones); `src/components/kit/kit.css` `.nv-actionbar` margin `-24px` against `.nv-content` 16px padding | Add the landscape query to the brand-restore rule. Wrap `portal-premium.css:48-52` in `(min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse)))`. In landscape, use the flat band (`overlap` 24px) and cap the band at 140px. Set `.nv-actionbar { margin-inline: calc(-1 * 16px) }` wherever `.nv-content` has 16px padding. | P1 | 2 |
+| WR-06 | All kit screens · both · 768, 1024, 1440 | Page canvas | `[data-nv-page]` paints `#F2F4F3` in a 1132×1214 box (at 1440) inside a white `.page-frame`. That leaves 32px white strips on each side and white below short pages. On the review, the grey ends at y≈440 and the rest of the screen is white. | `S/cmp-1440a.png` (grey slab visible), `S/manager-review-1440-full.png` | `src/app/app/portal-premium.css:23,29` set the grey only inside the phone query | `@media (min-width: 761px) { html body .app-shell.nevora-portal :is(.app-main, .page-frame):has([data-nv-page]) { background: var(--nv-bg); } }` | P1 | 2 |
+| WR-07 | Schedule · both · 1024 | Whole page | The page scrolls sideways by **95px** (scrollWidth 1119 vs 1024). The cause is `.sr-only` "Published" and `.mws-no-assignment` (`position: absolute`) inside the horizontally scrolling roster: `.mws-roster-content` isn't a containing block, so they escape to the document. | `S/manager-schedule-1024-full.png`; `data/manager-schedule-1024.json` (`sw` 1119) | `src/app/app/schedule/manager-schedule.css:74` (`.mws-roster-content { overflow-x: auto }` without `position`) and `:189` | `.mws-roster-content { position: relative; }` | P1 | 2 |
+| WR-08 | Every screen · both · 768 | Breadcrumb in the top bar | The breadcrumb nav is squeezed to 100px (x=244–344). The current crumb's text runs to x=378 and the Search field starts at x=360, an **18px overlap** ("Pla Ho", "Plaimb", "Te Req" in the shots). | `S/crops/WR-768-breadcrumb.png` | `src/app/app/portal-desktop.css:34` (`li { white-space: nowrap; min-width: 0 }`, no overflow) and `:65` | Under 1100px, show only the current crumb: `.portal-location li:not(:last-child) { display: none }`, and give the nav `overflow: hidden; text-overflow: ellipsis`. | P1 | 2 |
+| WR-09 | Schedule · both · 768–1440 (worst at 1024) | Week toolbar on the band; the "More ▾" toggle | The toolbar row (week pager, This week, Templates) straddles the band's bottom edge. At 1024 the "More ▾" toggle is teal #077572 drawn on the band #1C4A47: **1.79:1**, effectively invisible. At 768 the toolbar wraps onto two rows with Templates and More below the band. | `S/crops/WR-sched1024-more.png`, `S/manager-schedule-1024-first.png` | Legacy `.schedule-operations-toolbar` (`globals.css:5135`) placed under a band with `overlap` on | Start the toolbar below the band (`PageBand overlap={false}` on Schedule at ≥761), or make the band controls white. "More" at least 4.5:1. | P1 | 2 |
+| WR-10 | Schedule, Team, Timecards, Payroll · both · all widths | Everything below the band | These screens have approved comps (`scratchpad/shots/p2-Schedule.png`, `p2-Team.png`, `p2-Timecards.png`, `p3-Payroll-Owner.png`). Phase 2 shipped only the band ("Content below is unchanged", Phase 2 README). The old content clashes with the kit on every axis; the inventory follows this table. | `S/cmp-comps-legacy.png`, `S/cmp-owner-390.png` | `src/app/app/portal-premium.css:139-143` (legacy content just placed on the band) | Build the four comps with kit parts: Schedule (Next up "Publish West Office", day list, "7 not working today"), Team (Ready-for-next-week card, People rows), Timecards ("From Inbox" card, Everyone rows with Fix / Waiting / Yours), Payroll (stepper band, Totals, Before you approve). Until then, apply the clash fixes WR-11 to WR-14, WR-22, WR-30 and WR-33. | P1 | 2 |
+| WR-11 | Timecards · both · 320–430 | Period panel (`Period start` / `Period end` / View period / Refresh) | The panel is a white card (radius 12, shadow) with **0px padding**. Labels and inputs touch its edges: card left x=16, label left x=16. Every other card on these screens has 20px padding. | `S/crops/WR-tc-panel.png` | `src/components/timecards.module.css:98` (`.managerRoot .periodPanel { padding: 0; background: transparent }`), then `src/app/mobile-workforce.css:179` makes it a card again | In `mobile-workforce.css:180`, add `[class*="timecards-module"][class$="__periodPanel"]` to the `padding: 20px` list, and use `border-radius: var(--nv-r-card)` (20). | P1 | 2 |
+| WR-12 | Timecards · both · 320 | Row figures and date inputs | Words break mid-word: "Record / ed", "Brea / ks". The date value "10/12/2026" is clipped under the calendar icon in both fields. | `S/crops/WR-tc320-words.png`, `S/manager-timecards-320-full.png` | `src/components/timecards.module.css:8` (`overflow-wrap: anywhere` on `.root`) | `.root { overflow-wrap: break-word; }`. Put the totals `dt`/`dd` on one line each (`white-space: nowrap`). At ≤359px, stack the two date fields (one column). | P1 | 2 |
+| WR-13 | Team · both · 320 (also 360, 390) | Filters (Role, Primary location, All / Active / Inactive) | At 320:<br>"Primary location" wraps to two lines, so the Role label sits 25px lower than its partner.<br>Selects are clipped: "All role", "All loca". At 360 and 390, "All locatic" and "All location:".<br>The segmented control's labels touch, with 0px between "Active 10" and "Inactive 0". | `S/crops/WR-team320.png` | `src/app/mobile-workforce.css:70` sets 17px on `button`, `label` and `select` inside `src/components/employee-directory.module.css:69-71` (a 3-column grid built for 12px) | Stack Role and Primary location at ≤400px (one column). Segments: `font: var(--nv-t-label)`, `gap: 4px`; at ≤359px show counts only under the label. | P1 | 2 |
+| WR-14 | Payroll · Owner · all phones | "Missing pay periods" and "Pay periods" panels | **Double padding.** `.pw-panel` (20px) contains `.pw-panel-heading` (another 20px). The heading and first paragraph start 40px in, while the next paragraph and the period cards start 20px in.<br>**Mismatched surfaces.** The card shadow is black `rgba(0,0,0,.1)`, not the teal-tinted e1, with radius 12 instead of 20. The period cards nested inside are bordered, radius 13: a card inside a card. | `S/crops/WR-payroll-padding.png`, `S/owner-payroll-390-full.png` | `src/app/mobile-workforce.css:180` (padding applied to both `.pw-panel` and `.pw-panel-heading`) | Remove `.pw-panel-heading` from that list. Set `.pw-panel { border-radius: var(--nv-r-card); box-shadow: var(--nv-e1) }`. Make nested periods rows separated by hairlines, not bordered cards. | P1 | 2 |
+| WR-15 | Payroll · Owner · all widths | Panel title "Missing pay periods" | F5 bans "missing". Home and Inbox now say "No clock-in", so Payroll is the one screen that still says it. | `S/owner-payroll-390-full.png` | `src/components/payroll/backlog-review.tsx:20` | "Pay periods with no payroll run" (as `product-designer.md` T9). Needs payroll copy approval. | P1 | 2 |
+| WR-16 | More · both · 320–430 | More sheet | Doesn't match the approved comp (`p3-More-Owner.png`), which is a full-width bottom sheet with icons, cards per group and a Done button. Live (Home version):<br>A 300px popover with no scrim; at 430, 109px of page shows beside it.<br>Items are **14px** (under the 15px floor) while group labels are 15px/600, so labels outweigh links.<br>Label text starts at x=85, item text at x=79: 6px out of line.<br>For the Owner, the sticky "Close actions" covers the last item: Settings (y=596–650) at 320×700, My pay at 360×780, Sign out (774–828) at 390×844. | `S/crops/WR-more-home-vs-inbox.png`, `S/owner-more-320x700.png` | `src/app/app/portal-gusto.css:357-480` (popover), `src/app/mobile-workforce.css:98-102` (sheet) | One sheet everywhere (see WR-03) with 17px items, 20px icons and labels at the item text inset. Add `padding-bottom: 64px` to the scroll area so Close never covers an item. | P1 | 2 |
+| WR-17 | Home · both · 360 · 1024 · 390 at 125% | Today stat label "No clock-in" | The label breaks at the hyphen: "No clock- / in" (360: column 108px, label 76px). At 390 it fits on one line, so the same card looks broken one size down. | `S/crops/WR-noclockin.png`, `S/cmp-1024.png` | `src/components/premium-home.tsx:125` (plain hyphen) | Use a non-breaking hyphen ("No clock‑in", U+2011) in the label string, and `text-wrap: balance` on `.nv-stat__label`. | P1 | 2 |
+| WR-18 | Home · Owner · 320–430 | First screen | "Finish setting up" (1 of 2 done, not urgent) comes first. It pushes **Next up below the first screen** at every phone width (Next up label at y≈800 on 390×844, under the 776px tab bar). The Owner's first screen has no primary action; the Manager's does. The approved Owner comp (`v4-Home-Owner.png`) opens with "Needs you". Judgment call: the README says the setup card goes first on purpose, but it conflicts with "one Next up per screen". | `S/cmp-owner-home-phones.png` | `src/components/premium-home.tsx` (setup before now) | Put the setup card after Today, or collapse it to one row ("Finish setting up · 1 of 2 · Set weekly hour targets ›", about 64px) above Next up. | P1 | 2 |
+| WR-19 | Team · both · all widths | Band title | The band says **"Employees"**. The tab bar, the More group, the comp (`p2-Team`: "Team · 10 ACTIVE PEOPLE") and D-4 all say **Team**. Jose taps Team and lands on "Employees". | `S/cmp-bands-390.png` | `src/components/employee-directory.tsx` (PageBand title) | Title "Team", eyebrow "10 active people", summary built from availability, as in the comp. | P1 | 2 |
+| WR-20 | Review, Inbox · both · 320 at 150% (390 at 150% partly) | Decision bar, Dates fact, Refresh | At 320 with root 150%:<br>Approve is cut off at the right edge ("Approv").<br>The Dates value is clipped ("Wed, Oct 28 – Thu, Oc").<br>Inbox Refresh is pushed off-screen ("Refres").<br>No sideways scroll, so the text is simply lost. | `S/cmp-large-320.png` | `.premium-fact` nowrap (`portal-premium.css:115`); `.nv-actionbar > .nv-btn { flex: 1 }` with no wrap; band eyebrow row nowrap | Let the fact wrap (`white-space: normal; text-align: right`). Let the action bar stack at large text (`flex-wrap: wrap`, buttons `min-width: 9rem`). Move Refresh to its own row when the eyebrow row overflows. | P1 | 2 |
+| WR-21 | Review · both · 1440 (and 1024) | Cards and decision bar | Everything stretches to 1100px. "Dates" and its value sit 1000px apart; Decline and Approve are 544px each. A short decision becomes hard to read. | `S/manager-review-1440-full.png` | No width cap on `.premium-review` | Interim: `.premium-review .nv-content { max-width: 720px; margin-inline: auto }` and the same cap on the action bar. The full list+detail layout is Phase 4. | P1 | 2 (interim) |
+| WR-22 | Schedule, Team, Timecards, Payroll · both · all phones | Status pills | Four pill systems on one product:<br>Kit (Home, Inbox, review): 15px, 28px tall, with glyph.<br>Schedule location chips: **12px**, 22px tall.<br>Team "Active": **11px**, 24px tall, no glyph.<br>Payroll "Review required": **11px**.<br>Timecards "Draft": 15px, 31px tall, blue-grey #F4F6F9, no glyph.<br>This breaks F3 (15px floor) and F4 (pills are conditions with a glyph). | `S/crops/WR-pills-inbox.png`, `WR-pills-schedule.png`, `WR-pills-team.png`, `WR-pills-tc.png`, `WR-pills-payroll.png` | `manager-schedule.css:217`, `employee-directory.module.css:99`, `payroll-workflow.css`, `timecards.module.css` | Replace all four with the kit `Status` component (tones neutral, review, done, urgent). | P1 | 2 |
+| WR-23 | Inbox · both · all widths | Band control `Refresh` | It doesn't match the other band controls. Refresh: radius 8, padding 10/16, weight 600, line-height 21.25. Add shift and Add employee: radius 12, padding 0/12, weight 500. Refresh looks bolder and boxier. | `S/crops/WR-band-controls.png` | `src/app/app/portal-gusto.css:150` still lists `.inbox-refresh` among legacy buttons | Remove `.inbox-refresh` from that selector (the kit `.nv-band-control` styles it). | P2 | 2 |
+| WR-24 | All band screens · both | Eyebrow and summary | Eyebrows: Home has the date, Inbox "Updated", review "Time-off request", Schedule and Timecards the week. **Team and Payroll have none**: Team's Add employee sits alone on an empty eyebrow row, and Payroll's title comes straight after the tabs.<br>Summaries: Timecards ("Review hours and close each pay period.") and Payroll describe the page instead of counting (F8). Compare the comp: "Approvals open after Oct 18. 2 shifts need a fix." | `S/cmp-bands-390.png`, `S/owner-payroll-390-first.png` | `timecards/page.tsx`, `payroll-ui.tsx`, `employee-directory.tsx` (PageBand props) | Every band gets an eyebrow: Team "10 active people", Payroll the period. Timecards summary counts ("10 timecards · approvals open after Oct 18"). The Payroll string waits for payroll copy approval. | P2 | 2 |
+| WR-25 | Timecards, Payroll · both · all widths | Section tabs | The tabs sit above the title (band starts at y=112 after a 44px strip), while Inbox keeps its filters inside the band under the summary. The comp `p2-Timecards` puts the tabs under the summary. On phones the tabs scroll and are cut mid-word: "Time e" (320), "Time export" (360), "Payr" (430, Owner). | `S/cmp-owner-payroll-phones.png`, `S/cmp-manager-timecards-phones.png` | `portal-premium.css:17-22` (tabs moved onto the band above the body) | Render the section tabs as `extra` under the summary (like the Inbox filters), with a 24px right-edge fade on the scroll row. | P2 | 2 |
+| WR-26 | Payroll vs others · Owner · 1440 | Band width | The Payroll band is **1120px** wide, every other band 1132px. Both start at x=276, so the right edge moves 12px between Timecards and Payroll runs, which share tabs. | `data/owner-payroll-1440.json` vs `owner-timecards-1440.json` | `src/app/app/portal-premium.css:49` (`.page-frame > [data-nv-page]` max-width applies only where the page is a direct child) | Use `.page-frame [data-nv-page]` (descendant), so every page is capped at 1120 and centred. | P2 | 2 |
+| WR-27 | Review · both · 768–1440 | `.nv-actionbar` | The bar's grey backing extends 8px past the card edges on both sides: margin −24 against a 16px content inset. Visible as a wider grey strip; it is the cause of WR-05(d). | `S/cmp-768.png` (review) | `kit.css` `.nv-actionbar` margin uses `--nv-gutter` (24 at ≥768); `portal-premium.css:51` sets the content inset to 16 | Make the two agree: `.nv-content { padding-inline: var(--nv-gutter) }` at ≥761, or margin `-16px`. | P2 | 2 |
+| WR-28 | Home, Inbox, Team, Schedule · both · 390 and 320 at 125–150% | Freshness stamp, Today stats, legacy rows | At 125–150%:<br>"Updated 10:09 PM" splits into "Updated" plus a stacked "10:09 / PM": `.nv-fresh` is inline-flex, so the figure becomes a shrinking item.<br>Today stat labels touch: "Scheduled" ends where "Clocked" begins, 0px gap at 390 at 150%.<br>Team: "Employe / e", the phone number breaks as "787- / 555- / 0101", and segment labels overlap.<br>Schedule: chip "1 of 2 publis" is clipped. | `S/cmp-large-390.png`, `S/cmp-large-320.png` | `kit.css` `.nv-fresh` (no `white-space: nowrap`); `.nv-stat` padding 16 with no minimum gap; `timecards.module.css:8` and Team module wrap rules | `.nv-fresh { white-space: nowrap; flex-wrap: nowrap }`. At large text, stats switch to `--nv-stat-cols: 1` (rows) when `1rem > 18px`. Phone numbers `white-space: nowrap`. | P2 | 2 |
+| WR-29 | Schedule · both · 320–430 | Location chips row, day strip | Both scroll sideways but are cut mid-word with no fade: "Ma", "Main Of", "Main Office • Pu"; the day strip starts at "ed 14" at 320 and "Tue" at 390. They read as clipped, not scrollable. | `S/cmp-manager-schedule-phones.png` | `manager-schedule.css` (location `segmented`, `mws-day-navigation`) | Scroll the selected day into view on load. Add a 24px fade mask on the right edge. Snap chips to whole items (`scroll-snap-type: x mandatory`). | P2 | 2 |
+| WR-30 | Schedule, Team · both · all phones | Search fields | A double field: a white input box inside a grey #F4F6F9 field, with the white box ending 16px short of the grey one at the right. It looks like a misregistered layer. Kit fields are one surface. | `S/crops/WR-search-double.png` | `manager-schedule.css` `.mws-search` (radius 8, fill #F4F6F9) and the Team search (radius 17, fill #FAFAFA) with a separately styled `input` | One field: `background: var(--nv-inset); border-radius: var(--nv-r-control); input { background: transparent; width: 100% }`. | P2 | 2 |
+| WR-31 | Home · Owner · all widths | "Finish setting up" card | The card uses its own link and row styles beside kit ones on the same screen. "Set weekly hour targets" is 17px/600; "Open Inbox" and "Open schedule" are 15px/500. "Coverage periods" is 17px/600 against kit row titles at 17px/500. At 1440 the card spans 1100px for two short rows. | `S/cmp-owner-home-phones.png`, `S/cmp-1440a.png` | `src/app/app/portal-premium.css:84-91` | Build it from kit rows: `.nv-row` with a `.nv-status` "Done", the link as `.nv-link` 15/500 + chevron. Desktop: put it in the 5fr column. | P2 | 2 |
+| WR-32 | Tab bar · both · 320–430 | Tab labels | Labels are **12px**. The token sheet's tab role is 13/16, 500 (600 selected). | `data/kit-manager-390.json` (`mobile-nav-link` 12px) | `src/app/mobile-workforce.css:91` (`font-size: 12px`); `portal-premium.css:33` doesn't set `font` | `.mobile-nav .mobile-nav-link { font: var(--nv-t-tab) }` in `portal-premium.css`. | P2 | 2 |
+| WR-33 | Schedule, Team, Timecards, Payroll · both · all widths | Buttons below the band | Legacy buttons are radius 8 with 1px borders. Kit buttons are radius 12, with no border on primary and an inset ring on secondary. Payroll pairs a white "Refresh" with a teal "Prepare a draft", and adds two more secondary "Review period" buttons: three outlined buttons plus one primary in one view. Timecards repeats View period + Refresh. | `S/owner-payroll-390-full.png`, `S/crops/WR-tc-panel.png` | `portal-refinement.css:110-117`, `portal-gusto.css:150` | Kit `.nv-btn` everywhere. Refresh becomes a band control (like the Inbox's). "Review period" becomes a row link with a chevron. | P2 | 2 |
+| WR-34 | Home · both · 1024, 1440 | Two-column grid | At 1440 (Manager) the left column ends 180px above the right column (Next up + Also needs you vs Today + This week + Planning + Team tools). At 1024 the 5fr column is 300px, too narrow for its stats (WR-17) and for "Schedules published 1 of 2 locations" (wraps). The Owner's setup card runs the full width. | `S/cmp-1440a.png`, `S/cmp-1024.png` | `portal-premium.css:101-107` | Phase 4 desktop layout: move Team tools to the left column, and switch to one column below 1180px. | P2 | 4 |
+| WR-35 | All bands · both · ≥768 | Band height | 208px (Home, Schedule, Team), 252px (review), 272px (Inbox at 1024 and 1440), 296px (Inbox at 768). PLAN Phase 4 caps the desktop band at 200px. | `data/*-1440.json` | `kit.css` overlap 56 + 24 bottom at ≥768 | Phase 4: overlap 40px, filters inline beside the title at ≥1024. | P2 | 4 |
+
+### Old content against the new style (inventory for WR-10)
+
+Measured at 390 from `data/<role>-<screen>-390.json`. The kit reference is Home, Inbox and review: radius 20 (phone) and 16 (desktop) for cards and 12 for controls, shadow e1 (teal-tinted), hairline #E8ECEB, inset #EEF1F0, canvas #F2F4F3, pills 15px and 28px tall with a glyph, buttons radius 12.
+
+| Screen | Surface | Measured | Clash |
+|---|---|---|---|
+| Schedule | `mws-toolbar`, `mws-planning`, `mws-roster` | radius **12**, legacy shadow | Card radius 12 vs kit 20 |
+| Schedule | `schedule-period-control` (week pager) | radius **8**, border **1px #D1D5DB** | Border instead of shadow; grey not in the kit ramp |
+| Schedule | `segmented` (location chips), `schedule-generation-controls`, `mws-search` | radius 8, fill **#F4F6F9** | Blue-grey fill (kit inset #EEF1F0) |
+| Schedule | `mws-day-navigation` | radius 12, border #E6E7E9, fill **#F6F7F8** | A third grey |
+| Schedule | `mws-shift` blocks | radius 8, fill #E7F3F2, 3px teal left border, "Sun" at **11px** | Accent-border cards inside a card; 11px text |
+| Schedule | Stats line "21 assignments 3 people assigned 168 hours assigned" | bare text on the canvas, 17/14px | Kit uses `.nv-stats` in a card |
+| Team | Filter card | radius **12**, legacy shadow | Card radius |
+| Team | Search field | radius **17**, border #D1D5DB, fill **#FAFAFA** | A fourth grey; double field (WR-30) |
+| Team | Segments | radius 9999, fill **#EEF0F2**, labels 12→17px | Collisions (WR-13) |
+| Team | Person rows | 1px **#E5E7EB** dividers, monospace IDs, 11px "Active" | Kit rows: 40px avatar, hairline #E8ECEB, meta 15px |
+| Timecards | `periodPanel` | radius 12, shadow, **0 padding** | WR-11 |
+| Timecards | `batch` "Review selected timecards" | radius 12, border #D7D9DC, fill **#F4F6F9** | Border + blue-grey |
+| Timecards | `rows` table | radius 12, border #D7D9DC | Border, not shadow |
+| Timecards | `issues` | radius **14**, border #ECEDEF, fill #F6F7F8 | A fifth radius |
+| Timecards | "Details" summary | **13px**, radius 4 | Under the 15px floor |
+| Payroll | `pw-panel` | radius 12, shadow **rgba(0,0,0,.1)** (black) | Kit shadows are teal-tinted |
+| Payroll | `pw-backlog-period`, `pw-import-format` | radius **13**, border #ECEDEF | Card in card |
+| Payroll | `pw-lines`, `pw-source`, `pw-stepper-hint` | radius 12 and **10**, fill #F6F7F8 | Two more radii |
+| Payroll | Dates, step text | **13px**; "Review required" **11px** | Under the 15px floor |
+
+Radii in use below the bands: 4, 8, 10, 12, 13, 14, 17 and 9999. Greys: #D1D5DB, #D7D9DC, #E5E7EB, #ECEDEF, #F4F6F9, #F6F7F8, #FAFAFA and #EEF0F2. None is a kit token.
+
+## Role differences (Owner vs Manager)
+
+- **Same on both:** Home count "7 things need you today.", the Inbox summary, filters, groups and Back labels; Schedule, Team and review markup. Verified at 320, 390 and 1440.
+- **Owner only:**
+  - "Finish setting up" first on Home (WR-18, WR-31).
+  - Payroll and Settings in More.
+  - Payroll and Settings in the desktop sidebar (Manager has "Scheduling rules" under Workspace instead).
+  - Four section tabs on Timecards and Payroll ("Timecards, Payroll runs, Time exports, Payroll settings"), which cut off at 320 and 430 (WR-25).
+  - "Planning and setup" reads 8 items for the Owner and 18 for the Manager (different setup scopes; not a defect).
+- **Manager at `/app/payroll`** is sent to `/app` (Home). That is correct for the role, but it lands with no notice. Not filed: a judgment call for the interaction inspector.
+- **Owner More at 320–390:** "Close actions" covers the last item (WR-16). The Manager's list is shorter and isn't covered at 390.
+- **Owner setup card fit:** no overflow at any width (320: 288px card, rows wrap cleanly; the "Done" label and "Set weekly hour targets ›" keep the chevron on one line thanks to `owner-setup-nowrap`). Its cost is placement (WR-18), not fit.
+
+## Checked and correct
+
+- **No sideways scroll** on Home, Inbox (all filters, groups open), review (both origins), Schedule, Team, Timecards and Payroll at 320, 360, 390, 430, 768 and 1440, for both roles. Every `sw` equals `iw` in `data/*.json`. Exceptions are filed: Schedule at 1024 (WR-07) and the review in landscape (WR-05).
+- **Band type is the same on every phone screen:**
+  - title 30/36 600 white
+  - eyebrow 15/20 500 #CFE3E1
+  - summary 17/24 400 #CFE3E1
+  - text left at x=16
+  - band side padding 16px, overlap 72px
+  - desktop: 32/40 title, 14px eyebrow, 16px summary, text left at x=308 at 1440, radius 20
+- **Kit card, row and pill styles agree between Home, Inbox and review:**
+  - cards: radius 20 at phone widths and 16 on desktop, shadow e1, card head padding 20/20/8, card title 17/22 600 (16/22 on desktop)
+  - rows: title 17/22 500 #16191C, meta 15/20 #5F666A
+  - status pills: 15px 500, 28px tall, radius 999
+  - avatars and tiles: 40px in rows, 44px in Next up
+- **Tab bar:** 68px tall and full width at every phone width and in landscape. Five tabs, each 55px hit area. The selected pill is 60×32. Icons don't move.
+- **Counts agree** between Home and Inbox for both roles at 320, 390 and 1440 (no regression from Phase 2's F1 check).
+- **Back label:** "Inbox" on the plain review URL and "Home" with `from=home`, for both roles, at every width.
+- **Inbox groups open:** every `details` opens without overflow at 320–1440 (`*-open.png`).
+- **Payroll at desktop** keeps its tabs and band; no overflow at 768, 1024 or 1440.
+
+## Not covered
+
+- Real iPhone, VoiceOver, 200% browser zoom and Spanish strings (Phase 6) were not run. Large text was tested by setting the root font size to 125% and 150% at 390 (Manager) and 320 (Owner) only.
+- Landscape full-page screenshots are capture artifacts: Playwright enlarges the viewport height, which drops the landscape-phone media query. Landscape evidence uses viewport screenshots at scroll 0, 260 and 600 (`*-land-s*.png`).
+- Sticky bars in the middle of full-page captures are capture artifacts and were not filed.
+- Icon weights and sizes were not measured here (alignment inspector's area). Kit icons on these screens are Phosphor; legacy pages mix their own.
+
+## Round 2
+
+October 18, 2026, on the current build at the same preview. Read only: no data changed and nothing approved, declined or saved.
+
+Every screen was recaptured for both roles at 320, 360, 390, 430, 768, 1024 and 1440, plus landscape 844×390, and so were the new views:
+- Attendance, Team overview and Schedule activity (`/app?view=…`)
+- "Already decided" (`requestId=does-not-exist`)
+
+Large text was rechecked at 125% and 150% (Manager at 390, Owner at 320). The More sheet was rechecked at 320, 390, 430 and in landscape.
+
+Evidence: `R2` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r2/`, with `shots/`, `crops/` and `data/`. Scripts: `shots2.mjs`, `recheck.mjs`, `kitprobe2.mjs`, `land2.mjs`, `more2.mjs`, `large2.mjs` and `clip.mjs`, one level up.
+
+**No page scrolls sideways** on any screen, role or width (every `sw` equals `iw` in `R2/data`).
+
+### Status of round-1 findings
+
+| ID | Status | Measurement now (cause if open) |
+|---|---|---|
+| WR-01 | **Fixed** | Timecards at 768: View period and Refresh are both 174×48, in two columns (`portal-premium.css:84-87`). |
+| WR-02 | **Fixed** | In landscape the Schedule toolbar is `position: static` (`portal-premium.css:81`). Scrolled 260px, the header scrolls away with the page and nothing covers its controls (`R2/shots/manager-schedule-land-s260.png`). |
+| WR-03 | **Fixed** | The header is 68px with a 16px inset on all seven screens (wordmark x=16). Home and Inbox open the same bottom sheet (`R2/crops/more-r2.png`). |
+| WR-04 | **Partly fixed** | Fixed: Approve and Decline are 52px at 390 and 1440, the same as Home; `.nv-link` is 15/20 everywhere; filters are 15px. Open: the last Inbox chip, now "Plan ahead", ends at x=374 at 360 (30px past the edge) and at x=360 at 320. The chip row has no fade, so the chip still looks cut off (`R2/crops/WR2-inbox-chips-360.png`). Cause: `.nv-filters` has no mask, while the Schedule location row has one. Fix: give `.nv-filters` the same `mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent)`, or make "Plan ahead" fit by using 12px padding at ≤360. |
+| WR-05 | **Fixed** | Landscape: wordmark shown at x=24; band radius 0, 140px tall; Home shows the Today card on the first screen; the review's scrollWidth is 844 (was 852). |
+| WR-06 | **Fixed** | `.page-frame` and `.app-main` are #F2F4F3 at 1440 on Home and the review. |
+| WR-07 | **Fixed** | Schedule at 1024: scrollWidth 1024. |
+| WR-08 | **Fixed** | At 768 only the current crumb shows. It ends at x=328 and Search starts at x=360. |
+| WR-09 | **Fixed** | Schedule band ends at y=245; the toolbar starts at y=488 on the canvas, so "More" teal sits on grey and passes contrast. |
+| WR-10 | **Partly fixed** | Team is rebuilt in kit. Timecards and Payroll use kit cards, radius 20 and teal shadows. Schedule has kit Next up, summary, location chips and search. Still old styling below the band:<br>**Schedule:** week pager with radius 8, 1px #D1D5DB border and a 13px date; `.segmented` track #F4F6F9; `schedule-generation-controls` #F4F6F9 with radius 8; day labels 13px; shift-block day 11px; "Build and publish" 14px.<br>**Payroll:** step text and period dates 13px; nested bordered boxes `pw-net` and `pw-import-format` (radius 13, border #C9E0DE / #ECEDEF); `pw-lines` fill #F6F7F8.<br>**Timecards:** `issues` blocks with radius 14 on #F6F7F8.<br>These are still Phase 2 (comps exist). |
+| WR-11 | **Fixed** | The period panel is no longer a card: transparent, radius 0, labels at x=16 on the content edge. |
+| WR-12 | **Fixed** | "Recorded" and "Breaks" are one line each (20px) at 320, and the date inputs stack at 288px wide. A new collision in the same row is filed as WR-37. |
+| WR-13 | **Fixed** | Role and Location labels stack; the selects are 248px and show "All roles" and "All locations" in full. The chip wrap is filed as WR-42. |
+| WR-14 | **Partly fixed** | Fixed: the panel inset is 20px for heading and body alike (was 40/20), radius 20, teal-tinted e1. Open: nested bordered boxes inside the panels (see WR-10). |
+| WR-15 | Deferred (payroll copy) | Agree with deferring. The suggested wording is good. |
+| WR-16 | **Partly fixed** | Fixed: one bottom sheet on every tab; items 17px/500; group labels and items both start at x=42. Open: for the Owner at 320×700, "Close" (sticky, y=620–668) still covers the "My account" label (y=621) and the top of "My pay" when the sheet opens (`R2/crops/more-r2.png`, left). Fix: `padding-bottom: 64px` on the sheet's scroll list, or let the list end above Close. |
+| WR-17 | **Fixed** | Non-breaking hyphen: "No clock‑in" is one line at 390 (20px). At 320 and 360 it breaks only at the space ("No / clock‑in"). |
+| WR-18 | **Fixed** | Owner Home order is now Today, Next up, Also needs you, …, Finish setting up. Next up starts at y≈500 at 390×844. |
+| WR-19 | **Fixed** | The band reads "Team", eyebrow "10 active employees". |
+| WR-20 | **Fixed** | At 320 and 150%, Decline and Approve stack full width and nothing is clipped. The dates wrap ("Wed, Oct 28 – / Thu, Oct 29"). Refresh is visible. |
+| WR-21 | **Fixed** | Review cards are 688px wide at 1440; the buttons are 338px each. |
+| WR-22 | **Fixed** | Schedule chips, Timecards "Draft" and Payroll "Review required" are kit pills: 15px, 28px tall, with a glyph. The Team "Active" pills are gone. |
+| WR-23 | **Fixed** | Refresh: radius 12, padding 0/12, weight 500, the same as Add shift and Add employee. |
+| WR-24 | **Partly fixed** | Team now has an eyebrow. The Timecards summary still describes the page ("Review hours and close each pay period.") instead of counting. The Payroll band has no eyebrow, but that is covered by the payroll copy deferral. |
+| WR-25 | Deferred (Phase 4) | Agree. The fade is present on the scrolling tab rows. |
+| WR-26 | **Not fixed** | At 1440 the Payroll page is 1120px wide and every other page is 1132px (both start at x=276). The `max-width: 1120px` at `portal-premium.css:56` loses to a legacy `max-width: 1440px` on `.employee-view` pages, so only Payroll is capped. Payroll is also left-aligned, not centred. Fix: raise the specificity of `:56` (`html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page]`) so every page is capped at 1120 and centred. |
+| WR-27 | **Fixed** | The bar still spans x=482–1202 against cards at 498–1186, but its backing is now the canvas colour, so nothing shows. The buttons line up with the card edges (498 and 1186). |
+| WR-28 | **Partly fixed** | Fixed: at large text, Today stats switch to rows; "Updated 11:01 PM" no longer splits its time. Open: Timecards at 320 and 150%: the overview labels collide ("Timecards" runs into "Need attention"), "Finalized" is clipped, and names break letter by letter ("Alex / andr / a / Rive / ra") (`R2/crops/r2-large-320.png`, last column). |
+| WR-29 | **Fixed** | The location chips have a 24px fade, and the day strip opens with the selected day in view. |
+| WR-30 | **Fixed** | Schedule and Team search are each one #EEF1F0 field with radius 12. |
+| WR-31 | **Fixed** | `owner-setup-link` uses the label role, 15/20 (`portal-premium.css:130`). |
+| WR-32 | **Fixed** | Tab labels are 13/16 on every screen. |
+| WR-33 | **Partly fixed** | Timecards buttons are kit (radius 12, 15/20 600). Still radius 8:<br>Payroll's five `pw-button`s: Refresh, Prepare a draft, Review period ×2 and Validate.<br>Schedule's "Build week", "Fill gaps only", "Publish Main Office", "Publish West Office", "More" and the day buttons. |
+| WR-34, WR-35 | Deferred (Phase 4) | Not rechecked. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-36 | Timecards · both · 768, 1024, 1440 | Each row's name and its "Details ›" link | "Details" is drawn on top of the employee name. At 1440: name x=384–564, y=663; Details x=364–430, y=663, so they share a top edge and overlap by 46px horizontally. Same at 768 (352 vs 332, y=751) and 1024 (y=721). Every row is affected. | `R2/crops/WR2-tc-rows-1440.png` | `portal-premium.css:300` adds `padding: 16px 20px` to `[class$="__row"]`. That pushes the name down 16px, but the summary is still absolutely positioned at `top: 30px; left: 72px` (`timecards.module.css:194, 209`). | At ≥761px either set `[class$="__row"] { padding: 0 }` or move the summary to `top: 62px; left: 92px`. Better, make the summary static in the identity column (`position: static; margin-top: 2px`). | P1 | 2 |
+| WR-37 | Timecards · both · 320, 360 | Row totals "Recorded 0h 0m · Breaks 0h 0m" | The totals no longer wrap, so the first figure runs into the second label. Content is 195px in a 160px box at 320 and 217px in a 200px box at 360: "0h 0mBreaks", touching or overlapping by 17 to 35px. | `R2/crops/WR2-tc-totals-360.png`, `R2/crops/r2-320.png` (Timecards column) | `portal-premium.css:313-314` add `white-space: nowrap` to `dt` and `dd`, inside `.rowTotals { display: flex; gap: 16px }` with no wrap (`timecards.module.css:170`) | `[class$="__rowTotals"] { flex-wrap: wrap; row-gap: 4px; column-gap: 16px; }` | P1 | 2 |
+| WR-38 | Attendance, Team overview, Schedule activity · both · all widths | Content below the new band | These views now carry the kit band and "Back to Home", but the content is the old dashboard:<br>Text **10–12.5px**: stat labels "Active employees" and "Targets missing" 10px; names 12px bold; "Target missing" pill 11px; "to review / people / corrections" 10.5px; "Clock-ins and breaks…" 12.5px.<br>Cards: radius 18 with 1px #D1D5DB border plus shadow; radius 12 stat tiles on #FAFAFA.<br>Uppercase micro eyebrows ("TODAY", "TEAM", "TIME CORRECTIONS").<br>A pill-shaped outlined Refresh (radius 22).<br>A week pager inside the band (radius 13, white at 88%, 12.5px date).<br>Next to Home, which they open from, they look like a different app. | `R2/crops/r2-390-b.png` (first three columns), `R2/crops/r2-views-1440.png`, `R2/crops/WR2-teamview-390.png` | `manager-dashboard.tsx` legacy subtab views placed under a `PageBand`; legacy `manager-subtab-*`, `attendance-review-*` and `dashboard-week-nav` styles | Rebuild with kit parts: `.nv-card`, `.nv-stats` (labels 15px), `.nv-rows` (names 17/22, meta 15/20), `Status` pills, kit `.nv-btn` for Refresh, the week as the band eyebrow with arrows as band controls, and no uppercase eyebrows. | P1 | 2 |
+| WR-39 | Team overview, Schedule activity · both · 320–430 | Band height | The band is **352px** (header plus band 420px, half of 844). It holds Back, an eyebrow "Oct 12 – Oct 18", the title, a 2-line summary, the view chips and the week pager. The week appears twice (eyebrow and pager). | `R2/crops/r2-390-b.png` | View switcher and pager both placed in `extra` | Drop the eyebrow when the pager is shown, or put the pager arrows on the eyebrow row (`‹ Oct 12 – Oct 18 ›`). Target band ≤ 260px. | P2 | 2 |
+| WR-40 | Schedule · both · 1024, 1440 | Next up "Plan West Office" button | The primary button stretches to **1060px** at 1440. The review got a 688px cap, but Next up didn't. | `R2/crops/r2-1440.png` (Schedule) | No max-width on `.nv-nextup` inside the Schedule page | Interim: `.nv-nextup .nv-btn { max-width: 360px; align-self: flex-start }` at ≥761. Desktop layout proper is Phase 4. | P2 | 2 (interim) |
+| WR-41 | All band screens · both · landscape 844×390 | Band summary | The summary is `display: none` in landscape, which removes the one count from Home ("7 things need you today."), the request dates from the review ("Wants Oct 28 – Oct 29 off.") and "1 of 2 locations published" from Schedule. F1 asks for the same count in every summary. Judgment call: the band is shorter on purpose. | `R2/shots/manager-home-land-s0.png` | `portal-premium.css:78` | Keep it to one line instead: `-webkit-line-clamp: 1; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden`. | P2 | 2 |
+| WR-42 | Team · both · 320 | Band eyebrow row; status chips | At 320:<br>"Add employee" drops to its own row under "10 active employees", so the band is 276px vs 220px at 360.<br>"Inactive 0" wraps alone onto a second chip row (y=618 vs 566). | `R2/crops/WR2-team-chips-320.png`, `R2/crops/r2-320.png` (Team) | `.nv-pageband__eyebrow-row { flex-wrap: wrap }` (`portal-premium.css:93`); the chip group wraps | Chips scroll in one row with a fade (as Schedule's location chips do). At ≤340px the eyebrow says "10 active". | P2 | 2 |
+| WR-43 | More · both · landscape 844×390 | More sheet | In landscape the sheet becomes a 300px panel on the right (x=523–823) with a pull-down grabber and 16px items. Portrait uses a full-width bottom sheet with 17px items. A grabber on a side panel suggests a swipe it doesn't support. | `R2/shots/owner-more-844x390_app.png` | Portrait-only rule `#manager-more-navigation:popover-open` (`portal-premium.css:459`) doesn't match the landscape query | Use the same bottom sheet in landscape (max-width 560px, centred), or remove the grabber from the side panel. | P2 | 2 |
+
+### Checked and correct in round 2
+
+- **Kit parts agree on every screen.** Primary and secondary buttons 52px, radius 12, 17/22 (16/22 desktop); links 15/20; filters and band controls 15/20 (14/20 desktop). Cards radius 20 / 16 with teal e1; status pills 15px and 28px tall. All this holds on Home, Inbox, review, Schedule, Team and Payroll (`R2/data/kit-manager-390.json`, `-1440.json`).
+- **Header:** 68px with a 16px inset on every phone screen; 65px on desktop.
+- **Bands:** title 30/36 at text x=16 on phones; 32/40 at x=312 on desktop.
+- **Docked decision bar:** sits above the tab bar at 320, 390 and 430 for both roles and both origins. In landscape it stays in the page.
+- **Already decided:** band "Already decided" with Back to Inbox, and one kit card with links to approved and declined requests. No overflow at any width.
+- **Owner vs Manager:** the same counts and Back labels. The Owner's More adds Payroll and Settings and opens the same sheet.
+- **Not covered:**
+  - Loading placeholders: holding the navigation response kept the old page on screen and no placeholder appeared. Needs the stability inspector's harness.
+  - The decision toast: it can't be triggered without approving or declining.
+  - Real device and VoiceOver.
+
+### Round 2 total
+
+- 1 not fixed: WR-26 (P2).
+- 7 partly fixed: WR-04, WR-10, WR-14 and WR-16 (P1); WR-24, WR-28 and WR-33 (P2).
+- 8 new: WR-36, WR-37 and WR-38 (P1); WR-39 to WR-43 (P2).
+
+**My area does not have zero open defects: 16 remain open (7 P1, 9 P2, no P0).** WR-36 and WR-37 are the ones Jose would see first: Timecards text collides at both desktop and phone widths.
+
+## Round 3
+
+October 18, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- Every open round-2 item, measured by script (`recheck3.mjs`, output in `R3/recheck3.json`).
+- Every screen and view recaptured for both roles at 320, 360, 390, 430, 768, 1024 and 1440 (`shots3.mjs`).
+- Landscape and the More sheet rechecked.
+- 150% text at 320 on the rebuilt views (`large3.mjs`).
+
+Evidence: `R3` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r3/`.
+
+**No page scrolls sideways** on any screen, role or width (every `sw` equals `iw` in `R3/data`).
+
+### Status of open items
+
+| ID | Status | Measurement now (cause if open) |
+|---|---|---|
+| WR-04 | **Fixed** | `.nv-filters` now has a 28px right-edge fade. At 360 "Plan ahead" ends at x=358, inside the 360px row. At 320 the fade marks the scroll (`R3/crops/inbox-360-first.png`). |
+| WR-10 | **Partly fixed** | Team overview and Schedule activity are on the kit (cards radius 20, no text under 15px, no old buttons), and Attendance's panels are restyled (radius 20, 15px). Still old styling:<br>**Schedule:** location names in the chips are 13px; "Show 7 not scheduled" is 14px; the day strip `mws-day-navigation` is #F6F7F8 with a #E6E7E9 border; `mws-result-summary` has a #D7D9DC rule; shift blocks are radius 8 with a 3px teal left border.<br>**Payroll:** employee names and amounts in the amounts list are 13px, employee IDs (`code`) 11px, "Amounts from your payroll provider" 12px, period dates 13px, step numbers 13px. One white box has radius 8 and a #D7D9DC border.<br>Measured on `/app/schedule` and `/app/payroll` at 390. |
+| WR-14 | **Partly fixed** | `pw-net`, `pw-source` and `pw-import-format` are now kit inset fills (#EEF1F0, radius 12, no border). Still inside the Pay periods panel: the bordered teal-wash run card (`pw-run-option`, radius 13) and three radius-13 boxes with #ECEDEF borders, which read as cards inside a card. |
+| WR-16 | **Fixed** | The More sheet no longer has a sticky Close. At 320×700 (Owner) nothing covers an item; the list runs to "My pay" and scrolls (`R3/crops/owner-more-320x700.png`). |
+| WR-24 | **Fixed** | The Timecards summary is now "Approvals open after Oct 18." The Payroll band's lack of an eyebrow stays under the payroll copy deferral. |
+| WR-26 | **Fixed** | Payroll, Timecards and Home are all 1120px wide at x=282 (centred) at 1440. |
+| WR-28 | **Fixed** (Timecards) | At 320 and 150%, the Timecards overview stacks its three stats and names wrap at word boundaries ("Alexandra / Rivera"). A separate Schedule issue at the same size is filed as WR-46. |
+| WR-33 | **Partly fixed** | Payroll's `pw-button`s are radius 12. Still radius 8 on Schedule: "More", the selected location chip, the day buttons ("Mon 12" … "Sun 18", "Full week") and the shift blocks. |
+| WR-36 | **Fixed** | Details now sits under the name. At 1440 the name spans y=647–669 and the Details text starts below it. The same holds at 768 and 1024, with no overlap (`R3/crops/tc-rows-1440.png`, `tc-rows-768.png`). |
+| WR-37 | **Fixed** | Row totals wrap: 184px box, 184px content, two lines (44px) at 320; 224/224 at 360. |
+| WR-38 | **Fixed** | Team overview and Schedule activity use kit cards, stats, rows and pills. Attendance uses radius 20 panels and a kit Refresh (radius 12). The measurement found no visible text under 15px on any of the three at 390. |
+| WR-39 | **Partly fixed** | The week is no longer repeated: the pager arrows now sit on the eyebrow row (‹ Oct 12 – Oct 18 ›). The band is still **352px** at 390 and 376px at 320 on Team overview and Activity. Attendance grew to the same height (352–376, was 308–332). Header plus band takes 420–444px of an 844px screen. Cause: Back row, eyebrow row, title, a 2–3 line summary and the view chips all sit in the band. Fix: one-line summary (`-webkit-line-clamp: 1`) or no summary on these three views. Target ≤ 280px. |
+| WR-40 | **Fixed** | Schedule's "Plan West Office" button is 360px wide at 1440. |
+| WR-41 | **Fixed** | In landscape the summary shows on one line (24px): "7 things need you today.", "Wants Oct 28 – Oct 29 off.", "1 of 2 locations published · 21 shifts this week". |
+| WR-42 | **Fixed** | Team at 320: the band is 244px with "Add employee" on the eyebrow row, and all three chips are on one row (y=534). |
+| WR-43 | **Fixed** | Landscape More is a centred bottom sheet, 560px wide (x=142–702), with its grabber (`R3/crops/more-land.png`). |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-44 | Home, review, Already decided, Payroll · both · 320, 360 | Band summary | Regression since round 2. The summary box is now 192px wide at 320 (100% − 96px), so short lines wrap: "7 things need / you today.", "Wants Oct 28 – / Oct 29 off.". The bands grow by 24px at 320: Home 280 (was 256), review 288 (was 264), Already decided 312. A 96px empty strip is left on the right of every summary. | `R3/crops/home320-r2-r3.png` (round 2 vs round 3, side by side) | `portal-premium.css:214` (`max-width: min(36em, calc(100% - 96px))`) | `calc(100% - 56px)` as before, or no right reserve at ≤360px (the watermark sits behind the text at 7% opacity). | P2 | 2 |
+| WR-45 | Every screen · both · 768–1100 | Breadcrumb | With only the current crumb shown, a stray "›" remains in front of it: "› Home", "› Schedule", "› Timecards". The `li + li::before` separator still applies to the visible last item. | `R3/crops/r3-768.png` (top bar of each column) | `portal-desktop.css:35` (`li + li::before { content: "›" }`), with the other items hidden at `portal-premium.css:70` | In the same media query: `.portal-location li:last-child::before { content: none; }` | P2 | 2 |
+| WR-46 | Schedule · both · 320 at 150% | Week pager; stats card | At large text:<br>The pager's next arrow sits on the date, clipping it to "Oct 12 – Oct 1".<br>The stats card's third column clips at the right edge ("assigned" shows as "assigne").<br>Home's stats already switch to rows at large text; Schedule's don't. | `R3/crops/r3-large150-320.png` (last column) | `schedule-period-control` keeps a fixed inner width; `mws-week-summary` keeps three columns | Pager: let the date shrink (`min-width: 0; flex: 1; text-overflow: ellipsis`) or move the arrows outside the date. Stats: use the same large-text rule as Home (`--nv-stat-cols: 1` when `1rem > 18px`). | P2 | 2 |
+
+### Checked and correct in round 3
+
+- **Kit parts, header and band** match on every screen, role and width, as in round 2:
+  - buttons 52px with radius 12
+  - links and band controls 15/20
+  - header 68px with a 16px inset on phones
+  - band title at x=16 on phones and centred at 1120px on desktop
+- **Rebuilt views at 768 and 1440:** Team overview, Schedule activity and Attendance all sit on the grey canvas with radius 16 cards and no overflow (`R3/crops/r3-desk.png`, `r3-768.png`).
+- **Owner vs Manager:** the same structure on every view. The Owner's More adds Payroll and Settings.
+- **Not covered, as before:** loading placeholders, the decision toast, a real device and VoiceOver.
+
+### Round 3 verdict
+
+Closed this round: 12 of 16 round-2 items (WR-04, 16, 24, 26, 28, 36–38, 40–43). Still open: 4 partly fixed — WR-10 and WR-14 (P1), WR-33 and WR-39 (P2). New: 3, all P2 (WR-44, WR-45, WR-46).
+
+**Not zero: 7 defects remain open in my area (2 P1, 5 P2, no P0).** The two P1s are the leftover old styling on Schedule and Payroll (WR-10, WR-14).
+
+## Round 4
+
+October 18, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- The seven open round-3 items, measured by script (`recheck4.mjs`, output in `R4/recheck4.json`).
+- Every screen recaptured for both roles at 320, 360, 390, 430, 768, 1024 and 1440, now including Time exports (`/app/payroll-export`) (`shots4.mjs`).
+- Landscape 844×390 recaptured, including Time exports, Team overview and Attendance (`land4.mjs`).
+- A check of header stickiness across pages in landscape (`landhdr.mjs`).
+
+Evidence: `R4` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r4/`.
+
+**No page scrolls sideways** on any of the 12 screens, for either role, at any of the seven widths or in landscape. In landscape the header is now sticky on every page alike.
+
+### Status of open items
+
+| ID | Status | Measurement now (cause if open) |
+|---|---|---|
+| WR-10 | **Partly fixed** | Open at 390:<br>**Schedule:** location names in the chips are **13px** (`STRONG` "Main Office", "West Office").<br>**Payroll:** the "Import format and content" disclosure is **13px**; `pw-stepper-hint` is radius 10 on #F6F7F8 (kit inset is #EEF1F0, radius 12); fields are covered by WR-49.<br>Schedule's location names and Payroll's disclosure are the only text under 15px left on these two screens. Time exports, newly on a band, is filed separately as WR-47. |
+| WR-14 | **Fixed** | No bordered boxes are left inside the Payroll panels. The selected run is a selectable tile (`pw-run-option.selected`: radius 12, #E7F3F2 fill, no border), not a nested card. |
+| WR-33 | **Partly fixed** | Schedule's "More" is now radius 12. Still radius 8: the selected location chip ("All locations"), "Full week", the day buttons "Mon 12" … "Sun 18" and the shift blocks (`a.mws-shift`). Cause: Schedule's own button styles in `manager-schedule.css`. |
+| WR-39 | **Fixed** | Back and the week share one row (Back at y=68 with the week arrows on the same line). Team overview and Activity bands are 284px at 390 (was 352), Attendance 308px, the same height as the Inbox band. At 320 they are 315, 291 and 308. |
+| WR-44 | **Fixed** | The summary box is 318px at 390 and 248px at 320 (`max-width: min(612px, 100% - 40px)`). "7 things need you today." and "Wants Oct 28 – Oct 29 off." fit on one line, and the Home band is back to 256px at 320. |
+| WR-45 | **Fixed** | At 768 and 1024 the single crumb has no separator (`::before` content `none`) (`R4/crops/top-768.png`). |
+| WR-46 | **Fixed** | At 320 and 150% the week label spans x=89–175 between the arrows (81 and 183), with no clipping (scrollWidth 86 = clientWidth 86). The stats switch to one column (288px), nothing clips, and the page doesn't scroll sideways (`R4/crops/schedule-320-150.png`). |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-47 | Time exports · both · all widths | Everything below the "Pay period" card | The page now has the kit band and a kit "Pay period" card, but "Choose finalized employees" and "Export summary" are still the old styling:<br>"0 ready" pill **10px**; selection note "0 selected · 10 not finalized…" **11px**; employee names **14px**; Recorded and Breaks figures **12px**.<br>Buttons and selects are radius 8 with #D7D9DC borders ("Generate reviewed export", "Add column", "Save mapping profile", the mapping selects); fills are #F6F7F8.<br>At 320, "0h 0m" and "Breaks" are 3px apart. | `R4/crops/r4-exports.png`, `R4/crops/r4-exports-desk.png` | `payroll-export.module.css` (legacy) inside a `PageBand` page | Kit rows for employees (names 17/22, meta 15/20), `Status` pill for "0 ready", kit `.nv-btn` (radius 12) and kit fields, inset #EEF1F0, and wrapping totals as on Timecards (WR-37 fix). | P1 | 2 |
+| WR-48 | Attendance · both · all phones | Freshness line "Updated 11:52 PM" | The green dot sits alone on its own line: dot at y=533, with "Updated 11:52 PM" starting below it at y=539. The dot and the `small` are flex items in a wrapping `inline-flex`, and the `small` takes the full width. | `R4/crops/attendance-updated-390.png`, `R4/crops/r4-390.png` (last column) | `portal-premium.css:750-751` (`display: inline-flex; flex-wrap: wrap` with a `::before` dot) | `flex-wrap: nowrap; align-items: center` on the first child, and `flex: 1; min-width: 0` on its `small`. Or draw the dot on the `small` itself, as `.nv-fresh` does. | P2 | 2 |
+| WR-49 | Timecards vs Team, Payroll, Time exports · both · all widths | Text fields and selects | Fields come in three styles:<br>**Timecards:** radius 12, border #D5DAD9, 48px tall.<br>**Team, Payroll and Time exports:** radius **8**, border #D7D9DC, 52px tall.<br>**Schedule search:** borderless #EEF1F0 field.<br>The kit control radius is 12. | `R4/recheck4.json`; side by side: `R4/shots/owner-timecards-390-first.png`, `owner-exports-390-first.png` | Legacy field rules (`portal-gusto.css`, `payroll-export.module.css`, `employee-directory.module.css`) still apply outside Timecards | One field style in `portal-premium.css` for `[data-nv-page] :is(input:not([type=checkbox]), select, textarea)`: radius 12, border #D5DAD9, height 48px, 17px text. | P2 | 2 |
+| WR-50 | Time exports · Owner · 320–430 | Section tab row | The row opens scrolled to the active tab, which hides "Timecards" off the left edge (left x=−123) and cuts the left of "Payroll runs" (x=−18). There is no left-edge fade, so nothing shows a tab is hidden; the right fade is present. The Manager's two tabs fit. | `R4/crops/r4-exports.png` (right column) | Section-tabs scroller: right-only mask | Add a left fade whenever the row is scrolled from the start, or scroll the active tab only far enough to be fully visible. | P2 | 2 |
+
+### Checked and correct in round 4
+
+- **Home views:** Team overview, Schedule activity and Attendance have Back and the week (or "Today") on one row at every width and in landscape, with kit cards and no text under 15px.
+- **Time exports band:** matches Timecards and Payroll (tabs above the title, title 30/36, summary 17/24) at every width. At 768 and 1440 its first card is kit.
+- **All earlier fixes still hold.** These were re-measured: header 68/16; kit buttons 52px; summaries on one line; Timecards Details and totals; breadcrumb; More sheet.
+- **Not covered, as before:** loading placeholders, the decision toast, a real device and VoiceOver.
+
+### Round 4 verdict
+
+Closed this round: 5 of 7 open items (WR-14, WR-39, WR-44, WR-45, WR-46). Still open: WR-10 (P1, partly fixed) and WR-33 (P2, partly fixed). New: WR-47 (P1), WR-48, WR-49 and WR-50 (P2).
+
+**Not zero: 6 defects remain open in my area (2 P1, 4 P2, no P0).** The largest is Time exports (WR-47): it now has the new band, but the content below its first card is still the old styling.
+
+## Round 5
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved. The preview's clock has passed midnight, so the current week is now Oct 19 – 25 and Home reads "20 things need you today". Measurements below use the live data.
+
+What was re-run:
+- The open round-4 items, measured by script (`recheck5.mjs`, output in `R5/recheck5.json`).
+- All 12 screens recaptured for both roles at 320, 360, 390, 430, 768, 1024, 1440 and landscape (`shots5.mjs`).
+
+Evidence: `R5` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r5/`.
+
+**No page scrolls sideways** on any screen, role or width.
+
+### Status of open items
+
+| ID | Status | Measurement now (cause if open) |
+|---|---|---|
+| WR-10 | **Fixed** | No visible text under 15px on Schedule or Payroll at 390. Location names in the chips are 15px, and the Payroll stepper hint is gone. Payroll's textarea is still radius 8; that is covered under WR-49. |
+| WR-33 | Kept by design (ROUND-2.md additions) | I agree. The remaining 8px corners belong to items inside a 12px track or card, which is the token sheet's `--nv-r-inner`. |
+| WR-47 | **Partly fixed** | Fixed: Time exports has no visible text under 15px at 390; its buttons and selects are radius 12.<br>Open at 320 and 360: the selection note "0 selected · 10 not finalized; 0 finalized beyond the 100-card selection limit." is squeezed beside "Select finalized" and "Clear". It is **73px wide and 203px tall (10 lines)** at 320, and 113×122px (6 lines) at 360 (`R5/crops/exports-cmp.png`, left column).<br>The bar still uses the old fill #F6F7F8 (kit inset is #EEF1F0).<br>Cause: `payroll-export.module.css:36-37`, a `display: flex` row whose button group never wraps.<br>Fix: `.selectionBar { flex-wrap: wrap }` with the note at `flex: 1 1 100%` at ≤400px, and `background: var(--nv-inset)`. |
+| WR-48 | **Not fixed** | Attendance at 390: the freshness dot still sits alone on its own line, with the line box at y=561 and "Updated 12:14 AM" starting at y=581 (`R5/crops/attendance-footer-390.png`). Cause unchanged: `portal-premium.css:750-751` (wrapping `inline-flex` with a `::before` dot, and the `small` taking the full width). |
+| WR-49 | **Partly fixed** | Text inputs and selects now match on Timecards, Team, Schedule, Payroll and Time exports: radius 12, border #D5DAD9, 48px tall. The exceptions are Time exports' date fields at 50px, and the Timecards select at 15px where the others are 17px.<br>Still old: the textareas on Payroll ("Amounts from your payroll provider…") and Time exports (mapping) are radius 8 with a #D7D9DC border.<br>This rule also caused WR-51. |
+| WR-50 | **Fixed** | The section-tabs track now has a 40px left fade (`mask-image: linear-gradient(to right, transparent, #000 40px)`), so the hidden "Timecards" tab is signalled. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-51 | Schedule · both · all widths | "Search team" field | A regression of WR-30: the field is a box inside a box again. The wrapper `.mws-search` spans x=36–354 with a #D5DAD9 border, radius 12, 52px tall. The input inside spans x=75–341 with its own #D5DAD9 border and radius 12. The placeholder sits against the inner border with no padding, and the inner box stops 13px short of the outer one. | `R5/crops/schedule-search-390.png` | The new shared field rule `portal-premium.css:795` (specificity 0-9-3, from `.page-frame.page-frame [data-nv-page] :is(input:not(…):not(…):not(…))`) outranks `:799` (0-8-3), which sets `border: 0` on `.mws-search input` | Raise `:799`, e.g. `… [data-nv-page] .manager-schedule-page .mws-search input { border: 0; border-radius: 0; background: transparent; min-height: 46px; padding: 0 }`, or exclude it in `:795` with `:not(.mws-search input)`. | P1 | 2 |
+| WR-52 | Schedule activity, Team overview · both · 320 | View chips in the band | The chip row opens scrolled to the selected chip (`scrollLeft` 139). "Attendance" sits off the left edge at x=−123 to −13, but the row only has a right-edge fade (`calc(100% - 28px)`), so nothing signals the hidden chip. This is the same issue as WR-50, on the band chips. | `R5/crops/r5-320-all.png` (last column) | `.nv-filters` mask is right-only | Use a two-sided mask while the row is scrolled from the start, as the section tabs now do. Or scroll only far enough to show the selected chip whole. | P2 | 2 |
+| WR-53 | Schedule · both · 320 | Week pager | "Oct 19 – Oct 25" wraps to two lines: the label is 86px wide and 40px tall inside a 192px pager that shares its row with the "…" menu. The previous week's label fit on one line, so the wrap depends on the dates. | `R5/crops/r5-320-all.png` (third column) | Pager width is fixed beside the menu button; the label has no `white-space: nowrap` | Label `white-space: nowrap`. At ≤340px, give the pager the full row and move "…" to the end of the next row. Or tighten the arrow buttons to 40px. | P2 | 2 |
+
+### Checked and correct in round 5
+
+- **Earlier fixes still hold:** Timecards Details and totals; one-line band summaries; Back and the week sharing one row in the Home views (bands 284–308px); the breadcrumb; the More sheet; landscape bands and header.
+- **Text inputs and selects** match on five screens (radius 12, #D5DAD9, 48px). Team and Payroll search fields are single boxes.
+- **Owner vs Manager:** the same structure everywhere. The Owner's tab row on Time exports now shows a fade where "Timecards" is hidden.
+- **Not covered, as before:** loading placeholders, the decision toast, a real device and VoiceOver.
+
+### Round 5 verdict
+
+Closed this round: WR-10 and WR-50. WR-33 is closed as kept by design, and I agree. Still open: WR-47 (P1, partly fixed), WR-48 (P2, not fixed), WR-49 (P2, partly fixed). New: WR-51 (P1, a regression), WR-52 and WR-53 (P2).
+
+**Not zero: 6 defects remain open in my area (2 P1, 4 P2, no P0).** The two P1s are the double-bordered Schedule search field (WR-51), caused by the new shared field rule, and the 10-line selection note on Time exports at 320 (WR-47).
+
+## Round 6
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- The six open round-5 items, measured by script for the Manager at 320 and the Owner at 360 and 390 (`recheck6.mjs`, output in `R6/recheck6.json`).
+- All 12 screens recaptured for both roles at 320, 360, 390, 430, 768, 1024, 1440 and landscape (`shots6.mjs`). That includes all four Inbox filters, the review from both origins, the three Home views, Already decided and Time exports.
+
+Evidence: `R6` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r6/`.
+
+**Sweep result:**
+- No page scrolls sideways on any of the 16 screen and filter variants, for either role, at any width or in landscape.
+- Every page still has its band.
+- No band height changed between round 5 and round 6.
+
+### Status of open items
+
+| ID | Status | Measurement now (cause if open) |
+|---|---|---|
+| WR-47 | **Fixed** | Time exports' selection note now runs full width above its buttons: 248×61px (3 lines) at 320, 288×41px at 360 and 318×41px at 390 (was 73×203 at 320). The bar wraps (`flex-wrap: wrap`) and uses the kit inset #EEF1F0 (`R6/crops/exports-selection-320.png`). |
+| WR-48 | **Fixed** | Attendance's freshness line no longer wraps: the dot and "Updated 12:36 AM" share one line (line top = text top: 583/583 at 320, 561/561 at 390) (`R6/crops/attendance-footer-390.png`). |
+| WR-49 | **Partly fixed, part regressed** | Fields match on Timecards, Team, Schedule and Time exports: radius 12, border #D5DAD9, 48px tall (Time exports' date fields 50px). Open:<br>**Payroll search ("Find an employee") regressed:** it is radius 8, border #D7D9DC, 52px tall again (radius 12 and 48px in round 5) (`R6/crops/payroll-search-390.png`). Cause: the WR-51 fix added `:not([type="search"])` to the shared field rule (`portal-premium.css:791`). Payroll's `.pw-search input` now falls back to `.payroll-workflow :is(input…)` and the mobile-workforce 52px rule.<br>**Textareas** on Payroll and Time exports are still radius 8 with a #D7D9DC border.<br>Fix: add `html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(.pw-search input, textarea) { min-height: 48px; border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); }`. Textareas keep their own height. |
+| WR-51 | **Fixed** | The Schedule search is one field again. Wrapper: x=36–354, 1px #D5DAD9, radius 12, 12px left padding. Input: 0px border, radius 0, 46px tall, inside the wrapper. |
+| WR-52 | **Fixed** | When the band chip row opens scrolled (Schedule activity: `scrollLeft` 139 at 320, 99 at 360, 69 at 390), it now fades on both edges (`transparent → #000 24px … calc(100% - 28px) → transparent`). Rows that open unscrolled keep the right-only fade. |
+| WR-53 | **Fixed** | "Oct 19 – Oct 25" is one line: 108×20px in a 248px pager at 320 (288px at 360). The "…" menu moves to its own row below the pager. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-54 | Home · both · 320 | Today card, "Scheduled today" stat label | The word "Scheduled" runs past its column's content edge. The column spans x=16–112 with 16px right padding (content ends at 96), but the text ends at x=111, 15px into the padding and 1px from the divider at 112. The other two labels end at 187 and 281, well inside their columns. Present since round 2; I missed it until now. | `R6/crops/home-320-top.png` | `.nv-stat:first-child { padding-left: 20px }` plus 16px right padding leaves 60px for a 75px word at 320 (`kit.css` `.nv-stat`) | At ≤340px: `.nv-stat { padding-inline: 12px }` and `.nv-stat:first-child { padding-left: 16px }`. That gives the first label 68px, which "Scheduled" needs at 15px. Or label it "Scheduled" with "today" on the next line, as it already wraps. | P2 | 2 |
+
+### Checked and correct in round 6
+
+- **Earlier fixes still hold:**
+  - kit buttons 52px
+  - header 68px with a 16px inset
+  - one-line band summaries
+  - Timecards Details and totals
+  - the breadcrumb at 768–1100
+  - the More sheet in portrait and landscape
+  - Back and the week on one row in the Home views
+  - the decision bar above the tab bar
+- **Already decided at 320:** the two links wrap as "See approved time off ·" / "See declined", leaving the separator at the end of the first line. That's acceptable link wrapping, so I didn't file it.
+- **Not covered, as before:** loading placeholders, the decision toast, a real device and VoiceOver.
+
+### Round 6 verdict
+
+Closed this round: WR-47, WR-48, WR-51, WR-52 and WR-53. Still open: WR-49 (P2), with its Payroll search part regressed by the WR-51 fix. New: WR-54 (P2).
+
+**Not zero: 2 defects remain open in my area (0 P0, 0 P1, 2 P2).** Both are small precision issues: Payroll's search field and the textareas use 8px corners, and "Scheduled" crowds its divider at 320.
+
+## Round 7
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved. Choosing days in Schedule's day strip only changes the view.
+
+What was re-run:
+- WR-49 and WR-54, plus the parts changed this round: the Schedule day strip (AL-37) and the Attendance footer. Measured by script (`recheck7.mjs`, output in `R7/recheck7.json`; `daystrip.mjs`).
+- A full regression sweep: all 16 screen and filter variants for both roles at 320, 360, 390, 430, 768, 1024, 1440 and landscape (`shots7.mjs`).
+
+Evidence: `R7` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r7/`.
+
+**Regression sweep against round 6:**
+- No page scrolls sideways.
+- Every page has its band.
+- No band height changed.
+- No page's total height changed by more than 40px.
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-49 | **Fixed** | At 320, 390 and 1440:<br>Payroll's employee-amounts search (`.pw-search input`): radius 12, 1px #D5DAD9, 48px tall, white.<br>The Payroll textarea and the Time exports mapping textarea: radius 12, 1px #D5DAD9 (182px and 75px tall, by content).<br>All text inputs and selects on Payroll, Time exports, Team and Timecards now share radius 12 and #D5DAD9, 48px tall. The one exception is Time exports' two date fields at 50px.<br>Schedule's search is still a single field: wrapper x=36–354 (390) with the border and radius 12; the input inside has a 0px border, radius 0 and no fill. |
+| WR-54 | **Fixed** | At 320 the stat columns are 107 / 90 / 90px (`minmax(min-content, 1fr)`). The "Scheduled today" column spans x=16–123 with padding 20 / 12, so its content edge is at 111. The label spans 36–111: inside the content box, 12px from the divider (`R7/crops/home-stats-320.png`). The same holds at 340. At 360 and above the old 16px padding applies; the label ends at 111 with the divider at 125 (14px clear). |
+
+### Changed this round, checked
+
+- **Schedule day strip (AL-37):** the strip has a two-sided fade. With Sat or Sun chosen, it scrolls so no day is cut at the left edge.
+  - 320, Sun: `scrollLeft` 236, Sun at 160–204 of 248, nothing partial.
+  - 320, Sat: Sat at 160–204, only Sun partly visible at the right, under the fade.
+  - 390: Sat, Sun and Wed all show whole days with nothing partial.
+  - Crops: `R7/crops/daystrip-*.png`.
+- **Attendance footer:** the freshness block now spans the card's text edge: x=36–354 at 390, matching the card title at 36–354. The dot and "Updated" stay on one line; at 1440 Refresh sits on the same row on the right (`R7/crops/attendance-footer-390.png`).
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-55 | Payroll, Timecards, Team, Time exports · both · phone and desktop | Text size inside form fields | With the shapes now matching, the text inside the fields still varies.<br>**Phones:** inputs and selects are 17px, but the Payroll textarea is **15px** and the Timecards select **15px**.<br>**1440:** Time exports fields and the Timecards date fields are 16px; Team's search and selects, Payroll's search and the Timecards select are **14px**; textareas are 14–15px.<br>Side by side on desktop, Team's 14px search looks smaller than Time exports' 16px fields. | `R7/recheck7.json` (`fields_320`, `fields_1440`) | The shared field rule sets shape but not `font`. Each page's older rule decides the text size (`timecards.module.css`, `employee-directory.module.css`, `payroll-workflow.css`). | Add `font: var(--nv-t-body)` to the shared field rule (17/24 on phones, 16/24 on desktop), including `textarea` and `select`. | P2 | 2 |
+
+Not filed: at 300px (below the brief's 320 minimum) the three stat columns add up to 341px in a 268px card, so the third stat is cut off. Worth knowing if 300px devices matter.
+
+### Round 7 verdict
+
+Closed: WR-49 and WR-54. New: WR-55 (P2, field text sizes).
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 8
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- WR-55 and the other parts changed this round, measured by script on Payroll, Time exports, Schedule, Team and Timecards at 320, 390, 768 and 1440 (`recheck8.mjs`, output in `R8/recheck8.json`).
+- A full regression sweep: all 16 screen and filter variants for both roles at 320, 360, 390, 430, 768, 1024, 1440 and landscape (`shots8.mjs`).
+
+Evidence: `R8` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r8/`.
+
+**Sweep result against round 7:**
+- No page scrolls sideways.
+- Every band height is unchanged.
+- Time exports is about 100px taller at 768–1440. That is expected: its 11 textareas grew from 62px to 72px with the 16px text.
+- Three Owner pages (Team at 768, Team overview at 360, Activity at 768) showed a server error during the sweep: the dev server logged `canceling statement due to statement timeout` under load from several inspectors. Retaken (`shots8b.mjs`), all three render normally with their round-7 band heights (220, 284, 284 at 360; 208, 272, 272 at 768). The error screen itself is filed as WR-57.
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-55 | **Fixed** | Every input, select and textarea on Timecards, Team, Schedule, Payroll and Time exports is **17px** at 320 and 390, and **16px** at 768 and 1440. That includes the Payroll textarea (was 15/15), the Timecards select (was 15/14), Team's search and selects (14 → 16 at desktop) and Payroll's search (14 → 16). Every single-line field is 48px; textareas size to their content (Payroll 214px, Time exports 72px). |
+
+### Changed this round, checked
+
+- **Attendance footer:** no shadow (the only shadow inside it is the Refresh button's 1px inset ring); 105px tall at 390. The loading height couldn't be tested, as before.
+- **Bell:** no stray mark at 320, 390 or 1440 with 0 unread.
+- **Root loading placeholder:** not reproducible here. Holding the navigation response keeps the old page on screen (round 2 note).
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-56 | Schedule · both · 320–760 | "Search team" field | On phones the field's wrapper is **52px** tall while every other single-line field is now 48px (Team's search right next door is 48). The inner input is 46px. At 768 and 1440 the wrapper is 48px. | `R8/recheck8.json` (`mws_320`, `mws_390`) | `mobile-workforce.css:122` (`[data-mobile-workforce="true"] .mws-search { min-height: 52px }`) is not overridden by the new 48px rule, which targets the input, not its wrapper | `html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .mws-search { min-height: 48px; height: 48px; }` | P2 | 2 |
+| WR-57 | Any manager page · Owner seen · 360, 768 | Server error screen | When a page's server read times out, the app shows Next's built-in error page: white, no shell, header, band or tab bar, a near-black "Reload" button with radius 8, and "ERROR 4074344408" in monospace. The app's own boundary (`src/app/app/error.tsx`: "This page could not be loaded", kit buttons) doesn't catch it, and there is no `src/app/global-error.tsx`. PLAN Phase 2 asks for a server-error state distinct from offline. Seen twice in this sweep under load. | `R8/shots/owner-team-768-first.png` (from the failed capture) | The error escapes `app/app/error.tsx` (thrown in a layout or above the segment boundary); no branded `global-error.tsx` | Add `src/app/global-error.tsx` with the same copy and kit styling as `app/app/error.tsx` (teal action #077572, radius 12, NEVORA wordmark). Check why a layout-level read can time out without reaching the segment boundary. Judgment: this is the interaction and states inspector's area too, and I'm flagging it because the screen clashes with the rest. | P2 | 2 |
+
+### Round 8 verdict
+
+Closed: WR-55. New: WR-56 (P2, Schedule search is 52px tall on phones) and WR-57 (P2, unbranded server error screen).
+
+**Not zero: 2 defects remain open in my area (0 P0, 0 P1, 2 P2).**
+
+## Round 9
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- WR-56 and the other changes this round, at 320, 390, 430 and 1440, with root text at 100%, 125% and 150% (`recheck9.mjs`, output in `R9/recheck9.json`).
+- The new error screen rendered from its own stylesheet with the component's markup (`errstatic.mjs`). A live render needs a layout-level failure, which didn't recur on demand.
+- A full regression sweep: all 16 screen and filter variants for both roles at 320, 360, 390, 430, 768, 1024, 1440 and landscape (`shots9.mjs`).
+
+Evidence: `R9` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r9/`.
+
+**Sweep result against round 7:**
+- No page scrolls sideways, and every band height is unchanged.
+- Time exports is about 100px taller at 768–1440, as noted in round 8 (larger textarea text).
+- The Owner's Payroll at 1024 hit a transient read failure once: Payroll's own in-page error card ("Payroll unavailable · Try again") showed under the band and shell, as designed. Retaken (`shots9b.mjs`), it renders normally: 3,311px tall, band 132px.
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-56 | **Fixed** | The Schedule "Search team" wrapper is **48px** at 320, 390, 430 and 1440, with its inner input 46px and no border. It now matches every other single-line field (Team's "Name or ID" search is 48px at every width). |
+| WR-57 | **Fixed** (static render; not reproduced live) | `src/app/error.tsx` and `src/app/global-error.tsx` both render `AppErrorScreen`: #F2F4F3 canvas, a white card with radius 20 and max-width 420, the app boundary's own wording, a teal #077572 "Try again" and a bordered "Back to home".<br>No sideways scroll at 320, 390, 844×390 or 1440.<br>At 320 the card is 288px and the buttons stack at 248px each; at 390 and up they sit side by side (102 and 137px). The card is centred: x=510–930 at 1440, x=212–632 in landscape (`R9/crops/error-static-*.png`).<br>The timeout didn't recur on a layout read during the sweep, so the live path is unverified. |
+
+### Changed this round, checked
+
+- **Home stats (TC-01):**
+  - 320: three columns at 100% (107 / 90 / 90px); one 288px column at 125% and 150%.
+  - 390 and 430: three columns at 100% and 125%, one column at 150%.
+  - 1440: three columns at every size.
+  - No page scrolls sideways at any size.
+- **Day buttons:** one width that follows the text size: 44px at 100%, 55px at 125%, 66px at 150%. The same at 320, 390, 430 and 1440. "Full week" is 72px on phones and 92px on desktop.
+- **Team search:** placeholder "Name or ID", 48px tall.
+- **Attendance footer:** "Updated 1:32 AM · Updates every 30s while this page is active." plus Refresh. 125px tall at 320, 105px at 390, 57px (one row) at 1440.
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-58 | Error screen (`AppErrorScreen`) · both · all widths | Card, mark, buttons | The new screen is close to the kit, but its local copy of the values differs in four places:<br>**Buttons:** 44px tall with 16px text. Kit primary and secondary buttons are 52px with 17/22 text on phones, and the portal's own `app/app/error.tsx` uses the kit `.button` styles.<br>**Ink:** #1C1C1C (kit ink #16191C).<br>**Card shadow:** neutral `rgb(16 24 40 / .06)` rather than the teal-tinted e1 `rgba(16,40,38,…)`.<br>**Mark:** "NEVORA" as 13px letter-spaced text in #1C4A47, not the wordmark asset used in the header (F7 asks for the real mark).<br>Side by side with a kit screen, the buttons look smaller and the mark looks different. | `R9/crops/error-static-390.png` | `src/components/app-error-screen.css` carries its own values, because it renders outside the portal shell | Use the kit values: buttons `min-height: 52px; font: 600 1.0625rem/1.375rem` (16px at ≥768), ink #16191C, card shadow `0 1px 2px rgba(16,40,38,.05), 0 8px 24px rgba(16,40,38,.06)`, and the shared NEVORA wordmark SVG (height 13px, colour #1C4A47) in place of the text mark. | P2 | 2 |
+
+### Round 9 verdict
+
+Closed: WR-56 and WR-57 (WR-57 by static render). New: WR-58 (P2, the error screen's buttons, ink, shadow and mark differ from the kit).
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 10
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- WR-58, in two ways:
+  - **Statically:** the component's markup with `kit.css`, its own CSS and the real `BrandWordmark` SVG taken from `/ui-preview/kit`, rendered on the preview's own origin so the wordmark image and Inter load (`errstatic2.mjs`).
+  - **Live:** under load from several inspectors, the preview's server timed out during this sweep. The new screen appeared on three real pages, giving live evidence for WR-57 and WR-58.
+- A full regression sweep: all 16 screen and filter variants for both roles at 320, 360, 390, 430, 768, 1024, 1440 and landscape (`shots10.mjs`).
+
+Evidence: `R10` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r10/`.
+
+**Sweep result against round 9:**
+- No page scrolls sideways.
+- Six captures hit a server read failure: Manager review (from Home) at 1024, Manager Payroll at 1024 (Home for this role), Manager Time exports at 1024, Owner Home at 1440, Owner Payroll at 320 and Owner Team overview at 1024.
+  - Four showed the new error screen. Three were full-page (Payroll ×2, Time exports); the review's appeared inside the shell, with the header still showing.
+  - Two showed Home's own "Dashboard unavailable" state (filed as WR-59).
+- Retaken (`shots10b.mjs`, `shots10c.mjs`), all six render normally with their round-9 band heights.
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-58 | **Fixed** (static render and live) | The screen is built from the kit: the teal `nv-masthead` with the real NEVORA wordmark (13px tall, white), title 30/36 on phones and 32/40 on desktop, a white `nv-card` with the teal-tinted e1 shadow, and `nv-btn` buttons 52px tall with radius 12, 17px on phones and 16px from 768.<br>320: the card is x=16–304; "Try again" and "Back to home" stack at 248px each.<br>390: the buttons sit side by side (116 + 150px).<br>Landscape 844×390: the title and card both run x=166–678.<br>1440: both run x=472–968; the band's text lines up with the card's left edge.<br>No sideways scroll at any size. The live captures match: `R10/shots/owner-payroll-320-first.png` (before retake) and `R10/crops/r10-failed.png`.<br>Static renders: `R10/crops/error-static-{320,390,844,1440}.png`. |
+
+### Changed this round, checked
+
+- **"Full week":** 72px (4.5rem) at 390; day buttons stay 44px.
+- **Home stats** (`.nv-card:has(.nv-stats)`): unchanged geometry at every width (band and page heights match round 9 on every recaptured page).
+- **Not testable here:** the Today placeholder head, which needs the loading state, and the shorter Attendance copy in states other than "nothing to review".
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-59 | Home and its views (Attendance, Team overview, Schedule activity) · both · seen at 1024 and 1440 | "Dashboard unavailable" state | When Home's server read fails, the page shows the old dashboard's fallback, not the kit:<br>a plain bordered white `section.panel` with no band;<br>the title "Dashboard unavailable" at the old panel size, with its line ("A current authorized read could not be verified.") and an old-style secondary "Refresh dashboard" button both around 13px.<br>The tab still has its sidebar and header, but no teal band, unlike every other failure state now (Payroll's in-page card, the new error screen). Its wording also differs from the app's "This page could not be loaded". Seen live twice in this sweep. | `R10/crops/r10-failed.png` (left column, from `R10/shots/owner-home-1440-first.png` before retake) | `src/app/app/page.tsx:62` returns `<section className="panel">…</section>` when `loadManagerDashboardData` fails | Render the kit for this case: a `PageBand` (eyebrow the date, title "Home") over an `nv-card` with the boundary's wording and a kit `nv-btn` "Try again" (and `Link` to Inbox). Or throw, so `app/app/error.tsx` handles it like the other pages. | P2 | 2 |
+
+### Round 10 verdict
+
+Closed: WR-58, with live evidence that the new error screen also covers WR-57's path. New: WR-59 (P2, Home's own read-failure state is still the old panel with no band).
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 11
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved. Offline was emulated in the browser only.
+
+What was re-run:
+- A full sweep: all 16 screen and filter variants for both roles at 320, 360, 390, 430, 768, 1024, 1440 and landscape (`shots11.mjs`).
+- The new Attendance offline state (`attoff.mjs`).
+- The desktop day buttons.
+
+Evidence: `R11` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r11/`.
+
+**Sweep result:** no page scrolls sideways. Under load from several inspectors, the preview's server failed six reads during the sweep, and each showed one of the new kit error pages. That gives live evidence for both error paths:
+
+| Capture | Which error page | Measured |
+|---|---|---|
+| Manager Home (via `/app/payroll` → `/app`) at 768 | **WR-59 path:** Home's own fallback inside the shell | Kit `PageBand` (164px, radius 20 at this width) under the 65px header, with the sidebar showing. Card at x=244–736 (the page column) with "Try loading the page again before taking an action." One primary "Try again", 52×111px; no "Back to home" on Home itself, as intended. |
+| Manager Team overview at 430 | Root `app/error.tsx` (layout failure) | Full-page kit screen: band with wordmark, card, "Try again" 52×116 and "Back to home" 52×150. No sideways scroll. |
+| Manager Inbox (Plan ahead) at 1440, Manager Home (Payroll redirect) at 1440, Owner Inbox (Act now) at 1440, Owner Already decided at 1440 | Root `app/error.tsx` | Full-page kit screen, content column centred (560px max), buttons 52px tall. No sideways scroll. |
+
+All six pages were retaken (`shots11b.mjs`, `shots11c.mjs`) and render normally with their round-9 band heights (296, 208, 272, 308, 220, 284, 252px as applicable). Crops: `R11/crops/r11-errors.png` (768 and 430), `R11/crops/r11-errors-desk.png` (1440).
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-59 | **Fixed** (verified live at 768) | When Home's read fails, the page is the kit error page inside the shell: band, card, kit buttons. It no longer shows the old "Dashboard unavailable" panel. Its wording matches `app/app/error.tsx` and the root screen word for word. |
+
+### Changed this round, checked
+
+- **Day buttons on desktop:** "Full week" is back to 92×61px on one line at 1440; day buttons are 44px wide. Phone sizes are unchanged from round 9 (72px, and 44/55/66px with text size).
+- **Attendance footer:** online it reads "Updated 2:44 AM · Updates every 30s." plus Refresh, 105px tall at 320 and 390. Offline (browser emulation) it reads "Offline." plus Refresh at the **same 105px**, so nothing below it moves (`R11/crops/att-offline-*.png`).
+
+### Passed to the interaction inspector (not my area, not counted)
+
+On the Attendance, Team overview and Schedule activity views, the error page's "Try again" goes to `/app?view=<view>` and drops the `week` parameter. After a failure on a past week, "Try again" opens the current week instead of the one you were on (`src/app/app/page.tsx`, the `href` on the "Try again" link). Keeping `week` in the link would fix it.
+
+### Round 11 verdict
+
+Closed: WR-59. No new findings in my area.
+
+**Zero: no defects remain open in widths, roles and cross-screen consistency (0 P0, 0 P1, 0 P2).** Not covered, as in every round: the loading placeholders, a real device and VoiceOver.
+
+## Round 12
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- A short regression check on AL-55, AL-54, TC-52 and IS-50, measured by script (`recheck12.mjs`, output in `R12/recheck12.json`; `errstatic12.mjs` for the root error screen).
+- A full sweep: all 16 screen and filter variants for both roles at 320–1440 and landscape (`shots12.mjs`).
+
+Evidence: `R12` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r12/`.
+
+**Sweep result:**
+- No page scrolls sideways.
+- Server load produced 11 error-page captures this time (`could not be loaded`), all on the kit error pages with no overflow.
+- Excluding those and last round's error captures, band heights match round 11.
+- One page height changed for a real reason: WR-60 below.
+
+### Changes checked
+
+| Change | Result |
+|---|---|
+| **Day strip (AL-55)** | Correct at every width, but only because the 16px "Full week" gap is a deliberate divider:<br>All 7 day buttons are 44px at 320, 390, 768, 1024 and 1440.<br>"Full week" is 72px on phones and 92px from 768.<br>Gaps between days are 8px; the gap after "Full week" is 16px from 768 (a divider) and 8px on phones.<br>The track starts at x=280 (768, 1024) and 318 (1440); its first button sits 4px inside, at 284 / 322, exactly on the card title's left edge (284 / 322).<br>Fade only where the strip scrolls: right-edge fade at 320, 390 and 768 (scrollable); no mask at 1024 and 1440, where all days fit (last button ends at 748 / 786 inside tracks ending 752 / 790).<br>Crops: `R12/crops/strip-*.png`. |
+| **Button-row gaps (AL-54)** | 12px on: Schedule "Build week" / "Fill gaps only" (every width); Timecards "View period" / "Refresh timecards" (768–1440); Time exports "View finalized time" / "Refresh export data" and "Select finalized" / "Clear"; both error pages' action rows. |
+| **Error card sentence (TC-52)** | 17px on phones and 16px from 768, in both `app/app/error.tsx` (`.premium-error__text`) and the root screen. The root screen's buttons: 52px tall, 12px apart, stacked at 248px at 320. |
+| **Home error "Try again" (IS-50)** | `src/app/app/page.tsx:70` now links to `/app?${retry}`, keeping week, view and the other parameters. Checked in code only, because the failure can't be forced. |
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-60 | Timecards · both · 360–430 | Period toolbar (Period start, Period end, View period, Refresh) | A regression from the 12px gap: the toolbar dropped from two columns to **one**. At 390 the grid is a single 358px column. Period start, Period end, View period and Refresh now stack four high, and the page is **144px taller** (3,547 → 3,691px at 390, 3,787 → 3,931 at 360, 3,264 → 3,408 at 430). In round 11 the dates and the buttons sat in pairs. | `R12/crops/tc-390-r11-r12.png` (round 11 left, round 12 right) | `timecards.module.css:159` sizes columns at `minmax(max(7rem, 50% - 5px), 1fr)`, which fits two columns only with a 10px gap. The new 12px gap (`portal-premium.css`, AL-54) makes 2 × (50% − 5px) + 12px exceed 100%, so `auto-fit` falls to one column. | Match the column formula to the gap: `minmax(max(7rem, calc(50% - 6px)), 1fr)`. Or set `grid-template-columns: repeat(2, minmax(0, 1fr))` at 340–760px. | P2 | 2 |
+
+Passed to the alignment inspector (not counted): on Schedule at 768–1440, "Templates" and the "More" toggle are 8px apart, the only pair in the toolbar not on the new 12px rhythm.
+
+### Round 12 verdict
+
+AL-55, AL-54, TC-52 and IS-50 check out. New: WR-60 (P2), a regression where the 12px gap collapses the Timecards toolbar to one column at 360–430.
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 13
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- WR-60 and the gap and type changes, measured at 320, 360, 390, 430, 768 and 1440, with the root text at 100%, 125% and 150% (`recheck13.mjs`, output in `R13/recheck13.json`).
+- A full sweep: all 16 screen and filter variants for both roles at 320–1440 and landscape (`shots13.mjs`, compared by `cmp13.py` with each page's last good capture).
+
+Evidence: `R13` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r13/`.
+
+**Sweep result:**
+- No page scrolls sideways, and every band height matches.
+- Seven captures hit server read failures under load. All showed the kit error page with no overflow.
+- The only page-height changes are Timecards returning to its two-column toolbar (−142px at 320–430, see WR-60) and Owner Payroll at 1440 back to 3,046px (round 12's 900px capture was a failed read).
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-60 | **Fixed** | Timecards' toolbar is two columns again at every phone width (138 / 158 / 173 / 193px columns, 12px gaps). Period start and Period end share a row, and so do View period and Refresh. At 390 the second column starts at x=201. Page height at 390 is 3,549px (round 11: 3,547; round 12: 3,691). At 768 it's two 174px columns; at 1440 one row of four. |
+
+### Changed this round, checked
+
+- **Button-row gaps:** Schedule "Templates" / "More" is 12px at 768 and 1440 (was 8). Payroll "Refresh" / "Prepare a draft" is 12px at every width. Schedule "Build week" / "Fill gaps only" stays 12px.
+- **"Full week" from 761px:** kit label type (14px/500, `nowrap`). It grows with text size and stays on one line: 92 → 115 → 138px at 100 / 125 / 150% at 768 and 1440, with no sideways scroll. On phones (unchanged rule) it is 72px at 100% and wraps to two lines at 125% and 150% (90 / 108px) inside its 64px button, like the day buttons.
+- **Roster heading from 761px:** the "Team schedule" title sits 20px inside its card at 1440, the same inset as the kit cards above it.
+- **Not testable here:** Home's failed "needs you" read with the loading card shapes, and the Inbox status line above its placeholder rows. Both are loading or failure states that couldn't be forced, and none occurred on those parts during the sweep.
+
+### Round 13 verdict
+
+Closed: WR-60. No new findings.
+
+**Zero: no defects remain open in widths, roles and cross-screen consistency (0 P0, 0 P1, 0 P2).** Not covered, as before: loading states, a real device and VoiceOver.
+
+## Round 14
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- The IS-56 change and the day-strip fade, measured at 320, 340, 360, 390, 430, 1024 and 1440, with the root text at 100%, 125% and 150% (`recheck14.mjs`, output in `R14/recheck14.json`).
+- A full sweep: all 16 screen and filter variants for both roles (`shots14.mjs`, compared by `cmp14.py` with each page's last good capture).
+
+Evidence: `R14` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r14/`.
+
+**Sweep result:**
+- No page scrolls sideways, and every band height matches.
+- Three captures hit the kit error page under load.
+- The only page-height changes are Timecards at 320 (3,903 → 4,045px, the intended one-column toolbar) and one Owner Inbox (Act now) capture at 768 that hit the Inbox's own "not available" state under load (see WR-61).
+
+### Changes checked
+
+| Change | Result |
+|---|---|
+| **Timecards toolbar (IS-56)** | **320:** one 288px column; Period start, Period end, View period and Refresh stack at x=16. The date fields are 288px wide and show "10/13/2026" in full. Page height 4,045px.<br>**340:** two 148px columns.<br>**360 / 390 / 430:** two columns of 158 / 173 / 193px, page heights 3,789 / 3,549 / 3,266px (unchanged from round 13).<br>At 340 the full date still fits in a 148px field, about 4px clear of the calendar icon (`R14/crops/tc-toolbars.png`). |
+| **Day-strip fade** | Phones (320–430): the strip overflows by 132–426px and keeps its right fade at every text size. At 1024 and 150% it overflows by 4px with no fade, and the last day button ends exactly at the track edge (0px cut). 1024 and 1440 at 100% and 125%: no overflow, no fade. No sideways scroll anywhere. |
+| **Paused copy and the Next up failure live region** | Not testable here: neither state occurred during the sweep, and I can't trigger them. |
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-61 | Inbox, Payroll, error pages · both · all widths (seen at 768 and 1440) | "Couldn't load" states | Pages that fail to load show three different card designs and three different wordings:<br>**Inbox** (seen live at 768, `R14/shots/owner-inbox-now-768-first.png`): white kit card overlapping the band, "The Inbox isn’t available right now.", a *secondary* "Try again" with a refresh icon. The band eyebrow reads "Not available" and the filter chips dim.<br>**Payroll** (seen live in round 12, `R12/shots/owner-payroll-1440-first.png`): a **pink-tinted card with a coral border**, sitting below a flat band rather than overlapping it, with an icon, the title "Payroll unavailable", the line "Request could not be completed." and a secondary "Try again".<br>**Error pages** (`app/app/error.tsx`, `page.tsx`, root): white kit card overlapping the band, "Try loading the page again before taking an action.", and a *primary* teal "Try again".<br>Moving between Inbox, Payroll and Home during a slow period, Jose would see three designs for one situation. | `R14/shots/owner-inbox-now-768-first.png`, `R12/shots/owner-payroll-1440-first.png`, `R11/crops/r11-errors.png` | `PayrollState … error` (`src/components/payroll/payroll-runs.tsx:27`, with its own pink style in `payroll-workflow.css`); `manager-inbox.tsx:22` (Inbox's own state); the kit error page | One failure card: the white kit card overlapping the band, the title and line in the kit error page's wording, and "Try again" as the primary button. Let Payroll's `PayrollState error` use the kit card (no pink fill or coral border), and give the Inbox state a primary "Try again". The Payroll wording needs payroll copy approval; the card styling doesn't. | P2 | 2 |
+
+### Round 14 verdict
+
+IS-56 and the day-strip fade check out with no regressions. New: WR-61 (P2), where the three "couldn't load" states use different card styles, button weights and wording. It was spotted only because the server failed under load.
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 15
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- WR-61, checked in my own browser: every request to `/api/payroll/runs`, `/api/manager/action-center` and `/api/manager/today` was answered with a 500 by Playwright route interception, at 320, 390 and 1440 (`fail15.mjs`, output in `R15/fail15.json`; `todaybtn.mjs`). Nothing reached the server.
+- A full sweep: all 16 screen and filter variants for both roles (`shots15.mjs`, compared by `cmp15.py`).
+
+Evidence: `R15` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r15/`.
+
+**Sweep result:** no sideways scroll, no server errors this time, and every band and page height matches the last good capture. The Owner Inbox (Act now) at 768 is back to 2,481px after round 14's failed read.
+
+### Status
+
+| ID | Status | Measurement now (simulated failures) |
+|---|---|---|
+| WR-61 | **Fixed** | Every "couldn't load" state is now a white kit card with no border and a 52px primary teal "Try again" (#077572, white text, no ring):<br>**Payroll** (`.pw-state-error`): white, radius 20 on phones and 16 on desktop, e1 shadow. Card x=16–374 at 390 and 298–1386 at 1440. "Try again" 52×116px. It sits below the flat Payroll band, as all Payroll content does.<br>**Inbox:** the kit card over the band (overlapping it by 72px on phones and 56px on desktop), primary "Try again" 52×142px.<br>**Home Next up:** the kit card, full-width primary "Try again" 52px (248px wide at 320, 318 at 390).<br>No sideways scroll in any of these states (`R15/crops/fail-cmp-390.png`). |
+
+### Changed this round, checked
+
+- **Home Today card when its read fails (ST-27):** it keeps its shape. It's 212px tall at 320 and 390 (190px at 1440), the same as with data. The three stats show "–", with the note "Today’s numbers aren’t available." The head carries a 17px teal "Try again" link with a refresh icon. The link's box is 96×20px, but an `::after` extends its hit area to 44px tall; I confirmed hits up to 21px above and below its centre.
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-62 | Payroll, Inbox, Home, error pages · both · all widths | "Couldn't load" card contents | The card shape and button now match, but the contents still differ in two visible ways:<br>**Refresh icon on "Try again":** shown on the Inbox, Home Next up and Home Today; not on Payroll or the error pages.<br>**Payroll alone** has an alert icon and a bold 15px/550 title ("Payroll unavailable") above its line. Inbox and Next up have a single 15px line, and the error pages a single body line.<br>In a slow moment, Payroll's card reads differently from the Inbox's. | `R15/crops/fail-cmp-390.png` | Payroll's `PayrollState` markup (icon plus title, `src/components/payroll/payroll-runs.tsx:27`); "Try again" rendered with and without `ArrowClockwise` per screen | Pick one: give every "Try again" the refresh icon (Payroll and both error pages too), and drop Payroll's alert icon. If the payroll title must stay for copy reasons, give the Inbox and Next up cards a matching title ("Inbox unavailable", "Next up unavailable") instead. | P2 | 2 |
+
+### Round 15 verdict
+
+Closed: WR-61. New: WR-62 (P2), where the failure cards now share one shape and button but not the refresh icon or Payroll's title row.
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 16
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- WR-62, using the same browser-side 500s on the payroll-runs, action-center and today reads, at 320, 390 and 1440 (`fail16.mjs`, output in `R16/fail16.json`; `payicon.mjs`).
+- A full sweep: all 16 screen and filter variants for both roles (`shots16.mjs`, compared by `cmp16.py`).
+
+Evidence: `R16` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r16/`.
+
+**Sweep result:** clean. No sideways scroll, no server errors, and every band and page height matches round 15.
+
+### Status
+
+| ID | Status | Measurement now (simulated failures) |
+|---|---|---|
+| WR-62 | **Fixed** (with one 2px leftover, WR-63) | Every "Try again" now carries the refresh icon: Payroll, Inbox, Home Next up (buttons), and Home Today (inline link, 16px icon). Payroll's alert icon is gone (0 icons in the card besides the button's). Its title "Payroll unavailable" is a kit card title, 17/22/600 #16191C on phones (16/22 at 1440), with 15px callout text below (14px at 1440). Cards: white, no border, radius 20 / 16. Buttons: 52px. |
+
+### Changed this round, checked
+
+- **Error pages:** the code shows the refresh icon on "Try again" in `app/app/error.tsx`, `AppErrorScreen` and Home's dashboard failure in `page.tsx`. The live captures don't contain these states this round, because no failure occurred and they can't be forced from the browser.
+- **Not testable here:** Home's "Paused" state (needs the window to lose focus or be hidden, which Playwright can't deliver natively, per the known limits) and focus moving after a retry (interaction inspector's area).
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-63 | Payroll · Owner · 320–760 (and landscape phones) | "Try again" refresh icon | On phones Payroll's icon is **20×20px**, while every other "Try again" icon is **18×18px** (Inbox and Home Next up at 320 and 390). At 1440 Payroll's is 18px like the rest. | `R16/crops/payroll-fail-390.png`; `R16/fail16.json` (`payroll_320`, `payroll_390`) | `portal-gusto.css:158`: `… .pw-button … svg { width: 20px; height: 20px }` inside the phone and landscape media query still applies to the Payroll button's icon | Exclude the retry icon, or set it explicitly: `html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .pw-state-error .pw-button svg { width: 18px; height: 18px; }` | P2 | 2 |
+
+### Round 16 verdict
+
+Closed: WR-62. New: WR-63 (P2), Payroll's retry icon is 2px larger than the others on phones.
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 17
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- WR-63 at 320, 390, 390 with 150% text, landscape 844×390 and 1440, using browser-side 500s on `/api/payroll/runs` and `/api/manager/action-center` (`r17check.mjs`, output in `R17/r17.json`).
+- Home's "Paused" state at 390 and 1440, simulated as the coordinator did: `document.visibilityState` and `hidden` overridden in my own browser, then `visibilitychange` and `blur` dispatched (`r17check.mjs`, `paused2.mjs`). Nothing was sent to the server.
+- The preview's copy changed while I measured (the Next up paused line read "It updates when you come back." then "Updates when you’re back."), so the text below is as last seen.
+
+Evidence: `R17` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r17/`.
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-63 | **Fixed** | Payroll's "Try again" icon is **18×18px** with a 0px top margin at 320, 390, 390 with 150% text, 844×390 and 1440. That matches the Inbox and Home Next up icons, also 18×18. All three icons are vertically centred on their labels (0px offset at every size measured) (`R17/crops/payroll-fail-390.png`). |
+
+### Home "Paused" state (simulated), checked
+
+| Part | 390 | 1440 |
+|---|---|---|
+| Band summary | "Paused while you’re away." (band 220px, unchanged) | Same (band 208px, unchanged) |
+| Today | Meta "Paused", stats "–", "Published shifts only"; card 212px (unchanged) | Same; 190px (unchanged) |
+| Next up | Paused line only; **no "Try again"**; card 221px (230 with data) | Same; 221px (209 with data) |
+| Also needs you | Meta "Paused", no rows' text; card 512px (515 with data) | Meta "Paused" with faint placeholder rows; 512px (415 with data) |
+| This week | Unchanged | Unchanged |
+| Sideways scroll | None | None |
+
+"Paused" shows on Today and Also needs you, and Next up has no "Try again", as stated (`R17/crops/home-paused-390.png`, `home-paused-1440.png`).
+
+### New finding
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| WR-64 | Home, paused · both · 390 and 1440 | Next up card while paused | **Empty stub:** the card keeps its dashed cut at y=132 of 221px, and below it a 52px `premium-skeleton__button--hold` placeholder with `visibility: hidden`. That leaves an **empty 89px stub** under the perforation: a ticket with nothing on its tear-off part.<br>**Inconsistent placeholders:** the "Also needs you" card in the same state shows its placeholder rows at opacity 0.6, so one card shows its held shapes and the other hides them.<br>**Height jump on desktop:** at 1440 pausing changes card heights by +12px (Next up) and +97px (Also needs you), so the right column shifts when focus leaves the window. Visible on desktop whenever the window loses focus (blur), not only when the tab is hidden. Judgment call: holding the space avoids a jump on resume, but the result looks unfinished. | `R17/crops/nextup-paused-390.png`, `R17/crops/home-paused-1440.png` | Paused Next up reuses the loading skeleton with the button placeholder held hidden (`premium-skeleton__button--hold`); Also needs you uses visible skeleton rows | Paused Next up: drop the cut and the held button slot, and show the paused line on its own (one card height for every non-ready Next up). Or show the held button as the same 0.6-opacity placeholder as the rows. Hold each card at its last measured height while paused, so nothing moves on blur. | P2 | 2 |
+
+### Round 17 verdict
+
+Closed: WR-63. Paused copy and Next up's missing "Try again" confirmed. New: WR-64 (P2), the paused Next up shows an empty stub under its perforation, and the paused cards change height on desktop.
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 18
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- WR-64, background-and-return plus offline at 320, 390, 430 and 1440 (`paused18.mjs`, output in `R18/paused18.json`). Each run measured Home's cards four times: with data, paused (`visibilityState` and `hidden` overridden in my own browser, `visibilitychange` and `blur` dispatched), after returning (`focus`), and offline (browser offline emulation).
+- A full sweep: all 16 screen and filter variants for both roles (`shots18.mjs`, compared by `cmp18.py`).
+
+Evidence: `R18` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r18/`.
+
+**Sweep result:** clean. No sideways scroll, no server errors, and every band and page height matches round 16.
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-64 | **Partly fixed** | **Fixed:**<br>The paused and offline Next up shows its 52px slot as a still placeholder (#EEF1F0, opacity 0.6, no animation, visible), matching the Also needs you rows (`R18/crops/paused-390.png`).<br>The "needs you" column is held at exactly its height with data: 872px at 320, 761 at 390, 701 at 430, 640 at 1440 (starting at y=245). Today and This week don't move, and after returning every card is back to its exact size and position.<br>**Still moving:**<br>**Next up resizes inside the held column**, so the top of Also needs you jumps when focus leaves and again when it returns. Next up goes 275 → 221px at 320 (Also needs you jumps 54px up), 230 → 221 at 390 and 430 (9px up), and 209 → 221 at 1440 (12px down). The same happens offline.<br>**The Plan ahead row shrinks** below the column. Its line changes from "18 items for the coming weeks. None are urgent." to "Not available right now.", so the card goes 116 → 76px at 320 and 96 → 76 at 390 and 430, and Team tools below it rises 40px / 20px.<br>Cause: the paused Next up has a fixed layout (label, one line, cut, 52px slot) that isn't held at the ready card's height. Plan ahead's shorter line isn't held either.<br>Fix: hold Next up at its last height (as the column is) and let the paused line and slot sit within it. Give Plan ahead a `min-height` equal to its last height while not ready, or keep its last line visible with "Paused" as the meta. |
+
+### Changed this round, checked
+
+- **Paused Next up copy:** "Updates when you’re back." at every width. Offline it reads "You’re offline. This updates when you reconnect."
+- **Not in my area, not checked:** the Inbox filter row's Tab order on failure (IS-59) and Attendance Refresh keeping focus (interaction inspector).
+
+### Round 18 verdict
+
+WR-64 is partly fixed: the column holds and the placeholder shows, but Next up still resizes inside the column (up to 54px at 320), and Plan ahead shrinks on pause or offline.
+
+**Not zero: 1 defect remains open in my area (0 P0, 0 P1, 1 P2).**
+
+## Round 19
+
+October 19, 2026, on the current build. Read only: no data changed and nothing approved, declined or saved.
+
+What was re-run:
+- The rest of WR-64, at 320, 390, 430 and 1440 (`paused19.mjs`, output in `R19/paused19.json`). Each run measured every Home card (top, left, width, height), the "needs you" column and the band at seven moments: with data; paused; 150ms and 3s after returning; offline; and 150ms and 3s after reconnecting. Visibility was overridden and offline emulated in my own browser only.
+- A full sweep: all 16 screen and filter variants for both roles (`shots19.mjs`, compared by `cmp19.py`).
+
+Evidence: `R19` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/r19/`.
+
+**Sweep result:** clean. No sideways scroll, no server errors, and every band and page height matches round 18.
+
+### Status
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR-64 | **Fixed** | At all four widths, every card's position and size is **identical in all seven moments**. That includes Today, Next up, Also needs you, Finish setting up, This week, Plan ahead and Team tools: zero cards moved or resized, measured to the pixel.<br>The column holds: 872px at 320, 761 at 390, 701 at 430, 640 at 1440.<br>The band holds: 256 / 220 / 220 / 208px.<br>Only the words change. The band summary reads "Paused while you’re away.", "Checking what needs you…" (briefly, at 150ms after return at 390–1440), "You’re offline." and then "20 things need you today." Next up reads "Updates when you’re back." and "Updates when you reconnect." (TC-59), then its real item.<br>No sideways scroll at any moment. |
+
+### Round 19 verdict
+
+Closed: WR-64. No new findings.
+
+**Zero: no defects remain open in widths, roles and cross-screen consistency (0 P0, 0 P1, 0 P2).** Not covered, as before: a real device and VoiceOver.
+
+## Phase 3, round 1
+
+October 19, 2026. Focused pass on the Employee and Lead screens (`PHASE-3-BRIEF.md`), on the current build after the other four areas' first round. Read only: saved browser states from `p3/state/` reused; no form, claim, swap, withdrawal, confirmation or correction submitted; no data changed.
+
+Accounts: AUDIT-E (employee), AUDIT-LEAD (lead), AUDIT-LONG (long name), payroll-qa-a (employee with statements); AUDIT-M and QAOWNER for the shared Updates and Notifications. Widths 320, 360, 390, 430, landscape 844×390 and 1440.
+
+Evidence: `P3` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/p3b/` (`shots/`, `data/`, `crops/`; script `p3bshots.mjs` one level up).
+
+_Results follow as they are measured._
+
+**Step 1, 390 (AUDIT-E and AUDIT-LEAD), done.** All 17 screens and variants render with a band and no sideways scroll for both. Employee and Lead are structurally the same on every screen (same tabs, section tabs, bands); differences are data only (Lead has no published shifts, so Home, My schedule and Time off summaries differ, and the Time-off band is 192px vs 168px because the Lead's summary wraps to two lines). Candidate findings noted at 390, measured below.
+
+**Step 2, My schedule week strip, measured (P3-WR-01 below).** At 320, 360 and 390 the seven-day strip wraps: Sat and Sun drop to a second row at 320 (each 122px wide), and at 360 and 390 Sunday sits alone on a second row, stretched to 288 / 318px. At 430 all seven fit on one row.
+
+**Step 3, Notifications (shared), measured for AUDIT-E and AUDIT-M at 390 (P3-WR-02 below).** Rows aren't kit rows. In both roles the row title is 14px/600, the time 11px, the status words 11px, the description 12px and the action link 12–13px (`notification-inbox.module.css:33-44`). Next to the Inbox's kit rows (17/22 title, 15/20 meta) the two lists look like different products. The employee sees "Action required" as a teal pill, while the manager sees "Action available" as plain text in the same position.
+
+**Step 4, other widths and accounts, done.** No sideways scroll on any screen for AUDIT-E (320, 360, 390, 430, landscape, 1440), AUDIT-LEAD (320, 390, landscape), AUDIT-LONG (320) or payroll-qa-a (390). AUDIT-LONG's "María José Rivera Santiago With A Long Name" wraps cleanly on Profile and Home ("Hi, María José."). Tab bar at 320: "Schedule" and "Requests" are only 5px apart on the employee bar (the manager bar's closest pair is 14px apart): P3-WR-03 below.
+
+**Step 5, large text and buttons, done.** At 320 with 150% text, no page scrolls sideways, but Availability's day rows overflow (P3-WR-04) and the employee tab labels overlap (in P3-WR-03). Buttons below the bands on nine employee screens are still the pre-kit style (P3-WR-05).
+
+### Findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| P3-WR-01 | My schedule (and `?intent=swap`) · Employee, Lead, Long name · 320, 360, 390 | Seven-day week strip | The strip wraps. At **320**, Sat and Sun fall to a second row and stretch to 122px each. At **360 and 390**, Sunday sits alone on a second row, stretched to 288 / 318px wide. At 430 all seven days fit on one row. The kit plan (and the Manager's Schedule day strip) keeps the week on one line. Most phones in use are 360–393px wide, so this is the default view of the employee's main screen. | `P3/crops/weekstrip.png`; `P3/crops/e390-1.png` (second column) | `src/app/app/schedule/employee-schedule.css:64` (`@media (max-width:400px) { .my-week-days { display:flex; flex-wrap:wrap } .my-week-day { flex:1 1 calc(25% - 6px) } }`) still applies. The Phase 3 rule `portal-premium.css:1149-1150` sets `display:flex; overflow-x:auto` and `flex:1 0 44px` but doesn't reset `flex-wrap`. | Add `flex-wrap: nowrap` to `portal-premium.css:1149` and `flex: 1 0 40px; min-width: 40px` to `:1150`. Seven 40px days plus 6 × 4px gaps = 304px, which fits the 248px inner width at 320 only by scrolling, so at ≤340px use `gap: 2px` and `min-width: 34px`, or let it scroll with the kit's right-edge fade. | P1 | 3 |
+| P3-WR-02 | Notifications · Employee, Lead, Manager, Owner · all widths | Notification rows | Rows don't use the kit rows the Inbox uses. In every role the title is **14px/600**, the time **11px**, status words **11px**, the description **12px** and the action link **12–13px** (`AUDIT-E` and `AUDIT-M` measured at 390). Inbox rows are 17/22 titles with 15/20 meta. The employee row shows "Action required" as a teal pill, while the manager row shows "Action available" as plain text in the same spot. The page's "Refresh" is a bordered radius-8 button inside the card; the Inbox's Refresh is a band control. | `P3/crops/notif-390.png` | `src/components/notification-inbox.module.css:33-44` (legacy sizes); status rendered differently per action kind | Render each notification as a kit `.nv-row` (title 17/22, meta 15/20, status as a kit `Status` pill for both "Action required" and "Action available"). Move Refresh to the band as a `.nv-band-control`, as on the Inbox. | P1 | 3 |
+| P3-WR-03 | Shell tab bar · Employee and Lead · 320 (100% and 150%) | "Schedule" and "Requests" labels | The labels are **5px** apart at 320 (x=126 and 131). They read as one phrase, "Schedule Requests". The manager bar's closest pair is 14px apart. At 150% text the employee labels **overlap by 5px** (manager: 7px apart). | `P3/crops/long320.png` (tab bar), `P3/crops/availability-320-150.png` (tab bar) | Five equal 62px tabs; "Schedule" (59px) and "Requests" (58px) at 13px nearly fill theirs | Let the tab grid size by content (`grid-template-columns: repeat(5, auto)` with `justify-content: space-between`). Then the gaps become equal (about 11px at 320). | P2 | 3 |
+| P3-WR-04 | Availability · Employee and Lead · 320 at 125% and 150% | Day rows (toggle and "Unavailable") | At 150% text the "Unavailable" label runs past the card and the screen edge (it ends at x=326 on a 320px screen, card edge at 284). The toggle overlaps "Wednesday" and "Thursday". | `P3/crops/availability-320-150.png` | `src/app/app/availability/availability.css:176` (`grid-template-columns: minmax(0, 1fr) 144px`), a fixed 144px column for toggle plus label that doesn't grow with the text | Make the second column `auto` (`minmax(0, 1fr) auto`), and let the row wrap the label under the toggle at large text (`flex-wrap`), or size it in rem (`9rem`). | P2 | 3 |
+| P3-WR-05 | Availability, Shift requests, Time off, Timecards, Profile, Notifications, Home, My schedule · Employee and Lead · all widths | Buttons below the band | Old button styles sit next to kit ones. **44px tall with radius 8:** "Save usual week", "Submit weekly availability", "Reset changes", "Swap shift" ×4, "Withdraw pending request", "View period", "Refresh timecards", "Refresh" (Notifications), "Create link" (48px). "Refresh home" is radius 4, and "Shift options" radius 10. On the same screens, kit `.nv-btn` (Updates, My pay, the Manager screens) is 52px with radius 12. Availability's count "0 of 7 days available" uses a #F4F6F9 pill, which isn't a kit status colour. | `P3/crops/buttons-390.png` | Legacy classes `av-button`, `employee-action`, `button`, `employee-corporate-button`, `notification-inbox-module__…` not yet mapped to the kit in `portal-premium.css` | Map these to kit `.nv-btn` (primary or secondary, 52px, radius 12), as was done for Payroll and Timecards in Phase 2. The availability count becomes a kit neutral `Status` pill. | P2 | 3 |
+
+### Checked and correct
+
+- **No sideways scroll** on any of the 17 employee screens and variants, for AUDIT-E at 320, 360, 390, 430, landscape and 1440; AUDIT-LEAD at 320, 390 and landscape; AUDIT-LONG at 320; payroll-qa-a at 390. Updates and Notifications for AUDIT-M at 390. At 320 with 150% text, no page scrolls sideways.
+- **Employee vs Lead:** the same tabs, section tabs, bands, cards and order on every screen. The only differences are data: the Lead has no published shifts, and the Lead's time-off summary wraps to two lines (band 192 vs 168px).
+- **Bands match the kit:** title 30/36, white, text at x=16 on phones; eyebrows and summaries in the kit styles; section tabs for Requests (Overview, Time off, Shift requests, Availability) and Pay (Statements, Hours, Timecards) sit in the band, like Timecards and Payroll for managers. The header joins the band on every employee screen.
+- **Long name:** "María José Rivera Santiago With A Long Name" wraps in Profile's Work details; Home greets "Hi, María José."
+- **Desktop 1440:** every employee screen renders with the sidebar and a capped band; layout proper is Phase 4.
+
+### Phase 3, round 1 verdict
+
+**Not zero: 5 open defects in widths, roles and consistency on the Phase 3 screens (0 P0, 2 P1, 3 P2).** The worst is the My schedule week strip, which wraps Sunday onto its own row at the most common phone widths (360–390).
+
+## Phase 3, round 3
+
+October 19, 2026, on the new preview (`http://127.0.0.1:51302`, checkpoint 8c4dd50) under the revised bar: every page, role, state and device. Read only: saved browser states from `scratchpad/main/state/` reused; nothing submitted, saved, withdrawn or confirmed; no data changed. One browser process at a time. The Mac's load average was 26–33 throughout (other inspectors' browsers), and the preview answered slowly; reads that failed were retried before anything was filed.
+
+Evidence: `P3R3` = `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8c7acfe8-4195-49cb-a26a-ba2ac9ec5c59/scratchpad/phase7/widths-roles/p3r3/` (`shots/`, `crops/`, `data/`). Scripts one level up: `lib.mjs`, `sweep.mjs`, `jobs.mjs`, `probe.mjs` and the measurement snippets in `js/`. Source cited from the preview's frozen copy (`scratchpad/main/evidence-2026-10-19T13-11-26-606Z/owned-next-TY86lS/app/src`).
+
+_Partial results are written below as they are measured._
+
+**Step 1, week strip and tab bar (P3-WR-01, P3-WR-03), measured.** Week strip is one row at 320, 360, 390, 430 and landscape for AUDIT-E and AUDIT-LEAD (also `?intent=swap`): 10px insets below 390, 20px at 390 and up; at 320 it scrolls (328 in 288) with a right fade, six whole days and Sunday under the fade. Tab-bar labels are at least 19px apart at 320 (11.2px at 150% and 200%, where the label is held at 15px). **New:** with large text the week strip's day buttons stay 44–45px wide while their text grows, so the labels run together at 150% and collide at 200% (P3-WR-06 below).
+
+**Step 2, Notifications and Availability (P3-WR-02, P3-WR-04), measured.** Notifications rows are kit rows for AUDIT-E, AUDIT-LEAD and AUDIT-M at 320 and 390 (QAOWNER has no notifications; its head, filters and Refresh match): 40px tile at x=36, text at x=88, title 17/22/500, time and statuses 15/20, "Action required" (review fill #FDF1DC) and "Action available" (neutral fill #F1F3F4) both 28px kit pills at 15/500, Refresh a quiet 44px control, head on one line, the filter row fades at 320 (248 of 320 visible). Availability: no toggle overlaps a day name at 320, 390 or landscape at 100–200% for either role; at large text the switch drops under the name. **New:** the drop is decided row by row, so one list mixes both layouts (P3-WR-07 below).
+
+**Step 3, Employee vs Lead, measured at 390.** Kit buttons below the band (P3-WR-05): every employee button measured is 52px, radius 12, 17/600 (primary teal #077572 or white with a ring; disabled ones on the inset fill), and the Availability count is a 28px neutral pill. **New, roles:** a Lead's My time (and Timecards) is not the Employee's layout. The pages pick their "corporate" layout only for `role === 'EMPLOYEE'`, so the Lead gets the older one: different card grouping, icons in the headings, grey boxes around empty lines, a three-line freshness footer and a 44px radius-8 bordered Refresh (P3-WR-09 below).
+
+**Step 4, landscape 844×390, measured (Chromium, phone emulation).** Every page that loaded (AUDIT-E's 16 employee screens and variants; AUDIT-M's 17 Phase 2 screens, views, filters and review states; QAOWNER's Home, Inbox, Schedule, Timecards, Payroll and Time exports) uses the phone shell and phone type: no sidebar, the 68px teal header with the wordmark, the tab bar, band titles 30/36. No page scrolls sideways (every `sw` = 844). Several reads hit 500s or timeouts under load and were retried (see "Not covered").
+
+**Step 5, large text and consistency, measured.** At 150% and 200% (320 and 390) the coordinator's script finds no sideways scroll, but text clipped or overlapping inside a card doesn't scroll the page, so I measured it per screen: Notifications' head collides at 150% (P3-WR-10); at 200% the Inbox row pill, the Inbox eyebrow, the Timecards row figures, the Time exports "Clear" button and the Schedule week pager are cut or overlapped (P3-WR-11). Time off's status pill and timeline change position from one request to the next (P3-WR-08), and "needs your review" is drawn three ways (P3-WR-12). Landscape Home for employees leaves 54px of the pass above the tab bar (P3-WR-13). Failure states captured next.
+
+### Scope this round
+
+Chromium with WebKit spot checks, per the coordinator's cuts (no Firefox; no 768–1440 on Employee and Lead pages; the phone header, tab bar, More sheet and section tabs are now the coordinator's). The script (`checks.mjs`) sweeps overflow, the text floor and targets, so my measurements went to what it can't see: text clipped or overlapping inside a card, role differences, cross-screen consistency and landscape.
+
+- **Accounts:** AUDIT-E, AUDIT-LEAD, AUDIT-ON, AUDIT-BREAK, AUDIT-LONG (round-1 checks), payroll-qa-b, AUDIT-M, QAOWNER.
+- **Widths:** 320, 360, 390, 430 and 844×390; text 100, 125, 150 and 200% where the item needs it.
+- **Failure and session states:** reads under `/api/` answered with 500 or 401 in my own browser only (`fail.mjs`); nothing reached the server.
+
+### Status of earlier items
+
+| ID | Status | Measurement now |
+|---|---|---|
+| P3-WR-01 | **Fixed** (at 100%) | One row at 320, 360, 390, 430 and landscape for AUDIT-E and AUDIT-LEAD, `?intent=swap` too. 10px insets below 390, 20px from 390. At 320 it scrolls (328 in 288) with a right fade: six whole days, Sunday under the fade. At 360, 390, 430 and landscape all seven fit (44 / 45 / 51 / 110px days). Large text breaks it: filed as P3-WR-06. |
+| P3-WR-02 | **Fixed** | Kit rows in every role (AUDIT-E, AUDIT-LEAD, AUDIT-M; QAOWNER has none): 40px tile at x=36, text at x=88, title 17/22/500, time and statuses 15/20. "Action required" (#FDF1DC) and "Action available" (#F1F3F4) are both 28px kit pills, 15/500. Refresh is a quiet 44px control. The head is on one line at 100%. The filter row fades at 320 (248 of 320 visible). Large text breaks the head: filed as P3-WR-10. |
+| P3-WR-03 | **Fixed** | Employee tab labels are at least 19px apart at 320 (19 / 19 / 23.8 / 24) and 28.9px at 360. At 150% and 200% the label stays 15px and the gap is 11.2px. No overlap. The shell is now the coordinator's. |
+| P3-WR-04 | **Fixed** | No switch overlaps a day name at 320, 390 or landscape at 100–200%, for either role: overlap 0 on every row, and every switch ends at the row's edge (284 at 320, 354 at 390). The switch drops under the name at large text. That drop is decided row by row: filed as P3-WR-07. |
+| P3-WR-05 | **Fixed for Employee** | Every Employee button below the band is 52px, radius 12, 17/600: primary #077572, secondary white with a ring, disabled on #EEF1F0. Measured on Availability, Time off, Shift requests, My time, Timecards, My pay, Profile and Updates. The Availability count is a 28px neutral pill (#F1F3F4, 15px). The Lead still has a 44px radius-8 bordered Refresh on My time; that is part of P3-WR-09. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev | Phase |
+|---|---|---|---|---|---|---|---|---|
+| P3-WR-06 | My schedule (and `?intent=swap`) · Employee, Lead · 320–430 at 150% and 200% | Week strip day buttons | The days stay 44px wide (45 at 390) while their text grows.<br>**150%:** the labels touch with no gap ("TueWedThu") and "Mon" runs past its teal selected pill.<br>**200%:** labels overlap by 11–13px ("Mon" × "Tue" 11px, "Wed" × "Thu" 13px) and the dates by 2px ("19" × "20"), at both 320 and 390.<br>The Manager's day strip grows with text (44 / 55 / 66px), so the two schedules behave differently. | `P3R3/crops/wr01-E-320-150.png`, `wr01-E-320-200.png`, `wr01-E-390-150.png` | `portal-premium.css:1150` (`.my-week-day { flex: 1 0 44px; min-width: 44px }` in px) | Size in rem, as the Manager strip does (`:891`): `.my-week-day { flex: 1 0 2.75rem; min-width: 2.75rem; }`. The strip already scrolls and fades, so the wider days scroll at large text. | P1 | 3 |
+| P3-WR-07 | Availability · Employee, Lead · 320 at 125%, 390 at 150% and 200% | Day rows | The switch drops under the name only on rows whose name is too long, so one list mixes two layouts:<br>**320 at 125%:** Tue, Wed, Thu and Sat stack (113px rows); Mon, Fri and Sun stay inline (77px).<br>**390 at 150%:** only Wednesday stacks (118 vs 77px).<br>**390 at 200%:** every day stacks except Friday (77 vs 129px).<br>The switches zig-zag down the card. | `P3R3/crops/avail-AUDIT-LEAD-320-125.png`; `P3R3/data/wr0245.json` | `portal-premium.css:1257-1260` (`flex-wrap: wrap` decided per row) | Decide for the whole list. Give the list `container-type: inline-size` and add `@container (max-width: 24em) { .av-day-row > .av-availability-toggle { flex-basis: 100%; margin-left: 0; } }`. The em scales with the text size, so every row stacks together. | P2 | 3 |
+| P3-WR-08 | Time off, My requests · Employee, Lead · 320, 360, 390 | Request rows: status pill and timeline | Position depends on how long the dates are, so it changes row to row (AUDIT-E at 390):<br>**Pill:** "Waiting" and "Approved" (Nov 8–9) sit under the date. "Withdrawn" and "Approved" (Nov 13) sit right of it.<br>**Timeline:** one line for "Sent Oct 19 · Waiting for your manager" and "Sent · Withdrawn"; two lines for "Declined by…" and "Approved by…". At 320 and 360 the split moves again. | `P3R3/crops/retake2-AUDIT-E-timeoff-my-390.png`, `P3R3/shots/chromium-AUDIT-E-360-100-_app_requests_tab_my.png`, `P3R3/crops/retake-AUDIT-LEAD-timeoff-my-390.png` | `portal-premium.css:1010` (head `flex-wrap: wrap; justify-content: space-between`), `:1011` (timeline `flex-wrap: wrap`) | On phones use one layout: the pill always under the date (`.premium-timeoff-row__head { flex-direction: column; align-items: flex-start; gap: 8px }`) and one event per line (`.premium-timeline { flex-direction: column; gap: 4px }`). | P2 | 3 |
+| P3-WR-09 | My time, Timecards · **Lead** vs Employee · all phones | Whole page below the band | The Lead gets the older layout. At 390:<br>**My time:** the page is **1,578px** tall vs 1,365 for the Employee. Today is a separate card. Headings carry icons. Empty lines sit in grey inset boxes. "0 entries" is a pill. The freshness block is three lines. Refresh is **44px, radius 8, with a 1px border**, where the Employee's is the quiet 44px accent control.<br>**Timecards:** "Choose a period" has an icon. The link reads "Request a correction in My time →" (Employee: "Request a correction ›"). "Draft" is a 39px bordered pill under the date (Employee: 33px, right of the title). "Needs attention" is an amber bordered box (Employee: a bullet list).<br>A lead and an employee comparing phones see two different apps. | `P3R3/crops/role-AUDIT-LEAD-my-time-390.png` vs `role-AUDIT-E-my-time-390.png`; `retake-AUDIT-LEAD-timecards-390.png` vs `retake2-AUDIT-E-timecards-390.png` | `src/app/app/my-time/page.tsx:18` (`const corporate=session.role==='EMPLOYEE'`); `src/app/app/timecards/page.tsx:27` (`employeeCorporate={session.role==='EMPLOYEE'}`) | Treat LEAD like EMPLOYEE in both: `corporate = session.role === 'EMPLOYEE' \|\| session.role === 'LEAD'` (the shell already does, `app-shell.tsx:63`). | P1 | 3 |
+| P3-WR-10 | Notifications · every role · 320 at 150%; 320 and 390 at 200% | Inbox head: "Your alerts" and Refresh / Retry | The head is held on one line, so at large text the title runs into the control:<br>**320 at 150%:** "Your alerts" touches the Refresh icon.<br>**200%:** they overlap by 64×36px ("Refresh") and 32×36px ("Retry") at 320, and by about 20px at 390.<br>Measured for AUDIT-E and AUDIT-M. | `P3R3/crops/big-notifhead-320-150.png`, `big-notifhead-320-200.png`, `big-notifhead-390-200.png` | `portal-premium.css:1239` (`__inboxTitle h2 { white-space: nowrap }` at ≤600px), with a toolbar that doesn't wrap (`:1236`) | Keep one line only while it fits: remove the `nowrap`, and set `[class*="__toolbar"] { flex-wrap: wrap; row-gap: 8px }` and `[class*="__inboxTitle"] { flex: 1 1 auto; min-width: 0 }`. Refresh then moves under the title at large text. | P1 | 3 |
+| P3-WR-11 | Inbox, Timecards, Time exports, Schedule, Notifications · Manager (Owner same) · 320 at 200% (pager also 390) | Text cut at a card edge (new 200% check; no page scroll, so the script doesn't see it) | **Inbox row:** the "Not clocked in" pill spans x=131–323, past the card edge (304) and the screen. "Started 8:00 AM" spans 88–307.<br>**Inbox band:** the eyebrow is cut beside Refresh ("Not availal", "Updated 12:04 P…").<br>**Timecards rows:** the figures ("6h 8m", "5h 54m") span 221–331 and are cut. The period date "Oct 13, 2026 – Oct 19, 2026" stays on one line and spans 88–454.<br>**Time exports:** "Clear" spans 256–329, past the card.<br>**Schedule pager:** the next arrow sits on "25" at 320 and 390. WR-46 holds at 150%.<br>**Notifications rows:** "Review schedule" spans 88–314, past the card edge (304).<br>At 150% all of these fit. | `P3R3/crops/big-inboxrow-320-200.png`, `big-inboxband-320-200.png`, `big-tcrow-320-200.png`, `big-expsel-320-200.png`, `big-pager-320-200.png`, `big-pager-390-200.png` | `kit.css:221-223` (`.nv-status { white-space: nowrap }`); kit eyebrow row (nowrap, ellipsis); `portal-premium.css:320-321` (Timecards `dt` and `dd` nowrap) and the period `small`; `payroll-export.module.css` selection bar buttons; `portal-premium.css:849` (pager `strong` nowrap) | Let these wrap when they don't fit: `.nv-row .nv-status { white-space: normal; max-width: 100% }`; the eyebrow row `flex-wrap: wrap` (Refresh to its own line); Timecards `dd`, `dt` and period `white-space: normal`; the selection bar's button group `flex-wrap: wrap`; the pager date `min-width: 0; white-space: normal; text-align: center` (two lines at 200%). | P2 | 2 |
+| P3-WR-12 | Home To do, Updates, Notifications, Timecards · Employee, Lead | Status pills for the same condition | One condition is drawn three ways:<br>**"Needs your review":** Home To do "Review needed" is a custom pill (padding 2/8, #FBF1E2, about 20px tall). Updates "Review needed" is an amber dot plus text with no fill (20px). Notifications "Action required" is the kit pill (28px, #FDF1DC).<br>**"Draft":** the Employee's Timecards pill is 33px on #F4F6F9 with no glyph. The Lead's is 39px with a 1px #D7D9DC border. The kit neutral pill (Manager Timecards since WR-22) is 28px, #F1F3F4, with a glyph. | `P3R3/crops/qab-app-390.png` (Home), `big-updrow-320-150.png` (Updates), `notif-AUDIT-E-390.png`, `retake2-AUDIT-E-timecards-390.png`, `retake-AUDIT-LEAD-timecards-390.png`; `P3R3/data/pill.json` | `employee-home-reviewed.module.css:254` (`.required`); `employee-updates.tsx:58` (`.updates-status`); `timecards.module.css` `__state` | Use the kit `Status` everywhere: tone "review" for "Review needed" / "Action required" (28px, #FDF1DC, glyph); tone "neutral" for "Draft". Keep the dot-and-text style only for read state ("Unread", "Read"). | P2 | 3 |
+| P3-WR-13 | Home · Employee (Lead same shell) · landscape 844×390 | Band and pass on the first screen | The employee band is **232px** under the 68px header. The pass starts at y=268, and only **54px** of it shows above the tab bar (top at y=322): "Your shifts · Published" and a cut first line. The Manager's landscape band is 180px, so its Today card head and labels show. This is the same problem WR-05(c) fixed for managers. Seen in WebKit; Chromium Home timed out under load. | `P3R3/crops/B-webkit-AUDIT-E-844x390-100-_app.png` vs `L-chromium-AUDIT-M-844x390-100-_app.png` | Employee Home band keeps its four lines (eyebrow, title, summary, "3 items need your review") in landscape; the landscape rules at `portal-premium.css:75-79` and `:602-604` only shorten the summary | In landscape, move the review link onto the eyebrow row (or drop it; the To do card carries the count) and use the 24px overlap, for a band of about 180px like the Manager's. Update `route-skeleton[data-route="home"]` (`:1177`, 236px) to match. | P2 | 3 |
+| P3-WR-14 | Home, Schedule, My pay, Profile, Notifications · Employee · 390 (simulated 500s; 401 on My time) | "Couldn't load" controls | Manager pages share one failure card since WR-61/62: white kit card, 52px primary teal "Try again" with the refresh icon. The kit error page does too. The employee pages use six variants:<br>**Home:** "Retry home", 44px, radius 4, text only, below the cards, while the pass says "Try again below".<br>**Schedule:** "Try again" as a 46px text link, with no icon. Its card comes after seven day rows showing "–", which read as days with no shifts.<br>**My pay:** "Try again" (52px secondary, with icon) right under a second "Refresh" (52px secondary).<br>**Profile:** "Retry" as a 44×44 text link and as a 52px secondary button.<br>**Notifications:** "Retry", quiet 44px.<br>**My time on 401:** "Sign In" (title case); everywhere else it's "Sign in". | `P3R3/shots/fail500-AUDIT-E-390-_app.png`, `fail500-AUDIT-E-390-_app_schedule.png`, `fail500-AUDIT-E-390-_app_my-pay.png`, `fail500-AUDIT-E-390-_app_profile.png`, `fail500-AUDIT-E-390-_app_notifications.png`; `P3R3/fail500.log`, `fail401.log` | `employee-home-actions.tsx:61`, `employee-home-reviewed.tsx:342`, `notification-inbox.tsx:60`, `employee-account-panel.tsx:24`, `calendar-subscription-panel.tsx:43`, `employee-time-panel.tsx:52` ("Sign In"); My pay's statements panel keeps its Refresh in the failed state | One employee failure pattern matching the Manager's: in the card that failed, the line plus a 52px primary "Try again" with `ArrowClockwise`. Hide the panel's own Refresh while it shows. On Schedule, show the failure card in place of the week list, not after empty day rows. Put Home's "Try again" inside the pass, not "below". "Sign in" in sentence case. | P2 | 3 |
+| P3-WR-15 | My time (and Home's clock card) · Employee clocked in or on break · 320, 390, landscape | Current status time | The open entry reads "Oct 19, 6:12:14 AM · Clock In", with seconds and title case. The entry list in the same card reads "6:12 AM", and the rest of the app uses sentence case ("Clock in"). Overlaps with the copy inspector's area. | `P3R3/crops/state-AUDIT-BREAK-my-time-320.png` | `employee-time-panel.tsx:58` (`stamp(current.clockInAt, …)` includes seconds; literal "Clock In") | Use the minute format the entry list uses ("6:12 AM") and "Clocked in at 6:12 AM", or "6:12 AM · Clock in". | P2 | 3 |
+
+Passed to the coordinator (shell, not counted): at 200% the header's "Search" label runs off-screen (x=238–332 at 320). While Home's route placeholder shows, the header wordmark draws as a white box (`P3R3/crops/state-AUDIT-ON-app-390.png`).
+
+### Checked and correct
+
+- No sideways scroll on any page that loaded, at 320, 360, 390, 430 and 844×390 (`sw` = `iw`).
+- Landscape 844×390 uses phone type and layout on every page: no sidebar, 68px header with the wordmark, tab bar, titles 30/36. Covered: 16 Employee screens, 17 Manager screens and views, 7 Owner screens. WebKit agrees on the Employee pages and on 7 Manager pages at 390.
+- Employee vs Lead: same tabs, section tabs, bands and order on Home, Schedule, Requests, Time off, Shift requests, Availability, My pay, Profile, Updates and Notifications. The differences are data, except P3-WR-09.
+- payroll-qa-b (a lead with statements): My pay, My time and Home render on the kit at 320 and 390, with no overflow.
+- AUDIT-ON and AUDIT-BREAK My time: the "Clocked in" / "On break" pill sits in the head; no overflow at 320, 390 or landscape.
+- Manager and Owner Phase 2 screens at 150%: Inbox rows, Timecards rows, Time exports and the Schedule pager all fit (`big-*-150.png`).
+
+### Not covered
+
+- **Home with data, Chromium portrait:** Employee, Lead, AUDIT-ON and AUDIT-BREAK Home showed "Couldn't load Home." on 6 attempts under load, so their loaded states weren't re-measured. WebKit landscape loaded once.
+- **Server 500s and timeouts:** some reads failed the same way on Schedule (Lead), Inbox (Requests filter), Time exports and Payroll; each was retried once.
+- **Not run:** the submission states (interaction inspector), the simulators, and 360/430 at 125% on Phase 2 screens (the script's sweep).
+
+### Phase 3, round 3 verdict
+
+Closed: P3-WR-01 to P3-WR-04, and P3-WR-05 for Employees (the Lead's leftover moved into P3-WR-09). New: 10.
+
+**Not zero: 10 defects remain open in widths, roles and consistency (0 P0, 3 P1, 7 P2).** The P1s:
+- P3-WR-09: the Lead's My time and Timecards are a different layout from the Employee's.
+- P3-WR-06: the week strip collides at large text.
+- P3-WR-10: the Notifications head collides at large text.
