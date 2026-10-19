@@ -24,6 +24,10 @@ const shapes: [string, Shape][] = [
   ["/app/profile", { route: "profile", label: "profile", shape: "cards", band: 128, overlap: false }],
   ["/app/updates", { route: "updates", label: "updates", shape: "list", band: 128, overlap: false }],
   ["/app/notifications", { route: "notifications", label: "notifications", shape: "list", band: 128, overlap: false }],
+  // Wave C (Phase 3.5): Settings and the recovery pages; heights in premium-wave-c.css. Each route also has its own loading.tsx.
+  ["/app/settings", { route: "settings", label: "settings", shape: "cards", band: 232 }],
+  ["/app/account-recovery", { route: "account-recovery", label: "account recovery", shape: "cards", band: 232 }],
+  ["/app/clocker-recovery", { route: "clocker-recovery", label: "Clocker recovery", shape: "cards", band: 232 }],
 ];
 const home: Shape = { route: "home", label: "your workspace", shape: "cards", band: 220 };
 

@@ -471,3 +471,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 /* The colour well keeps its 64px target at large text; the hex field takes what's left. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-colour-row > .wc-field:first-child { flex: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-colour-row > .wc-hex { min-width: 0; }
+
+/* The portal's parent placeholder (root-loading.tsx) for Wave C routes: band heights measured at 320–430. */
+.route-skeleton[data-route="settings"], .route-skeleton[data-route="account-recovery"], .route-skeleton[data-route="clocker-recovery"] { --route-band: 232px; }
+@media (max-width: 359px) { .route-skeleton[data-route="clocker-recovery"] { --route-band: 256px; } }
