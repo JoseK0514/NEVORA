@@ -69,7 +69,8 @@
   --nv-t-tab: 500 .8125rem/1rem var(--nv-font);          /* 13/16, always with an icon */
   --nv-t-badge: 600 .75rem/1rem var(--nv-font);          /* 12/16, numbers only */
 }
-@media (min-width: 768px) {
+/* Desktop tokens from 768px, except a phone held sideways (it stays on the phone's 15px floor, like the shell). */
+@media (min-width: 768px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   :root {
     --nv-gutter: 24px;
     --nv-overlap: 56px;
