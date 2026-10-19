@@ -830,3 +830,104 @@ October 19, 2026 · Preview `http://127.0.0.1:51302`, fictional accounts (AUDIT-
 ### Phase 3, round 3 verdict
 
 Not at zero: 1 P0 (AL-P3-17), 3 P1 (AL-P3-18, -19, -20), 8 P2 (AL-P3-21 to -28), plus AL-P3-12 not fixed and AL-P3-03 and AL-P3-13 partly fixed.
+
+## Phase 3, round 4
+
+October 19, 2026 · Preview `http://127.0.0.1:60059`, restarted after the 15:25 crash of 51349; the same code, freshly seeded. Fictional accounts: AUDIT-E, AUDIT-LEAD, AUDIT-ON, AUDIT-BREAK, AUDIT-LONG, payroll-qa-b, AUDIT-M and QAOWNER.
+
+This was read only:
+- Every non-GET request was answered in my browser.
+- Nothing was submitted, sent, withdrawn or saved.
+- The password was never printed.
+
+Source references are to `.claude/worktrees/premium-phase-1` at 8c4264c. Scripts, JSON and crops are in `.../scratchpad/phase7/alignment/p3r4/` ("r4/" below).
+
+**Coverage:**
+- **Chromium, E and L, every listed page:** 320 and 390 at 100% and 200%.
+- **Chromium, AUDIT-E, every listed page:** also 360 and 430 at 100, 150 and 200%.
+  - About half of these ran before the crash (Home through My pay).
+  - The rest were re-run on 60059.
+- **Landscape 844×390 at 100% and 150%:**
+  - E and L: Home, Schedule, Time off (My requests), Profile, My time and Timecards.
+  - AUDIT-E only: Availability `?week=`.
+  - Not run in landscape: Open shifts, Requests overview, Time off (New request), Shift requests, Availability (usual week), My pay, Updates and Notifications. The landscape run was cut by the crash and not repeated.
+- **Specific states:**
+  - AUDIT-ON and AUDIT-BREAK: Home and My time.
+  - AUDIT-M and QAOWNER: Notifications and Updates.
+  - QAOWNER: Payroll in landscape.
+  - AUDIT-M: the single review at 200%.
+  - AUDIT-LONG: Availability and Profile.
+  - payroll-qa-b: My pay and Timecards.
+- **More sheet:** all four roles at 320×568 and 390, at 100% and 200%, and in landscape.
+- **WebKit at 390, 100% and 200%:** E Home, Time off (both tabs), Schedule, Profile and Timecards, and L My time.
+
+The probe is the same as round 3 (box, Range and font-metric baselines), plus a per-selector computed-style probe (`sel-extra.js`) and a More-sheet probe (`more-extra.js`).
+
+### Verdict
+
+**Not at zero.**
+- **Re-check:** 10 of 15 IDs are fixed (AL-P3-28 in source only, because it didn't render). 4 are partly fixed: AL-P3-13, -22, -25, and -26, which is still off on the Home pass head. 1 is still unmeasured (AL-P3-12).
+- **New findings:** 1 P1 (AL-P3-29) and 2 P2 (AL-P3-30, -31).
+- **Open in total:** 1 P1 and 6 P2. AL-P3-12 is also open as a gap.
+
+### Status of earlier items
+
+| ID | Status | Measured now |
+|---|---|---|
+| AL-P3-03 | **Fixed** | M and O Notifications: the lead line ends at 257.5 and the card starts at 273.5 (**16**) at 320 and 390. At 200%: 485.02 → 501.02 (16). |
+| AL-P3-12 | **Not re-measured (gap)** | `/api/timecards` answered **503** on every load on 60059 (E, L and payroll-qa-b, Chromium and WebKit), so only "Couldn’t load timecards" rendered. The `align-items: baseline` rule is still at `portal-premium.css:1340`. |
+| AL-P3-13 | **Partly fixed** | **Fixed:** My time heads are now plain titles at 36 (E and L). The week title has a 20 icon at 36 and its text at **68**. Planning ahead, Profile settings and Sign out are at 68. Notifications, Updates and Work details are at 88.<br>**Still off:** the "Confirm you’ve seen your schedule" card puts its 24 icon in a **32** column, so the text is at **80** (320–430, E and L, WebKit too). The icon is also centred on the whole copy block (icon centre 1981 against the title's first line at about 1940).<br>**Cause:** `employee-schedule.css:62` (phone `.my-schedule-review { grid-template-columns: 32px … }`) and `:117`. The round-3 fix at `portal-premium.css:1500` changed only the gap.<br>**Fix:** `.premium-employee-schedule .my-schedule-review:not(#nv-kit) { grid-template-columns: 20px minmax(0,1fr); align-items: start }` with the icon at 20 px, giving text at 68. Alternatively use a 40 tile at 36 for text at 88.<br>Crop: r4/crops/c-sched-review-390.png |
+| AL-P3-17 | **Fixed** | Day buttons are now 44 / 66 / 88 px at 100 / 150 / 200%.<br>• The smallest label gap is 14.0 / 22.1 / 31.0 px and the smallest date gap is 20.7 / 31.2 / 41.6 px, at 320, 360, 390 and 430. Nothing overlaps.<br>• `data-overflow="true"` (the fade is on) whenever the strip overflows: at 320 for every text size, and at 150% and 200% at every width. |
+| AL-P3-18 | **Fixed** | Time off form: lead line → first group **16** (366 → 382). Between groups **20** (500 → 520 and 630 → 650). The same at 320, 200% and in WebKit. |
+| AL-P3-19 | **Fixed** (one position) | All five status pills sit under the dates at 390 and 320, 100% and 200%, in Chromium and WebKit (text at 66.13 in every row), and the timeline is stacked. P3-WR-08 (`portal-premium.css:1398`, phones and landscape) wins over the round-3 "top right" rule at `:1470–1472`, which is therefore unused on phones. The result is consistent. |
+| AL-P3-20 | **Fixed** | In landscape (E and L, 100% and 150%), all three Profile cards span **16–828**, and Work details is padded 20 (text at 36). In portrait, all three cards span 16–(W−16). |
+| AL-P3-21 | **Fixed** (portrait) | The specific-week card has `padding: 0`. Its first text is 20 from the top, the deadline icon is at 36 with its text at 68, and "Submitted" is at 36 (320, 390 and 200%; E and L). The landscape remainder is filed as AL-P3-31. |
+| AL-P3-22 | **Partly fixed** | **Fixed:** Home Clock status, My time (E and L), Updates and Notifications Refresh are all one shape: 44 tall, radius 12, no border, padding 0 12, accent label.<br>**Still different, Home footer "Refresh home":** radius **4**, padding **8px 4px**, a **17 px** label next to the 15 px "Updated 3:13 PM", 205.7–325.4 at 390. Cause: `employee-home-reviewed.module.css:112` (`.refreshButton`) isn't in the `portal-premium.css:1292` list.<br>**Still different, head-trailing Refresh:** the label still ends **12 px** inside the card text edge (box 354, label 342), and in the Home clock card the icon starts at 48 rather than 36.<br>**Fix:** add `[class*="employee-home-reviewed-module"][class*="__refreshButton"]` to the `:1292` selector list (font `var(--nv-t-label)`). Optionally add `margin-inline: -12px` on the start or end side, so the label meets the 36/354 text edges.<br>Crop: r4/crops/c-home-refresh-390.png |
+| AL-P3-23 | **Fixed** | Shift requests cards are padded 20 with text 20 from the top. The date line and both detail lines start at **60** (E and L, 320 and 390). |
+| AL-P3-24 | **Fixed** | L My time at 320: all cards are padded 20, with text at 36. |
+| AL-P3-25 | **Partly fixed** | **Fixed:**<br>• The total "2h 5m" now shares the date's line (baseline 885 against 886).<br>• The legacy `summary::after` resolves to `content: none` (`portal-premium.css:1488` works).<br>**Still open, AUDIT-ON at 390:**<br>• The total column ends at **233**.<br>• A "+" disclosure glyph still draws at about x 249–262 (crop).<br>• So the row's trailing edge is about **92 px** inside the card's text edge (354).<br>• The summary's computed grid is `minmax(0,1fr) max-content 24px`, yet the total starts at 153.6, so the children aren't in the columns intended.<br>**Likely cause:**<br>• Grid placement from `employee-mobile-corporate.css:167` and `my-time/my-time.css:117`.<br>• Another child or pseudo-element draws the "+". I didn't locate which, because the `::after` is already none.<br>**Fix:** give the summary's parts explicit columns: the date block `grid-column: 1`, the total `grid-column: 2; justify-self: end`, and the disclosure `grid-column: 3; justify-self: end`. The "+" then ends at 354 and the total ends 12 px before it.<br>Crop: r4/crops/c-ON-entry-390.png |
+| AL-P3-26 | **Partly fixed; not fixed on Home** | **Fixed:** the Schedule agenda head and the Open shifts head (Δ ≤ 0.6, also in landscape), and Payroll's landscape toolbar (see AL-P3-27).<br>**Still off, Home pass "Your shifts"/"Published":**<br>• Chromium: Δ **+2.5** at 320, 390 and landscape (E, L, AUDIT-ON and AUDIT-BREAK), and **+5.5** at landscape 150%.<br>• WebKit: Δ **+3.16**.<br>• In round 3 it was −2, so the fix overshot. "Published" now sits low.<br>**Cause:** `employee-home-reviewed.module.css:42`: `.published` is `inline-flex; align-items: center` with the 5 px dot `::before` first. The pill's baseline is therefore synthesized from the dot's bottom edge, and `portal-premium.css:1491` aligns that to the title.<br>**Fix:** `[data-pass="true"] > header > [class*="__published"] { align-items: baseline } … ::before { align-self: center }`, so the text sets the pill's baseline.<br>Crop: r4/crops/c-home-passhead-390.png |
+| AL-P3-27 | **Fixed** | Payroll in landscape (O, 100/150/200%): the status line box (268–288) is centred on the button row (256–300). |
+| AL-P3-28 | **Fixed in source; not rendered** | On the reseeded data, Updates had items for E, L, M and O, so the empty or failed block didn't render. The rule is at `portal-premium.css:1494`. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL-P3-29 | Availability (usual week and `?week=`) · E and L · 320 at 200% (also tight at 360 at 200%) · Chromium | "7 of 7 days available" count pill | The pill is one unbreakable line, 36–**327.9** wide, inside a card that ends at **304** (text edge 284). It runs **24 px past the card edge** and its last letter meets the viewport edge. At 360 at 200% it ends at 327.9, against a text edge of 324. Fits at 390 and 430. | r4/crops/c-av-daycount-320-200.png | `portal-premium.css:1290` `.av-day-count { white-space: nowrap; display: inline-flex }` | Let it wrap: `white-space: normal; max-width: 100%`, with `align-items: baseline` and the number kept whole. Or drop `nowrap` below 390 px. | **P1** |
+| AL-P3-30 | My schedule (and `?intent=swap`) · E and L · 320–430, every text size, Chromium and WebKit | "West Office hasn’t published" note under the week strip | The note's top equals the day buttons' bottom: **0 px gap** (474.39 / 474.39 at 390; 554.11 / 554.11 at 150%; 735.81 / 735.81 at 200%). The selected teal "Mon 19" button sits directly on the grey note. The note's computed margin is 0, so `employee-schedule.css:143`'s `margin: 14px 0 0` is lost. The strip's `margin-bottom: −6px` (`portal-premium.css:1157`) also pulls the note up into the strip's padding. | r4/crops/c-sched-week-390.png | `portal-premium.css:1157` (strip `margin: -6px -20px`) and a reset of `.my-week-note` margin to 0 | `.premium-employee-schedule .my-week-note:not(#nv-kit) { margin-top: calc(var(--nv-s-3) + 6px) }`. That gives 12 px from the buttons; use 16 to match the card rhythm. | P2 |
+| AL-P3-31 | Availability `?week=` · E · landscape 844×390 | Week context card inset | In landscape the sections are padded **24**: "Submitted" is at 40, the tile text at 104 and the first text 24 from the top. Every other landscape card uses 20 (text at 36), and the same card in portrait is 20. | r4/crops/X-E-avweek-844.png | `availability.css:168`/`:170` section padding at the landscape breakpoint. The round-3 fix only zeroed the panel. | `.premium-employee-availability .av-week-panel > :is(.av-week-context, .av-deadline, .av-submission-detail):not(#nv-kit) { padding: var(--nv-s-5) }` | P2 |
+
+### Checked and correct
+
+**Shared shell and More sheet:**
+- E, L, M and O at 320×568 and 390, 100% and 200%. Close is 16–(W−16), 48 tall, ending 16 above the bottom.
+- When the list scrolls, Close stays put (identical box at scrollTop 0 and at the end). The last row ("Sign out") ends 10 px above it (765 against 775).
+- In landscape the sheet is 142–702 for all four roles, with Close sticky too.
+
+**Bands and gaps:**
+- Band → first card is 16 on every E/L page measured, in Chromium and WebKit.
+- Card gaps are 16; Profile is 16 / "App settings" / 12 / 16.
+- Kit cards are radius 20, e1 shadow, border 0, text at 36.
+
+**Heads:** "Clock status"/"Off clock" and "To do"/"3 items" are Δ 0. "My requests"/"5 requests" is Δ 0. The agenda head is Δ ≤ 0.6.
+
+**Time off form:** groups are 20 apart and the lead line → form is 16.
+
+**Notifications:** M and O lead line → card is 16.
+
+**Payroll in landscape:** the toolbar line is centred.
+
+**Page scroll:** no horizontal scroll on any load. The AL-P3-29 pill overflows its card but not the page.
+
+**Not filed:**
+- **Profile tile:** `profile-icon-tile` stays 40 px at 200% (not rem). "Avatars and tiles sized in rem" may refer only to kit avatars, none of which render on these pages. Judgment call.
+- **Calendar subscription in landscape:** its inner content measured at 44/72 in landscape against 36/64 in portrait. Those texts belong to a collapsed `details`, so they may not be on screen. I didn't open it, so this isn't filed.
+
+### Gaps
+
+- **Timecards with data (E, L and P) and AL-P3-12:** `/api/timecards` answered 503 on every load on 60059.
+- **Landscape:** Open shifts, Requests overview, Time off (New request), Shift requests, Availability (usual week), My pay, Updates and Notifications weren't re-run after the crash.
+- **Not measured on 60059:** 360/430 and 150% for E Profile, Updates and Notifications (Profile has 320/390 only). Every L page at 360/430.
+- **AL-P3-28:** the Updates empty and failed states didn't render on the reseeded data.
+- **Loading placeholders:** not measured by me this round; that is the stability inspector's area.

@@ -1,8 +1,23 @@
-# Phase 3 (Employee and Lead), round 4 — for Codex
+# Phase 3 (Employee and Lead), round 5 — EXIT ROUND, for Codex
 
-- **Round:** 4. **Not the exit round.**
-- **Commit:** the `claude/premium-phase-1` commit that adds this file (26e51cc plus this file). Inspect that exact commit.
-- **Earlier reports:** `docs/product/specs/premium-phase-3/inspection/*.md`. Read the "Phase 3, round 3" sections. The interaction report's round 3 is partial: it was stopped early, so treat interaction as a **full sweep** this round.
+- **Round:** 5, the **exit round**: a full sweep, all five areas, plus every earlier P3 ID.
+- **Commit:** the `claude/premium-phase-1` commit that adds this version of the file. It includes every round 4 fix (4d469a4 and earlier).
+- **Earlier reports:** `docs/product/specs/premium-phase-3/inspection/*.md`. Round 4 sections are copied in. Round 4's interaction sweep may not be included; treat interaction as a full sweep.
+- **Fixed since round 4 (re-check):**
+  - TC-P3-32 / P3-WR-18: dates (only month and day are glued; "Mon, Oct 19" stays whole).
+  - TC-P3-33: From and Until labels.
+  - P3-ST-14: My time hold (the panel is a real box now).
+  - P3-ST-17: Home title at 320 and 200%.
+  - P3-ST-20 and -24: placeholder band per width and text step (`html[data-text-step]`).
+  - P3-ST-21: Inbox eyebrow at 200%.
+  - P3-ST-25: placeholder first block.
+  - P3-WR-07, -11, -12, -14, -16, -17.
+  - AL-P3-13, -22, -25, -26, -29, -30, -31.
+  - The TC-P3 wording items.
+  - The shared submit button keeps its size while sending.
+- **Known, not to file:**
+  - One console 404 for `/api/manager/inbox-count` per Manager or Owner load before the backend merge.
+  - Next's dev-only "negative time stamp" warning.
 
 ## Routes and roles
 

@@ -1161,3 +1161,158 @@ October 19, 2026, 10:15–13:35 · Preview `http://127.0.0.1:51302` (build quiet
 - **11 P2:**
   - Partly fixed: TC-P3-09.
   - New: TC-P3-21 to TC-P3-31.
+
+## Phase 3, round 4
+
+October 19, 2026, 15:10–15:40 · Preview `http://127.0.0.1:51349` (`claude/premium-phase-1` at 8c4264c) · Scripts, data and crops under `S/p3r4/` (`json/`, `shots/`, `crops/`), where `S/` is the scratchpad folder named above. Source lines refer to `.claude/worktrees/premium-phase-1/src/`.
+
+### Verdict
+
+**Not zero.** 10 open: **2 P1** (both new) and **8 P2**. 3 IDs are fixed on screen and 5 are fixed in code only. I couldn't see those 5 on screen because the preview went down mid-round.
+
+- **Biggest new problem:** the extended `keepWhole` now breaks Home's dates *inside* words at the default text size. At 320@100 you get "Week of Mon, October 19, 202" / "6", and it gets worse at 150% and 200% (TC-P3-32).
+- **Second new problem:** Availability's "From" and "Until" labels are **11px** at every phone width (TC-P3-33).
+
+**The preview went down partway through.** It crashed at about 15:26 with a Turbopack internal panic (`next.log`: "turbo-tasks: an internal panic occurred … Aborting"), and it was still refusing connections at 15:40. Before the crash, 90 of the 266 snapshots came back as the root error page. The cause was Postgres statement timeouts, "while locking tuple (0,3) in relation workspaces", from `payroll/service.ts:93` via `app/app/layout.tsx:45`. I didn't restart the preview: it belongs to the main session. As a result, the state probes, the WebKit pass, the pass-pixel contrast check and the placeholder pass didn't run (see Gaps).
+
+### How it was measured
+
+- **Chromium sweep** (`p3r4/dump.mjs`, one browser, up to 7 contexts): computed type, composited contrast, visual line breaks and clipping for every visible text node. 266 snapshots, 176 usable.
+  - Usable: AUDIT-E on all 17 Employee routes at 320 (100/125/150/200), 390 (100/150/200) and 844×390 (100/150), with gaps where loads failed.
+  - AUDIT-LEAD on all routes at 390 (100/150/200).
+  - Partial: AUDIT-LEAD at 320, AUDIT-ON, AUDIT-BREAK, AUDIT-LONG, Manager and Owner.
+- **Mid-word break detector** (`p3r4/midword.mjs`): flags a line break where the page text has no space at that point.
+- **Crops:** cut from the full-page captures with `sips`.
+- **Read only.** Every non-GET request was aborted in my browser, except `POST /api/timecards`, which is a period read. Nothing was submitted.
+
+### Status of earlier items
+
+| ID | Status | Measured now |
+|---|---|---|
+| TC-P3-09 | **Partly fixed** | **Fixed:**<br>• Time off row titles break only after the dash ("Oct 29, 2026 –" / "Oct 30, 2026").<br>• "Partial day ·" / "9:00 AM – 1:00 PM".<br>• "Updated" stamps.<br>• Manager Schedule "42 shifts" stays together.<br>**Still split:**<br>• Availability week "Oct 26 – Nov" / "1" (320@150, 390@200)<br>• "Last updated Oct" / "19, 3:11 PM" (320@200)<br>• My time entry "Mon, Oct" / "19" (`employee-time-panel.tsx:28`, `entryDate` without `keepWhole`)<br>• "3h" / "13m" in My time Today and Timecards totals (AUDIT-BREAK 390@200)<br>• Manager Schedule "13 of 13 team members · Mon," / "Oct 19" (320@200)<br>Causes: `availability/page.tsx:165, 167` (`formatBusinessDateTime` / week range without `keepWhole`), `employee-time-panel.tsx:28`, the Today and Timecards metric `dd`s, `manager-weekly-roster.tsx`.<br>The new regression is filed as TC-P3-32. |
+| TC-P3-18 | Fixed in code, partly measured | **Measured:** "Couldn’t load your time records" 15/20/500 on Home and My time (320, 390, landscape); "Weekly submission" and the context line 15/20.<br>**Code:** `portal-premium.css:1428-1436` puts toasts and redirect toasts on `--nv-t-label` and `.av-feedback` and page messages on `--nv-t-callout`, inside the shared phone and landscape query.<br>**Not seen:** the redirect toast and `.av-feedback`, because the state probes didn't run. |
+| TC-P3-19 | Fixed in code | `lib/action-center/present.ts:19` turns "2026-10-19–2026-10-25" into "Oct 19 – Oct 25", with a test (`present.test.ts:30-31`). On screen, the Inbox read failed ("The Inbox isn’t available right now.") for AUDIT-M and QAOWNER. |
+| TC-P3-20 | **Fixed** | AUDIT-BREAK Timecards: "No clock-out yet" (`timecards.tsx:21`). |
+| TC-P3-21 | Fixed in code | The pill is now `rgb(0 0 0/.18)` (`employee-home-reviewed.module.css:207`). It darkens the gradient, which already measured ≥5.7:1 beside the pill, so white text should now be ≥5.7:1. Pixel check not re-run. |
+| TC-P3-22 | **Fixed** | The Lead gets the corporate set (`app-shell.tsx:65`): "Current status" 19/25/600 for both roles. "Choose a period" is still 20/27; see TC-P3-28. |
+| TC-P3-23 | **Partly fixed** | **Fixed:**<br>• "Clocked in at …"<br>• the range ends "12:11 PM – now"<br>• "3h 13m since clock-in · 23m on break" stays whole<br>**Still there:** seconds in person-facing times:<br>• "Updated Oct 19, 3:20:11 PM" (Record details)<br>• the Clock in, break and Clock out stamps<br>Cause: `employee-time-panel.tsx:25` (`stamp()` with `second:'2-digit'`). Fix: drop `second`. |
+| TC-P3-24 | **Partly fixed** | **Fixed:**<br>• Home "Time off waiting / declined / withdrawn"<br>• "Waiting, approved and past requests"<br>• "Yes, withdraw this request" / "Withdraw request"<br>• timeline "Waiting for approval"<br>• "No designated lead" (Shift requests)<br>• "Back to Home" (error, not-found, Home views)<br>• "Unable to work"<br>• Inbox "Set the availability deadline…"<br>**Still there:**<br>• Hub "Swaps, coverage and **callouts**" and "…including swaps, coverage and **callouts**." (`requests/hub/request-hub.tsx:30, 38`), on screen at all sizes<br>• "No designated **Lead**" in the swap form (`reviewed-swap-form.tsx:45`, `swap-shift-summary.tsx:33`), in code<br>• Manager roster "Times in Puerto Rico." (`manager-weekly-roster.tsx:179`), in code<br>• Availability "until the **cutoff**" next to "deadline" (`availability/page.tsx:166`)<br>Fix: "Swaps, coverage and unable-to-work requests"; "No designated lead"; `timeZoneLabel()`; "until the deadline". |
+| TC-P3-25 | **Partly fixed** | **Fixed on screen:** "Couldn’t load Home." / "Couldn’t load your shift." / "Couldn’t load your time records" / "Couldn’t load timecards." / "Couldn’t load updates" / "Couldn’t load notifications" / "Couldn’t load your details.", each with "Try again".<br>**Fixed in code:**<br>• "Your session ended" (`employee-time-panel.tsx:61`, `time-off-withdrawal.tsx:31`)<br>• withdraw failure "We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice." (`time-off-withdrawal.tsx:30`)<br>• exchange errors in the second person (`exchange/page.tsx:48-67`)<br>**Still old:**<br>• My schedule failure: three phrasings in one view. The band says "Your schedule couldn’t be checked.", the card says "**Schedule unavailable** / We couldn’t load your schedule." (`employee-my-schedule.tsx:148, 189`; Home `:282, :312`).<br>• The root error page, which every 500 showed this round: "This page could not be loaded / Your current information is unavailable. / Try loading the page again before taking an action." (`app/app/error.tsx:10-12`).<br>• Profile: "Calendar settings unavailable. Retry to check the current link." (`calendar-subscription-panel.tsx:23`).<br>Fix: "Couldn’t load your schedule." + Try again; "Couldn’t load this page." + "Try again"; "Couldn’t load your calendar link." |
+| TC-P3-26 | Fixed in code | `keep-whole.ts:6` rewrites "Oct 19 at 9:11" as "Oct 19, 9:11". The WebKit pass didn't run. |
+| TC-P3-27 | **Partly fixed** | **Fixed:** the pass note now reads "whether you’re clocked in", curly.<br>**Still straight in code** (states not seen this round):<br>• "This week's submitted hours are locked." (`availability/page.tsx:166`)<br>• "You&apos;re all set." (`employee-home-reviewed.tsx:349`) |
+| TC-P3-28 | **Partly fixed** | **Fixed:**<br>• Home "Your shifts", "To do", "Quick actions", "Recent activity", "Clock status": 19/25/600<br>• "Scheduled now", "Next shift": 17/22/600<br>• the Home clock card's "Refresh" and "My time": 15/20/500<br>• "Current status" and "Work details": 19/25/600<br>• "Your request at a glance" 17/22/600; "Couldn’t load updates" 17/22/600<br>**Still off the roles:**<br>• Timecards "Choose a period" **20/27/600** (Lead and Employee)<br>• My schedule's week-strip "Today" 17/**25.5**/600<br>• the More sheet's sticky "Close" 17/**25.5**/500 (`button.mobile-workforce-sheet-close`, still under the shell's `a, button` 17/1.5 rule)<br>Fix: `font: var(--nv-t-title-3)` on the Timecards `h2`; `font: var(--nv-t-headline)` on "Today" and Close. |
+| TC-P3-29 | **Fixed** | "These hours apply to this schedule week." and "Weekly submission": 15/20 at 100%, 30/40 at 200% (320, 390). |
+| TC-P3-30 | **Partly fixed** | **Fixed:** Schedule band "42 shifts" / "this week"; Updates breaks only between date and time.<br>**Still split:** the roster summary "· Mon," / "Oct 19" (320@200); see TC-P3-09.<br>**Not seen:** the Home row clamp (Manager Home 320@200 failed to load). |
+| TC-P3-31 | Fixed in code | A failed send keeps the form and shows "Your request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again." (`requests/time-off-form.tsx:38-44, 91`). Availability does the same (`availability-editor.tsx:94`). The browser probe didn't run. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| TC-P3-32 | Home · Employee, Lead · 320 at **100%** and up; 390@150+ | To do "Week of …", Recent activity titles and meta, pass date | Dates now break inside words, which is worse than round 3:<br>• **320@100:** "Week of" / "Mon, October 19, 202" / "**6**" (both schedule rows; the column is 166px)<br>• **390@150 (Lead):** the same "202" / "6"<br>• **320@150:** "Mon, October 1" / "9, 2026", and "Oct 29, 2026" / "**–**" / "Oct 30, 2026" with the dash alone on a line<br>• **320@200:** "Mon, Octob" / "er 19, 202" / "6"; "Oct 29, 20" / "26 –"; "Recorded Mon, Oct 1" / "9, 3:10 PM"; "withdrawn" / "·"<br>• **Lead 390@200:** pass date "Mon, October 19, 202" / "6" | `S/p3r4/crops/home-todo-week-of-320-100.png`, `S/p3r4/crops/home-recent-320-100.png`, `S/p3r4/shots/main2/chromium_AUDIT-E_-app-more_320_200.png` | `keep-whole.ts:8-9` now glues weekday, long month, day and year into one unbreakable chunk ("Mon, October 19, 2026" is 21 characters). `dateLabel()` (`employee-home-reviewed.tsx:46-50`) uses weekday + long month + year. When the chunk can't fit, `.itemCopy{overflow-wrap:break-word}` (`employee-home-reviewed.module.css:88`) breaks it anywhere. | • To do: "Week of Oct 19" (`{month:'short',day:'numeric'}`; the week always starts Monday).<br>• Recent activity: drop the current year ("Oct 29 – Oct 30").<br>• `keepWhole`: glue month and day only, and leave plain spaces after "Mon," and before the year, so a too-long date breaks between its parts and never inside a word. | **P1** |
+| TC-P3-33 | Availability (usual and specific week) · Employee (Lead same component) · 320, 390, 844×390 | "From" / "Until" labels above the time fields | **11px** #5F6368 at 100% (13.75 / 16.5 / 22 at 125 / 150 / 200), under the 15px floor on the page's main form. This is visible now that AUDIT-E has available days. | `S/p3r4/crops/avail-from-until-390-100.png` | `app/app/availability/availability.css:102` (`.av-time-range label > span{font-size:calc(11*var(--type-unit))}`). The TC-P3-18 phone block (`portal-premium.css:1435`) doesn't list it. | Add `.av-time-range label > span` to the `portal-premium.css:1435` rule with `font: var(--nv-t-callout)` (15/20) | **P1** |
+| TC-P3-34 | My time (failure state), Profile, Requests overview, More sheet, Notifications · 320@150–200, 390@200 | Words broken mid-word in narrow columns | • My time footer, when records fail: "Only recorded punches appear here." is squeezed to **91px** at 320@200 and reads "Only / record / ed / punch / es / appea / r here."<br>• Profile `dt` "Compan" / "y" and "locatio" / "ns" (AUDIT-LONG 320@150 and 200; Lead 390@200)<br>• Overview row "availabil" / "ity" (320@200)<br>• More sheet name "Alexan" / "dra" (320@200)<br>• Notifications band title "Notificatio" / "ns" (320@200, 60px title) | `S/p3r4/crops/mytime-footer-320-200.png`, `S/p3r4/shots/main2/chromium_AUDIT-LONG_-app-profile_320_200.png` | • `globals.css:12806` (footer `small{flex:1 1 180px;overflow-wrap:anywhere}` beside "Try again"); the stacking rule `portal-premium.css:1304` only covers `.employee-time-panel`<br>• Profile's two-column `dl` keeps a fixed `dt` track<br>• `overflow-wrap:anywhere` in the shell | • Stack the footer on phones whatever the state.<br>• Profile `dl`: a single column when text is above 125% (`grid-template-columns:1fr`).<br>• `overflow-wrap: break-word` (not `anywhere`).<br>• Band title at 200%: cap at `calc(30px*1.5)` or `hyphens:auto`. | P2 |
+
+### Checked and correct
+
+- **Floor at 100%:** no text under 15px on the usable snapshots at 320, 390 and 844×390, except TC-P3-33. Accepted exceptions: tab labels 13/16, "Workforce" 13.
+- **Messages on phones:** 15/20 in the measured failure states (Home, My time, Timecards, Profile, Notifications, Updates).
+- **Contrast:**
+  - Nothing under 4.5:1 outside disabled or failed-read controls:
+    - Updates filters at 2.29–3.84 while the read fails
+    - the Inbox filters while the read fails
+    - Home "Refresh" #A7ABAD (2.32), seen once while busy
+  - No icon under 3:1. Kit cards 5.8:1 and up.
+- **More sheet:** items 17/22/500 at 17.7:1; "Sign out" 15/20/500 (7.56:1).
+- **Section tabs:** 15px. **Tab bar:** 13/16 at 5.82:1, active 7.35:1.
+- **Words:**
+  - "Scheduled until 4:00 PM." and "Scheduled until 5:00 PM."
+  - "No clock-out yet", "Unable to work", "No designated lead", "Back to Home", "Try again"
+  - Payday "Tue, Oct 27 · for Oct 19 – Oct 25"
+  - "West Office hasn’t published this week yet. Shifts shown are published."
+  - "Times in Puerto Rico time"
+- **Copy hygiene:** curly apostrophes on every rendered string. No leaked escapes, `undefined` or `NaN`. No Title Case in Employee copy.
+- **Durations:** "3h 13m" style throughout; no "0h 0m".
+- **No sideways scroll** on any usable snapshot.
+
+### Payroll wording for Jose (not counted)
+
+- **My pay** still says "Contact your payroll administrator if a statement is **missing**." Suggested: "…if a statement isn’t here."
+- **The empty card says it twice:** "Statements appear here after payroll publishes them." and "Your pay statements will appear when your company publishes them." Suggested: keep the second.
+- **Data gap, as in round 3:** payroll-qa-b's My pay didn't load, so statement rows are still unchecked.
+
+### Gaps
+
+- **Preview down from about 15:26** (Turbopack panic), and still down at 15:40. Not run:
+  - the state probes: the redirect toast, `.av-feedback`, Withdraw pending and failed, the Time off and Availability send failures, the 401 "Your session ended", Home offline
+  - the WebKit pass (TC-P3-26)
+  - the pass-pixel contrast check (TC-P3-21)
+  - the loading placeholders for all four roles
+  - the landscape 125–150% shell probe
+
+  The scripts are ready: `p3r4/states.mjs` (scenarios `homeReadStates,urlStates,withdraw,timeoffSubmit,availabilitySave,placeholders`) and `p3r4/jobs-wk.json`.
+- **Loads that failed** (500 from Postgres statement timeouts), never captured ready:
+  - AUDIT-E Home at 320 and 390 as a plain load (Home is covered by the More-sheet snapshots), Time off new, My schedule at 390, Timecards, Profile at 320, My pay at 390
+  - Lead 320 Schedule, Availability and My time
+  - AUDIT-ON My time and Timecards
+  - payroll-qa-a and payroll-qa-b My pay
+  - Manager Home and the Inbox
+- **Not filed:**
+  - The Manager Notifications 320@200 snapshot rendered without CSS (layout viewport 903px), a server failure.
+  - The 844×390 @150 snapshots show the desktop shell after a full-page capture. Round 3 proved this is a capture artifact, but I couldn't re-probe it this round.
+
+### Zero open defects?
+
+**No.** 10 open:
+- **2 P1:** TC-P3-32, TC-P3-33 (both new).
+- **8 P2:**
+  - Partly fixed: TC-P3-09, TC-P3-23, TC-P3-24, TC-P3-25, TC-P3-27, TC-P3-28, TC-P3-30.
+  - New: TC-P3-34.
+  - TC-P3-31 is fixed in code and not counted.
+
+**Fixed in code, not re-measured on screen:** TC-P3-18, TC-P3-19, TC-P3-21, TC-P3-26, TC-P3-31. **Fixed on screen:** TC-P3-20, TC-P3-22, TC-P3-29.
+
+### Round 4 addendum: the gaps, re-run on the restarted preview
+
+15:36–15:50 on `http://127.0.0.1:60059` (freshly seeded, same code as above). Per the coordinator, the TC-P3-32 and TC-P3-33 fixes are committed but **not** on this preview, so both are "fixed in code, re-check next round". One commit note: 5479e46 is titled "TC-P3-32" but contains the TC-P3-33 fix (From/Until labels).
+
+**What ran, read only:**
+- `p3r4/states.mjs` (Chromium 390): Home read failing with 503, 403 and 401, then offline; the Home clock and My time reads held, 503, 403 and 401; URL feedback states; Withdraw open, pending and failed; Time off and Availability sends held and then aborted.
+- `p3r4/passpx.mjs` (Published pill contrast from pixels).
+- `p3r4/inbox.mjs` (AUDIT-M at 390@100 and 320@200; only the read `POST /api/manager/action-center` was allowed).
+- WebKit sweep (`json/wk/`, 54 snapshots): AUDIT-E on 10 routes at 390 (100/150/200) and 844×390 (100/150), plus AUDIT-LEAD Home and AUDIT-ON My time.
+
+#### Status changes
+
+| ID | Now | Measured |
+|---|---|---|
+| TC-P3-18 | **Fixed** | • The redirect toast "Your request was submitted for manager review. Track the decision below." is 15/20/500.<br>• `.av-feedback` messages ("…has been updated.", "The availability deadline for this week has passed.", "Your availability changed while saving…", "Every available day needs…") are 15/20.<br>• The Time off `?error=invalid` message is 15/20.<br>• The Home clock title is 15/20/500 in all four states (`--nv-t-label`).<br>• My time "Loading recorded time", "Couldn’t load your time records" and "Your session ended" are 15/20/500. |
+| TC-P3-19 | **Fixed** | Inbox (AUDIT-M): "Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing." At 320@200 it breaks only after the dash and the dots ("Oct 19 –" / "Oct 25 ·"). Crop: `p3r4/crops/inbox-period-AUDIT-M-320-200.png`. |
+| TC-P3-21 | **Fixed** | Published pill, white text, from pixels: median **7.10:1**, worst 5.34 (AUDIT-E 390); median 6.86, worst 5.14 (320). Was 4.06–4.18. |
+| TC-P3-26 | **Fixed** | WebKit writes "Updated Oct 19, 3:48 PM", "Recorded Mon, Oct 19, 3:34 PM" and "Last updated Oct 19, 3:34 PM". No "at" anywhere. |
+| TC-P3-31 | **Fixed** | A failed Time off send keeps the page and the entered dates (the summary still reads "Dec 7, 2026 – Dec 8, 2026"). It shows "Your request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again." at 15/20. A failed Availability save does the same ("Your availability wasn’t saved…") and keeps "You have unsaved changes." |
+| TC-P3-16 | **Fixed** (seen) | Offline Home: the band says "You’re offline.", the pass says "Your shift updates when you reconnect.", and the clock card says "Updates paused". Nothing repeats. |
+| TC-P3-25 | Partly fixed (more seen) | **Correct:**<br>• Session: Home "Sign in again to view Home." / "Sign in again to see your shift." / "Your session ended" + "Sign in"; My time "Your session ended / Sign in again to see your time." + "Sign in".<br>• Withdraw: "Withdrawing…", then "We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again." + "Try again".<br>• Exchange errors in the second person: "That’s outside the availability one of you sent.", "One of you can’t work at that location."<br>**Added to the remainder:**<br>• Offline Home button "**Retry home**" (`employee-home-reviewed.tsx:365`); fix: "Try again".<br>• Exchange fallback "The exchange **could not** be processed." (`exchange/page.tsx:202`); fix: "Couldn’t send that request. Try again."<br>• Time off invalid "The request **could not** be saved. Check that…" (`requests/page.tsx:71`); fix: "Couldn’t send your request. Check that…" |
+| TC-P3-28 | Partly fixed (more seen) | Added to the remainder: the Time off type picker "Full day" / "Partial day" is 17/**25.5**/500. Fix: `font: var(--nv-t-label)`. |
+| TC-P3-32 | Fixed in code, **re-check next round** | Still on this preview. WebKit shows the same: "Mon, October 19, 202" / "6" at 390@150 and on the pass at 390@200 (AUDIT-E and Lead). |
+| TC-P3-33 | Fixed in code (5479e46), **re-check next round** | Not on this preview. |
+
+**Also checked and correct:**
+- **WebKit:** no text under 15px, no contrast failures, and no sideways scroll on the 54 snapshots. Mid-word breaks match Chromium (TC-P3-32, TC-P3-34).
+- **WebKit landscape:** 844×390 at 150% keeps the phone shell (tab bar 15px, no desktop location bar). That confirms the Chromium @150 desktop shell was a capture artifact.
+
+#### Gaps that remain
+
+- **Loading placeholders, not captured.**
+  - What I tried: holding RSC requests and then (a) calling `router.push` and (b) tapping the tab bar. Both left the current page on screen, and `.route-skeleton` never rendered.
+  - What I did see: Home's own loading state, "Checking your shifts…" 17px and "Loading Home…" 15px white on the pass. That type is fine.
+  - The route placeholders' text (mostly decorative bands) is unmeasured and needs the stability inspector's method.
+- **Unchanged from above:** payroll-qa-b statement rows.
+
+#### Updated count
+
+**8 open, all P2:** TC-P3-09, TC-P3-23, TC-P3-24, TC-P3-25, TC-P3-27, TC-P3-28, TC-P3-30, TC-P3-34.
+
+**2 P1, fixed in code and re-checked next round:** TC-P3-32, TC-P3-33.
+
+**Fixed on screen this round:** TC-P3-16, TC-P3-18, TC-P3-19, TC-P3-20, TC-P3-21, TC-P3-22, TC-P3-26, TC-P3-29, TC-P3-31.
