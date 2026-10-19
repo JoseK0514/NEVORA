@@ -1,0 +1,34 @@
+{
+  "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "rootApprovedScope": "7 Desktop breakpoints +320/390 phone regressions",
+  "parentTools": "/workspace/nevora-inspections/p4-desktop/exit-cd764f6/execution-tools/guard-v2",
+  "sourceEdits": false,
+  "sizes": [
+    "1440",
+    "768",
+    "1024",
+    "390",
+    "320",
+    "761",
+    "1023",
+    "1179",
+    "1180"
+  ],
+  "baseline": 7416,
+  "supplemental": 1656,
+  "large": 192,
+  "total": 9264,
+  "unchangedCollectorAndGuard": true,
+  "derivation": "Scope count/plan hashing/exact-input raw continuation; optional graceful external batch-stop file. No checker/app/fixture changes.",
+  "files": {
+    "phase3-desktop-scope-crosswalk.json": "d809304b207da17e1df7971a24488f182676d19dc1ad230c2c3d0143ac20c388",
+    "scripts/collection-policy.mjs": "ce39d6da6dc2a04b27c27d1eaaf69ca028b192566cc7f9310de11f1e7499adf2",
+    "scripts/read-guard.cjs": "94c42161f14f8b4558712428f886e21e3612a2bb75a4cbb3d422be270dbc986e",
+    "scripts/after-check-collector.mjs": "604df032d9af6b2645add473556734e8e3dd0f79044c6019a22c9513d81a3890",
+    "scripts/geometry-measure.mjs": "648390bfabcc3960755086917ece3dbf01c290ff8a232de26fd33041fc4ed0bb",
+    "scripts/serial-baseline.mjs": "466660fae7e3b5bd1b6c928b3ea8f5c68dd7fa31278cd71301639ec043f72810",
+    "scripts/recheck-inbox.mjs": "9e05efb91dfb47ae7e147f6ea83dab6c0ba265493be29d1c677621ad9b20274b",
+    "scripts/recheck-header.mjs": "7c35236e523862443de36883beaa5ad0949d78d25303a6e87beeabcc210031ba"
+  },
+  "continuationStopFlag": "A requested stop flag does not discard a raw-complete exit0/1 batch; count, exact args and every raw row are verified. Incomplete/terminated-child batches are rejected."
+}

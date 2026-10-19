@@ -1,0 +1,11 @@
+--- a/src/components/payroll/payroll-settings.tsx
++++ b/src/components/payroll/payroll-settings.tsx
+@@ -11,2 +11,3 @@
+ import { KeepFocusClear } from '../wave-b-forms';
++import { PendingLabel } from '../employee-submit-button';
+ import { noticeReadiness, reminderWindow } from './workflow-status';
+@@ -129,3 +130,3 @@
+     <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}</div></section>
+-  </fieldset><div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={locked}>{operation.busy && savingId === 'company' ? 'Saving…' : 'Save company preferences'}</button></div></form></section>;
++  </fieldset><div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div></form></section>;
+ }

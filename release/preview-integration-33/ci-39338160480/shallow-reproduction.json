@@ -1,0 +1,12 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "initialShallow": "true",
+  "initialPinnedCommitExitCode": 128,
+  "initialPinnedCommitError": "fatal: git cat-file 7c628e374f03c9025b2c0cfd3568be033f07238d: bad file",
+  "unshallowExitCode": 0,
+  "finalShallow": "false",
+  "finalPinnedCommitExitCode": 0,
+  "pinnedTreeLine": "tree 5a2df7788b4a5f52b77b1273bedd59e191438379",
+  "sourceAfter": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "trackedSourceClean": true
+}

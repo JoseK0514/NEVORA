@@ -1,0 +1,25 @@
+{
+  "workflow": 39338160480,
+  "headSha": "9d6530bcf3e7ec8cead4a863031bedb1f12276cc",
+  "executedPrMergeSha": "36e9ef38da8c12c96347f9160574a154a99ae329",
+  "tree": "36af7c12c9d1a27db13443bb540d59fb598c330f",
+  "fullLogsKeptLocally": "/workspace/paused-evidence/ci-9d6530bc",
+  "logSha256": {
+    "phase-d-attendance-ui-connector.log": "cd95985cff82a65a985746684be3da2a4920fa7676f575d670e424c3201eff96",
+    "phase-e-ui-connector.log": "cc2e8f561936f23e4d1d8740adf4c59f8cb5fe71ac92afaaa016be35d29c42c1",
+    "validate-connector.log": "a7fe4e31bbe576153950ee3ea208dc8f5286848c132ede997abe24769eda42af",
+    "phase-e-postgres-connector.log": "4168198e47034c1c5d505982d56a9dfff53b4a7b5a373223f7ac83f17e9ccd4f"
+  },
+  "retrieval": "GitHub app job-log/artifact reads; no action rerun, source edit or workflow mutation",
+  "restoredPinnedRead": {
+    "migrations": 25,
+    "allHaveHashes": true,
+    "source": "7c628e374f03c9025b2c0cfd3568be033f07238d",
+    "tree": "5a2df7788b4a5f52b77b1273bedd59e191438379",
+    "exitCode": 0
+  },
+  "artifactIDs": {
+    "browser": 12228520814,
+    "sql": 12227198880
+  }
+}

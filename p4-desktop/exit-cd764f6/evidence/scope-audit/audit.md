@@ -1,0 +1,21 @@
+# Desktop scope audit on exact cd764f6
+
+The current9888 matrix is a constructed union of two instructions. No single Desktop instruction specifies twelve widths for every route. Existing raw results, checkpoints and running process are preserved; this audit does not change the plan or claim any unexecuted cell passed.
+
+| Source at frozen cd764f6 | Exact instruction | Consequence |
+|---|---|---|
+| codex-joint/INSPECTION-BRIEF.md:19,20,21,26 | Eight widths320,360,390,430,844x390,768,1024,1440; four text sizes; Chromium+WebKit; unchanged checker first over every route/width/text/browser | General cloud matrix and full-checker method. |
+| p4-desktop/ROUND.md:11,22 | Desktop761–1440, seven named desktop breakpoint widths761,768,1023,1024,1179,1180,1440; collapsed1440; phone regressions320/390; four text sizes; Chromium and WebKit spots | The four additional desktop breakpoint widths have an explicit Desktop basis. Extra general phone widths360/430/landscape do not appear in Desktop's matrix. |
+| p4-desktop/ROUND.md:57–58; inspection/ROUND-2.md:72–82 | E/L desktop is in scope; Phase3 owns their phones. Earlier specific E/L first-round matrix names768,1024,1440 and320/390 unchanged-phone regressions | Full E/L five-phone Cartesian coverage duplicates another owner. Retain the latest ROUND's seven desktop breakpoint widths conservatively; the earlier three-width E/L wording is a scope-history distinction, not authority to silently omit latest breakpoint proof. |
+| p4-desktop/inspection/BRIEF.md:41–45 | Jose's cuts: judgment768,1024,1440 plus320/390; Chromium/WebKit spots; no repeat of an already completed checker | This is the local round's manual allocation. It does not provide exact-combined-SHA checker evidence; current cloud full-checker instructions still require fresh source-bound results. |
+| p4-desktop/ROUND.md:26,49–58 | All prior findings, preserved accepted decisions and waiting-owner distinctions; E/L integration | Counts do not replace individual manual/recheck obligations. |
+| codex-joint/INSPECTION-BRIEF.md:50–55 | Desktop owns desktop sidebar/account/header; coordinator owns phone shell | Cross-owner shell findings must be filed once, with evidence attributed. |
+| CODEX-WHILE-CLAUDE-PAUSED.md:3,15–25 | Same bar and rules; finish each owner's named ROUND | Follow the specific owner's scope while retaining the general method; do not invent extra Cartesian requirements. |
+
+The current runner has103role-route pairs×12widths×4texts×2engines=9888cells. The union includes the general eight plus four Desktop breakpoints. Removing only the three unlisted general phone widths after root reconciliation would leave7416cells. The unchanged normal1656 supplement and separate large192 obligation would make9264 automated cells. This is a proposed correction of expansion, not a passing claim or executed reduction.
+
+Exact literal planned cross-owner overlap is2200phone cells:1880 with Phase3's frozen core4480 and320 with its normal M/O supplemental480. The full dimension list and exact other-plan hashes are in literal-phase3-overlap.json and audit.json. All2520E/L phone cells are conceptually owned by Phase3, but640 are different query or fixture dimensions absent from its literal core; those cannot be treated as matching passes. Requests/Exchange/Availability M/O body coverage also overlaps WaveA ownership, but Desktop still owes its own shell/trail judgment on those routes. Updates/Reports and Profile bodies overlap WaveB/Profile; they do not remove Desktop shell checks.
+
+All twelve-width running evidence remains valid evidence for the cells actually measured. A reconciled plan needs its own manifest/hash and explicit disposition for removed cells; do not rewrite an active lineage. A five-area zero still requires all applicable desktop widths, regressions, manual states, prior IDs and source/fixture shutdown proof. No other owner's planned or partial pass is inherited.
+
+Timing comes from recorded batch startedAt/completedAt, not a fixed-wait guess. See audit.json for the current measured cell count, recent rate and load-dependent ETA; the manual obligations are additional. Compiler, axe, passive capture and other owners' workers affect the rate.

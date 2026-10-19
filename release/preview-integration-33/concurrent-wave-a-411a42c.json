@@ -18,7 +18,7 @@
       "finding": "IS-WA-12",
       "historicalCandidateCommit": "8159391",
       "ownerIntegratedCommit": "ba313d1",
-      "disposition": "owner port on411; no fresh411 browser credit; avoid duplicate application"
+      "disposition": "owner integrated Optional-marker portion only; shared src/components/select-field.tsx label/hint remainder explicitly handed to coordinator; no fresh411 closure"
     },
     {
       "finding": "IS-P4-11",

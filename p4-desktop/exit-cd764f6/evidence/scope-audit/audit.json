@@ -1,0 +1,130 @@
+{
+  "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "capturedAt": "2026-10-19T23:12:50.073Z",
+  "runningEvidencePreserved": true,
+  "sourceDocumentHashes": {
+    "docs/product/specs/codex-joint/INSPECTION-BRIEF.md": "df103ab7e99c8eefd921a05e97c156c2ac686a92b260ae1e9772c5f936d6d6f2",
+    "docs/product/specs/p4-desktop/ROUND.md": "d4d49de96f92170bc23285e0addf772094e5583588e6f7af7b5b0d920801f7cb",
+    "docs/product/specs/p4-desktop/inspection/BRIEF.md": "fa36d6c48b603e3e480805317fd7535f1dfe6e3c66e4a5e972982fc8ac63fd90",
+    "docs/product/specs/p4-desktop/inspection/ROUND-2.md": "cb245b6ce98280b37da21b98a68c616202605fbdfdf5bef54b00597359844e5b",
+    "docs/product/specs/codex-joint/CODEX-WHILE-CLAUDE-PAUSED.md": "920272a0c08296b11b8b28e99449ae44226528b28bc860b35d6d81f787e382f4"
+  },
+  "full9888Derivation": {
+    "roleRoutePairs": 103,
+    "engines": 2,
+    "texts": [
+      100,
+      125,
+      150,
+      200
+    ],
+    "generalWidths": [
+      "320",
+      "360",
+      "390",
+      "430",
+      "844x390",
+      "768",
+      "1024",
+      "1440"
+    ],
+    "specificDesktopWidths": [
+      "761",
+      "768",
+      "1023",
+      "1024",
+      "1179",
+      "1180",
+      "1440",
+      "320",
+      "390"
+    ],
+    "constructedUnion": [
+      "1440",
+      "768",
+      "1024",
+      "390",
+      "320",
+      "761",
+      "1023",
+      "1179",
+      "1180",
+      "360",
+      "430",
+      "844x390"
+    ],
+    "literalSingleDesktopInstructionForUnion": false,
+    "total": 9888
+  },
+  "extraGeneralPhoneDimensions": {
+    "widths": [
+      "360",
+      "430",
+      "844x390"
+    ],
+    "cells": 2472,
+    "scopeInterpretation": "general-brief expansion beyond specific Desktop ROUND widths"
+  },
+  "nineWidthPlanIfRootConfirms": {
+    "cells": 7416,
+    "automatedIncludingPreservedSupplementAndLarge": 9264,
+    "doesNotDrop": [
+      "seven specified desktop breakpoints",
+      "320/390 phone regressions",
+      "all four text sizes",
+      "both checker engines",
+      "all prior IDs",
+      "five-area manual obligations",
+      "collapsed sidebar",
+      "normal1656 Phase3desktop supplement",
+      "large192 separate fixture"
+    ]
+  },
+  "phase3PlannedLiteralPhoneOverlap": {
+    "core": 1880,
+    "normalSupplement": 320,
+    "total": 2200,
+    "byAccount": {
+      "QAOWNER": 160,
+      "AUDIT-M": 160,
+      "AUDIT-E": 440,
+      "AUDIT-LEAD": 440,
+      "payroll-qa-a": 440,
+      "payroll-qa-b": 440,
+      "AUDIT-LONG": 40,
+      "AUDIT-ON": 40,
+      "AUDIT-BREAK": 40
+    },
+    "notAllSameLineage": true,
+    "noPassingInheritance": true,
+    "otherPlans": {
+      "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/core/baseline/plan.json": "fb1ed8ad46b82b7779ffa595b698a8e03b9b5786196bad72231b6dc18ca8b620",
+      "/workspace/nevora-inspections/premium-phase-3/complete-exit-preparation/normal-shared-scope.json": "ab71db41be59ab778d1a4c3eef7914dec8c32fecee0d4803fb53769e3483a4ea"
+    }
+  },
+  "employeeLeadPhoneOwnership": {
+    "allBaselineFivePhoneCells": 2520,
+    "literalPhase3CoreOverlap": 1880,
+    "remainingDifferentQueryOrFixtureCells": 640,
+    "mandatedRegressionWidths": [
+      "320",
+      "390"
+    ],
+    "notes": "ROUND57/ROUND2:72 reserve full E/L phones to Phase3. Different queries are not interchangeable. Reconcile completed proof and remaining shell regression obligations before removing any cell."
+  },
+  "timing": {
+    "completed": 130,
+    "totalBaseline": 9888,
+    "measuredWallSeconds": 844.895,
+    "overallSecondsPerCell": 6.499192307692308,
+    "recentBatchCount": 20,
+    "recentCells": 68,
+    "recentSeconds": 420.24,
+    "recentSecondsPerCell": 6.18,
+    "remainingBaselineHours": 16.751233333333335,
+    "remaining11736Hours": 19.923633333333335,
+    "manualHoursIncluded": false,
+    "loadDependentEstimate": true
+  },
+  "decision": "Do not mutate active runner/checkpoint or silently reduce scope. Root reconciliation pending."
+}

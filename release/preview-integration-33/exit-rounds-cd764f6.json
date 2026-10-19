@@ -1,8 +1,7 @@
 {
   "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "status": "combined initial readiness passed; fresh152+72 running; Desktop full exit released; other owners being staggered",
-  "completedCurrentCells": 0,
+  "status": "Desktop, Phase3 and WaveA full checkers running oncd; WB/WC resource queued. Fresh targeted152 complete:150pass,2failed cases (Payroll company button height; additional WebKit contrast assertion under attribution); unchanged72checker running.",
   "zeroExits": [],
   "reviews": [
     {
@@ -36,13 +35,39 @@
     },
     {
       "owner": "Desktop",
-      "automatedCells": 11736,
+      "automatedCells": 9264,
       "priorIDs": 111,
       "historicalIDSAudit": 102,
-      "path": "p4-desktop/exit-cd764f6/"
+      "path": "p4-desktop/exit-cd764f6/",
+      "baselineCells": 7416,
+      "normalSupplementCells": 1656,
+      "largeSupplementCells": 192,
+      "scopeProvenance": "../../p4-desktop/exit-cd764f6/execution-tools/scope-v3-nine-widths/derivation.json",
+      "exactInputContinuation": "../../p4-desktop/exit-cd764f6/evidence/full-exit-cd764f6-scope-v3/baseline/continuation.json",
+      "importedCompleteCells": 138
     }
   ],
   "criteria": "Full unchanged checker with axe, all five areas, all prior IDs, required state/large-data/manual judgments. Genuine product failures retained; setup gaps separate. No prior pass counts inherited.",
   "publication": "Candidate33 and four ready branches pushed; combined branch includes only33 findings and two named integration corrections, no later34\u201345 fixes.",
-  "pinnedPublishedRef": "codex/checkpoint-preview33-cd764f6"
+  "pinnedPublishedRef": "codex/checkpoint-preview33-cd764f6",
+  "completedFullExits": 0,
+  "additionalCurrentRepairProbe": {
+    "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+    "checkpointRef": "codex/checkpoint-preview33-15a0fcd7",
+    "scope": "next separate bounded Rules16/Inbox12 then other scoped/cold; no full code/exit credit inherited fromcd"
+  },
+  "combinedTargeted": {
+    "completed": 152,
+    "passed": 150,
+    "failedCases": 2,
+    "assertions": 1622,
+    "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+    "summary": "combined-cd764f6/targeted-base-summary.json",
+    "setupRecovery": "148 original completed cells plus4 exact connected-button replays; original4 locator gaps retained separately"
+  },
+  "desktopScopeAudit": {
+    "status": "Executed documented nine-width v3 continuation,138 exact-input complete rawv2cells imported with1retained failure. Source/checker/guard/collector/fixture unchanged. General360/430/landscape2472extra cells excluded without credit; mandatory bar preserved.",
+    "citation": "docs/product/specs/p4-desktop/ROUND.md:22",
+    "notYetACompletionClaim": true
+  }
 }

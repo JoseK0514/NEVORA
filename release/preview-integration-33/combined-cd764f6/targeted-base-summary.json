@@ -1,0 +1,121 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "completed": 152,
+  "passed": 150,
+  "total": 152,
+  "assertions": 1622,
+  "failures": [
+    {
+      "name": "payroll-settings-focus",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "save: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 88,
+              "top": 379.515625,
+              "right": 304,
+              "bottom": 467.515625,
+              "left": 16
+            },
+            "pending": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 52,
+              "top": 379.515625,
+              "right": 304,
+              "bottom": 431.515625,
+              "left": 16
+            },
+            "delta": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": -36
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "payroll-settings-focus",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "save: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 16,
+              "y": 675.515625,
+              "width": 288,
+              "height": 88,
+              "top": 675.515625,
+              "right": 304,
+              "bottom": 763.515625,
+              "left": 16
+            },
+            "pending": {
+              "x": 16,
+              "y": 675.515625,
+              "width": 288,
+              "height": 52,
+              "top": 675.515625,
+              "right": 304,
+              "bottom": 727.515625,
+              "left": 16
+            },
+            "delta": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": -36
+            }
+          }
+        },
+        {
+          "message": "save: pending kit text reaches4.5:1",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 16,
+              "y": 675.515625,
+              "width": 288,
+              "height": 52,
+              "top": 675.515625,
+              "right": 304,
+              "bottom": 727.515625,
+              "left": 16
+            },
+            "focused": true,
+            "disabled": false,
+            "ariaDisabled": "true",
+            "fieldsetDisabled": false,
+            "text": "Saving…",
+            "kit": true,
+            "color": "rgb(95, 102, 106)",
+            "background": "rgb(211, 226, 225)",
+            "opacity": "1",
+            "visibleText": "Saving…",
+            "textBounds": {
+              "top": 681.015625,
+              "bottom": 722.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        }
+      ]
+    }
+  ]
+}

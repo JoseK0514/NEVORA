@@ -1,0 +1,65 @@
+{
+  "updatedAt": "2026-10-19T23:13:08.357076+00:00",
+  "inspectedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "newerBoundedProbeSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "fullExitZeroCount": 0,
+  "findings": [
+    {
+      "id": "ST-RC-PAYROLL-SAVE-01",
+      "owner": "WaveB",
+      "severity": "P2",
+      "status": "DOM geometry measured oncd; pending-card occlusion means visible impact/severity provisional; same component bytes in15, no fresh15 runtime credit",
+      "measurement": "Company Save88\u219252px while held at320/200, bothengines; focus and one-request guard pass",
+      "report": "combined-cd764f6/candidate-findings.md",
+      "proposal": "review-proposals/ST-RC-PAYROLL-SAVE-01.patch",
+      "proposalStatus": "unapplied; requires owner review and dynamic checks"
+    },
+    {
+      "id": "ST-P4-13",
+      "owner": "Desktop",
+      "status": "retained open oncd; owner repair adopted15; fresh15 bounded verification pending",
+      "measurement": "guard-v2 planning Inbox CLS0.0639 at1440/100 vsbar0.01",
+      "report": "../../p4-desktop/exit-cd764f6/evidence/full-exit-cd764f6-guard-v2/"
+    },
+    {
+      "id": "TC-P3-09",
+      "owner": "Coordinator",
+      "status": "retained measured open",
+      "measurement": "Employee320/200 next-weekAvailability LastupdatedOct19 splits over40px",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/72d6196951ff88173583.json"
+    },
+    {
+      "id": "TC-P3-34",
+      "owner": "Coordinator",
+      "status": "retained measured open",
+      "measurement": "Employee320/200 Notifications title splits Notificatio/ns across72px",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/112274885136645ebdcb.json"
+    },
+    {
+      "id": "AL-47",
+      "alias": "WR-RC-TABS-01 provisional",
+      "owner": "Coordinator",
+      "status": "passive current selected Availability offscreen after text-step; interactive timing proof pending; no duplicate count",
+      "measurement": "selected textx418\u2013584 vsvisibletrackx16\u2013304 at320/200",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/72d6196951ff88173583.json"
+    },
+    {
+      "id": "TC-P3-32",
+      "owner": "Coordinator",
+      "status": "passive numeric date-fragment split measured; midpage crop confirmation pending; retain historical ID/severity without new count",
+      "measurement": "Employee Chromium320/200 Home To do Mon, Oct19 breaks final9 onto next40px line in5date ranges",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/52f8931d41b37e0f4dbb.json"
+    }
+  ],
+  "additionalUnderInvestigation": [
+    {
+      "owner": "WaveB",
+      "observation": "Computed WebKit4.3768:1 may be transitional underlay text occluded by Recordingaction card. Painted-visibility/transition attribution pending; raw failure retained."
+    },
+    {
+      "id": "WR-WA-3P2",
+      "owner": "WaveA",
+      "observation": "WebKit native Add Location select truncation390/200; original ID retained, final disposition pending"
+    }
+  ]
+}

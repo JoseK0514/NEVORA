@@ -1,0 +1,11 @@
+{
+  "finding": "ST-RC-PAYROLL-SAVE-01",
+  "status": "unapplied review proposal; no dynamic pass credit",
+  "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "path": "src/components/payroll/payroll-settings.tsx",
+  "beforeSha256": "ee80b3cf0b5dbbe4dec10ad2155034c2bce9183cfb4888e1ae525cf903ff43e2",
+  "afterSha256": "6e53c923651e955e57186f78dd4f201ad07570b8b84b59cef4e725b9d1549e4f",
+  "scope": "Reserve idle and pending Company save labels using existing PendingLabel; preserve guards, focus behavior, commands and wording. Does not address the separately investigated pending contrast observation.",
+  "evidence": "../combined-cd764f6/candidate-findings.md",
+  "requiredVerification": "Actual connected button geometry, focus, one held request, label accessible name/contrast and 409 recovery in Chromium and WebKit at320/200 and390/100; typecheck/lint after owner integration."
+}

@@ -1,0 +1,13 @@
+{
+  "passed": 39,
+  "failed": 1,
+  "failures": [
+    {
+      "file": "/home/runner/work/NEVORA/NEVORA/src/test/integration/phase-e-home.integration.ts",
+      "title": "communication cap sentinel retains known rows and never claims complete",
+      "failureMessages": [
+        "AssertionError: expected { state: 'unavailable', \u2026(1) } to match object { state: 'partial', \u2026(2) }\n(1 matching property omitted from actual)\n    at Proxy.<anonymous> (file:///home/runner/work/NEVORA/NEVORA/node_modules/vitest/dist/chunks/index.DGdajAO2.js:2051:10)\n    at Proxy.<anonymous> (file:///home/runner/work/NEVORA/NEVORA/node_modules/vitest/dist/chunks/index.DGdajAO2.js:1945:14)\n    at Proxy.methodWrapper (file:///home/runner/work/NEVORA/NEVORA/node_modules/chai/index.js:1700:25)\n    at /home/runner/work/NEVORA/NEVORA/src/test/integration/phase-e-home.integration.ts:262:33\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///home/runner/work/NEVORA/NEVORA/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2783:20"
+      ]
+    }
+  ]
+}
