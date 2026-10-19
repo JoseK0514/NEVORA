@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { PinActionResult } from '@/app/app/employees/[employeeId]/clocker-pin/actions';
 import { Card } from './kit/kit';
 import { Field, FieldPair, FormActions, Notice } from './wave-a/parts';
+import { useKeepHeight } from './wave-a/keep-height';
 
 /** Phase 3.5 Wave A: Clocker PIN in the shared form pattern. The PIN never enters React state, the fields clear
  * before the request leaves, one request at a time, and the button says "Saving…" while it is out. */
@@ -16,6 +17,7 @@ export function ClockerPinForm({ employeeId, initialVersion, action }: {
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<PinActionResult | null>(null);
   const lock = useRef(false);
+  const saveButton = useKeepHeight<HTMLButtonElement>(pending);
   const feedback = useRef<HTMLDivElement>(null);
   const employeeHref = `/app/employees/${encodeURIComponent(employeeId)}`;
   const blocked = Boolean(result && !result.ok && result.refresh);
@@ -72,7 +74,7 @@ export function ClockerPinForm({ employeeId, initialVersion, action }: {
           </div>
           <div className="wa-card-body">
             <FormActions>
-              <button type="submit" className="nv-btn" data-kind="primary" data-block="true">{pending ? 'Saving…' : configured ? 'Reset PIN' : 'Save PIN'}</button>
+              <button ref={saveButton} type="submit" className="nv-btn" data-kind="primary" data-block="true">{pending ? 'Saving…' : configured ? 'Reset PIN' : 'Save PIN'}</button>
               <a className="nv-btn" data-kind="secondary" data-block="true" href={employeeHref}>Cancel</a>
             </FormActions>
           </div>
