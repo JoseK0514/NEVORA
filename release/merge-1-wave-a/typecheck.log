@@ -1,0 +1,5 @@
+
+> fuel-scheduler@0.1.0 typecheck
+> tsc --noEmit
+
+src/components/availability-team-list.tsx(7,10): error TS2724: '"@/components/kit/hold-height"' has no exported member named 'useHoldHeight'. Did you mean 'HoldHeight'?

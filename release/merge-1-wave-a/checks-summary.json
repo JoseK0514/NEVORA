@@ -1,0 +1,30 @@
+{
+  "candidate": "0e010464aeb5f532981ac6071c48e1527e9419db",
+  "passed": 0,
+  "total": 64,
+  "http500": 64,
+  "engines": [
+    "chromium",
+    "webkit"
+  ],
+  "accounts": [
+    "AUDIT-E",
+    "AUDIT-LEAD",
+    "AUDIT-M",
+    "QAOWNER"
+  ],
+  "widths": [
+    "390"
+  ],
+  "text": [
+    100
+  ],
+  "axe": true,
+  "files": [
+    "2026-10-19T18-53-36-445Z.json",
+    "2026-10-19T18-54-02-074Z.json",
+    "2026-10-19T18-54-26-666Z.json"
+  ],
+  "finding": "RC-WA-IS-01; development error overlays are not separate UI findings",
+  "remainingMatrix": "blocked; not zero"
+}

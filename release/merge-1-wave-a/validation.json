@@ -1,0 +1,71 @@
+{
+  "candidate": "0e010464aeb5f532981ac6071c48e1527e9419db",
+  "command": [
+    "npm",
+    "test",
+    "--",
+    "--maxWorkers=2",
+    "--reporter=json",
+    "--outputFile=<private evidence>/latest-vitest.json"
+  ],
+  "exitCode": 1,
+  "success": false,
+  "assertions": {
+    "passed": 7280,
+    "failed": 7,
+    "skipped": 801,
+    "pending": 55
+  },
+  "total": 8143,
+  "failedAssertions": [
+    {
+      "file": "src/test/phase-e-process.test.ts",
+      "test": "a short graceful timeout stops detached Next/browser process resources and fails",
+      "error": "AssertionError: expected [Function] to throw an error"
+    },
+    {
+      "file": "src/test/phase-e-process.test.ts",
+      "test": "a short forced timeout stops detached Next/browser process resources and fails",
+      "error": "AssertionError: expected [Function] to throw an error"
+    },
+    {
+      "file": "src/test/phase-e-process.test.ts",
+      "test": "a short forced-title-worker timeout stops detached Next/browser process resources and fails",
+      "error": "AssertionError: expected [Function] to throw an error"
+    },
+    {
+      "file": "src/components/availability-team-list.test.tsx",
+      "test": "availability review filters renders every submitted window, including two windows on the same day",
+      "error": "TypeError: (0 , __vite_ssr_import_4__.useHoldHeight) is not a function"
+    },
+    {
+      "file": "src/components/availability-team-list.test.tsx",
+      "test": "availability review filters preserves the server-formatted update label across browser locales",
+      "error": "TypeError: (0 , __vite_ssr_import_4__.useHoldHeight) is not a function"
+    },
+    {
+      "file": "src/components/manager-workflows.test.tsx",
+      "test": "distinguishes missing, intentionally unavailable and submitted windows without treating seeded hours as a submission",
+      "error": "TypeError: (0 , __vite_ssr_import_4__.useHoldHeight) is not a function"
+    },
+    {
+      "file": "src/components/manager-workflows.test.tsx",
+      "test": "handles an invalid management week without reading or editing personal availability",
+      "error": "TypeError: (0 , __vite_ssr_import_4__.useHoldHeight) is not a function"
+    }
+  ],
+  "lint": {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "warnings": 0
+  },
+  "typescript": {
+    "command": "npm run typecheck",
+    "exitCode": 2,
+    "error": "TS2724: useHoldHeight is not exported"
+  },
+  "install": {
+    "command": "npm ci --no-audit --no-fund",
+    "exitCode": 0
+  }
+}

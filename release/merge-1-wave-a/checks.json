@@ -1,0 +1,1666 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/new",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/coverage",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/copy-receipt?operation=bad",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/requests?tab=pending",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange?tab=pending",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-E",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/new",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-E/clocker-pin",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/new",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/coverage",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/copy-receipt?operation=bad",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/requests?tab=pending",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange?tab=pending",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-E",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/new",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-E/clocker-pin",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/new",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/coverage",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/copy-receipt?operation=bad",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/requests?tab=pending",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange?tab=pending",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-E",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/new",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-E/clocker-pin",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/new",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/coverage",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/copy-receipt?operation=bad",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/requests?tab=pending",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange?tab=pending",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-E",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/new",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-E/clocker-pin",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/callout?shiftId=audit-shift-1-1",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/callout?shiftId=audit-shift-1-1",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LEAD",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LEAD",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LEAD",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-2",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LEAD",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-3",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-LEAD",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-LEAD",
+  "size": "390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-LEAD",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-2",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-LEAD",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-3",
+  "status": 500,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "page: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f",
+   "console: ./src/components/availability-team-list.tsx:7:1\nError: Export useHoldHeight doesn't exist in target module\n   5 | import { keepWhole } from \"@/lib/keep-whole\";\n   6 | import { Avatar, Card, Status } f"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)",
+   "scrollable-region-focusable (1)"
+  ],
+  "ok": false
+ }
+]
