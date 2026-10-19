@@ -8,6 +8,13 @@
   - **ST-02:** at 200% text the toast covered Save. On portrait phones the toast now sits at `tab bar + measured save bar + 8px`. Verified locally in Chromium and WebKit at 320 and 390, at 100% and 200%: 0px overlap, an 8px gap.
 - **Still to re-check from round 3:** every other ID listed for round 3 below, as part of the full sweep.
 
+## Combined candidate (Oct 19, evening)
+
+- **Branch now sits on the release candidate** `codex/verify-preview-33` at `cd764f6` (fast-forward; nothing of Wave C's was missing).
+- **Fixed on top of it (commit `f58b18e`):** **TC-WC-iOS-1** (P2, from Jose's iOS keyboard check): Company profile's protected Business timezone showed the raw name `America/Puerto_Rico`; it now reads `Puerto Rico time` via `timeZoneLabel()`.
+- **Already fixed in the candidate, nothing for Wave C to change:** WR-WC-25 (dialog buttons `flex: 0 0 auto` under 600px, `premium-wave-c.css` near line 575) and TC-WC-28 (shared field edge `--nv-field-border` on textareas, `portal-premium.css` line 1388).
+- **Codex's cd764f6 exit reports are prepared, not run;** no combined-SHA findings yet. Wave C is not zero until an exit round reports zero.
+
 ## Routes and roles
 
 | Route | Roles that can open it | Notes |
