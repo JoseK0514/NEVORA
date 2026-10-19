@@ -1,5 +1,6 @@
 'use client';
 
+import {keepWhole} from '@/lib/keep-whole';
 import Link from 'next/link';
 import {NavIcon} from './nav-icon';
 import { CaretDownIcon, ClockIcon, CoffeeIcon, MapPinIcon, MinusIcon, PlusIcon, ReceiptIcon } from '@phosphor-icons/react';
@@ -14,6 +15,11 @@ import {timeZoneLabel} from '../lib/time-zone-label';
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off clock':entry.state==='ON_BREAK'?'On break':'Clocked in';
 /** Freshness needs minutes, not seconds: "Oct 15, 7:31 PM". */
 function checked(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));}
+// P3-WR-15: the clock-in time reads like the entry list ("6:12 AM"), with the date only when it wasn't today.
+function clockedInAt(at:string,zone:string,today:string){
+ const day=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at));
+ return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:zone,...(day===today?{}:{month:'short' as const,day:'numeric' as const}),hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at)));
+}
 function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at));}
 function entryDate(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric'}).format(new Date(at));}
 function entryRange(entry:EmployeeTimeEntry,zone:string){
@@ -49,13 +55,13 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
  const placeholder=!ready&&!compact&&!paused&&!denied&&time?.state!=='unavailable';
  const title=paused?'Updates paused':denied?'Sign in again':time?.state==='unavailable'?'Recorded time unavailable':'Loading recorded time';
  const controls=<div className="employee-time-controls">
-  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign In</Link>:<button className={corporate?employeeButtonClass('quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label="Refresh recorded time" onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{refreshing?'Refreshing…':'Refresh'}</button>}
+  {denied?<Link className={corporate?employeeButtonClass('primary','employee-time-refresh'):'employee-time-refresh'} href="/login">Sign in</Link>:<button className={corporate?employeeButtonClass('quiet','employee-time-refresh'):'employee-time-refresh'} type="button" aria-label="Refresh recorded time" onClick={onRefresh} disabled={paused||refreshing}><NavIcon name="refresh" size={16}/>{refreshing?'Refreshing…':'Refresh'}</button>}
   {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
  </div>;
  const content=<>
   <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:<span className="employee-time-badge" aria-hidden="true">–</span>}</div>
   {ready?<>
-   {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p><time dateTime={current.clockInAt}>{stamp(current.clockInAt,ready.timeZone)}</time> · Clock In</p><p><b>{formatRecordedDuration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<> · <b>{formatRecordedDuration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
+   {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p>Clocked in at <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></p><p><b>{formatRecordedDuration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<> · <b>{formatRecordedDuration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
   </>:<div className="employee-time-message" role="status"><strong>{title}</strong><p>{paused?'Return online to check your latest records.':denied?'Your current employee session is required.':time?.state==='unavailable'?(compact?'Couldn’t check your records. Try again.':'Your latest clock records could not be confirmed. Try refreshing.'):'Checking your actual punches and breaks.'}</p></div>}
   <p className="employee-time-note">Use your location’s Clocker to record punches.</p>
   {/* P3-ST-06: while loading, the full footer has the ready footer's lines (an invisible stand-in for the zone line), so it doesn't change height. */}

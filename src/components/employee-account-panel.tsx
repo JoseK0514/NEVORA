@@ -1,4 +1,5 @@
 'use client';
+import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
@@ -21,7 +22,8 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
   {!ready?<><p className="profile-supporting-copy employee-profile-status" role="status">{state.paused?'Updates paused. Return to this window while online to check current information.':denied?'Sign in again. Your current employee session is required.':unavailable?'We couldn’t confirm your current information. Try again.':'Checking your current details…'}</p>
    <dl className="employee-profile-details" aria-hidden="true">{['Name','Company','Work locations','App access','Time zone'].map(label=><div key={label}><dt>{label}</dt><dd>–</dd></div>)}</dl></>:
    <EmployeeProfileDetails profile={ready.profile} notificationsEnabled={notificationsEnabled}/>}
-  <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button type="button" className={kind==='profile'?'profile-refresh-link':'button secondary'} disabled={state.paused||state.refreshing} onClick={onRetry} aria-label={unavailable?(kind==='profile'?'Retry work details':'Retry notifications'):undefined}>{state.refreshing?'Checking…':unavailable?'Retry':kind==='profile'?'Refresh details':'Refresh'}</button>}</footer>
+  <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:unavailable?<button type="button" className="nv-btn" data-kind="primary" disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>{state.refreshing?'Checking…':'Try again'}<span className="nv-sr">{kind==='profile'?' to load work details':' to load notifications'}</span></button>
+   :<button type="button" className={kind==='profile'?'profile-refresh-link':'button secondary'} disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':kind==='profile'?'Refresh details':'Refresh'}</button>}</footer>
  </section>;
 }
 export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean}){

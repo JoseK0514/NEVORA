@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import { keepWhole } from '@/lib/keep-whole';
 import { KeepSelectedVisible } from './kit/keep-selected-visible';
 import { FilterPills, PageBand } from './kit/kit';
@@ -181,7 +182,9 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       {confirmationNeeded && !acknowledged && confirmation && state !== 'unavailable' ? <a className="my-review-jump" href="#my-review-title">Your manager asks you to confirm this week</a> : null}
       <section className="employee-view-surface employee-schedule-agenda my-schedule-agenda" aria-labelledby="my-agenda-title">
         <div className="my-agenda-heading"><h2 id="my-agenda-title">Your week at a glance</h2><span>{state==='published'?'Published schedule':'Published assignments only'}</span></div>
-        {dates.map(date => { const label=formatDayLabel(date); const dayShifts=shifts.filter(shift=>shift.date===date); return <article className={`employee-schedule-day${date===today?' today':''}${date===selectedDay?' selected':''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
+        {/* P3-WR-14: a failed read replaces the week list (no "–" days that read as days off) and offers the primary Try again. */}
+        {state === 'unavailable' ? <div className="my-schedule-failure" role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule.</p><Link href={`/app/schedule?week=${weekStart}`} className="nv-btn" data-kind="primary"><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again<span className="nv-sr"> to load your schedule</span></Link></div> : null}
+        {state === 'unavailable' ? null : dates.map(date => { const label=formatDayLabel(date); const dayShifts=shifts.filter(shift=>shift.date===date); return <article className={`employee-schedule-day${date===today?' today':''}${date===selectedDay?' selected':''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
           <time className="employee-agenda-date" dateTime={date}><span>{label.weekday}</span><strong>{Number(date.slice(8))}</strong>{date===today?<small>Today</small>:null}{date===selectedDay?<span className="sr-only">Selected day</span>:null}</time>
           <div className="employee-schedule-day-copy">
             {dayShifts.length ? dayShifts.map(shift=><div className="employee-schedule-shift my-shift" key={shift.id}>
@@ -199,7 +202,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       <div className="my-schedule-side">
       {error ? <div className="my-schedule-feedback error" role="alert"><strong>Confirmation could not be completed.</strong><p>{typeof error === 'string' ? error : 'Review the current schedule and try again.'}</p><Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Review current week</Link></div> : null}
       {safeReceipt ? <p className="my-schedule-feedback success" role="status">Schedule confirmed.</p> : null}
-      {state === 'unavailable' ? <div className="my-schedule-feedback" role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule. Try again to see your current assignments.</p><Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Try again</Link></div> : null}
+
 
       {confirmation && state !== 'unavailable' ? <section className={`my-schedule-review${acknowledged?' is-confirmed':''}`} aria-labelledby="my-review-title">
         <div className="my-review-icon">{acknowledged?<CheckCircleIcon size={24} aria-hidden="true" />:<CalendarCheckIcon size={24} aria-hidden="true" />}{acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}</div>

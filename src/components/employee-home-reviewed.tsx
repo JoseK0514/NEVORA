@@ -1,5 +1,6 @@
 'use client';
 
+import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import Link from 'next/link';
 import {usePresentation} from './presentation-context';
 import type {ModuleId} from '@/lib/workspace-presentation/modules';
@@ -337,7 +338,11 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
       </> : null}</HoldHeight>
       <footer className={styles.freshness}>
         {snapshot ? <small data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
+        {/* P3-WR-14: a failed read gets the same control as every other page: a primary "Try again" with the refresh icon. */}
         {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
+          : !snapshot && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
+            <ArrowsClockwiseIcon size={18} aria-hidden="true"/>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
+          </button>
           : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
             {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Retry home'}
           </button>}

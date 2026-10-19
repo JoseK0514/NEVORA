@@ -22,7 +22,7 @@ it.each(['Retry','scheduled revalidation'])('clears source-expired rows without 
  const request=vi.fn().mockResolvedValueOnce(Response.json(ready())).mockImplementation(async()=>Response.json(ready(false)));vi.stubGlobal('fetch',request);
  const panel=await mount();expect(html()).toContain('notificationId=expiring');
  await vi.advanceTimersByTimeAsync(101);
- expect(last().snapshot).toEqual({state:'unavailable',reason:'read_failed'});expect(html()).not.toContain('notificationId=expiring');expect(html()).not.toContain('Sign in');expect(html()).toContain('Retry');
+ expect(last().snapshot).toEqual({state:'unavailable',reason:'read_failed'});expect(html()).not.toContain('notificationId=expiring');expect(html()).not.toContain('Sign in');expect(html()).toContain('Try again');
  if(recovery==='Retry'){panel.props.onRetry();await vi.advanceTimersByTimeAsync(0);}else await vi.advanceTimersByTimeAsync(30000);
  expect(request).toHaveBeenCalledTimes(2);expect(last().snapshot).toMatchObject({state:'ready',items:[]});expect(html()).toContain('No notifications here.');expect(host.states.some(state=>state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied')).toBe(false);
 });
