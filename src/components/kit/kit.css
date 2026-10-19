@@ -240,7 +240,8 @@ a.nv-row:active { background: var(--nv-inset); }
   display: inline-flex; align-items: center; justify-content: center; gap: var(--nv-s-2);
   min-height: 52px; padding: 0 var(--nv-s-5); border: 0; border-radius: var(--nv-r-control);
   font: var(--nv-t-headline); text-decoration: none; cursor: pointer;
-  transition: background-color var(--nv-m-quick) var(--nv-ease-out), transform var(--nv-m-press) linear;
+  /* TC-WA-16: foreground and background must change together to retain pending contrast. */
+  transition: transform var(--nv-m-press) linear;
 }
 .nv-btn:active:not(:disabled) { transform: scale(.98); }
 .nv-btn[data-kind="primary"] { background: var(--nv-accent); color: #FFFFFF; }
