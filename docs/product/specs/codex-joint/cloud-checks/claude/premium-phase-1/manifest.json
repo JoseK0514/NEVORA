@@ -3181,6 +3181,52 @@
       "code": 1,
       "passed": 15,
       "failed": 1
+    },
+    {
+      "name": "00139-matrix-payroll-qa-b-chromium-320",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T20-20-57-245Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00139-matrix-payroll-qa-b-chromium-320.log",
+      "args": [
+        "--routes",
+        "/app/profile,/app/requests,/app/requests/hub,/app/schedule",
+        "--accounts",
+        "payroll-qa-b",
+        "--widths",
+        "320",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "841bf4e9163fd926fa90e4d02d39d55cf9e5bf24c87ee52455c9fcc6a6a1c683",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
+    },
+    {
+      "name": "00140-matrix-payroll-qa-b-chromium-320",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T20-21-57-781Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00140-matrix-payroll-qa-b-chromium-320.log",
+      "args": [
+        "--routes",
+        "/app/schedule/coverage,/app/timecards,/app/updates,/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+        "--accounts",
+        "payroll-qa-b",
+        "--widths",
+        "320",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "035d018a6782ad400b4b59690a7ebc8591296d84aba8614ca62bea1e5290d956",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
     }
   ],
   "planned": 12580,
