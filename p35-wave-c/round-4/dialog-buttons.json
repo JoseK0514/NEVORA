@@ -1,0 +1,1350 @@
+[
+  {
+    "engine": "chromium",
+    "width": 320,
+    "text": 150,
+    "kind": "archive",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 280,
+        "height": 52,
+        "top": 708,
+        "right": 300,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 49.5,
+        "y": 717.5,
+        "width": 221,
+        "height": 33,
+        "top": 717.5,
+        "right": 270.5,
+        "bottom": 750.5,
+        "left": 49.5
+      },
+      "lines": [
+        {
+          "x": 49.5,
+          "y": 718.5,
+          "width": 221,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 286,
+        "width": 320,
+        "height": 558,
+        "top": 286,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 698,
+        "width": 280,
+        "height": 57,
+        "top": 698,
+        "right": 300,
+        "bottom": 755,
+        "left": 20
+      },
+      "label": {
+        "x": 49.5,
+        "y": 710,
+        "width": 221,
+        "height": 33,
+        "top": 710,
+        "right": 270.5,
+        "bottom": 743,
+        "left": 49.5
+      },
+      "lines": [
+        {
+          "x": 49.5,
+          "y": 711,
+          "width": 221,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 276,
+        "width": 320,
+        "height": 568,
+        "top": 276,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "width": 320,
+    "text": 150,
+    "kind": "rotate",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 280,
+        "height": 52,
+        "top": 708,
+        "right": 300,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 60.5,
+        "y": 717.5,
+        "width": 199,
+        "height": 33,
+        "top": 717.5,
+        "right": 259.5,
+        "bottom": 750.5,
+        "left": 60.5
+      },
+      "lines": [
+        {
+          "x": 60.5,
+          "y": 718.5,
+          "width": 199,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 399,
+        "width": 320,
+        "height": 445,
+        "top": 399,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 698,
+        "width": 280,
+        "height": 57,
+        "top": 698,
+        "right": 300,
+        "bottom": 755,
+        "left": 20
+      },
+      "label": {
+        "x": 60.5,
+        "y": 710,
+        "width": 199,
+        "height": 33,
+        "top": 710,
+        "right": 259.5,
+        "bottom": 743,
+        "left": 60.5
+      },
+      "lines": [
+        {
+          "x": 60.5,
+          "y": 711,
+          "width": 199,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 389,
+        "width": 320,
+        "height": 455,
+        "top": 389,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "width": 320,
+    "text": 200,
+    "kind": "archive",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 280,
+        "height": 52,
+        "top": 708,
+        "right": 300,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 40,
+        "y": 690,
+        "width": 240,
+        "height": 88,
+        "top": 690,
+        "right": 280,
+        "bottom": 778,
+        "left": 40
+      },
+      "lines": [
+        {
+          "x": 101,
+          "y": 691,
+          "width": 118,
+          "height": 41
+        },
+        {
+          "x": 77.5,
+          "y": 735,
+          "width": 165,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 140,
+        "width": 320,
+        "height": 704,
+        "top": 140,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 632,
+        "width": 280,
+        "height": 112,
+        "top": 632,
+        "right": 300,
+        "bottom": 744,
+        "left": 20
+      },
+      "label": {
+        "x": 40,
+        "y": 644,
+        "width": 240,
+        "height": 88,
+        "top": 644,
+        "right": 280,
+        "bottom": 732,
+        "left": 40
+      },
+      "lines": [
+        {
+          "x": 101,
+          "y": 645,
+          "width": 118,
+          "height": 41
+        },
+        {
+          "x": 77.5,
+          "y": 689,
+          "width": 165,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 64,
+        "width": 320,
+        "height": 780,
+        "top": 64,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "width": 320,
+    "text": 200,
+    "kind": "rotate",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 280,
+        "height": 52,
+        "top": 708,
+        "right": 300,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 40,
+        "y": 690,
+        "width": 240,
+        "height": 88,
+        "top": 690,
+        "right": 280,
+        "bottom": 778,
+        "left": 40
+      },
+      "lines": [
+        {
+          "x": 107.5,
+          "y": 691,
+          "width": 105,
+          "height": 41
+        },
+        {
+          "x": 85.5,
+          "y": 735,
+          "width": 149,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 234,
+        "width": 320,
+        "height": 610,
+        "top": 234,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 632,
+        "width": 280,
+        "height": 112,
+        "top": 632,
+        "right": 300,
+        "bottom": 744,
+        "left": 20
+      },
+      "label": {
+        "x": 40,
+        "y": 644,
+        "width": 240,
+        "height": 88,
+        "top": 644,
+        "right": 280,
+        "bottom": 732,
+        "left": 40
+      },
+      "lines": [
+        {
+          "x": 107.5,
+          "y": 645,
+          "width": 105,
+          "height": 41
+        },
+        {
+          "x": 85.5,
+          "y": 689,
+          "width": 149,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 158,
+        "width": 320,
+        "height": 686,
+        "top": 158,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "width": 390,
+    "text": 150,
+    "kind": "archive",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 350,
+        "height": 52,
+        "top": 708,
+        "right": 370,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 84.5,
+        "y": 717.5,
+        "width": 221,
+        "height": 33,
+        "top": 717.5,
+        "right": 305.5,
+        "bottom": 750.5,
+        "left": 84.5
+      },
+      "lines": [
+        {
+          "x": 84.5,
+          "y": 718.5,
+          "width": 221,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 346,
+        "width": 390,
+        "height": 498,
+        "top": 346,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 698,
+        "width": 350,
+        "height": 57,
+        "top": 698,
+        "right": 370,
+        "bottom": 755,
+        "left": 20
+      },
+      "label": {
+        "x": 84.5,
+        "y": 710,
+        "width": 221,
+        "height": 33,
+        "top": 710,
+        "right": 305.5,
+        "bottom": 743,
+        "left": 84.5
+      },
+      "lines": [
+        {
+          "x": 84.5,
+          "y": 711,
+          "width": 221,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 336,
+        "width": 390,
+        "height": 508,
+        "top": 336,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "width": 390,
+    "text": 150,
+    "kind": "rotate",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 350,
+        "height": 52,
+        "top": 708,
+        "right": 370,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 95.5,
+        "y": 717.5,
+        "width": 199,
+        "height": 33,
+        "top": 717.5,
+        "right": 294.5,
+        "bottom": 750.5,
+        "left": 95.5
+      },
+      "lines": [
+        {
+          "x": 95.5,
+          "y": 718.5,
+          "width": 199,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 429,
+        "width": 390,
+        "height": 415,
+        "top": 429,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 698,
+        "width": 350,
+        "height": 57,
+        "top": 698,
+        "right": 370,
+        "bottom": 755,
+        "left": 20
+      },
+      "label": {
+        "x": 95.5,
+        "y": 710,
+        "width": 199,
+        "height": 33,
+        "top": 710,
+        "right": 294.5,
+        "bottom": 743,
+        "left": 95.5
+      },
+      "lines": [
+        {
+          "x": 95.5,
+          "y": 711,
+          "width": 199,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 419,
+        "width": 390,
+        "height": 425,
+        "top": 419,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "width": 390,
+    "text": 200,
+    "kind": "archive",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 350,
+        "height": 52,
+        "top": 708,
+        "right": 370,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 49.5,
+        "y": 712,
+        "width": 291,
+        "height": 44,
+        "top": 712,
+        "right": 340.5,
+        "bottom": 756,
+        "left": 49.5
+      },
+      "lines": [
+        {
+          "x": 49.5,
+          "y": 713,
+          "width": 291,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 220,
+        "width": 390,
+        "height": 624,
+        "top": 220,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 676,
+        "width": 350,
+        "height": 68,
+        "top": 676,
+        "right": 370,
+        "bottom": 744,
+        "left": 20
+      },
+      "label": {
+        "x": 49.5,
+        "y": 688,
+        "width": 291,
+        "height": 44,
+        "top": 688,
+        "right": 340.5,
+        "bottom": 732,
+        "left": 49.5
+      },
+      "lines": [
+        {
+          "x": 49.5,
+          "y": 689,
+          "width": 291,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 188,
+        "width": 390,
+        "height": 656,
+        "top": 188,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "width": 390,
+    "text": 200,
+    "kind": "rotate",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 350,
+        "height": 52,
+        "top": 708,
+        "right": 370,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 64,
+        "y": 712,
+        "width": 262,
+        "height": 44,
+        "top": 712,
+        "right": 326,
+        "bottom": 756,
+        "left": 64
+      },
+      "lines": [
+        {
+          "x": 64,
+          "y": 713,
+          "width": 262,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 314,
+        "width": 390,
+        "height": 530,
+        "top": 314,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 676,
+        "width": 350,
+        "height": 68,
+        "top": 676,
+        "right": 370,
+        "bottom": 744,
+        "left": 20
+      },
+      "label": {
+        "x": 64,
+        "y": 688,
+        "width": 262,
+        "height": 44,
+        "top": 688,
+        "right": 326,
+        "bottom": 732,
+        "left": 64
+      },
+      "lines": [
+        {
+          "x": 64,
+          "y": 689,
+          "width": 262,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 282,
+        "width": 390,
+        "height": 562,
+        "top": 282,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "width": 320,
+    "text": 150,
+    "kind": "archive",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 280,
+        "height": 52,
+        "top": 708,
+        "right": 300,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 43.390625,
+        "y": 717.5,
+        "width": 233.203125,
+        "height": 33,
+        "top": 717.5,
+        "right": 276.59375,
+        "bottom": 750.5,
+        "left": 43.390625
+      },
+      "lines": [
+        {
+          "x": 43.398414611816406,
+          "y": 718.5,
+          "width": 233.18756103515625,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 286,
+        "width": 320,
+        "height": 558,
+        "top": 286,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 698,
+        "width": 280,
+        "height": 57,
+        "top": 698,
+        "right": 300,
+        "bottom": 755,
+        "left": 20
+      },
+      "label": {
+        "x": 43.390625,
+        "y": 710,
+        "width": 233.203125,
+        "height": 33,
+        "top": 710,
+        "right": 276.59375,
+        "bottom": 743,
+        "left": 43.390625
+      },
+      "lines": [
+        {
+          "x": 43.398414611816406,
+          "y": 711,
+          "width": 233.18756103515625,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 276,
+        "width": 320,
+        "height": 568,
+        "top": 276,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "width": 320,
+    "text": 150,
+    "kind": "rotate",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 280,
+        "height": 52,
+        "top": 708,
+        "right": 300,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 55.953125,
+        "y": 717.5,
+        "width": 208.078125,
+        "height": 33,
+        "top": 717.5,
+        "right": 264.03125,
+        "bottom": 750.5,
+        "left": 55.953125
+      },
+      "lines": [
+        {
+          "x": 55.95442199707031,
+          "y": 718.5,
+          "width": 208.07554626464844,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 369,
+        "width": 320,
+        "height": 475,
+        "top": 369,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 698,
+        "width": 280,
+        "height": 57,
+        "top": 698,
+        "right": 300,
+        "bottom": 755,
+        "left": 20
+      },
+      "label": {
+        "x": 55.953125,
+        "y": 710,
+        "width": 208.078125,
+        "height": 33,
+        "top": 710,
+        "right": 264.03125,
+        "bottom": 743,
+        "left": 55.953125
+      },
+      "lines": [
+        {
+          "x": 55.95442199707031,
+          "y": 711,
+          "width": 208.07554626464844,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 359,
+        "width": 320,
+        "height": 485,
+        "top": 359,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "width": 320,
+    "text": 200,
+    "kind": "archive",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 280,
+        "height": 52,
+        "top": 708,
+        "right": 300,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 40,
+        "y": 690,
+        "width": 240,
+        "height": 88,
+        "top": 690,
+        "right": 280,
+        "bottom": 778,
+        "left": 40
+      },
+      "lines": [
+        {
+          "x": 96.77825927734375,
+          "y": 691.5,
+          "width": 126.4434814453125,
+          "height": 41
+        },
+        {
+          "x": 72.04657745361328,
+          "y": 735.5,
+          "width": 175.9068603515625,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 100,
+        "width": 320,
+        "height": 744,
+        "top": 100,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 632,
+        "width": 280,
+        "height": 112,
+        "top": 632,
+        "right": 300,
+        "bottom": 744,
+        "left": 20
+      },
+      "label": {
+        "x": 40,
+        "y": 644,
+        "width": 240,
+        "height": 88,
+        "top": 644,
+        "right": 280,
+        "bottom": 732,
+        "left": 40
+      },
+      "lines": [
+        {
+          "x": 96.77825927734375,
+          "y": 645.5,
+          "width": 126.4434814453125,
+          "height": 41
+        },
+        {
+          "x": 72.04657745361328,
+          "y": 689.5,
+          "width": 175.9068603515625,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 24,
+        "width": 320,
+        "height": 820,
+        "top": 24,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "width": 320,
+    "text": 200,
+    "kind": "rotate",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 280,
+        "height": 52,
+        "top": 708,
+        "right": 300,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 40,
+        "y": 690,
+        "width": 240,
+        "height": 88,
+        "top": 690,
+        "right": 280,
+        "bottom": 778,
+        "left": 40
+      },
+      "lines": [
+        {
+          "x": 105.22978210449219,
+          "y": 691.5,
+          "width": 109.54043579101562,
+          "height": 41
+        },
+        {
+          "x": 80.33641052246094,
+          "y": 735.5,
+          "width": 159.32717895507812,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 194,
+        "width": 320,
+        "height": 650,
+        "top": 194,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 632,
+        "width": 280,
+        "height": 112,
+        "top": 632,
+        "right": 300,
+        "bottom": 744,
+        "left": 20
+      },
+      "label": {
+        "x": 40,
+        "y": 644,
+        "width": 240,
+        "height": 88,
+        "top": 644,
+        "right": 280,
+        "bottom": 732,
+        "left": 40
+      },
+      "lines": [
+        {
+          "x": 105.22978210449219,
+          "y": 645.5,
+          "width": 109.54043579101562,
+          "height": 41
+        },
+        {
+          "x": 80.33641052246094,
+          "y": 689.5,
+          "width": 159.32717895507812,
+          "height": 41
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 34px / 44px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "44px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 118,
+        "width": 320,
+        "height": 726,
+        "top": 118,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "width": 390,
+    "text": 150,
+    "kind": "archive",
+    "before": {
+      "button": {
+        "x": 20,
+        "y": 708,
+        "width": 350,
+        "height": 52,
+        "top": 708,
+        "right": 370,
+        "bottom": 760,
+        "left": 20
+      },
+      "label": {
+        "x": 78.390625,
+        "y": 717.5,
+        "width": 233.203125,
+        "height": 33,
+        "top": 717.5,
+        "right": 311.59375,
+        "bottom": 750.5,
+        "left": 78.390625
+      },
+      "lines": [
+        {
+          "x": 78.3984146118164,
+          "y": 718.5,
+          "width": 233.18756103515625,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "1 1 0px",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 346,
+        "width": 390,
+        "height": 498,
+        "top": 346,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "browserOnlyFlexAuto": {
+      "button": {
+        "x": 20,
+        "y": 698,
+        "width": 350,
+        "height": 57,
+        "top": 698,
+        "right": 370,
+        "bottom": 755,
+        "left": 20
+      },
+      "label": {
+        "x": 78.390625,
+        "y": 710,
+        "width": 233.203125,
+        "height": 33,
+        "top": 710,
+        "right": 311.59375,
+        "bottom": 743,
+        "left": 78.390625
+      },
+      "lines": [
+        {
+          "x": 78.3984146118164,
+          "y": 711,
+          "width": 233.18756103515625,
+          "height": 31
+        }
+      ],
+      "css": {
+        "flex": "0 0 auto",
+        "padding": "12px 20px",
+        "font": "600 25.5px / 33px Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "lineHeight": "33px"
+      },
+      "actionDirection": "column",
+      "dialog": {
+        "x": 0,
+        "y": 336,
+        "width": 390,
+        "height": 508,
+        "top": 336,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  }
+]

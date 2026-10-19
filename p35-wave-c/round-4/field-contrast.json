@@ -1,0 +1,618 @@
+[
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "idle": {
+      "class": "wc-control",
+      "style": null,
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        }
+      ]
+    },
+    "hover": {
+      "class": "wc-control",
+      "style": "",
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control:hover:not(:disabled):not(:focus)",
+          "border": "",
+          "color": "rgb(185, 193, 191)"
+        }
+      ]
+    },
+    "focus": {
+      "class": "wc-control",
+      "style": "",
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):focus-visible",
+          "border": "",
+          "color": "var(--g-accent)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control:focus-visible",
+          "border": "",
+          "color": "var(--nv-accent)"
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "idle": {
+      "class": "wc-control",
+      "style": null,
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        }
+      ]
+    },
+    "hover": {
+      "class": "wc-control",
+      "style": "",
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control:hover:not(:disabled):not(:focus)",
+          "border": "",
+          "color": "rgb(185, 193, 191)"
+        }
+      ]
+    },
+    "focus": {
+      "class": "wc-control",
+      "style": "",
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):focus-visible",
+          "border": "",
+          "color": "var(--g-accent)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control:focus-visible",
+          "border": "",
+          "color": "var(--nv-accent)"
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "idle": {
+      "class": "wc-control",
+      "style": null,
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        }
+      ]
+    },
+    "hover": {
+      "class": "wc-control",
+      "style": "",
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control:hover:not(:disabled):not(:focus)",
+          "border": "",
+          "color": "rgb(185, 193, 191)"
+        }
+      ]
+    },
+    "focus": {
+      "class": "wc-control",
+      "style": "",
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):focus-visible",
+          "border": "",
+          "color": "var(--g-accent)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control:focus-visible",
+          "border": "",
+          "color": "var(--nv-accent)"
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "idle": {
+      "class": "wc-control",
+      "style": null,
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        }
+      ]
+    },
+    "hover": {
+      "class": "wc-control",
+      "style": "",
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control:hover:not(:disabled):not(:focus)",
+          "border": "",
+          "color": "rgb(185, 193, 191)"
+        }
+      ]
+    },
+    "focus": {
+      "class": "wc-control",
+      "style": "",
+      "border": "1px solid rgb(213, 218, 217)",
+      "color": "rgb(22, 25, 28)",
+      "background": "rgb(255, 255, 255)",
+      "box": {
+        "x": 36,
+        "y": 470,
+        "width": 318,
+        "height": 126,
+        "top": 470,
+        "right": 354,
+        "bottom": 596,
+        "left": 36
+      },
+      "fieldBorderVar": "#858b8f",
+      "rules": [
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"])",
+          "border": "",
+          "color": "var(--g-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal .page-frame :is(input, select, textarea):not([type=\"hidden\"]):focus-visible",
+          "border": "",
+          "color": "var(--g-accent)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] textarea",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(textarea, input[type=\"search\"]):not(.mws-search input):not([class*=\"__search\"] input):not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+          "border": "1px solid var(--nv-border)",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"hidden\"]), select, textarea):not(.nv-x):not(.nv-y), html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] :is([class*=\"__search\"], .mws-search, .schedule-period-control):not(.nv-x)",
+          "border": "",
+          "color": "var(--nv-field-border)"
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control",
+          "border": "1px solid var(--nv-field-border, var(--nv-border))",
+          "color": ""
+        },
+        {
+          "selector": "html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(input, select, textarea).wc-control:focus-visible",
+          "border": "",
+          "color": "var(--nv-accent)"
+        }
+      ]
+    }
+  }
+]
