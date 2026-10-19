@@ -105,6 +105,7 @@ it("copy commits one shift and retains original receipt after lost response, ret
     expect.objectContaining({
       status: "COMMITTED",
       shiftId: expect.any(String),
+      employeeName:'Fictional Worker',date:'2030-10-07',startTime:'08:00',endTime:'12:00',locationName:expect.any(String),
     }),
   ]);
   await db.executor.query({

@@ -2,8 +2,16 @@ import type {ManagerActionItem} from '../assistance/manager-actions';
 import type {AttendanceDisplayReview} from '../attendance/read-model';
 import type {ManagerTimeCorrections} from '../time-corrections/read-model';
 import type {TimecardsResult} from '../timecards/read-model';
-export type ActionItem=Omit<ManagerActionItem,'type'>&{type:ManagerActionItem['type']|'ATTENDANCE'|'TIME_CORRECTION'|'TIMECARD';category:'scheduling'|'requests'|'timekeeping'};
+export type ActionItem=Omit<ManagerActionItem,'type'>&{type:ManagerActionItem['type']|'ATTENDANCE'|'TIME_CORRECTION'|'TIMECARD';category:'scheduling'|'requests'|'timekeeping';request?:import('../data/action-request-facts.server').ActionRequestFacts};
 export type ActionCenter={state:'ready';observedAt:string;validForMs:number;weekStart:string;items:ActionItem[];counts:{total:number;scheduling:number;requests:number;timekeeping:number};limitedAttendance:boolean}|{state:'unavailable';reason:'access_denied'|'read_failed'};
+function validateRequestFacts(value:NonNullable<ActionItem['request']>) {
+ const date=(v:unknown):v is string=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
+ if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['startDate','endDate','partialDay','lengthText','locationName','note','reviewHref'].includes(k))||
+  !date(value.startDate)||!date(value.endDate)||value.endDate<value.startDate||typeof value.lengthText!=='string'||!value.lengthText||value.lengthText.length>200||
+  typeof value.locationName!=='string'||!value.locationName||value.locationName.length>200||
+  value.note!==undefined&&(typeof value.note!=='string'||value.note.length>3000)||typeof value.reviewHref!=='string'||!/^\/app\/(requests|exchange)\?/.test(value.reviewHref)||/[\\\u0000-\u001f\u007f]/.test(value.reviewHref))throw Error('Invalid request facts');
+ if(value.partialDay!==undefined){const p=value.partialDay;if(!p||typeof p!=='object'||Object.keys(p).sort().join(',')!=='end,start'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(p.start)||!/^(([01]\d|2[0-3]):[0-5]\d|24:00)$/.test(p.end))throw Error('Invalid request facts');}
+}
 const requestTypes=new Set(['TIME_OFF','EXCHANGE','CALLOUT']);
 export function combineManagerActions(scheduling:ManagerActionItem[],attendance:Extract<AttendanceDisplayReview,{state:'ready'}>,corrections:Extract<ManagerTimeCorrections,{state:'ready'}>,timecards:Extract<TimecardsResult,{state:'ready'}>,actorId:string):ActionItem[]{
  const items:ActionItem[]=scheduling.map(item=>({...item,category:requestTypes.has(item.type)?'requests':'scheduling'}));
@@ -22,6 +30,6 @@ export function parseActionCenter(value:unknown,weekStart:string):ActionCenter{
  if(v.state==='unavailable'){if(!['access_denied','read_failed'].includes(v.reason))throw Error('Invalid unavailable state');return v;}
  if(v.state!=='ready'||v.weekStart!==weekStart||!Number.isFinite(Date.parse(v.observedAt))||!Number.isFinite(v.validForMs)||v.validForMs<1||v.validForMs>45000||!Array.isArray(v.items)||v.items.length>1000||typeof v.limitedAttendance!=='boolean')throw Error('Invalid action center');
  const counts={total:v.items.length,scheduling:0,requests:0,timekeeping:0},ids=new Set<string>();
- for(const item of v.items){if(!item||typeof item.id!=='string'||ids.has(item.id)||!['scheduling','requests','timekeeping'].includes(item.category)||!['URGENT','REVIEW','MISSING_INPUT'].includes(item.priority)||typeof item.title!=='string'||!item.title||typeof item.detail!=='string'||typeof item.href!=='string'||!/^\/app(?:\/|\?)/.test(item.href)||item.href.includes('\\')||item.title.length>500||item.detail.length>3000)throw Error('Invalid action item');ids.add(item.id);counts[item.category]++;}
+ for(const item of v.items){if(!item||typeof item.id!=='string'||ids.has(item.id)||!['scheduling','requests','timekeeping'].includes(item.category)||!['URGENT','REVIEW','MISSING_INPUT'].includes(item.priority)||typeof item.title!=='string'||!item.title||typeof item.detail!=='string'||typeof item.href!=='string'||!/^\/app(?:\/|\?)/.test(item.href)||item.href.includes('\\')||item.title.length>500||item.detail.length>3000)throw Error('Invalid action item');if(item.request!==undefined)validateRequestFacts(item.request);ids.add(item.id);counts[item.category]++;}
  if(!v.counts||Object.keys(counts).some(key=>counts[key as keyof typeof counts]!==v.counts[key as keyof typeof counts]))throw Error('Invalid action counts');return v;
 }

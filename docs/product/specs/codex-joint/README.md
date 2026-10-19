@@ -58,7 +58,19 @@ Tests capture an actual buffered `.eml` through `recoveryDelivery()` and a JSON 
 
 ## 5. Remaining agreed projections
 
-Pending: Inbox count; Wave A decision metadata, numeric coverage needs and descriptive copy receipts. D-5 is already implemented according to the desktop contract and will be verified rather than duplicated. Unspecified/product-dependent changes in HANDOFF section 2 remain proposals rather than invented APIs. Joint real-submission, device, large-data and browser inspections remain separate from unit evidence.
+Implemented additive projections without changing the existing decisions or units:
+
+- **Inbox count:** `readInboxCount(proof, executor?)` in `src/lib/data/inbox-count.server.ts` and `GET /api/manager/inbox-count`. Owner/Manager only; exact `needsYou(actions.items,today.today,today.missed).count`. Both private sources must succeed and remain current, with final session verification. Failed/partial sources return unavailable rather than zero. Claude: fetch this private endpoint for the sidebar/phone badge; render no badge while unavailable. The endpoint requires no actor selector and rejects query selectors and cross-site fetches.
+- **Desktop request detail:** optional `request` facts on action-center items, populated by `withActionRequestFacts` in one batch for the IDs already in the actor's action read. The batch verifies the live session and administrative location scope. It returns dates, partial-day times, length, location, note and a fixed review destination. Exchange/callout facts are omitted if live terms differ from the request's captured terms; the existing full-review link remains the fallback. `parseActionCenter()` validates the added object before client consumption. Claude: render these facts when present; keep decisions on the full review until Jose approves moving them (O1).
+- **Wave A C1:** `listTeamTimeOffRequests()` now includes the same optional `reviewedAt`/`reviewerName` projection as the employee timeline, preserving requests with a LEFT JOIN. Claude: wire the decision timeline to these fields.
+- **C2:** coverage repair targets now include numeric `count` for STAFFING, LEAD and POSITION, and `positionName` for POSITION. Existing labels remain intact. Claude can retire sentence parsing when wiring the numeric fields.
+- **C3:** newly persisted copy receipts include `employeeName`, destination `date`, `startTime`, `endTime`, and `locationName` for every outcome, including skipped rows. Fields are optional/nullable for historical receipts and unavailable source metadata; no fake labels or backfill from changed live rows. The receipt retains those facts across lost responses/retries. Claude: use the fields when present and retain a fallback for older receipts.
+- **C4:** decimal scheduled/target/needed hours are unchanged. No unit conversion contract was introduced.
+- **D-5:** existing action behavior already returns to the originating Inbox/filter and drops `item=` to select the next remaining request. Its existing action tests, including fixed destination validation, passed; no duplicate redirect logic was added.
+
+The targeted projection/action-center/Profile run passed 212 tests across 12 files; later parser/capture tests also passed. Actual PostgreSQL tests now cover request facts under Owner versus restricted Manager scope and changed exchange/callout terms; final results follow below. The existing persisted-copy/lost-response integration test additionally asserts descriptive receipt fields.
+
+Unspecified/product-dependent section-2 proposals (a separate Attendance page, employee no-punch read, alternate timecard navigation, broader notification context) have no complete agreed new API here and remain proposals. Wave B report-definition rewrites and payroll/legal wording remain with Jose. Wave B/C submission, expiry, export/document rendering, physical-device, large-data and browser inspections stay joint work; the underlying database suites are recorded separately below.
 
 ## 6. Review of Claude's server changes
 

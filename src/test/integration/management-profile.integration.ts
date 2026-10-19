@@ -7,6 +7,10 @@ import {notificationIntentStatements} from '../../lib/data/notifications';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {NotificationIntent} from '../../lib/notifications/types';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
+import {withActionRequestFacts} from '../../lib/data/action-request-facts.server';
+import {getWorkspace} from '../../lib/data/workspaces';
+import type {ActionItem} from '../../lib/action-center/project';
+import {currentShiftTermsSql} from '../../lib/data/shift-change-release';
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const proof=(role:'OWNER'|'MANAGER'='OWNER'):SessionMutationProof=>({employee:{id:role.toLowerCase(),role,firstName:'Fictional',lastName:role,primaryLocationId:'loc-1'},sessionTokenHash:(role==='OWNER'?'a':'b').repeat(64)});
 beforeEach(async()=>{
@@ -40,8 +44,35 @@ it('reads installed Manager location scope and denies a missing administrative g
   const locations=await db.executor.query<{name:string}>({text:"SELECT name FROM locations WHERE id='loc-2'",values:[]});
   expect(profile).toMatchObject({state:'ready',locations:{scope:'assigned',names:[locations[0].name]}});
   expect(await readManagementProfile(proof(),db.executor)).toMatchObject({state:'ready',locations:{scope:'all'}});
+  await db.executor.query({text:"UPDATE nevora_tenancy.portal_administrative_authority SET scope_kind='ALL_TENANT'",values:[]});
+  expect(await readManagementProfile(proof('MANAGER'),db.executor)).toMatchObject({state:'ready',locations:{scope:'all'}});
+  await db.executor.query({text:"UPDATE nevora_tenancy.portal_administrative_authority SET scope_kind='LOCATIONS'; DELETE FROM nevora_tenancy.portal_administrative_location",values:[]});
+  expect(await readManagementProfile(proof('MANAGER'),db.executor)).toMatchObject({state:'ready',locations:{scope:'assigned',names:[]}});
   await db.executor.query({text:'DELETE FROM nevora_tenancy.portal_administrative_authority',values:[]});
   expect(await readManagementProfile(proof('MANAGER'),db.executor)).toMatchObject({state:'unavailable',reason:'access_denied'});
+});
+it('adds request detail only within the currently authorized Manager location scope',async()=>{
+  await db.executor.query({text:`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason) VALUES('facts','manager','2030-01-01','2030-01-02','Fictional reason');
+    CREATE SCHEMA IF NOT EXISTS nevora_tenancy;
+    CREATE TABLE nevora_tenancy.portal_administrative_authority(workspace_id text,employee_id text,scope_kind text);
+    CREATE TABLE nevora_tenancy.portal_administrative_location(workspace_id text,employee_id text,location_id text);
+    INSERT INTO nevora_tenancy.portal_administrative_authority SELECT id,'manager','LOCATIONS' FROM workspaces;
+    INSERT INTO nevora_tenancy.portal_administrative_location SELECT id,'manager','loc-2' FROM workspaces;`,values:[]});
+  const items=[{id:'TIME_OFF:facts',type:'TIME_OFF',category:'requests',priority:'REVIEW',title:'QA',detail:'QA',href:'/app/requests'}] as ActionItem[],workspace=await getWorkspace(db.executor);
+  expect((await withActionRequestFacts(proof(),workspace,items,db.executor))[0].request).toMatchObject({note:'Fictional reason',lengthText:'2 days'});
+  expect((await withActionRequestFacts(proof('MANAGER'),workspace,items,db.executor))[0].request).toBeUndefined();
+});
+it('omits exchange and callout facts once live terms differ from the captured request',async()=>{
+  await db.executor.query({text:`INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('facts-schedule','loc-1','2030-01-07','owner');
+    INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('facts-shift','facts-schedule','manager','2030-01-07','08:00','12:00'),('facts-callout-shift','facts-schedule','manager','2030-01-08','08:00','12:00');
+    INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status,source_terms)
+      SELECT 'facts-exchange','COVERAGE',s.id,'manager','OPEN',${currentShiftTermsSql('s','sc')} FROM shifts s JOIN schedules sc ON sc.id=s.schedule_id WHERE s.id='facts-shift';
+    INSERT INTO shift_callouts(id,shift_id,employee_id,reason_code,source_terms)
+      SELECT 'facts-callout',s.id,'manager','OTHER',${currentShiftTermsSql('s','sc')} FROM shifts s JOIN schedules sc ON sc.id=s.schedule_id WHERE s.id='facts-callout-shift';`,values:[]});
+  const items=['EXCHANGE:facts-exchange','CALLOUT:facts-callout'].map(id=>({id,type:id.split(':')[0],category:'requests',priority:'REVIEW',title:'QA',detail:'QA',href:'/app/exchange'})) as ActionItem[],workspace=await getWorkspace(db.executor);
+  expect((await withActionRequestFacts(proof(),workspace,items,db.executor)).every(i=>i.request?.partialDay?.start==='08:00')).toBe(true);
+  await db.executor.query({text:"UPDATE shifts SET start_time='09:00' WHERE id IN ('facts-shift','facts-callout-shift')",values:[]});
+  expect((await withActionRequestFacts(proof(),workspace,items,db.executor)).every(i=>i.request===undefined)).toBe(true);
 });
 it('keeps concurrent different topic saves and identical retries without changing another person',async()=>{
   await Promise.all(['time-off','shift-changes'].map(topicId=>saveManagementAlertChoice(proof(),{topicId,on:false},db.executor)));

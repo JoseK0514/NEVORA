@@ -33,9 +33,9 @@ export function deriveCoverageRepair(source: GenerationSource, supplied: Coverag
     weekDates: Array.from({ length: 7 }, (_, i) => addDays(locator.weekStart, i)) });
   const block = health.coverageBlocks.find(b => b.key === locator.gapKey && b.locationId === locator.locationId && b.date === locator.date && b.startTime === locator.startTime && b.endTime === locator.endTime);
   const targets = block ? [
-    ...block.positionCoverage.filter(p => p.missing > 0).map(p => ({ target: 'POSITION' as const, positionId: p.positionId, label: `${p.positionName}: ${p.missing} missing` })),
-    ...(block.gap && block.gap > 0 ? [{ target: 'STAFFING' as const, label: `${block.gap} employees missing` }] : []),
-    ...(block.requiresLead && !block.leadCovered ? [{ target: 'LEAD' as const, label: 'Designated Lead missing' }] : []),
+    ...block.positionCoverage.filter(p => p.missing > 0).map(p => ({ target: 'POSITION' as const, positionId: p.positionId, positionName:p.positionName,count:p.missing,label: `${p.positionName}: ${p.missing} missing` })),
+    ...(block.gap && block.gap > 0 ? [{ target: 'STAFFING' as const,count:block.gap,label: `${block.gap} employees missing` }] : []),
+    ...(block.requiresLead && !block.leadCovered ? [{ target: 'LEAD' as const,count:1,label: 'Designated Lead missing' }] : []),
   ] : [];
   const current = block ? reportedCoverageState({ ...block, requiresLead: block.requiresLead && !block.leadCovered }) : undefined;
   const changed = !current || stable(current) !== stable(locator.reported);
