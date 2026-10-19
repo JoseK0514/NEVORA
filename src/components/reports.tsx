@@ -106,7 +106,8 @@ export function Reports({initialPeriod}:{initialPeriod:Period}){
     validUntil=started+body.validForMs;setReport(result);setState('ready');
     if(timer)clearTimeout(timer);if(refresher)clearTimeout(refresher);refresher=null;
     timer=setTimeout(()=>{holdPlace();clear('loading');void load();},remaining);
-    if(heldScroll!==null)(window.requestAnimationFrame??((step:()=>void)=>setTimeout(step,0)))(releasePlace);
+    // ST-B13: restore the place only once the report is back on the page (React may commit after the next frame).
+    if(heldScroll!==null){const frame=window.requestAnimationFrame??((step:()=>void)=>setTimeout(step,16));const settle=(tries:number)=>{if(document.querySelector?.('.wb-insights-view')||tries>60)releasePlace();else frame(()=>settle(tries+1));};frame(()=>settle(0));}
     if(remaining>5000)refresher=setTimeout(()=>{refresher=null;void load(false,true);},remaining/3);
    }catch{if(!active||current!==generation)return;if(!silent){clear(navigator.onLine?'unavailable':'offline');return;}
     // A failed quiet refresh tries again while the current snapshot still has time left.
