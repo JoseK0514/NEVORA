@@ -1,0 +1,90 @@
+[
+ {
+  "engine": "chromium",
+  "account": "ANONYMOUS",
+  "size": "360",
+  "text": 100,
+  "route": "/login",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "label. «Employee ID» 14px",
+   "label. «Password» 14px",
+   "span. «Forgot access?» 14px",
+   "small. «New employee?» 12px",
+   "span. «New employee?Activate your acc» 14px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "ANONYMOUS",
+  "size": "360",
+  "text": 125,
+  "route": "/login",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "label. «Employee ID» 14px",
+   "label. «Password» 14px",
+   "span. «Forgot access?» 14px",
+   "small. «New employee?» 12px",
+   "span. «New employee?Activate your acc» 14px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "ANONYMOUS",
+  "size": "360",
+  "text": 150,
+  "route": "/login",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "label. «Employee ID» 14px",
+   "label. «Password» 14px",
+   "span. «Forgot access?» 14px",
+   "small. «New employee?» 12px",
+   "span. «New employee?Activate your acc» 14px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "ANONYMOUS",
+  "size": "360",
+  "text": 200,
+  "route": "/login",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "label. «Employee ID» 14px",
+   "label. «Password» 14px",
+   "span. «Forgot access?» 14px",
+   "small. «New employee?» 12px",
+   "span. «New employee?Activate your acc» 14px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]
