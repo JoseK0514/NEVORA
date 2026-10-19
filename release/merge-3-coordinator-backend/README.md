@@ -1,4 +1,4 @@
-# Coordinator and backend integration — validation in progress
+# Coordinator and backend integration — historical blocked checkpoint
 
 Candidate `98b037b855b30d0494885e0e8c5b0c3bc78d228f` includes coordinator `8c4264c` and backend `c6a5954`. It retains the previously authorized Wave A `c05e0c7`; newer `7679133` awaits its own zero exit. This is local integration evidence, not release acceptance or a production certification.
 
@@ -11,3 +11,5 @@ First full suite: 7,333 passed / 3 failed / 801 skipped / 55 pending (8,192 asse
 Corrected browser probe: 60 rendered samples, no HTTP/page errors; all eight role/engine More open/focus/Close/Escape/focus-return checks pass, with 44px minimum sheet targets. The probe allows the read-only /api/manager/action-center POST; every submission remains intercepted. Automated checks and five combined reports are pending. Current checker flags identify the known desktop shell type floor, owned by Desktop and excluded from Wave A’s own findings.
 
 No source branch edits or pushes, device exposure, deployment, or main merge. All fixtures are fictional, loopback only, external delivery disabled. No credentials or browser state are included. Full release gate remains NO-GO pending the six zero exits and final combined sweep.
+
+Completed checkpoint: full serial suite7336/0, process12/12 and backfill68/68 isolated; build/scan pass. Checks128/256 pass (128 text-floor failures), strict preview close succeeds. Five combined area reports now retain the confirmed2 pending-height P1s plus1 shared-shell P1; the secondary review’s8 unsettled panels remain gaps. Later candidate reports provide the fresh settled rerun.

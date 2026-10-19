@@ -1,0 +1,12 @@
+{
+  "checkpoint": "7f75dc4",
+  "complete": false,
+  "fullMatrixRun": false,
+  "reason": "Targeted pending rechecks found reproducible ST-WA-11 P1; no zero exit claimed.",
+  "targetedCases": 16,
+  "heldPosts": 16,
+  "mutationsReachedServer": 0,
+  "P0": 0,
+  "P1": 1,
+  "P2": 0
+}

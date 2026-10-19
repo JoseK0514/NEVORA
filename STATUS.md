@@ -2,9 +2,9 @@
 
 Current handoff: Jose approved item 4 in chat on October 19. Codex may make named P1/P2 UI fixes **on `codex/release-candidate` only**, one finding per commit. Review each before its owner ports or replaces it. This extends the historical three-edit boundary below.
 
-- **Integrated locally:** coordinator `227150b`, backend `da2a4e5` (approved Profile alerts), verified-zero Profile `ea58610`. Candidate `cbaadbc` adds the separately authorized Profile server initial read. Full gates and merged browser checks are in progress; no green or publication claim yet.
+- **Integrated locally:** coordinator `227150b`, backend `da2a4e5` (approved Profile alerts), verified-zero Profile `ea58610`. Candidate `cbaadbc` adds the separately authorized Profile server initial read. Typecheck and lint pass; full tests and merged browser checks are in progress. No full green or publication claim yet.
 - **Verified zero:** Profile exit round 4 at `ea58610`; its five committed reports were verified in `release/readiness/profile-ea58610/`. Other exact exit rounds remain open/incomplete until their results arrive.
-- **Active inspection owners:** Phase 3 `227150b`, Wave A `7f75dc4`, Wave B `9bd265e` (handoff `564d193`), Wave C `5f7c166`, Desktop `8012d97`. Separate read-only worktrees and owned fictional previews; no source-branch changes.
+- **Active inspection owners:** Phase 3 `227150b`, Wave A `a05f26a` (supersedes `7f75dc4`, ST-WA-11 clamp), Wave B `9bd265e` (handoff `564d193`), Wave C `5f7c166`, Desktop `8012d97`. Separate read-only worktrees and owned fictional previews; no source-branch changes.
 - **Open by owner:** Phase 3 interaction IS-74, IS-77–80, IS-82 and prior cloud IDs are being rechecked. Wave A ST-WA-9/10 are being rechecked. Wave B, Wave C and Desktop full exit sweeps are pending.
 - **Device access:** proposal below remains pending Jose’s phone-access yes/no. No deploy, tunnel, or external preview exposure.
 
@@ -18,9 +18,20 @@ No new item-4 finding fix committed yet. Separate standing-authorized post-merge
 
 Backend conflicts follow existing source-owner directions: Coverage takes Wave A’s prescribed test (blob `18e3861`); root layout keeps the latest coordinator text-scale/data-text-step script and adds the prescribed async/error hook. Profile's only conflict takes the exact latest coordinator `portal-premium.css`. No unprescribed screen choice.
 
-Everything below is retained history. Older “current”, “running”, and “publishing now” entries describe their own sessions and do not replace this handoff.
+Parallel publication custody: this paused-handoff task uses the latest coordinator `227150b` and explicit item-4 approval in this chat. Remote candidate was still `0e01046` at20:35UTC. Any first-published candidate will be fetched and preserved before publishing; no force-push of a parallel release candidate. Parallel checkpoints `c34043b`, `23fcdc3` and their evidence below remain historical/unpublished until their remote custody is established. This task's explicit item-4 approval supersedes the older “no additional UI-fix permission” note below.
+
+Preserved source findings: Wave A ST-WA-11 is fixed by new source `a05f26a` and awaits exit recheck; Wave C TC-WC-28 / WR-WC-25 remain open for measured recheck and minimal candidate applicability review. Neither source is zero yet.
+
+Everything below is retained history from the parallel inspection/publishing tasks. Earlier “current” headings describe their own checkpoints.
 
 ---
+
+## Claude, start here — 2026-10-19 20:28 UTC
+
+- Current publishing task has integrated latest coordinator `c9d58d5` (app676358c), backend `da2a4e5`, verified-zero Profile `ea58610` (appcaef395), and separate authorized Profile server-initial-read commit `4ff37e5`, at local candidate **23fcdc3**. Latest premium CSS matches the coordinator exactly. npmci/typecheck/lint pass; the full one-worker suite and fresh combined checks are running. Build/production-absence scan passes:2298 artifacts, all5 markers absent. The parallel publisher’s separate `c34043b` checkpoint and all its records are preserved; no branch is force-pushed. At publication, fetch and preserve any first-published remote candidate.
+- **Wave A7f75dc4 is not zero / not merged.** ST-WA-7/8/9/10 targeted rechecks pass. New **ST-WA-11 P1**: a pending Delete button held at844 retains min-width772px after narrowing to320, inside a248px card; its label is clipped in both browsers at100/200. Abort clears the hold and restores248px. [Five explicit-scope reports and16 held cases](p35-wave-a/round-2-7f75dc4/README.md). Strict source/mirror guard and owned PostgreSQL shutdown pass.
+- Profile is the only verified zero source exit available to this publishing task. Phase3, WaveB, WaveC and Desktop exits remain with the independent inspection loop; their incomplete results are not zero. Candidate shared-shell type-floor findings remain open; fresh current-source combined reports will name each owner.
+- Candidate-only UI commits are the already authorized lint ref cleanup9df0f47 and Profile initial read4ff37e5. No additional UI-fix permission is inferred from the paused-Claude plan. Device setup uses DEVICE-CHECKLIST-REVIEWED.md and still waits for Jose’s explicit approval; nothing deployed or exposed.
 
 2026-10-19 20:16 UTC · requested ordered merges complete locally: coordinator4d469a4 →9a35168, backendda2a4e5 →cf066dc, Profileea58610 →b444813; separate initial-read commit **c34043b**. Candidate frozen for full gates. npmci/typecheck/lint pass (0 warnings), full one-worker tests running, browser checks pending. [Exact candidate and evidence](release/publish-c34043b/README.md). New Wave A7f75dc4 remains excluded. This task will publish after recording the gates; earlier verification-only stop is superseded.
 
@@ -159,3 +170,10 @@ Wave C round 4 has 0 newly verified defects so far, with incomplete coverage. �
 ID cross-reference: this cloud report’s **TC-P3-32 means Availability’s From/Until labels** (the chat calls those TC-P3-33 in round 5). The chat’s separate TC-P3-32 concerns dates. Cloud **ST-P3-24** means the Availability pending-button jump; the chat’s **P3-ST-24** is a placeholder item. Preserve these distinct IDs when re-checking.
 
 2026-10-19 20:16 UTC · post-merge Profile initial-read c34043b · install/type/lint pass; full tests/checks running · publication pending
+2026-10-19 20:25:24 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 1, P2 0 · not zero
+
+New WR-WC-25: phone dialog buttons collapse to 52px at 200% while their labels need 88px, making parts unreadable. The earlier blank swatch and toast overlap remain independently fixed. Full exit coverage is incomplete.
+
+2026-10-19 20:27:13 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 2, P2 0 · not zero
+
+TC-WC-28 adds Account recovery’s verification textarea edge: #D5DAD9 on white = 1.41:1 in both browsers/roles. The stronger shared textarea rule overrides Wave C’s intended 3.45:1 edge; coordinate the shared-style update.

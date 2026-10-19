@@ -1,0 +1,9 @@
+{
+  "checkpoint": "7f75dc4245ba03ff7d35a8c294be0f0bb8068bf0",
+  "tree": "5e853201735c58f71a594d013d871ce0f3dfa668",
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true,
+  "errors": [],
+  "startedAt": "2026-10-19T20:22:40.817Z",
+  "completedAt": "2026-10-19T20:25:42.126Z"
+}
