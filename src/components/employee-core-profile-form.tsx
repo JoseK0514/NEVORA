@@ -1,10 +1,12 @@
 import { ConfigurationForm, type ConfigurationResult } from "@/components/configuration-form";
 import { PhoneInput } from "@/components/phone-input";
 import { SelectField } from "@/components/select-field";
+import { Field, FieldPair, FormActions } from "@/components/wave-a/parts";
+import { PendingButton } from "@/components/wave-a/pending-button";
 import type { EmployeeManagementProfile } from "@/lib/data/employees";
 import type { Location, UserRole } from "@/lib/domain";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 
+/** Phase 3.5 Wave A: the person's contact and access details, in the shared form pattern. */
 export function EmployeeCoreProfileForm({
   employee,
   locations,
@@ -34,87 +36,35 @@ export function EmployeeCoreProfileForm({
     }));
 
   return (
-    <ConfigurationForm action={action} reviewedUpdatedAt={employee.updatedAt} className="employee-form employee-core-profile-form">
+    <ConfigurationForm action={action} reviewedUpdatedAt={employee.updatedAt} className="wa-form">
       <input type="hidden" name="employeeId" value={employee.id} />
-
-      <div className="employee-core-id">
-        <span>Employee ID</span>
-        <strong>{employee.id}</strong>
-        <small>Employee IDs remain stable after creation.</small>
+      <div className="wa-fields">
+        <div className="wa-readonly wa-readonly--first">
+          <span className="wa-field__label">Employee ID</span>
+          <span className="wa-readonly__value">{employee.id}</span>
+          <span className="wa-field__help">Employee IDs stay the same after they’re created.</span>
+        </div>
+        <FieldPair>
+          <Field label="First name"><input name="firstName" defaultValue={employee.firstName} autoComplete="off" required maxLength={160} /></Field>
+          <Field label="Last name"><input name="lastName" defaultValue={employee.lastName} autoComplete="off" required maxLength={160} /></Field>
+        </FieldPair>
+        <FieldPair>
+          <Field label="Phone"><PhoneInput name="phone" defaultValue={employee.phone} autoComplete="off" required /></Field>
+          <Field label="Email" optional><input name="email" type="email" defaultValue={employee.email ?? ""} autoComplete="off" maxLength={254} /></Field>
+        </FieldPair>
+        <FieldPair>
+          <SelectField className="wa-select" name="role" label="Access role" defaultValue={employee.role} options={roleOptions} required />
+          <SelectField className="wa-select" name="primaryLocationId" label="Primary location" defaultValue={employee.primaryLocationId} options={locationOptions}
+            hint={locations.find((location) => location.id === employee.primaryLocationId)?.active ? undefined : "Choose an active primary location before reactivating this employee."} required />
+        </FieldPair>
+        <SelectField className="wa-select" name="active" label="Status" defaultValue={String(employee.active)}
+          options={[{ value: "true", label: "Active" }, { value: "false", label: "Inactive" }]}
+          hint="Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved." required />
       </div>
-
-      <div className="form-columns">
-        <label>
-          First name
-          <input name="firstName" defaultValue={employee.firstName} required maxLength={160} />
-        </label>
-        <label>
-          Last name
-          <input name="lastName" defaultValue={employee.lastName} required maxLength={160} />
-        </label>
-      </div>
-
-      <div className="form-columns">
-        <label>
-          Phone number
-          <PhoneInput
-            name="phone"
-            defaultValue={employee.phone}
-            autoComplete="tel"
-            required
-          />
-        </label>
-        <label>
-          <span className="employee-email-label">Email <small>Optional</small></span>
-          <input
-            name="email"
-            type="email"
-            defaultValue={employee.email ?? ""}
-            autoComplete="email"
-            maxLength={254}
-          />
-        </label>
-      </div>
-
-      <div className="form-columns">
-        <SelectField
-          name="role"
-          label="Access role"
-          defaultValue={employee.role}
-          options={roleOptions}
-          required
-        />
-        <SelectField
-          name="primaryLocationId"
-          label="Primary location"
-          defaultValue={employee.primaryLocationId}
-          options={locationOptions}
-          hint={
-            locations.find((location) => location.id === employee.primaryLocationId)
-              ?.active
-              ? undefined
-              : "Choose an active primary location before reactivating this employee."
-          }
-          required
-        />
-      </div>
-
-      <SelectField
-        name="active"
-        label="Employee status"
-        defaultValue={String(employee.active)}
-        options={[
-          { value: "true", label: "Active" },
-          { value: "false", label: "Inactive" },
-        ]}
-        hint="Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved."
-        required
-      />
-
-      <div className="form-footer">
-        <button className="button primary" type="submit">
-          <CheckIcon size={18} aria-hidden="true" focusable="false" /> Save employee details
-        </button>
+      <div className="wa-card-body">
+        <FormActions>
+          <PendingButton pending="Saving…" block>Save details</PendingButton>
+        </FormActions>
       </div>
     </ConfigurationForm>
   );

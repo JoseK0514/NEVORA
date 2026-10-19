@@ -6,8 +6,8 @@ import Link from "next/link";
 import { SelectField } from "./select-field";
 import { ShiftChangeForm } from "./shift-change-form";
 import { calloutReasonNoteError } from "../lib/shift-changes/command-parser";
-import { NavIcon } from "./nav-icon";
-import styles from "./callout-view.module.css";
+import { FormActions, Notice } from "./wave-a/parts";
+import { PendingButton } from "./wave-a/pending-button";
 
 const reasons = [
   ["ILLNESS", "Illness / sick"],
@@ -32,85 +32,69 @@ export function ReviewedCalloutForm({
   const detailsId = useId();
 
   return (
-    <ShiftChangeForm
-      fields={fields ?? {}}
-      className={`shift-change-form ${styles.form}`}
-    >
-      <SelectField
-        name="reasonCode"
-        label="Reason (required)"
-        hint="Choose the closest match."
-        value={reason}
-        required
-        onChange={(event) => {
-          setReason(event.target.value);
-          noteInput.current?.setCustomValidity(
-            calloutReasonNoteError(event.target.value, note) ?? "",
-          );
-        }}
-        options={[
-          { value: "", label: "Select a reason", disabled: true },
-          ...reasons.map(([value, label]) => ({ value, label })),
-        ]}
-      />
-      <label className={styles.notes}>
-        <span className={styles.notesTitle}>
-          Additional details <small>{reason === "OTHER" ? "Required" : "Optional"}</small>
-        </span>
-        <textarea
-          ref={noteInput}
-          aria-describedby={detailsId}
-          required={reason === "OTHER"}
-          minLength={reason === "OTHER" ? 3 : undefined}
-          name="reasonNote"
-          maxLength={300}
-          rows={4}
-          value={note}
+    <ShiftChangeForm fields={fields ?? {}} className="wa-form shift-change-form">
+      <div className="wa-fields">
+        <SelectField
+          className="wa-select"
+          name="reasonCode"
+          label="Reason"
+          hint="Choose the closest match."
+          value={reason}
+          required
           onChange={(event) => {
-            setNote(event.target.value);
-            event.target.setCustomValidity(
-              calloutReasonNoteError(reason, event.target.value) ?? "",
+            setReason(event.target.value);
+            noteInput.current?.setCustomValidity(
+              calloutReasonNoteError(event.target.value, note) ?? "",
             );
           }}
-          placeholder="What should management know?"
+          options={[
+            { value: "", label: "Choose a reason", disabled: true },
+            ...reasons.map(([value, label]) => ({ value, label })),
+          ]}
         />
-        <span className={styles.notesHelp}>
-          <span id={detailsId}>
-            {reason === "OTHER"
-              ? "For Other, add at least 3 characters of detail."
-              : "Add context if it would help management review your report."}
+        <label className="wa-field">
+          <span className="wa-field__label">More details{reason === "OTHER" ? null : <span className="wa-field__optional">Optional</span>}</span>
+          <textarea
+            ref={noteInput}
+            aria-describedby={detailsId}
+            required={reason === "OTHER"}
+            minLength={reason === "OTHER" ? 3 : undefined}
+            name="reasonNote"
+            maxLength={300}
+            rows={4}
+            value={note}
+            onChange={(event) => {
+              setNote(event.target.value);
+              event.target.setCustomValidity(
+                calloutReasonNoteError(reason, event.target.value) ?? "",
+              );
+            }}
+            placeholder="What should your manager know?"
+          />
+          <span className="wa-field__help wa-field__help--split">
+            <span id={detailsId}>
+              {reason === "OTHER"
+                ? "For Other, add at least 3 characters. Share only what your manager needs."
+                : "Share only what your manager needs to review it."}
+            </span>
+            <span className="wa-field__count" aria-label={`${note.length} of 300 characters`}>{note.length}/300</span>
           </span>
-          <span aria-label={`${note.length} of 300 characters`}>{note.length}/300</span>
-        </span>
-      </label>
-      <p className={styles.privacy}><NavIcon name="requests" size={16} />Share only the details management needs to review your report.</p>
-      {!fields ? (
-        <p className={styles.stale} role="alert">
-          The assignment changed. Your reason is preserved. Refresh and review
-          before submitting.
-        </p>
-      ) : null}
-      {!fields ? (
-        <button
-          className={styles.refresh}
-          type="button"
-          onClick={() => router.refresh()}
-        >
-          Refresh and review assignment
-        </button>
-      ) : null}
-      <div className={styles.actions}>
-        <Link href="/app/exchange?tab=my">
-          Cancel
-        </Link>
-        <button
-          type="submit"
-          disabled={!fields}
-        >
-          Submit callout <NavIcon name="arrowRight" size={18} />
-        </button>
+        </label>
+        {!fields ? (
+          <Notice tone="urgent" title="The shift changed">Your reason is kept. Refresh to see the shift as it is now, then send.</Notice>
+        ) : null}
+        {!fields ? (
+          <button className="nv-btn" data-kind="secondary" data-block="true" type="button" onClick={() => router.refresh()}>
+            Refresh the shift
+          </button>
+        ) : null}
       </div>
-      <p className={styles.receipt}>Submitting sends your report for management review. If approved, the shift opens for coverage. <Link href="/app/exchange?tab=requests">View my requests <NavIcon name="arrowRight" size={16} /></Link></p>
+      <div className="wa-card-body">
+        <FormActions note="A manager reviews it. If they approve it, the shift opens for someone else to pick up.">
+          <PendingButton pending="Sending…" disabled={!fields} block>Send report</PendingButton>
+          <Link className="nv-btn" data-kind="secondary" data-block="true" href="/app/exchange?tab=my">Cancel</Link>
+        </FormActions>
+      </div>
     </ShiftChangeForm>
   );
 }

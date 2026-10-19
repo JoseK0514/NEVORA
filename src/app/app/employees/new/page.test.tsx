@@ -68,7 +68,8 @@ it("preserves submitted field names, required contact fields and optional email"
   expect(fields.filter(field => /name="(?:id|firstName|lastName|phone)"/.test(field)).every(field => field.includes('required=""'))).toBe(true);
   expect(fields.find(field => field.includes('name="email"'))).not.toContain('required=""');
   expect(html).toContain('value="EMPLOYEE" selected=""');
-  expect(html.match(/href="\/app\/employees"/g)).toHaveLength(3);
+  // Back (to Team) and Cancel.
+  expect(html.match(/href="\/app\/employees"/g)).toHaveLength(2);
 });
 
 it("blocks creation when no active location exists and supplies the Owner setup route", async () => {

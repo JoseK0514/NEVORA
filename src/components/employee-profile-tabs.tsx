@@ -1,17 +1,14 @@
 "use client";
 
 import { useId, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
-import { UserCircleIcon } from "@phosphor-icons/react/dist/ssr/UserCircle";
-import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 
 const subscribe = () => () => {};
 const clientSnapshot = () => true;
 const serverSnapshot = () => false;
-const tabs = [
-  { label: "Details", Icon: UserCircleIcon },
-  { label: "Scheduling", Icon: CalendarBlankIcon },
-] as const;
+const tabs = ["Details", "Scheduling"] as const;
 
+/** Two views of one person: Details and Scheduling. A real tab list once the page is interactive;
+ * before that, plain links to both sections (both stay visible). */
 export function EmployeeProfileTabs({ details, scheduling }: { details: ReactNode; scheduling: ReactNode }) {
   const id = useId();
   const enhanced = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
@@ -35,14 +32,13 @@ export function EmployeeProfileTabs({ details, scheduling }: { details: ReactNod
   }
 
   return (
-    <div className="profile-workspace">
-      <div className="profile-segments" role={enhanced ? "tablist" : "navigation"} aria-label="Employee profile sections" data-selected={selected}>
-        {enhanced ? <span className="profile-segment-thumb" aria-hidden="true" /> : null}
-        {tabs.map(({ label, Icon }, index) => enhanced ? (
+    <div className="wa-tabs">
+      <div className="wa-segments" role={enhanced ? "tablist" : "navigation"} aria-label="Employee profile sections">
+        {tabs.map((label, index) => enhanced ? (
           <button
             key={label}
             ref={node => { buttons.current[index] = node; }}
-            className="profile-segment"
+            className="wa-segment"
             type="button"
             role="tab"
             id={tabId(index)}
@@ -52,25 +48,21 @@ export function EmployeeProfileTabs({ details, scheduling }: { details: ReactNod
             onClick={() => setSelected(index)}
             onKeyDown={event => handleKey(event, index)}
           >
-            <Icon size={20} weight="regular" aria-hidden="true" focusable="false" />
             {label}
           </button>
         ) : (
-          <a key={label} className="profile-segment" href={`#${panelId(index)}`}>
-            <Icon size={20} weight="regular" aria-hidden="true" focusable="false" />
-            {label}
-          </a>
+          <a key={label} className="wa-segment" href={`#${panelId(index)}`}>{label}</a>
         ))}
       </div>
       {[details, scheduling].map((content, index) => (
         <div
-          key={tabs[index].label}
+          key={tabs[index]}
           id={panelId(index)}
-          className="profile-tab-panel"
+          className="wa-tabpanel"
           role={enhanced ? "tabpanel" : undefined}
           aria-labelledby={enhanced ? tabId(index) : undefined}
           hidden={enhanced && selected !== index}
-          tabIndex={enhanced ? 0 : undefined}
+          tabIndex={enhanced ? -1 : undefined}
         >
           {content}
         </div>

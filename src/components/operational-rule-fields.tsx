@@ -7,6 +7,7 @@ import type {
   RuleSetting,
 } from "../lib/shift-changes/types";
 import { PolicySaveForm } from "./policy-save-form";
+import { PendingButton } from "./wave-a/pending-button";
 import { saveOperationalRulesAction } from "../app/app/employees/actions";
 
 const rules = [
@@ -38,8 +39,8 @@ function RuleFields({
     : {}) as Record<string, string | number | boolean>;
 
   const numeric = (name: string, label: string) => (
-    <label>
-      {label}
+    <label className="wa-field">
+      <span className="wa-field__label">{label}</span>
       <input
         name={`${rule}.${name}`}
         type="number"
@@ -53,9 +54,10 @@ function RuleFields({
   );
 
   return (
-    <div className="operational-rule-row">
-      <h3>{title}</h3>
+    <div className="wa-rule">
+      <h3 className="wa-rule__title">{title}</h3>
       <SelectField
+        className="wa-select"
         name={`${rule}.status`}
         label="Review status"
         value={status}
@@ -65,12 +67,13 @@ function RuleFields({
         options={reviewStatusOptions}
       />
       {status === "CONFIGURED" ? (
-        <div className="operational-rule-values">
+        <div className="wa-rule__values">
           {rule === "breaks" ? (
             <>
               {numeric("afterMinutes", "Break required after (minutes)")}
               {numeric("minimumMinutes", "Minimum break (minutes)")}
               <SelectField
+                className="wa-select"
                 name={`${rule}.paid`}
                 label="Break payment"
                 required
@@ -88,6 +91,7 @@ function RuleFields({
             <>
               {numeric("weeklyMinutes", "Weekly threshold (minutes)")}
               <SelectField
+                className="wa-select"
                 name={`${rule}.routing`}
                 label="Routing"
                 required
@@ -103,6 +107,7 @@ function RuleFields({
             numeric("minutes", "Duration (minutes)")
           )}
           <SelectField
+            className="wa-select"
             name={`${rule}.timeBasis`}
             label="Time basis"
             required
@@ -115,6 +120,7 @@ function RuleFields({
           />
           {rule === "maximumDaily" ? (
             <SelectField
+              className="wa-select"
               name={`${rule}.window`}
               label="Daily window"
               required
@@ -141,10 +147,12 @@ export function OperationalRuleFields({
   profile: OperationalRuleProfile;
   canEdit: boolean;
 }) {
+  // Wave A: the Owner review sits behind one disclosure in its own card. The words are unchanged (legal wording: Jose approves).
   return (
-    <details className="shift-policy-disclosure">
-      <summary>Owner-reviewed operational rules</summary>
-      <p>
+    <details className="wa-disclosure" data-tone="neutral">
+      <summary className="wa-disclosure__summary">Owner-reviewed operational rules</summary>
+      <div className="wa-card-body">
+      <p className="wa-field__help">
         Scheduled projections are not worked time, proof of breaks taken, final
         overtime pay or legal certification. Review applicability explicitly;
         no values are inferred from the employee’s role.
@@ -163,14 +171,12 @@ export function OperationalRuleFields({
               setting={profile[rule]}
             />
           ))}
-          <button className="button primary" type="submit">
-            Save operational review
-          </button>
+          <PendingButton pending="Saving…" block>Save operational review</PendingButton>
         </PolicySaveForm>
       ) : (
-        <dl>
+        <dl className="wa-facts wa-facts--flush">
           {rules.map(([rule, title]) => (
-            <div key={rule}>
+            <div className="wa-fact" key={rule}>
               <dt>{title}</dt>
               <dd>
                 {profile[rule].status === "UNKNOWN"
@@ -185,7 +191,8 @@ export function OperationalRuleFields({
           ))}
         </dl>
       )}
-      {profile.reviewedAt ? <p>Last Owner review: {profile.reviewedAt}</p> : null}
+      {profile.reviewedAt ? <p className="wa-field__help">Last Owner review: {profile.reviewedAt}</p> : null}
+      </div>
     </details>
   );
 }

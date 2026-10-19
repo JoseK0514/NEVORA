@@ -1,11 +1,8 @@
-import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import { timeZoneLabel } from '@/lib/time-zone-label';
-import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
-import { BriefcaseIcon } from '@phosphor-icons/react/dist/ssr/Briefcase';
-import { MedalIcon } from '@phosphor-icons/react/dist/ssr/Medal';
-import { UserCircleIcon } from '@phosphor-icons/react/dist/ssr/UserCircle';
 import type { ExchangeShift } from '@/lib/data/exchanges';
 import { addDays, formatDayLabel, formatTime } from '@/lib/date-utils';
+import { keepWhole } from '@/lib/keep-whole';
+import { MetaParts } from '@/components/kit/kit';
 
 export function swapDateLabel(date: string) {
   return new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`));
@@ -21,17 +18,14 @@ export function swapPositionLabel(shift: ExchangeShift) {
   return shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : 'No assigned position');
 }
 
+/** One side of a swap: the label ("You give"), the day, the time, then who, where and what. Times never split. */
 export function SwapShiftSummary({ shift, label, employee = false }: { shift: ExchangeShift; label: string; employee?: boolean }) {
-  return <section className="swap-assignment" aria-label={label}>
-    <p className="swap-assignment-label">{label}</p>
-    <p className="swap-assignment-date"><CalendarBlankIcon size={18} aria-hidden="true" /><time dateTime={shift.date}>{swapDateLabel(shift.date)}</time></p>
-    <strong className="swap-assignment-time">{swapTimeLabel(shift)}</strong>
-    <ul className="swap-assignment-details">
-      {employee ? <li><UserCircleIcon size={18} aria-hidden="true" /><span>{shift.employeeName}</span></li> : null}
-      <li><MapPinIcon size={18} aria-hidden="true" /><span>{shift.locationName}</span></li>
-      <li><BriefcaseIcon size={18} aria-hidden="true" /><span>{swapPositionLabel(shift)}</span></li>
-      <li><MedalIcon size={18} aria-hidden="true" /><span>{shift.isDesignatedLead ? 'Designated lead' : 'No designated Lead'}</span></li>
-    </ul>
-    {shift.timeZone ? <p className="swap-timezone">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
+  const details = [employee ? shift.employeeName : null, shift.locationName, swapPositionLabel(shift), shift.isDesignatedLead ? 'Designated lead' : 'No designated Lead'].filter(Boolean) as string[];
+  return <section className="wa-shift" aria-label={label}>
+    <p className="wa-shift__label">{label}</p>
+    <p className="wa-shift__when"><time dateTime={shift.date}>{keepWhole(swapDateLabel(shift.date))}</time></p>
+    <p className="wa-shift__when wa-shift__time">{keepWhole(swapTimeLabel(shift))}</p>
+    <p className="wa-shift__where">{details.map((part, index) => <span className="nv-keep" key={index}>{part}{index < details.length - 1 ? ' ·' : ''} </span>)}</p>
+    {shift.timeZone ? <p className="wa-shift__where">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
   </section>;
 }

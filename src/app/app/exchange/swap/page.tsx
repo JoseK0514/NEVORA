@@ -6,7 +6,6 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { redirect } from "next/navigation";
 import { SwapPageContent } from '@/components/swap-page-content';
-import './swap.css';
 import {requireSessionMutationProof} from "@/lib/auth/session";
 import {readShiftChangeTerms} from "@/lib/data/shift-change-snapshot";
 

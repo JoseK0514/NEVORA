@@ -1,7 +1,9 @@
+import type { ReactNode } from "react";
 import type { Employee, Location, Position } from "../lib/domain";
 
 const DISCLOSURE_THRESHOLD = 8;
 
+/** Positions and eligible locations as checkbox lists (Wave A form pattern). Long lists fold behind a disclosure. */
 export function EmployeeSchedulingFields({
   employee,
   locations,
@@ -22,22 +24,22 @@ export function EmployeeSchedulingFields({
       employee?.primaryLocationId === location.id,
   );
   const positionRows = availablePositions.map((position) => (
-    <label className="checkbox-row employee-scheduling-choice" key={position.id}>
+    <label className="wa-check" key={position.id}>
       <input
         type="checkbox"
         name="positionIds"
         value={position.id}
         defaultChecked={employee?.positionIds?.includes(position.id)}
       />
-      <span>
-        {position.name}
-        {position.active ? "" : " (Inactive — retained qualification)"}
+      <span className="wa-check__text">
+        <span className="wa-check__title">{position.name}</span>
+        {position.active ? null : <span className="wa-check__help">Inactive position, kept as a qualification</span>}
       </span>
     </label>
   ));
 
   const locationRows = availableLocations.map((location) => (
-    <label className="checkbox-row employee-scheduling-choice" key={location.id}>
+    <label className="wa-check" key={location.id}>
       <input
         type="checkbox"
         name="eligibleLocationIds"
@@ -48,68 +50,34 @@ export function EmployeeSchedulingFields({
         }
         disabled={employee?.primaryLocationId === location.id}
       />
-      <span>
-        {location.name}
-        {location.active ? "" : " (Inactive)"}
-        {employee?.primaryLocationId === location.id ? " · Primary" : ""}
+      <span className="wa-check__text">
+        <span className="wa-check__title">{location.name}</span>
+        {!location.active || employee?.primaryLocationId === location.id ? <span className="wa-check__help">{[!location.active ? "Inactive" : null, employee?.primaryLocationId === location.id ? "Primary location, always included" : null].filter(Boolean).join(" · ")}</span> : null}
       </span>
     </label>
   ));
 
+  const group = (rows: ReactNode[], summary: string) => rows.length > DISCLOSURE_THRESHOLD ? (
+    <details className="employee-choice-disclosure">
+      <summary className="wa-disclosure__summary"><span>{summary}</span><span className="wa-muted">{rows.length} available</span></summary>
+      <div className="wa-checks">{rows}</div>
+    </details>
+  ) : <div className="wa-checks">{rows}</div>;
+
   return (
     <>
-      <fieldset>
-        <legend>Positions</legend>
-        {availablePositions.length > DISCLOSURE_THRESHOLD ? (
-          <details className="employee-choice-disclosure">
-            <summary>
-              <span>Position qualifications</span>
-              <small>{availablePositions.length} available</small>
-            </summary>
-            <div className="employee-choice-disclosure-body">
-              <p>
-                Job qualifications are separate from access roles. A shift
-                position is selected explicitly.
-              </p>
-              <div className="checkbox-grid">{positionRows}</div>
-            </div>
-          </details>
-        ) : (
-          <>
-            <p>
-              Job qualifications are separate from access roles. A shift
-              position is selected explicitly.
-            </p>
-            <div className="checkbox-grid">{positionRows}</div>
-          </>
+      <fieldset className="wa-fieldset">
+        <legend className="wa-fieldset__legend">Positions</legend>
+        <p className="wa-field__help">What they’re qualified to do. This is separate from their access role.</p>
+        {availablePositions.length ? group(positionRows, "Position qualifications") : (
+          <p className="wa-field__help">No active positions yet. Positions are optional.</p>
         )}
-        {!availablePositions.length ? (
-          <p>
-            No active positions available. Positions are optional; this employee
-            can have no position qualifications.
-          </p>
-        ) : null}
       </fieldset>
 
-      <fieldset>
-        <legend>Eligible locations</legend>
-        {availableLocations.length > DISCLOSURE_THRESHOLD ? (
-          <details className="employee-choice-disclosure">
-            <summary>
-              <span>Eligible locations</span>
-              <small>{availableLocations.length} available</small>
-            </summary>
-            <div className="employee-choice-disclosure-body">
-              <p>The primary location is always included.</p>
-              <div className="checkbox-grid">{locationRows}</div>
-            </div>
-          </details>
-        ) : (
-          <>
-            <p>The primary location is always included.</p>
-            <div className="checkbox-grid">{locationRows}</div>
-          </>
-        )}
+      <fieldset className="wa-fieldset">
+        <legend className="wa-fieldset__legend">Locations they can work at</legend>
+        <p className="wa-field__help">Their primary location is always included.</p>
+        {group(locationRows, "Eligible locations")}
       </fieldset>
     </>
   );
