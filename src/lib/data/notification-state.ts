@@ -1,4 +1,5 @@
 import {communicationDevelopmentAllowedSql,communicationRecipientAllowedSql} from '../communications/sql';
+import {recipientAlertOn} from '../notifications/alert-choices';
 import {checkPayrollNotice} from '../payroll/notices';
 import {readShiftChangeMaintenanceSnapshot,maintenanceExchangeSource} from './shift-change-maintenance';
 import {currentShiftTermsSql} from './shift-change-release';
@@ -33,7 +34,7 @@ export const notificationReadSql = {
       FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id JOIN workspaces w ON w.id=c.workspace_id AND w.singleton AND w.active
       WHERE c.id::text=${id} AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ${communicationDevelopmentAllowedSql()}`, 
     intent: (id='$1') => `SELECT * FROM notifications WHERE id = ${id} AND environment IS NOT NULL AND cancelled_at IS NULL LIMIT 1`,
-    recipient: (id='$1') => `SELECT e.id, e.role, e.active,
+    recipient: (id='$1') => `SELECT e.id, e.role, e.active,COALESCE(to_jsonb(e)->'management_alert_choices','{}'::jsonb) AS alert_choices,
         COALESCE(array_agg(elig.location_id ORDER BY elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL AND l.active=true), ARRAY[]::text[]) AS allowed_location_ids
         FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id LEFT JOIN locations l ON l.id=elig.location_id
         WHERE e.id = ${id} GROUP BY e.id, e.role, e.active`,
@@ -79,11 +80,12 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 id: string;
                 role: UserRole;
                 active: boolean;
+                alert_choices?: Record<string,boolean>;
                 allowed_location_ids: string[];
             }>({ text: notificationReadSql.recipient(), values: [employeeId] });
             if (!row || !['OWNER', 'MANAGER', 'LEAD', 'EMPLOYEE'].includes(row.role))
                 return null;
-            return { employeeId: row.id, role: row.role, active: row.active, allowedLocationIds: row.allowed_location_ids } satisfies RecipientAccess;
+            return { employeeId: row.id, role: row.role, active: row.active, allowedLocationIds: row.allowed_location_ids,...(row.alert_choices?{alertChoices:row.alert_choices}:{}) } satisfies RecipientAccess;
         },
         async readSource(source) {
             if(source.kind==='PAYROLL_PREPARATION'||source.kind==='PAYROLL_STATEMENT')return null; // Payroll checks use metadata-only authority queries.
@@ -133,9 +135,11 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 const intent = await repository.findIntent(source.id);
                 if (!intent || intent.source.kind !== 'MANAGER_SUMMARY' || intent.source.version !== source.version) return null;
                 const items: ManagerActionItem[] = [];
+                const recipient=await repository.recipientAccess(intent.employeeId);
                 for (const key of intent.itemKeys ?? []) {
                     const member = parseSummaryMember(key);
                     if (!member) continue;
+                    if(!recipientAlertOn(recipient,member.source.kind))continue;
                     const current = await repository.readSource(member.source);
                     if (!current) continue;
                     if (current.kind !== 'MANAGER_SUMMARY' && current.source.version !== member.source.version) {
@@ -160,6 +164,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
             if (intent.employeeId !== recipientId) return rejected(intent,'recipient_mismatch');
             if(intent.source.kind==='PAYROLL_PREPARATION'||intent.source.kind==='PAYROLL_STATEMENT')return checkPayrollNotice(intent,recipientId,now,executor,workspace);
             let [recipient, source] = await Promise.all([repository.recipientAccess(recipientId),repository.readSource(intent.source)]);
+            if(!recipientAlertOn(recipient,intent.source.kind,intent.type))return rejected(intent,'topic_disabled');
             if(source?.kind==='EXCHANGE' && source.record.status==='OPEN'){const current=await readShiftChangeMaintenanceSnapshot(intent.source.id,'EXCHANGE',executor,now);if(current?.lifecycle.source)source=maintenanceExchangeSource(current,source.record);}
             try {
                 const current=await getWorkspace(executor);

@@ -1,6 +1,7 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {readManagementProfile} from '@/lib/data/management-profile.server';
 import {correctionJson} from '@/lib/time-corrections/http.server';
+import {isRedirectError} from 'next/dist/client/components/redirect-error';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 export async function GET(request:Request) {
@@ -15,5 +16,5 @@ export async function GET(request:Request) {
     if(proof.employee.id!==session.id||proof.employee.role!==session.role)return correctionJson({state:'unavailable',reason:'access_denied'},403);
     const result=await readManagementProfile(proof);
     return correctionJson(result,result.state==='unavailable'&&result.reason==='access_denied'?403:200);
-  }catch{return correctionJson({state:'unavailable',reason:'read_failed'});}
+  }catch(error){return isRedirectError(error)?correctionJson({state:'unavailable',reason:'access_denied'},401):correctionJson({state:'unavailable',reason:'read_failed'});}
 }

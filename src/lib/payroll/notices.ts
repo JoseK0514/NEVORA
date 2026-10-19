@@ -27,7 +27,7 @@ export const payrollNoticeReadSql = (id='$1',recipient='$2') => `SELECT n.versio
  JOIN workspaces w ON w.id=n.workspace_id AND w.singleton AND w.active
  JOIN employees e ON e.id=${recipient} AND e.active
  JOIN locations l ON l.id=e.primary_location_id AND l.workspace_id=w.id
- WHERE n.id=${id}::text::uuid AND n.payload->>'workspaceVersion'=w.updated_at::text AND (
+ WHERE n.id=${id}::text::uuid AND (n.kind<>'PAYROLL_PREPARATION' OR (to_jsonb(e)->'management_alert_choices'->>'payroll-ready') IS DISTINCT FROM 'false') AND n.payload->>'workspaceVersion'=w.updated_at::text AND (
  (n.kind='PAYROLL_PREPARATION'
  AND (e.role='OWNER' OR EXISTS(SELECT 1 FROM payroll_grants_current g WHERE g.workspace_id=w.id AND g.employee_id=e.id AND g.payload->>'review'='true'))
  AND EXISTS(SELECT 1 FROM payroll_setting_revisions s WHERE s.workspace_id=w.id AND s.revision=(n.payload->>'settingsRevision')::integer AND s.payload->'preferences'->'automation'->>'reminders'='true' AND s.revision=(SELECT revision FROM payroll_setting_revisions WHERE workspace_id=w.id AND effective_from<=(clock_timestamp() AT TIME ZONE w.time_zone)::date ORDER BY effective_from DESC,revision DESC LIMIT 1))

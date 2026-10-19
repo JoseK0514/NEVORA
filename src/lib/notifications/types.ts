@@ -19,7 +19,7 @@ export type NotificationIntent = NotificationEvent & {
   purpose: 'EVENT' | 'REMINDER' | 'SUMMARY' | 'TEST'; urgency: 'normal' | 'high';
   dueAt: string; expiresAt: string; itemKeys?: readonly string[];
 };
-export type RecipientAccess = { employeeId: string; role: UserRole; active: boolean; allowedLocationIds: readonly string[] };
+export type RecipientAccess = { employeeId: string; role: UserRole; active: boolean; allowedLocationIds: readonly string[]; alertChoices?: Readonly<Record<string,boolean>> };
 /** Per-account projection of the existing publication/acknowledgement records. */
 export type EmployeePublicationProjection = {
   effectiveVersion: string; publishedAt: string;

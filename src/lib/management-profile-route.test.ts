@@ -26,6 +26,10 @@ it('denies cross-origin saves and substituted identities',async()=>{
   expect((await POST(post(undefined,{origin:'https://other.invalid'}))).status).toBe(403);
   mocks.proof.mockResolvedValue({employee:{id:'other',role:'OWNER'}});expect((await GET(get())).status).toBe(403);expect((await POST(post())).status).toBe(403);
 });
+it('returns 401 if session expiry makes the second authentication read redirect',async()=>{
+  mocks.proof.mockRejectedValue(Object.assign(Error('NEXT_REDIRECT'),{digest:'NEXT_REDIRECT;replace;/login;307;'}));
+  expect((await GET(get())).status).toBe(401);expect((await POST(post())).status).toBe(401);
+});
 it('rejects invalid bodies and query selectors, and saves the own topic choice',async()=>{
   expect((await GET(new Request('http://localhost:3000/api/management/profile?employeeId=other'))).status).toBe(400);
   expect((await POST(post({topicId:'time-off',on:0}))).status).toBe(400);

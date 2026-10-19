@@ -1,12 +1,9 @@
 -- Additive, own-account topic choices; absence preserves existing delivery defaults.
-CREATE TABLE IF NOT EXISTS management_alert_preferences (
-  workspace_id text NOT NULL REFERENCES workspaces(id),
-  employee_id text NOT NULL REFERENCES employees(id),
-  topic_id text NOT NULL CHECK (topic_id IN ('time-off','shift-changes','unable-to-work','clock-review','payroll-ready')),
-  enabled boolean NOT NULL,
-  updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-  PRIMARY KEY(workspace_id,employee_id,topic_id)
-);
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS management_alert_choices jsonb NOT NULL DEFAULT '{}'::jsonb
+  CHECK (jsonb_typeof(management_alert_choices)='object'
+    AND management_alert_choices-ARRAY['time-off','shift-changes','unable-to-work','clock-review','payroll-ready']='{}'::jsonb
+    AND NOT jsonb_path_exists(management_alert_choices,'$.* ? (@.type() != "boolean")'));
+ALTER TABLE notifications ADD COLUMN IF NOT EXISTS management_alert_suppressed boolean NOT NULL DEFAULT false;
 
 CREATE OR REPLACE FUNCTION management_alert_topic(source_kind text, event_type text)
 RETURNS text LANGUAGE sql IMMUTABLE AS $$
@@ -19,9 +16,8 @@ $$;
 CREATE OR REPLACE FUNCTION management_alert_on(actor text, topic text)
 RETURNS boolean LANGUAGE sql STABLE AS $$
   SELECT NOT EXISTS (
-    SELECT 1 FROM management_alert_preferences p JOIN employees e ON e.id=p.employee_id
-      JOIN locations l ON l.id=e.primary_location_id AND l.workspace_id=p.workspace_id
-    WHERE p.employee_id=actor AND p.topic_id=topic AND NOT p.enabled AND e.role IN ('OWNER','MANAGER')
+    SELECT 1 FROM employees e WHERE e.id=actor AND e.role IN ('OWNER','MANAGER')
+      AND e.management_alert_choices->>topic='false'
   )
 $$;
 
@@ -35,7 +31,9 @@ BEGIN
   IF NEW.source_kind='MANAGER_SUMMARY' AND cardinality(NEW.item_keys)>0 THEN
     FOREACH member IN ARRAY NEW.item_keys LOOP
       BEGIN
-        member_kind := (member::jsonb)->>0;
+        BEGIN member_kind := (member::jsonb)->>0;
+        EXCEPTION WHEN invalid_text_representation THEN member_kind := substring(member from '^(?:test|production):[0-9-]+:(TIME_OFF|EXCHANGE|CALLOUT):');
+        END;
         IF management_alert_on(NEW.employee_id,management_alert_topic(member_kind,NULL)) THEN
           retained := array_append(retained,member);
         END IF;
@@ -48,10 +46,12 @@ BEGIN
     IF cardinality(retained)=0 THEN
       NEW.cancelled_at := COALESCE(NEW.cancelled_at,clock_timestamp());
       NEW.push_state := 'cancelled';
+      NEW.management_alert_suppressed := true;
     END IF;
   ELSIF NOT management_alert_on(NEW.employee_id,topic) THEN
     NEW.cancelled_at := COALESCE(NEW.cancelled_at,clock_timestamp());
     NEW.push_state := 'cancelled';
+    NEW.management_alert_suppressed := true;
   END IF;
   RETURN NEW;
 END $$;

@@ -1,10 +1,12 @@
 import {readFile} from 'node:fs/promises';
+import {Client} from 'pg';
 import {beforeEach,afterEach,it,expect} from 'vitest';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {readManagementProfile,saveManagementAlertChoice} from '../../lib/data/management-profile.server';
 import {notificationIntentStatements} from '../../lib/data/notifications';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {NotificationIntent} from '../../lib/notifications/types';
+import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const proof=(role:'OWNER'|'MANAGER'='OWNER'):SessionMutationProof=>({employee:{id:role.toLowerCase(),role,firstName:'Fictional',lastName:role,primaryLocationId:'loc-1'},sessionTokenHash:(role==='OWNER'?'a':'b').repeat(64)});
 beforeEach(async()=>{
@@ -67,4 +69,28 @@ it('keeps enabled members in mixed summaries and cancels a summary with only opt
   const off=JSON.stringify(['TIME_OFF','r','1','TIME_OFF:r','2026-10-19']),on=JSON.stringify(['EXCHANGE','x','1','EXCHANGE:x','2026-10-19']);
   await db.executor.transaction(notificationIntentStatements([{...intent('mixed','owner','MANAGER_SUMMARY'),itemKeys:[off,on]},{...intent('only-off','owner','MANAGER_SUMMARY'),itemKeys:[off]}]));
   expect(await db.executor.query({text:'SELECT id,item_keys,push_state FROM notifications ORDER BY id',values:[]})).toEqual([{id:'mixed',item_keys:[on],push_state:'pending'},{id:'only-off',item_keys:[],push_state:'cancelled'}]);
+});
+it('delivery rechecks preferences when a producer commits after an opt-out sweep',async()=>{
+  await db.executor.query({text:"INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) VALUES('request-race','manager','2030-01-01','2030-01-02','PENDING')",values:[]});
+  const producer=new Client({connectionString:db.connectionString});await producer.connect();
+  try {
+    await producer.query('BEGIN');
+    const statement=notificationIntentStatements([{...intent('race'),source:{kind:'TIME_OFF',id:'request-race',version:'PENDING'},effectiveVersion:'PENDING'}])[0];
+    await producer.query(statement.text,[...statement.values]);
+    await saveManagementAlertChoice(proof(),{topicId:'time-off',on:false},db.executor);
+    await producer.query('COMMIT');
+    const repository=sqlNotificationStateRepository(db.executor),notification=await repository.findIntent('race');
+    expect(notification).not.toBeNull();
+    expect(await repository.check(notification!,'owner',new Date())).toMatchObject({deliverable:false,reason:'topic_disabled'});
+  }finally{await producer.query('ROLLBACK');await producer.end();}
+});
+it('cancels an actual queued delivery and retains the audit notification',async()=>{
+  await db.executor.transaction(notificationIntentStatements([intent('queued')]));
+  await db.executor.query({text:`INSERT INTO push_subscriptions(id,employee_id,installation_hash,environment,endpoint_fingerprint,encrypted_material,generation,session_hash,status)
+    VALUES('fictional-sub','owner','fictional-install','test','fictional-endpoint','opaque-fictional','fictional-generation',repeat('a',64),'active');
+    INSERT INTO push_deliveries(notification_id,subscription_id,generation,next_attempt_at,expires_at)
+    VALUES('queued','fictional-sub','fictional-generation',clock_timestamp(),clock_timestamp()+interval '10 minutes');`,values:[]});
+  await saveManagementAlertChoice(proof(),{topicId:'time-off',on:false},db.executor);
+  expect(await db.executor.query({text:'SELECT status FROM push_deliveries',values:[]})).toEqual([{status:'cancelled'}]);
+  expect(await db.executor.query({text:"SELECT management_alert_suppressed FROM notifications WHERE id='queued'",values:[]})).toEqual([{management_alert_suppressed:true}]);
 });

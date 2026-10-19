@@ -45,6 +45,6 @@ it('validates choices and forbids another employee identifier or Manager payroll
 it('saves a topic with an upsert and live session guards before and after writes',async()=>{
   const db=database(undefined);await saveManagementAlertChoice(proof(),{topicId:'time-off',on:false},db);
   const statements=(db.transaction as ReturnType<typeof vi.fn>).mock.calls[0][0] as SqlStatement[];
-  expect(statements.find(s=>s.text.startsWith('INSERT INTO management_alert_preferences'))?.values).toEqual(['w','qa-self','time-off',false]);
+  expect(statements.find(s=>s.text.startsWith('UPDATE employees SET management_alert_choices'))?.values).toEqual(['qa-self','time-off',false]);
   expect(statements.at(-1)?.text).toContain('expires_at>clock_timestamp()');
 });
