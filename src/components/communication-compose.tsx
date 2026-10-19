@@ -13,6 +13,7 @@ import {SlidersHorizontalIcon} from '@phosphor-icons/react/dist/ssr/SlidersHoriz
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import './communication-compose.css';
+import {revealFeedback} from '@/lib/reveal-feedback';
 import {localDateTimeToInstant} from '../lib/business-time';
 import {validateCommunicationDraft} from '../lib/communications/validation';
 import {communicationRequest,useCommunicationAction,useCommunicationResource,type CommunicationMode} from '../lib/communications/client';
@@ -29,7 +30,7 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
  const setType=(value:ComposeValues['type'])=>set('type',value),setScopeKind=(value:ComposeValues['scopeKind'])=>set('scopeKind',value),setLocationId=(value:string)=>set('locationId',value),setShiftId=(value:string)=>set('shiftId',value),setTitle=(value:string)=>set('title',value),setBody=(value:string)=>set('body',value),setAck=(value:ComposeValues['ack'])=>set('ack',value),setExpiration=(value:string)=>set('expiration',value),setUseExpiry=(value:boolean)=>set('useExpiry',value);
  const [error,setError]=useState<string|null>(null),[preview,setPreview]=useState<{count:number;fingerprint:string}|null>(null),[previewing,setPreviewing]=useState(false);const previewGeneration=useRef(0);
  const formRef=useRef<HTMLFormElement>(null);
- const feedbackRef=useRef<HTMLDivElement>(null);
+ const feedbackRef=useRef<HTMLDivElement>(null),recoveryRef=useRef<HTMLDivElement>(null);
  useGSAP(()=>{
   const media=gsap.matchMedia();
   media.add('(prefers-reduced-motion: no-preference)',()=>{
@@ -37,7 +38,18 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
   });
   return ()=>media.revert();
  },{scope:formRef,dependencies:[preview],revertOnUpdate:true});
- useEffect(()=>{if(preview||action.notice||error?.startsWith('Audience'))feedbackRef.current?.focus();},[preview,error,action.notice]);
+ useEffect(()=>{
+  if((action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown)&&recoveryRef.current){
+   revealFeedback(recoveryRef.current);
+   const next=recoveryRef.current.querySelector<HTMLButtonElement>('button');
+   if(next)revealFeedback(next);
+  }else if((action.notice==='conflict'||error?.startsWith('Audience'))&&feedbackRef.current)revealFeedback(feedbackRef.current);
+ },[error,action.notice,action.hasUnknown]);
+ useEffect(()=>{
+  if(!preview)return;
+  const heading=feedbackRef.current?.querySelector<HTMLElement>('.communication-audience h2');
+  if(heading){heading.tabIndex=-1;revealFeedback(heading);}
+ },[preview]);
  useEffect(()=>()=>{previewGeneration.current++;},[]);
  const titleCount=[...title.trim()].length,bodyCount=[...body.trim()].length;
  function changed(){previewGeneration.current++;setPreview(null);setPreviewing(false);setError(null);action.setNotice(null);}
@@ -85,7 +97,7 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
    {action.notice==='conflict'||staleEdit?<div className="compose-alert" role="alert"><WarningCircleIcon size={22} aria-hidden="true"/><div><strong>Review the latest information</strong><p>{staleEdit?'A newer version is available. Your retained draft belongs to the version you originally reviewed. Review latest before editing again.':'This update or its audience changed. Review the latest context and preview again.'}</p>{editing?<Link className="button secondary" href={'/app/updates/'+editing.id}>Review latest</Link>:null}</div></div>:action.notice==='unavailable'?<p className="compose-alert" role="alert">We could not confirm the result. Check status before trying again.</p>:null}
    {preview&&action.notice!=='conflict'&&!staleEdit?<section className="communication-audience compose-review compose-reviewed" aria-label="Audience preview"><div className="compose-review-copy"><span className="compose-review-icon"><UsersThreeIcon size={24} aria-hidden="true"/></span><div><h2>Audience preview</h2><p><strong>{preview.count} eligible {preview.count===1?'recipient':'recipients'}</strong> at {context.locations.find(l=>l.id===locationId)?.label}.</p>{scopeKind==='SHIFT'?<p>{context.shifts.filter(s=>s.id===shiftId&&s.locationId===locationId).map(s=><span key={s.id}>{s.assigneeLabel}{s.positionLabel?` · ${s.positionLabel}`:''} · {s.date} · {s.startTime}–{s.endTime}</span>)}</p>:null}<p className="compose-hint">{preview.count===0?'No eligible recipients in this audience. You can change the delivery settings before publishing.':'Check your message and delivery settings, then publish.'}</p></div></div><button className="button primary compose-action" type="button" disabled={disabled} onClick={publish}>{action.pending?'Publishing…':editing?'Publish new version':'Publish update'}<PaperPlaneTiltIcon size={20} aria-hidden="true"/></button><p className="compose-review-footnote">Eligibility is checked again when you publish. Changing any field requires a new preview.</p></section>:<section className="compose-review" aria-label="Review before publishing"><div className="compose-review-copy"><span className="compose-review-icon"><UsersThreeIcon size={24} aria-hidden="true"/></span><div><h2>Review before publishing</h2><p>Check the eligible audience before your update goes live.</p></div></div><button className="button primary compose-action" disabled={disabled||previewing} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} aria-hidden="true"/></button></section>}
    {previewing||action.pending?<p className="compose-live" role="status">{previewing?'Checking audience…':'Confirming publication…'}</p>:null}
-   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div className="compose-alert compose-recovery" role="status"><div><strong>Publication needs a status check</strong><p>We couldn&apos;t confirm the result. Check status before trying again.</p></div><div className="compose-recovery-actions"><button className="button secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="button secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div>:null}
+   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="compose-alert compose-recovery" role="status"><div><strong>Publication needs a status check</strong><p>We couldn&apos;t confirm the result. Check status before trying again.</p></div><div className="compose-recovery-actions"><button className="button secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="button secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div>:null}
   </div>
  </form>;
 }
