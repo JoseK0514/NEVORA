@@ -70,7 +70,7 @@ export function EmployeeSchedulingFields({
         <legend className="wa-fieldset__legend">Positions</legend>
         <p className="wa-field__help">What they’re qualified to do. This is separate from their access role.</p>
         {availablePositions.length ? group(positionRows, "Position qualifications") : (
-          <p className="wa-field__help">No active positions yet. Positions are optional.</p>
+          <p className="wa-field__help">No active positions available. Positions are optional.</p>
         )}
       </fieldset>
 
