@@ -6,8 +6,8 @@ import type {RecoveryDelivery} from '../auth/recovery.server';
 import type {PushSender} from '../notifications/provider';
 import type {PushRuntimeConfig} from '../notifications/types';
 import {localDevEnabled,loopbackOrigin,localRequest,type LocalCaptureContext} from './local-only';
-import {captureDirectory} from './capture-gate';
-export {captureNotificationRuntime} from './capture-gate';
+import {captureDirectory} from './capture-gate.cjs';
+export {captureNotificationRuntime} from './capture-gate.cjs';
 async function record(directory:string,kind:'email'|'push',extension:string,value:Buffer|string) {
   const folder=join(directory,kind);
   await mkdir(folder,{recursive:true,mode:0o700});

@@ -1,12 +1,13 @@
 import 'server-only';
 import nodemailer from 'nodemailer';
 import type {RecoveryDelivery} from './recovery.server';
-import {captureDirectory} from '../dev/capture-gate';
+// Erased in production; avoid top-level await in CLI imports.
+const developmentCapture:typeof import('../dev/capture-gate.cjs')|null=process.env.NODE_ENV!=='production'?require('../dev/capture-gate.cjs'):null;
 import {localRequest} from '../dev/local-only';
 /** Explicit existing SMTP account configuration; no vendor preset or activation. */
 export function recoveryDelivery(env:Record<string,string|undefined>=process.env,requestHeaders?:Pick<Headers,'get'>):RecoveryDelivery|null{
- if(process.env.NODE_ENV!=='production'){
-  const directory=captureDirectory(env);
+ if(process.env.NODE_ENV!=='production'&&developmentCapture){
+  const directory=developmentCapture.captureDirectory(env);
   if(directory===null)return null;
   if(directory!==undefined){
    if(!requestHeaders||!localRequest(requestHeaders))return null;

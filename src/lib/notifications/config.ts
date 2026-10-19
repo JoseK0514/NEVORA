@@ -3,7 +3,8 @@ import { notificationPolicyFor } from './policy';
 import { getWorkspace } from '../data/workspaces';
 import type { Workspace } from '../domain';
 import type { NotificationConfig, PushRuntimeConfig, SqlExecutor } from './types';
-import {captureNotificationRuntime} from '../dev/capture-gate';
+// Erased by Next production compilation; synchronous for the existing worker CLI.
+const developmentCapture:typeof import('../dev/capture-gate.cjs')|null=process.env.NODE_ENV!=='production'?require('../dev/capture-gate.cjs'):null;
 /** Canonical unpadded URL-safe encoding only. Never include rejected values in errors. */
 export function decodePushKey(value: unknown, length: number): Buffer | null {
     if (typeof value !== 'string' || !/^[A-Za-z0-9_-]+$/.test(value))
@@ -64,7 +65,7 @@ export function readNotificationConfig(env: Record<string, string | undefined>):
         ...(encryptionKey ? { subscriptionEncryptionKey: env.PUSH_SUBSCRIPTION_ENCRYPTION_KEY } : {}),
         ...((env.NOTIFICATION_WORKER_SECRET?.length ?? 0) >= 32 ? { workerSecret: env.NOTIFICATION_WORKER_SECRET } : {}),
     };
-    return process.env.NODE_ENV!=='production'?captureNotificationRuntime(config,env):config;
+    return process.env.NODE_ENV!=='production'&&developmentCapture?developmentCapture.captureNotificationRuntime(config,env):config;
 }
 export function bindWorkspaceNotificationConfig(runtime: PushRuntimeConfig, workspace: Workspace): NotificationConfig {
     return {...runtime, workspace, policy:notificationPolicyFor(workspace.timeZone),
