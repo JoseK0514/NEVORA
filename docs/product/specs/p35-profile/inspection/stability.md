@@ -128,3 +128,76 @@ The bars are right: the phone header and the flat band join with no seam at ever
 - Real device back-forward cache (`pageshow` with `persisted`) wasn't exercised; the fix in ST-01 covers it.
 
 Open P0–P2 in stability: 8
+
+## Round 2
+
+October 19, build at `claude/p35-profile-6cdee8` HEAD 1f29c3b on port 52269. Chromium at 320, 390, 430, 844×390, 1024 and 1440, both roles; WebKit spot checks at 390 and 1440. Text size 100 % except where ST-08 needs it. Fixtures: the session's (reworded topics); `manager-eight` and `manager-expiring` were rebuilt from the new `manager.json`. Evidence: `…/stability/r2/` (frame logs) and `…/stability/r2-*.png`, `ST-*-r2-*.png`.
+
+**Verdict.** The read rhythm is fixed: no load showed a second read or a ready → dash → ready flash (16 Chromium and 4 WebKit loads, plus a deliberate bare `focus`). Blur, offline, a failed refresh and an expired read now hold their space. The landscape band matches, Saving… and save errors move nothing, Try again keeps its width and Show all stays under the finger. Four things are still open, all P2:
+- a wrapped email still pushes the page 22 px when the read lands (CLS 0.035 at 390 for both roles; the builder's "0 at 390 Owner" didn't reproduce here);
+- an ended session still collapses the details;
+- held rows are 0.5 px taller than ready rows because an old phone stylesheet restyles `__note` classes;
+- the rem placeholder band is exact at 100 % but 11–22 px off at 125–150 %.
+
+### Round-1 findings
+
+| ID | Status | Measured in round 2 |
+|---|---|---|
+| ST-01 | **Fixed** | Every load read once, with no flash: Chromium 12 of 12, WebKit 4 of 4. A `focus` with no blur on a ready page: nothing moves, no read (frame log empty). |
+| ST-02 | **Open, narrowed (P2)** | Fixed for blur, focus, offline, online, a failed 30 s refresh and an expired read (390 Owner and Manager, 320, 844×390, 1440, WebKit 390). The only movement left is ST-09's 0.5 px per row. Still open: **ready → signed out** (refresh answered 401) clears the held size by design and the Email row collapses 75→53. Pay, Notifications and Sign out move up 22 px (1484→1462), CLS **0.020** at 390 Owner. Screenshot `ST-02-r2-denied.png`. Cause: `manager-profile-live.tsx:246` `setHeld(null)` and `:153` (no `sized` for `denied`). Fix: on an ended session keep the sizes without the values. Before clearing `held`, store the three read rows' and the topic list's rendered heights (numbers only, from a ref measured while ready). Render the denied dash rows and panel with `style={{ minHeight }}` from them, so nothing private stays in the DOM and nothing moves. |
+| ST-03 | **Open, narrowed (P2)** | Locations (one line now) and the alert rows (text-shaped placeholders, loading = ready at every width: Owner 368 = 368, Manager 300 = 300, 320: 448 = 448) no longer grow. The wrapped email still does: `owner@northside-qa.example` needs 244 px, and the value column is 222 px at 390, so the row grows 53→75 and Pay and Sign out move +22. Measured: Owner 390 CLS **0.035**, Manager 390 **0.035**, Manager 430 **0.035** (Owner 430 0.0003). 320: +44 (Owner) and +66 (Manager) below the fold, CLS 0.008. 1024: 0.0018 and 0.0020. 844×390 and 1440: 0. WebKit 390 shows the same +22. The same jump follows a successful Try again after a first-load failure. Screenshot `ST-03-r2-email.png`. I can't confirm the builder's "0 at 390/430 Owner": 430 is 0.0003, but 390 is 0.035 in Chromium and +22 px in WebKit, with Inter loaded. Judgement: until Codex supplies `initial`, the most common phone width shifts on every visit for a typical address. Fix, UI only: on cards narrower than 26rem (the `#profile-details` container already exists, `premium-profile.css:108`), put the label above the value for Email (or for all seven rows, for consistency): `@container (max-width: 26rem) { .pmp-details > div { flex-direction: column; } .pmp-details dt { flex-basis: auto; } }`. The value then gets the full 318 px at 390 and 248 px at 320, so a typical address is one line. The loading row (label over dash) is the same height as the ready row. `initial` from the server then covers the rare address wider than the card. |
+| ST-04 | **Fixed** | Save answered 401 on rows 0 and 1 at 320, 360 and 390: nothing moves (frame log empty). Slow save at 390: nothing moves while Saving… shows or after it settles. |
+| ST-05 | **Fixed** | Try again → Trying again… → Try again at 390, 320 and 1440: the head action keeps 101.9 px at 390 (95.7 px at 1440) and doesn't move. Its left edge stays at 252.1 (390). |
+| ST-06 | **Fixed** | Manager with 8 assigned locations, 390: "Show all 8" / "Show fewer" stays at y 615, left edge 132 (width 73→84, left-aligned); the list grows below it. Owner `all` scope is one line with no toggle. |
+| ST-07 | **Fixed** | 844×390: placeholder band 104 = real band 104 (Chromium and WebKit hard loads; Chromium client navigation). |
+| ST-08 | **Open, narrowed (P2)** | Phone placeholder band is now `6.5rem` (`premium-profile.css:83`). At 100 % it's exact (104 = 104 at 320, 390, 430 and 844×390). The real band doesn't scale as pure rem, though: about 40 px of it is fixed padding, and the summary wraps at 320 from 125 % and at 390 at 200 %. Placeholder vs real: 125 % 130 vs 119 (390) and 149 (320); 150 % 156 vs 134 (390) and 170 (320); 200 % 208 vs 212. So the page jumps −11 to −22 px (390) or +14 to +19 px (320) when it arrives at large text. Screenshot `ST-08-r2-z15.png`. Fix: draw the band's real words in the placeholder, as the alert rows now do. `route-skeleton` for `profile` renders an invisible flat PageBand with the title "Profile" and the summary text (`color: transparent`, text-shaped bars), so it wraps exactly like the real band. The Owner/Manager and employee summaries can be picked by `.employee-shell`. The desktop part of round-1 ST-08 (no placeholder band from 768 up) is the shared rule in `portal-premium.css`, so it goes to the coordinator under the round-2 scope cut and isn't counted here. |
+
+### New finding
+
+#### ST-09 · P2 · Held rows are 0.5 px taller than ready rows, so every pause or failure nudges the page 1–1.5 px
+
+- **Where:** Owner and Manager, phones and 844×390, Chromium and WebKit. Not at 1440.
+- **Measured:**
+  - Blur at 390: Phone and Locations rows 53→53.5. Pay, Notifications and Sign out move down 1 px (1484→1485) and back on focus. CLS 0.0009 / 0.0007.
+  - Offline (Manager 390), failed refresh and expired read: the same +1 px.
+  - 844×390: +1.5 px (three rows). 320: +1 px.
+  - The held dash also renders at 15 px instead of the 17 px used in the ready and loading rows.
+- **Screenshot:** `…/stability/ST-09-r2-held.png`. Measured cells: `.pmp-hold__note` is font-size 15 px, line-height 22.5 px; `.pmp-hold__value` is 22 px.
+- **Cause:** `src/app/mobile-workforce.css:69`. The old phone rule `.page-frame :is(small,[class*="__hint"],[class*="__note"]) { font-size: var(--mobile-caption); line-height: 1.5 }` matches the class `pmp-hold__note` used at `manager-profile-live.tsx:155` and `:211`.
+- **Fix:** rename the class so it doesn't end in `__note` (for example `pmp-hold-note`, in `manager-profile-live.tsx:155`, `:211` and `premium-profile.css:89–90`). Or add `font: inherit` to `.pmp-hold__note` in `premium-profile.css:89`, and keep `.pmp-topics-note > p` on its own callout font.
+
+### Checked and correct (round 2)
+
+- **Header and band join:** 68/68 with the same colour at 320, 390, 430 and 844×390; desktop band at 93–201 at 1024 and 1440. Chromium and WebKit.
+- **Loading → failed and → paused:** the alert list keeps its exact height. Owner panel 360 over rows 368; Manager 292 over 300. 320: 440 over 448. 1440: 340 over 348.
+- **Retry:** the head word, the Try again buttons and the panel stay put through pending and failed. The success announcement ("Your details loaded.") is in the status line and changes no geometry.
+- **Saving:** slow save, failed save (401) at 320, 360 and 390: frame log empty.
+- **1440:** blur, focus, retry and the full load: CLS 0.0001–0.0002, no element moves.
+- **Landscape 844×390:** load CLS 0.0005 (no move); held state moves only ST-09's 1.5 px.
+
+Open P0–P2 in stability: 4
+
+## Round 3
+
+October 19, build 7713d75 on port 52269. Hard loads ran in Chromium at 320, 390, 430, 844×390 and 1440 for both roles, and in WebKit at 390 and 430. Pause and return (blur/focus, offline/online) ran at the same widths, plus WebKit at 390. Ready → signed out ran at 320, 390 and 430. The band was checked at 125 % and 150 % through client navigation. Evidence: `…/stability/r3/` and `…/stability/r3-*.png`, `ST-*-r3-*.png`. No background runs are left.
+
+**Verdict.** ST-02 and ST-09 are fixed, with no element moving in any pause, offline, failure or signed-out change. Every load reads once. The Owner page now loads with no movement at 320, 390, 430, 844×390 and 1440. Two items stay open, both narrowed and data- or width-dependent:
+- **ST-03:** the Manager fixture's longer address and two-name list still grow at 320 and 430.
+- **ST-08:** the band formula is exact at 390 but not at 320, where the summary wraps from 125 %.
+
+| ID | Status | Measured in round 3 |
+|---|---|---|
+| ST-02 | **Fixed** | Ready → signed out (refresh answered 401): no element moves at 320, 390 (Owner) or 430 (Manager). Only the head word changes (CLS 0.0003–0.0007). |
+| ST-09 | **Fixed** | Blur/focus and offline/online at 320, 390, 430, 844×390 and 1440 (Chromium) and 390 (WebKit): every card, the topic list and Sign out keep their exact position. Only the head word changes (CLS ≤ 0.002, the head text alone). |
+| ST-03 | **Open, narrowed (P2)** | **Owner:** loading = ready at 320, 390, 430, 844×390 and 1440 (Sign out moves 0; WebKit 390 and 430 also 0). **Manager** (`morgan.rivera@northside-qa.example`, two assigned locations): 390, 844×390 and 1440 move 0, but 2 cells still grow. **430:** the address wraps beside its label (the value column is 262 px, over the 14rem stacking threshold): row 53→75, Pay and Sign out +22, layout-shift value **0.036**; WebKit 430 also +22. **320:** the stacked address still needs two lines (77→99) and "Main Office · West Office" wraps (53→75): Sign out +44, value **0.015**. Chromium flagged both entries `hadRecentInput: true` although the probe sends no input, so a CLS sum that drops input entries reads 0 there. That may be why the builder's probe shows 0; the frame log shows the move. Screenshot `ST-03-r3-manager.png`. Fix: raise the email stacking threshold from 14rem to 17rem (`premium-profile.css` TC-09 rule), so 430 stacks too. The address then has 358 px and fits on one line, the same as loading. The 320 remainder (an address wider than the card, a wrapping location list) can only be removed by Codex's server read as `initial`, which `CODEX.md` now documents. Once `initial` is wired, I'd close this. |
+| ST-08 | **Open, narrowed (P2)** | `calc(44px + 3.75rem)` is exact wherever the summary is one line: 390 at 100 % 104 = 104, at 125 % 119 = 119 and at 150 % 134 = 134 (client navigation). At 320 the summary "Your details, pay and alerts." wraps from 125 %. The placeholder is 119 px vs the real 149 px at 125 % (+30 px jump), and 134 px (formula) vs the real 170 px at 150 % (+36). Screenshot `ST-08-r3-320z125.png`. Fix: add the second summary line where it wraps. Because the formula is in rem, the wrap point is a width: the summary is about 14.5em wide, and it wraps when the band's text column (viewport − 32 px) is narrower. One way: `@container`/`@media (max-width: 359px)` → `calc(44px + 5.25rem)`, which also covers 125–200 % at 320. Exact at all sizes would mean drawing the real band words invisibly in the placeholder (round-2 suggestion). |
+
+### Checked and correct (round 3)
+
+- **Hard loads:** every load (13) read once with no flash: `Checking… > ready`.
+- **Bands:** placeholder band = real band at 100 %: 104 px at 320, 390, 430 and 844×390 (both roles, Chromium and WebKit). Desktop band 93–201.
+- **Owner loads:** no movement at 320, 390, 430, 844×390 and 1440 in Chromium, and at 390 and 430 in WebKit.
+- **Alert list:** keeps its height from loading to ready (Owner 368, Manager 300, 320: 448 and 360) and under every note (paused 360 / 292, offline 292, signed out 360 / 292).
+- **1440:** load, blur and offline CLS 0.0001.
+
+Open P0–P2 in stability: 2

@@ -47,3 +47,103 @@ Matrix: `…/widths/matrix.mjs`, results `…/widths/results-*.json` (merged: `r
 - My pay with payroll off, and a Manager whose scope is "all", can't be produced on this preview without server data changes. Both were checked by code only.
 
 Open P0–P2 in widths and roles: 3
+
+## Round 2
+
+October 19, build `1f29c3b` (the preview's `manager-profile.tsx`, `manager-profile-live.tsx` and `premium-profile.css` are byte-identical to HEAD). Chromium at 320×640, 390×844, 844×390 and 1440×900 at 100/125/150/200% text. WebKit spot checks at the same sizes, 100 and 200%. 360 and 430 at 100 and 125% for WR-3. Data cases: `owner`, `manager`, `owner-large`, `manager-empty`, `manager-large` (12 assigned), plus two new fictional ones of mine, `manager-mid` (4 assigned, including the 75-character name) and `manager-all` (Manager with company-wide scope). Landscape is measured on fresh pages with viewport captures only. Scripts and results: `…/widths/r2/`. A 500 or timeout was retried once. 154 manager-page measurements loaded (Chromium 124, WebKit 30), plus 16 Employee/Lead pages. No Firefox, no shell.
+
+### Round-1 findings
+
+| ID | Status | Evidence |
+|---|---|---|
+| WR-1 | **Fixed** | `manager-profile.tsx:19-20` no longer calls `readPayrollCapabilities`. It passes `{ enabled: payrollFeatureEnabled() }` to `navigationForRole`. That matches the shell, because `readPayrollCapabilities` returns `enabled: false` exactly when the flag is off and `enabled: true` otherwise (`src/lib/payroll/service.ts:813-827`, `:107`), and My pay in the navigation depends only on `enabled` plus the module (`navigation.ts:128-131`). Server log since the last old-build trace (`next.log` line 39830): 10 statement timeouts, all from `layout.tsx:42` and none from the Profile page; 343 `/app/profile` 200s against 17 500s, where round 1 had 667 500s against 1,527 200s. My pay still shows for Owner and Manager in every case (payroll on). |
+| WR-2 | **Fixed** | Assigned lists over five now show "12 locations" and the toggle above the names. `manager-large`, Chromium: "Show all 12" sits at y=793 (320), 703 (390), 615 (844×390) and 644 (1440) at 100%, and at 1,722, 1,591, 970 and 1,214 at 200%. After the tap it is at **the same y** every time, in view and still focused. It opens 12 names, then "Show fewer" brings back 5 (`aria-expanded` true/false). WebKit: same positions. (The button isn't focused after a click there, which is WebKit's normal behaviour for buttons.) The 60-location Owner case no longer lists: "All 60 locations" is one line at every size. |
+| WR-3 | **Fixed** | Label 5rem, value basis 8rem. At 100% text all 7 rows keep label and value side by side at 320 (value column 152px), 360 (192), 390 (222) and 430 (262) for Owner and Manager in Chromium and WebKit, and at 125% at 360 (172) and 430 (242). Rows stack only at 200% on phones (320 and 390: value 248 and 318px wide, at the card's text edge, x=36), which is the intended large-text behaviour. At 1440 and in landscape they never stack. |
+
+### New finding
+
+| ID | Page, role, width, browser, text | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| WR-4 | `/app/profile`, Owner (`owner-large`), 390×844 Chromium 100%; also 320×640 Chromium 200% | Phone value "+1 (787) 555-0100 ext. 4021" | The extension's number breaks away from "ext.". The line ends "… 555-0100 ext." and "4021" sits alone on line 2 (390/100%). At 320/200% it reads "+1 (787)", then "555-0100 ext.", then "4021". Every space is an equal break point, so "ext." and its number are two separate wrap units. WebKit happens to break before "ext." at the same sizes ("555-0100 ⏎ ext. 4021"), so this shows in Chromium, which Android phones use. | `…/widths/shots/crops/WR-4-phone-ext-390.png` | `src/components/manager-profile/manager-profile-live.tsx:90-91` (`number.split(/\s+/)`) | Bind the extension to its number before splitting: `number.replace(/\b(ext\.?|x)\s+(?=\d)/gi, '$1 ').split(/\s+/)`. Each part is an inline-block (`premium-profile.css:99`), so "ext. 4021" then moves as one unit and the line breaks after "555-0100". | P2 |
+
+### Checked and correct (round 2)
+
+- **No sideways overflow, clipping or edge-hugging text** on any of the 154 pages: `scrollWidth` equals the viewport, no element past the edge except the band's decorative SVG, no clamp or ellipsis, no text within 12px of a card edge. No targets under 44px (phones and landscape) or 24px (desktop). Card head never overlaps its meta. Band-to-card gap 16px. One column at 320/360/390/430 and in landscape, two at 1440. Smallest text 15px on phones and in landscape, 14px on desktop, scaling with text size.
+- **Landscape 844×390 (fresh page, viewport captures):** phone layout, cards 24–820, labels and values side by side at 100% (value column 676px) and 200% (596px), for Owner, Manager and all data cases in Chromium, and Owner and `manager-mid` in WebKit.
+- **Locations:**
+  - Owner "All 3 locations" and "All 60 locations" are one line with no Show names.
+  - The Manager's company-wide scope (`manager-all`) reads "All 3 locations", one line.
+  - Short assigned lists are inline ("Main Office · West Office", one row 53px tall at 390).
+  - `manager-mid` (4 names, the first 75 characters) wraps between and inside names within the 222px column and stays inside the card at 320–1440 and 100–200%.
+  - `manager-empty` reads "None assigned yet", with "Not added" for email and phone.
+- **Contact values:** the 91-character email breaks only after the @ or before dots (and at the domain's hyphens when a part is wider than the line), never mid-word: at 390/100% it reads "maria.jose.rivera.santiago" / ".with.a.long.name@" / "northside-quality-" / "assurance-workforce" / ".example". It is one or two lines at 844 and 1440.
+- **Roles:** Owner has "Edit your details", 5 alert switches, My pay, and band summary "Your details, pay and alerts.". Manager has the ask-the-owner note, 4 switches and My pay. The Owner's alert rows follow payroll: with payroll on (this preview) the ready list has 5 and the loading rows are sized for 5. With payroll off the loading rows size for the 4-topic set (`manager-profile-live.tsx:162`, `payrollAlerts` from `manager-profile.tsx:33`). That last part is checked by code only, because payroll can't be switched off on this preview.
+- **Employee and Lead:** `AUDIT-E` and `AUDIT-LEAD` get the Phase 3 Profile (`.premium-employee-profile`, 5 detail rows) at 320, 390, 844×390 and 1440 in Chromium and WebKit. None of these pages calls `/api/management/profile`, and none overflows.
+
+### Gaps (round 2)
+
+- Payroll off (My pay hidden, band "Your details and alerts.", Owner with 4 alert rows) can't be produced on this preview, so it's checked by code only.
+- WebKit `manager-mid` at 320 didn't load after one retry. Chromium covers it at 320 for 100% and 200%.
+
+Open P0–P2 in widths and roles: 1
+
+## Round 3
+
+October 19, build `7713d75` (the preview's `manager-profile-live.tsx` and `premium-profile.css` match HEAD).
+- **Chromium:** 320, 360, 390, 430, 768, 1024 and 1440 at 100/125/150/200% text, and 844×390 (fresh page, viewport captures) at the same text sizes.
+- **WebKit spot checks:** 320, 390, 430 and 844×390 at 100 and 200%.
+- **Data cases:** `owner`, `manager`, `owner-large`, `manager-empty` and `manager-mid` (Owner and Manager).
+- **Employee and Lead:** Chromium at 320, 360, 390, 430 and 844×390, WebKit at 390.
+- **Loads:** 182 Profile measurements, no failed loads.
+- **Scripts, results and crops:** `…/widths/r3/` and `…/widths/shots/crops/R3-*`.
+
+### WR-4: fixed
+
+"ext. 4021" is now one part (`manager-profile-live.tsx:92-98`) and never splits, in Chromium and WebKit.
+
+| Text size | 320 | 390 | 430 |
+|---|---|---|---|
+| 100% | "+1 (787) 555-0100" / "ext. 4021" | "+1 (787) 555-0100" / "ext. 4021" | one line |
+| 125% | "+1 (787) 555-0100" / "ext. 4021" | "+1 (787) 555-0100" / "ext. 4021" | "+1 (787) 555-0100" / "ext. 4021" |
+| 150% | "+1 (787) 555-0100" / "ext. 4021" | "+1 (787) 555-0100" / "ext. 4021" | "+1 (787) 555-0100" / "ext. 4021" |
+| 200% | "+1 (787)" / "555-0100" / "ext. 4021" | "+1 (787) 555-0100" / "ext. 4021" | "+1 (787) 555-0100" / "ext. 4021" |
+
+Landscape and 1440 show the number on one line. The extension's number never sits alone.
+
+### New finding
+
+| ID | Page, role, width, browser, text | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| WR-5 | `/app/profile`, Manager with no email (`manager-empty`), 320, 360 and 390 at 100%, and 430 at 125–150%; also 1024 at 100% (desktop column), Chromium and WebKit | Email row when the value is "Not added" | The 14rem rule stacks the Email row even when it holds the 9-character muted "Not added". The result is "Email" on one line and "Not added" under it at x=36, in a 77px row. Directly below, Phone shows the same "Not added" beside its label at x=132, in a 53px row. Two adjacent rows with identical values use two layouts. The rule exists so an address keeps its parts whole, which doesn't apply to "Not added" (one 63px line). | `…/widths/shots/crops/R3-mgrempty-390-email-stacked.png` | `src/app/app/premium-profile.css:107` (`.pmp-details > [data-row="email"] > dd { flex-basis: 14rem }`) applies to every Email value | Limit the wide basis to rows that show an address. The address parts are `.pmp-part`, so use `.pmp-details > [data-row="email"]:has(.pmp-part) > dd { flex-basis: 14rem }`. Then loading and held rows keep their size (the hidden held value contains `.pmp-part`), and only a ready "Not added" row sits beside its label. Cost: when the read returns no email, that row shrinks once by 24px (77 to 53) as the empty value arrives, only for accounts without an email. Judgment: P2 because it is visible in the card. If the stability owner prefers no shrink, keep the rule and show "Not added" stacked for Phone too, so the two rows match. | P2 |
+
+### The stacked Email row against the other rows and the employee Profile
+
+- **Where it stacks with an address (intended):**
+  - 320, 360 and 390 at 100%.
+  - 430 from 125%.
+  - 1024 at 100%. This is the desktop's two-column layout, where the details column (214px) is narrower than a 390 phone's (222px). It follows the rule as written, though the coordinator's note described it as phones only. Recorded, not filed.
+  - 1440 at 200%.
+- **Where it sits beside its label:** 430 at 100%, 768 at 100%, 1440 at 100–150%, and landscape at every text size.
+- **Line breaks in the stacked row:** the label is at x=36 like every label, and the value starts at x=36 under it, the same position all rows take when they stack at large text. The address breaks only between parts:
+  - "owner@northside-qa.example" is one line at 320–390.
+  - The 91-character address is "maria.jose.rivera.santiago" / ".with.a.long.name@" / "northside-quality-" / … at 390.
+- **Row heights:** 77px for a one-line address against 52–53px for the other rows. The other rows are unchanged from round 2 (value at x=132, side by side at 100% on every phone).
+- **Employee Profile (Phase 3, AUDIT-E and AUDIT-LEAD):** no email row; 5 rows, never stacked at 320–430 or in landscape. Labels at x=36 like this page. Values at x=144/160/172/188 (320/360/390/430) against this page's fixed 132, and rows 59–60px against 52–53px. These are the two pages' own geometries and were not changed this round; noted for the alignment owner, not filed.
+
+### Checked and correct (round 3)
+
+- **Overflow and clipping:**
+  - `scrollWidth` equals the viewport on all 182 Profile pages.
+  - No element past the edge (except the band's decorative SVG).
+  - No text clipped or within 12px of a card edge.
+  - No targets under 44px (phones and landscape) or 24px (desktop).
+  - No head/meta overlap; the head stacks only below 16rem and never collides.
+  - Band-to-card gap 16px.
+  - Columns: one up to 768, two at 1024 and 1440.
+  - Text floor: 15px on phones and in landscape, 14px on desktop.
+- **Landscape 844×390:** every row side by side at 100–200%, Chromium and WebKit, for both roles. The phone reads "+1 (787) 555-0100 ext. 4021" on one line.
+- **Roles:** Owner has 5 alert switches and Manager 4 (payroll on), and both have My pay. The Owner-without-payroll case hides the payroll topic (`manager-profile-live.tsx:164`, `:177`). That is checked by code only, because payroll can't be switched off on this preview.
+- **Employee and Lead:** they get the Phase 3 Profile at every size checked, make zero requests to `/api/management/profile`, and nothing overflows.
+- **Background runs:** none of mine are running.
+
+Open P0–P2 in widths and roles: 1

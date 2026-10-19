@@ -141,3 +141,118 @@ All topics are sentence case, with curly apostrophes and no blame words. For the
 - **Employee and Lead:** `AUDIT-E` and `AUDIT-LEAD` at `/app/profile` (Chromium) get the employee Profile (`.premium-employee-profile` 1, `.premium-manager-profile` 0). One `AUDIT-E` load returned 500 under machine load and passed on retry, which matches the coordinator's dev-server note.
 
 Open P0–P2 in type, colour and copy: 8
+
+## Round 2
+
+October 19, build `1f29c3b` (HEAD of `claude/p35-profile-6cdee8`, with the kit landscape fix cherry-picked as `d3d0be1`).
+
+Coverage:
+- **Chromium:** 320, 390, 844×390 and 1440 at 100, 125, 150 and 200%, Owner and Manager, every state:
+  - ready, loading, failed, `unavailable`, 404, signed out, paused, offline
+  - save pending, failed, aborted and 401
+  - retry pending, `owner-large`, `manager-empty`
+  - scratch fixtures: 12 assigned locations, five inline locations with one very long name, no contact or alerts, one location, and a 24-character address part
+- **WebKit spot checks:** ready, owner-large, failed, save pending, save failed, retry pending, inline list and the 24-character address, at the same widths, 100 and 200%.
+- **Totals:** 604 snapshots and 346 axe runs. Eight snapshots didn't load or are gone by design:
+  - 2 were 500s under load, retried once.
+  - 6 were the old "Show names" step: company-wide scope is now one line, so the button no longer exists, by design.
+
+New screenshots are in `scratchpad/inspect/type/r2/shots/` (same root as above).
+
+### Round-1 findings
+
+| ID | Status | Measured now |
+|---|---|---|
+| TC-01 | **Fixed** | Busy switch rows use `aria-disabled` and keep full opacity. "Saving…" 5.84:1, row title 17.65:1, switch on its card 5.53:1, thumb on track 5.53:1 (`TC-01-saving-390.png`). "Trying again…" is 5.53:1 (teal) in the head and 17.65:1 (ink on white) on the panel button (`TC-01-retry-pending-390.png`). "Signing out…" is at opacity 1, 5.84:1. That was checked by setting `disabled` in my own browser; Sign out wasn't pressed. Busy text measured in Chromium, WebKit spot check same: no text under 4.5:1 anywhere except the decorative loading bars. |
+| TC-02 | **Fixed** for every real fixture | "morgan.rivera@ / northside-qa / .example" breaks only after the "@" or before a dot at every width and text size, in Chromium and WebKit (`TC-02-manager-390-100.png`). No real-fixture address breaks before an "@" in any snapshot. The lone "@" below is a new cause, filed as TC-09. |
+| TC-03 | **Fixed** | No clipping in any snapshot. The 24-character part at 320 and 200% ends at x=284, the value edge, inside the card's clip at 304 (round 1: 449). Parts wider than the line wrap inside their own box (`TC-03-email24-320-200.png`). |
+| TC-04 | **Fixed** | Announced as "Time-off requests: Not saved. Sign in again." The row reads "Not saved. Sign in again." and the offline case "Not saved. You’re offline." No "Alert:" fallback. |
+| TC-05 | **Fixed** (code) | `manager-profile.tsx:23` now gives "Your details, pay and alerts." only with My pay, else "Your details and alerts." The preview has payroll on, so only the first branch shows (Pay card present), which is correct. |
+| TC-06 | **Fixed** | The first row is now "All notifications" under the card title "Notifications". |
+| TC-07 | **Fixed** | The panel reads "Your alert choices couldn’t load." with Try again; no connection claim. |
+| TC-08 | **Fixed** | The workaround is gone from `premium-profile.css` (no landscape rule left), and `kit.css:73` excludes coarse-pointer landscape from desktop tokens. At 844×390: callout and label 15, rows 17, title 30, smallest text 15.0. |
+
+### New finding
+
+#### TC-09 · P1 · On phones, long address parts break mid-word beside the label, including a lone "@" line
+
+- **Where:** Owner, Chromium and WebKit, 320 and 390 at 100%, and 390 at 125%. Address `christopherjohnsonmanage@westoverhospitality.example`: a 24-character local part and a 19-character domain label, a realistic company address. Served from a scratch fixture.
+- **Element:** Your details › Email value (`.pmp-part`).
+- **Measured:**
+  - The new 5rem label column with an 8rem value basis keeps the value beside the label: 152px wide at 320 and 222px at 390. Under the label it would be 248 and 318.
+  - At 390 and 100%, the value renders as four lines: "christopherjohnsonmanage", then **"@"** alone, then "westoverhospitality", then ".example".
+  - At 320 and 100%: "christopherjohnso", "nmanage@", "westoverhospitalit", **"y"**, ".example".
+  - Both parts would fit whole under the label: about 226px against 318 and 248. These breaks are avoidable, and they break the rule (after the @ or before dots only).
+  - A domain label of about 16 or more characters already splits mid-word at 320 and 100%.
+  - The shipped fixtures don't show it: "morgan.rivera@" is 14 characters.
+- **Screenshots:** `r2/shots/TC-09-email24-390-100.png`, `r2/shots/TC-09-email24-320-100.png`
+- **Cause:** `src/app/app/premium-profile.css:16-17` (dt `flex: 0 0 5rem`, dd `flex: 1 1 8rem`) together with `:99` (`.pmp-part { overflow-wrap: anywhere }`). `anywhere` lowers each part's min-content to one character, so the row never wraps the value under its label; the part breaks letter by letter instead.
+- **Fix:**
+  1. In `:99`, use `overflow-wrap: break-word`. A part keeps its full min-content, and it can still break inside when it alone is wider than the line.
+  2. Give contact values a wider basis so a long part drops under the label: `.pmp-details dd:has(.pmp-part) { flex-basis: 14rem; }` (224px). At 390 the value goes under the label (318px), where "morgan.rivera@northside-qa.example" fits on one line, and at 1440 it stays beside the label (400px). Re-measure the label geometry with the alignment inspector, since this changes it.
+
+### Checked and correct in round 2
+
+- **Type:** every text node is a kit role. Smallest text is 15.0px on phones and landscape and 14.0px on desktop (callout and label). Everything scales with the root size at every step. No sideways overflow, no clipping or line-clamp in 604 snapshots.
+- **New copy:** sentence case, curly apostrophes and real ellipses throughout; no blame words; terms match the app. Checked:
+  - "All notifications"
+  - "Updates paused. Your alert choices show again when you come back to this window."
+  - "You’re offline. Your alert choices show again when you’re back online."
+  - "Your alert choices couldn’t load."
+  - "Your session ended. Sign in again to see your alert choices."
+  - "Still couldn’t load your contact details, locations and alert choices." and "Your details loaded." (spoken)
+  - "Not saved. Try again." / "Not saved. Sign in again." / "Not saved. You’re offline."
+  - "12 locations" and "Show all 12" / "Show fewer"; "All 3 locations"; "All 60 locations"
+  - The approved topics ("Shift requests", "When a clock-in needs your review") and payroll wording weren't re-reviewed.
+- **Inline locations:** "Main Office · West Office" breaks only between names. The very long name wraps inside its own item, and the "·" stays attached to the name before it (non-breaking space in `::after`).
+- **Contrast:**
+  - Text: ink 17.65, muted 5.84 (5.52 on hover), teal 5.53, save error 6.76.
+  - Paused tile glyph 7.43; urgent tile glyph 5.80; save-error icon 3.77 (3.56 on hover); chevrons 3.45 (3.26 on hover).
+  - Switch off: track 3.45, thumb 3.45. Switch on: track 5.53, thumb 5.53. These are unchanged while saving.
+- **Loading rows:** the text-shaped bars (#EEF1F0, transparent text) and the thumbless pills (1.14:1) are decorative and `aria-hidden`; they carry no state. "Checking…" in the head carries it (5.84:1).
+- **Phone numbers:** break only at spaces. "555-0100" never splits.
+- **axe:** 0 violations in 346 runs (Chromium and WebKit, 100 and 200%, every state above).
+
+Open P0–P2 in type, colour and copy: 1
+
+## Round 3
+
+October 19, build `7713d75`.
+
+Coverage:
+- **Chromium:** 320, 390, 430, 844×390 and 1440 at 100, 125, 150 and 200%. States: the long-address fixture, ready (Owner and Manager), `owner-large`, 12 assigned locations, five inline locations, save failed, failed read, retry pending, loading, signed out and paused.
+- **WebKit spot checks:** long address, ready, `owner-large` and save failed at 320, 390, 430 and 1440, 100 and 200%.
+- **Totals:** 388 snapshots and 218 axe runs. No load failures.
+
+Screenshots are in `scratchpad/inspect/type/r3/shots/`.
+
+### TC-09 · **Fixed**
+
+- **Long address, `christopherjohnsonmanage@westoverhospitality.example`:**
+  - At 100% it renders as two lines, "christopherjohnsonmanage@" / "westoverhospitality.example", at every phone width:
+    - 320: value under its label, 248px wide (`TC-09-email24-320-1.png`)
+    - 390: under its label, 318px (`TC-09-email24-390-1.png`)
+    - 430: beside its label, 262px (`TC-09-email24-430-1.png`)
+  - Also unbroken at 390 and 125%, 430 at 125–150%, and 844 and 1440 at every size.
+  - Same in WebKit at 100%.
+- **Remaining breaks inside a part** happen only where that part alone is wider than the whole row, which is the agreed fallback. Examples:
+  - 320 at 125%: the 25-character part is about 293px against 248.
+  - 320 at 200%: "westoverhospit / ality" (about 330px against 248) (`TC-09-email24-320-2.png`).
+  - 390 at 150%, and 430 at 200%.
+  - No lone "@" or single-letter line at 100%.
+- **Manager address:** "morgan.rivera@northside-qa.example" at 100% is one line at 390 (318px). At 320 and 430 it breaks only before ".example".
+- **`owner-large`:** its 37-character domain part is wider than any row, so it wraps at its own hyphens (the fallback).
+
+### Quick pass over what changed
+
+- **Phone extension:** "ext. 4021" is one part. "+1 (787) 555-0100 ext. 4021" breaks only at "(787) | 555-0100" and before "ext. 4021", never between "ext." and "4021". Plain numbers break only at spaces.
+- **Save-error icon:** now centred with `1lh`. Colour unchanged: #E1553F on white, 3.77:1. Text #A3361F, 6.76:1. Icon and words, so not colour alone.
+- **Screen-reader status lines:** "Your details loaded." (after a reader's retry), paused and offline words, and "Time-off requests: Not saved. …". Sentence case, curly apostrophes, no blame words.
+- **Owner without payroll:** the payroll topic is filtered out (`manager-profile-live.tsx`, `visible()`). The preview has payroll on, so I checked this in the code only.
+- **Held classes renamed:** the held copies are still `visibility: hidden` and `aria-hidden`. No hidden text was measured or announced.
+- **Type:** smallest text 15.0px on phones and landscape and 14.0px on desktop (callout and label). Everything scales with the root size.
+- **Contrast:** no text under 4.5:1 (loading bars excluded, decorative); switch track and thumb 3.45 and 5.53 as before.
+- **Overflow:** no clipping and no sideways overflow in any snapshot.
+- **axe:** 0 violations in 218 runs.
+
+Open P0–P2 in type, colour and copy: 0

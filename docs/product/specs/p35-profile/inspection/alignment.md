@@ -59,3 +59,61 @@ Correct, with measurements (Chromium unless noted; same in Firefox and WebKit wh
 - Keyboard focus rings were read from the CSS, not measured: rows and switches draw a 2px ring inset by 2px (`premium-profile.css:37`), so it can't be clipped by the card.
 
 Open P0–P2 in alignment: 4
+
+## Round 2
+
+October 19, build at HEAD of `claude/p35-profile-6cdee8` (1f29c3b), preview on port 52269. Chromium at 320, 390, 844×390 and 1440, Owner and Manager, text at 100/125/150/200%, states ready, loading, empty, large, failed, signed out, paused, offline, save pending and save failed: 60 page loads, 240 measurements, each timeout retried once. WebKit spot checks: Owner 320 and 390 at 100 and 200% in ready, loading, failed and save failed; WebKit DPR 3 for the hairlines; WebKit 390 for the held-value baseline. No Firefox, no shared shell. Data: `$S/r2/`; crops: `$S/shots/r2/`. (The round-1 "large-open" state no longer exists for these fixtures: a company-wide list is one line with no Show names.)
+
+### Round-1 findings
+
+| ID | Status | Measured now |
+|---|---|---|
+| AL-1 | **Fixed** | "Your details" head height is the same in all 10 states for every role, width and text size measured (Chromium, e.g. 320: 74 / 84.5 / 95 / 116 at 100–200%; 390: 50 at 100%, 116 at 200%; 1440: 50 at 100%, 116 at 200%). One sub-pixel exception: 844×390 at 125%, Owner loading 56 vs 55.5. In the one-line cases the state word and actions keep the title's baseline (no offset over 0.75px), and right-aligned actions end at card right − 20. When the head stacks, "Checking…", "Updates paused", "You’re offline" and "Sign in" start at the title's x (36). The stacked "Try again" doesn't: that's the new AL-5. Judgment note, not filed: the 22rem threshold stacks the head at 320 even at 100%, where one line would fit ("Your details" 93 + 12 + "Updates paused" ~105 = 210 of 248px), so the ready card carries an empty 20px line there. About 16rem would keep 320/100% on one line. |
+| AL-2 | **Fixed** | Notifications card height is the same as ready in loading, failed, signed out, paused and offline at every measured width and text size, both roles: 0 differences in 240 measurements. Owner 320 at 200%: ready 2025, every state 2025 (round 1: −744). The panel covers its hidden copy exactly (panel height = hidden list height). WebKit 320/390 at 100/200%: the same. |
+| AL-3 | **Open, phones fixed; desktop residual** | Phones and landscape: the icon scales (16 / 20 / 24 / 32px) and its centre is within 0.48px of the first line's middle at every text size, Chromium and WebKit (−0.01). A wrapped message hangs under the text (text starts 6px after the icon on every line): `$S/shots/r2/AL3-390-z2-savefailed-row.png`. **1440, Chromium:** the icon sits above the middle by 0.18 / 0.84 / 0.51 / 1.35px at 100 / 125 / 150 / 200%. Cause: `premium-profile.css:70` `margin-top: .1333em` is right for the phone callout line (20/15), but desktop callout is 14px on a 20px line (kit.css:82). Fix: `margin-top: calc((1lh - 1.0667em) / 2)`, or a desktop override `@media (min-width: 768px) { … .pmp-save-error > svg { margin-top: .181em; } }` ((20/14 − 1.0667) / 2). P2 (small, but over tolerance from 125%). |
+| AL-4 | **Fixed** | Detail dividers now run from card x + 20 to the card's right edge in every record (390: 36 to 374, the same right end as the Notifications rows). WebKit DPR 3: `border-top-width` 0.333px (one device pixel), row hairlines 0.5px. |
+
+### New findings
+
+| ID | Where | Element | Measured problem | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL-5 | Owner and Manager, failed read, wherever the head stacks: 320 at 100–200%, 390 at 125–200%, 1440 at 200%. Chromium and WebKit. | `#profile-details .pmp-head-action` ("Try again" under "Your details") | When the head stacks, the button box starts at the title's x (36) but its words don't: "Try again" starts at x 71.45 at 320/100% (35.5px in), 78.97 at 125%, 85.95 at 150% and 98.31 at 200% (62.3px in). At 1440/200% it's 377.23 against the title's 318 (59px in). WebKit: 71.47 and 98.33. The label sits right-aligned in a cell as wide as "Trying again…". | `$S/shots/r2/AL5-320-z1-failed-details.png` | `src/app/app/premium-profile.css:96` (`text-align: right` on the head action's label stack in every layout); the stacked layout comes from `:109-111` | Inside the `@container (max-width: 22rem)` block add `… #profile-details .pmp-head-action .pmp-label-stack > span { text-align: left; }`. The id outranks line 96. Right alignment stays for the one-line head. | P2 |
+| AL-6 | Owner and Manager, paused, offline and failed after a ready read (the held-size states), phones and landscape (320/390/844×390; at 100% and 844×390 up to 200%; at 320/390 the value drops under its label from 125%). Chromium; WebKit 0.47px. | `.pmp-details` Email, Phone, Locations: the visible note ("–" when paused or offline, "Couldn’t load" after a failed re-read) in `.pmp-hold__note` | The note's baseline is 1px above its label's in Chromium (390 paused: label 482, "–" 481; failed after ready: label 482, "Couldn’t load" 481, also Phone 557/556 and Locations 610.5/609.5). 84 such rows across the matrix; none at 1440. WebKit 390: 0.47px. The dash also renders at 15px on a 22.5px line instead of the value's 17/22. | `$S/shots/r2/AL6-390-failed-after-ready-details.png` (numbers from `$S/fr.mjs`) | An old phone rule reaches the new class: `src/app/mobile-workforce.css:69` styles `[class*="__note"]` (`font-size: var(--mobile-caption); line-height: 1.5`), which matches `.pmp-hold__note` (`manager-profile-live.tsx:155` and `:211`, `premium-profile.css:89-90`). Found with CDP matched styles. | Rename the class so the old selector can't match, e.g. `pmp-hold-note` in the TSX (both places) and the CSS. Or set `font: inherit` on `.pmp-hold__note` under the page prefix. Renaming also keeps the alert panel (same class) out of that rule. | P2 |
+
+### Checked and correct (Round 2)
+
+- Page edge 16/16 at 320 and 390 and now also at 844×390 (cards 812 wide; was 24/24 in round 1). Band to first card 16 everywhere; cards 16 apart.
+- 1440: two columns at x 298 and 850, both top 217, 536 wide, 16px gutter.
+- Rows: no tile, chevron, switch, text-gap, right-inset, row-height or spill deviation in any of 240 Chromium measurements, including the loading ghost rows. The ghost rows are exactly the ready rows' size (card Δ0), and their switches are thumbless pills.
+- Alert panel centred over its hidden copy (tile, words and button centres = panel centre), button 52 tall.
+- Details: label column 5rem, so values start at card x + 100 (116 on phones) in every row. Label and value baselines agree within 0.75px wherever they share a line, except the held notes in AL-6. "Main Office · West Office" stays inline.
+- Foot: 4px padding, "Edit your details" 44 tall inside a 53px foot, text at card x + 20; the Manager's foot copy is at x + 20 too.
+- Targets: none under 44 on phones or 24 on desktop.
+- No sideways overflow in any record.
+
+Open P0–P2 in alignment: 3
+
+## Round 3
+
+October 19, build 7713d75, preview on port 52269. Chromium: Owner and Manager at 320, 390, 430 and 1440, text 100/125/150/200%, states ready, loading, failed, signed out, paused, offline and save failed (28 page loads, 112 measurements, each timeout retried once). Plus a failed-after-ready probe at 390 and a fresh signed-out load at 430. WebKit spot checks: Owner at 320/390/430, 100/125/200%, failed and save failed, plus the failed-after-ready probe at 390. Data: `$S/r3/`.
+
+| ID | Status | Measured now |
+|---|---|---|
+| AL-3 | **Fixed** | The icon's centre is within 0.49px of the first line's middle at every size, phones and desktop alike. Chromium 1440: 0.49 / −0.02 / 0.49 / −0.01 at 100/125/150/200% (round 2: up to −1.35). 320–430: ≤0.48. WebKit 320–430: −0.01 to −0.03. |
+| AL-5 | **Fixed** | Stacked "Try again" starts at the title's x (card + 20) everywhere the head stacks: Chromium 320 at 125–200%, 390 at 150–200%, 430 at 200%; WebKit the same. One-line "Try again" still ends at card right − 20 (320/100%: text at x + 201.6, baseline Δ0.2; WebKit Δ0.0). |
+| AL-6 | **Fixed** | Held notes share their label's baseline. Failed after a ready read, 390, Chromium: Phone label 559 / "Couldn’t load" 559, Locations 612 / 612 (round 2: 1px off); WebKit 559.17 / 559.17 and 612.17 / 612.17. Paused and offline: no baseline offset in any measurement (round 2: 84). The notes render in the callout role (15/20), not the old 15/22.5. |
+
+Head at 320, 100 and 125% (both roles, all 7 states): at 100% the head is one line, 50px in every state; "Checking…", "Updates paused", "You’re offline", "Try again" and "Sign in" sit on the title's baseline (Δ −0.7 to +0.2) and end at the card's right inset. At 125% it stacks, 84.5px in every state, with every state word or action at card x + 20. The 0.5px exception remains: the loading head is 56 against 55.5 at 390 and 430 at 125%, Manager only. That's sub-pixel and not filed.
+
+Stacked Email row at 320, 390 and 430 (ready, loading and held states, both roles):
+- At 320 and 390 (all text sizes) and at 430 from 125%, the value takes the row under its label.
+  - Label and value both start at card x + 20.
+  - The value starts 4px under the label.
+  - Padding is 16 above and 15 below.
+  - The divider runs from card x + 20 to the card's right edge, the same as the next row (Phone).
+- At 430 / 100% the value stays beside the label at card x + 100 (the 14rem basis fits). The Manager's address then wraps to two lines in the value column (row 75px), which is the intended part-wise break.
+- WebKit matches: value at card x + 20 at 320 and 390, and at 430 from 125%.
+
+Not filed (stability, for that inspector): an ended session holds the read rows' heights as pixel values captured when it ended. If the width later grows, a row keeps its narrower, taller height. Measured: signed out at 320, then widened to 430 gives Email 77px against 53 when loaded fresh at 430. A fresh load at 430 is correct (53/53/53).
+
+Open P0–P2 in alignment: 0

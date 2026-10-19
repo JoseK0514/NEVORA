@@ -81,6 +81,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
  * text lines follow the reader's text size (3.75rem): 104px at 100%, 119 at 125%, 134 at 150% (measured Oct 19, 390). The phone band
  * only shows up to 760px wide (shared rule in portal-premium.css); desktop placeholders are the shell's. */
 html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: calc(44px + 3.75rem); }
+/* ST-08: where the band's summary ("Your details, pay and alerts.", about 13.2rem of text) wraps to a second line, so
+ * does the placeholder. The summary gets the width minus 72px up to 400px wide, minus 128px from 401px (portal-premium.css). */
+html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { container-type: inline-size; }
+@container (max-width: calc(13.2rem + 72px)) { html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] .route-skeleton-band { --route-band: calc(44px + 5.25rem); } }
+@container (min-width: 401px) and (max-width: calc(13.2rem + 128px)) { html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] .route-skeleton-band { --route-band: calc(44px + 5.25rem); } }
 
 /* Held sizes (ST-02): while paused, offline or failed, the last values keep their space, hidden, under the note. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold { display: grid; }
@@ -97,9 +102,9 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 
 /* Contact parts (TC-02, TC-03): each part moves whole to the next line and wraps inside only if wider than the line. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-part { display: inline-block; max-width: 100%; overflow-wrap: break-word; }
-/* TC-09: the email value takes the full row under its label when the value column is under 14rem (phones up to 390),
+/* TC-09, WR-5: the contact values (Email and Phone, as one block) take the full row under their labels when the value column is under 17rem (phones up to 430),
  * in every state, so an address keeps its parts whole and its row is the same height loading and ready. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > [data-row="email"] > dd { flex-basis: 14rem; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > :is([data-row="email"], [data-row="phone"]) > dd { flex-basis: 17rem; }
 /* Loading alert rows (AL-2): the expected words as text-shaped grey bars, so the row is a ready row's size. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-ghost { border-radius: 6px; background: var(--nv-inset); color: transparent; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 /* Busy words stay readable (TC-01): the old portal stylesheet fades every disabled button to 55%. */

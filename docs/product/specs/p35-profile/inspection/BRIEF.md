@@ -53,3 +53,29 @@ Contents: band "Profile"; card **Your details** (Name, Role, Company, Email, Pho
 Write `docs/product/specs/p35-profile/inspection/<area>.md` in the worktree above. Format as in `BRIEF.md`: verdict paragraph, findings worst first (ID with your prefix, page/role/width/browser/zoom, element, measured problem, screenshot path, cause at `file:line`, fix, P0/P1/P2), then what you checked and found correct with the measurement. End with one line: "Open P0–P2 in <area>: N". Never invent a finding; a number beats an opinion.
 
 When you re-inspect after fixes, add a section `## Round N` to the same file: re-check every open finding, then your whole area again.
+
+## Round 2 (October 19, after Jose's cuts in PARALLEL.md)
+
+- **Scope:** re-check every round-1 finding in your report by ID, then whatever the fixes touched (below). Don't redo the full sweep; `checks.mjs` re-ran the width, text-size and browser sweep (Chromium and WebKit).
+- **Where:** 320, 390, landscape 844x390 and 1440, in Chromium, with WebKit spot checks. 125–200% text where your finding needs it. No Firefox; don't file Firefox-only findings.
+- **Not yours:** the shared shell (phone header, tab bar, More sheet, section tabs, desktop sidebar or header). Ignore shell flags from `checks.mjs`.
+- **Report:** add `## Round 2` to your file: each round-1 ID as fixed or still open (with numbers), any new finding in full, and a short "checked and correct" list. End with "Open P0–P2 in <area>: N".
+- **Build:** commits fa27b75 → 8 later ones, ending at the HEAD of `claude/p35-profile-6cdee8` (cherry-picked kit fix 9f7b649 included). Since 0542792: the card head leaves out the empty status line when Try again or Sign in shows; a short assigned list reads inline ("Main Office · West Office"); the label column is 5rem; Owner alert rows follow payroll (5 on, 4 off). Jose approved the design, the payroll wording and the alert topics.
+
+What changed, so you know what to re-check:
+
+| Area | Change |
+|---|---|
+| Read rhythm | A focus or `pageshow` without leaving first no longer clears a finished read. Leaving (blur, hidden, offline) clears; coming back reads again. |
+| Held sizes | Paused, offline and failed keep the last ready values' size (hidden, under the note); re-reading after a return shows the last values with "Checking…". A session that ended keeps nothing. |
+| Alert list | Loading rows draw the role's expected words as text-shaped grey bars (exact ready size); loading switches are thumbless grey pills. Paused, offline, failed and signed-out lay a panel (tile, words, Try again or Sign in) over a hidden copy of the rows. |
+| Card head | Never empty (non-breaking space unless an action shows); stacks to two lines in every state when the card is narrower than 22rem; Try again keeps one width ("Trying again…" shares its cell). |
+| Focus and names | Switches and Try again are never `disabled` while busy (aria-disabled / aria-busy), so focus stays; Try again's name is its visible words, described by the read sentence. |
+| Announcements | Only a reader-started retry says "Trying again…"; its result is announced ("Your details loaded." / "Still couldn’t load…"). Each failed save is announced once with its topic. |
+| Copy | "Not saved. You’re offline." / "Not saved. Sign in again."; error panel without "check your connection"; band summary drops "pay" without My pay; first row "All notifications"; topics "Shift requests", "When a clock-in needs your review". |
+| Contact values | Each address or phone part is an inline-block that moves whole and wraps inside only if wider than the line; addresses break after the @ or before dots. |
+| Locations | Company-wide scope is one line ("All 3 locations", no list); an assigned list over five shows a count and Show all above the names. |
+| Geometry | Label column 5.5rem, value basis 8rem; detail hairlines run to the card edge (0.5px at 2x); foot has 4px padding; row focus rings drawn inside; save-error icon in em, hanging. |
+| Contrast | Busy words and Sign out's pending label at full opacity (old 55% fade overridden on this page). |
+| Server load | My pay uses the payroll flag directly; the page no longer repeats the layout's payroll read. |
+| Placeholder band | 6.5rem on phones (portrait and landscape); desktop has none (shared rule). |
