@@ -68,7 +68,7 @@ export function ReviewedCalloutForm({
         />
         <div className="wa-field">
         <label className="wa-field__control">
-          <span className="wa-field__label">More details{reason === "OTHER" ? null : <span className="wa-field__optional">Optional</span>}</span>
+          <span className="wa-field__label">More details{reason === "OTHER" ? null : <span className="wa-field__optional" aria-hidden="true">Optional</span>}</span>
           <textarea
             ref={noteInput}
             aria-describedby={detailsId}

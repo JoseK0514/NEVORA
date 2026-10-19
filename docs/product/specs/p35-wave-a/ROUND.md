@@ -1,5 +1,10 @@
 # Wave A: round 2 (exit round)
 
+**Update on the combined build (October 19, evening):** this branch is now `origin/codex/verify-preview-33` (`cd764f6`, merged as a fast-forward) plus Wave A fixes for the items Codex's crosswalk still lists for Wave A:
+- **IS-WA-12 (Wave A part):** the "Optional" marker is hidden from the accessible name in `Field` (`wave-a/parts.tsx`) and on More details (`reviewed-callout-form.tsx`), as in Codex's prepared patch. The shared `select-field.tsx` part of that patch (aria-labelledby from the label words, so the hint isn't in a select's name) is the coordinator's file and has been sent to the coordinator.
+- **IS-P4-11:** the time-off review's Back to Inbox keeps the Inbox's selected item (`?item=TIME_OFF:<id>`), validated as an item id; anything else is dropped. Covered by a new test. The Inbox side (passing `item` in its link to the review) is the Inbox owner's.
+- **ST-WA-1 Coverage subcase:** already present on the candidate (`schedule/coverage/loading.tsx`); nothing to apply.
+
 **Update after Codex's interim round-2 report and the first combined candidate (October 19, about 3 PM):** fixed at the head of this branch:
 - **ST-WA-7:** while sending, the pressed button keeps the height it had (a two-line label at 200% no longer shrinks to one line and pulls the page up 36px). `src/components/wave-a/pending-button.tsx`.
 - **Combined build TypeScript error:** the coordinator's kit no longer exports `useHoldHeight`; Team availability now uses the kit's `HoldHeight` component (present on both this branch and the candidate). `src/components/availability-team-list.tsx`. This also unblocks the candidate's browser checks (Availability compiled with a 500).
