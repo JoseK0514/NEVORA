@@ -29,8 +29,8 @@ export function ShiftChangePolicyFields({
               defaultValue={current?.mode ?? ""}
               options={[
                 { value: "", label: "Not set yet" },
-                { value: "AUTOMATIC_WHEN_VALID", label: "Automatically when valid" },
-                { value: "MANAGER_REVIEW", label: "A manager reviews each one" },
+                { value: "AUTOMATIC_WHEN_VALID", label: "Automatically" },
+                { value: "MANAGER_REVIEW", label: "Manager reviews" },
               ]}
             />
             <label className="wb-field">
@@ -79,9 +79,9 @@ export function ShiftChangePolicyFields({
                 <div><dt>How requests are approved</dt>
                 <dd>
                   {current?.mode === "AUTOMATIC_WHEN_VALID"
-                    ? "Automatically when valid"
+                    ? "Automatically"
                     : current?.mode === "MANAGER_REVIEW"
-                      ? "A manager reviews each one"
+                      ? "Manager reviews"
                       : "Unknown"}
                 </dd></div>
                 <div><dt>Ask at least</dt>

@@ -575,7 +575,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .
 /* WR-B-06: Apply and Archive share one width. */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions > :is(div, form) > .nv-btn { width: 100%; }
 @media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li:not(:has([data-confirming])) .wb-template-actions { grid-template-columns: repeat(2, 12rem); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li:not(:has([data-confirming])) .wb-template-actions { grid-template-columns: repeat(2, minmax(0, 12rem)); }
 }
 /* WR-B-09: Period summary rows let the value drop under its label rather than clip at large text. */
 @container (max-width: 27rem) {
@@ -622,3 +622,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .
 html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-lines > div { flex-wrap: wrap; column-gap: var(--nv-s-3); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :is(.pw-employee-amount summary strong, .pw-run-option strong) { overflow-wrap: break-word; word-break: normal; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-import-format .pw-small { overflow-wrap: anywhere; }
+
+/* ---------- Round 3 fixes (widths and roles) ---------- */
+/* WR-B-22: a template row wraps before its name gets squeezed; the action pair shrinks within its 12rem columns. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li { flex-wrap: wrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-identity { flex: 1 1 12rem; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { flex: 0 1 auto; min-width: 0; }
+/* WR-B-10: the payment output profile takes the whole row, so its long value fits from tablet up. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-grid > label:has(select[name="bankProfile"]) { grid-column: 1 / -1; }

@@ -6,7 +6,9 @@ import type { usePayrollOperation } from './use-payroll';
 import { PayrollPanel } from './payroll-ui';
 import { backlogDescription } from './workflow-status';
 import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
-import { keepWhole } from '@/lib/keep-whole';
+import { keepWhole as keepWholeBase } from '@/lib/keep-whole';
+/** WR-B-11: also keeps a weekday with its date ("Mon, Oct 19"); the shared keepWhole doesn't yet. */
+const keepWhole = (text: string) => keepWholeBase(text).replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), /g, '$1,\u00a0');
 
 export function BacklogReview({ data, operation }: { data: PayrollRunsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const [expanded, setExpanded] = useState(false);

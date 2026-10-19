@@ -61,7 +61,7 @@ beforeEach(() => {
 
 it("keeps every rule group and native fragment destination available from section navigation", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
-  expect(html).toMatch(/<h1[^>]*>Scheduling rules<\/h1>/);
+  expect(html).toMatch(/<h1[^>]*>Sched\u00aduling rules<\/h1>/);
   expect(html).toContain('aria-label="Scheduling rule sections"');
   for (const id of ["rules-staffing", "rules-hours", "rules-coverage", "rules-policy"]) {
     expect(html).toContain(`href="#${id}"`);

@@ -11,7 +11,9 @@ import { DocumentLink, OperationFeedback, PayrollFrame, PayrollPanel, PayrollSta
 import { BacklogReview } from './backlog-review';
 import { noticeOutcome, noticeReadiness, payrollExceptionMessage, payrollReviewNotes } from './workflow-status';
 import { formatDateRange, formatDisplayDate } from '@/lib/date-utils';
-import { keepWhole } from '@/lib/keep-whole';
+import { keepWhole as keepWholeBase } from '@/lib/keep-whole';
+/** WR-B-11: also keeps a weekday with its date ("Mon, Oct 19"); the shared keepWhole doesn't yet. */
+const keepWhole = (text: string) => keepWholeBase(text).replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), /g, '$1,\u00a0');
 
 const statusLabels = { WAITING_FOR_AMOUNTS: 'Waiting for amounts', REVIEW_REQUIRED: 'Review required', APPROVED: 'Approved' };
 const jobLabels = { PREPARE: 'Draft preparation', PDF: 'PDF generation', PUBLISH: 'Statement publication', REMINDER: 'Private payroll notice' };

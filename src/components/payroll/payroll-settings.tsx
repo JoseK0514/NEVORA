@@ -20,7 +20,7 @@ function SettingsCard({ title, description, children }: { title: string; descrip
   return <section className="nv-card"><div className="nv-card__head"><h2 className="nv-card__title">{title}</h2></div><div className="wb-body">{description && <p className="wb-note">{description}</p>}{children}</div></section>;
 }
 /* TC-B-03: dates read whole and with their year; the wording around them is unchanged. */
-function effectiveDate(date: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`))); }
+function effectiveDate(date: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`))).replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), /, '$1,\u00a0'); }
 function recordedAt(at: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(at))); }
 function today() { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
 const defaults: PayrollPreferences = {

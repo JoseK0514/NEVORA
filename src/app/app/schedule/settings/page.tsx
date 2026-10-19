@@ -62,7 +62,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
 
   return (
     <div className="nv-page wb-page wb-rules" data-nv-page="">
-      <PageBand back={{ href: "/app/schedule", label: "Schedule" }} title="Scheduling rules" summary="Set staffing, weekly hours and recurring coverage so your team knows what a complete schedule needs." overlap={false} />
+      <PageBand back={{ href: "/app/schedule", label: "Schedule" }} title={"Sched\u00aduling rules"} summary="Set staffing, weekly hours and recurring coverage so your team knows what a complete schedule needs." overlap={false} />
       <div className="nv-content">
       <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" />
       {params.error || params.saved || params.windowSaved || params.windowDeleted ? <div className="wb-feedback">
