@@ -43,6 +43,8 @@ type View = {
   /** The last ready read. While paused, offline or failed it holds each row's size (hidden, under the note), and
    * while re-reading after a return it stays on screen, so the page doesn't collapse and regrow. */
   held?: Ready | null;
+  /** Which switch had focus, so it can get it back when the list returns (null when focus moved elsewhere). */
+  onTopicFocus?: (id: string | null) => void;
 };
 type Ready = Extract<ManagerProfileSnapshot, { state: 'ready' }>;
 
@@ -122,7 +124,7 @@ function saveMessage(error: AlertSave['error']) {
 }
 
 /** One alert switch. Without onToggle (re-reading, or a size-holding copy) it reads as busy and ignores presses. */
-function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void; skeleton?: boolean }) {
+function TopicRow({ topic, save, on, onToggle, skeleton = false, onTopicFocus }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void; skeleton?: boolean; onTopicFocus?: View['onTopicFocus'] }) {
   const busy = !!save?.pending || !onToggle;
   // Loading rows: the expected words drawn as grey text-shaped bars, so each row is exactly a ready row's size.
   if (skeleton) return <li aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder">
@@ -131,7 +133,8 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: Mana
   </div></li>;
   return <li>
     {/* While busy it says so and ignores presses, but stays enabled, so keyboard focus stays on it. */}
-    <button type="button" role="switch" aria-checked={on} className="nv-row pmp-switch-row"
+    <button type="button" role="switch" aria-checked={on} className="nv-row pmp-switch-row" data-topic={topic.id}
+      onFocus={() => onTopicFocus?.(topic.id)} onBlur={event => { if (event.relatedTarget) onTopicFocus?.(null); }}
       aria-disabled={busy || undefined} aria-busy={save?.pending || undefined} onClick={() => { if (!busy) onToggle?.(topic, !on); }}>
       <span className="nv-row__text"><span className="nv-row__title">{topic.label}</span>
         {/* The detail, "Saving…" and a failed save share one cell sized to the longest, so the row never changes height. */}
@@ -145,7 +148,7 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: Mana
   </li>;
 }
 
-export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null }: View) {
+export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, onTopicFocus }: View) {
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
   const read = readState(state), row = 'row' in read ? read.row : undefined;
   // Approved set: without payroll an Owner isn't told about payroll, even if the read lists the topic (switched off).
@@ -168,7 +171,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         {/* Never empty: the head lines up on this text's baseline in every state. */}
         {/* The head lines up on the first text in it: the state word, a non-breaking space, or the action. An empty span
             would give it a made-up baseline, so it is left out when an action shows (the alert below speaks for it). */}
-        {read.kind === 'failed' || read.kind === 'denied' ? null : <span role="status">{read.head ?? '\u00a0'}<span className="sr-only">{read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</span></span>}
+        {read.kind === 'failed' || read.kind === 'denied' ? null : <span>{read.head ?? '\u00a0'}</span>}
         {/* Never disabled while busy, so focus stays on it; a second press only restarts the same read. */}
         {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
         {read.kind === 'denied' ? <Link className="pmp-text-button pmp-head-action" href="/login">Sign in</Link> : null}
@@ -176,7 +179,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         ? <KitLink href={`/app/employees/${encodeURIComponent(identity.employeeId)}`}>Edit your details</KitLink>
         : <p className="pmp-foot-copy">Something wrong here? Ask the account owner to update it.</p>}>
         <p className="sr-only" role="alert" id="profile-read-said">{said}</p>
-        <dl className="pmp-details">
+        {/* Always present, so what it says is spoken: a pause, or the result of a retry the reader asked for. */}
+        <p className="sr-only" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</p>
+        <dl className="pmp-details" id="profile-details-list" tabIndex={-1} aria-labelledby="profile-details-title">
           <div><dt>Name</dt><dd>{identity.name}</dd></div>
           <div><dt>Role</dt><dd>{identity.owner ? 'Owner' : 'Manager'}</dd></div>
           <div><dt>Company</dt><dd>{identity.company}</dd></div>
@@ -205,7 +210,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         </Rows>
         <h3 className="pmp-subhead" id="profile-alerts-title">You’re told about</h3>
         <ul className="nv-rows pmp-topics" aria-labelledby="profile-alerts-title">
-          {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
+          {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} onTopicFocus={onTopicFocus} />)
             : read.kind === 'loading' ? sizing.map(topic => <TopicRow key={topic.id} topic={topic} on={false} skeleton />)
             // Any other state says what happened where the alert rows are, over their hidden copy, so nothing below moves.
             : <li className="pmp-hold pmp-topics-hold">
@@ -235,7 +240,11 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
   const [saves, setSaves] = useState<Record<string, AlertSave>>({});
   const [overrides, setOverrides] = useState<Record<string, { on: boolean; basis: string }>>({});
   const [held, setHeld] = useState<Ready | null>(initial);
-  const [retryFrom, setRetryFrom] = useState<{ snapshot: ManagerProfileSnapshot | null } | null>(null);
+  // A retry the reader asked for: pending until its read answers, then its outcome, tied to that one answer so
+  // returning to the window later doesn't announce it again.
+  const [retried, setRetried] = useState<{ pending: boolean; outcome: 'loaded' | 'failed' | null; snapshot: ManagerProfileSnapshot | null }>({ pending: false, outcome: null, snapshot: null });
+  const retryPending = useRef(false);
+  const lastTopic = useRef<string | null>(null);
   const [announced, setAnnounced] = useState({ text: '', count: 0 });
   const inFlight = useRef(new Set<string>());
   const control = useRef<ReturnType<typeof createPrivateSnapshotController<ManagerProfileSnapshot>> | null>(null);
@@ -244,6 +253,10 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
     // Same privacy rhythm as the employee Profile: details clear when the window is left, and re-read on return.
     const changed = (next: PrivatePanelState<ManagerProfileSnapshot>) => {
       setState(next);
+      if (retryPending.current && (next.paused || (!next.refreshing && next.snapshot))) {
+        retryPending.current = false;
+        setRetried(next.paused || !next.snapshot ? { pending: false, outcome: null, snapshot: null } : { pending: false, outcome: next.snapshot.state === 'ready' ? 'loaded' : 'failed', snapshot: next.snapshot });
+      }
       if (next.snapshot?.state === 'ready') setHeld(next.snapshot);
       else if (next.snapshot?.state === 'unavailable' && next.snapshot.reason === 'access_denied') setHeld(null); // an ended session keeps nothing
     };
@@ -282,10 +295,20 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
   const ready = state.snapshot?.state === 'ready' ? state.snapshot : null;
   const shownOverrides = Object.fromEntries(Object.entries(overrides).filter(([, saved]) => ready?.observedAt === saved.basis).map(([id, saved]) => [id, saved.on]));
 
-  // A retry is the reader's while the read it restarted is still out; then its result is announced.
-  const retrying = !!retryFrom && state.refreshing && state.snapshot === retryFrom.snapshot;
-  const retried = retryFrom && !state.paused && state.snapshot && state.snapshot !== retryFrom.snapshot ? state.snapshot.state === 'ready' ? 'loaded' : 'failed' : null;
-  const retry = () => { setRetryFrom({ snapshot: state.snapshot }); control.current?.refresh(); };
+  const retrying = retried.pending && state.refreshing;
+  const outcome = retried.outcome && state.snapshot === retried.snapshot ? retried.outcome : null;
+  const retry = () => { retryPending.current = true; setRetried({ pending: true, outcome: null, snapshot: null }); control.current?.refresh(); };
+
+  // Focus never falls to the page: a successful retry moves it to the details it loaded (the button is gone), a switch
+  // that was focused gets it back when the list returns, and an ended session moves it to Sign in.
+  const denied = state.snapshot?.state === 'unavailable' && state.snapshot.reason === 'access_denied';
+  useEffect(() => {
+    if (document.activeElement && document.activeElement !== document.body) return;
+    if (outcome === 'loaded') { document.getElementById('profile-details-list')?.focus(); return; }
+    if (!lastTopic.current) return;
+    if (ready) document.querySelector<HTMLElement>(`[data-topic="${CSS.escape(lastTopic.current)}"]`)?.focus();
+    else if (denied) document.querySelector<HTMLElement>('.pmp-topics-note a')?.focus();
+  }, [outcome, ready, denied]);
 
   async function toggle(topic: ManagerAlertTopic, on: boolean) {
     if (inFlight.current.has(topic.id)) return; // a second tap never sends a second request
@@ -313,6 +336,6 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
     if (!error || error === 'signed_out') control.current?.refresh();
   }
 
-  return <ManagerProfileView identity={identity} state={state} onRetry={retry} retrying={retrying} retried={retried} saves={saves} overrides={shownOverrides} onToggle={toggle}
+  return <ManagerProfileView identity={identity} state={state} onRetry={retry} retrying={retrying} retried={outcome} onTopicFocus={id => { lastTopic.current = id; }} saves={saves} overrides={shownOverrides} onToggle={toggle}
     held={held} announcement={announced.text ? announced.text + (announced.count % 2 ? '' : '\u00a0') : ''} />;
 }

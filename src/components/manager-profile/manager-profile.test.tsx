@@ -109,7 +109,9 @@ describe('Owner and Manager Profile', () => {
     expect(failed).not.toMatch(/<button[^>]*disabled[^>]*>Try again/);
     expect(render(manager, { state: 'unavailable', reason: 'read_failed' }, { retrying: true })).toContain('aria-busy="true" aria-describedby="profile-read-said"><span class="pmp-label-stack"><span data-shown="false">Try again</span><span data-shown="true">Trying again…');
     expect(render(manager, { state: 'unavailable', reason: 'read_failed' }, { retried: 'failed' })).toContain('Still couldn’t load');
-    expect(render(manager, parseManagerProfile(fixture('manager')), { retried: 'loaded' })).toContain('Your details loaded.');
+    expect(render(manager, parseManagerProfile(fixture('manager')), { retried: 'loaded' })).toContain('role="status">Your details loaded.');
+    // The status region is always there (empty when nothing to say), so its words are spoken when they arrive.
+    expect(render(manager, parseManagerProfile(fixture('manager')))).toContain('<p class="sr-only" role="status"></p>');
     const denied = render(manager, { state: 'unavailable', reason: 'access_denied' });
     expect(denied).toContain('Your session ended.');
     expect(denied).toContain('href="/login"');
@@ -132,7 +134,7 @@ describe('Owner and Manager Profile', () => {
     expect(paused).not.toContain('style="--pmp-rows');
     const rereading = render(owner, null, { held: last });
     expect(rereading).not.toContain('pmp-hold__value');
-    expect(rereading).toMatch(/aria-checked="true" class="nv-row pmp-switch-row" aria-disabled="true"/);
+    expect(rereading).toMatch(/aria-checked="true" class="nv-row pmp-switch-row" data-topic="[a-z-]+" aria-disabled="true"/);
     const denied = render(owner, { state: 'unavailable', reason: 'access_denied' }, { held: last });
     expect(denied).not.toContain('northside-qa');
   });
@@ -140,7 +142,7 @@ describe('Owner and Manager Profile', () => {
   it('marks a pending save as Saving… and disabled, and a failed save in the row’s own space', () => {
     const ready = parseManagerProfile(fixture('manager'));
     const pending = render(manager, ready, { saves: { 'time-off': { pending: true, error: null } } });
-    expect(pending).toMatch(/aria-checked="true" class="nv-row pmp-switch-row" aria-disabled="true" aria-busy="true"/);
+    expect(pending).toMatch(/aria-checked="true" class="nv-row pmp-switch-row" data-topic="time-off" aria-disabled="true" aria-busy="true"/);
     expect(pending).toContain('data-shown="true">Saving…');
     const failed = render(manager, ready, { saves: { 'time-off': { pending: false, error: 'failed' } } });
     expect(failed).toMatch(/data-shown="true" class="pmp-save-error">.*Not saved. Try again./);

@@ -110,3 +110,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__head { flex-direction: column; align-items: flex-start; row-gap: var(--nv-s-1); }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__meta { height: auto; min-height: 1.25rem; }
 }
+/* The details list takes focus after a successful retry; it shows the ring only for keyboard users, inside the card. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details-list:focus { outline: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details-list:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
