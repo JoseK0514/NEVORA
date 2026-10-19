@@ -224,11 +224,13 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   </div>;
 }
 
-export function ManagerProfileLive({ identity }: { identity: ManagerProfileIdentity }) {
+/** `initial`: the same read done on the server (CODEX.md, optional), so the page arrives with its details already
+ * in place and nothing moves when the client's first read lands. Without it the client reads after hydration. */
+export function ManagerProfileLive({ identity, initial = null }: { identity: ManagerProfileIdentity; initial?: Ready | null }) {
   const [state, setState] = useState<PrivatePanelState<ManagerProfileSnapshot>>({ snapshot: null, paused: false, refreshing: true });
   const [saves, setSaves] = useState<Record<string, AlertSave>>({});
   const [overrides, setOverrides] = useState<Record<string, { on: boolean; basis: string }>>({});
-  const [held, setHeld] = useState<Ready | null>(null);
+  const [held, setHeld] = useState<Ready | null>(initial);
   const [retryFrom, setRetryFrom] = useState<{ snapshot: ManagerProfileSnapshot | null } | null>(null);
   const [announced, setAnnounced] = useState({ text: '', count: 0 });
   const inFlight = useRef(new Set<string>());

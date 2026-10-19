@@ -65,6 +65,10 @@ The UI reserves one row per topic while loading, so the count per role must stay
 
 If payroll is off for an Owner, either drop `payroll-ready` and tell the UI session to make the count depend on payroll, or keep it and return `on: false`. The UI already accepts any count; only the loading rows assume 5 and 4.
 
+### Optional, recommended: the same read on the server
+
+`ManagerProfileLive` takes an `initial` prop: a ready body (the shape above, parsed with `parseManagerProfile`). If the page (`manager-profile.tsx`) passes the server-side result of the same read, the details, locations and alert switches render in the first HTML, and nothing on the page moves when the client's own first read arrives. Without it, the page shows placeholders until the client read lands. Placeholders are sized for typical data, but a long email that wraps on a phone still adds a line (measured layout shift up to 0.035 at 320–430 with the Manager fixture). Suggested: `readManagementProfile(proof): Promise<ready body | null>` in `src/lib/data/`, called in `ManagerProfilePage` next to `getWorkspace()`, returning `null` on any failure, so the client read takes over.
+
 ## 2. Save: `POST /api/management/profile/alerts`
 
 Turns one alert topic on or off for the signed-in Owner or Manager.
