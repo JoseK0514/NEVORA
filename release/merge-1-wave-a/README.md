@@ -1,6 +1,6 @@
 # Wave A rolling merge — blocked candidate
 
-Candidate: `0e010464aeb5f532981ac6071c48e1527e9419db`. This is a reviewable integration, not release acceptance. Confirmed combined count: **P0 1 / P1 0 / P2 0**, with inspection gaps; unknown coverage is not zero.
+Published `codex/release-candidate`: [`0e010464aeb5f532981ac6071c48e1527e9419db`](https://github.com/JoseK0514/NEVORA/commit/0e010464aeb5f532981ac6071c48e1527e9419db). This is a reviewable integration, not release acceptance. Confirmed combined count: **P0 1 / P1 0 / P2 0**, with inspection gaps; unknown coverage is not zero.
 
 ## Changes and custody
 

@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-10-19 18:57 UTC",
+  "repository": "JoseK0514/NEVORA",
+  "branch": "codex/release-candidate",
+  "head": "0e010464aeb5f532981ac6071c48e1527e9419db",
+  "replacedRehearsal": "bec0ed4e64be7a4db3351973e1dc9993eeb90e8b",
+  "guard": "exact force-with-lease against the named rehearsal",
+  "coordinatorObserved": "e7671e65b5a54e171422b6dbca887c416a5b0e0c",
+  "validationReportCommit": "ac09de63276689389bec5986ac500f2e55b3316f",
+  "releaseVerdict": "blocked; not zero",
+  "deployed": false,
+  "deviceAccessExposed": false
+}
