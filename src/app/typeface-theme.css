@@ -476,7 +476,7 @@ body .nevora-select {
   line-height: 1.6;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   .employee-home-heading { margin-bottom: 20px; }
   .employee-home-today,
   .employee-home-summary { padding: 20px; }
