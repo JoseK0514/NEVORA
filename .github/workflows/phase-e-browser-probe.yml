@@ -1,0 +1,65 @@
+name: Phase E browser refresh probe
+
+on:
+  push:
+    branches: [codex/browser-probe-20261019]
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    name: ${{ matrix.suite }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [navigation, calendar, communications]
+    env:
+      PHASE_E_EXPECTED_SHA: c8752f2bab60f1a85da5d408dfc8537cebc50007
+      PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/phase-e-browser-probe
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: c8752f2bab60f1a85da5d408dfc8537cebc50007
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - run: npm ci
+      - name: Install pinned browser runtime
+        shell: bash
+        run: |
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Install browsers
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install owned PostgreSQL runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
+      - name: Run exact-source suite in owned fixture
+        run: node scripts/phase-e-owned.mjs browser --suite ${{ matrix.suite }}
+      - name: Upload scrubbed reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase-e-probe-${{ matrix.suite }}-${{ env.PHASE_E_EXPECTED_SHA }}
+          path: |
+            ${{ runner.temp }}/phase-e-browser-probe/*-report.json
+            ${{ runner.temp }}/phase-e-browser-probe/calendar-case-*.json
+            ${{ runner.temp }}/phase-e-browser-probe/navigation-*.json
+            ${{ runner.temp }}/phase-e-browser-probe/updates-*-failure.json
+            ${{ runner.temp }}/phase-e-browser-probe/source-manifest.json
+            ${{ runner.temp }}/phase-e-browser-probe/owned-postgres-*/ownership.json
+            ${{ runner.temp }}/phase-e-browser-probe/owned-next-*/ownership.json
+          if-no-files-found: error
+          retention-days: 14
