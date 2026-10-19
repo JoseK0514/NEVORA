@@ -551,5 +551,5 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule :is(.my-week-today, .my-week-note) { font-size: .875rem; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-week-day > span { font-size: .875rem; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-week-day strong { font-size: 1.25rem; }
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-shift-copy > strong { font-size: 1rem; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-shift-copy > strong { font-size: 1.0625rem; }
 }
