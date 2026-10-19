@@ -1,0 +1,21 @@
+{
+  "mockOnly": true,
+  "browserLaunched": false,
+  "networkUsed": false,
+  "originalClosePreserved": true,
+  "collectionRunsAfterCheckerResult": true,
+  "collectionFailureCannotSkipClose": true,
+  "trace": [
+    "checker-result-computed-0",
+    "passive-evaluate-0",
+    "passive-screenshot-0",
+    "passive-evaluate-0",
+    "passive-evaluate-0",
+    "passive-evaluate-0",
+    "passive-screenshot-0",
+    "native-close-0",
+    "checker-result-computed-1",
+    "passive-evaluate-1",
+    "native-close-1"
+  ]
+}

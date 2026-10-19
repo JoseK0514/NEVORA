@@ -1,0 +1,12 @@
+cd764f614be8ca5b5215be19d46e07cf968638d7
+fce5b40274656871cb9c1bbd72dd197f98782a42
+ST-WA-7: retain actual pending label in the callout page mock
+8640247be632ee6382c68b3b1ae3bbed532a5d65
+4aaa79383f82a3c6023f9d2a2c2f492ba3152fce b68f250129e2d21731624652e0aad7412b042bc3
+merge: prepare Claude preview 4aaa793 with exact candidate33 b68f250
+4aaa79383f82a3c6023f9d2a2c2f492ba3152fce
+4d97dda55f42a60241cb9f6b3358b7382fb7d0cb 9dd7812e7ac929af3e88f5fc336f919a28a72fcc
+Preview integration: merge Desktop (skip link kept; coordinator files at their latest)
+b68f250129e2d21731624652e0aad7412b042bc3
+9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b
+ST-RC-HOME-01: reserve Home band rows while its private read loads

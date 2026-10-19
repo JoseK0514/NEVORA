@@ -1,0 +1,34 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "originalMerge": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "claudeSource": "4aaa79383f82a3c6023f9d2a2c2f492ba3152fce",
+  "candidate33": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "correctionCommits": [
+    "fce5b40274656871cb9c1bbd72dd197f98782a42",
+    "cd764f614be8ca5b5215be19d46e07cf968638d7"
+  ],
+  "sourceClean": true,
+  "blobHashes": {
+    "scripts/ui-checks/checks.mjs": "11d6b4f87b72de53bb6bfc5f360a0335c282edf9",
+    "src/app/app/portal-premium.css": "c72c855ed3fcb284c9694233af56245710fcc929",
+    "package-lock.json": "76af83a326821ae23720673ac2e5f5aeccb99787",
+    "src/components/kit/kit.css": "4d40cb01626e9b2adc94bcd79dd8d8a745f374ec",
+    "src/app/app/exchange/callout/page.test.tsx": "a2c3983db80713bee167c375561759bfe0954a31"
+  },
+  "sha256": {
+    "scripts/ui-checks/checks.mjs": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+    "src/app/app/portal-premium.css": "c0a3a213ba88c7f6c60bcc97f0ef11f8ba5c4760d1dac44e9b40f1ddff5bea70",
+    "package-lock.json": "eb022d968acfd69c7c44d5df1ecca537e987e01ef0a945b52645fad6ed1f670c",
+    "src/components/kit/kit.css": "201fa33c2391ef97e2608db06fc3119204cd096b95918a99513fc681984dd945",
+    "src/app/app/exchange/callout/page.test.tsx": "524ba0eb208445da543bbc3734e3b933d05b55f4031c6538e093582ae519d873"
+  },
+  "kitMatchesClaude": true,
+  "coordinatorPremiumCssExact": true,
+  "focusedResult": {
+    "passed": 18,
+    "failed": 0,
+    "evidence": "/workspace/paused-evidence/final-cd764f6/focused-integration.json"
+  },
+  "fullGates": "running; no fresh full pass claimed"
+}

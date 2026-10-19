@@ -1,0 +1,31 @@
+{
+  "candidate": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "counts": {
+    "passed": 7360,
+    "skipped": 801,
+    "failed": 2,
+    "pending": 55
+  },
+  "files": 474,
+  "reportedSuccess": false,
+  "failed": [
+    {
+      "file": "src/components/kit/kit.test.tsx",
+      "name": "kit tokens does not restyle existing classes",
+      "status": "failed",
+      "durationMs": 7.520243999999991,
+      "failureMessages": [
+        "AssertionError: html body .app-shell.nevora-portal .page-frame .nv-btn:is(:disabled, [aria-disabled=\"true\"]): expected 'html body .app-shell.nevora-portal .p\u2026' to match /^[a-z]*\\.nv-/\n    at /workspace/verify-preview-33/src/components/kit/kit.test.tsx:39:77\n    at file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:1628:35\n    at file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:2783:26\n    at file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3319:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3314:10)\n    at file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3299:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3257:10)\n    at file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/run.C5UmxDPh.js:3876:64"
+      ]
+    },
+    {
+      "file": "src/app/app/exchange/callout/page.test.tsx",
+      "name": "genuine ongoing overnight absence remains reportable from the previous business date",
+      "status": "failed",
+      "durationMs": 35.01586500000002,
+      "failureMessages": [
+        "Error: [vitest] No \"PendingLabel\" export is defined on the \"@/components/employee-submit-button\" mock. Did you forget to return it from \"vi.mock\"?\nIf you need to partially mock a module, you can use \"importOriginal\" helper inside:\n\n    at VitestMocker.createError (file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/index.hTNFpC24.js:63:17)\n    at Object.get (file:///workspace/verify-preview-33/node_modules/vitest/dist/chunks/index.hTNFpC24.js:340:16)\n    at PendingButton (/workspace/verify-preview-33/src/components/wave-a/pending-button.tsx:68:8)\n    at Object.react_stack_bottom_frame (/workspace/verify-preview-33/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:10371:18)\n    at renderWithHooks (/workspace/verify-preview-33/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5361:19)\n    at renderElement (/workspace/verify-preview-33/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5796:23)\n    at retryNode (/workspace/verify-preview-33/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6783:21)\n    at renderNodeDestructive (/workspace/verify-preview-33/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6717:11)\n    at renderNode (/workspace/verify-preview-33/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:7268:18)\n    at renderChildrenArray (/workspace/verify-preview-33/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:7029:11)"
+      ]
+    }
+  ]
+}

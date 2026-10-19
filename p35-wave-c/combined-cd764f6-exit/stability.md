@@ -1,0 +1,21 @@
+**PREPARED / NOT RUN — incomplete; no zero verdict.** Exact combined source `cd764f614be8ca5b5215be19d46e07cf968638d7`. No browser case or application test has run for this exit branch. Severity counts cannot be inferred from the prepared registry or older source reports.
+
+## Status of earlier findings
+
+Priority IDs: ST-02, ST-05, ST-08, ST-13, ST-14, ST-15, ST-16, ST-17, ST-18. Each requires measured combined-SHA disposition; source repairs and earlier samples are provenance only. The [104-ID historical inventory](preparation/historical-finding-inventory.json) preserves all other earlier IDs and accepted decisions.
+
+## Findings
+
+No new measured combined-SHA finding has been produced while runtime is held. Unapplied WR-10/ST-14 source remainders remain in the separate proposal ledger and require actual state proof. Known source P1 proofs do not become combined passes merely because their CSS is present.
+
+## Required review
+
+Native loading/ready height and CLS; hydration colors; top/middle/end action, tab, toast and safe-area clearances; first/repeated pending bounds and scroll; combined ST-13 inner clamp/outer cap and full message accessibility; ST-18 clean/dirty at 320. ST-14 retry proposal remains unapplied.
+
+## Checked and correct
+
+No rendered UI checks completed yet. Frozen SHA, source/checker hashes, complete job inventory and external helper dry-run preparation are recorded separately.
+
+## Gaps
+
+Entire checker and five-area/state execution is held by root’s canonical gate window. All 960 baseline cells must use axe. Native placeholders, faithful server-only first-run/read-failure fixtures and large data are obligations, not optional gaps that can be omitted from a zero verdict.

@@ -1,0 +1,1372 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "distinctIds": [
+    "AL-01",
+    "AL-02",
+    "AL-03",
+    "AL-04",
+    "AL-05",
+    "AL-06",
+    "AL-07",
+    "AL-08",
+    "AL-09",
+    "AL-10",
+    "AL-11",
+    "AL-12",
+    "AL-14",
+    "AL-13",
+    "AL-15",
+    "AL-16",
+    "AL-17",
+    "AL-18",
+    "ST-01",
+    "ST-02",
+    "ST-03",
+    "ST-04",
+    "ST-05",
+    "ST-06",
+    "ST-07",
+    "ST-08",
+    "ST-09",
+    "ST-10",
+    "ST-11",
+    "ST-12",
+    "ST-13",
+    "ST-14",
+    "ST-15",
+    "ST-16",
+    "ST-17",
+    "ST-18",
+    "TC-01",
+    "TC-02",
+    "TC-03",
+    "TC-04",
+    "TC-05",
+    "TC-06",
+    "TC-07",
+    "TC-08",
+    "TC-09",
+    "TC-10",
+    "TC-11",
+    "TC-12",
+    "TC-13",
+    "TC-14",
+    "TC-15",
+    "TC-16",
+    "TC-17",
+    "TC-18",
+    "TC-19",
+    "TC-20",
+    "TC-21",
+    "TC-22",
+    "TC-23",
+    "TC-24",
+    "TC-25",
+    "TC-26",
+    "TC-27",
+    "TC-28",
+    "TC-29",
+    "TC-30",
+    "IS-1",
+    "IS-2",
+    "IS-3",
+    "IS-4",
+    "IS-5",
+    "IS-6",
+    "IS-7",
+    "IS-8",
+    "IS-9",
+    "IS-10",
+    "IS-11",
+    "IS-12",
+    "IS-13",
+    "IS-14",
+    "IS-15",
+    "WR-01",
+    "WR-02",
+    "WR-03",
+    "WR-04",
+    "WR-05",
+    "WR-06",
+    "WR-07",
+    "WR-08",
+    "WR-09",
+    "WR-10",
+    "WR-11",
+    "WR-12",
+    "WR-13",
+    "WR-14",
+    "WR-15",
+    "WR-16",
+    "WR-21",
+    "WR-22",
+    "WR-23",
+    "WR-24",
+    "WR-25",
+    "TC-WC-28",
+    "WR-WC-25"
+  ],
+  "count": 104,
+  "sourceTables": [
+    {
+      "finding": "AL-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 15,
+      "tableCell": "Features & words \u00b7 O \u00b7 1024 at 200% (main column ~380px)"
+    },
+    {
+      "finding": "AL-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 16,
+      "tableCell": "Account recovery, Clocker recovery, Branding \u00b7 O and M \u00b7 320\u2013390 at 200% (Branding also 1024 at 200%)"
+    },
+    {
+      "finding": "AL-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 17,
+      "tableCell": "Location detail (Clocker link card) \u00b7 O \u00b7 320 at 125/150/200%, 360 at 150/200%, 390 at 200%, 1024 and 1440 at 150/200%"
+    },
+    {
+      "finding": "AL-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 18,
+      "tableCell": "Branding (Preview card) \u00b7 O \u00b7 320 and 390 at 200% (also 360 at 200%)"
+    },
+    {
+      "finding": "AL-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 19,
+      "tableCell": "Settings hub \u00b7 O \u00b7 1024, 1440 (all text sizes)"
+    },
+    {
+      "finding": "AL-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 20,
+      "tableCell": "Settings hub \u00b7 O \u00b7 320 at 200%"
+    },
+    {
+      "finding": "AL-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 21,
+      "tableCell": "Locations list \u00b7 O \u00b7 all widths"
+    },
+    {
+      "finding": "AL-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 22,
+      "tableCell": "Company profile (320 at 100%, 360 and 390 at 150%, all phones at 200%); Account recovery and Clocker recovery (asides at 1024 and 1440 at 150%, phones at 125%+)"
+    },
+    {
+      "finding": "AL-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 23,
+      "tableCell": "Break types, Locations, Clocker devices \u00b7 O \u00b7 320 at 125%+, 360 and 390 at 150\u2013200%"
+    },
+    {
+      "finding": "AL-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 24,
+      "tableCell": "Settings hub, Locations list \u00b7 O \u00b7 all widths"
+    },
+    {
+      "finding": "AL-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 25,
+      "tableCell": "Location detail, Branding \u00b7 O \u00b7 all widths"
+    },
+    {
+      "finding": "AL-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 26,
+      "tableCell": "Every Wave C form \u00b7 O and M \u00b7 all widths"
+    },
+    {
+      "finding": "AL-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 62,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 63,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 64,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 65,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 66,
+      "tableCell": "Fixed, with the regression AL-14"
+    },
+    {
+      "finding": "AL-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 67,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 68,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 69,
+      "tableCell": "Partly fixed"
+    },
+    {
+      "finding": "AL-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 70,
+      "tableCell": "Fixed, with the new AL-15"
+    },
+    {
+      "finding": "AL-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 71,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 72,
+      "tableCell": "Fixed (by code, not re-measured)"
+    },
+    {
+      "finding": "AL-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 73,
+      "tableCell": "Closed (decided)"
+    },
+    {
+      "finding": "AL-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 79,
+      "tableCell": "Settings hub \u00b7 O \u00b7 1024 and up (measured at 1440, 100% and 200%)"
+    },
+    {
+      "finding": "AL-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 80,
+      "tableCell": "Account recovery, Clocker recovery \u00b7 O and M \u00b7 320 and 390 at 200%"
+    },
+    {
+      "finding": "AL-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 81,
+      "tableCell": "Break types, Locations, Clocker devices \u00b7 O \u00b7 320 and 390 at 200% (wherever Add drops under Back)"
+    },
+    {
+      "finding": "AL-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 82,
+      "tableCell": "Positions (320, 390 and 1440 at 200%), Clocker devices and Company profile (320 at 200%), Clocker recovery (320 at 200%)"
+    },
+    {
+      "finding": "AL-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 116,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 117,
+      "tableCell": "Partly fixed"
+    },
+    {
+      "finding": "AL-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 118,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 119,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 120,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "AL-17",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 126,
+      "tableCell": "Clocker devices \u00b7 O \u00b7 844\u00d7390, 768, 1024 and 1440 (Chromium and WebKit)"
+    },
+    {
+      "finding": "AL-18",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/alignment.md",
+      "line": 127,
+      "tableCell": "Settings hub \u00b7 O \u00b7 320 at 200%"
+    },
+    {
+      "finding": "ST-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 34,
+      "tableCell": "Company profile, Company policies, Clocker devices, Location detail, Account recovery, Clocker recovery, Branding. Owner. 1024\u00d7768 and 1440\u00d7900 (policies at both widths; the others wherever the page scrolls far enough)"
+    },
+    {
+      "finding": "ST-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 35,
+      "tableCell": "Features & words, Owner, 390\u00d7844 and 430\u00d7932, Chromium and WebKit"
+    },
+    {
+      "finding": "ST-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 36,
+      "tableCell": "Company policies, Owner, 320\u00d7568, 390\u00d7844, 430\u00d7932, Chromium and WebKit"
+    },
+    {
+      "finding": "ST-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 37,
+      "tableCell": "Features & words and Company policies, Owner, 390\u00d7844 (Features also 1440 without the jump)"
+    },
+    {
+      "finding": "ST-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 38,
+      "tableCell": "Every Settings sub-page, Owner, hard load, phones (320\u2013430 and 844\u00d7390)"
+    },
+    {
+      "finding": "ST-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 39,
+      "tableCell": "Features and Policies, Owner, every phone width and landscape, Chromium and WebKit"
+    },
+    {
+      "finding": "ST-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 40,
+      "tableCell": "Features and Policies, Owner, landscape 844\u00d7390"
+    },
+    {
+      "finding": "ST-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 41,
+      "tableCell": "Features & words (and Policies), Owner, phones"
+    },
+    {
+      "finding": "ST-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 42,
+      "tableCell": "Break types and Clocker devices dialogs, Owner, 320, 390, 768, 844\u00d7390, 1440"
+    },
+    {
+      "finding": "ST-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 43,
+      "tableCell": "Clocker recovery, Owner, 320\u00d7568 and 390\u00d7844"
+    },
+    {
+      "finding": "ST-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 44,
+      "tableCell": "Features & words (any page whose summary wraps near a line end), Owner, 390\u00d7844, first visit"
+    },
+    {
+      "finding": "ST-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 45,
+      "tableCell": "Every Wave C page, Owner, hard load at 768, 1024 and 1440"
+    },
+    {
+      "finding": "ST-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 104,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 105,
+      "tableCell": "**Not fixed (phones)**"
+    },
+    {
+      "finding": "ST-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 106,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 107,
+      "tableCell": "Fixed (scroll), see ST-13"
+    },
+    {
+      "finding": "ST-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 108,
+      "tableCell": "**Partly fixed**"
+    },
+    {
+      "finding": "ST-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 109,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 110,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 111,
+      "tableCell": "**Partly fixed**"
+    },
+    {
+      "finding": "ST-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 112,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 113,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 114,
+      "tableCell": "Fixed as far as measured"
+    },
+    {
+      "finding": "ST-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 115,
+      "tableCell": "Handed on"
+    },
+    {
+      "finding": "ST-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 121,
+      "tableCell": "Company policies, Owner, 390\u00d7844 (Chromium)"
+    },
+    {
+      "finding": "ST-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 122,
+      "tableCell": "Company policies, Owner, 1440\u00d7900"
+    },
+    {
+      "finding": "ST-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 123,
+      "tableCell": "Features and Policies, Owner, 390\u00d7844 at 200% text"
+    },
+    {
+      "finding": "ST-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 124,
+      "tableCell": "Branding, Owner, 390\u00d7844, before hydration"
+    },
+    {
+      "finding": "ST-17",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 125,
+      "tableCell": "Break types, Edit dialog after a blocked save, Owner, 844\u00d7390"
+    },
+    {
+      "finding": "ST-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 164,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 165,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 166,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 167,
+      "tableCell": "**Partly fixed**"
+    },
+    {
+      "finding": "ST-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 168,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 169,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 170,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-17",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 171,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "ST-18",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/stability.md",
+      "line": 178,
+      "tableCell": "Features & words, Owner, 320\u00d7568, Chromium and WebKit"
+    },
+    {
+      "finding": "TC-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 73,
+      "tableCell": "Every Wave C form \u00b7 Owner, Manager \u00b7 all widths"
+    },
+    {
+      "finding": "TC-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 74,
+      "tableCell": "Branding \u00b7 Owner \u00b7 320@150, 390@200, 320@200"
+    },
+    {
+      "finding": "TC-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 75,
+      "tableCell": "Location detail \u00b7 Owner \u00b7 320@150, 320@200, 390@200, 1440@150 (aside); WebKit too"
+    },
+    {
+      "finding": "TC-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 76,
+      "tableCell": "Branding, Locations no-match, Break Archive dialog \u00b7 Owner \u00b7 320@200, 390@200"
+    },
+    {
+      "finding": "TC-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 77,
+      "tableCell": "Branding \u00b7 Owner \u00b7 320@150, 320@200, 390@200"
+    },
+    {
+      "finding": "TC-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 78,
+      "tableCell": "Company profile \u00b7 Owner \u00b7 320@150, 320@200, 390@200"
+    },
+    {
+      "finding": "TC-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 79,
+      "tableCell": "Features, Location detail, Positions editor \u00b7 Owner \u00b7 all widths"
+    },
+    {
+      "finding": "TC-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 80,
+      "tableCell": "Locations \u00b7 Owner \u00b7 320@200; 320@150, 390@200 (long names, simulated)"
+    },
+    {
+      "finding": "TC-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 81,
+      "tableCell": "Location detail, Branding, Features (default state); Account recovery and Positions before hydration \u00b7 all widths"
+    },
+    {
+      "finding": "TC-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 82,
+      "tableCell": "Hub, Positions \u00b7 Owner \u00b7 320@200 (Chromium and WebKit)"
+    },
+    {
+      "finding": "TC-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 83,
+      "tableCell": "Company profile \u00b7 Owner \u00b7 390@200"
+    },
+    {
+      "finding": "TC-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 84,
+      "tableCell": "Company policies \u00b7 Owner \u00b7 390@200, 320@150, 320@200"
+    },
+    {
+      "finding": "TC-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 85,
+      "tableCell": "Hub, Features, Branding \u00b7 Owner"
+    },
+    {
+      "finding": "TC-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 86,
+      "tableCell": "Locations, Clocker devices, Break types, Positions \u00b7 Owner"
+    },
+    {
+      "finding": "TC-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 87,
+      "tableCell": "Locations, Location detail, New location, Clocker devices \u00b7 Owner \u00b7 other word presets"
+    },
+    {
+      "finding": "TC-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 88,
+      "tableCell": "Several \u00b7 Owner"
+    },
+    {
+      "finding": "TC-17",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 89,
+      "tableCell": "Location detail success; every \"Not saved\" notice"
+    },
+    {
+      "finding": "TC-18",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 90,
+      "tableCell": "Branding \u00b7 Owner"
+    },
+    {
+      "finding": "TC-19",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 91,
+      "tableCell": "Clocker devices \u00b7 Owner"
+    },
+    {
+      "finding": "TC-20",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 92,
+      "tableCell": "Account recovery \u00b7 Owner, Manager"
+    },
+    {
+      "finding": "TC-21",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 93,
+      "tableCell": "Company profile, Company policies, Clocker recovery"
+    },
+    {
+      "finding": "TC-22",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 94,
+      "tableCell": "Company policies, Branding \u00b7 Owner \u00b7 loaded network"
+    },
+    {
+      "finding": "TC-23",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 95,
+      "tableCell": "All forms (judgment)"
+    },
+    {
+      "finding": "TC-24",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 96,
+      "tableCell": "Company policies \u00b7 Owner \u00b7 320@100, 390@150"
+    },
+    {
+      "finding": "TC-25",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 97,
+      "tableCell": "Branding vs Positions (judgment)"
+    },
+    {
+      "finding": "TC-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 218,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 219,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 220,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 221,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 222,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 223,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 224,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 225,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 226,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 227,
+      "tableCell": "**Not fixed**"
+    },
+    {
+      "finding": "TC-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 228,
+      "tableCell": "Partly fixed"
+    },
+    {
+      "finding": "TC-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 229,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 230,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 231,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 232,
+      "tableCell": "Partly fixed"
+    },
+    {
+      "finding": "TC-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 233,
+      "tableCell": "Partly fixed"
+    },
+    {
+      "finding": "TC-17",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 234,
+      "tableCell": "Partly fixed"
+    },
+    {
+      "finding": "TC-18",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 235,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-19",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 236,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-20",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 237,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-21",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 238,
+      "tableCell": "Fixed (non-policy)"
+    },
+    {
+      "finding": "TC-22",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 239,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-23",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 240,
+      "tableCell": "Fixed (shared `a62cc79`)"
+    },
+    {
+      "finding": "TC-24",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 241,
+      "tableCell": "Partly fixed"
+    },
+    {
+      "finding": "TC-25",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 242,
+      "tableCell": "Partly fixed"
+    },
+    {
+      "finding": "TC-26",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 248,
+      "tableCell": "Hub (and every `.nv-row__meta` on Wave C) \u00b7 Owner \u00b7 390@100, 320@100, 844\u00d7390@200, 1440@200"
+    },
+    {
+      "finding": "TC-27",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 249,
+      "tableCell": "Account recovery from an employee \u00b7 Owner \u00b7 390"
+    },
+    {
+      "finding": "TC-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 308,
+      "tableCell": "Fixed, with a small remainder (P2, below)"
+    },
+    {
+      "finding": "TC-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 309,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 310,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 311,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-17",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 312,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-24",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 313,
+      "tableCell": "Decided (round 3)"
+    },
+    {
+      "finding": "TC-25",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 314,
+      "tableCell": "Decided (round 3; shared library)"
+    },
+    {
+      "finding": "TC-26",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 315,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-27",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 316,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "TC-28",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 322,
+      "tableCell": "Branding \u00b7 Owner \u00b7 320@200, 390@200 (Chromium and WebKit); clamped at 390@200 in the Yellow and blocked states too"
+    },
+    {
+      "finding": "TC-29",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 323,
+      "tableCell": "Brand blocked, Features blocked, Break and Device dialogs blocked, vs Location, New location and Policies \u00b7 Owner"
+    },
+    {
+      "finding": "TC-30",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/type-colour-copy.md",
+      "line": 324,
+      "tableCell": "Hub \u00b7 Owner \u00b7 320@200 (Chromium and WebKit)"
+    },
+    {
+      "finding": "IS-1",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 30,
+      "tableCell": "Account recovery \u00b7 Owner \u00b7 390 and 1440"
+    },
+    {
+      "finding": "IS-2",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 31,
+      "tableCell": "Every Wave C form (seen on New location, Account recovery, Clocker recovery) \u00b7 Owner \u00b7 390 and 1440"
+    },
+    {
+      "finding": "IS-3",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 32,
+      "tableCell": "Every Wave C form with field checks (Company profile, New location, Edit location, Positions add and edit, Break types dialog, Clocker devices dialog, Account recovery, Clocker recovery) \u00b7 Owner \u00b7 390 and 1440"
+    },
+    {
+      "finding": "IS-4",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 33,
+      "tableCell": "Break types dialog \u00b7 Owner \u00b7 390"
+    },
+    {
+      "finding": "IS-5",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 34,
+      "tableCell": "Company policies \u00b7 Owner \u00b7 390"
+    },
+    {
+      "finding": "IS-6",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 35,
+      "tableCell": "Break types \"Archive this break type?\"; Clocker devices \"Revoke this device's access?\" and \"Create a new setup code?\" \u00b7 Owner \u00b7 320, 390"
+    },
+    {
+      "finding": "IS-7",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 36,
+      "tableCell": "Break types and Clocker devices dialogs \u00b7 Owner \u00b7 320, 390"
+    },
+    {
+      "finding": "IS-8",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 37,
+      "tableCell": "Branding, Features & words, Company policies \u00b7 Owner \u00b7 390"
+    },
+    {
+      "finding": "IS-9",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 38,
+      "tableCell": "Every action \u00b7 Owner \u00b7 390"
+    },
+    {
+      "finding": "IS-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 39,
+      "tableCell": "Branding \u00b7 Owner \u00b7 390"
+    },
+    {
+      "finding": "IS-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 40,
+      "tableCell": "Branding \u00b7 Owner (DOM)"
+    },
+    {
+      "finding": "IS-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 41,
+      "tableCell": "Clocker devices \u00b7 Owner (DOM)"
+    },
+    {
+      "finding": "IS-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 42,
+      "tableCell": "Positions (measured) and Break types (from code) \u00b7 Owner \u00b7 390"
+    },
+    {
+      "finding": "IS-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 43,
+      "tableCell": "Every Owner-only Settings page (Manager, Lead, Employee); recovery pages (Lead, Employee) \u00b7 from code"
+    },
+    {
+      "finding": "IS-1",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 104,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-2",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 105,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-3",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 106,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-4",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 107,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-5",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 108,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-6",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 109,
+      "tableCell": "**Not fixed**"
+    },
+    {
+      "finding": "IS-7",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 110,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-8",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 111,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-9",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 112,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 113,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 114,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 115,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 116,
+      "tableCell": "Fixed"
+    },
+    {
+      "finding": "IS-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 117,
+      "tableCell": "Decided"
+    },
+    {
+      "finding": "IS-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/interaction-states.md",
+      "line": 123,
+      "tableCell": "Features & words \u00b7 Owner \u00b7 390"
+    },
+    {
+      "finding": "WR-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 23,
+      "tableCell": "Account recovery (all three variants) \u00b7 Owner, Manager \u00b7 320 and 360 at 200%"
+    },
+    {
+      "finding": "WR-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 24,
+      "tableCell": "Branding \u00b7 Owner \u00b7 320 and 360 at 200%"
+    },
+    {
+      "finding": "WR-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 25,
+      "tableCell": "Branding \u00b7 Owner \u00b7 320 and 360 at 200%"
+    },
+    {
+      "finding": "WR-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 26,
+      "tableCell": "Every Wave C page with guidance, Branding, Features \u00b7 Owner (and Manager on recovery) \u00b7 1024"
+    },
+    {
+      "finding": "WR-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 27,
+      "tableCell": "Location detail, unknown id (`/app/settings/locations/no-such-location`) \u00b7 Owner \u00b7 all widths"
+    },
+    {
+      "finding": "WR-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 28,
+      "tableCell": "Settings hub, every Settings page, both recovery pages \u00b7 Manager (Settings), Lead and Employee (all) \u00b7 390, 1440"
+    },
+    {
+      "finding": "WR-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 29,
+      "tableCell": "Location card \u00b7 Owner \u00b7 320 and 360 at 200% (any width once the title is wider than the space left by the pill)"
+    },
+    {
+      "finding": "WR-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 30,
+      "tableCell": "Branding \u00b7 Owner \u00b7 320 and 768 at 200%"
+    },
+    {
+      "finding": "WR-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 31,
+      "tableCell": "Company policies \u00b7 Owner \u00b7 320 from 125%, 360 and 390 at 200%"
+    },
+    {
+      "finding": "WR-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 32,
+      "tableCell": "Account recovery \u00b7 Manager \u00b7 any width"
+    },
+    {
+      "finding": "WR-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 33,
+      "tableCell": "Locations, Break types, Clocker devices, Positions \u00b7 Owner \u00b7 all widths"
+    },
+    {
+      "finding": "WR-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 34,
+      "tableCell": "Locations, Clocker devices \u00b7 Owner \u00b7 320, 360"
+    },
+    {
+      "finding": "WR-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 35,
+      "tableCell": "Locations list, detail, new, loading \u00b7 Owner \u00b7 all widths"
+    },
+    {
+      "finding": "WR-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 36,
+      "tableCell": "Home vs Settings hub vs Clocker recovery \u00b7 Owner, Manager"
+    },
+    {
+      "finding": "WR-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 37,
+      "tableCell": "Account recovery from an employee \u00b7 Owner, Manager"
+    },
+    {
+      "finding": "WR-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 38,
+      "tableCell": "Branding preview \u00b7 Owner \u00b7 320"
+    },
+    {
+      "finding": "WR-01",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 94,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-02",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 95,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-03",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 96,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-04",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 97,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-05",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 98,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-06",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 99,
+      "tableCell": "Decided (Codex)"
+    },
+    {
+      "finding": "WR-07",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 100,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-08",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 101,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-09",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 102,
+      "tableCell": "**Partly fixed**"
+    },
+    {
+      "finding": "WR-10",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 103,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 104,
+      "tableCell": "**Partly fixed** (rest decided)"
+    },
+    {
+      "finding": "WR-12",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 105,
+      "tableCell": "Pills decided; band control **Fixed**"
+    },
+    {
+      "finding": "WR-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 106,
+      "tableCell": "**Partly fixed**"
+    },
+    {
+      "finding": "WR-14",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 107,
+      "tableCell": "Decided (sent on)"
+    },
+    {
+      "finding": "WR-15",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 108,
+      "tableCell": "**Changed; see WR-24**"
+    },
+    {
+      "finding": "WR-16",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 109,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-21",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 115,
+      "tableCell": "Branding \u00b7 Owner \u00b7 every width, Chromium and WebKit (**regression**)"
+    },
+    {
+      "finding": "WR-22",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 116,
+      "tableCell": "Clocker recovery, Account recovery \u00b7 Owner, Manager \u00b7 320 and 390 at 200%"
+    },
+    {
+      "finding": "WR-23",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 117,
+      "tableCell": "Settings hub \u00b7 Owner \u00b7 320 at 200%"
+    },
+    {
+      "finding": "WR-24",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 118,
+      "tableCell": "Account recovery from an employee \u00b7 Owner, Manager \u00b7 all widths"
+    },
+    {
+      "finding": "WR-11",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 154,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-13",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 155,
+      "tableCell": "**Fixed** (loading placeholder decided in ROUND-3)"
+    },
+    {
+      "finding": "WR-21",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 156,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-22",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 157,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-23",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 158,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-24",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 159,
+      "tableCell": "**Fixed**"
+    },
+    {
+      "finding": "WR-25",
+      "sourceReport": "docs/product/specs/p35-wave-c/inspection/widths-roles-consistency.md",
+      "line": 166,
+      "tableCell": "Settings hub \u00b7 Owner \u00b7 320 and 390 at 200% (any card narrow enough to hide the tiles), Chromium and WebKit"
+    }
+  ],
+  "mergedBrowserVerified": false,
+  "acceptedDecisions": [
+    "inspection/ROUND-2.md",
+    "inspection/ROUND-3.md",
+    "CODEX.md"
+  ]
+}

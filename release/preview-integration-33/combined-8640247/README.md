@@ -2,7 +2,9 @@
 
 Target `8640247be632ee6382c68b3b1ae3bbed532a5d65`, source `/workspace/verify-preview-33`. Parentage and canonical candidate33 ledger are separate files beside this report.
 
-No combined browser execution is yet claimed. Root reports locked npm installation, Next type generation, typecheck and lint pass; full suite/production markers remain root-owned and the resource hold remains active. This folder is a prepared evidence destination.
+**Superseded preparation: no combined preview/browser was launched on864.** Root full suite completed7360pass/2 genuine integration failures (kit namespace selector location; missing PendingLabel export in callout test mock). A corrected descendant will receive fresh gate/browser evidence; this folder preserves the unexecuted plan and original lineage.
+
+No combined browser execution is claimed. Root reports locked npm installation, Next type generation, typecheck and lint pass; full suite/production markers remain root-owned and the resource hold remains active. This folder is a prepared evidence destination.
 
 The initial combined smoke will run the fresh original152 targeted states using documented actual-source selector adaptations and the unchanged72-cell bounded checker. Product failures are retained and do not suppress remaining cells; setup gaps must be repaired or reported separately. The owned preview then closes with source/mirror hashes and PostgreSQL teardown verified.
 

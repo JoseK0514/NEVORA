@@ -1,0 +1,45 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "status": "waiting for root gate/resource release",
+  "completedCurrentCells": 0,
+  "zeroExits": [],
+  "reviews": [
+    {
+      "owner": "Phase3",
+      "automatedCells": 5280,
+      "manualJobs": 1546,
+      "priorIDs": 135,
+      "path": "premium-phase-3/complete-exit-preparation/"
+    },
+    {
+      "owner": "WaveA",
+      "automatedCells": 1792,
+      "judgmentJobs": 1244,
+      "priorIDs": 51,
+      "path": "p35-wave-a/complete-exit-cd764f6-preparation/"
+    },
+    {
+      "owner": "WaveB",
+      "automatedCells": 3008,
+      "priorIDs": 137,
+      "path": "p35-wave-b/full-exit-cd764f6/"
+    },
+    {
+      "owner": "WaveC",
+      "automatedCells": 960,
+      "totalSerialCheckpoints": 1253,
+      "priorIDs": 104,
+      "path": "p35-wave-c/combined-cd764f6-exit/"
+    },
+    {
+      "owner": "Desktop",
+      "automatedCells": 11736,
+      "priorIDs": 111,
+      "historicalIDSAudit": 102,
+      "path": "p4-desktop/exit-cd764f6/"
+    }
+  ],
+  "criteria": "Full unchanged checker with axe, all five areas, all prior IDs, required state/large-data/manual judgments. Genuine product failures retained; setup gaps separate. No prior pass counts inherited.",
+  "publication": "Candidate33 and four ready branches pushed; combined branch includes only33 findings and two named integration corrections, no later34\u201345 fixes."
+}

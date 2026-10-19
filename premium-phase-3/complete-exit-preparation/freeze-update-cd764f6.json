@@ -1,0 +1,72 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "parents": [
+    "fce5b40274656871cb9c1bbd72dd197f98782a42"
+  ],
+  "acceptedFindingCommits": 33,
+  "acceptedCandidate": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "later45Checkpoint": "historical e8e947e; interrupted by user target switch; no pass inherited",
+  "baselineCheckerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "phoneAxes": {
+    "core": 4480,
+    "managementNormalSupplement": 480,
+    "separateLarge": 320,
+    "total": 5280
+  },
+  "manualRowsExpected": 1546,
+  "priorIDs": 135,
+  "previewStarted": false,
+  "browserStarted": false,
+  "runtimeTestsRun": false,
+  "resourceRelease": "not yet granted",
+  "previousProofProvenance": "b956152 andb6880Home retain original checkpoints; all current required cells/states remain fresh review obligations",
+  "createdAt": "2026-10-19T22:40:27.540665+00:00",
+  "scriptHashes": {
+    "scripts/collection-policy.mjs": "8b717fb22a2c191de04bd9007fd197899b7095f045cccd4574414ff471d86d4b",
+    "scripts/after-check-collector.mjs": "9f017dc8b19d87a7fca74b111d788cc5e0c365395f4237f837deb2df95a9398f",
+    "scripts/serial-geometry.mjs": "e441d3c6e0c7c755e3ee91f055debb96b800c1167c5d0fc55429913ba0b5a9ac",
+    "scripts/manual-ledger.mjs": "683db1516189159da19b8fab5bce452787dff8a7ba38cc3287c07b0cdb956bd1",
+    "scripts/geometry-measure.mjs": "8ebbc88dba2a9e5a67ee8a8a0e5ccab85f7dad7ba871382f0afc78a61663d040",
+    "scripts/build-plan.py": "9bd1ac21eaaa4d076c278256912699ffd605491b0317f8f5a6006dcb2e662625",
+    "scripts/serial-baseline.mjs": "c805f2e032eec75ba336bcfa30075c0cb8143435ab5b555c899af1979e80448a",
+    "scripts/build-manual.py": "7b1a8c189cffd109e5c739d7c82df0934b8265827163117dd163abdc17aa6a9b",
+    "scripts/scoped-phase3.mjs": "99677328d545f8d84571a29c32f57dca80c15d919aa5c73efd64afa5ca5f4c85"
+  },
+  "scriptSyntaxOrAppTestsRunOn864": false,
+  "manualLedgerRows": 1546,
+  "allRouteTemplates": 44,
+  "all135StaticCrosswalk": "historical-all-135-crosswalk-cd764f6.json",
+  "addedMyPayReadStateConfigurations": 46,
+  "all1500EarlierManualIDsPreserved": true,
+  "internallyConsistentStaticFreezeAt": "2026-10-19T22:40:27.540665+00:00",
+  "largeDataCells": 320,
+  "integrationBase": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "previousSourceSnapshot": "freeze-history/8640247-preparation/",
+  "scriptSyntaxOrAppTestsRunOnCurrentSource": false,
+  "all1546PriorManualIDsPreserved": true,
+  "manualStageCounts": {
+    "read-state": 384,
+    "action-state": 240,
+    "font-swap": 102,
+    "shell": 320,
+    "large-data": 320,
+    "prior-id": 135,
+    "placeholder-route-access": 44,
+    "candidate-finding": 1
+  },
+  "rebind": {
+    "fromSource": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+    "changedFiles": [
+      "src/app/app/exchange/callout/page.test.tsx",
+      "src/components/kit/kit.css"
+    ],
+    "kind": "static preparation/source reference rebind only",
+    "appEdits": false,
+    "criteriaChanges": false,
+    "previewStarted": false,
+    "browserStarted": false,
+    "runtimeTestsRun": false,
+    "resourceRelease": "not yet granted"
+  }
+}

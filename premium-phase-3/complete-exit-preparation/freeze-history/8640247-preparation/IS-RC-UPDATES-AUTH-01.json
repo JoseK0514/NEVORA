@@ -1,0 +1,14 @@
+{
+  "finding": "IS-RC-UPDATES-AUTH-01",
+  "severity": "P2",
+  "base": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "evidence": "Static exact code path only; no browser claim",
+  "files": [
+    "src/components/employee-updates.tsx",
+    "src/components/employee-updates.test.tsx"
+  ],
+  "cause": "TC-B16 parser maps401 to session_ended but View only recognizes access_denied;403 also falsely says session ended.",
+  "scope": "View recognizes both parser reasons, truthful401vs403 heading and actualSignin. Read503 remains retry. Existing tests extended to cross parser\u2192View contract in both modes; not run.",
+  "applicationFilesEdited": false,
+  "testsOrRuntimeRun": false
+}

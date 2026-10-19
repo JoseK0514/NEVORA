@@ -1,0 +1,11 @@
+--- a/src/app/app/availability/availability.css
++++ b/src/app/app/availability/availability.css
+@@ -211,3 +211,8 @@
+ @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-availability .av-time-range label > span { font: var(--nv-t-label); }
+ }
++
++/* AL-P3-31: the specific-week card keeps the same 20px inset in phone landscape. */
++@media (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
++  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-availability .av-week-panel > :is(.av-week-context, .av-deadline, .av-submission-detail):not(#nv-kit) { padding: var(--nv-s-5); }
++}

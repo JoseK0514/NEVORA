@@ -1,8 +1,8 @@
 # Phase 3 complete exit preparation
 
-The exact current review source is combined `8640247be632ee6382c68b3b1ae3bbed532a5d65`, tree `fc83886c2f3d2d7a2f2d6ef6894aedf469f01ac1`, in clean detached `/workspace/inspect-phase3-final`. Its parents are Claude's all-six integration `4aaa793` and the accepted candidate `b68f250` with **33 finding commits**. `candidate-fix-ledger.json` lists only `8e18a95..b68f250`. Later34–45 fixes and external proposals are historical; no current pass or applied-fix assumption comes from them. Root's old45 gate was interrupted for the user's target switch. This source remains held until root explicitly releases it after the new full gates.
+The exact current review source is combined `cd764f614be8ca5b5215be19d46e07cf968638d7`, tree `64bc4c24afac005ce5270b3d65112a797b59b511`, in clean detached `/workspace/inspect-phase3-final`. It descends from combined864, whose parents are Claude's all-six integration `4aaa793` and accepted candidate `b68f250` with **33 finding commits**. The corrected descendant restores kit.css byte-for-byte to Claude4aaa (the existing coordinator selector already covers the opacity rule) and retains actual PendingLabel in the callout test mock; no fixture/backend/checker/portal/criteria changed. `candidate-fix-ledger.json` lists only `8e18a95..b68f250`. Later34–45 fixes and external proposals are historical; no current pass or applied-fix assumption comes from them. Root's old45 gate was interrupted for the user's target switch. This source remains held until root explicitly releases it after the new full gates.
 
-No preview, browser, application edits, commits, pushes, Claude writes or STATUS changes have been made for this preparation. Older9ec preparation files are preserved in `freeze-history/9ec3adc-preparation/`; b956152 and b6880Home proofs retain their original SHA. They never become combined864 passes.
+No preview, browser, application edits, commits, pushes, Claude writes or STATUS changes have been made for this preparation. The complete prior864 preparation snapshot is preserved in `freeze-history/8640247-preparation/` with a file-hash manifest. Older9ec preparation files are preserved in `freeze-history/9ec3adc-preparation/`; b956152 and b6880Home proofs retain their original SHA. They never become current combined passes.
 
 ## Required scope
 
@@ -18,10 +18,10 @@ Root must first set exact `PHASE3_RELEASED_SHA`. Use the approved disk-backed ow
 
 ```bash
 source /workspace/nevora-inspections/runtime.env
-export PHASE3_RELEASED_SHA=8640247be632ee6382c68b3b1ae3bbed532a5d65
+export PHASE3_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7
 export PHASE3_SOURCE=/workspace/inspect-phase3-final
-export PREVIEW_OUT=/workspace/paused-previews/phase3-combined-864
-export PHASE3_REPORT=/workspace/nevora-inspections/premium-phase-3/round-5-8640247-full
+export PREVIEW_OUT=/workspace/paused-previews/phase3-combined-cd764f6
+export PHASE3_REPORT=/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full
 node /workspace/nevora-inspections/premium-phase-3/complete-exit-preparation/scripts/serial-baseline.mjs \
   --source "$PHASE3_SOURCE" --sha "$PHASE3_RELEASED_SHA" \
   --preview "$PREVIEW_OUT" --report "$PHASE3_REPORT/core" --week 2026-10-19 --execute

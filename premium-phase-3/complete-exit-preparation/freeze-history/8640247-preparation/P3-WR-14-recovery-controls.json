@@ -1,0 +1,26 @@
+{
+  "finding": "P3-WR-14",
+  "base": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md:1063 on227150b",
+  "files": [
+    "src/components/employee-updates.tsx",
+    "src/components/timecards.tsx",
+    "src/components/payroll/payroll-ui.tsx",
+    "src/components/notification-inbox.tsx",
+    "src/components/employee-home-reviewed.tsx",
+    "src/components/employee-time-panel.tsx"
+  ],
+  "applyAfter": "IS-RC-UPDATES-AUTH-01.patch (only Updates View baseline is virtual after that patch)",
+  "scope": [
+    "Updates failed-read retry uses primary kit action and existing icon; signed-out toolbar refresh hidden.",
+    "Timecards failed-read retry primary with refresh icon; signed-out refresh hidden and existing Signin primary.",
+    "MyPay primary retry by removing secondary class from shared PayrollState; manager PayrollState already primary via existingCSS. No pay/legal/copy change.",
+    "Notifications existing Signin link uses primary kit control.",
+    "Home signed-out footer Signin primary; Home placeholder compact clock suppresses only duplicate401Signin via showRecovery={!denied}; existing other fallback retry contract remains. New optional showRecovery prop defaults true everywhere else.",
+    "All existing authority/lifecycle/command paths unchanged; no auth/period validation change.",
+    "Apply after WR12 may require resolving adjacent imports/employee-time-view parameter and clock JSX context, preserving both changes.",
+    "No source edit or runtime/test executed."
+  ],
+  "applicationFilesEdited": false,
+  "testsOrRuntimeRun": false
+}

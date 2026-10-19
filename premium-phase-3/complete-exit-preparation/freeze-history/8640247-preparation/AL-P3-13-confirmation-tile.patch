@@ -1,0 +1,12 @@
+--- a/src/app/app/schedule/employee-schedule.css
++++ b/src/app/app/schedule/employee-schedule.css
+@@ -148,3 +148,9 @@
+ @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+   html body .app-shell.nevora-portal[data-mobile-workforce="true"] .page-frame .premium-employee-schedule .my-week-today:not(#nv-kit) { font: var(--nv-t-headline); }
+ }
++
++/* AL-P3-13: the confirmation tile aligns with the start of the copy block. */
++@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
++  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-schedule-review:not(#nv-kit) { align-items: start; }
++  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-review-icon:not(#nv-kit) { width: 40px; height: 40px; }
++}

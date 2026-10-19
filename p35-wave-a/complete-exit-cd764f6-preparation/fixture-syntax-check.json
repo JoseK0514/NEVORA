@@ -1,0 +1,22 @@
+{
+  "kind": "Static syntax/transpile diagnostics only; emitted output discarded",
+  "sourceSha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "results": [
+    {
+      "file": "initial-fixture.mts",
+      "syntaxErrors": [],
+      "applicationImportsExecuted": false
+    },
+    {
+      "file": "initial-positive-fixture.mts",
+      "syntaxErrors": [],
+      "applicationImportsExecuted": false
+    }
+  ],
+  "databaseInitialized": false,
+  "browserExecuted": false,
+  "historicalArtifact": true,
+  "currentSourceSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "currentTargetSyntaxRun": false,
+  "note": "Original 864 static parse evidence preserved. Only literal source/preparation bindings were updated; no new transpile/test invocation under root resource hold."
+}

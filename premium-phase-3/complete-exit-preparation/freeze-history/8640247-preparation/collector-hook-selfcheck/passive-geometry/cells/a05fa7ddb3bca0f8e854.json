@@ -1,0 +1,14 @@
+{
+ "engine": "chromium",
+ "account": "AUDIT-E",
+ "size": "390",
+ "text": 100,
+ "route": "/app/profile",
+ "sha": "0000000000000000000000000000000000000000",
+ "lineage": "inert-mock-only-no-browser",
+ "scriptHash": "9b822f38d45911a542823790a95d3404a922e16e957b4c060c61594173f1b5a5",
+ "policy": "primary-role-judgment",
+ "phase": "after-unchanged-checker-cell",
+ "observedAt": "2026-10-19T21:38:20.237Z",
+ "collectionError": "intentional inert collection failure"
+}

@@ -1,0 +1,1209 @@
+{
+  "source": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "count": 135,
+  "rules": "Source inspection only. A candidate fix or source-only proof cannot close an owner finding. Every ID needs final-source measured evidence, or remains a gap/open. Payroll wording is suggestions, excluded from defect counts.",
+  "findings": [
+    {
+      "id": "TC-P3-01",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1039,
+      "lastPriorTableRow": "| TC-P3-01 | Fixed | At 320\u2013430 @100: week-strip days 15px, agenda dates 15px, location and position 15px, \"Shift options\" and \"What changed\" 15px. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-02",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1040,
+      "lastPriorTableRow": "| TC-P3-02 | Fixed | Labels, \"Optional\", \"0/250\" (no stray space) and \"Withdraw this request\" are all 15px. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-03",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1041,
+      "lastPriorTableRow": "| TC-P3-03 | Fixed | Day names are row type; dates are callout in **Inter**; counts and the deadline card are 15px. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-04",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1042,
+      "lastPriorTableRow": "| TC-P3-04 | Fixed | Detail, lead and zone 15px; dates 15px. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-05",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1105,
+      "lastPriorTableRow": "| TC-P3-05 | Closed | Remainder tracked as TC-P3-14, which is fixed. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-06",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1044,
+      "lastPriorTableRow": "| TC-P3-06 | Fixed | \"Published\" and \"Off clock\" are 15px. The More sheet is Inter, sentence case, at 15\u201317px (name and \"Sign out\" included). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-07",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1045,
+      "lastPriorTableRow": "| TC-P3-07 | Fixed | The band title is 30/36 on My time and Timecards. The Lead's My time figures are kit figures. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-08",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1046,
+      "lastPriorTableRow": "| TC-P3-08 | Fixed online | \"Hi, Alexandra.\" See TC-P3-16 for offline. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-09",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1192,
+      "lastPriorTableRow": "| TC-P3-09 | **Partly fixed** | **Fixed:**<br>\u2022 Time off row titles break only after the dash (\"Oct 29, 2026 \u2013\" / \"Oct 30, 2026\").<br>\u2022 \"Partial day \u00b7\" / \"9:00 AM \u2013 1:00 PM\".<br>\u2022 \"Updated\" stamps.<br>\u2022 Manager Schedule \"42 shifts\" stays together.<br>**Still split:**<br>\u2022 Availability week \"Oct 26 \u2013 Nov\" / \"1\" (320@150, 390@200)<br>\u2022 \"Last updated Oct\" / \"19, 3:11 PM\" (320@200)<br>\u2022 My time entry \"Mon, Oct\" / \"19\" (`employee-time-panel.tsx:28`, `entryDate` without `keepWhole`)<br>\u2022 \"3h\" / \"13m\" in My time Today and Timecards totals (AUDIT-BREAK 390@200)<br>\u2022 Manager Schedule \"13 of 13 team members \u00b7 Mon,\" / \"Oct 19\" (320@200)<br>Causes: `availability/page.tsx:165, 167` (`formatBusinessDateTime` / week range without `keepWhole`), `employee-time-panel.tsx:28`, the Today and Timecards metric `dd`s, `manager-weekly-roster.tsx`.<br>The new regression is filed as TC-P3-32. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-10",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1107,
+      "lastPriorTableRow": "| TC-P3-10 | Fixed | The To do title is \"Schedule updated\" with the \"Review needed\" pill; \"Request a swap\" in both places; \"Times in Puerto Rico time\" on the pass, Shift requests and Timecards. New splits are TC-P3-24. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-11",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1049,
+      "lastPriorTableRow": "| TC-P3-11 | Fixed | \"Off clock\", \"Clock in\", \"Clock out\", curly apostrophes, \"Showing 1 earlier entry\", \"waiting for your manager\". Notifications says \"No notifications here.\" when empty (all filter). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-12",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1108,
+      "lastPriorTableRow": "| TC-P3-12 | Fixed | \"0h\", \"37m\"-style, \"3h 40m\", \"1h 52m\", \"Breaks: 0h\", \"Starts in 19h 7m\" (Employee); Manager Timecards and Time exports \"6h 51m\", \"4h 1m\", \"0h\". No \"0h 0m\" or \"h 0m\" anywhere. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-13",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1051,
+      "lastPriorTableRow": "| TC-P3-13 | Fixed | The pass failure line reads \"Couldn\u2019t load your shift. Try again below.\". Unavailable schedule days show \"\u2013\", and the week card carries the message. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-14",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1109,
+      "lastPriorTableRow": "| TC-P3-14 | Fixed | Notification rows: heading 17/22/500, time 15/20, \"Unread\" and \"Action required\" 15/20/500 pills (5.53 and 5.66:1), destination 15/20, \"Read update\" 15/20/500. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-15",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1110,
+      "lastPriorTableRow": "| TC-P3-15 | Fixed | Pass shift time 32/40/600 at 320 and 390. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-16",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1294,
+      "lastPriorTableRow": "| TC-P3-16 | **Fixed** (seen) | Offline Home: the band says \"You\u2019re offline.\", the pass says \"Your shift updates when you reconnect.\", and the clock card says \"Updates paused\". Nothing repeats. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-17",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1112,
+      "lastPriorTableRow": "| TC-P3-17 | Fixed | \"Choose your dates and send a request to your manager.\" is 15/20 #5F666A (AUDIT-LONG, 320). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-18",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1289,
+      "lastPriorTableRow": "| TC-P3-18 | **Fixed** | \u2022 The redirect toast \"Your request was submitted for manager review. Track the decision below.\" is 15/20/500.<br>\u2022 `.av-feedback` messages (\"\u2026has been updated.\", \"The availability deadline for this week has passed.\", \"Your availability changed while saving\u2026\", \"Every available day needs\u2026\") are 15/20.<br>\u2022 The Time off `?error=invalid` message is 15/20.<br>\u2022 The Home clock title is 15/20/500 in all four states (`--nv-t-label`).<br>\u2022 My time \"Loading recorded time\", \"Couldn\u2019t load your time records\" and \"Your session ended\" are 15/20/500. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-19",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1290,
+      "lastPriorTableRow": "| TC-P3-19 | **Fixed** | Inbox (AUDIT-M): \"Casey Rivera \u00b7 Oct 19 \u2013 Oct 25 \u00b7 Fix recorded-time issues before finalizing.\" At 320@200 it breaks only after the dash and the dots (\"Oct 19 \u2013\" / \"Oct 25 \u00b7\"). Crop: `p3r4/crops/inbox-period-AUDIT-M-320-200.png`. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-20",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1195,
+      "lastPriorTableRow": "| TC-P3-20 | **Fixed** | AUDIT-BREAK Timecards: \"No clock-out yet\" (`timecards.tsx:21`). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-21",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1291,
+      "lastPriorTableRow": "| TC-P3-21 | **Fixed** | Published pill, white text, from pixels: median **7.10:1**, worst 5.34 (AUDIT-E 390); median 6.86, worst 5.14 (320). Was 4.06\u20134.18. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-22",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1197,
+      "lastPriorTableRow": "| TC-P3-22 | **Fixed** | The Lead gets the corporate set (`app-shell.tsx:65`): \"Current status\" 19/25/600 for both roles. \"Choose a period\" is still 20/27; see TC-P3-28. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-23",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1198,
+      "lastPriorTableRow": "| TC-P3-23 | **Partly fixed** | **Fixed:**<br>\u2022 \"Clocked in at \u2026\"<br>\u2022 the range ends \"12:11 PM \u2013 now\"<br>\u2022 \"3h 13m since clock-in \u00b7 23m on break\" stays whole<br>**Still there:** seconds in person-facing times:<br>\u2022 \"Updated Oct 19, 3:20:11 PM\" (Record details)<br>\u2022 the Clock in, break and Clock out stamps<br>Cause: `employee-time-panel.tsx:25` (`stamp()` with `second:'2-digit'`). Fix: drop `second`. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-24",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1199,
+      "lastPriorTableRow": "| TC-P3-24 | **Partly fixed** | **Fixed:**<br>\u2022 Home \"Time off waiting / declined / withdrawn\"<br>\u2022 \"Waiting, approved and past requests\"<br>\u2022 \"Yes, withdraw this request\" / \"Withdraw request\"<br>\u2022 timeline \"Waiting for approval\"<br>\u2022 \"No designated lead\" (Shift requests)<br>\u2022 \"Back to Home\" (error, not-found, Home views)<br>\u2022 \"Unable to work\"<br>\u2022 Inbox \"Set the availability deadline\u2026\"<br>**Still there:**<br>\u2022 Hub \"Swaps, coverage and **callouts**\" and \"\u2026including swaps, coverage and **callouts**.\" (`requests/hub/request-hub.tsx:30, 38`), on screen at all sizes<br>\u2022 \"No designated **Lead**\" in the swap form (`reviewed-swap-form.tsx:45`, `swap-shift-summary.tsx:33`), in code<br>\u2022 Manager roster \"Times in Puerto Rico.\" (`manager-weekly-roster.tsx:179`), in code<br>\u2022 Availability \"until the **cutoff**\" next to \"deadline\" (`availability/page.tsx:166`)<br>Fix: \"Swaps, coverage and unable-to-work requests\"; \"No designated lead\"; `timeZoneLabel()`; \"until the deadline\". |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-25",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1295,
+      "lastPriorTableRow": "| TC-P3-25 | Partly fixed (more seen) | **Correct:**<br>\u2022 Session: Home \"Sign in again to view Home.\" / \"Sign in again to see your shift.\" / \"Your session ended\" + \"Sign in\"; My time \"Your session ended / Sign in again to see your time.\" + \"Sign in\".<br>\u2022 Withdraw: \"Withdrawing\u2026\", then \"We couldn\u2019t confirm the withdrawal. Try again; it won\u2019t withdraw twice. If this keeps happening, sign in again.\" + \"Try again\".<br>\u2022 Exchange errors in the second person: \"That\u2019s outside the availability one of you sent.\", \"One of you can\u2019t work at that location.\"<br>**Added to the remainder:**<br>\u2022 Offline Home button \"**Retry home**\" (`employee-home-reviewed.tsx:365`); fix: \"Try again\".<br>\u2022 Exchange fallback \"The exchange **could not** be processed.\" (`exchange/page.tsx:202`); fix: \"Couldn\u2019t send that request. Try again.\"<br>\u2022 Time off invalid \"The request **could not** be saved. Check that\u2026\" (`requests/page.tsx:71`); fix: \"Couldn\u2019t send your request. Check that\u2026\" |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-26",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1292,
+      "lastPriorTableRow": "| TC-P3-26 | **Fixed** | WebKit writes \"Updated Oct 19, 3:48 PM\", \"Recorded Mon, Oct 19, 3:34 PM\" and \"Last updated Oct 19, 3:34 PM\". No \"at\" anywhere. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-27",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1202,
+      "lastPriorTableRow": "| TC-P3-27 | **Partly fixed** | **Fixed:** the pass note now reads \"whether you\u2019re clocked in\", curly.<br>**Still straight in code** (states not seen this round):<br>\u2022 \"This week's submitted hours are locked.\" (`availability/page.tsx:166`)<br>\u2022 \"You&apos;re all set.\" (`employee-home-reviewed.tsx:349`) |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-28",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1296,
+      "lastPriorTableRow": "| TC-P3-28 | Partly fixed (more seen) | Added to the remainder: the Time off type picker \"Full day\" / \"Partial day\" is 17/**25.5**/500. Fix: `font: var(--nv-t-label)`. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-29",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1204,
+      "lastPriorTableRow": "| TC-P3-29 | **Fixed** | \"These hours apply to this schedule week.\" and \"Weekly submission\": 15/20 at 100%, 30/40 at 200% (320, 390). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-30",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1205,
+      "lastPriorTableRow": "| TC-P3-30 | **Partly fixed** | **Fixed:** Schedule band \"42 shifts\" / \"this week\"; Updates breaks only between date and time.<br>**Still split:** the roster summary \"\u00b7 Mon,\" / \"Oct 19\" (320@200); see TC-P3-09.<br>**Not seen:** the Home row clamp (Manager Home 320@200 failed to load). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-31",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1293,
+      "lastPriorTableRow": "| TC-P3-31 | **Fixed** | A failed Time off send keeps the page and the entered dates (the summary still reads \"Dec 7, 2026 \u2013 Dec 8, 2026\"). It shows \"Your request wasn\u2019t sent. Check your connection and send it again. If this keeps happening, sign in again.\" at 15/20. A failed Availability save does the same (\"Your availability wasn\u2019t saved\u2026\") and keeps \"You have unsaved changes.\" |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-32",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1297,
+      "lastPriorTableRow": "| TC-P3-32 | Fixed in code, **re-check next round** | Still on this preview. WebKit shows the same: \"Mon, October 19, 202\" / \"6\" at 390@150 and on the pass at 390@200 (AUDIT-E and Lead). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-33",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1298,
+      "lastPriorTableRow": "| TC-P3-33 | Fixed in code (5479e46), **re-check next round** | Not on this preview. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "TC-P3-34",
+      "area": "type-colour-copy.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
+      "sourceLine": 1214,
+      "lastPriorTableRow": "| TC-P3-34 | My time (failure state), Profile, Requests overview, More sheet, Notifications \u00b7 320@150\u2013200, 390@200 | Words broken mid-word in narrow columns | \u2022 My time footer, when records fail: \"Only recorded punches appear here.\" is squeezed to **91px** at 320@200 and reads \"Only / record / ed / punch / es / appea / r here.\"<br>\u2022 Profile `dt` \"Compan\" / \"y\" and \"locatio\" / \"ns\" (AUDIT-LONG 320@150 and 200; Lead 390@200)<br>\u2022 Overview row \"availabil\" / \"ity\" (320@200)<br>\u2022 More sheet name \"Alexan\" / \"dra\" (320@200)<br>\u2022 Notifications band title \"Notificatio\" / \"ns\" (320@200, 60px title) | `S/p3r4/crops/mytime-footer-320-200.png`, `S/p3r4/shots/main2/chromium_AUDIT-LONG_-app-profile_320_200.png` | \u2022 `globals.css:12806` (footer `small{flex:1 1 180px;overflow-wrap:anywhere}` beside \"Try again\"); the stacking rule `portal-premium.css:1304` only covers `.employee-time-panel`<br>\u2022 Profile's two-column `dl` keeps a fixed `dt` track<br>\u2022 `overflow-wrap:anywhere` in the shell | \u2022 Stack the footer on phones whatever the state.<br>\u2022 Profile `dl`: a single column when text is above 125% (`grid-template-columns:1fr`).<br>\u2022 `overflow-wrap: break-word` (not `anywhere`).<br>\u2022 Band title at 200%: cap at `calc(30px*1.5)` or `hyphens:auto`. | P2 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-01",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 716,
+      "lastPriorTableRow": "| AL-P3-01 | **Fixed** | Every employee card at 320\u2013430 (E, L, M, O, P) is radius 20, e1 shadow, border 0; 16 at \u2265768. The two bordered cards in landscape are filed as AL-P3-17. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-02",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 785,
+      "lastPriorTableRow": "| AL-P3-02 | **Fixed** | Notifications date heading at 36, rows' tile at 36 and text at 88 (E, L, M, O). Profile settings rows: icon 36, text 68 (calendar row too). My pay privacy note icon at 16, text 41. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-03",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 877,
+      "lastPriorTableRow": "| AL-P3-03 | **Fixed** | M and O Notifications: the lead line ends at 257.5 and the card starts at 273.5 (**16**) at 320 and 390. At 200%: 485.02 \u2192 501.02 (16). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-04",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 787,
+      "lastPriorTableRow": "| AL-P3-04 | **Fixed** | Schedule blocks 16/16/16 (E and L, 320 and 390, up to 200%); review jump \u2192 agenda 16, swap card \u2192 review jump 16; E Timecards sections 16 (h2 \u2192 fields 20 is the legend gap, then 12/12/16/16/16). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-05",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 720,
+      "lastPriorTableRow": "| AL-P3-05 | **Fixed** | The Refresh button's centre and the bell's centre are both on the \"Your alerts\" line centre (\u0394 **0.00** at 320, 390 and 430; E, L, M and O). The label-to-title baseline difference (\u22121) comes from the 15 px label centred against the 17 px title, as with every kit head button. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-06",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 788,
+      "lastPriorTableRow": "| AL-P3-06 | **Fixed** | \"Current status\"/\"Off clock\", \"Recent entries\"/\"0 entries\" and \"Today\"/date \u0394 0 for E and L at 320, 360, 390, 430 and landscape, 100\u2013200%, and for AUDIT-ON (\"Clocked in\") and AUDIT-BREAK (\"On break\"). WebKit \u0394 0.01. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-07",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 722,
+      "lastPriorTableRow": "| AL-P3-07 | **Fixed** | Home To do and Recent row titles are at **88** (\u00d75); the tile and chevron are centred (\u0394 \u2264 0.5). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-08",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 723,
+      "lastPriorTableRow": "| AL-P3-08 | **Fixed** | The Updates row arrow's cy\u0394row is **0** at 320, 390 and 430 for E, L, M and O. The icon stays on the first line. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-09",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 724,
+      "lastPriorTableRow": "| AL-P3-09 | **Fixed** | My pay has one \"Pay statements\" card (16\u2013374, radius 20); the empty-state text is at **36**; no card in card (E, L and P). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-10",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 789,
+      "lastPriorTableRow": "| AL-P3-10 | **Fixed** | The Home column is `\u2026__mainColumn` with a transparent background; the 16 px between the pass and Clock status (955 \u2192 971 at 390) is canvas (crops/R3-home-pass-clock-390-webkit.png). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-11",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 790,
+      "lastPriorTableRow": "| AL-P3-11 | **Fixed** | Home \"Clock status\"/\"Off clock\" \u0394 0 (Chromium and WebKit, 390). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-12",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 878,
+      "lastPriorTableRow": "| AL-P3-12 | **Not re-measured (gap)** | `/api/timecards` answered **503** on every load on 60059 (E, L and payroll-qa-b, Chromium and WebKit), so only \"Couldn\u2019t load timecards\" rendered. The `align-items: baseline` rule is still at `portal-premium.css:1340`. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-13",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 879,
+      "lastPriorTableRow": "| AL-P3-13 | **Partly fixed** | **Fixed:** My time heads are now plain titles at 36 (E and L). The week title has a 20 icon at 36 and its text at **68**. Planning ahead, Profile settings and Sign out are at 68. Notifications, Updates and Work details are at 88.<br>**Still off:** the \"Confirm you\u2019ve seen your schedule\" card puts its 24 icon in a **32** column, so the text is at **80** (320\u2013430, E and L, WebKit too). The icon is also centred on the whole copy block (icon centre 1981 against the title's first line at about 1940).<br>**Cause:** `employee-schedule.css:62` (phone `.my-schedule-review { grid-template-columns: 32px \u2026 }`) and `:117`. The round-3 fix at `portal-premium.css:1500` changed only the gap.<br>**Fix:** `.premium-employee-schedule .my-schedule-review:not(#nv-kit) { grid-template-columns: 20px minmax(0,1fr); align-items: start }` with the icon at 20 px, giving text at 68. Alternatively use a 40 tile at 36 for text at 88.<br>Crop: r4/crops/c-sched-review-390.png |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-14",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 793,
+      "lastPriorTableRow": "| AL-P3-14 | **Fixed** | Held Home read (AUDIT-E, 390): the placeholder's lines sit at 326 / 356\u2013396 / 406\u2013440 / 452\u2013476, the same 6/10/12 px steps as the loaded pass (date 646\u2013670 \u2192 time 676\u2013716 \u2192 countdown 726\u2013760); the head at 286\u2013314 equals the loaded \"Your shifts\" head. No 8 px offset. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-15",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 794,
+      "lastPriorTableRow": "| AL-P3-15 | **Fixed** | 360: days 26\u2013334 in a 16\u2013344 card (10/10). 320: Monday at 26, the strip scrolls with the fade over a 14 px Sunday sliver (crops/B-AUDIT-E-app_schedule-320x844-t100.png). New text-size problem filed as AL-P3-17. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-16",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 795,
+      "lastPriorTableRow": "| AL-P3-16 | **Fixed** (as far as rendered) | Landscape Clock status card: border 0 with the kit shadow. To do and Recent activity didn't render in landscape (Home read 503). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-17",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 880,
+      "lastPriorTableRow": "| AL-P3-17 | **Fixed** | Day buttons are now 44 / 66 / 88 px at 100 / 150 / 200%.<br>\u2022 The smallest label gap is 14.0 / 22.1 / 31.0 px and the smallest date gap is 20.7 / 31.2 / 41.6 px, at 320, 360, 390 and 430. Nothing overlaps.<br>\u2022 `data-overflow=\"true\"` (the fade is on) whenever the strip overflows: at 320 for every text size, and at 150% and 200% at every width. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-18",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 881,
+      "lastPriorTableRow": "| AL-P3-18 | **Fixed** | Time off form: lead line \u2192 first group **16** (366 \u2192 382). Between groups **20** (500 \u2192 520 and 630 \u2192 650). The same at 320, 200% and in WebKit. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-19",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 882,
+      "lastPriorTableRow": "| AL-P3-19 | **Fixed** (one position) | All five status pills sit under the dates at 390 and 320, 100% and 200%, in Chromium and WebKit (text at 66.13 in every row), and the timeline is stacked. P3-WR-08 (`portal-premium.css:1398`, phones and landscape) wins over the round-3 \"top right\" rule at `:1470\u20131472`, which is therefore unused on phones. The result is consistent. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-20",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 883,
+      "lastPriorTableRow": "| AL-P3-20 | **Fixed** | In landscape (E and L, 100% and 150%), all three Profile cards span **16\u2013828**, and Work details is padded 20 (text at 36). In portrait, all three cards span 16\u2013(W\u221216). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-21",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 884,
+      "lastPriorTableRow": "| AL-P3-21 | **Fixed** (portrait) | The specific-week card has `padding: 0`. Its first text is 20 from the top, the deadline icon is at 36 with its text at 68, and \"Submitted\" is at 36 (320, 390 and 200%; E and L). The landscape remainder is filed as AL-P3-31. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-22",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 885,
+      "lastPriorTableRow": "| AL-P3-22 | **Partly fixed** | **Fixed:** Home Clock status, My time (E and L), Updates and Notifications Refresh are all one shape: 44 tall, radius 12, no border, padding 0 12, accent label.<br>**Still different, Home footer \"Refresh home\":** radius **4**, padding **8px 4px**, a **17 px** label next to the 15 px \"Updated 3:13 PM\", 205.7\u2013325.4 at 390. Cause: `employee-home-reviewed.module.css:112` (`.refreshButton`) isn't in the `portal-premium.css:1292` list.<br>**Still different, head-trailing Refresh:** the label still ends **12 px** inside the card text edge (box 354, label 342), and in the Home clock card the icon starts at 48 rather than 36.<br>**Fix:** add `[class*=\"employee-home-reviewed-module\"][class*=\"__refreshButton\"]` to the `:1292` selector list (font `var(--nv-t-label)`). Optionally add `margin-inline: -12px` on the start or end side, so the label meets the 36/354 text edges.<br>Crop: r4/crops/c-home-refresh-390.png |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-23",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 886,
+      "lastPriorTableRow": "| AL-P3-23 | **Fixed** | Shift requests cards are padded 20 with text 20 from the top. The date line and both detail lines start at **60** (E and L, 320 and 390). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-24",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 887,
+      "lastPriorTableRow": "| AL-P3-24 | **Fixed** | L My time at 320: all cards are padded 20, with text at 36. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-25",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 888,
+      "lastPriorTableRow": "| AL-P3-25 | **Partly fixed** | **Fixed:**<br>\u2022 The total \"2h 5m\" now shares the date's line (baseline 885 against 886).<br>\u2022 The legacy `summary::after` resolves to `content: none` (`portal-premium.css:1488` works).<br>**Still open, AUDIT-ON at 390:**<br>\u2022 The total column ends at **233**.<br>\u2022 A \"+\" disclosure glyph still draws at about x 249\u2013262 (crop).<br>\u2022 So the row's trailing edge is about **92 px** inside the card's text edge (354).<br>\u2022 The summary's computed grid is `minmax(0,1fr) max-content 24px`, yet the total starts at 153.6, so the children aren't in the columns intended.<br>**Likely cause:**<br>\u2022 Grid placement from `employee-mobile-corporate.css:167` and `my-time/my-time.css:117`.<br>\u2022 Another child or pseudo-element draws the \"+\". I didn't locate which, because the `::after` is already none.<br>**Fix:** give the summary's parts explicit columns: the date block `grid-column: 1`, the total `grid-column: 2; justify-self: end`, and the disclosure `grid-column: 3; justify-self: end`. The \"+\" then ends at 354 and the total ends 12 px before it.<br>Crop: r4/crops/c-ON-entry-390.png |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-26",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 889,
+      "lastPriorTableRow": "| AL-P3-26 | **Partly fixed; not fixed on Home** | **Fixed:** the Schedule agenda head and the Open shifts head (\u0394 \u2264 0.6, also in landscape), and Payroll's landscape toolbar (see AL-P3-27).<br>**Still off, Home pass \"Your shifts\"/\"Published\":**<br>\u2022 Chromium: \u0394 **+2.5** at 320, 390 and landscape (E, L, AUDIT-ON and AUDIT-BREAK), and **+5.5** at landscape 150%.<br>\u2022 WebKit: \u0394 **+3.16**.<br>\u2022 In round 3 it was \u22122, so the fix overshot. \"Published\" now sits low.<br>**Cause:** `employee-home-reviewed.module.css:42`: `.published` is `inline-flex; align-items: center` with the 5 px dot `::before` first. The pill's baseline is therefore synthesized from the dot's bottom edge, and `portal-premium.css:1491` aligns that to the title.<br>**Fix:** `[data-pass=\"true\"] > header > [class*=\"__published\"] { align-items: baseline } \u2026 ::before { align-self: center }`, so the text sets the pill's baseline.<br>Crop: r4/crops/c-home-passhead-390.png |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-27",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 890,
+      "lastPriorTableRow": "| AL-P3-27 | **Fixed** | Payroll in landscape (O, 100/150/200%): the status line box (268\u2013288) is centred on the button row (256\u2013300). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-28",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 891,
+      "lastPriorTableRow": "| AL-P3-28 | **Fixed in source; not rendered** | On the reseeded data, Updates had items for E, L, M and O, so the empty or failed block didn't render. The rule is at `portal-premium.css:1494`. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-29",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 897,
+      "lastPriorTableRow": "| AL-P3-29 | Availability (usual week and `?week=`) \u00b7 E and L \u00b7 320 at 200% (also tight at 360 at 200%) \u00b7 Chromium | \"7 of 7 days available\" count pill | The pill is one unbreakable line, 36\u2013**327.9** wide, inside a card that ends at **304** (text edge 284). It runs **24 px past the card edge** and its last letter meets the viewport edge. At 360 at 200% it ends at 327.9, against a text edge of 324. Fits at 390 and 430. | r4/crops/c-av-daycount-320-200.png | `portal-premium.css:1290` `.av-day-count { white-space: nowrap; display: inline-flex }` | Let it wrap: `white-space: normal; max-width: 100%`, with `align-items: baseline` and the number kept whole. Or drop `nowrap` below 390 px. | **P1** |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-30",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 898,
+      "lastPriorTableRow": "| AL-P3-30 | My schedule (and `?intent=swap`) \u00b7 E and L \u00b7 320\u2013430, every text size, Chromium and WebKit | \"West Office hasn\u2019t published\" note under the week strip | The note's top equals the day buttons' bottom: **0 px gap** (474.39 / 474.39 at 390; 554.11 / 554.11 at 150%; 735.81 / 735.81 at 200%). The selected teal \"Mon 19\" button sits directly on the grey note. The note's computed margin is 0, so `employee-schedule.css:143`'s `margin: 14px 0 0` is lost. The strip's `margin-bottom: \u22126px` (`portal-premium.css:1157`) also pulls the note up into the strip's padding. | r4/crops/c-sched-week-390.png | `portal-premium.css:1157` (strip `margin: -6px -20px`) and a reset of `.my-week-note` margin to 0 | `.premium-employee-schedule .my-week-note:not(#nv-kit) { margin-top: calc(var(--nv-s-3) + 6px) }`. That gives 12 px from the buttons; use 16 to match the card rhythm. | P2 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "AL-P3-31",
+      "area": "alignment.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/alignment.md",
+      "sourceLine": 899,
+      "lastPriorTableRow": "| AL-P3-31 | Availability `?week=` \u00b7 E \u00b7 landscape 844\u00d7390 | Week context card inset | In landscape the sections are padded **24**: \"Submitted\" is at 40, the tile text at 104 and the first text 24 from the top. Every other landscape card uses 20 (text at 36), and the same card in portrait is 20. | r4/crops/X-E-avweek-844.png | `availability.css:168`/`:170` section padding at the landscape breakpoint. The round-3 fix only zeroed the panel. | `.premium-employee-availability .av-week-panel > :is(.av-week-context, .av-deadline, .av-submission-detail):not(#nv-kit) { padding: var(--nv-s-5) }` | P2 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-01",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 695,
+      "lastPriorTableRow": "| P3-ST-01 Home load | **Fixed** | Cold load (replayed): CLS 0.0000 and no visible move at 320, 390, 430 and 844\u00d7390. The cards below the pass stay hidden until the pass is ready, then appear in place. With the real server (it fails): CLS 0.0000 at 390, 430 and landscape for every account. At larger text the band itself grows on load; that is new, filed as P3-ST-17. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-02",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 810,
+      "lastPriorTableRow": "| P3-ST-02 Home paused, offline or failed | **Scroll fixed. P2 remains (was P1).** | **Scroll position:** scrolled to 300, it stayed at 300 in all 16 cases (320, 390 and 430 \u00d7 background, offline, return with a failed 500 read, and return with a 401). The pass keeps its exact height: 786 at 320, 682 at 390 and 430. **Still wrong:** the clock card grows while Home isn't ready. At 320 it goes from 181 to **207px** when paused or offline, and to **225px** while loading or after a failed read; the page goes from 2783 to 2836px. At 390 and 430 it goes from 181 to 187px. Cause: the footer's one-line \"Updated Oct 19, 3:44 PM\" is replaced by \"Only recorded punches appear here.\", which takes two lines at 320 (the `small` goes from 20 to 40px, the footer from 68 to 94px), at `components/employee-time-panel.tsx:73`. At 320 the card was below the visible area at scroll 300; at 390 its 6px growth is on screen. Crops: `R4-clock-320-ready.png` vs `R4-clock-320-paused.png`. **Fix:** keep the last \"Updated \u2026\" stamp in the footer when not ready (the band already says it's paused), or reserve 2 lines for the footer text at \u2264359px. Alternatively, make the clock `aside` a `HoldHeight` with `holding={!ready}`. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-03",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 652,
+      "lastPriorTableRow": "| P3-ST-03 tab-tap placeholders, landscape header | **Fixed** | Every tab tap and More link shows a teal band from the first frame at the final height. 390: Schedule 168, Requests 104 (with tabs), Home 272, Updates 128, Notifications 128, Profile 104. 320 and landscape variants also match. One exception, seen once (AUDIT-LONG, 390, Home tap from Pay): one frame of the Pay-shaped placeholder (band 112\u2013240 with section tabs) showed before Home's own (68\u2013340), the ST-22 pattern. It didn't repeat in the other 27 runs, so I haven't filed it. The header is teal and 68px in every frame on phones and in landscape, and section tabs are teal from the first frame. Landscape CLS is 0.000\u20130.003 on all 64 cells (was 0.033). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-04",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 811,
+      "lastPriorTableRow": "| P3-ST-04 Profile rows | **Fixed** | The rows start at the same y in the loading and ready frames: AUDIT-E 390 Name 268/268, 320 292/292; AUDIT-LONG the same. Only values that wrap grow downward, as intended: AUDIT-E 320 Company 60 \u2192 84, AUDIT-LONG Name 59 \u2192 107. The cards below stay hidden until ready. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-05",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 654,
+      "lastPriorTableRow": "| P3-ST-05 Updates | **Fixed** | CLS 0.000\u20130.003 for every employee account and width. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-06",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 698,
+      "lastPriorTableRow": "| P3-ST-06 My time footer (load) | **Fixed** | Loading \u2192 ready: CLS 0.0000 and no visible move at 320, 360, 390, 430 and 844\u00d7390, for AUDIT-E, AUDIT-LEAD, AUDIT-ON and AUDIT-BREAK (clocked in and on break too; 430 traced for AUDIT-ON and AUDIT-BREAK). The footer is 116px (390) loading and ready. The same footer still moves on every refresh at 390: new, P3-ST-15. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-07",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 656,
+      "lastPriorTableRow": "| P3-ST-07 My pay | **Fixed** | CLS 0.000\u20130.005 at every width. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-08",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 657,
+      "lastPriorTableRow": "| P3-ST-08 More sheet | **Fixed** | Edge to edge at 320 ([0, 233, 320, 335], bottom at 568) and 390 ([0, 509, 390, 335], bottom at 844). In landscape it is the same bottom sheet ([142, 109, 560, 281], bottom at 390) on Home, Schedule and Requests. The page no longer scrolls under the open sheet (scrollY stays 0 after a wheel over it). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-09",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 658,
+      "lastPriorTableRow": "| P3-ST-09 tab bar | **Fixed** | 68px at every width, and active labels are the same width as idle (Home 37.23 in both states). The one-frame label narrowing on Pay, like the accepted ST-19, is still there. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-10",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 701,
+      "lastPriorTableRow": "| P3-ST-10 Bottom clearance | **Regressed (filed as P3-ST-18)** | Home, Timecards and My pay are at 20px. The pages built on `.premium-employee-content` are at 68px. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-11",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 660,
+      "lastPriorTableRow": "| P3-ST-11 safe areas | **Fixed in code** | The exclusion is gone. Not verifiable without a notched device. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-12",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 699,
+      "lastPriorTableRow": "| P3-ST-12 Home failed reads | **Fixed for the time read; one 320 case left (filed as P3-ST-16)** | Time read failing with 500, 401 or 403 after Home is ready (replayed): CLS 0.0000 and no move at 390 and 320; the clock card keeps its height. Home read 401/403: CLS 0.0000 at 390 and 320 (\"Sign in again to view Home.\"). Home read 500: 0.0000 at 390, but 0.0105 at 320 (P3-ST-16). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-13",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 700,
+      "lastPriorTableRow": "| P3-ST-13 Timecards band | **Fixed** | The band is 148px (390, 430, landscape) or 172px (320, 360) from the first frame. CLS 0.0000\u20130.0003 at every width for AUDIT-E, AUDIT-LEAD, payroll-qa-a and payroll-qa-b, and at 150% and 200% text. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-14",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 812,
+      "lastPriorTableRow": "| P3-ST-14 My time collapse | **Not fixed (P1)** | Scrolled to 300, then **390** background or offline: the page goes from 1311 to **844px** and the scroll from 300 to **0**. Failed 500 or 401: the same, 300 \u2192 0. **320** background or offline: 1359 \u2192 708px, scroll 300 \u2192 140. Failed 500: \u2192 732px, scroll 164. Failed 401: \u2192 688px, scroll 120. **844\u00d7390:** 1144 \u2192 592px, scroll 300 \u2192 202 (206 after a failed read). After returning, the sections come back but the scroll stays where it was clamped. Today, Recent entries and Corrections are removed, and nothing holds their space. **Cause:** the `HoldHeight` around the panel never holds, because the panel is `display: contents` on the corporate phone layout (`app/employee-mobile-corporate.css:119`). Its box is 0px tall, so the hold measures 0 and its `min-height` does nothing (probe: `.employee-time-panel h=0 minH=0px disp=contents`; the parent `.premium-employee-content` goes from 939 to 292px). Crops: `hold-AUDIT-E-390-_app_my_time-offline-1ready.png` vs `-2during.png`, `R4-mytime-390-offline.png`. **Fix:** on that layout, replace `display: contents` with `display: flex; flex-direction: column; gap: inherit;`, so the panel has a box to hold. Or move the `HoldHeight` to `.premium-employee-content`. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-15",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 813,
+      "lastPriorTableRow": "| P3-ST-15 My time Refresh | **Fixed** | The footer stays at 116px (390) and 140px (360) before, during and after a Refresh with the read held for 3 seconds. Today stays at 606 (390) and 630 (360). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-16",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 814,
+      "lastPriorTableRow": "| P3-ST-16 Home pass line | **Fixed** | The first pass line holds 2 lines (48px) while loading at 320, 390, 430 and 844\u00d7390. The pass keeps its height when a failed or paused message replaces it (see P3-ST-02). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-17",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 815,
+      "lastPriorTableRow": "| P3-ST-17 Home band at large text | **Fixed except one cell. P1 at 320 with 200% text.** | Loading \u2192 ready, real read held 2.5 seconds: the band is the same height (\u0394 0, CLS 0) at 320/100\u2013150%, 390 and 430 at 100/150/200%, and 844\u00d7390 at 100/150/200%. **320 at 200%:** the title \"Home\" (72px) becomes \"Hi, Alexandra.\" on two lines (**144px**). The band goes from 423 to **531px**, the pass moves from 428 to 536 (+108), and CLS is **0.1013**. Crops: `R4-home-AUDIT-E-320-200-loading.png` vs `-ready.png`. Cause: `components/employee-home-reviewed.tsx:293`; the eyebrow is held, but the title isn't. **Fix:** while loading, draw an invisible \"Hi, {first name}.\" stand-in, as the eyebrow does (the shell already has `user.firstName`). Or give `.nv-masthead__title` `min-height: 2lh` on Home when the text scale is 1.75 or more at \u2264359px. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-18",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 816,
+      "lastPriorTableRow": "| P3-ST-18 Bottom gap | **Fixed** | At maximum scroll the last card ends 20px above the tab bar: 390/430/844\u00d7390 at 100% on Home, Schedule, the Requests overview, Time off (both tabs), Shift requests (both tabs), Availability, My time, Timecards, My pay, Profile and Notifications (crops `bottom-AUDIT-E-390-*.png`). At 390 with 200% text it is 20.98px, with the tab bar at 83px. Manager and Owner Home, Team and Payroll: 20\u201323.5px at 100% and 200%. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-19",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 817,
+      "lastPriorTableRow": "| P3-ST-19 Reduced-motion shimmer | **Fixed** | With reduced motion, no placeholder element has an animation. The employee Schedule placeholder was on screen for 57 frames with 0 animated; Manager Schedule, Team and Inbox also 0. Control run with motion allowed: `nevora-shimmer` runs on the placeholder bars. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-20",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 769,
+      "lastPriorTableRow": "| P3-ST-20 Placeholder bands at larger text | **Partly fixed, P1 remains** | **Exact now:** at 390, placeholder = page band at 100% and 200% on every employee route measured (Schedule, Requests overview, Time off, Shift requests, Availability, Timecards, Profile, Updates, Notifications: \u0394 0). **Still wrong:** (1) **150% at 390** is off because `--route-band-grow` is linear from 100% to 200%: Schedule \u221224, Shift requests \u221224, My time \u221226, Updates \u221224, Profile \u221212, Requests overview/Time off/Availability/Timecards/My pay/Notifications +12. (2) **320**, where the band grows more than at 390, but the single grow value per route was measured at 390. **Employee 320 at 200%:** Notifications 260 \u2192 428 (**+168**), Schedule 276 \u2192 396 (**+120**), Shift requests +48, Requests overview/Availability/My pay/Timecards +24. **Employee 320 at 150%:** \u221224 to +24 (Shift requests \u221224, Profile +24, Schedule/My time/Notifications +10 to +12, the rest \u221212). **Manager 320 at 200%:** Inbox 416 \u2192 636 (**+220**), Schedule +48, Home 508 \u2192 476 (\u221232). **Manager 320 at 150%:** Inbox +66, Schedule +28, Team +12, Timecards +12. Chromium's CLS stays at 0 on these because the band is a replaced element. The real move is the band's bottom edge and everything under it. Cause: `portal-premium.css:446` (`height: calc(var(--route-band) + var(--route-band-grow) * (var(--nv-text-scale) - 1))`) with one grow per route at `:1512-1531`, measured at 390 only. **Fix:** remember each route's real band height per width and text size (the `HoldHeight` memory key `nv-hold:<route>-band:<w>x<px>`) and give the placeholder that height, with the calc as a first-visit fallback. Or add 320 (`max-width: 359px`) grow values and a separate 150% step (`--route-band-150`), because the growth isn't linear. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-21",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 818,
+      "lastPriorTableRow": "| P3-ST-21 Inbox band at large text | **Not fixed (P1)** | 100%: the eyebrow row is 44px from loading to ready, with no move. **390 at 200% (Manager and Owner):** when the Inbox is ready, \"Updated 3:53 PM\" and Refresh no longer fit on one row. Refresh wraps under the time, the eyebrow row goes from 44 to **96px**, and the title, summary, filters and cards move down **52px** (cards 494 \u2192 546). CLS **0.2125** for both roles. Crops: `R4-inbox-390-200-early.png` vs `-ready.png`. Cause: `app/app/portal-premium.css:1403-1404` (P3-WR-11's `flex-wrap: wrap` and `white-space: normal` on every band's eyebrow row) outranks the Inbox's `nowrap` at `:504-505`. **Fix:** add `:not(.premium-inbox)` to the `[data-nv page]` part of the `:1403-1404` selectors, or raise `:504-505` to the same specificity, so the Inbox eyebrow stays on one line and shortens with an ellipsis. Or reserve the two-row eyebrow while \"Checking\u2026\" is shown at large text. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-22",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 819,
+      "lastPriorTableRow": "| P3-ST-22 Review placeholder | **Fixed** | Direct loads, Manager and Owner, with and without `&from=home`: no section tabs in any frame. The placeholder band equals the review's band: 68+264 at 320 and 390, 68+224 at 844\u00d7390. CLS 0. Opening the review from the Inbox keeps the Inbox until the review is ready (no placeholder frame). One leftover affects every overlap placeholder: P3-ST-25. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-23",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 820,
+      "lastPriorTableRow": "| P3-ST-23 WebKit font swap | **Partly fixed (P2)** | In 4 normal WebKit cold loads (Availability \u00d73, Home), Inter was loaded before the first layout, so there was no swap. To test the fallback, I held the Inter file for 2.5 seconds so the first paint used \"Inter Fallback\". Availability, My time, Schedule, the Requests overview and Profile at 320, and Availability, My time, Schedule and the Requests overview at 390, have the same band, title and summary boxes before and after Inter arrives. **Profile at 390** (WebKit and Chromium): \"Your work information and app settings.\" takes 2 lines in the fallback and 1 in Inter. The summary goes from 48 to 24px and the band from 128 to **104px**, so the page moves up 24px when Inter arrives. At 360 it's 2 lines in both fonts. Cause: the fallback is slightly wider than Inter on this line (`app/typeface-theme.css:23-30`), and the font isn't preloaded. **Fix:** add `<link rel=\"preload\" as=\"font\" type=\"font/ttf\" href=\"/fonts/typeface/inter/variable.ttf\" crossorigin>` in `app/layout.tsx`. Optionally, lower `size-adjust` by about 1% after checking it on this line. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-24",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 778,
+      "lastPriorTableRow": "| P3-ST-24 | Schedule (`/app/schedule`) and Time off (`/app/requests?tab=new`, `?tab=my`), employee (AUDIT-E), 320, **100% text** | `.route-skeleton-band` vs `[data-nv-band]` | At default text size the placeholder band has the wrong height at 320. **Schedule:** placeholder 168px, page band 192px (+24), so the band's edge and the first card drop 24px when the page arrives. **Time off (both tabs):** placeholder 192px, page band 168px (\u221224), so the content jumps up 24px. 390 matches (\u0394 0); 360 not measured. CLS reads 0 (replaced element). | \u2013 (`data/skel-emp.jsonl`, 320/100 rows) | `app/app/portal-premium.css:1167` gives Schedule 168px at every width (the 320 band now has a two-line summary), and `:1180` gives `review` 192px up to 389px, but the 320 Time off band is 168. | At `max-width: 359px`, set `[data-route=\"schedule\"] { --route-band: 192px }` and `[data-route=\"review\"] { --route-band: 168px }`. Measure 360 before choosing the 389px breakpoint for `review`. Or adopt the remembered-height fix in P3-ST-20, which covers this case too. | P2 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-25",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 826,
+      "lastPriorTableRow": "| P3-ST-25 | Every route placeholder with an overlap band (Manager and Owner Home, Inbox, Schedule, Team, the single review; employee Home), 320/390/844\u00d7390, direct loads | `.route-skeleton > .nevora-skeleton` (the first grey block) vs the page's first card | The band matches the page, but the placeholder's first grey block starts 20px **below** the band, while the real first card **overlaps** the band by 72px. When the page replaces the placeholder, the first card appears **92px higher** than the grey block (390 at 100%: Manager Home 308 \u2192 216, Inbox 396 \u2192 304, Schedule 332 \u2192 240, Team 308 \u2192 216, review 352 \u2192 260, employee Home 360 \u2192 268; 844\u00d7390 review 312 \u2192 260, \u221252). Flat bands are off by 20px (e.g., employee Schedule 256 \u2192 236). CLS reads 0 because the block is replaced. | \u2013 (`data/overlap.jsonl`, `data/review.jsonl`) | `app/app/portal-premium.css:452-453` and `:1505` put the overlap margin on `.route-skeleton-band + *`. That element is `.route-skeleton-header`, which `:454` hides (`display: none`; probe: `route-skeleton-header disp=none mt=-72px`). The visible `.nevora-skeleton` gets no margin, plus the 20px grid gap. | Move the margin to the first visible block: `.route-skeleton[data-band=\"overlap\"] > .route-skeleton-header + * { margin-top: -92px; }` (the real card starts 72px inside the band, and the grid adds a 20px gap). Flat: `.route-skeleton[data-band=\"flat\"] > .route-skeleton-header + * { margin-top: -20px; }`. Or drop the hidden header from banded placeholders, so `.route-skeleton-band + *` is the visible block. | P2 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-ST-26",
+      "area": "stability.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
+      "sourceLine": 827,
+      "lastPriorTableRow": "| P3-ST-26 | Manager Timecards (`/app/timecards`), AUDIT-M, 320 at 200% text | `[data-nv-band]` and `.premium-legacy-content` | In 2 of 3 loads, about 3.3s after load the band went 304 \u2192 256px and the period panel and everything below moved **up 48px** (448 \u2192 400). CLS **0.0409** both times (`data/sw-recheck.jsonl`; the earlier run had band sequence 256 \u2192 304 \u2192 256). In the third load the band was 256px from its first frame. I didn't isolate which band child is 48px taller for a while (at 48px per line, that's one line at 200%). | `R4-mgr-timecards-320-200-early.png` / `-late.png` (the third, stable load) | Not isolated. The band text is server-rendered (`app/app/timecards/page.tsx:18`), so a client-side control in the band row is the likely source. | Trace the band's children at 320/200% and give the late-arriving element its final size from the first frame. | P2 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-01",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1050,
+      "lastPriorTableRow": "| P3-WR-01 | **Fixed** | Week strip is one row at 320, 360, 390, 430 and 844\u00d7390 (Chromium and WebKit). At 360, 390 and 430 all 7 days fit (44 / 45 / 51px). At 320 it scrolls (328 in 288) with the right fade. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-02",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1051,
+      "lastPriorTableRow": "| P3-WR-02 | **Fixed** | Holds for AUDIT-E and AUDIT-LEAD at 390: title 17/22/500, time 15/20, \"Action required\" a 28px kit pill (#FDF1DC), Refresh a quiet 44px control, head 17/22/600. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-03",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1052,
+      "lastPriorTableRow": "| P3-WR-03 | **Fixed** | Minimum gap between tab labels: 19 / 28.9 / 34.9 / 26.2 / 109px at 320 / 360 / 390 / 430 / landscape. At 125\u2013200% it's 11.2 / 22 / 28.6 / 17.4 / 100.2px. No overlap. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-04",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1053,
+      "lastPriorTableRow": "| P3-WR-04 | **Fixed** | No switch overlaps a day name (overlap 0 on every row) at 320, 360, 390 and landscape, 100\u2013200%, for AUDIT-E and AUDIT-LEAD. Every switch ends at the row edge. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-05",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1054,
+      "lastPriorTableRow": "| P3-WR-05 | **Fixed** | Holds. The Lead now gets the Employee's controls (see 09). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-06",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1055,
+      "lastPriorTableRow": "| P3-WR-06 | **Fixed** | Days now grow with text: 44 / 55 / 66 / 88px at 100 / 125 / 150 / 200%. The strip scrolls (636 in 288 at 320/200%) and no labels in the strip overlap. WebKit agrees. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-07",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1056,
+      "lastPriorTableRow": "| P3-WR-07 | **Open (P2)** | 320 is now right: all seven rows stack at 100\u2013200%. Wider phones still mix the two layouts in one list:<br>**360 at 150%:** only Wednesday stacks (switch 40px under the name); the other six are inline.<br>**360 at 200%:** six rows stack, Friday stays inline.<br>**390 at 200%:** Wed, Thu and Sat stack; Mon, Tue, Fri and Sun stay inline.<br>(`data/main.jsonl`, `avail.js`.) The fix at `portal-premium.css:1393` (`@container (max-width: 15.5rem)`) only matches at 320. In Chromium the `rem` in that query doesn't follow the page's text size, so it never matches at 360+ even at 200%. **Fix:** put the threshold in `em` against a container that scales with the text (`.av-day-list { font-size: 1rem }` with `@container (max-width: 15.5em)`), or stack every row whenever the longest name and the switch can't share a line (for example, `@container (max-width: 22em)`). Check in WebKit too. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-08",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1057,
+      "lastPriorTableRow": "| P3-WR-08 | **Fixed** | On every row at 320, 360 and 390, 100\u2013200% (AUDIT-E 5 rows, AUDIT-LEAD 1), the pill sits under the dates at x=36 (`flex-direction: column`) and each timeline event starts its own line. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-09",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1058,
+      "lastPriorTableRow": "| P3-WR-09 | **Fixed** | The Lead's pages match the Employee's. My time is 1,359 / 1,311px tall at 320 / 390 for both roles. Timecards is 1,289 / 1,084px for both, with the same 28px \"Draft\" pill (#F1F3F4) right of the title. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-10",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1059,
+      "lastPriorTableRow": "| P3-WR-10 | **Fixed** | At 200% \"Your alerts\" keeps one line and Refresh moves under it (x=203 at 390, below the title). No overlap at 150 or 200% for AUDIT-E, AUDIT-LEAD or AUDIT-M, Chromium and WebKit. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-11",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1060,
+      "lastPriorTableRow": "| P3-WR-11 | **Open (P2), partly fixed** | Fixed at 320/200% for AUDIT-M: Timecards rows and period, Time exports \"Clear\", the Schedule pager, and the Inbox band eyebrow (none cut).<br>**Still cut, Inbox rows at 320 and 390 at 200%:** the time meta is in `nv-nowrap` spans, so \"7:00 AM \u2013 3:00 PM\" runs to x=383 (card edge 304 / 374) and \"Started 8:00 AM\" to x=347 (`crops/wr11-inbox-started-320-200.png`).<br>**Still cut, Notifications rows, every role, 320 at 200%:** \"Review schedule\" runs to x=314 (card 304), and the footer's \"Requests \u203a Schedule\" to x=326 (`crops/wr11-notif-action-320-200.png`, `wr11-notif-schedule-320-200.png`).<br>**Causes:** `manager-inbox.tsx:87` (`<span className=\"nv-nowrap\">{when}</span>`), `notification-inbox.module.css:44` (`.open { white-space: nowrap }`) and the footer link row at `notification-inbox.tsx:90`.<br>**Fix:** drop `nv-nowrap` on `{when}` (`keepWhole` already breaks a range only after the dash), set `[class*=\"notification-inbox-module\"][class*=\"__open\"] { white-space: normal }`, and let the footer link row wrap (`flex-wrap: wrap`). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-12",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1061,
+      "lastPriorTableRow": "| P3-WR-12 | **Open (P2)** | No change to the pills listed in round 3:<br>**Home To do \"Review needed\":** still the custom pill (24px, padding 2/8, #FBF1E2, weight 400, no glyph), `employee-home-reviewed.module.css:255`.<br>**Updates \"Review needed\":** still a dot plus text (20px, no fill), `employee-updates.tsx:62`.<br>**Notifications \"Action required\":** the kit pill (28px, #FDF1DC, 500).<br>**\"Draft\" on Timecards:** now 28px #F1F3F4 for both roles, but without the kit glyph.<br>**Also inconsistent:** the clock state badge is two shapes. \"Off clock\" on Home is 26px with radius 999 on #F6F7F8; on My time it's 30px with radius 20 on #F7F8FA (`employee-time-badge`, styled separately in `employee-home-reviewed.module.css:151` and the My time CSS).<br>**Fix:** use the kit `Status` for all of these: tone \"review\" for both \"Review needed\"s; tone \"neutral\" for \"Draft\" and \"Off clock\". |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-13",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1062,
+      "lastPriorTableRow": "| P3-WR-13 | **Open (P2), page fixed** | The loaded landscape Home band is now **180px** (y=68\u2013248, like the Manager's), Chromium and WebKit. The placeholder wasn't updated: Home's landscape route placeholder band is still **232px** (`skel.mjs`, AUDIT-E 844\u00d7390), so the band shrinks by 52px when Home arrives. **Cause:** `portal-premium.css:1185` (`.employee-shell .route-skeleton[data-route=\"home\"] { --route-band: 236px }` in landscape). **Fix:** `--route-band: 180px` there. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-14",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1063,
+      "lastPriorTableRow": "| P3-WR-14 | **Open (P2), partly fixed** | Fixed with a 500 on `/api/` (390): Home (52px primary \"Try again\" with icon, inside the page), My time (Employee and Lead), Notifications and Profile (52px primary \"Try again\"). Schedule and Availability render server-side and were unaffected.<br>**Still different:**<br>**Updates:** \"Refresh updates\", quiet 44px, no \"Try again\".<br>**Timecards:** \"Refresh timecards\", 52px **secondary** with no icon.<br>**My pay:** \"Try again\", 52px **secondary** (white), not primary.<br>**Home:** the clock card adds its own quiet 44px \"Try again\" next to the page's primary one.<br>**Sign in on a 401:** three styles. My time and Updates use a 52px primary. Notifications uses a quiet 44px. Home uses a 44px quiet button plus a text link \"Sign in \u203a\". Updates also keeps \"Refresh updates\" next to its Sign in.<br>(`shots/fail500-AUDIT-E-390-_app_updates.png`, `\u2026_timecards.png`, `\u2026_my-pay.png`, `shots/fail401-AUDIT-E-390-*.png`, `fail500.log`, `fail401.log`.)<br>**Fix:** the same primary \"Try again\" with `ArrowClockwise` on Updates, Timecards and My pay. The same 52px primary \"Sign in\" in every 401 state, with the panel's Refresh hidden while it shows. |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-15",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1064,
+      "lastPriorTableRow": "| P3-WR-15 | **Fixed** | The current status reads \"Clocked in at 12:34 PM\" (minutes, sentence case) for AUDIT-BREAK at 320, 390 and landscape (`employee-time-panel.tsx:69`). The record details keep seconds on purpose (\"the exact punch\", `:24`). |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-16",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1070,
+      "lastPriorTableRow": "| P3-WR-16 | My schedule, \"Your week at a glance\" \u00b7 Employee, Lead, Long name \u00b7 320, 360, 390 at 150% and 200% (Chromium and WebKit) | Day column (weekday, date, \"Today\") vs the shift | The day column stays **40px** while its text grows:<br>**200%:** \"Mon\" overlaps \"8:00 AM\" by 5px, \"19\" overlaps \"4:00 PM\" by 12px and \"Today\" overlaps \"Main Office\" by 7px. That's 10 collisions per week at 320, 360 and 390 for AUDIT-E, AUDIT-LEAD and AUDIT-LONG. WebKit is the same.<br>**150%:** \"Today\" overlaps \"Customer Support\" by 10px at 360 and 390. | `P3R4/crops/wr16-agenda-390-200.png`, `wr16-agenda-390-150.png` | `src/app/app/schedule/employee-schedule.css:62` (in `@media (max-width:760px)`: `.my-schedule .employee-schedule-day { grid-template-columns: 40px minmax(0,1fr); gap: 14px }`) | Size the day column by its text: `grid-template-columns: minmax(2.5rem, max-content) minmax(0, 1fr)`. Or, under `@container (max-width: 22em)`, stack the day label above the shift (`grid-template-columns: 1fr`, day as one line \"Mon 19 \u00b7 Today\"). | P1 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-17",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1071,
+      "lastPriorTableRow": "| P3-WR-17 | My time, Recent entries \u00b7 Employee clocked in (AUDIT-ON), on break (AUDIT-BREAK), with history (payroll-qa-a) \u00b7 320 at 200% | Entry total (\"3h 3m\" with \"In progress\" / \"Completed\") | **\"In progress\":** runs to x=322 (AUDIT-BREAK) and x=317 (AUDIT-ON). **\"Completed\"** runs to x=331 (payroll-qa-a). All pass past the card edge (304) and the 320 screen. \"In progress\" also sits against \"12:34 PM\" with no gap.<br>**The total:** with no room left, the browser breaks \"3h 3m\" inside the word, as \"3h 3\" / \"m\". | `P3R4/crops/wr17-mytime-break-320-200.png`, `wr17-mytime-qaa-320-200.png` | `src/app/employee-mobile-corporate.css:167` (`summary { grid-template-columns: minmax(0,1fr) max-content \u2026 }`), with `:169` (`.employee-time-entry-total > small { white-space: nowrap }`) | Let the total move under the date when the row is narrow: under `@container (max-width: 22em)` use `summary { grid-template-columns: minmax(0,1fr) var(--corporate-space-6) }` and `.employee-time-entry-total { grid-column: 1; grid-row: 2; }`. Keep \"3h 3m\" whole (it is `keepWhole`d) and let `small` wrap (`white-space: normal`). | P1 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "P3-WR-18",
+      "area": "widths-roles-consistency.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md",
+      "sourceLine": 1072,
+      "lastPriorTableRow": "| P3-WR-18 | Notifications (every role) \u00b7 320, 360, 390 at 200%; Updates \u00b7 320 at 200% | Date group headings | The new `keepWhole` makes the whole heading one unbreakable line:<br>**Notifications:** \"Monday, October 19, 2026\" spans x=36\u2013379 and is cut at the card edge (304 at 320, 344 at 360, 374 at 390).<br>**Updates:** \"October 19, 2026\" spans 36\u2013334 at 320 and is cut at 304.<br>Measured for AUDIT-E, AUDIT-LEAD, AUDIT-LONG and AUDIT-M, Chromium and WebKit. At 150% they fit. | `P3R4/crops/wr18-notif-320-200.png`, `wr18-notif-390-200.png`, `wr18-updates-320-200.png` | `src/lib/keep-whole.ts:8-9` (weekday + \", \" and month + day + \", \" + year all joined with no-break spaces); applied at `notification-inbox.tsx:72` and `employee-updates.tsx:57` | Keep only \"October 19\" together. Allow a break after \"Monday,\" and before the year: in `keep-whole.ts:8`, don't bind the weekday comma; in `:9`, bind month and day but leave \", 2026\" breakable. | P2 |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-64",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 848,
+      "lastPriorTableRow": "| IS-64 | Fixed | The employee More sheet now closes when Tab leaves it: Updates \u2192 Notifications \u2192 Profile \u2192 Sign out \u2192 Close \u2192 **More** (the sheet closes and focus lands on the trigger). Escape returns focus to More with `:focus-visible`. The Manager sheet is the same: it closes after 10 Tabs, with focus on \"More navigation\". | |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-65",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 849,
+      "lastPriorTableRow": "| IS-65 | Partly fixed | Notifications at 320: focusing `Needs action` scrolls the row to x 144\u2013284 inside 36\u2013284 (`scrollLeft` 58 of 62), so the label is in full, with or without reduced motion. 360 is fine (184\u2013324 in 36\u2013324).<br>**Open (P2):** at 320 the pill ends exactly at the row's edge, so the **right side of its 2px ring (3 px offset) is clipped**, and the row stops 4 px short of its end. | `notification-inbox.tsx:65` row (`overflow-x: auto`, 4 px padding) with the `inline: \"nearest\"` follower in `app-shell.tsx` | Give the Notifications filter row `scroll-padding-inline: 8px` and `padding-inline-end: 8px`, so the ring fits when the last pill is in view. Crop: `SP/p3r2/shots/is-p3r2-notif-pills-focus-320.png` |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-66",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 850,
+      "lastPriorTableRow": "| IS-66 | **Not fixed (new look, P1)** | The week strip doesn't scroll sideways; it **wraps**:<br>\u2022 **320:** Mon\u2013Fri on the first row (46 px each); **Sat and Sun on a second row, stretched to 122 px each**;<br>\u2022 **360 and 390:** Mon\u2013Sat on the first row; **Sun alone on a second row, 288 and 318 px wide**;<br>\u2022 390 at 150% text: the same as 390;<br>\u2022 430: one row.<br>Focused days near the edges (Mon, Fri, Sat, Sun) have their 2px ring clipped by the row (`~ring` in `SP/p3r2/week.mjs` output), and at 360 the focused Sun's ring is cut at the bottom by the next card. The days are now at least 44 px wide, but the strip reads as broken. | `src/app/app/schedule/employee-schedule.css:64` (`@media (max-width: 400px) { .my-week-days { display: flex; flex-wrap: wrap } .my-week-day { flex: 1 1 calc(25% - 6px) } }`) still applies. `portal-premium.css:1149-1150` sets `display: flex; overflow-x: auto` and `flex: 1 0 44px` but not `flex-wrap: nowrap` | Add `flex-wrap: nowrap` to `portal-premium.css:1149`, plus `padding: 4px` (or `scroll-padding-inline: 8px`) so the edge days' rings aren't clipped. Crops: `SP/p3r2/shots/is-p3r2-week-320.png`, `-360.png` |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-67",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 851,
+      "lastPriorTableRow": "| IS-67 | Fixed | On `/app/timecards`, the tab bar marks `Pay` (`.active`, `aria-current=\"page\"`) for both `AUDIT-E` and `payroll-qa-a`. | |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-68",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 852,
+      "lastPriorTableRow": "| IS-68 | Fixed | Home offline: band \"You're offline.\" and card \"You're offline. This updates when you reconnect.\" Paused (window blur): band \"Paused while you're away.\" | |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-69",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 853,
+      "lastPriorTableRow": "| IS-69 | Fixed | The \"Check NEVORA\" link is 125\u00d7**50**, a 44 px+ target through its padding. | |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-70",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 854,
+      "lastPriorTableRow": "| IS-70 | Fixed | The swap view has 10 links with 10 unique names: \"Request a swap, Oct 19, 8:00 AM\", \"Unable to work, Oct 19, 8:00 AM\", \u2026 | |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-71",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 855,
+      "lastPriorTableRow": "| IS-71 | Fixed | After Try again (Enter), focus lands on the recovered page's band h1, with a 2px ring and `:focus-visible`:<br>\u2022 root error screen (Employee): \"Hi, Alexandra.\";<br>\u2022 in-portal (Employee, Updates): \"Updates\";<br>\u2022 in-portal (Manager, Inbox): \"Inbox\". | |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-72",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 856,
+      "lastPriorTableRow": "| IS-72 | Fixed | Landscape 844\u00d7390: My time and Timecards have no target under 44 px. | |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-73",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": 857,
+      "lastPriorTableRow": "| IS-73 | Fixed | With both Profile reads failed, the buttons are named \"Retry work details\" (44\u00d744) and \"Retry calendar link\" (78\u00d744). | |",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-74",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-75",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-76",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": [],
+      "aliasOrDistinction": "Authoritative ROUND maps IS76 to P3-ST14. Earlier unnamed read-auth surface does not redefine this ID; candidate auth regression is separate IS-RC-UPDATES-AUTH-01."
+    },
+    {
+      "id": "IS-77",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-78",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-79",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-80",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-81",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-82",
+      "area": "interaction-states.md",
+      "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/interaction-states.md",
+      "sourceLine": null,
+      "lastPriorTableRow": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-P3-01",
+      "area": "interaction-states.md",
+      "aliasOrDistinction": "IS-74 Availability surface",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-P3-02",
+      "area": "interaction-states.md",
+      "aliasOrDistinction": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "IS-P3-03",
+      "area": "interaction-states.md",
+      "aliasOrDistinction": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "ST-P3-24",
+      "area": "stability.md",
+      "aliasOrDistinction": "distinct from P3-ST-24 loading-band finding",
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "ST-RC-CALENDAR-01",
+      "area": "stability.md",
+      "aliasOrDistinction": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "ST-RC-ACK-01",
+      "area": "stability.md",
+      "aliasOrDistinction": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    },
+    {
+      "id": "ST-RC-CORRECTION-01",
+      "area": "stability.md",
+      "aliasOrDistinction": null,
+      "status": "pending-final-source-measurement",
+      "evidence": []
+    }
+  ]
+}

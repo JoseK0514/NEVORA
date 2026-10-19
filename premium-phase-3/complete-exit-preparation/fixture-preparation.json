@@ -1,5 +1,5 @@
 {
-  "checkpoint": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "kind": "static exact combined-source fixture preparation; nothing seeded or launched",
   "sourceHashes": {
     "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",

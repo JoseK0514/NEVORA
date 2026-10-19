@@ -1,0 +1,78 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "sourceWorktree": "/workspace/inspect-wave-c-combined-cd764f6",
+  "sourceClean": true,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "externalMjsSyntax": "passed node --check; no imports/app tests executed",
+  "stager": "static dry run only; materialization requires exact root release",
+  "plan": {
+    "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+    "accounts": 10,
+    "routeRolePairs": 15,
+    "earlierFindingIds": 39,
+    "historicalFindingIds": 104,
+    "stages": {
+      "matrix": {
+        "jobs": 128,
+        "cells": 960
+      },
+      "loading": {
+        "jobs": 150,
+        "cells": 150
+      },
+      "loading-back": {
+        "jobs": 40,
+        "cells": 40
+      },
+      "variants": {
+        "jobs": 117,
+        "cells": 117
+      },
+      "forms": {
+        "jobs": 124,
+        "cells": 124
+      },
+      "dialogs": {
+        "jobs": 70,
+        "cells": 70
+      },
+      "recovery": {
+        "jobs": 130,
+        "cells": 130
+      },
+      "auth": {
+        "jobs": 56,
+        "cells": 56
+      },
+      "access": {
+        "jobs": 345,
+        "cells": 345
+      },
+      "motion": {
+        "jobs": 45,
+        "cells": 45
+      },
+      "large": {
+        "jobs": 9,
+        "cells": 9
+      },
+      "signed-out": {
+        "jobs": 39,
+        "cells": 39
+      }
+    },
+    "passiveFacts": 960,
+    "passiveJudgmentCells": 240,
+    "duplicateJudgmentVisits": 0,
+    "totalJobs": 1253,
+    "additionalManualWorkstreams": 5
+  },
+  "sourceContractMissing": {},
+  "runtimeStarted": false,
+  "dataWrites": 0,
+  "browserCasesRun": 0,
+  "staticDecoderChecksRunOnCurrentSha": false,
+  "winningTextareaSearchRule": "portal-premium.css:882-883 retains --nv-field-border with --nv-border fallback",
+  "rebindOnly": true,
+  "previousPreparation": "p35-wave-c/combined-8640247-exit"
+}

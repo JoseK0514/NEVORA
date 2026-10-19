@@ -1,0 +1,11 @@
+# Wave C private before-listen binding
+
+Prepared from Wave B `full-exit-8640247/preparation`, rebound to exact source `/workspace/inspect-wave-c-combined-cd764f6` at `cd764f614be8ca5b5215be19d46e07cf968638d7`. No helper has been materialized and no database/preview started. The [dry-run receipt](../stager-dry-run.json) confirms callback-before-spawn and removal of all post-listen base seeding.
+
+`initial-fixture.mts` exports `seedInitialWaveC`. It preserves base, payroll, all twelve available fictional actors (including the ten brief accounts), extra decided/clock/swap fixtures, initial templates, canonical coverage and local communication grants. It adds canonical initial Branding history through `saveWorkspacePresentation`, reads it back and restores default brand. Normal and `WC_FIXTURE_VARIANT=large` are separate new databases and previews, run sequentially. No fixture mutation may occur after inspection begins.
+
+The callback receives migrated/unseeded `{database,identity,root,source}`. It verifies source SHA, input hashes, disposable identity marker and absent prior fixture, writes one initialization marker and returns only the generated private password. Runtime writes the normal 0600 access.json. No browser publication, email, push delivery or real data is involved. All initial fixture creation is held until root release.
+
+After release, materialize with the explicit stager arguments from `stager-dry-run.json`, plus `--materialize` and `READY_REVIEW_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7`. Set `--export seedInitialWaveC` and `--runtime-template` to this directory's private runtime. Use the existing approved owned-template default. The new helper destination `/workspace/nevora-inspection-runtime/private-wave-c-cd764f6` must not already exist; the stager does not overwrite shared helpers or launch anything.
+
+Use only the returned launcher after sourcing runtime.env and setting the frozen PREVIEW_SOURCE, owned PREVIEW_OUT, disk PG directory and fixture variant. Keep one preview and one worker active. Read the source/mirror and before-listen receipts before starting the unchanged checker. Do not run the old shared launcher or seed-extra against an already listening preview for this exit.

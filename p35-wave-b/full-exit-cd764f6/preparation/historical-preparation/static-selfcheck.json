@@ -1,0 +1,18 @@
+{
+  "mockOnly": true,
+  "previewStarted": false,
+  "browserStarted": false,
+  "networkUsed": false,
+  "databaseUsed": false,
+  "sourceWrites": false,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "trace": [
+    "checker-result-pushed",
+    "passive-measure",
+    "native-close",
+    "native-close-on-failure"
+  ],
+  "readAndWriteClassification": "passed",
+  "capturedTemplateClones": "passed",
+  "reviewSHA": "368e98a18c16d47df04a93f2bea560843e461e0e"
+}

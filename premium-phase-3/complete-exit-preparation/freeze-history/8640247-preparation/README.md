@@ -1,0 +1,42 @@
+# Phase 3 complete exit preparation
+
+The exact current review source is combined `8640247be632ee6382c68b3b1ae3bbed532a5d65`, tree `fc83886c2f3d2d7a2f2d6ef6894aedf469f01ac1`, in clean detached `/workspace/inspect-phase3-final`. Its parents are Claude's all-six integration `4aaa793` and the accepted candidate `b68f250` with **33 finding commits**. `candidate-fix-ledger.json` lists only `8e18a95..b68f250`. Later34–45 fixes and external proposals are historical; no current pass or applied-fix assumption comes from them. Root's old45 gate was interrupted for the user's target switch. This source remains held until root explicitly releases it after the new full gates.
+
+No preview, browser, application edits, commits, pushes, Claude writes or STATUS changes have been made for this preparation. Older9ec preparation files are preserved in `freeze-history/9ec3adc-preparation/`; b956152 and b6880Home proofs retain their original SHA. They never become combined864 passes.
+
+## Required scope
+
+The core remains **4,480 all-axe cells**: seven ROUND Employee/Lead fixtures ×16 admissible ROUND routes ×five phone/landscape sizes ×four text steps ×two engines. Manager/Owner are outside that role-route product. The explicit supplemental scope is **480 normal Manager/Owner cells** and **320 separate-large-preview cells**. Total phone/landscape baseline: **5,280 all-axe cells**. Large320 preserves both the brief's160 at100/200 and the original source plan's160 at125/150. `scope-reconciliation-aa5e07e.json` explains why old duplicated axe stages coalesce into all-axe cells; no unique dimensions disappear. Desktop's separate2976 normal+192large overlap is delegated with an explicit mapping, not silently counted here.
+
+`manual-queue.json` has1,546 pending jobs:384 read-state sequences(3,856 state observations),240 action configurations,102 font cases,320 shared-shell configurations,320 large-data cells,135 prior IDs,44 all-route loading-boundary access jobs and the additional candidate Updates-auth regression. All five report judgments remain incomplete until required measurements finish. Missing, unsupported, failed or unmeasured states cannot count as zero. The authoritative ROUND maps IS76 to P3-ST14; earlier unnamed read-auth notes do not redefine that ID. Keep IS-RC-UPDATES-AUTH-01 separate.
+
+## Execution after release
+
+The external `scripts/serial-baseline.mjs` invokes the **unchanged** source checker with `--axe`, one browser process at a time, at most four routes per batch. Source checker SHA256 is `e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d`. It checks exact clean SHA, owned running loopback preview, fixture week and account states. Original JSON/logs and atomic checkpoints preserve completed cells. Resume requires identical source/checker/collector/plan/fixture lineage. An interrupted preview has a new lineage after restart. Failed measurements stay failed. A preview lock prevents overlapping workers.
+
+Root must first set exact `PHASE3_RELEASED_SHA`. Use the approved disk-backed owned preview launcher with this source, actual source migrations and fictional fixtures. Seed/login all seven Phase3 accounts plus AUDIT-M/QAOWNER. Keep the password/access file private. Turbopack needs physical ignored dependencies in its owned mirror; do not use an escaping node_modules symlink.
+
+```bash
+source /workspace/nevora-inspections/runtime.env
+export PHASE3_RELEASED_SHA=8640247be632ee6382c68b3b1ae3bbed532a5d65
+export PHASE3_SOURCE=/workspace/inspect-phase3-final
+export PREVIEW_OUT=/workspace/paused-previews/phase3-combined-864
+export PHASE3_REPORT=/workspace/nevora-inspections/premium-phase-3/round-5-8640247-full
+node /workspace/nevora-inspections/premium-phase-3/complete-exit-preparation/scripts/serial-baseline.mjs \
+  --source "$PHASE3_SOURCE" --sha "$PHASE3_RELEASED_SHA" \
+  --preview "$PREVIEW_OUT" --report "$PHASE3_REPORT/core" --week 2026-10-19 --execute
+```
+
+Run the same wrapper with `--scope normal-shared-scope.json` and a separate `$PHASE3_REPORT/management-normal` report root for480 supplemental cells. The scope file uses only the twelve documented Manager/Owner role-route pairs. Use `--max-batches 1` only for a bounded diagnostic; it does not reduce the required plan.
+
+The external Page.close preload collects geometry/screenshots **after** each unchanged checker cell has computed/pushed its result. It changes no checker conditions, timers or init scripts and adds no route visits. Core policy saves776 judgment cells; management supplemental and large policies save the documented Chromium320/390/landscape judgments and WebKit390 spots. Judge those saved crops/data after baseline. Follow up concrete concerns only; there is no second4,480-route geometry traversal. `serial-geometry.mjs` requires explicit diagnostic routes.
+
+Then complete the manual queue, all135 prior-ID judgments, every admissible all-route placeholder, keyboard/sheet/focus/retry/scroll states, reduced motion, font swaps, short viewport and read/submit failure branches. Parent targeted proof is reusable only with exact source/state/dimensions and original provenance. The external scoped regression module `/workspace/nevora-inspection-runtime/final-verification/scoped-phase3.mjs` is preparation, not execution evidence; later missing fixes can correctly record completed failing assertions on combined33. Initial missing fixture/actor prerequisites stay gaps. Every business write is held/answered/blocked in the browser; POST/api/timecards is permitted only as its exact two-key read. Unknown retries keep original command identity.
+
+Close and audit the normal preview before launching a separate owned large preview. Seed exact source `seed-extra.mts --large`; never convert the normal dataset. Confirm actual200-person/50-shift-per-day location data and long names are displayed, including choosing the genuine loc-large filter when necessary. The large wrapper requires `--scope large-shared-scope.json --large-receipt <verified-json>` and a separate report root. The receipt must name exact `sha`, `dataset:"large"`, `preview`, `previewRun`, and true `seedCompleted`, `ownedIdentityVerified`, `normalPreviewClosed`. Record source seed output/owned identity and visible dataset proof; a normal-location Schedule does not prove the large-layout state merely because large rows exist elsewhere.
+
+## Completion
+
+Finish five reports, source/runtime/fixture manifests, full baseline receipts, manual evidence, all prior-ID statuses and a five-area exit judgment. Preserve all open findings and gaps. Verify only owned processes stopped, PostgreSQL closed and source clean. Physical phone/device access remains a separate Jose decision.
+
+The unchanged core has a220-minute fixed-wait floor; all5,280 cells have about260minutes before navigation/browser/axe costs. Estimate5–7hours for serial baseline and8–11hours for the complete review, with additional time if findings or load retries require it. This estimate never reduces the bar or authorizes running before resource release.

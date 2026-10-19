@@ -1,0 +1,96 @@
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -15,7 +15,7 @@
+ import styles from './employee-home-reviewed.module.css';
+ import {formatDisplayDate} from '../lib/date-utils';
+ import {unpublishedNote} from '../lib/publication-note';
+-import {KitStack, PageBand} from './kit/kit';
++import {KitStack, PageBand, Status} from './kit/kit';
+ import {HoldHeight} from './kit/hold-height';
+ import {keepWhole} from '../lib/keep-whole';
+ 
+@@ -175,7 +175,7 @@
+         <strong>{keepWhole(attentionLabel(item))}</strong>
+         {item.ref.kind === 'SCHEDULE' ? <small>Week of <time dateTime={item.ref.id}>{dateLabel(item.ref.id)}</time></small>
+           : <small>Recorded <time dateTime={item.changedAt}>{stamp(item.changedAt, zone)}</time></small>}
+-        {item.required ? <small className={styles.required}>Review needed</small> : null}
++        {item.required ? <Status tone="review">Review needed</Status> : null}
+         {item.deadlineAt ? <small className={styles.deadline}>Respond by <time dateTime={item.deadlineAt}>{stamp(item.deadlineAt, zone)}</time></small> : null}
+       </span>
+       <Arrow/>
+--- a/src/components/employee-home-reviewed.module.css
++++ b/src/components/employee-home-reviewed.module.css
+@@ -325,3 +325,6 @@
+  * so the cards under it keep their space but stay invisible until it resolves; nothing visible moves. After a pause
+  * the pass holds its exact height (data-held), so the cards stay visible. */
+ .root[data-home-state="loading"]:has([data-pass]:not([data-held])) :is(.recordedSlot, .sideColumn, .freshness) { visibility: hidden; }
++
++/* P3-WR-12: the shared review pill sits below its date and may wrap in a narrow row. */
++.itemCopy > :global(.nv-status) { max-width: 100%; margin-top: 4px; box-sizing: border-box; white-space: normal; }
+--- a/src/components/employee-updates.tsx
++++ b/src/components/employee-updates.tsx
+@@ -1,7 +1,7 @@
+ 'use client';
+ 
+ import {keepWhole} from '@/lib/keep-whole';
+-import {PageBand} from './kit/kit';
++import {PageBand,Status} from './kit/kit';
+ import {KeepSelectedVisible} from './kit/keep-selected-visible';
+ import Link from 'next/link';
+ import {useState} from 'react';
+@@ -59,7 +59,7 @@
+      const status = mode === 'manager' ? item.acknowledgement === 'REQUIRED' ? 'Acknowledgement required' : 'Optional update' : item.ownAcknowledgedAt ? 'Acknowledged' : item.acknowledgement === 'REQUIRED' ? 'Review needed' : item.ownReadAt ? 'Read' : 'Not read';
+      return <li key={item.id}><Link className={`updates-row${reviewed ? ' is-reviewed' : ''}`} href={'/app/updates/' + item.id} prefetch={false}>
+       <UpdateKind type={item.type} iconOnly />
+-      <div className="updates-row-copy"><div className="updates-row-meta"><UpdateKind type={item.type} /><span className={`updates-status${reviewed ? ' is-reviewed' : ''}`}>{reviewed ? <CheckCircleIcon size={14} aria-hidden="true" /> : <span className="updates-status-dot" aria-hidden="true" />}{status}</span></div><h3>{item.title}</h3><p className="updates-preview">{item.body}</p><time dateTime={item.publishedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt)))}</time></div>
++      <div className="updates-row-copy"><div className="updates-row-meta"><UpdateKind type={item.type} />{status === 'Review needed' ? <Status tone="review">{status}</Status> : <span className={`updates-status${reviewed ? ' is-reviewed' : ''}`}>{reviewed ? <CheckCircleIcon size={14} aria-hidden="true" /> : <span className="updates-status-dot" aria-hidden="true" />}{status}</span>}</div><h3>{item.title}</h3><p className="updates-preview">{item.body}</p><time dateTime={item.publishedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt)))}</time></div>
+       <span className="updates-row-action"><span>Review update</span><NavIcon name="arrowRight" /></span>
+      </Link></li>;
+     })}</ul>
+--- a/src/components/timecards.tsx
++++ b/src/components/timecards.tsx
+@@ -2,6 +2,7 @@
+ 
+ import {keepWhole} from '@/lib/keep-whole';
+ import Link from 'next/link';
++import {Status} from './kit/kit';
+ import { timeZoneLabel } from '@/lib/time-zone-label';
+ import {NavIcon} from './nav-icon';
+ import {usePrivateFragmentFocus} from './private-fragment-focus';
+@@ -204,7 +205,7 @@
+         <div className={styles.rowMain}>
+           <label className={styles.rowSelect}><input type="checkbox" aria-label={`Select ${name}`} checked={selected.includes(id)} disabled={busy||!!pending||!!outcomes||!!exclusion||(!selected.includes(id)&&selected.length>=100)} onChange={e=>{setSelected(ids=>e.target.checked?ids.length<100?[...ids,id]:ids:ids.filter(value=>value!==id));setReview(null);setConfirmed(false);}}/></label>
+           <div className={styles.rowIdentity}><h2 title={name}>{name}</h2><small>{keepWhole(`${periodDate(period.startDate)} – ${periodDate(period.endDate)}`)}</small></div>
+-          <span className={styles.rowState}><strong className={styles.state} data-state={item.state}>{stateLabel(item.state)}</strong></span>
++          <span className={styles.rowState}>{item.state==='DRAFT'?<Status tone="neutral">Draft</Status>:<strong className={styles.state} data-state={item.state}>{stateLabel(item.state)}</strong>}</span>
+           <dl className={styles.rowTotals}><div><dt>Recorded</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt>Breaks</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
+           <div className={styles.rowAttention} data-tone={item.card.issues.length?tone:undefined}>{item.card.issues.length?<><NavIcon name={tone==='neutral'?'clock':'alert'} size={16}/><span>{issueNames[item.card.issues[0]]}{item.card.issues.length>1?<small> +{item.card.issues.length-1} more</small>:null}</span></>
+             :<span className={styles.rowQuiet}>No issues found</span>}</div>
+@@ -235,7 +236,7 @@
+     {manager?null:cards.map(item=>{
+       const presentation=corporate?employeeTimecardPresentation(item.card.issues):null;
+       return <article key={item.card.employeeId} className={(corporate?'employee-corporate-timecard ':'')+styles.card} tabIndex={-1} id={`timecard-${item.card.employeeId}`}>
+-      <header><div className={styles.identity}><span className={styles.avatar} aria-hidden="true"><NavIcon name={manager?'employee':'clock'} size={24}/></span><div><h2>{manager?item.card.employeeName:'Your timecard'}</h2><small>{keepWhole(`${periodDate(period.startDate)} – ${periodDate(period.endDate)}`)}</small></div></div><strong className={styles.state} data-state={item.state}>{stateLabel(item.state)}</strong></header>
++      <header><div className={styles.identity}><span className={styles.avatar} aria-hidden="true"><NavIcon name={manager?'employee':'clock'} size={24}/></span><div><h2>{manager?item.card.employeeName:'Your timecard'}</h2><small>{keepWhole(`${periodDate(period.startDate)} – ${periodDate(period.endDate)}`)}</small></div></div>{item.state==='DRAFT'?<Status tone="neutral">Draft</Status>:<strong className={styles.state} data-state={item.state}>{stateLabel(item.state)}</strong>}</header>
+       <dl className={(corporate?'employee-corporate-timecard-metrics ':'')+styles.totals}><div><dt><NavIcon name="hours" size={17}/>Recorded time</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt><NavIcon name="clock" size={17}/>Break time</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
+       {item.card.issues.length?<div className={(corporate?'employee-corporate-timecard-issues ':'')+styles.issues} data-tone={presentation?.tone}><NavIcon name={presentation?.tone==='neutral'?'clock':'alert'} size={20}/><div><h3>{corporate?presentation?.heading:'Needs attention'}</h3><ul>{(presentation?.issues??item.card.issues).map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>{corporate?(presentation?.tone==='neutral'?'Totals can change until the period closes.':'Review your recorded entries. Request corrections in My time.'):'Review the entries and resolve open time or corrections before approval.'}</p></div></div>:null}
+       <MobileHomeDisclosure id={`mobile-timecard-${item.card.employeeId}`} label="Review timecard" expandedLabel="Close timecard review"
+--- a/src/components/employee-time-panel.tsx
++++ b/src/components/employee-time-panel.tsx
+@@ -2,6 +2,7 @@
+ 
+ import {keepWhole} from '@/lib/keep-whole';
+ import Link from 'next/link';
++import {Status} from './kit/kit';
+ import {NavIcon} from './nav-icon';
+ import { CaretDownIcon, ClockIcon, CoffeeIcon, MapPinIcon, MinusIcon, PlusIcon, ReceiptIcon } from '@phosphor-icons/react';
+ import {useCallback,useEffect,useRef,useState} from 'react';
+@@ -67,7 +68,7 @@
+   {compact?<Link className="employee-time-link" href="/app/my-time">My time <NavIcon name="arrowRight" size={16}/></Link>:null}
+  </div>;
+  const content=<>
+-  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:<span className="employee-time-badge" aria-hidden="true">–</span>}</div>
++  <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current status'}</h2>{ready?current?<span data-state={current.state} className={'employee-time-badge'+(current.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:<Status tone="neutral">Off clock</Status>:<span className="employee-time-badge" aria-hidden="true">–</span>}</div>
+   {ready?<>
+    {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p>Clocked in at <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></p><p><b>{duration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<>{'\u00a0· '}<b>{duration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
+   </>:<div className="employee-time-message" role="status"><strong>{title}</strong>{/* P3-ST-02: on Home the band already says updates are paused, so the clock card keeps its ready height. */}{compact&&paused?null:<p>{paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</p>}</div>}

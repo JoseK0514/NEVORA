@@ -1,0 +1,15 @@
+{
+  "mode": "static-dry-run",
+  "source": "/workspace/inspect-wave-c-combined-cd764f6",
+  "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "out": "/workspace/nevora-inspection-runtime/private-wave-c-cd764f6",
+  "initializer": "/workspace/nevora-inspections/p35-wave-c/combined-cd764f6-exit/preparation/bindings/initial-fixture.mts",
+  "beforeListenBeforeSpawn": true,
+  "postListenBaseSeedRemoved": true,
+  "filesWouldWrite": [
+    "preview-runtime.mjs",
+    "owned-preview-app-dev.mts",
+    "runtime-adapter-manifest.json"
+  ],
+  "previewStarted": false
+}

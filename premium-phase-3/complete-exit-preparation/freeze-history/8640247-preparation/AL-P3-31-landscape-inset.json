@@ -1,0 +1,11 @@
+{
+  "finding": "AL-P3-31",
+  "base": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/alignment.md:899 on227150b",
+  "files": [
+    "src/app/app/availability/availability.css"
+  ],
+  "scope": "Exact original prescribed20px all-sides padding on landscape specific-week child sections. Existing horizontal-only portal fix retained; local selector outranks it. No other availability cards or portrait/desktop change.",
+  "applicationFilesEdited": false,
+  "testsOrRuntimeRun": false
+}

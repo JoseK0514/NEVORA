@@ -1,0 +1,76 @@
+{
+  "source": "/workspace/exit-desktop-cd764f6",
+  "ref": "codex/exit-desktop-cd764f6",
+  "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "sourceClean": true,
+  "scope": {
+    "baseline": 9888,
+    "supplementalNormal": 1656,
+    "normalUnique": 11544,
+    "separateLarge": 192,
+    "automatedUniqueIncludingLarge": 11736,
+    "manual": "all original five-area/state/keyboard/focus/reduced-motion/font/collapsed/selected-item obligations preserved"
+  },
+  "oldReadySHA": "724b430f3693bc5a9d37677ad250581e33d0f866",
+  "acceptanceInheritance": false,
+  "executedOnThisSHA": 0,
+  "runtimeReleased": false,
+  "missingOwnFixes": [
+    "ST-P4-13 5b66aa3",
+    "TC-DESKTOP-KBD-01/TC-P4-24 28266eb",
+    "IS-P4-19 4314266+compiler correction",
+    "IS-P4-11 c841b33"
+  ],
+  "original8012RemainsNonzero": true,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "currentSourcePriorIDs": 111,
+  "dependencies": {
+    "sourceIgnoredSymlink": "/workspace/verify-preview-33/node_modules",
+    "ownerVerifiedStable": false,
+    "materializedMirrorRequired": true,
+    "status": "Root fresh npmci/full gates active; do not read runtime until release"
+  },
+  "beforeListenAdapter": "/workspace/nevora-inspection-runtime/prepare-before-listen.py",
+  "scriptHashes": {
+    "collection-policy.mjs": "ce39d6da6dc2a04b27c27d1eaaf69ca028b192566cc7f9310de11f1e7499adf2",
+    "read-guard.cjs": "54a1a4c1a20b36922be729151b25450c398882451426d8577eea456bc81e6ae7",
+    "after-check-collector.mjs": "604df032d9af6b2645add473556734e8e3dd0f79044c6019a22c9513d81a3890",
+    "geometry-measure.mjs": "648390bfabcc3960755086917ece3dbf01c290ff8a232de26fd33041fc4ed0bb",
+    "serial-baseline.mjs": "49e653a159084931521a9f95462d065c0f8adddc3d57cb3c77cd80a760966eed",
+    "recheck-inbox.mjs": "9e05efb91dfb47ae7e147f6ea83dab6c0ba265493be29d1c677621ad9b20274b",
+    "recheck-header.mjs": "7c35236e523862443de36883beaa5ad0949d78d25303a6e87beeabcc210031ba"
+  },
+  "preparationChecks": "Static source/plan generation only; no browser/runtime/CI or tests executed.",
+  "boundedCombinedSupplement": {
+    "cells": 62,
+    "module": "combined-scoped-desktop.mjs",
+    "executed": 0,
+    "scope": "IS19,IS11,TC28actualScheduleToday,TC34footer,TC25failedwording,ST13ordinaryopening+heldread/privatefocus; exact current source, negative assertions preserved"
+  },
+  "beforeListenWrapper": "/workspace/nevora-inspection-runtime/launch-before-listen.sh",
+  "beforeListenReceiptSchema": {
+    "file": "inspection-initial-fixture.json",
+    "checkpoint": "sourceImportSHA",
+    "prelisten": "initializedBeforeListen",
+    "mode": "fixtureMode",
+    "sourceHelperHash": "extraSeedSha256",
+    "counts": "fixtureCounts",
+    "identity": "fixtureIdentity"
+  },
+  "reboundFrom": {
+    "sha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+    "publishedPreparation": "/workspace/nevora-inspections/p4-desktop/exit-8640247",
+    "preservedFreezeSha256": "ba9110fed9defb5e6646eaa9659ba62c7507b27abfb757bdcaf9cae714c5c0b3",
+    "scopeChanged": false,
+    "criteriaChanged": false,
+    "codeChanges": [
+      "src/components/kit/kit.css redundant override removed; source4aaa bytes restored",
+      "src/app/app/exchange/callout/page.test.tsx partial mock retains real PendingLabel"
+    ],
+    "actualChangedFiles": [
+      "src/app/app/exchange/callout/page.test.tsx",
+      "src/components/kit/kit.css"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "finding": "TC-P3-09",
+  "aliases": [
+    "TC-P3-30 selected-day date only"
+  ],
+  "base": "4314266b0020b6f0a566543c8d6b569256c3648f",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/type-colour-copy.md:1192,1205 on227150b",
+  "files": [
+    "src/app/app/availability/page.tsx",
+    "src/components/manager-weekly-roster.tsx"
+  ],
+  "scope": "Only three exact reported remainders; existing keepWhole helper reused. Candidate TC24 also touches roster import; coordinator may resolve adjacent import hunk.",
+  "applicationFilesEdited": false,
+  "testsOrRuntimeRun": false
+}

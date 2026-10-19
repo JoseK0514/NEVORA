@@ -1,0 +1,103 @@
+{
+  "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "source": "/workspace/exit-wave-b-cd764f6",
+  "sourceClean": true,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "fixtureImportsExactAndUnchanged": {
+    "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+    "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/test/integration/management-api.ts": "8575a34686d72c0d0d9f569034781915ba722e45d1ae6ec9fc3eb7eacc4891b3",
+    "src/lib/communications/service.server.ts": "22d302752a77c76fcf60b492330e8db6008a66f8bf64efbf00c319980c1457b0",
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
+    "src/lib/data/schedule-templates.ts": "3d2f42c02304b1ea49b394810854c1ddfd41b974b8235aaf59fedeceb2a0067d",
+    "src/lib/data/schedule-health.ts": "1d4599d0bfdcd71092ee8aab9770aecadfc316648d5df4b9a632bb37ada22bef",
+    "src/lib/payroll/service.ts": "28e8a0286b533aa31638f6b4d6da2a33df056693bb7e168272556f5ca3d220d8",
+    "src/lib/payroll/worker.ts": "3a8bef47ac894b414bb0f83f55b9a5614f2908744abb55f347c989f52effe640",
+    "src/lib/timecards/service.ts": "fdd405b6ede4a102fcd0d480a02835c2914f11d6eab8d43b996b0ae9d3aaac39",
+    "src/lib/period-close/service.ts": "496582db2f13a761c997f440b9c6ea5e918135fc9480a15fe66665a1b43a2512"
+  },
+  "runtimeExecuted": false,
+  "syntaxOrTestsExecutedOnNewPlan": false,
+  "sourceRefCreationOnly": "authorized own codex/exit-wave-b-cd764f6 at immutable864",
+  "noAppSourceEdits": true,
+  "historicalPreparationReceipt": "/workspace/nevora-inspections/p35-wave-b/full-exit-cd764f6/preparation/historical-preparation/preparation-receipt.json",
+  "fileHashes": {
+    "joblist.json": "c0716a65c85878b211aac8b7dfee3c771221cb5e3dc093e16231d1c4d7e89148",
+    "completed-source-manual-index.json": "2d81f368d19293a8add8a62838c341a83e7060e9a1df8ce5dcbb630e0229b2f6",
+    "JOBLIST.md": "ba8434c07be905376b0b50682fd89e41f89e0d41bdd4885d9a8ff46ccba81199",
+    "manual/insights-expiry-cases.mjs": "08c2dadceedc521dbe3338d57bde5210c1937d09610b2785989a0790ff2522c3",
+    "manual/scoped-wave-b.mjs": "2210dfa07c096af94f3c9092ce2f437c16a713a46768f5ccdf13a88273975392",
+    "manual/retained-source-cases.pre-split.mjs": "45884323f814fa3cf50dcf607354074722373a2edfb76efcf2f5bdb29c843705",
+    "manual/positive-payroll-cases.mjs": "6a0c098f6b554fce82e66394a3032b4e56ef3121eec48b0beaa18f96ecbada22",
+    "manual/verify-wave-b.mjs": "c6fbdc9e8b6f25bdadab3753e5fb17956803804336a6ed2d093b3fe5036fe162",
+    "manual/scoped-wave-b.pre-864.mjs": "810e65d4fbee431f9ac2a1fccb9ebb09d03c738fcc7d582384884438c5aa8215",
+    "bindings/fixture-bindings.json": "9ddcb68b01188e74a775952a42e319278e777a45697742433ee715b9b9502209",
+    "bindings/preview-runtime.before-listen.patch": "9a2ebd1461b01a372b806c027e16aa8f60b26213e8ec832bba0613644cac95c2",
+    "bindings/state-action-bindings.json": "ae47845d2f34db378524bb863ac2e1ab4497d4a12adbde5625b84be7e96991af",
+    "bindings/supplemental-payroll.mts": "4aa8432c821f58510407293a2df4e195583e16a1cdfe5c080beec5bfcb12de62",
+    "bindings/preview-runtime.private.mjs": "8edfa7b1d7862c5ca4ff0981a1d1e78c4e6526fffb589c88f64d85e69f04bada",
+    "bindings/README.md": "1e234e07f745f4de1e00dcc908b8d580bd3d4f0e72776fd1c791d41944423654",
+    "bindings/initial-fixture.mts": "7cdf4541b88444174aa4e28b9d99e2197fccab285400a0e4c719470410a9e85e",
+    "bindings/selector-bindings.json": "938b0910ca53708d3bf9a95d393fd7332b8947a926d5ab90f4603a7434c60620",
+    "bindings/owned-preview.before-listen.patch": "30ab6571be9328424d64f6ae333631f29bacb2018b4c401cce8a49d438afa57d",
+    "scripts/passive-close-core.mjs": "34ef5a6d8a34b20ae29790c130dcfa75a04ce067190c0aa1df3b1c5fdd5934a4",
+    "scripts/collection-policy.mjs": "421a76c1abe762d567c1ec89bf41e3f1ca717e163e28bd362b7cff534af49125",
+    "scripts/stage-private-before-listen.py": "8949c4751545780a138d615b5c46b27fc3b57e85ca6176bf5aa8b5b29f917256",
+    "scripts/after-check-collector.mjs": "a03fc76cad2af3f25bba2465db98446397cf0c5b7cf5685df459f10c796236b8",
+    "scripts/serial-matrix.mjs": "bc7516218244af18827327fb75f8340ae2f0143ea4522fead47786952ff8b6a6",
+    "scripts/geometry-measure.mjs": "35f752c299f63da032739c8c017e906d72429858cd609a1cdb734a07080961f1",
+    "scripts/static-selfcheck.mjs": "065b2b04abca44f0dbea6a6fb57d32615ffe7a732d119a69043fcffec657b4c6",
+    "scripts/state-contracts.mjs": "3db192343bf36fe8ff7fb6580489989b493097064a2ca3d23ce88c63631b61b4"
+  },
+  "fixtureImports": {
+    "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+    "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/test/integration/management-api.ts": "8575a34686d72c0d0d9f569034781915ba722e45d1ae6ec9fc3eb7eacc4891b3",
+    "src/lib/communications/service.server.ts": "22d302752a77c76fcf60b492330e8db6008a66f8bf64efbf00c319980c1457b0",
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
+    "src/lib/data/schedule-templates.ts": "3d2f42c02304b1ea49b394810854c1ddfd41b974b8235aaf59fedeceb2a0067d",
+    "src/lib/data/schedule-health.ts": "1d4599d0bfdcd71092ee8aab9770aecadfc316648d5df4b9a632bb37ada22bef",
+    "src/lib/payroll/service.ts": "28e8a0286b533aa31638f6b4d6da2a33df056693bb7e168272556f5ca3d220d8",
+    "src/lib/payroll/worker.ts": "3a8bef47ac894b414bb0f83f55b9a5614f2908744abb55f347c989f52effe640",
+    "src/lib/timecards/service.ts": "fdd405b6ede4a102fcd0d480a02835c2914f11d6eab8d43b996b0ae9d3aaac39",
+    "src/lib/period-close/service.ts": "496582db2f13a761c997f440b9c6ea5e918135fc9480a15fe66665a1b43a2512"
+  },
+  "supplementalPayrollPreparationOnly": {
+    "enabledBy": "WB_SUPPLEMENTAL_PAYROLL=yes before listen",
+    "helper": "/workspace/nevora-inspections/p35-wave-b/full-exit-cd764f6/preparation/bindings/supplemental-payroll.mts",
+    "runtimeVerified": false,
+    "states": [
+      "REVIEW_REQUIRED with real review token, provider rows/totals/no blocking exception",
+      "APPROVED with actual unpublished employee PDF",
+      "FAILED PREPARE job via actual canonical SCHEDULE_CHANGED worker failure"
+    ],
+    "directStatusForcing": false,
+    "positiveActors": [
+      "QAOWNER",
+      "payroll-qa-owner",
+      "payroll-qa-reviewer"
+    ]
+  },
+  "manualPreparedCases": {
+    "scopedSharedBothEngines": 96,
+    "positivePayrollBothEngines": 18,
+    "insightsExpiryBothEngines": 24,
+    "ordinaryAndReducedTotal": 276,
+    "executed": 0
+  },
+  "runtimeTemplateHash": "8edfa7b1d7862c5ca4ff0981a1d1e78c4e6526fffb589c88f64d85e69f04bada",
+  "preparationStaticFreeze": "Complete new864 plan snapshot; all runtime/test/transpile checks pending explicit root release",
+  "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "reboundFrom": {
+    "sha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+    "preservedPublishedPreparation": "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247",
+    "changedSourceFiles": [
+      "src/components/kit/kit.css",
+      "src/app/app/exchange/callout/page.test.tsx"
+    ],
+    "criteriaChanged": false,
+    "completedCellsTransferred": 0
+  }
+}

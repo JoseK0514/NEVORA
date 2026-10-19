@@ -1,0 +1,108 @@
+{
+  "checkpoint": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "kind": "static exact combined-source fixture preparation; nothing seeded or launched",
+  "sourceHashes": {
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
+    "scripts/ui-checks/login.mjs": "f796889550f067edec2451972c2f4bc7bfeb22937c810a218f97b65561fcd48e",
+    "scripts/ui-checks/preview-runtime.mjs": "f9604310d5e7d87a7104fa28d563d138042d8906760dd89126130ec20f6f1e2e",
+    "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+    "src/test/integration/payroll-fixture.ts": "7f830da23d54caea79f7a8bfa3be8cfa0b44850da8479d124bc487654824278f"
+  },
+  "launch": "Use /workspace/nevora-inspection-runtime/launch-preview.sh only after root release. It removes the original preview script browser Publish bootstrap and uses the approved fictional owned-fixture executor instead. Record its generated runtime adapter manifest.",
+  "accounts": [
+    "AUDIT-E",
+    "AUDIT-LONG",
+    "AUDIT-ON",
+    "AUDIT-BREAK",
+    "payroll-qa-a",
+    "AUDIT-LEAD",
+    "payroll-qa-b",
+    "AUDIT-M",
+    "QAOWNER"
+  ],
+  "dates": {
+    "fixtureDate": "Read actual audit.fixtureDate; do not hardcode the calendar day",
+    "week": "Read audit.fixtureWeek",
+    "availabilityNextWeek": "Read audit.nextWeekSeeded, verify it equals fixtureWeek plus7days",
+    "overnightRun": "Business date may change during the long sweep. Preserve fixture lineage and compare semantic format/state, not literal elapsed minutes."
+  },
+  "knownFixtures": {
+    "swap": {
+      "account": "AUDIT-E",
+      "route": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "targets": [
+        "x-swap-5",
+        "x-swap-6"
+      ],
+      "proof": "seed-extra gives E/SWAP reviewed operational rules,6AM-10PM availability and next-week submissions; source/target terms remain from the page, never invent them"
+    },
+    "withdraw": {
+      "account": "AUDIT-E",
+      "requestId": "audit-timeoff",
+      "route": "/app/requests?tab=my",
+      "confirmation": "Open the first owned pending withdrawal disclosure; Enter must be on its action button, not its checkbox"
+    },
+    "availability": {
+      "filledAccount": "AUDIT-E",
+      "emptyAccount": "AUDIT-LONG",
+      "nextWeek": "Use audit.nextWeekSeeded",
+      "draft": "Record switch checked and row copy before/pending/after; native reset must not diverge them"
+    },
+    "decidedTimeOff": {
+      "employee": [
+        "x-to-approved",
+        "x-to-partial",
+        "x-to-declined",
+        "x-to-withdrawn"
+      ],
+      "lead": [
+        "x-to-lead-approved"
+      ],
+      "proof": "Extra fixture supplies approved/partial/declined/withdrawn rows without any browser action"
+    },
+    "onBreak": {
+      "clockedInAccount": "AUDIT-ON",
+      "onBreakAccount": "AUDIT-BREAK",
+      "breakType": "audit-rest",
+      "proof": "Exact source extra fixture uses existing owned Clocker device and real open fictional entries"
+    },
+    "payStatements": {
+      "account": "payroll-qa-b",
+      "role": "LEAD",
+      "expectedPublishedPeriods": [
+        {
+          "startDate": "2026-09-21",
+          "endDate": "2026-09-27",
+          "payday": "2026-09-29"
+        },
+        {
+          "startDate": "2026-09-28",
+          "endDate": "2026-10-04",
+          "payday": "2026-10-06"
+        }
+      ],
+      "expectedCount": 2,
+      "proof": "Verify under current browser session; fixture creation alone is not visible-proof closure"
+    },
+    "updates": {
+      "uuid": "Resolve the owned fictional required-ack update from a.updates-row/API result; never hardcode a prior preview UUID",
+      "title": "Fictional inspection schedule update",
+      "readyCheckbox": "I have reviewed this update",
+      "businessWrites": "Every acknowledge/send/mark-read/withdraw/rotate/revoke/Save action held or fulfilled locally"
+    },
+    "large": {
+      "separatePreview": true,
+      "locationId": "loc-large",
+      "people": 200,
+      "shiftsPerDay": 50,
+      "timeEntries": "One year of weekdays for AUDIT-E and ten large-data people",
+      "proof": "Verify intended location and displayed data, not just a seed count"
+    }
+  },
+  "ignoredDependencyLink": {
+    "path": "/workspace/inspect-phase3-final/node_modules",
+    "target": "/workspace/NEVORA/node_modules",
+    "sourcePackageLockSha256": "eb022d968acfd69c7c44d5df1ecca537e987e01ef0a945b52645fad6ed1f670c",
+    "rule": "Ignored source link only; approved launcher must dereference physical node_modules inside owned Turbopack mirror. No app files changed."
+  }
+}

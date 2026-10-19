@@ -1,0 +1,68 @@
+{
+  "sourceSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "sourceWorktree": "/workspace/exit-wave-a-cd764f6",
+  "phase": "standby-prepared-only",
+  "previewRunning": false,
+  "browserExecuted": false,
+  "fixtureDatabaseInitialized": false,
+  "fiveAreaExitCertified": false,
+  "rootReleased": false,
+  "requiredRelease": "Explicit root exactcd764f6 browser/fixture release after combined full gates and separate combined smoke",
+  "counts": {
+    "checkerAxe": 1792,
+    "priorCredits": 0,
+    "baselineAndVariantJudgments": 1244,
+    "passiveOverlap": 560,
+    "separateJudgmentVisits": 684,
+    "heldForms": 720,
+    "heldResize": 112,
+    "actualReceipts": 128,
+    "browserMockedSent": 64,
+    "roleGuards": 192,
+    "extraStateGroups": 11,
+    "scopedSupplement": 60
+  },
+  "remainingRuntimeGaps": [
+    "Exact-source initial fixture assertions unexecuted",
+    "Actual first Inbox Coverage discovery pending",
+    "Next Flight sent-state acceptance unverified",
+    "Actual rendered owned route error/retry seam needs runtime proof",
+    "All five manual judgments remain pending"
+  ],
+  "createdAt": "2026-10-19T22:40:17.726404+00:00",
+  "dependencyRoot": "/workspace/verify-preview-33/node_modules",
+  "dependencyMaterialization": "Ignored symlink only; owned runtime must dereference/copy physical dependencies",
+  "staticChecks": {
+    "historical864PreparationChecksPreserved": true,
+    "rebindMetadataAndSourceHashesOnly": true,
+    "newIndependentTestsExecuted": false,
+    "newHarnessDryRunExecuted": false,
+    "applicationImportsExecuted": false
+  },
+  "updatedAt": "2026-10-19T22:40:17.726404+00:00",
+  "canonicalSourceReadbackPrepared": [
+    "real eligible manager decisions both actors",
+    "source-qualified Employee/Lead swaps and offers",
+    "actor-owned eligible callout terms on actual canonical/scoped paths",
+    "Owner operational review row",
+    "actor-bound copy receipts/commands",
+    "configured/unconfigured PIN views",
+    "source-qualified positive Coverage plus actor-bound replacement hints"
+  ],
+  "sourceRef": "codex/exit-wave-a-cd764f6",
+  "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "rebind": {
+    "fromSha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+    "fromPreparation": "/workspace/nevora-inspections/p35-wave-a/complete-exit-8640247-preparation",
+    "toSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+    "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+    "sourceWorktree": "/workspace/exit-wave-a-cd764f6",
+    "sourceRef": "codex/exit-wave-a-cd764f6",
+    "reboundAt": "2026-10-19T22:40:17.726404+00:00",
+    "scopeChanged": false,
+    "criteriaChanged": false,
+    "rootReleased": false,
+    "runtimeExecuted": false,
+    "independentTestsExecuted": false
+  }
+}

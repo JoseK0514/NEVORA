@@ -1,0 +1,33 @@
+{
+  "previousCandidate": "b9567abc26b977a517b77622a1661b16172f5b16",
+  "frozenCandidate": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "tree": "8dd5e121f6a5d5b961563b9f86d48be784d8b317",
+  "frozenAt": "2026-10-19T21:43:19.216843+00:00",
+  "newFinding": "TC-RC-PAYROLL-01",
+  "newCommit": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "changedFiles": [
+    "src/app/app/payroll/payroll-workflow.css"
+  ],
+  "patch": "diff --git a/src/app/app/payroll/payroll-workflow.css b/src/app/app/payroll/payroll-workflow.css\nindex 984a90a..c794c43 100644\n--- a/src/app/app/payroll/payroll-workflow.css\n+++ b/src/app/app/payroll/payroll-workflow.css\n@@ -185,3 +185,9 @@ html body .app-shell.nevora-portal .page-frame .payroll-workflow :is(.pw-documen\n \n /* TC-P4-23: the payday line follows the kit callout floor; filenames are TC-B32. */\n html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-statements header p { font: var(--nv-t-callout); }\n+\n+/* TC-RC-PAYROLL-01: desktop next-step guidance follows the kit's readable, scalable roles. */\n+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {\n+  html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-workflow-guidance { font: var(--nv-t-callout); }\n+  html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-workflow-guidance strong { font: var(--nv-t-label); }\n+}\n",
+  "scopeAssessment": "Only two font declarations added inside desktop-only media query. No JavaScript, business logic, fixture, checker or phone selectors changed. Portrait widths320-430 do not match min-width761. Touch landscape844x390 is explicitly excluded. Full exact-9ec3adc baseline remains required. Original b956152 proofs include phone and desktop cases and retain their own SHA; they are not fresh9ec proofs.",
+  "preservedTargetedProofs": {
+    "targeted-states.json": {
+      "path": "/workspace/nevora-inspections/release/paused-ui-fixes-b9567ab/targeted-states.json",
+      "sha256": "860d8050de2cfa577b8d9685c674d54dd5f59115a8913a3c97605d532caba588",
+      "originalCheckpoint": "b9567abc26b977a517b77622a1661b16172f5b16"
+    },
+    "targeted-summary.json": {
+      "path": "/workspace/nevora-inspections/release/paused-ui-fixes-b9567ab/targeted-summary.json",
+      "sha256": "0c6a90b07830c27751fcc56068f9b66a5e82b72adc69902a7c085d4375abf07d",
+      "originalCheckpoint": "b9567abc26b977a517b77622a1661b16172f5b16"
+    },
+    "final-receipt.json": {
+      "path": "/workspace/nevora-inspections/release/paused-ui-fixes-b9567ab/final-receipt.json",
+      "sha256": "1fcbceddad5e023e6e614260936ebddde1a32e8eaa353111ea45162a305b9994",
+      "originalCheckpoint": "b9567abc26b977a517b77622a1661b16172f5b16"
+    }
+  },
+  "previewStarted": false,
+  "browserStarted": false,
+  "resourceRelease": "not received"
+}

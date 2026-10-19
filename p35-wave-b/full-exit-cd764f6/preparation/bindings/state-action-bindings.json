@@ -1,0 +1,220 @@
+{
+  "reviewSHA": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "mode": "static preparation for combinedcd764f6; no runtime/preview/CI executed",
+  "pages": {
+    "reports": {
+      "path": "/api/reports",
+      "method": "POST",
+      "binding": "Request body exactly {startDate,endDate}; ready envelope {state:ready,validForMs:1..15000,source}; projectReports(source) validates period/cards/schedules/requests/changes/publications/attendanceSources/publishedWeeks. Capture actual owned ready response first.",
+      "states": [
+        "held-loading",
+        "ready",
+        "report-empty",
+        "report-partial",
+        "503",
+        "401",
+        "403",
+        "offline-event",
+        "pagehide-paused",
+        "quiet-refresh-failure-before-expiry",
+        "held-replacement-after-expiry",
+        "print",
+        "reduced-motion"
+      ],
+      "selectors": [
+        ".wb-insights",
+        ".wb-insights-view",
+        "#report-first-day",
+        "#report-last-day",
+        "#report-export-error"
+      ],
+      "writeRule": "Reports/export POST are read-only routes with exact period envelope; all nonallowlisted POST still aborted."
+    },
+    "templates": {
+      "route": "/app/schedule/templates",
+      "transport": "server-rendered GET; form actions are RSC POST to same page. Apply uses /api/schedule-copy POST with actor-bound JSON operation.",
+      "states": [
+        "populated initial fixture",
+        "empty-templates fresh fixture variant",
+        "large fresh fixture variant",
+        "?saved=1",
+        "?archived=1",
+        "?error=save",
+        "?applied=3&skipped=1&warnings=1",
+        "held/failure/duplicate for Save+Archive+Apply"
+      ],
+      "identity": [
+        "Apply operationId,kind=TEMPLATE,weekStart,templateId identical across original/retry; localStorage key nevora-copy-pending:<actor>.",
+        "Do not craft RSC success wire payload; query feedback proofs do not claim backend submissions succeeded."
+      ],
+      "gap": "SSR failed/empty reads require fresh initial fixture or documented dev-only switch. Browser route cannot intercept server-internal data calls."
+    },
+    "rules": {
+      "route": "/app/schedule/settings",
+      "transport": "server-rendered GET; RSC actions held/aborted to same path before reaching server.",
+      "states": [
+        "normal",
+        "large initial fixture",
+        "?saved=1",
+        "?error=invalid_hours",
+        "?windowSaved=1",
+        "policy client order error",
+        "held/failure/duplicate/Enter on staffing,period,quantities,trade policy,coverage policy",
+        "Remove confirm Keep/Escape/landscape"
+      ],
+      "selectors": [
+        ".wb-rules",
+        "form.wb-config",
+        "form.wb-period-form",
+        "details.wb-policy",
+        "input[name=scope]",
+        "input[name=expectedRevision]"
+      ],
+      "identity": "FormData captured before lock; original server-action binding unchanged; policy expectedRevision/scope remain identical; existing busy guard synchronously suppresses duplicate sends.",
+      "gap": "SSR failure cannot be forced by page.route; use explicit dev-only switch or retain gap."
+    },
+    "update-detail": {
+      "read": "GET /api/<manager|employee>/communications/<initialUpdateId>",
+      "action": "POST /api/<manager|employee>/communications",
+      "lookup": "GET /api/<manager|employee>/communications/operations/<originalOperationId>",
+      "authorization": "Keep captured X-Nevora-Communication-Authority; ready response authority must match and observedAt/validForMs1..45000 must remain valid.",
+      "states": [
+        "held-loading",
+        "ready",
+        "detail-optional",
+        "detail-acknowledged",
+        "detail-read",
+        "detail-withdrawn",
+        "503",
+        "401",
+        "403",
+        "offline",
+        "pagehide-paused",
+        "unknown interrupted action",
+        "lookup operation_not_found then original retry"
+      ],
+      "actionBinding": [
+        "ACKNOWLEDGE:kind,operationId,authority,communicationId,expectedRevisionId,contentHash",
+        "MARK_READ:kind,operationId,authority,ref.kind/ref.id/ref.version",
+        "WITHDRAW:kind,operationId,authority,communicationId,expectedRevisionId"
+      ],
+      "fixtureRule": "Do not use original update for ON/BREAK/SWAP ready proof; require fresh before-listen recipient-grant verification."
+    },
+    "compose": {
+      "read": "GET /api/<manager|employee>/communications/context; revision GET when editing",
+      "preview": "POST /api/<manager|employee>/communications/preview (browser fulfilled ready {state,count,fingerprint})",
+      "action": "POST /api/<manager|employee>/communications",
+      "states": [
+        "held-loading",
+        "ready",
+        "context-empty",
+        "503",
+        "401",
+        "403",
+        "offline+retained draft+reconnect",
+        "stale revision",
+        "preview count0/positive",
+        "preview failure",
+        "publication held/failure/duplicate",
+        "unknown lookup/notfound/original retry"
+      ],
+      "identity": "PUBLISH/REVISE preserves original operationId,authority,draft,audienceFingerprint; REVISE also communicationId/expectedRevisionId. Retry body hash must equal original after lookup, not regenerate operation.",
+      "selectors": [
+        "#communication-title",
+        "#communication-body",
+        "Audience preview heading",
+        "Publication needs a status check notice",
+        "Check status button",
+        "Retry original publication button"
+      ]
+    },
+    "payroll-settings": {
+      "read": "GET /api/payroll/settings",
+      "write": "POST /api/payroll/settings",
+      "receipt": "GET /api/payroll/receipts?operationId=<original>",
+      "envelope": "version=PAYROLL_API_V1; captured capabilities; arrays revisions/exceptions/grants/employees/futureDraftImpact.",
+      "states": [
+        "held-loading",
+        "ready",
+        "settings-empty",
+        "503",
+        "401",
+        "403",
+        "offline",
+        "SAVE_SETTINGS held/failure/duplicate",
+        "SAVE_EXCEPTION held/failure/duplicate",
+        "SET_GRANT held/failure/duplicate",
+        "receipt-not-found/original retry"
+      ],
+      "priority": "Measure Company ready/pending/failure label/control geometry at320/200 in both engines; source savingId now changes text and may wrap. Do not assume focus fix preserves height.",
+      "identity": "operationId in localStorage nevora-payroll-operation:<recoveryScope>; command.current retains exact original input; retry hash identical; check receipt operationId must match.",
+      "selectors": [
+        "form[data-form=company]",
+        "form[data-form=exception]",
+        "form[data-form=access]",
+        ".wb-payroll-feedback .pw-feedback"
+      ]
+    },
+    "payroll-runs": {
+      "read": "GET /api/payroll/runs",
+      "write": "POST /api/payroll/runs",
+      "receipt": "GET /api/payroll/receipts?operationId=<original>",
+      "envelope": "version=PAYROLL_API_V1,capabilities,runs[],jobs[]; preserve optional validated backlog and missingPeriods.",
+      "states": [
+        "held-loading",
+        "ready",
+        "runs-empty",
+        "payroll-review-only",
+        "503",
+        "401",
+        "403",
+        "offline",
+        "PREPARE",
+        "IMPORT",
+        "APPROVE",
+        "PUBLISH",
+        "CORRECT",
+        "PAYMENT_EXPORT",
+        "RETRY_JOB",
+        "receipt-not-found/original retry"
+      ],
+      "binding": "Capture real owned run id/revision/period/payday/reviewToken/rows and documents first. Browser-local cloned capabilities canReview=true,canApprove=false provides review-only branch without grant writes. All commands held/answered before server.",
+      "fileInput": "Import JSON built from captured run period/payday/rows and strictly positive fictional cent strings; shape NEVORA_PAYROLL_IMPORT_V1/USD,sourceName/sourceReference,rows employeeId,grossMinor,netMinor,employeeDeductions[],employerContributions[].",
+      "identity": "Preserve original operationId and all captured revision/run/job ids and payload bytes across retry. Receipt response with another id must not commit locally."
+    }
+  },
+  "sharedStates": [
+    "normal/reduced motion",
+    "keyboard visible focus",
+    "disclosure state retention",
+    "local lifecycle pause/reconnect",
+    "long names and fresh large variant"
+  ],
+  "unavailableStatesAreGaps": true,
+  "noIndependentClosure": true,
+  "sourceSHA": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "actualAbsentFixes": [
+    "IS-B12 completion",
+    "IS-B31 Rules eb83869",
+    "IS-B31 Payroll",
+    "IS-B33",
+    "IS-B29"
+  ],
+  "negativeMeasurementRule": "After confirmed held request and real settled UI, missing control/focus/geometry is a completed negative assertion. Only absent fixture/transport/setup is a gap; never wait for absent fix as setup.",
+  "supplementalPayroll": {
+    "enabledBy": "WB_SUPPLEMENTAL_PAYROLL=yes before listen",
+    "helper": "/workspace/nevora-inspections/p35-wave-b/full-exit-cd764f6/preparation/bindings/supplemental-payroll.mts",
+    "runtimeVerified": false,
+    "states": [
+      "REVIEW_REQUIRED with real review token, provider rows/totals/no blocking exception",
+      "APPROVED with actual unpublished employee PDF",
+      "FAILED PREPARE job via actual canonical SCHEDULE_CHANGED worker failure"
+    ],
+    "directStatusForcing": false,
+    "positiveActors": [
+      "QAOWNER",
+      "payroll-qa-owner",
+      "payroll-qa-reviewer"
+    ]
+  }
+}

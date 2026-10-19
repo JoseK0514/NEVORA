@@ -1,0 +1,134 @@
+{
+  "sourceReportsCommit": "aa5e07e",
+  "inspectedSource": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "candidateCodeReviewed": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b plus Home-onlyb68f250129e2d21731624652e0aad7412b042bc3",
+  "status": "static crosswalk, not a current candidate zero judgment",
+  "reportedFindings": [
+    {
+      "sourceId": "ST-P3-24",
+      "screen": "Availability idle/pending size",
+      "candidateCommit": "74b527db3c4909358daa4db9afd30c091e676ee6",
+      "candidateId": "ST-P3-24",
+      "status": "implemented; current full measurement pending"
+    },
+    {
+      "sourceId": "ST-P3-27",
+      "screen": "Calendar idle/pending size",
+      "candidateCommit": "58e100a3fc80de3b3276ec8e5c349133e1f984ee",
+      "candidateId": "ST-RC-CALENDAR-01",
+      "status": "implemented; source alias newly crosswalked; current measurement pending"
+    },
+    {
+      "sourceId": "IS-P3-03",
+      "screen": "Availability native reset/draft",
+      "candidateCommit": "6229ad4bfa11e00ef5d1c8ae0f5a3046dd89bbaf",
+      "candidateId": "IS-P3-03",
+      "status": "implemented; current full measurement pending"
+    },
+    {
+      "sourceId": "IS-P3-02",
+      "screen": "Time off/Availability failure reveal",
+      "candidateCommit": "db48fb36df39f097cf6ad393eb64dde6763b3c84",
+      "candidateId": "IS-P3-02 / localIS-75",
+      "status": "implemented; current full measurement pending"
+    },
+    {
+      "sourceId": "IS-P3-01",
+      "screen": "Availability pending focus",
+      "candidateCommit": "4b041f7bfc82eba7655f22a0d28fb22cf712db3e",
+      "candidateId": "IS-74 Availability surface",
+      "status": "implemented; same finding, not a second candidate commit"
+    },
+    {
+      "sourceId": "IS-P3-77",
+      "screen": "Timecards paused/offline count/actions",
+      "candidateCommit": "ac265b97e748546a6ea5ac4695999d8683bf1c52",
+      "candidateId": "IS-77",
+      "status": "implemented; current full measurement pending"
+    },
+    {
+      "sourceId": "IS-P3-78",
+      "screen": "Timecards401 Sign in link",
+      "candidateCommit": "6990234ea005f9d070ac508b2522d1c3fcf8af58",
+      "candidateId": "IS-78 Timecards surface",
+      "status": "implemented; source grades this surfaceP1; broader prior groupP2 does not negate its source severity"
+    },
+    {
+      "sourceId": "IS-P3-80",
+      "screen": "Calendar unknown-result recovery",
+      "candidateCommit": "ab7d86603db6efdcc3f5b3f4ae746dd1075f41b2",
+      "candidateId": "IS-80",
+      "status": "implemented; unknown command identity remains retained"
+    },
+    {
+      "sourceId": "IS-P3-82",
+      "screen": "Withdrawal confirmation reset",
+      "candidateCommit": "2dfc390c3aaa52c8a7602352bd46ed01c479067c",
+      "candidateId": "IS-82",
+      "status": "implemented; current full measurement pending"
+    },
+    {
+      "sourceId": "TC-P3-25",
+      "screen": "Timecards503 must offerTry again",
+      "candidateCommit": null,
+      "candidateId": "TC-P3-25",
+      "status": "UNCOVERED in9ec3adc/b68f250; parent is implementing named finding34; IS77/78 only changed pause/session recovery"
+    }
+  ],
+  "collisions": [
+    {
+      "cloud": "ST-P3-24",
+      "meaning": "Availability pending size",
+      "distinctLocal": "P3-ST-24",
+      "localMeaning": "shared placeholder band heights"
+    },
+    {
+      "cloud": "TC-P3-32",
+      "meaning": "Availability From/Until label floor onf691dec, fixed on227150b",
+      "localEquivalent": "TC-P3-33",
+      "distinctLocal": "TC-P3-32",
+      "localMeaning": "Home/date wrapping"
+    },
+    {
+      "cloud": "ST-P3-27",
+      "meaning": "Calendar pending size",
+      "candidateAlias": "ST-RC-CALENDAR-01",
+      "distinctLocal": "P3-ST-26",
+      "localMeaning": "Manager Timecards late band shift"
+    },
+    {
+      "cloud": "IS-P3-02",
+      "candidate": "IS-P3-02",
+      "localAlias": "IS-75"
+    },
+    {
+      "cloud": "IS-P3-01",
+      "candidate": "IS-74",
+      "surface": "Availability only; remaining IS74 surfaces retain their own measured proof"
+    }
+  ],
+  "priorMeasurementsStillPending": {
+    "alignment": "AL-P3-03,-12,-13,-18 through-31 full current judgment remains; AL-P3-17 old round4 pass is not a final-SHA closure",
+    "widths": "P3-WR-06 old week-strip pass does not close current exit; all other earlierIDs remain under measurement",
+    "stability": "P3-ST-02,-04,-14 through-26 still require current rechecks; no unknown converted to a new defect or a pass",
+    "type": "TC-P3-09,-18 through-34 remain under final full judgment; sourceTC28 measured controls fixed but its remainder still pending; TC31 Availability draft instance aliasesIS03",
+    "interaction": "IS64\u201382 full state sweep still required; new source reports had correction/ACK/swap and403/success gaps; independent b956targeted proofs stay onb956"
+  },
+  "sourceTypeClosures": {
+    "cloudTC-P3-32/localTC-P3-33": "Source227 at390/10015/20 and320/20030/40 forE/Lbothengines; no new candidate fix needed for this phone-label issue",
+    "TC-P3-28": "TimecardsChoose period19/25, TimeoffFull/Partial15/20, MoreClose15/20 measured onsource; complete scope not closed"
+  },
+  "sourceFixtureConstraint": "Lead has no waiting withdrawal fixture; do not change server data to create one. Preserve that constraint in role/state eligibility; resolve browser-only state coverage or report gap honestly.",
+  "reportHashes": {
+    "alignment.md": "070d86b2529be908e0835f538b94d86cdaaeb21d751abaec7945e704ed399c77",
+    "stability.md": "28350f85a66d386fb0694d390f8509150dbe3b27d82be997c82a7b84cf6f6387",
+    "type-colour-copy.md": "ae9f4995ffe5e1c920edf846438c12186fb8788c790336ff0ef5a3d6d6127505",
+    "interaction-states.md": "9f529f5ed33cab14522084cb65ea8f068abcff80e052ed83e0e02c060e0a229a",
+    "widths-roles.md": "38680993d6037069e902fdb13323847f119d7de95c8c336b760006aa3ad9ac16"
+  },
+  "trulyUncoveredReportedP1P2": [
+    "TC-P3-25"
+  ],
+  "testsRun": false,
+  "browserStarted": false
+}

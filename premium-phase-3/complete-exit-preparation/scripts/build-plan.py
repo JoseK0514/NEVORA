@@ -2,7 +2,7 @@ from pathlib import Path
 import re,json,hashlib
 root=Path('/workspace/inspect-phase3-final')
 out=Path('/workspace/nevora-inspections/premium-phase-3/complete-exit-preparation')
-sha='8640247be632ee6382c68b3b1ae3bbed532a5d65'
+sha='cd764f614be8ca5b5215be19d46e07cf968638d7'
 roles=['AUDIT-E','AUDIT-LONG','AUDIT-ON','AUDIT-BREAK','payroll-qa-a','AUDIT-LEAD','payroll-qa-b']
 sizes=['320','360','390','430','844x390']; texts=[100,125,150,200]; engines=['chromium','webkit']
 areas={'type-colour-copy.md':('TC-P3',range(1,35)),'alignment.md':('AL-P3',range(1,32)),'stability.md':('P3-ST',range(1,27)),'widths-roles-consistency.md':('P3-WR',range(1,19)),'interaction-states.md':('IS',range(64,83))}
@@ -87,10 +87,10 @@ plan['fiveAreaJudgments']['visualJudgment']='Judge saved passive evidence in Chr
 plan['executionOrder'][5]='unchanged checker finishes each cell, external Page.close hook then collects selected geometry/crops from the same loaded page; judge saved evidence after full baseline'
 fixes=json.loads((out/'candidate-fix-ledger.json').read_text())
 assert fixes['validationSource']==sha and len(fixes['commits'])==33
-plan['acceptedFixBase']={'candidate':fixes['candidate'],'validationSource':sha,'findingCommits':33,'ledger':'candidate-fix-ledger.json','previousTargetedProofsCheckpoint':'b9567abc26b977a517b77622a1661b16172f5b16','provenanceAssessment':'freeze-update-8640247.json','fullCurrentBaselineRequired':True}
+plan['acceptedFixBase']={'candidate':fixes['candidate'],'validationSource':sha,'findingCommits':33,'ledger':'candidate-fix-ledger.json','previousTargetedProofsCheckpoint':'b9567abc26b977a517b77622a1661b16172f5b16','provenanceAssessment':'freeze-update-cd764f6.json','fullCurrentBaselineRequired':True}
 plan['largeData'].update({'cells':320,'texts':[100,125,150,200],'requiredBriefCellsAt100And200':160,'legacyAdditionalCellsAt125And150':160,'totalCells':320})
 plan['sharedManagementNormalSupplement']={'scopeFile':'normal-shared-scope.json','cells':480,'axe':True}
 plan['reconciledPhoneBaselineCells']=5280
-plan['staticCandidateAudit']={'sha':sha,'all135Crosswalk':'historical-all-135-crosswalk-8640247.json','extraCandidateFindings':['IS-RC-UPDATES-AUTH-01']}
+plan['staticCandidateAudit']={'sha':sha,'all135Crosswalk':'historical-all-135-crosswalk-cd764f6.json','extraCandidateFindings':['IS-RC-UPDATES-AUTH-01']}
 (out/'full-exit-joblist.json').write_text(json.dumps(plan,indent=2))
 print(json.dumps({'baseline':4480,'passiveGeometry':776,'duplicateGeometryVisits':0,'shell':320,'largeData':320,'readStateSequences':plan['readStateSweeps']['sequences'],'readStateObservations':plan['readStateSweeps']['maximumStateObservations'],'actionConfigurations':plan['actionStateSweeps']['surfaceConfigurations'],'fontSwap':plan['fontSwap']['cells'],'priorIDs':len(ledger),'allAppRouteTemplates':len(route_pages),'previewStarted':False,'browserStarted':False}))

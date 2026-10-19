@@ -1,7 +1,7 @@
 {
   "sourceReportsCommit": "aa5e07e",
   "sourceCheckpoint": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
-  "currentCandidateTarget": "await root final freeze after findings33/34; prepared worktree remains9ec3adc until instructed",
+  "currentCandidateTarget": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceNormal": {
     "plannedStageRows": 9920,
     "completedSourceRows": 184,
@@ -509,5 +509,6 @@
     "previousStagedSourceRows": 10560,
     "whyFewerCallsIsNotReducedScope": "Each unique candidate cell runswithaxe and produces basic+axe results in one unchanged-checker invocation. This coalesces previously separateaxe-stage revisits; all declared role-route/viewport/text/engine/dataset dimensions remain explicit."
   },
-  "notCountedAsCurrent": "All source partial184/44results remain on227150b; b956152 targeted cases remain onb956; no source/old-target case is relabeled as a current-candidate result."
+  "notCountedAsCurrent": "All source partial184/44results remain on227150b; b956152 targeted cases remain onb956; no source/old-target case is relabeled as a current-candidate result.",
+  "currentTargetNote": "Exact corrected combined Claude4aaa + accepted33 descendant; no current runtime results. Unique source/role/viewport/text/engine/dataset dimensions unchanged."
 }

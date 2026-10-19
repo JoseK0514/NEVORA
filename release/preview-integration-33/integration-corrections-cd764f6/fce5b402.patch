@@ -1,0 +1,24 @@
+From fce5b40274656871cb9c1bbd72dd197f98782a42 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 22:38:37 +0000
+Subject: [PATCH] TC-WA-16: use coordinator pending contrast without a kit
+ override
+
+---
+ src/components/kit/kit.css | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/src/components/kit/kit.css b/src/components/kit/kit.css
+index b8c2bc41..4d40cb01 100644
+--- a/src/components/kit/kit.css
++++ b/src/components/kit/kit.css
+@@ -342,6 +342,3 @@ a.nv-row:active { background: var(--nv-inset); }
+   .nv-card { box-shadow: 0 0 0 1px var(--nv-ink); }
+   .nv-masthead { background: var(--nv-masthead); }
+ }
+-
+-/* TC-WA16: disabled kit colours already express pending state; do not fade their contrast. */
+-html body .app-shell.nevora-portal .page-frame .nv-btn:is(:disabled, [aria-disabled="true"]) { opacity: 1; }
+-- 
+2.52.0
+

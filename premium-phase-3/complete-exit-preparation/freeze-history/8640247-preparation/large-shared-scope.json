@@ -1,0 +1,39 @@
+{
+  "preparedAgainst": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "releaseTarget": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "dataset": "large",
+  "scope": {
+    "QAOWNER": [
+      "/app",
+      "/app/inbox",
+      "/app/schedule",
+      "/app/employees"
+    ],
+    "AUDIT-M": [
+      "/app",
+      "/app/inbox",
+      "/app/schedule",
+      "/app/employees"
+    ]
+  },
+  "sizes": [
+    "320",
+    "360",
+    "390",
+    "430",
+    "844x390"
+  ],
+  "texts": [
+    100,
+    125,
+    150,
+    200
+  ],
+  "engines": [
+    "chromium",
+    "webkit"
+  ],
+  "axe": true,
+  "expectedCells": 320,
+  "resourceStatus": "held until root gate release"
+}

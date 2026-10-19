@@ -1,5 +1,5 @@
 {
-  "sourcePreparedAgainst": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "sourcePreparedAgainst": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceReleasedForExecution": null,
   "status": "standby-no-preview-no-browser",
   "roles": [
@@ -14155,11 +14155,11 @@
   ],
   "acceptedFixBase": {
     "candidate": "b68f250129e2d21731624652e0aad7412b042bc3",
-    "validationSource": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+    "validationSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
     "findingCommits": 33,
     "ledger": "candidate-fix-ledger.json",
     "previousTargetedProofsCheckpoint": "b9567abc26b977a517b77622a1661b16172f5b16",
-    "provenanceAssessment": "freeze-update-8640247.json",
+    "provenanceAssessment": "freeze-update-cd764f6.json",
     "fullCurrentBaselineRequired": true
   },
   "sharedManagementNormalSupplement": {
@@ -14169,8 +14169,8 @@
   },
   "reconciledPhoneBaselineCells": 5280,
   "staticCandidateAudit": {
-    "sha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
-    "all135Crosswalk": "historical-all-135-crosswalk-8640247.json",
+    "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+    "all135Crosswalk": "historical-all-135-crosswalk-cd764f6.json",
     "extraCandidateFindings": [
       "IS-RC-UPDATES-AUTH-01"
     ]

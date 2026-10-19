@@ -1,0 +1,64 @@
+--- external/preview-runtime.mjs
++++ private/preview-runtime.mjs
+@@ -1,4 +1,5 @@
+ import assert from 'node:assert/strict';
++import {seedInitialWaveB} from '/workspace/nevora-inspections/p35-wave-b/full-exit-cd764f6/preparation/bindings/initial-fixture.mts';
+ import {spawnSync,execFileSync} from 'node:child_process';
+ import {createRequire,registerHooks} from 'node:module';
+ import {randomBytes,randomUUID} from 'node:crypto';
+@@ -33,7 +34,7 @@
+ const pg=(name,args)=>{const r=spawnSync(join(pgBin,name),args,{encoding:'utf8',timeout:45000});if(r.error||r.status!==0)throw Error(name+': '+(r.error?.message??r.stderr));};
+ const port=await new Promise((res,rej)=>{const s=createServer();s.once('error',rej);s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>res(p));});});
+ const report={checkpoint,tree:execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),startedAt:new Date().toISOString(),screens:[],errors:[],checks:[],limitations:['Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.','Viewport emulation is not physical iPhone/iPad testing.','Automated axe and keyboard checks do not certify a screen-reader audit.','Route visual inspection is not complete business workflow regression or production verification.']};
+-let app,started=false;const browsers=[];
++let app,fixtureAccess,started=false;const browsers=[];
+ const stop=new AbortController();
+ for(const signal of ['SIGTERM','SIGINT'])process.once(signal,()=>stop.abort(new Error('Owned preview shutdown requested')));
+ report.runtimeAdapter=JSON.parse(await readFile(new URL('../../runtime-adapter-manifest.json',import.meta.url),'utf8'));
+@@ -70,44 +71,9 @@
+  delete process.env.DATABASE_URL;
+  process.env.FUEL_TEST_DATABASE_URL=`postgresql://nevora_audit@127.0.0.1:${port}/nevora_exchange_test_audit_${marker.slice(0,12)}`;
+  process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN='yes';process.env.NEVORA_PAYROLL_ENABLED='true';
+- app=await createOwnedNextApp(evidence,{signal:stop.signal,payrollEnabled:true,pinDevTypeReferences:true,clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
++ app=await createOwnedNextApp(evidence,{signal:stop.signal,beforeListen:async owned=>{fixtureAccess=await seedInitialWaveB(owned,report,evidence);},payrollEnabled:true,pinDevTypeReferences:true,clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
+  report.sourceManifest=join(app.root,'source-manifest.json');await writeFile(join(evidence,'runtime.json'),JSON.stringify({url:app.url,root:app.root,checkpoint:report.checkpoint},null,2));console.log('READY '+app.url);
+- await seedOwnedApp(app.database.executor);
+- const password=await hashPassword(TEST_PASSWORD);
+- for(const [id,first,last,role] of [['AUDIT-LEAD','Taylor','Rivera','LEAD'],['AUDIT-M','Morgan','Rivera','MANAGER'],['AUDIT-E','Alexandra','Rivera','EMPLOYEE'],['AUDIT-LONG','María José','Rivera Santiago With A Long Name','EMPLOYEE']]){
+- await q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,'7875550101',$4,$5,'loc-1')",[id,first,last,id.toLowerCase()+'@example.invalid',role]);
+- await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,password]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1'),($1,'loc-2')",[id]);await q("INSERT INTO employee_positions(employee_id,position_id) VALUES($1,'qa-pos')",[id]);
+- }
+- await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) VALUES('audit-rest','workspace-fuel','Rest break','REST',15,'QAOWNER','QAOWNER')");
+- const today=businessDate(new Date(),'America/Puerto_Rico'),week=weekStartFor(today);report.fixtureDate=today;report.fixtureWeek=week;
+- await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('audit-current','loc-1',$1,'DRAFT','QAOWNER')",[week]);
+- for(let d=0;d<7;d++)for(const [i,id]of ['AUDIT-M','AUDIT-E','AUDIT-LONG'].entries())await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'audit-current',$2,$3,$4,$5,'qa-pos',false)",[`audit-shift-${d}-${i}`,id,addDays(week,d),i===0?'07:00':'08:00',i===0?'15:00':'16:00']);
+- await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
+- // B2 fixture: a published next week (Mon-Fri) so Home has a real next shift and swaps/coverage have partners.
+- {const next=addDays(week,7);await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('audit-next','loc-1',$1,'DRAFT','QAOWNER')",[next]);
+-  for(let d=0;d<5;d++)for(const [i,id] of ['AUDIT-M','AUDIT-E','AUDIT-LONG'].entries())await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'audit-next',$2,$3,$4,$5,'qa-pos',false)",[`audit-next-${d}-${i}`,id,addDays(next,d),i===1?'08:00':i===0?'12:00':'09:00',i===1?'16:00':i===0?'20:00':'17:00']);
+-  await publishScheduleWithRevision({locationId:'loc-1',weekStart:next,managerId:'QAOWNER'},app.database.executor);report.nextWeekSeeded=next;}
+- await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('audit-timeoff','AUDIT-E',$1,$2,'PENDING','Fictional family appointment')",[addDays(today,10),addDays(today,11)]);
+- const hook=registerHooks({resolve(specifier,ctx,next){return next(specifier==='server-only'?new URL('../../node_modules/next/dist/compiled/server-only/empty.js',import.meta.url).href:specifier,ctx);}});
+- const {seedPayrollPreviewFixture}=await import('./payroll-preview-fixture.ts');hook.deregister();
+- const payroll=await seedPayrollPreviewFixture(app.database.executor);report.payrollFixtureSeeded=true;
+- // Inspection bootstrap is fixture-only: no browser publication or other application mutation.
+- const communicationHook=registerHooks({resolve(specifier,ctx,next){return next(specifier==='server-only'?new URL('../../node_modules/next/dist/compiled/server-only/empty.js',import.meta.url).href:specifier,ctx);}});
+- const {fixtureProof}=await import('../../src/test/integration/shift-change-api.ts');
+- const {previewCommunicationAudience,executeCommunicationCommand}=await import('../../src/lib/communications/service.server.ts');
+- const proof=await fixtureProof(app.database.executor,'QAOWNER');
+- const draft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Fictional inspection schedule update',body:'Please review the fictional upcoming schedule. This update exists only in the disposable inspection preview.',acknowledgement:'REQUIRED',expiresAt:null};
+- const audience=await previewCommunicationAudience(proof,draft,app.database.executor);
+- assert.equal(audience.state,'ready','Owned fixture audience must be ready');
+- const publication=await executeCommunicationCommand(proof,{kind:'PUBLISH',operationId:randomUUID(),authority:audience.authority,draft,audienceFingerprint:audience.fingerprint},app.database.executor);
+- assert.equal(publication.status,'committed','Owned fictional fixture publication must commit');
+- communicationHook.deregister();
+- report.checks.push({name:'Fictional update inserted through owned fixture executor',passed:true});
+- report.bootstrapMethod='fixture-only executor; no browser publication';
+- report.demoAccounts={owner:'QAOWNER',manager:'AUDIT-M',lead:'AUDIT-LEAD',employee:'AUDIT-E',payrollOwner:payroll.ids.owner,payrollEmployee:payroll.ids.a};
+- const demoPassword=process.env.PREVIEW_PASSWORD||('Review-'+randomBytes(9).toString('base64url')+'!');
+- const demoHash=await hashPassword(demoPassword);
+- await q('UPDATE employee_credentials SET password_hash=$1,must_change_password=false',[demoHash]);
++ const demoPassword=fixtureAccess.password;
+  await writeFile(join(evidence,'access.json'),JSON.stringify({url:app.url,checkpoint,demoAccounts:report.demoAccounts,password:demoPassword},null,2),{mode:0o600});
+  console.log('PREVIEW_READY '+app.url);
+  await save();

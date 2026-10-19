@@ -1,0 +1,513 @@
+{
+  "sourceReportsCommit": "aa5e07e",
+  "sourceCheckpoint": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "currentCandidateTarget": "await root final freeze after findings33/34; prepared worktree remains9ec3adc until instructed",
+  "sourceNormal": {
+    "plannedStageRows": 9920,
+    "completedSourceRows": 184,
+    "roleRoutePairs": 124,
+    "scope": {
+      "AUDIT-E": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-LEAD": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-LONG": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-ON": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-BREAK": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "payroll-qa-a": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "payroll-qa-b": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-M": [
+        "/app",
+        "/app/inbox",
+        "/app/schedule",
+        "/app/employees",
+        "/app/notifications",
+        "/app/requests?tab=pending&requestId=audit-timeoff"
+      ],
+      "QAOWNER": [
+        "/app",
+        "/app/inbox",
+        "/app/schedule",
+        "/app/employees",
+        "/app/notifications",
+        "/app/requests?tab=pending&requestId=audit-timeoff"
+      ]
+    },
+    "baseDimensions": {
+      "widths": [
+        "320",
+        "360",
+        "390",
+        "430",
+        "844x390",
+        "768",
+        "1024",
+        "1440"
+      ],
+      "texts": [
+        100,
+        125,
+        150,
+        200
+      ],
+      "engines": [
+        "chromium",
+        "webkit"
+      ],
+      "uniqueCells": 7936
+    },
+    "separateAxeStage": {
+      "widths": [
+        "390",
+        "1440"
+      ],
+      "texts": [
+        100,
+        125,
+        150,
+        200
+      ],
+      "engines": [
+        "chromium",
+        "webkit"
+      ],
+      "rows": 1984,
+      "explanation": "same viewport/role/route dimensions repeated withaxe; not1984additional unique page dimensions"
+    }
+  },
+  "candidatePhonePlan": {
+    "primaryPhase3": {
+      "roleRoutePairs": 112,
+      "cells": 4480,
+      "axe": true,
+      "status": "unchanged full baseline first"
+    },
+    "supplementalNormalShared": {
+      "scope": {
+        "AUDIT-M": [
+          "/app",
+          "/app/inbox",
+          "/app/schedule",
+          "/app/employees",
+          "/app/notifications",
+          "/app/requests?tab=pending&requestId=audit-timeoff"
+        ],
+        "QAOWNER": [
+          "/app",
+          "/app/inbox",
+          "/app/schedule",
+          "/app/employees",
+          "/app/notifications",
+          "/app/requests?tab=pending&requestId=audit-timeoff"
+        ]
+      },
+      "roleRoutePairs": 12,
+      "sizes": [
+        "320",
+        "360",
+        "390",
+        "430",
+        "844x390"
+      ],
+      "texts": [
+        100,
+        125,
+        150,
+        200
+      ],
+      "engines": [
+        "chromium",
+        "webkit"
+      ],
+      "cells": 480,
+      "axe": true,
+      "status": "additional separate matrix; only shared shell/placeholder/prior-ID ready overlaps owned byPhase3"
+    },
+    "normalTotal": 4960
+  },
+  "desktopMappingRequired": {
+    "scope": {
+      "AUDIT-E": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-LEAD": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-LONG": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-ON": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-BREAK": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "payroll-qa-a": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "payroll-qa-b": [
+        "/app",
+        "/app/schedule",
+        "/app/schedule?view=open",
+        "/app/requests/hub",
+        "/app/requests?tab=new",
+        "/app/requests?tab=my",
+        "/app/exchange?tab=available",
+        "/app/exchange?tab=requests",
+        "/app/availability",
+        "/app/availability?week=2026-10-26",
+        "/app/my-time",
+        "/app/timecards",
+        "/app/my-pay",
+        "/app/profile",
+        "/app/updates",
+        "/app/notifications"
+      ],
+      "AUDIT-M": [
+        "/app",
+        "/app/inbox",
+        "/app/schedule",
+        "/app/employees",
+        "/app/notifications",
+        "/app/requests?tab=pending&requestId=audit-timeoff"
+      ],
+      "QAOWNER": [
+        "/app",
+        "/app/inbox",
+        "/app/schedule",
+        "/app/employees",
+        "/app/notifications",
+        "/app/requests?tab=pending&requestId=audit-timeoff"
+      ]
+    },
+    "sizes": [
+      "768",
+      "1024",
+      "1440"
+    ],
+    "texts": [
+      100,
+      125,
+      150,
+      200
+    ],
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "normalUniqueCells": 2976,
+    "employeeLeadCells": 2688,
+    "managerOwnerCells": 288,
+    "axeAt1440Subset": 992,
+    "assigned": "Desktop independent final exit worker; explicit coverage receipt still pending; not claimed complete"
+  },
+  "sourceLarge": {
+    "plannedStageRows": 640,
+    "completedSourceRows": 44,
+    "scope": {
+      "QAOWNER": [
+        "/app",
+        "/app/inbox",
+        "/app/schedule",
+        "/app/employees"
+      ],
+      "AUDIT-M": [
+        "/app",
+        "/app/inbox",
+        "/app/schedule",
+        "/app/employees"
+      ]
+    },
+    "baseUniqueCells": 512,
+    "separateAxeStageRows": 128
+  },
+  "candidateLargePlan": {
+    "phone": {
+      "scope": {
+        "QAOWNER": [
+          "/app",
+          "/app/inbox",
+          "/app/schedule",
+          "/app/employees"
+        ],
+        "AUDIT-M": [
+          "/app",
+          "/app/inbox",
+          "/app/schedule",
+          "/app/employees"
+        ]
+      },
+      "sizes": [
+        "320",
+        "360",
+        "390",
+        "430",
+        "844x390"
+      ],
+      "texts": [
+        100,
+        125,
+        150,
+        200
+      ],
+      "engines": [
+        "chromium",
+        "webkit"
+      ],
+      "cells": 320,
+      "roundRequiredCellsAt100And200": 160,
+      "legacyCarryoverCellsAt125And150": 160,
+      "axe": true,
+      "separatePreviewRequired": true
+    },
+    "desktop": {
+      "scope": {
+        "QAOWNER": [
+          "/app",
+          "/app/inbox",
+          "/app/schedule",
+          "/app/employees"
+        ],
+        "AUDIT-M": [
+          "/app",
+          "/app/inbox",
+          "/app/schedule",
+          "/app/employees"
+        ]
+      },
+      "sizes": [
+        "768",
+        "1024",
+        "1440"
+      ],
+      "texts": [
+        100,
+        125,
+        150,
+        200
+      ],
+      "engines": [
+        "chromium",
+        "webkit"
+      ],
+      "cells": 192,
+      "axeAt1440Subset": 64,
+      "assigned": "Desktop worker large-data job mapping pending"
+    }
+  },
+  "uniqueTotals": {
+    "sourceNormalAndLarge": 8448,
+    "phase3PhoneShare": 5280,
+    "desktopShare": 3168,
+    "previousStagedSourceRows": 10560,
+    "whyFewerCallsIsNotReducedScope": "Each unique candidate cell runswithaxe and produces basic+axe results in one unchanged-checker invocation. This coalesces previously separateaxe-stage revisits; all declared role-route/viewport/text/engine/dataset dimensions remain explicit."
+  },
+  "notCountedAsCurrent": "All source partial184/44results remain on227150b; b956152 targeted cases remain onb956; no source/old-target case is relabeled as a current-candidate result."
+}

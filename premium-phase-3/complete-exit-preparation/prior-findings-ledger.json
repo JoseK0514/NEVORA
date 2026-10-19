@@ -1,5 +1,5 @@
 {
-  "source": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "count": 135,
   "rules": "Source inspection only. A candidate fix or source-only proof cannot close an owner finding. Every ID needs final-source measured evidence, or remains a gap/open. Payroll wording is suggestions, excluded from defect counts.",
   "findings": [

@@ -1,0 +1,165 @@
+--- a/src/app/app/error.tsx
++++ b/src/app/app/error.tsx
+@@ -8,9 +8,9 @@
+ export default function Error({reset}:{error:Error & {digest?:string};reset:()=>void}) {
+  return <>
+   <div className="nv-page premium-error" data-nv-page="">
+-   <PageBand title="This page could not be loaded" summary="Your current information is unavailable." />
++   <PageBand title="Couldn’t load this page." summary="Your current information is unavailable." />
+    {/* IS-49: one live region with the whole message; the buttons sit outside it. */}
+-   <p className="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>
++   <p className="nv-sr" role="alert">Couldn’t load this page. Your current information is unavailable. Try loading the page again before taking an action.</p>
+    <KitStack>
+     <Card>
+      <CardBody>
+--- a/src/components/app-error-screen.tsx
++++ b/src/components/app-error-screen.tsx
+@@ -9,10 +9,10 @@
+  * Same words as that boundary, drawn with the kit itself: the teal band with the wordmark, a white card, kit buttons. */
+ export function AppErrorScreen({reset}: {reset: () => void}) {
+   return <main className="nv-page app-error-screen">
+-    <Masthead title="This page could not be loaded" summary="Your current information is unavailable." />
++    <Masthead title="Couldn’t load this page." summary="Your current information is unavailable." />
+     <KitStack>
+       {/* IS-49: one live region with the whole message; the buttons sit outside it. */}
+-      <p className="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>
++      <p className="nv-sr" role="alert">Couldn’t load this page. Your current information is unavailable. Try loading the page again before taking an action.</p>
+       <section className="nv-card">
+         <CardBody>
+           <p className="app-error-screen__text">Try loading the page again before taking an action.</p>
+--- a/src/app/app/page.tsx
++++ b/src/app/app/page.tsx
+@@ -65,7 +65,7 @@
+   // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
+   const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
+   if(!dashboardData)return <div className="nv-page premium-error" data-nv-page="">
+-    <PageBand title="This page could not be loaded" summary="Your current information is unavailable."/>
++    <PageBand title="Couldn’t load this page." summary="Your current information is unavailable."/>
+     <KitStack><Card><CardBody><div className="premium-error__body">
+       <p className="premium-error__text">Try loading the page again before taking an action.</p>
+       <div className="premium-error__actions">
+--- a/src/components/employee-my-schedule.tsx
++++ b/src/components/employee-my-schedule.tsx
+@@ -145,7 +145,7 @@
+       <PageBand title="My schedule" overlap={false}
+         summary={view === 'open'
+           ? (openCount ? `${openCount}\u00a0open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up.` : 'Shifts your team offers.')
+-          : state === 'unavailable' ? 'Your schedule couldn’t be checked.'
++          : state === 'unavailable' ? 'Couldn’t load your schedule.'
+           : shifts.length ? `${shifts.length}\u00a0${shifts.length === 1 ? 'shift' : 'shifts'} · ${scheduledHours(shifts)} scheduled.`
+           : 'No published shifts this week.'}
+         extra={modules.marketplace ? <FilterPills label="Schedule views" items={[
+@@ -186,7 +186,7 @@
+       <section className="employee-view-surface employee-schedule-agenda my-schedule-agenda" aria-labelledby="my-agenda-title">
+         <div className="my-agenda-heading"><h2 id="my-agenda-title">Your week at a glance</h2><span>{state==='published'?'Published schedule':'Published assignments only'}</span></div>
+         {/* P3-WR-14: a failed read replaces the week list (no "–" days that read as days off) and offers the primary Try again. */}
+-        {state === 'unavailable' ? <div className="my-schedule-failure" role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule.</p><Link href={`/app/schedule?week=${weekStart}`} className="nv-btn" data-kind="primary"><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again<span className="nv-sr"> to load your schedule</span></Link></div> : null}
++        {state === 'unavailable' ? <div className="my-schedule-failure" role="status"><strong>Couldn’t load your schedule.</strong><p>Check your connection, then try again.</p><Link href={`/app/schedule?week=${weekStart}`} className="nv-btn" data-kind="primary"><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again<span className="nv-sr"> to load your schedule</span></Link></div> : null}
+         {state === 'unavailable' ? null : dates.map(date => { const label=formatDayLabel(date); const dayShifts=shifts.filter(shift=>shift.date===date); return <article className={`employee-schedule-day${date===today?' today':''}${date===selectedDay?' selected':''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
+           <time className="employee-agenda-date" dateTime={date}><span>{label.weekday}</span><strong>{Number(date.slice(8))}</strong>{date===today?<small>Today</small>:null}{date===selectedDay?<span className="sr-only">Selected day</span>:null}</time>
+           <div className="employee-schedule-day-copy">
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -283,7 +283,7 @@
+   // Phase 3: the band says the one thing an employee opens Home for, in one line.
+   const summary = paused ? (online ? 'Paused while you’re away.' : 'You’re offline.') : denied ? 'Sign in again to view Home.' : loading ? 'Checking your shifts…'
+     : !snapshot ? 'Couldn’t load Home.'
+-    : snapshot.publicationState === 'unavailable' ? 'Your schedule couldn’t be checked.'
++    : snapshot.publicationState === 'unavailable' ? 'Couldn’t load your schedule.'
+     : underWay ? keepWhole(`Scheduled until ${clock(underWay.endAt)}.`)
+     : snapshot.nextShift ? keepWhole(`Next shift ${(relativeDay(snapshot.nextShift.date, snapshot.observedAt, snapshot.timeZone) ?? formatDisplayDate(snapshot.nextShift.date)).replace(/^(Today|Tomorrow)$/, word => word.toLowerCase())} at ${clock(snapshot.nextShift.startAt)}.`)
+     : 'No published shifts coming up.';
+@@ -320,7 +320,7 @@
+             {snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? <span className={styles.published}>Published</span> : null}
+           </header>
+           {snapshot ? <>
+-            {snapshot.publicationState === 'unavailable' ? <p className={styles.assignmentMessage}>Schedule unavailable</p>
++            {snapshot.publicationState === 'unavailable' ? <p className={styles.assignmentMessage}>Couldn’t load your schedule.</p>
+               : underWay ? <>
+                 <section className={styles.current} aria-label="Scheduled now">
+                   <h3>Scheduled now</h3>
+@@ -367,7 +367,7 @@
+         {snapshot ? <small data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
+         {/* P3-WR-14: a failed read gets the same control as every other page: a primary "Try again" with the refresh icon. */}
+         {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
+-          : !snapshot && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
++          : (!snapshot || snapshot.publicationState === 'unavailable') && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
+             <ArrowsClockwiseIcon size={18} aria-hidden="true"/>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
+           </button>
+           : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
+--- a/src/components/calendar-subscription-panel.tsx
++++ b/src/components/calendar-subscription-panel.tsx
+@@ -23,7 +23,7 @@
+   {paused?<p role="status">Calendar settings paused. Return to this window to check the link.</p>:<>
+    <p>View your published shifts in Apple Calendar, Google Calendar, or Outlook.</p>
+    <div className="employee-calendar-status-box">
+-    {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">Calendar settings unavailable. {status.state==='unauthorized'?'Sign in again.':'Retry to check the current link.'}</p>:<>
++    {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">{status.state==='unauthorized'?'Calendar settings unavailable. Sign in again.':'Couldn’t load your calendar link.'}</p>:<>
+      <span className={`employee-calendar-state${active?' is-active':''}`}>{active?'Link active':status.state==='revoked'?'Link revoked':'No calendar link'}</span>
+      {!active?<><p>Create a private link, then add it to your calendar app.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ISSUE')}><PendingLabel pending={busy} pendingText="Saving…">Create link</PendingLabel></button></>:null}
+      {active&&!currentUrl?<><p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button></>:null}
+--- a/src/components/app-error-screen.test.tsx
++++ b/src/components/app-error-screen.test.tsx
+@@ -10,9 +10,9 @@
+ 
+ it("uses the portal's own error words, with a retry and a full-load link home", () => {
+   const html = renderToStaticMarkup(createElement(AppErrorScreen, { reset: () => {} }));
+-  expect(html).toContain('<p class="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>');
++  expect(html).toContain('<p class="nv-sr" role="alert">Couldn’t load this page. Your current information is unavailable. Try loading the page again before taking an action.</p>');
+   expect(html.match(/role="alert"/g)).toHaveLength(1);
+-  expect(html).toContain("This page could not be loaded");
++  expect(html).toContain("Couldn’t load this page.");
+   expect(html).toContain("Try loading the page again before taking an action.");
+   expect(html).toMatch(/<button type="button" class="nv-btn" data-kind="primary"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/button>/);
+   expect(html).toContain('aria-label="NEVORA"');
+@@ -24,8 +24,8 @@
+   const error = Object.assign(new Error("statement timeout"), { digest: "4074344408" });
+   const root = renderToStaticMarkup(createElement(RootError, { error, reset: () => {} }));
+   const global = renderToStaticMarkup(createElement(GlobalError, { error, reset: () => {} }));
+-  expect(root).toContain("This page could not be loaded");
++  expect(root).toContain("Couldn’t load this page.");
+   expect(global).toMatch(/^<html lang="en">(<head><\/head>)?<body/);
+-  expect(global).toContain("This page could not be loaded");
++  expect(global).toContain("Couldn’t load this page.");
+   for (const html of [root, global]) expect(html).not.toContain("4074344408");
+ });
+--- a/src/components/employee-home-reviewed.test.tsx
++++ b/src/components/employee-home-reviewed.test.tsx
+@@ -151,7 +151,7 @@
+     expect(markup).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+     expect(none).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+     const unavailable = html(props(projectEmployeeHome(snapshot({currentShift: current, nextShift: null, publicationState: 'unavailable'}))));
+-    expect(unavailable).toContain('Schedule unavailable');
++    expect(unavailable).toContain('Couldn’t load your schedule.');
+   });
+ 
+   it('keeps "Next shift" as the heading and names the day link when no shift is under way', () => {
+@@ -253,7 +253,7 @@
+     const current = snapshot();
+     current.sources.schedule = {...current.sources.schedule, state: 'unavailable', reason: 'read_failed'};
+     const markup = html(props(projectEmployeeHome(current)));
+-    expect(markup).toContain('Schedule unavailable');
++    expect(markup).toContain('Couldn’t load your schedule.');
+     expect(markup).not.toContain('Private location');
+     expect(markup).not.toContain('Published');
+     expect(markup).toContain('Private own recorded-time slot');
+@@ -321,7 +321,7 @@
+     expect(none).not.toContain('>Published<');
+     const unavailable = html(props(projectEmployeeHome(snapshot({publicationState: 'unavailable', nextShift: null}))));
+     expect(unavailable).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+-    expect(unavailable).toContain('Schedule unavailable');
++    expect(unavailable).toContain('Couldn’t load your schedule.');
+   });
+   it('places quick actions after To do and before recent updates', () => {
+     const markup = html(props(projectEmployeeHome(snapshot({attention: [item('todo', {actionable: true}), item('news')]}))));
+--- a/src/components/employee-my-schedule.test.tsx
++++ b/src/components/employee-my-schedule.test.tsx
+@@ -18,7 +18,7 @@
+ });
+ it('unavailable reads hide private shifts, actions, confirmation and change history even when stale props remain',()=>{
+  const output=html({state:'unavailable',acknowledged:true,receipt:true,confirmation:createElement('button',null,'Confirm schedule'),changes:createElement('p',null,'Private change')});
+- expect(output).toContain('Schedule unavailable');
++ expect(output).toContain('Couldn’t load your schedule.');
+  for(const privateValue of ['8:00 AM','North Office','self-shift','Private change','Confirm schedule','Schedule confirmed.','You’re up to date']) expect(output).not.toContain(privateValue);
+ });
+ it('known confirmation succeeds only with actual confirmation state',()=>{
