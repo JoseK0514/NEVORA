@@ -11,11 +11,12 @@ export function EmployeeWeeklyConfirmation({weekStart,expectedRevisionId,intent}
  const router=useRouter(),[pending,start]=useTransition(),[result,setResult]=useState<CommandResult|null>(null);
  const generation=useRef(0);
  useEffect(()=>{
-  const clear=()=>{generation.current++;setResult({status:'blocked',reason:'view_left'});};
+  const lifecycleGeneration=generation;
+  const clear=()=>{lifecycleGeneration.current++;setResult({status:'blocked',reason:'view_left'});};
   const hidden=()=>{if(document.visibilityState==='hidden')clear();};
   const refresh=()=>{router.refresh();};
   window.addEventListener('blur',clear);window.addEventListener('pagehide',clear);document.addEventListener('visibilitychange',hidden);window.addEventListener('focus',refresh);
-  return()=>{generation.current++;window.removeEventListener('blur',clear);window.removeEventListener('pagehide',clear);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('focus',refresh);};
+  return()=>{lifecycleGeneration.current++;window.removeEventListener('blur',clear);window.removeEventListener('pagehide',clear);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('focus',refresh);};
  },[router]);
  const retryable=!result||result.status==='outcome_unknown'||result.status==='unavailable';
  function submit(form:FormData){const current=generation.current;start(async()=>{
