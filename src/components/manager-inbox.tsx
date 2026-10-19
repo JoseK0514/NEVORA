@@ -3,55 +3,61 @@
 import Link from "next/link";
 import { MissedPunches } from "./manager-today";
 import { useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { actionCenterNavigation } from "./action-center-navigation";
-import { SwipeRow } from "./swipe-row";
-import { TimeOffReviewActions } from "./time-off-review-actions";
 import { EmptyState } from "./empty-state";
 import { Celebration } from "./celebration";
 import { SkeletonRows } from "./skeleton";
-import { reviewTimeOffAction } from "@/app/app/requests/actions";
-import { groupInboxItems, inboxSections, timeOffRequestId } from "@/lib/action-center/inbox";
+import { groupInboxItems, inboxFilter, inboxSections, type InboxFilter } from "@/lib/action-center/inbox";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 
-type Filter = "all" | "exceptions" | "requests";
 const statusText = {
   loading: "Loading inbox…", reconnecting: "Reconnecting…", offline: "Inbox unavailable offline", paused: "Updates paused — return to this tab to refresh.",
   unavailable: "Inbox unavailable — try again.", access_lost: "Sign in again to view the inbox.", ready: "Inbox unavailable — try again.",
 } as const;
 
-function Row({ item }: { item: ActionItem }) {
-  const Icon = item.priority === "URGENT" ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : item.category === "requests" ? UserCheckIcon : CalendarBlankIcon;
+/** O1: no decision from here. The Inbox item carries no dates, duration or
+ * note, so every request opens its full review, which shows them first. */
+function Row({ item, calm = false }: { item: ActionItem; /** Past work (C2): no urgent styling. */ calm?: boolean }) {
+  const urgent = item.priority === "URGENT" && !calm;
+  const Icon = urgent ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : item.category === "requests" ? UserCheckIcon : CalendarBlankIcon;
   const action = actionCenterNavigation(item);
-  const requestId = timeOffRequestId(item);
-  const body = <>
+  return <li className={`inbox-row${urgent ? " is-urgent" : ""}`}><div className="inbox-row-content">
     <span className="inbox-icon" aria-hidden="true"><Icon size={20} /></span>
     <div className="inbox-copy">
       <strong>{item.title}</strong>
       <p>{mobileActionDetail(item.detail)}</p>
       <Link className="inbox-link" href={action.href} aria-label={`${action.label}: ${item.title}`}>{action.label}</Link>
     </div>
-    {requestId ? <form action={reviewTimeOffAction} className="inbox-decision" aria-label={`Decide on: ${item.title}`}>
-      <input type="hidden" name="requestId" value={requestId} />
-      <TimeOffReviewActions />
-    </form> : null}
-  </>;
-  const className = `inbox-row${item.priority === "URGENT" ? " is-urgent" : ""}`;
-  return requestId ? <SwipeRow className={className}>{body}</SwipeRow>
-    : <li className={className}><div className="swipe-row-content">{body}</div></li>;
+  </div></li>;
 }
 
 export function ManagerInbox({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
-  return <InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} lead={<MissedPunches />} />;
+  // W2: ?filter= is the source of truth, so Back from a review restores it.
+  const initialFilter = inboxFilter(useSearchParams()?.get("filter"));
+  return <InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} lead={<MissedPunches />} initialFilter={initialFilter} />;
 }
 
 /** Presentation only: receives the released action center observation. */
-export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZone, lead }: { snapshot: ActionCenter | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; /** Shown under the page header (D1), e.g. missed punches. */ lead?: ReactNode }) {
-  const [filter, setFilter] = useState<Filter>("all");
+export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZone, lead, initialFilter = "all" }: { snapshot: ActionCenter | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; /** Shown under the page header (D1), e.g. missed punches. */ lead?: ReactNode; initialFilter?: InboxFilter }) {
+  const [filter, setFilter] = useState<InboxFilter>(initialFilter);
+  // Follow the URL when it changes underneath us (Back, a new link).
+  const [urlFilter, setUrlFilter] = useState(initialFilter);
+  if (urlFilter !== initialFilter) { setUrlFilter(initialFilter); setFilter(initialFilter); }
+  // W2: the filter lives in the URL, so a review page's Back returns to it.
+  const choose = (value: InboxFilter) => {
+    setFilter(value);
+    const url = new URL(window.location.href);
+    if (value === "all") url.searchParams.delete("filter"); else url.searchParams.set("filter", value);
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  };
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
-  const sections = ready ? inboxSections(ready.items) : [];
+  // The workspace's date at the time of this observation, so server and browser agree.
+  const today = ready ? new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ready.observedAt)) : undefined;
+  const sections = ready ? inboxSections(ready.items, today) : [];
   const counts = { all: ready?.items.length ?? 0, exceptions: ready?.items.filter(item => item.category !== "requests").length ?? 0, requests: ready?.counts.requests ?? 0 };
   const shown = sections.map(section => ({ ...section, items: section.items.filter(item => filter === "all" || (filter === "requests" ? item.category === "requests" : item.category !== "requests")) })).filter(section => section.items.length);
   const updated = ready ? new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(ready.observedAt)) : null;
@@ -68,7 +74,7 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
     </header>
     {lead}
     {ready && ready.items.length ? <div className="inbox-filters" role="group" aria-label="Show">
-      {(["all", "exceptions", "requests"] as const).map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)}>
+      {(["all", "exceptions", "requests"] as const).map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => choose(value)}>
         {value === "all" ? "All" : value === "exceptions" ? "To review" : "Requests"}<span className="sr-only">,</span> <span className="inbox-filter-count">{counts[value]}</span>
       </button>)}
     </div> : null}
@@ -84,18 +90,18 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
     </div> : <>
       {shown.map(section => <section key={section.id} className="inbox-section" data-section={section.id} aria-labelledby={`inbox-${section.id}`}>
         <h2 id={`inbox-${section.id}`}>{section.title}<span className="sr-only">,</span> <span className="inbox-section-count">{section.items.length}</span></h2>
-        <ul className="inbox-list">{groupInboxItems(section.items).map(entry => entry.kind === "item" ? <Row key={entry.item.id} item={entry.item} />
-          : <li key={entry.key} className={`inbox-group${entry.items[0].priority === "URGENT" ? " is-urgent" : ""}`}>
+        {section.id === "past" ? <p className="inbox-section-note">These times have passed. Review them for the record; they don’t need action now.</p> : null}
+        <ul className="inbox-list">{groupInboxItems(section.items).map(entry => entry.kind === "item" ? <Row key={entry.item.id} item={entry.item} calm={section.id === "past"} />
+          : <li key={entry.key} className={`inbox-group${entry.items[0].priority === "URGENT" && section.id !== "past" ? " is-urgent" : ""}`}>
             <details>
-              <summary><span className="inbox-icon" aria-hidden="true">{entry.items[0].priority === "URGENT" ? <WarningCircleIcon size={20} /> : <CalendarBlankIcon size={20} />}</span>
+              <summary><span className="inbox-icon" aria-hidden="true">{entry.items[0].priority === "URGENT" && section.id !== "past" ? <WarningCircleIcon size={20} /> : <CalendarBlankIcon size={20} />}</span>
                 <span className="inbox-copy"><strong>{entry.title}</strong><p>{entry.items.length} items · earliest first</p></span>
                 <span className="inbox-section-count">{entry.items.length}</span><CaretDownIcon className="inbox-group-caret" size={18} aria-hidden="true" /></summary>
-              <ul className="inbox-list">{entry.items.map(item => <Row key={item.id} item={item} />)}</ul>
+              <ul className="inbox-list">{entry.items.map(item => <Row key={item.id} item={item} calm={section.id === "past"} />)}</ul>
             </details>
           </li>)}</ul>
       </section>)}
       {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
-      <p className="inbox-note inbox-swipe-hint">On a phone, swipe a time-off request right to approve or left to decline.</p>
     </>}
   </div>;
 }

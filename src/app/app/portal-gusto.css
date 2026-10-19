@@ -127,6 +127,15 @@ html body .app-shell.nevora-portal .page-frame .button.ghost { background: trans
 html body .app-shell.nevora-portal .page-frame .button.ghost:hover:not(:disabled) { background: var(--g-accent-wash); }
 html body .app-shell.nevora-portal .page-frame :is(.button,.pw-button,.ncc-button):active:not(:disabled) { transform: scale(.98); }
 html body .app-shell.nevora-portal :is(button,.button):disabled { opacity: .55; }
+/* One disabled look for button-shaped actions (O4, 2026-10-18). A disabled action drops the
+ * brand fill and is not faded, so it can't pass for an available one and its label stays
+ * readable (#5F6368 on #F6F7F8 is 5.7:1). The second selector outranks the phone primary rule
+ * in mobile-workforce.css, which repaints every primary teal. Employee corporate pages keep
+ * their own disabled rule. */
+html body .app-shell.nevora-portal:not([data-employee-corporate="true"]) .page-frame :is(.button,.nto-button,.pw-button,.ncc-button,button.primary):disabled,
+html body .app-shell.nevora-portal[data-mobile-workforce="true"]:not([data-employee-corporate="true"]) .page-frame :is(.button,.nto-button,.pw-button,.ncc-button,button.primary):disabled {
+  opacity: 1; border-color: var(--g-hairline); background: var(--g-inset); color: var(--g-muted); box-shadow: none; cursor: not-allowed;
+}
 
 /* One button shape on phones (phone foundations, D4 with phone type). Primary and secondary
  * buttons, including the page stragglers the 390 inventory found, take 8px corners, 44px

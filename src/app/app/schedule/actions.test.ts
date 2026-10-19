@@ -25,13 +25,13 @@ vi.mock('@/lib/data/acknowledgements',()=>({clearWeekAcknowledgements:m.clear}))
 vi.mock('@/lib/data/publication-revisions',()=>({publishScheduleWithRevision:m.publish}));
 vi.mock('@/lib/data/positions',()=>({listPositions:async()=>[]}));
 vi.mock('@/lib/data/employees',()=>({listEmployees:vi.fn()}));
-vi.mock('@/lib/data/schedules',()=>({insertShift:m.insert,updateShift:m.update,deleteShift:m.remove,ensureSchedule:async()=> 'a',getShiftValidationContext:async()=>({}),getShiftForManagement:async()=>({id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek}),listWeekShifts:async()=>m.shifts}));
+vi.mock('@/lib/data/schedules',()=>({insertShift:m.insert,updateShift:m.update,deleteShift:m.remove,ensureSchedule:async()=> 'a',getShiftValidationContext:async()=>({}),getShiftForManagement:async()=>({id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'}),listWeekShifts:async()=>m.shifts}));
 vi.mock('@/lib/data/schedule-templates',()=>({listTemplateShifts:async()=>[{employeeId:'E',locationId:'loc-1',positionId:'barista',dayOffset:6,startTime:m.templateStart,endTime:'17:00'},{employeeId:'BLOCKED',locationId:'loc-1',dayOffset:1,startTime:'09:00',endTime:'17:00'}],archiveScheduleTemplate:vi.fn(),createTemplateFromWeek:vi.fn()}));
 import { applyTemplateAction } from './templates/actions';
 import { createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction,copyPreviousWeekAction,setAvailabilityDeadlineAction } from './actions';
 function form(){const data=new FormData();Object.entries({operationId:'11111111-1111-4111-8111-111111111111',shiftId:'s',employeeId:'E',locationId:'loc-1',weekStart:'2030-10-07',date:'2030-10-07',startTime:'09:00',endTime:'17:00',confirmWarnings:'yes'}).forEach(([k,v])=>data.set(k,v));return data;}
 beforeEach(()=>{vi.clearAllMocks();m.role='MANAGER';m.existingWeek='2030-10-07';m.templateStart='09:00';});
-it.each([['publish',publishScheduleAction,'&location=loc-1&published=loc-1'],['create',createShiftAction,'&location=loc-1'],['update',updateShiftAction,'&updated=1'],['delete',deleteShiftAction,'&deleted=1']] as const)('%s returns without provider contact or blanket acknowledgement invalidation',async(_,action,suffix)=>{
+it.each([['publish',publishScheduleAction,'&location=loc-1&published=loc-1'],['create',createShiftAction,'&location=loc-1&day=2030-10-07#schedule-employee-E'],['update',updateShiftAction,'&location=loc-1&day=2030-10-07&updated=1#schedule-employee-E'],['delete',deleteShiftAction,'&location=loc-1&day=2030-10-08&deleted=1#schedule-employee-E']] as const)('%s returns without provider contact or blanket acknowledgement invalidation',async(_,action,suffix)=>{
   await expect(action(form())).rejects.toMatchObject({destination:`/app/schedule?week=2030-10-07${suffix}`});
   expect(m.provider).not.toHaveBeenCalled();expect(m.send).not.toHaveBeenCalled();expect(m.clear).not.toHaveBeenCalled();
 });
@@ -112,6 +112,6 @@ it('copy and template wrappers never substitute client assignment fields for the
 
 it('a newly saved second-location shift returns to that location rather than all locations',async()=>{
  const data=form();data.set('locationId','loc-2');
- await expect(createShiftAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&location=loc-2'});
+ await expect(createShiftAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&location=loc-2&day=2030-10-07#schedule-employee-E'});
  expect(m.insert).toHaveBeenCalledWith(expect.objectContaining({scheduleId:'a',employeeId:'E'}));
 });

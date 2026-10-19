@@ -48,7 +48,7 @@ export function AvailabilityTeamList({ employees, employeeId }: {
     <p className="sr-only" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "employee" : "employees"} shown</p>
     <div className="av-review-column-headings" aria-hidden="true"><span>Employee / submission</span><span>Available hours</span></div>
     <div className="av-team-list">
-      {visible.map(employee => <article ref={employee.employeeId === employeeId ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} className={`av-person-row${employee.employeeId === employeeId ? " selected" : ""}`} key={employee.employeeId} aria-label={`${employee.employeeName} availability`}>
+      {visible.map(employee => <article ref={employee.employeeId === employeeId ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} className={`av-person-row${employee.employeeId === employeeId ? " selected" : ""}${employee.submitted ? "" : " missing"}`} key={employee.employeeId} aria-label={`${employee.employeeName} availability`}>
         <div className="av-person">
           <span className="av-avatar" aria-hidden="true">{employee.employeeName.trim().split(/\s+/).slice(0, 2).map(name => name[0]).join("")}</span>
           <div className="av-person-copy"><h3>{employee.employeeName}</h3><p className="av-location"><MapPinIcon size={14} aria-hidden="true" />{employee.locationName}</p>
@@ -56,7 +56,9 @@ export function AvailabilityTeamList({ employees, employeeId }: {
             {employee.updatedLabel ? <small>Updated {employee.updatedLabel}</small> : null}
           </div>
         </div>
-        <div className="av-person-hours">{employee.windows.length ? <ul className="av-hour-list" aria-label={`${employee.employeeName} available hours`}>{employee.windows.map(window => <li key={window.id}><strong>{DAYS[window.dayOfWeek]}</strong><span>{formatTime(window.startTime)} – {formatTime(window.endTime)}</span></li>)}</ul> : <div className={`av-person-note${employee.submitted ? "" : " missing"}`}><strong>{employee.submitted ? "No available hours this week" : "Awaiting a submission"}</strong><p>{employee.submitted ? "This employee submitted that they cannot work this week." : "Weekly hours will appear when this employee submits."}</p></div>}</div>
+        <div className="av-person-hours">{employee.windows.length ? <ul className="av-hour-list" aria-label={`${employee.employeeName} available hours`}>{employee.windows.map(window => <li key={window.id}><strong>{DAYS[window.dayOfWeek]}</strong><span>{formatTime(window.startTime)} – {formatTime(window.endTime)}</span></li>)}</ul> : employee.submitted ? <div className="av-person-note"><strong>No available hours this week</strong><p>This employee submitted that they cannot work this week.</p></div>
+          // U2: a missing submission is one quiet line, not a repeated card; the pill already says "Not submitted".
+          : <p className="av-person-pending">Hours appear after they submit.</p>}</div>
       </article>)}
       {!visible.length ? <div className="av-empty"><UsersIcon size={30} aria-hidden="true" /><h3>{employees.length ? "No matching submissions" : "No active employees"}</h3><p>{employees.length ? "Choose another filter to view the team." : "Employee and Lead submissions will appear here."}</p>{employees.length ? <button className="av-button secondary" type="button" onClick={() => setFilter("all")}>Show all employees</button> : null}</div> : null}
     </div>

@@ -6,6 +6,7 @@ import { EmployeeProfileTabs } from "@/components/employee-profile-tabs";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
+import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import "./employee-profile.css";
 import { requireSessionMutationProof } from "@/lib/auth/session";
@@ -146,6 +147,24 @@ export default async function EmployeeProfilePage({
                 </Link>
               </section>
             ) : null}
+            {canManageCore && employee.active && employee.id !== actor.id ? (
+              <section className="profile-pin">
+                <span className="profile-pin-icon" aria-hidden="true">
+                  <LockKeyIcon size={22} />
+                </span>
+                <div>
+                  <h2>Portal sign-in</h2>
+                  <p>Help them back in after you verify who they are.</p>
+                </div>
+                <Link
+                  className="button secondary"
+                  href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`}
+                >
+                  Account recovery
+                  <CaretRightIcon size={18} aria-hidden="true" focusable="false" />
+                </Link>
+              </section>
+            ) : null}
           </>
         }
         scheduling={
@@ -189,7 +208,10 @@ export default async function EmployeeProfilePage({
               <p>
                 Operational review is unavailable until scheduling hour settings
                 have been explicitly established. No maximum is created by this
-                review.
+                review.{" "}
+                <Link className="profile-inline-link" href={`/app/schedule/settings#target-${encodeURIComponent(employee.id)}`}>
+                  Set weekly hours
+                </Link>
               </p>
             )}
           </section>

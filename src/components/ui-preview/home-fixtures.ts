@@ -109,7 +109,7 @@ export const previewManagerHome: ComponentProps<typeof ManagerDashboard> = {
   workspaceName: records.workspace.name, timeZone, firstName: 'Fictional', role: 'OWNER',
   weekStart: previewWeek, weekLabel: 'Oct 12–18, 2026', previousWeek: '2026-10-05', nextWeek: '2026-10-19',
   view: 'overview', readyLocationCount: 1, totalLocations: records.locations.length,
-  availabilitySubmitted: 0, activeEmployees: records.people.length, unavailableAllWeek: 0,
+  availabilitySubmitted: 0, availabilityEligible: records.people.length, activeEmployees: records.people.length, unavailableAllWeek: 0,
   coverageIssueCount: 0, coverageConfigured: true, pendingRequestCount: 0, managerActions: actions,
   days: records.days.map(day => ({date: day.date, weekday: new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'})
     .format(new Date(`${day.date}T12:00:00Z`)), day: day.date.slice(-2), shiftCount: day.count, gapCount: 0})),
@@ -120,5 +120,5 @@ export const previewManagerHome: ComponentProps<typeof ManagerDashboard> = {
       totalBlocks: 0, coveredBlocks: 0, uncoveredBlocks: 0,
       scheduleStatus: schedule?.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | undefined};
   }),
-  scheduleRoster: [], hours: [], requestCounts: {timeOff: 0, exchange: 0, callout: 0}, latestRevision: {revisionNumber: 1, sourceType: 'PUBLISH', createdAt: '2026-10-09T18:30:00.000Z'},
+  hours: [], latestRevision: {revisionNumber: 1, sourceType: 'PUBLISH', createdAt: '2026-10-09T18:30:00.000Z'},
 };

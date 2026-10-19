@@ -18,6 +18,10 @@ import {employeeTimecardPresentation} from './employee-timecard-presentation';
 
 const stamp=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at));
 const issueNames:Record<string,string>={period_open:'Period is still open',open_entry:'Missing clock out',open_break:'Open break',pending_correction:'Correction awaiting review',overlapping_time:'Overlapping recorded time'};
+// C2: a period that hasn't ended is normal waiting, not an exception. The server
+// flag still blocks approval; only its presentation changes.
+const needsAttention=(card:Timecard)=>employeeTimecardPresentation(card.issues).tone==='warning';
+const shortDate=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric'}).format(new Date(`${value}T12:00:00Z`));
 const periodDate=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'}).format(new Date(`${value}T12:00:00Z`));
 function Details({card}:{card:Timecard}){
   return <div className={styles.details}>
@@ -145,7 +149,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   }
   const currentActor=snapshotActor===actorId;
   usePrivateFragmentFocus('timecard-',currentActor&&data?.state==='ready');
-  const cards=currentActor&&data?.state==='ready'?[...data.cards].sort((a,b)=>Number(b.card.issues.length>0)-Number(a.card.issues.length>0)||a.card.employeeName.localeCompare(b.card.employeeName)):[];
+  const cards=currentActor&&data?.state==='ready'?[...data.cards].sort((a,b)=>Number(needsAttention(b.card))-Number(needsAttention(a.card))||a.card.employeeName.localeCompare(b.card.employeeName)):[];
   const eligible=cards.filter(item=>!batchExclusion(item,actorId,batchAction));
   return <section className={(corporate?'employee-corporate-timecards ':'')+styles.root+(manager?' '+styles.managerRoot:'')} aria-label={manager?'Manager timecards':'Your period timecard'}>
     <div className={(corporate?'employee-corporate-period ':'')+styles.periodPanel}>
@@ -158,7 +162,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     </form>
     <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}</p>
     </div>
-    {manager&&currentActor&&data?.state==='ready'&&cards.length?<dl className={styles.overview} aria-label="Period overview"><div><dt>Timecards</dt><dd>{cards.length}</dd></div><div><dt>Need attention</dt><dd>{cards.filter(item=>item.card.issues.length>0).length}</dd></div><div><dt>Finalized</dt><dd>{cards.filter(item=>item.state==='FINALIZED').length}</dd></div></dl>:null}
+    {manager&&currentActor&&data?.state==='ready'&&cards.length?<dl className={styles.overview} aria-label="Period overview"><div><dt>Timecards</dt><dd>{cards.length}</dd></div><div><dt>Need attention</dt><dd>{cards.filter(item=>needsAttention(item.card)).length}</dd></div><div><dt>Finalized</dt><dd>{cards.filter(item=>item.state==='FINALIZED').length}</dd></div></dl>:null}
     {!manager?<Link href="/app/my-time" className={corporate?employeeRowClass('employee-corporate-correction-link '+styles.link):styles.link}><NavIcon name="clock" size={18}/>{corporate?<><span className="employee-corporate-desktop-copy">Request a correction in My time →</span><span className="employee-corporate-mobile-copy">Request a correction<small>Continue in My time</small></span><CaretRightIcon className="employee-corporate-caret" size={20} aria-hidden="true"/></>:'Request a correction in My time →'}</Link>:null}
     {manager&&currentActor&&data?.state==='ready'?<section className={styles.batch} aria-label="Selected timecard review">
       <details open={selected.length>0||!!review||!!outcomes||!!pending}>
@@ -187,23 +191,26 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     {cards.map(item=>{
       // D2: one row per person (Gusto/Square pattern). Same controls and names; entries and history open under Details.
       const id=item.card.employeeId,name=item.card.employeeName,exclusion=batchExclusion(item,actorId,batchAction),own=actorId===id;
-      return <article key={id} className={styles.row} tabIndex={-1} id={`timecard-${id}`} data-attention={item.card.issues.length>0||undefined}>
+      const tone=employeeTimecardPresentation(item.card.issues).tone,waiting=!own&&tone==='neutral'&&item.card.issues.length>0;
+      return <article key={id} className={styles.row} tabIndex={-1} id={`timecard-${id}`} data-attention={tone==='warning'||undefined}>
         <div className={styles.rowMain}>
           <span className={styles.rowSelect}><input type="checkbox" aria-label={`Select ${name}`} checked={selected.includes(id)} disabled={busy||!!pending||!!outcomes||!!exclusion||(!selected.includes(id)&&selected.length>=100)} onChange={e=>{setSelected(ids=>e.target.checked?ids.length<100?[...ids,id]:ids:ids.filter(value=>value!==id));setReview(null);setConfirmed(false);}}/></span>
-          <div className={styles.rowIdentity}><h2>{name}</h2><small>{periodDate(period.startDate)} – {periodDate(period.endDate)}</small></div>
+          <div className={styles.rowIdentity}><h2 title={name}>{name}</h2><small>{periodDate(period.startDate)} – {periodDate(period.endDate)}</small></div>
           <span className={styles.rowState}><strong className={styles.state} data-state={item.state}>{item.state.replaceAll('_',' ').toLowerCase()}</strong></span>
           <dl className={styles.rowTotals}><div><dt>Recorded</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt>Breaks</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
-          <div className={styles.rowAttention}>{item.card.issues.length?<><NavIcon name="alert" size={16}/><span>{issueNames[item.card.issues[0]]}{item.card.issues.length>1?<small> +{item.card.issues.length-1} more</small>:null}</span></>
-            :own?<span className={styles.rowQuiet}>Needs a different manager</span>:<span className={styles.rowQuiet}>No issues found</span>}</div>
+          <div className={styles.rowAttention} data-tone={item.card.issues.length?tone:undefined}>{item.card.issues.length?<><NavIcon name={tone==='neutral'?'clock':'alert'} size={16}/><span>{issueNames[item.card.issues[0]]}{item.card.issues.length>1?<small> +{item.card.issues.length-1} more</small>:null}</span></>
+            :<span className={styles.rowQuiet}>No issues found</span>}</div>
           <div className={styles.rowActions}>
             {pending?.employeeId===id?<button type="button" className="button primary" disabled={busy} onClick={()=>void act(item,pending.action)}>Retry pending action</button>:
               item.state==='FINALIZED'?<span className={styles.rowQuiet}>Reopen in Details</span>:
+              own?<span className={styles.rowQuiet}>Needs a different manager</span>:
+              waiting&&!pending&&!outcomes?<span className={styles.rowQuiet}>Approve after {shortDate(period.endDate)}</span>:
               <><button type="button" className="button primary" disabled={busy||!!pending||!!outcomes||own||!!item.card.issues.length} onClick={()=>void act(item,'APPROVE')}>Approve timecard</button>
                 <button type="button" className="button secondary" disabled={busy||!!pending||!!outcomes||own||item.state!=='APPROVED'||!!item.card.issues.length} onClick={()=>void act(item,'FINALIZE')}>Finalize period</button></>}
           </div>
         </div>
         <details className={styles.rowDetails}><summary>Details<span className="sr-only"> for {name}</span><NavIcon name="chevronRight" size={16}/></summary>
-          {item.card.issues.length?<div className={styles.issues}><NavIcon name="alert" size={20}/><div><h3>Needs attention</h3><ul>{item.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>Review the entries and resolve open time or corrections before approval.</p></div></div>:null}
+          {item.card.issues.length?<div className={styles.issues} data-tone={tone}><NavIcon name={tone==='neutral'?'clock':'alert'} size={20}/><div><h3>{tone==='neutral'?'Period information':'Needs attention'}</h3><ul>{item.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>{tone==='neutral'?`Totals can change until the period ends. Approval opens after ${shortDate(period.endDate)}.`:'Review the entries and resolve open time or corrections before approval.'}</p></div></div>:null}
           {exclusion&&!item.card.issues.length?<p className={styles.note}>Not selectable for {batchAction==='APPROVE'?'approval':'finalization'}: {{self:'a different manager must review',issues:'resolve timecard issues first',state:'incompatible current state'}[exclusion]}.</p>:null}
           <Details card={item.card}/>
           {item.state==='FINALIZED'&&pending?.employeeId!==id?<div className={styles.actions}><label>Reopen reason<input value={notes[id]??''} maxLength={500} onChange={e=>setNotes({...notes,[id]:e.target.value})}/></label>

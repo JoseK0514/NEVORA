@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Owner batch 2 evidence</title>
+<style>
+:root{--ink:#1C1C1C;--muted:#5F6368;--line:#ECEDEF;--bg:#F6F7F8;--accent:#077572}
+body{margin:0;padding:24px;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
+h1{font-size:22px;margin:0 0 4px}p.lead{margin:0 0 24px;color:var(--muted)}
+.pair{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 20px 20px;margin:0 0 20px;width:max-content;max-width:100%}
+.pair h2{font-size:16px;margin:0 0 2px}.pair p{margin:0 0 12px;color:var(--muted);max-width:780px}
+.row{display:flex;gap:20px;flex-wrap:wrap}.shot{display:grid;gap:6px;align-content:start}
+.shot b{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.shot.after b{color:var(--accent)}
+.crop{overflow:hidden;border:1px solid var(--line);border-radius:8px;background:#fff;display:flex;flex-direction:column}
+.crop.bottom{justify-content:flex-end}.crop img{display:block;flex:none}
+</style></head><body>
+<h1>Owner portal, batch 2</h1><p class="lead">Fictional QA data, local preview. Before is 44e831d (batch 1); after is branch claude/owner-batch-2.</p>
+<section class="pair" id="r1-schedule"><h2>R1 · One editable schedule</h2><p>Old link /app?view=schedule&amp;day=…&amp;location=…&amp;employee=AUDIT-E used to open Home's second schedule editor. It now redirects to the Schedule page for the same week, day and location, with Alexandra's row focused.</p>
+<div class="row"><div class="shot"><b>Before · old link</b><div class="crop" style="width:390px;height:844px"><img src="before/old-schedule-390.png"></div></div>
+<div class="shot after"><b>After · same link</b><div class="crop" style="width:390px;height:844px"><img src="after/old-schedule-link-landing-390.png"></div></div></div></section>
+<section class="pair" id="r1-requests"><h2>R1 · One landing for requests</h2><p>/app?view=requests, Home's "Pending requests", Time off's and Shift requests' "All requests" now open the Inbox filtered to Requests.</p>
+<div class="row"><div class="shot"><b>Before · old link</b><div class="crop" style="width:390px;height:844px"><img src="before/old-requests-390.png"></div></div>
+<div class="shot after"><b>After · same link</b><div class="crop" style="width:390px;height:844px"><img src="after/inbox-requests-filter-390.png"></div></div></div></section>
+<section class="pair" id="r1-tabs"><h2>R1 · Home's own views only</h2><p>The dashboard tab row drops Schedule and Requests; "Team" reads "Team overview" (the metrics summary). Employees stays the team directory.</p>
+<div class="row"><div class="shot"><b>Before · 1440</b><div class="crop" style="width:1180px;height:330px"><img src="before/team-overview-1440.png" style="margin-left:-250px"></div></div>
+<div class="shot after"><b>After · 1440</b><div class="crop" style="width:1180px;height:330px"><img src="after/team-overview-1440.png" style="margin-left:-250px"></div></div></div></section>
+<section class="pair" id="w2-recovery"><h2>W2 · Account recovery from the employee's page</h2><p>Employee page gains "Portal sign-in → Account recovery". The form opens with their ID filled in and Back returns to that employee. Opened directly, Back goes to Employees (it went to the old Home Team view).</p>
+<div class="row"><div class="shot after"><b>After · employee page</b><div class="crop bottom" style="width:390px;height:520px"><img src="after/employee-390.png"></div></div>
+<div class="shot"><b>Before · recovery</b><div class="crop" style="width:390px;height:520px"><img src="before/account-recovery-390.png" style="margin-top:-60px"></div></div>
+<div class="shot after"><b>After · recovery, prefilled</b><div class="crop" style="width:390px;height:520px"><img src="after/account-recovery-prefilled-390.png" style="margin-top:-60px"></div></div></div></section>
+<section class="pair" id="w2-hours"><h2>W2 · Missing hour settings link to that person</h2><p>"Set weekly hours" opens Scheduling rules at this employee's row.</p>
+<div class="row"><div class="shot"><b>Before · 390</b><div class="crop bottom" style="width:390px;height:300px"><img src="before/employee-scheduling-before-390.png"></div></div>
+<div class="shot after"><b>After · 390</b><div class="crop bottom" style="width:390px;height:300px"><img src="after/employee-scheduling-after-390.png"></div></div></div></section>
+<section class="pair" id="w2-schedule"><h2>W2 · Shift forms return to the same day and person</h2><p>Cancel on Edit shift (and Back on Create shift, and the redirect after save or delete) returns to the shift's week, location and day, with that person's row focused. Before, Cancel opened the week with no location, day or person.</p>
+<div class="row"><div class="shot after"><b>After · Cancel from Edit shift</b><div class="crop" style="width:390px;height:844px"><img src="after/edit-cancel-landing-390.png"></div></div></div></section>
+<section class="pair" id="c1-names"><h2>C1 · One name per page</h2><p>More, Search, the section tab and the heading all say "Time exports" (search for "payroll export" still finds it). Company profile's heading matches its entry. Notifications explains it is alerts; decisions are in Inbox.</p>
+<div class="row"><div class="shot"><b>Before · More</b><div class="crop" style="width:390px;height:844px"><img src="before/more-sheet-before-390.png"></div></div>
+<div class="shot after"><b>After · More</b><div class="crop" style="width:390px;height:844px"><img src="after/more-sheet-after-390.png"></div></div>
+<div class="shot"><b>Before · heading</b><div class="crop" style="width:390px;height:300px"><img src="before/exports-390.png" style="margin-top:-60px"></div><div class="crop" style="width:390px;height:250px"><img src="before/company-profile-390.png" style="margin-top:-60px"></div><div class="crop" style="width:390px;height:280px"><img src="before/notifications-390.png" style="margin-top:-60px"></div></div>
+<div class="shot after"><b>After · heading</b><div class="crop" style="width:390px;height:300px"><img src="after/exports-390.png" style="margin-top:-60px"></div><div class="crop" style="width:390px;height:250px"><img src="after/company-profile-390.png" style="margin-top:-60px"></div><div class="crop" style="width:390px;height:280px"><img src="after/notifications-390.png" style="margin-top:-60px"></div></div></div></section>
+</body></html>

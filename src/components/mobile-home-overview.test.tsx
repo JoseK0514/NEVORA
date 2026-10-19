@@ -7,7 +7,7 @@ import { MobileHomeOverview, MobileHomeTools } from "./mobile-home-overview";
 it("keeps selected-week facts, draft context and exact week destinations in the phone summary", () => {
   const html = renderToStaticMarkup(<MobileHomeOverview weekStart="2026-10-12" weekLabel="Oct 12 – Oct 18"
     previousWeek="2026-10-05" nextWeek="2026-10-19" plannedShifts={21}
-    availabilityReceived={6} activeEmployees={10} publishedLocations={1} locations={2}/>);
+    availabilityReceived={6} availabilityEligible={10} publishedLocations={1} locations={2}/>);
   expect(html).toContain('href="/app?week=2026-10-05"');
   expect(html).toContain('href="/app?week=2026-10-19"');
   expect(html).toContain('href="/app/schedule?week=2026-10-12"');
@@ -20,9 +20,12 @@ it("keeps selected-week facts, draft context and exact week destinations in the 
 
 it("preserves the remaining manager views behind meaningful phone actions", () => {
   const html = renderToStaticMarkup(<MobileHomeTools weekStart="2026-10-12"/>);
-  for (const view of ['attendance', 'team', 'requests', 'activity']) {
+  for (const view of ['attendance', 'team', 'activity']) {
     expect(html).toContain(`href="/app?week=2026-10-12&amp;view=${view}"`);
   }
+  // R1: requests have one landing, the Inbox filtered to Requests.
+  expect(html).toContain('href="/app/inbox?filter=requests"');
+  expect(html).not.toContain('view=requests');
   expect(html).toContain('Review attendance');
   expect(html).toContain('Pending requests');
   expect(html).toContain('href="/app/clocker-recovery"');
@@ -32,7 +35,7 @@ it("preserves the remaining manager views behind meaningful phone actions", () =
 it("an empty roster shows an empty bar rather than dividing by zero", () => {
   const html = renderToStaticMarkup(<MobileHomeOverview weekStart="2026-10-12" weekLabel="Oct 12 – Oct 18"
     previousWeek="2026-10-05" nextWeek="2026-10-19" plannedShifts={0}
-    availabilityReceived={0} activeEmployees={0} publishedLocations={0} locations={0}/>);
+    availabilityReceived={0} availabilityEligible={0} publishedLocations={0} locations={0}/>);
   expect(html).toContain('0<span> of 0</span>');
   expect(html).toContain('style="width:0%"');
 });

@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Owner batch 1 evidence</title>
+<style>
+:root{--ink:#1C1C1C;--muted:#5F6368;--line:#ECEDEF;--bg:#F6F7F8;--accent:#077572}
+body{margin:0;padding:24px;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
+h1{font-size:22px;margin:0 0 4px}p.lead{margin:0 0 24px;color:var(--muted)}
+.pair{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 20px 20px;margin:0 0 20px;width:max-content;max-width:100%}
+.pair h2{font-size:16px;margin:0 0 2px}.pair p{margin:0 0 12px;color:var(--muted);max-width:760px}
+.row{display:flex;gap:20px;flex-wrap:wrap}.shot{display:grid;gap:6px}
+.shot b{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.shot.after b{color:var(--accent)}
+.crop{overflow:hidden;border:1px solid var(--line);border-radius:8px;background:#fff}
+.crop img{display:block}
+</style></head><body>
+<h1>Owner portal, batch 1</h1><p class="lead">Fictional QA data, local preview. Before is HEAD fae3512; after is branch claude/owner-batch-1.</p>
+<section class="pair" id="o1"><h2>O1 · Inbox no longer approves without the request details</h2><p>Approve, Decline, swipe and the swipe hint are gone. "Review time off" opens the full request (dates, full day, note) with the decision there.</p>
+<div class="row"><div class="shot"><b>Before · 390</b><div class="crop" style="width:390px;height:430px"><img src="before/inbox-390.png" style="margin-top:-1963px"></div></div>
+<div class="shot after"><b>After · 390</b><div class="crop" style="width:390px;height:430px"><img src="after/inbox-390.png" style="margin-top:-1831px"></div></div>
+<div class="shot after"><b>After · lands on full review</b><div class="crop" style="width:390px;height:430px"><img src="after/request-review-landing-390.png" style="margin-top:-180px"></div></div></div></section>
+<section class="pair" id="o2"><h2>O2 · Availability counts the people asked to submit</h2><p>0 of 10 counted owners and managers. Now 0 of 5, labelled "Employees and leads". Team size stays 10.</p>
+<div class="row"><div class="shot"><b>Before · 1440</b><div class="crop" style="width:400px;height:300px"><img src="before/home-1440.png" style="margin:-450px 0 0 -1030px"></div></div>
+<div class="shot after"><b>After · 1440</b><div class="crop" style="width:400px;height:300px"><img src="after/home-1440.png" style="margin:-450px 0 0 -1030px"></div></div></div></section>
+<section class="pair" id="o3"><h2>O3 · All-day coverage reads "All day"</h2><p>00:00–24:00 showed "12:00 AM – 12:00 AM". Stored values unchanged; an end at 24:00 now reads "midnight".</p>
+<div class="row"><div class="shot"><b>Before · 390</b><div class="crop" style="width:390px;height:230px"><img src="before/rules-390.png" style="margin-top:-4347px"></div></div>
+<div class="shot after"><b>After · 390</b><div class="crop" style="width:390px;height:230px"><img src="after/rules-390.png" style="margin-top:-4347px"></div></div></div></section>
+<section class="pair" id="o4"><h2>O4 + C2 · Timecards: open period is neutral, disabled looks disabled</h2><p>Before: 10 "need attention" and a solid teal Approve on every row, all disabled. After: 0 need attention, a clock icon, one line saying when approval opens; your own card says it needs a different manager.</p>
+<div class="row"><div class="shot"><b>Before · 390</b><div class="crop" style="width:390px;height:900px"><img src="before/timecards-390.png" style="margin-top:-250px"></div></div>
+<div class="shot after"><b>After · 390</b><div class="crop" style="width:390px;height:900px"><img src="after/timecards-390.png" style="margin-top:-250px"></div></div></div></section>
+<section class="pair" id="o4d"><h2>O4 · Closed period, desktop: enabled vs disabled</h2><p>Enabled Approve stays teal; disabled Finalize is a grey surface with a readable label. Columns line up, and the long name no longer runs into Details.</p>
+<div class="row"><div class="shot"><b>Before · 1440</b><div class="crop" style="width:1150px;height:860px"><img src="before/timecards-closed-1440.png" style="margin:-440px 0 0 -270px"></div></div>
+<div class="shot after"><b>After · 1440</b><div class="crop" style="width:1150px;height:860px"><img src="after/timecards-closed-1440.png" style="margin:-440px 0 0 -270px"></div></div></div></section>
+<section class="pair" id="w2"><h2>Missed punch → that person's timecard</h2><p>"Review timecard" for Morgan now opens /app/timecards#timecard-AUDIT-M with Morgan's row focused, instead of the top of Timecards.</p>
+<div class="row"><div class="shot after"><b>After · 390</b><div class="crop" style="width:390px;height:844px"><img src="after/missed-punch-landing-390.png"></div></div></div></section>
+</body></html>

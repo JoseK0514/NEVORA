@@ -4,7 +4,6 @@ import {expect, it, vi} from 'vitest';
 import type {ActionCenter, ActionItem} from '../lib/action-center/project';
 
 vi.mock('next/link', () => ({default: ({children, ...props}: React.ComponentProps<'a'>) => createElement('a', props, children)}));
-vi.mock('@/app/app/requests/actions', () => ({reviewTimeOffAction: vi.fn()}));
 const {InboxSurface} = await import('./manager-inbox');
 
 const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW'): ActionItem =>
@@ -16,12 +15,14 @@ const ready = (items: ActionItem[], limitedAttendance = false): ActionCenter => 
 const html = (snapshot: ActionCenter | null, connection: Parameters<typeof InboxSurface>[0]['connection'] = 'ready') =>
   renderToStaticMarkup(createElement(InboxSurface, {snapshot, connection, onRefresh: () => {}, timeZone: 'America/Puerto_Rico'}));
 
-it('lists exceptions before requests with an in-place decision only on time off', () => {
+it('lists exceptions before requests and sends every decision to its full review', () => {
   const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT'), item('EXCHANGE:e1', 'EXCHANGE', 'requests')]));
   expect(output.indexOf('id="inbox-urgent"')).toBeGreaterThan(0); expect(output.indexOf('id="inbox-urgent"')).toBeLessThan(output.indexOf('id="inbox-requests"'));
-  expect(output).toContain('class="swipe-row inbox-row"');
-  expect(output.match(/name="requestId" value="r1"/g)).toHaveLength(1);
-  expect(output.match(/name="decision"/g)).toHaveLength(2);
+  // O1: no Approve/Decline or swipe without the request's dates, duration and note.
+  expect(output).not.toContain('name="decision"');
+  expect(output).not.toContain('<form');
+  expect(output).not.toContain('swipe');
+  expect(output).toContain('href="/app/requests?tab=pending&amp;requestId=r1#request-r1"');
   expect(output).toContain('inbox-row is-urgent');
   expect(output).toContain('Updated <time dateTime="2026-10-16T14:30:00Z">10:30 AM</time>');
 });
@@ -36,4 +37,9 @@ it('keeps counts separate from labels for assistive tech', () => {
   const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests')]));
   expect(output).toMatch(/Requests<span class="sr-only">,<\/span> <span class="inbox-filter-count">1<\/span>/);
   expect(output).toMatch(/>Requests<span class="sr-only">,<\/span> <span class="inbox-section-count">1<\/span><\/h2>/);
+});
+it('opens on the filter named in the URL (W2)', () => {
+  const output = renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]), connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', initialFilter: 'requests'}));
+  expect(output).toMatch(/aria-pressed="true"[^>]*>Requests/);
+  expect(output).not.toContain('id="inbox-urgent"');
 });

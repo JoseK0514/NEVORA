@@ -74,6 +74,15 @@ export function formatTime(time: string) {
   return `${displayHour}:${minute} ${suffix}`;
 }
 
+/** A stored time range for display. 24:00 is the end of the day, so 00:00–24:00
+ * reads "All day" and an end at 24:00 reads "midnight" rather than a second
+ * 12:00 AM, which looks like zero hours (O3). Stored values are unchanged. */
+export function formatTimeRange(startTime: string, endTime: string) {
+  const endOfDay = endTime.slice(0, 5) === "24:00";
+  if (endOfDay && startTime.slice(0, 5) === "00:00") return "All day";
+  return `${formatTime(startTime)} – ${endOfDay ? "midnight" : formatTime(endTime)}`;
+}
+
 export function durationMinutes(startTime: string, endTime: string) {
   const toMinutes = (time: string) => {
     const [hours, minutes] = time.slice(0, 5).split(":").map(Number);

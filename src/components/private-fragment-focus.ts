@@ -13,7 +13,10 @@ export function usePrivateFragmentFocus(prefix:string,ready:boolean){
    const row=document.getElementById(id);if(!row)return;
    focused.current=id;row.focus({preventScroll:true});row.scrollIntoView({block:'center'});
   };
-  const frame=requestAnimationFrame(focus);window.addEventListener('hashchange',focus);
-  return()=>{cancelAnimationFrame(frame);window.removeEventListener('hashchange',focus);};
+  // A frame later, so a target revealed by the same change (an opened disclosure) can take focus.
+  let frame=requestAnimationFrame(focus);
+  const changed=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(focus);};
+  window.addEventListener('hashchange',changed);
+  return()=>{cancelAnimationFrame(frame);window.removeEventListener('hashchange',changed);};
  },[prefix,ready]);
 }

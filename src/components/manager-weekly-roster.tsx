@@ -60,12 +60,14 @@ function Shift({ shift }: { shift: RosterShift }) {
   </Link>;
 }
 
-export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone }: {
+export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId }: {
   employees: RosterEmployee[];
   dates: string[];
   today: string;
   reviewDay?: string;
   timeZone: string;
+  /** The selected location, so a new shift's Back returns to it (W2). */
+  locationId?: string;
 }) {
   const container = useRef<HTMLElement>(null);
   const picker = useRef<HTMLDivElement>(null);
@@ -117,8 +119,9 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
     return () => media.revert();
   }, { scope: container });
 
-  // Full-week view keeps unscheduled people one click away instead of a wall of empty cells.
-  const collapse = day === "all" && !query.trim();
+  // Unscheduled people stay one tap away instead of a wall of empty cards, in the
+  // full week and on a single day (U2). Searching shows everyone who matches.
+  const collapse = !query.trim();
   const scheduled = filtered.filter(employee => employee.shifts.some(shift => visibleDates.includes(shift.date)));
   const unscheduled = filtered.filter(employee => !scheduled.includes(employee));
   const renderRow = (employee: RosterEmployee) => {
@@ -128,7 +131,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
           {visibleDates.map(date => {
             const shifts = employee.shifts.filter(shift => shift.date === date);
             return <div className={`mws-day-cell${!shifts.length ? " empty" : ""}${date === today ? " today" : ""}`} key={date} role="group" aria-label={`${formatDayLabel(date).weekday}, ${formatDayLabel(date).day}`}>
-              {shifts.length ? shifts.map(shift => <Shift shift={shift} key={shift.id} />) : <><span className="mws-no-assignment">No assignment</span><Link className="mws-add" tabIndex={-1} aria-hidden="true" href={`/app/schedule/new?week=${encodeURIComponent(dates[0])}&date=${encodeURIComponent(date)}&employeeId=${encodeURIComponent(employee.id)}`}>+ Add</Link></>}
+              {shifts.length ? shifts.map(shift => <Shift shift={shift} key={shift.id} />) : <><span className="mws-no-assignment">No assignment</span><Link className="mws-add" tabIndex={-1} aria-hidden="true" href={`/app/schedule/new?week=${encodeURIComponent(dates[0])}&date=${encodeURIComponent(date)}&employeeId=${encodeURIComponent(employee.id)}${locationId ? `&locationId=${encodeURIComponent(locationId)}` : ""}`}>+ Add</Link></>}
             </div>;
           })}
           {!shownShifts.length ? <p className="mws-mobile-empty">{day === "all" ? "No assignments this week" : "No assignments on this day"}</p> : null}
@@ -155,7 +158,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       <div className="mws-grid-heading" aria-hidden="true"><span>Team member</span>{visibleDates.map(date => <div className={date === today ? "today" : ""} key={date} data-day-total={dayTotal(filtered, date)}><span>{formatDayLabel(date).weekday}</span><strong>{Number(date.slice(8))}</strong>{date === today ? <small>Today</small> : null}</div>)}</div>
       {(collapse ? scheduled : filtered).map(renderRow)}
       {collapse && unscheduled.length ? <details className="mws-unscheduled">
-        <summary><span>Show {unscheduled.length} unscheduled</span><CaretDownIcon size={16} aria-hidden="true" /></summary>
+        <summary><span>{day === "all" ? `Show ${unscheduled.length} unscheduled` : `Show ${unscheduled.length} not scheduled this day`}</span><CaretDownIcon size={16} aria-hidden="true" /></summary>
         {unscheduled.map(renderRow)}
       </details> : null}
     </div> : <EmptyState className="mws-empty" status icon={<UsersIcon size={22} />} illustration={employees.length ? undefined : "setup-checklist"} title={employees.length ? "No team members match" : "Your team schedule starts here"}

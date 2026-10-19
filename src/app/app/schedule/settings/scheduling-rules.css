@@ -82,6 +82,27 @@
 .rules-empty p { margin: 6px 0 14px; font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.65; }
 .rules-empty .button { margin-top: 8px; }
 .rules-period-list > .rules-empty { padding: 12px 0 0; }
+/* U3: weekly hours filter, and coverage periods grouped by location. */
+.rules-hours-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 0 24px 16px; }
+.rules-hours-search { flex: 1 1 220px; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid var(--design-border); border-radius: var(--design-radius-control); background: var(--design-surface-elevated); color: var(--design-text-secondary); }
+.rules-hours-search input { flex: 1; min-width: 0; min-height: 42px; border: 0; background: transparent; font: inherit; font-size: calc(14 * var(--type-unit, 1px)); color: var(--design-text-primary); }
+.rules-hours-search input:focus { outline: none; }
+.rules-hours-search:focus-within { outline: 2px solid var(--design-accent-ink); outline-offset: 2px; }
+.rules-hours-missing { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid var(--design-border); border-radius: var(--design-radius-pill); background: var(--design-surface-elevated); color: var(--design-text-primary); font: inherit; font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; cursor: pointer; }
+.rules-hours-missing[aria-pressed="true"] { border-color: var(--design-text-primary); background: var(--design-text-primary); color: var(--design-surface-elevated); }
+.rules-hours-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--design-surface-inset); color: var(--design-text-primary); font-size: calc(12 * var(--type-unit, 1px)); font-weight: 600; font-variant-numeric: tabular-nums; }
+.rules-hours-row[hidden] { display: none; }
+.rules-hours-none { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 20px 24px; color: var(--design-text-secondary); }
+.rules-hours-none p { margin: 0; font-size: calc(13 * var(--type-unit, 1px)); }
+.rules-period-group { border: 1px solid var(--design-surface); border-radius: 14px; background: var(--design-surface-elevated); }
+.rules-period-group > summary { min-height: 56px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; list-style: none; cursor: pointer; }
+.rules-period-group > summary::-webkit-details-marker { display: none; }
+.rules-period-group > summary > span { display: grid; gap: 2px; min-width: 0; }
+.rules-period-group > summary strong { font-size: calc(14 * var(--type-unit, 1px)); font-weight: 600; }
+.rules-period-group > summary small { font-size: calc(12 * var(--type-unit, 1px)); color: var(--design-text-secondary); }
+.rules-period-group > summary svg:last-child { margin-left: auto; flex-shrink: 0; transition: transform 180ms ease; }
+.rules-period-group[open] > summary svg:last-child { transform: rotate(90deg); }
+.rules-period-group-list { display: grid; gap: 10px; padding: 0 12px 12px; }
 .scheduling-rules-page .shift-policy-disclosure { margin: 0; padding: 20px 24px; border: 0; background: transparent; border-radius: 0; }
 .scheduling-rules-page .shift-policy-disclosure > summary { min-height: 44px; cursor: pointer; font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.6; }
 .scheduling-rules-page .shift-policy-disclosure > p { margin: 12px 0 20px; font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.65; color: var(--design-text-secondary); }
@@ -113,6 +134,7 @@
   .rules-staffing-row { grid-template-columns: minmax(0, 1fr) 120px; gap: 14px; padding: 18px 20px; }
   .rules-lead-toggle, .rules-lead-choice { grid-column: 1 / -1; }
   .rules-hours-row { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 18px 20px; }
+  .rules-hours-filter { padding: 0 20px 14px; }
   .rules-hour-fields { max-width: 360px; }
   .rules-savebar { padding: 18px 20px; flex-direction: column; align-items: stretch; gap: 14px; }
   .rules-add-period { margin: 16px 20px; }

@@ -13,9 +13,9 @@ function Fraction({ value, total }: { value: number; total: number }) {
 
 /** Selected-week planning facts (Gusto "This week" anatomy), on every width. */
 export function MobileHomeOverview({ weekStart, weekLabel, previousWeek, nextWeek,
-  plannedShifts, availabilityReceived, activeEmployees, publishedLocations, locations }: {
+  plannedShifts, availabilityReceived, availabilityEligible, publishedLocations, locations }: {
   weekStart: string; weekLabel: string; previousWeek: string; nextWeek: string;
-  plannedShifts: number; availabilityReceived: number; activeEmployees: number;
+  plannedShifts: number; availabilityReceived: number; availabilityEligible: number;
   publishedLocations: number; locations: number;
 }) {
   return <section className="mobile-home-schedule" aria-labelledby="mobile-home-schedule-title">
@@ -27,7 +27,7 @@ export function MobileHomeOverview({ weekStart, weekLabel, previousWeek, nextWee
     </div>
     <dl className="mobile-home-week-facts">
       <div><dt>Planned shifts <small>Includes drafts</small></dt><dd><span className="home-fact-value">{plannedShifts}</span></dd></div>
-      <div><dt>Availability received</dt><Fraction value={availabilityReceived} total={activeEmployees}/></div>
+      <div><dt>Availability received <small>Employees and leads</small></dt><Fraction value={availabilityReceived} total={availabilityEligible}/></div>
       <div><dt>Locations published</dt><Fraction value={publishedLocations} total={locations}/></div>
     </dl>
     <Link href={`/app/schedule?week=${encodeURIComponent(weekStart)}`} className="mobile-home-schedule-action"><span>View schedule</span><CaretRightIcon size={18} aria-hidden="true"/></Link>
@@ -51,7 +51,7 @@ export function MobileHomeTools({ weekStart }: { weekStart: string }) {
   const actions = [
     { href: `/app?week=${week}&view=attendance`, label: "Review attendance", Icon: ClockIcon },
     { href: `/app?week=${week}&view=team`, label: "Team overview", Icon: UsersThreeIcon },
-    { href: `/app?week=${week}&view=requests`, label: "Pending requests", Icon: ClipboardTextIcon },
+    { href: "/app/inbox?filter=requests", label: "Pending requests", Icon: ClipboardTextIcon },
     { href: `/app?week=${week}&view=activity`, label: "Schedule activity", Icon: ClockCounterClockwiseIcon },
     { href: "/app/clocker-recovery", label: "Clocker recovery", Icon: WrenchIcon },
     { href: "/app/account-recovery", label: "Account recovery", Icon: LockKeyIcon },

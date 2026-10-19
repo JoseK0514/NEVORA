@@ -113,7 +113,7 @@
 
 .rows { min-width: 0; border: 1px solid var(--tc-line); border-radius: 12px; background: var(--tc-panel); overflow: hidden; }
 .rowHeader, .rowMain {
-  display: grid; grid-template-columns: 40px minmax(180px, 1.5fr) 112px 88px 80px minmax(160px, 1.4fr) auto; align-items: center; column-gap: 16px;
+  display: grid; grid-template-columns: 40px minmax(180px, 1.5fr) 112px 88px 80px minmax(160px, 1.4fr) minmax(19rem, auto); align-items: center; column-gap: 16px;
 }
 .rowHeader { min-height: 44px; padding: 0 16px; border-bottom: 1px solid var(--tc-line); background: var(--tc-inset); color: var(--tc-muted); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; }
 .rowHeaderActions { text-align: right; }
@@ -137,6 +137,7 @@
 .rowAttention > svg { flex: none; }
 .rowAttention small { color: var(--tc-muted); font-size: calc(13 * var(--type-unit, 1px)); }
 .rowQuiet { color: var(--tc-muted); font-size: calc(14 * var(--type-unit, 1px)); }
+.rowAttention[data-tone="neutral"] { color: var(--tc-muted); }
 .rowActions { display: flex; justify-content: flex-end; gap: 8px; }
 .rowActions :global(.button), .managerRoot .rowActions button { min-height: 36px; padding: 0 12px; font-size: calc(13 * var(--type-unit, 1px)); white-space: nowrap; }
 .rowDetails { padding: 0 16px 0 72px; }
@@ -180,25 +181,25 @@
 @media print { .rowSelect, .rowActions, .rowDetails > summary { display: none; } .row { break-inside: avoid; } }
 
 /* D2 refinements: one line per person on desktop. The period is chosen above,
- * so rows don't repeat it; Details sits under the name; unavailable actions
- * recede instead of showing a faded primary on every row. */
+ * so rows don't repeat it; Details sits under the name. Unavailable actions use
+ * the portal's shared disabled look (portal-gusto.css, O4). */
 .managerRoot .rows .rowIdentity h2 { margin: 0; font: 600 calc(15 * var(--type-unit, 1px))/1.35 var(--design-font-body); letter-spacing: 0; }
 .managerRoot .rows .rowIdentity small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .managerRoot .batchHeading h2 { font-size: calc(15 * var(--type-unit, 1px)); }
-.managerRoot .rowActions button:disabled { opacity: 1; border-color: var(--g-hairline, #ECEDEF); background: transparent; color: var(--tc-muted); }
 @media (min-width: 761px) {
   .row { position: relative; }
   .rowMain { min-height: 68px; align-items: start; padding: 12px 16px 26px; }
   .rowMain > :not(.rowIdentity) { align-self: center; margin-top: 4px; }
   .rowDetails { padding: 0 16px 0 72px; }
   .rowDetails > summary { position: absolute; top: 36px; left: 72px; min-height: 28px; margin: 0; }
+  /* Details sits a fixed distance under the name, so the name keeps to one line (full name in the heading and its title). */
+  .managerRoot .rows .rowIdentity h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rowDetails[open] { padding-top: 4px; }
 }
 @media (max-width: 760px) {
   .rowActions { flex-wrap: nowrap; }
   .rowActions :global(.button), .managerRoot .rowActions button { flex: 1 1 0; min-width: 0; padding: 0 10px; }
 }
-.managerRoot.managerRoot .rows .rowActions button:global(.button):disabled { opacity: 1; border-color: var(--g-hairline, #ECEDEF); background: transparent; color: var(--tc-muted); }
 @media (min-width: 761px) { .rowTotals > div { align-self: center; margin-top: 4px; } }
 @media (max-width: 760px) { .managerRoot .overview > div + div { border-left: 0; } .managerRoot .overview > div { padding: 0 16px 0 0; } }
 /* Targets stay at least 44px (project rule), with the row kept to one line of content. */

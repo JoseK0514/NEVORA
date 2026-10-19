@@ -387,7 +387,7 @@ export default async function SchedulePage({
       <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
       <ManagerIssueFocus prefix="schedule-" />
       {reviewDay?<div className="manager-schedule-context manager-issue-target" id="schedule-review" tabIndex={-1}><p>Opened for review: {formatDayLabel(reviewDay).weekday} {formatDayLabel(reviewDay).day} · {selectedLocation==='all'?'All locations':locations.find(location=>location.id===selectedLocation)?.shortName}</p><Link href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link></div>:null}
-      <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone} />
+      <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone} locationId={selectedLocation === "all" ? undefined : selectedLocation} />
     </div>
   );
 }

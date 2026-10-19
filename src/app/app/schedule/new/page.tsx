@@ -97,7 +97,8 @@ export default async function NewShiftPage({
     listPositions(),
   ]);
   const locationId = locations.some(location => location.id === params.locationId) ? params.locationId! : "";
-  const cancelHref = `/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}`;
+  // W2: Back returns to the day and person the form was opened for, when it was opened for one.
+  const cancelHref = `/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}${params.date === date ? `&day=${date}` : ""}${params.employeeId ? `#schedule-employee-${encodeURIComponent(params.employeeId)}` : ""}`;
   return (
     <ShiftWorkspace title="Create shift" description="Choose who’s working, where, and when." backHref={cancelHref} backLabel="Back to schedule" context={formatWeekRange(weekStart)}>
       <CreateShiftForm action={createShiftAction} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />

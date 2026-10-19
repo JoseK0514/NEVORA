@@ -19,3 +19,7 @@ it.each([undefined,'foreign-location'])('all-locations or invalid entry requires
  expect(html).toContain('<option value="" disabled="" selected="">Select location</option>');
  expect(html).not.toContain('type="hidden" name="locationId"');
 });
+it('opened for a day and person, Back returns to that day and person (W2)',async()=>{
+ const html=renderToStaticMarkup(await NewShiftPage({searchParams:Promise.resolve({week:'2026-10-05',locationId:'loc-2',date:'2026-10-07',employeeId:'AUDIT-E'})}));
+ expect(html).toContain('href="/app/schedule?week=2026-10-05&amp;location=loc-2&amp;day=2026-10-07#schedule-employee-AUDIT-E"');
+});

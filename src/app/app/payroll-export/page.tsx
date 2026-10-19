@@ -14,6 +14,6 @@ export default async function PayrollExportPage({searchParams}:{searchParams:Pro
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
-  return <div className="employee-view payroll-page"><header className="payroll-page-heading"><div className="payroll-page-mark"><PayrollExportMotion /></div><div><h1>Payroll exports</h1><p>Review finalized time and prepare files for your payroll system.</p></div></header>
+  return <div className="employee-view payroll-page"><header className="payroll-page-heading"><div className="payroll-page-mark"><PayrollExportMotion /></div><div><h1>Time exports</h1><p>Review finalized time and prepare files for your payroll system.</p></div></header>
     <PayrollExport key={session.id} initialPeriod={period} actorId={session.id}/></div>;
 }

@@ -1,0 +1,142 @@
+[
+  [
+    "missed-punch-link",
+    {
+      "url": "/app/timecards#timecard-AUDIT-M",
+      "focused": "timecard-AUDIT-M",
+      "inView": true
+    }
+  ],
+  [
+    "inbox-tab-stops-with-approve-or-decline",
+    []
+  ],
+  [
+    "inbox-review-link-reached",
+    [
+      "Review time off: Time-off request|solid"
+    ]
+  ],
+  [
+    "request-review-landing",
+    {
+      "url": "/app/requests?tab=pending&requestId=audit-timeoff#request-audit-timeoff",
+      "focused": "request-audit-timeoff",
+      "facts": "Oct 28, 2026 – Oct 29, 2026\nFull day\n\nFictional family appointment"
+    }
+  ],
+  [
+    "page 320 /app/inbox",
+    {
+      "docW": 320,
+      "axe": []
+    }
+  ],
+  [
+    "page 320 /app",
+    {
+      "docW": 320,
+      "axe": []
+    }
+  ],
+  [
+    "page 320 /app/timecards",
+    {
+      "docW": 320,
+      "axe": []
+    }
+  ],
+  [
+    "page 320 /app/timecards?start=2026-09-21&end=2026-09-27",
+    {
+      "docW": 320,
+      "axe": []
+    }
+  ],
+  [
+    "page 320 /app/schedule/settings",
+    {
+      "docW": 320,
+      "axe": []
+    }
+  ],
+  [
+    "page 390 /app/inbox",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "page 390 /app",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "page 390 /app/timecards",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "page 390 /app/timecards?start=2026-09-21&end=2026-09-27",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "page 390 /app/schedule/settings",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "page 1440 /app/inbox",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "page 1440 /app",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "page 1440 /app/timecards",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "page 1440 /app/timecards?start=2026-09-21&end=2026-09-27",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "page 1440 /app/schedule/settings",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "disabled-hover",
+    {
+      "bg": "rgb(246, 247, 248)",
+      "cursor": "not-allowed",
+      "tabIndex": 0,
+      "disabled": true
+    }
+  ]
+]
