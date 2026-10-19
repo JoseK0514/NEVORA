@@ -1,0 +1,334 @@
+[
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0002,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Choose the days and times you » 13px",
+   "p.av-no-hours «No available hours» 13px",
+   "p.av-input-hint «An end time of midnight includ» 12px",
+   "p. «Your saved usual week.» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0002,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0006,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 100,
+  "route": "/app/exchange/callout?shiftId=cloud-payroll-qa-b",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0002,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 125,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0522,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 125,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Choose the days and times you » 13px",
+   "p.av-no-hours «No available hours» 13px",
+   "p.av-input-hint «An end time of midnight includ» 12px",
+   "p. «Your saved usual week.» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0171,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 125,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0164,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 125,
+  "route": "/app/exchange/callout?shiftId=cloud-payroll-qa-b",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 150,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1139,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 150,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Choose the days and times you » 13px",
+   "p.av-no-hours «No available hours» 13px",
+   "p.av-input-hint «An end time of midnight includ» 12px",
+   "p. «Your saved usual week.» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0524,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 150,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0256,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 150,
+  "route": "/app/exchange/callout?shiftId=cloud-payroll-qa-b",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 200,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.3808,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 200,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Choose the days and times you » 13px",
+   "p.av-no-hours «No available hours» 13px",
+   "p.av-input-hint «An end time of midnight includ» 12px",
+   "p. «Your saved usual week.» 12px"
+  ],
+  "targets": [],
+  "cls": 0.1572,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 200,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0472,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "768",
+  "text": 200,
+  "route": "/app/exchange/callout?shiftId=cloud-payroll-qa-b",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]
