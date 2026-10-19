@@ -7292,5 +7292,131 @@
   "page": "/app/payroll-export",
   "path": "/api/manager/inbox-count",
   "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:26.578Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:32.087Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:35.704Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:36.938Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:20:39.511Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:44.315Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:50.416Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:54.842Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:20:55.651Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:20:58.648Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:03.480Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:04.717Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:21:07.193Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:08.220Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:21:11.975Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:13.003Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:21:16.884Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:17.647Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
  }
 ]

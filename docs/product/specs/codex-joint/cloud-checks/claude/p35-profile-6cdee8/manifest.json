@@ -1663,6 +1663,29 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00073-matrix-AUDIT-M-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T19-21-08-607Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00073-matrix-AUDIT-M-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app/schedule/settings,/app/schedule/templates,/app/timecards,/app/updates",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "fe035a02633c67843a248ce9a43033a1e7691ddc53f6c4d7b7db6faa91f402ff",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12716,
