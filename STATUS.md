@@ -142,3 +142,10 @@ Wave C round 4 has 0 newly verified defects so far, with incomplete coverage. �
 ID cross-reference: this cloud report’s **TC-P3-32 means Availability’s From/Until labels** (the chat calls those TC-P3-33 in round 5). The chat’s separate TC-P3-32 concerns dates. Cloud **ST-P3-24** means the Availability pending-button jump; the chat’s **P3-ST-24** is a placeholder item. Preserve these distinct IDs when re-checking.
 
 2026-10-19 20:16 UTC · post-merge Profile initial-read c34043b · install/type/lint pass; full tests/checks running · publication pending
+2026-10-19 20:25:24 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 1, P2 0 · not zero
+
+New WR-WC-25: phone dialog buttons collapse to 52px at 200% while their labels need 88px, making parts unreadable. The earlier blank swatch and toast overlap remain independently fixed. Full exit coverage is incomplete.
+
+2026-10-19 20:27:13 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 2, P2 0 · not zero
+
+TC-WC-28 adds Account recovery’s verification textarea edge: #D5DAD9 on white = 1.41:1 in both browsers/roles. The stronger shared textarea rule overrides Wave C’s intended 3.45:1 edge; coordinate the shared-style update.

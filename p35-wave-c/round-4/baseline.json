@@ -1,0 +1,3186 @@
+[
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings",
+    "name": "chromium-QAOWNER-settings-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/workspace",
+    "name": "chromium-QAOWNER-workspace-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/locations",
+    "name": "chromium-QAOWNER-locations-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/locations/loc-1",
+    "name": "chromium-QAOWNER-loc-1-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/locations/new",
+    "name": "chromium-QAOWNER-new-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/branding",
+    "name": "chromium-QAOWNER-branding-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/features",
+    "name": "chromium-QAOWNER-features-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/company-policies",
+    "name": "chromium-QAOWNER-company-policies-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/breaks",
+    "name": "chromium-QAOWNER-breaks-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/positions",
+    "name": "chromium-QAOWNER-positions-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Position name",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/clocker",
+    "name": "chromium-QAOWNER-clocker-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "chromium-QAOWNER-account-recovery-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-QAOWNER-clocker-recovery-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings",
+    "name": "chromium-QAOWNER-settings-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/workspace",
+    "name": "chromium-QAOWNER-workspace-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Changing the business timezone requires a separately reviewed conversion because operational records already exist.",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/locations",
+    "name": "chromium-QAOWNER-locations-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/locations/loc-1",
+    "name": "chromium-QAOWNER-loc-1-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/locations/new",
+    "name": "chromium-QAOWNER-new-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/branding",
+    "name": "chromium-QAOWNER-branding-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/features",
+    "name": "chromium-QAOWNER-features-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/company-policies",
+    "name": "chromium-QAOWNER-company-policies-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/breaks",
+    "name": "chromium-QAOWNER-breaks-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/positions",
+    "name": "chromium-QAOWNER-positions-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Position name",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/clocker",
+    "name": "chromium-QAOWNER-clocker-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "chromium-QAOWNER-account-recovery-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-QAOWNER-clocker-recovery-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings",
+    "name": "chromium-QAOWNER-settings-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/workspace",
+    "name": "chromium-QAOWNER-workspace-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/locations",
+    "name": "chromium-QAOWNER-locations-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/locations/loc-1",
+    "name": "chromium-QAOWNER-loc-1-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/locations/new",
+    "name": "chromium-QAOWNER-new-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/branding",
+    "name": "chromium-QAOWNER-branding-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/features",
+    "name": "chromium-QAOWNER-features-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/company-policies",
+    "name": "chromium-QAOWNER-company-policies-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/breaks",
+    "name": "chromium-QAOWNER-breaks-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/positions",
+    "name": "chromium-QAOWNER-positions-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Position name",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/settings/clocker",
+    "name": "chromium-QAOWNER-clocker-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "chromium-QAOWNER-account-recovery-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-QAOWNER-clocker-recovery-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings",
+    "name": "chromium-QAOWNER-settings-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/workspace",
+    "name": "chromium-QAOWNER-workspace-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/locations",
+    "name": "chromium-QAOWNER-locations-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/locations/loc-1",
+    "name": "chromium-QAOWNER-loc-1-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/locations/new",
+    "name": "chromium-QAOWNER-new-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/branding",
+    "name": "chromium-QAOWNER-branding-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/features",
+    "name": "chromium-QAOWNER-features-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/company-policies",
+    "name": "chromium-QAOWNER-company-policies-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/breaks",
+    "name": "chromium-QAOWNER-breaks-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/positions",
+    "name": "chromium-QAOWNER-positions-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Position name",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/settings/clocker",
+    "name": "chromium-QAOWNER-clocker-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "chromium-QAOWNER-account-recovery-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-QAOWNER-clocker-recovery-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings",
+    "name": "chromium-QAOWNER-settings-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/workspace",
+    "name": "chromium-QAOWNER-workspace-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/locations",
+    "name": "chromium-QAOWNER-locations-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/locations/loc-1",
+    "name": "chromium-QAOWNER-loc-1-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/locations/new",
+    "name": "chromium-QAOWNER-new-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/branding",
+    "name": "chromium-QAOWNER-branding-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/features",
+    "name": "chromium-QAOWNER-features-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/company-policies",
+    "name": "chromium-QAOWNER-company-policies-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/breaks",
+    "name": "chromium-QAOWNER-breaks-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/positions",
+    "name": "chromium-QAOWNER-positions-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Position name",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/clocker",
+    "name": "chromium-QAOWNER-clocker-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "chromium-QAOWNER-account-recovery-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-QAOWNER-clocker-recovery-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings",
+    "name": "chromium-QAOWNER-settings-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/workspace",
+    "name": "chromium-QAOWNER-workspace-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/locations",
+    "name": "chromium-QAOWNER-locations-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/locations/loc-1",
+    "name": "chromium-QAOWNER-loc-1-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/locations/new",
+    "name": "chromium-QAOWNER-new-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/branding",
+    "name": "chromium-QAOWNER-branding-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/features",
+    "name": "chromium-QAOWNER-features-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/company-policies",
+    "name": "chromium-QAOWNER-company-policies-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/breaks",
+    "name": "chromium-QAOWNER-breaks-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/positions",
+    "name": "chromium-QAOWNER-positions-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Position name",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/clocker",
+    "name": "chromium-QAOWNER-clocker-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "chromium-QAOWNER-account-recovery-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-QAOWNER-clocker-recovery-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings",
+    "name": "chromium-QAOWNER-settings-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/workspace",
+    "name": "chromium-QAOWNER-workspace-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/locations",
+    "name": "chromium-QAOWNER-locations-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/locations/loc-1",
+    "name": "chromium-QAOWNER-loc-1-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/locations/new",
+    "name": "chromium-QAOWNER-new-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/branding",
+    "name": "chromium-QAOWNER-branding-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/features",
+    "name": "chromium-QAOWNER-features-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/company-policies",
+    "name": "chromium-QAOWNER-company-policies-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/breaks",
+    "name": "chromium-QAOWNER-breaks-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/positions",
+    "name": "chromium-QAOWNER-positions-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Position name",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/clocker",
+    "name": "chromium-QAOWNER-clocker-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "chromium-QAOWNER-account-recovery-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-QAOWNER-clocker-recovery-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings",
+    "name": "chromium-QAOWNER-settings-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/workspace",
+    "name": "chromium-QAOWNER-workspace-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/locations",
+    "name": "chromium-QAOWNER-locations-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/locations/loc-1",
+    "name": "chromium-QAOWNER-loc-1-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/locations/new",
+    "name": "chromium-QAOWNER-new-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/branding",
+    "name": "chromium-QAOWNER-branding-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/features",
+    "name": "chromium-QAOWNER-features-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/company-policies",
+    "name": "chromium-QAOWNER-company-policies-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/breaks",
+    "name": "chromium-QAOWNER-breaks-844x390-t200",
+    "status": 200,
+    "errors": [
+      "A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:\n\n- A server/client branch `if (typeof window !== 'undefined')`.\n- Variabl"
+    ],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/positions",
+    "name": "chromium-QAOWNER-positions-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Position name",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Use a job title or qualification your team recognizes.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Active position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Available for new assignments",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Turning this off stops new assignments. Employees keep their qualifications and history.",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Save position",
+        "clips": [
+          "section.nv-card"
+        ]
+      },
+      {
+        "text": "Cancel",
+        "clips": [
+          "section.nv-card"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/settings/clocker",
+    "name": "chromium-QAOWNER-clocker-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "chromium-QAOWNER-account-recovery-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-QAOWNER-clocker-recovery-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "chromium-AUDIT-M-account-recovery-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-AUDIT-M-clocker-recovery-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "chromium-AUDIT-M-account-recovery-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-AUDIT-M-clocker-recovery-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "chromium-AUDIT-M-account-recovery-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-AUDIT-M-clocker-recovery-1440x900-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "chromium-AUDIT-M-account-recovery-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-AUDIT-M-clocker-recovery-844x390-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "chromium-AUDIT-M-account-recovery-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-AUDIT-M-clocker-recovery-390x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "chromium-AUDIT-M-account-recovery-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-AUDIT-M-clocker-recovery-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "chromium-AUDIT-M-account-recovery-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-AUDIT-M-clocker-recovery-320x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "chromium-AUDIT-M-account-recovery-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 844,
+    "height": 390,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "chromium-AUDIT-M-clocker-recovery-844x390-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 844
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/locations",
+    "name": "webkit-QAOWNER-locations-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/branding",
+    "name": "webkit-QAOWNER-branding-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/settings/company-policies",
+    "name": "webkit-QAOWNER-company-policies-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 390
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "webkit-QAOWNER-account-recovery-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "webkit-QAOWNER-clocker-recovery-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/locations",
+    "name": "webkit-QAOWNER-locations-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/branding",
+    "name": "webkit-QAOWNER-branding-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/settings/company-policies",
+    "name": "webkit-QAOWNER-company-policies-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 320
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "webkit-QAOWNER-account-recovery-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "webkit-QAOWNER-clocker-recovery-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/locations",
+    "name": "webkit-QAOWNER-locations-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/branding",
+    "name": "webkit-QAOWNER-branding-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/settings/company-policies",
+    "name": "webkit-QAOWNER-company-policies-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "webkit-QAOWNER-account-recovery-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "webkit-QAOWNER-clocker-recovery-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/account-recovery",
+    "name": "webkit-AUDIT-M-account-recovery-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "route": "/app/clocker-recovery",
+    "name": "webkit-AUDIT-M-clocker-recovery-390x844-t100",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 390
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "webkit-AUDIT-M-account-recovery-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "webkit-AUDIT-M-clocker-recovery-320x844-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 320
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/account-recovery",
+    "name": "webkit-AUDIT-M-account-recovery-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      },
+      {
+        "text": "Issuing another code retires unused earlier codes.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "text": 200,
+    "route": "/app/clocker-recovery",
+    "name": "webkit-AUDIT-M-clocker-recovery-1440x900-t200",
+    "status": 200,
+    "errors": [],
+    "ownSmall": [],
+    "splits": [],
+    "clipped": [
+      {
+        "text": "Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.",
+        "clips": [
+          "section.nv-card.wc-guide"
+        ]
+      }
+    ],
+    "documentWidth": 1440
+  }
+]
