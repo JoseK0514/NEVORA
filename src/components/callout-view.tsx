@@ -2,6 +2,7 @@ import { ReviewedCalloutForm } from "./reviewed-callout-form";
 import { Card, KitLink, PageBand } from "./kit/kit";
 import { Notice } from "./wave-a/parts";
 import { SwapShiftSummary } from "./swap-shift-summary";
+import { CalloutSentBoundary } from "./wave-a/callout-sent";
 import type { ExchangeShift } from "../lib/data/exchanges";
 
 /** Phase 3.5 Wave A: "Unable to work" on the kit (Employee and Lead). The shift, what happens next, then the reason. */
@@ -15,6 +16,7 @@ export function CalloutView({
   error?: string;
 }) {
   return (
+    <CalloutSentBoundary shift={shift}>
     <div className="nv-page wa-page wa-callout" data-nv-page="">
       <PageBand back={{ href: "/app/exchange?tab=my", label: "Shift requests" }} title="Unable to work" summary="Tell your manager you can’t work this shift." />
       <div className="nv-content wa-narrow">
@@ -41,5 +43,6 @@ export function CalloutView({
         </Card>
       </div>
     </div>
+    </CalloutSentBoundary>
   );
 }

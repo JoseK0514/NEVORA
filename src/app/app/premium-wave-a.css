@@ -390,3 +390,6 @@ html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [da
 
 /* The swap form's body is one column of cards, like the form itself. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-swap-body { display: flex; flex-direction: column; gap: var(--nv-s-4); }
+
+/* A form's own result line inside a card keeps the card's 20px inset. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .nv-card .wa-form > :is(.form-error, .form-success, a.swap-button, button.button) { margin: 0 var(--nv-s-5) var(--nv-s-5); width: auto; }

@@ -1,7 +1,7 @@
 # Wave A: round 2 (exit round)
 
 - **Round:** 2. Round 1 was run locally by five inspectors; its reports are in `inspection/` (alignment, stability, type-colour-copy, interaction-states, widths-roles). Every round-1 finding is fixed.
-- **Commit:** the head of `claude/p35-wave-a-1283c8` when this file was pushed (see `git log -1`).
+- **Commit:** the head of `claude/p35-wave-a-1283c8`. Pushed first at `2859ac4`; the head adds the swap and "Unable to work" sent states (below). Inspect the head.
 - **Exit round:** **yes.** Please run the full sweep by all five areas (the matrix in `INSPECTION-BRIEF.md`), plus the re-checks below. The fixes touched every Wave A page, so a re-check-only round would cover almost everything anyway.
 - **Brief for Wave A specifics:** `inspection/BRIEF.md` (pages, states, accounts, what's not Wave A's). `CODEX.md` lists what's set aside.
 
@@ -39,6 +39,11 @@ Submissions: only with every POST held and then aborted in the browser. Count PO
 - `src/components/wave-a/*`: `parts.tsx` (Field markup, FieldPair short variant, offline notice in FormActions), `pending-button.tsx` (result focus, single submit), `action-form.tsx` (new), `single-submit.ts` (new), `route-error.tsx` (new), `offline-notice.tsx` (new), `keep-duration.ts` (new), `shift-block.tsx`.
 - Pages and components: `manager-time-off.tsx`, `manager-shift-requests.tsx`, `manager-availability.tsx`, `availability-team-list.tsx`, `coverage-assistant.tsx`, `coverage-review-content.tsx`, `create-shift-form.tsx`, `schedule/{new,edit,coverage,copy-receipt}/*`, `employees/[employeeId]/*`, `employees/new/*`, `employee-scheduling-fields.tsx`, `reviewed-callout-form.tsx`, `reviewed-swap-form.tsx`, `swap-shift-summary.tsx`, `swap-page-content.tsx`, `clocker-pin-form.tsx`, and new `loading.tsx`/`error.tsx` in each Wave A segment.
 - Codex C1–C3 are read when present (decided-by line on the Time-off records, need counts on Coverage, described rows on the copy receipt); each falls back to today's behaviour.
+
+## Added after the first push
+
+- **Swap: choose, compare, send now have data.** The coordinator's seed gives AUDIT-E and AUDIT-SWAP reviewed rules and availability: as AUDIT-E, `/app/exchange/swap?sourceShiftId=audit-next-0-1` (or `audit-next-1-1`) shows two shifts (Riley Rivera, Sat and Sun). Checked locally: Send disabled until a choice, one POST on a double tap, "Sending…", a blocked send shows "Outcome uncertain…" with "Check & retry same request", focused.
+- **Sent states.** After a real send, the server stops offering that shift and refreshes the page; the page used to flip to "No shifts to swap" and lose the result. Swap and Unable to work now keep a steady sent page ("Swap request sent" / "Report sent", a focused notice, the shift(s), and the link to follow it). Real sends on local data are fine to test; cancel them afterwards from `/app/exchange?tab=requests` as AUDIT-E so the next check has targets again.
 
 ## Known, not Wave A's (don't file)
 

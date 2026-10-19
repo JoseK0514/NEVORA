@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { useCalloutSent } from "./wave-a/callout-sent";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SelectField } from "./select-field";
@@ -30,10 +31,23 @@ export function ReviewedCalloutForm({
   const router = useRouter();
   const noteInput = useRef<HTMLTextAreaElement>(null);
   const detailsId = useId();
+  // Once the report is recorded, the boundary above this form shows the result (the page refreshes underneath).
+  const markSent = useCalloutSent();
+  const body = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const form = body.current?.closest("form");
+    if (!form) return;
+    let submitted = false;
+    const onSubmit = () => { submitted = true; };
+    const observer = new MutationObserver(() => { if (submitted && form.querySelector(":scope > .form-success")) markSent(); });
+    form.addEventListener("submit", onSubmit, true);
+    observer.observe(form, { childList: true });
+    return () => { form.removeEventListener("submit", onSubmit, true); observer.disconnect(); };
+  }, [markSent]);
 
   return (
-    <ShiftChangeForm fields={fields ?? {}} className="wa-form shift-change-form">
-      <div className="wa-fields">
+    <ShiftChangeForm fields={fields ?? {}} className="wa-form shift-change-form" resolvedHref="/app/exchange?tab=requests">
+      <div className="wa-fields" ref={body}>
         <SelectField
           className="wa-select"
           name="reasonCode"
