@@ -4,7 +4,7 @@ import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime, weekStartFor } from "@/lib/date-utils";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
-import { Card, FilterPills, KitLink, PageBand, Row, Rows, Status, Tile } from "@/components/kit/kit";
+import { Card, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, Status, Tile } from "@/components/kit/kit";
 import { Fact, Facts, Notice } from "@/components/wave-a/parts";
 import { TimeOffReviewDecision } from "@/components/time-off-review-decision";
 import { ManagerIssueFocus } from './manager-issue-focus';
@@ -110,7 +110,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   return (
     <div className="nv-page wa-page wa-timeoff" data-nv-page="">
       <PageBand title="Time off" overlap={false}
-        summary={selected.id === "pending" ? (count ? `${plural(count)} waiting for your review.` : "Nothing is waiting for your review.") : `Your team’s ${selected.label.toLowerCase()} time off, newest first.`}
+        summary={selected.id === "pending" ? (count ? `${plural(count)} waiting for your review.` : "Nothing is waiting for your review.") : `Your team’s ${selected.label.toLowerCase()} time off, latest dates first.`}
         extra={<FilterPills label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} />} />
       <div className="nv-content">
         <ManagerIssueFocus prefix="request-" />
@@ -138,8 +138,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
             {count ? <Rows label={`${selected.label} time off`}>
               {requests.map(request => (
                 <Row key={request.id} title={request.employeeName}
-                  meta={<>{rangeLabel(request)} · {lengthLabel(request)}{request.reason ? <span className="wa-row-note">Note: {request.reason}</span> : null}</>}
-                  status={<Status tone={selected.id === "approved" ? "done" : "neutral"}>{selected.label}</Status>} />
+                  meta={<><MetaParts text={`${rangeLabel(request)} · ${lengthLabel(request)}`} />{request.reason ? <span className="wa-row-note">Note: {request.reason}</span> : null}</>} />
               ))}
             </Rows> : <div className="wa-card-body"><p className="wa-text wa-muted">{`No ${selected.label.toLowerCase()} time off yet. Decisions you make show up here.`}</p></div>}
           </Card>
