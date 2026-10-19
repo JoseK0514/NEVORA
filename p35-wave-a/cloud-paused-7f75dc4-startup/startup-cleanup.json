@@ -1,0 +1,14 @@
+[
+  {
+    "ownership": "/tmp/nevora-wa-paused/evidence-2026-10-19T20-32-03-387Z/owned-next-OGri5f/ownership.json",
+    "closedPid": 9371,
+    "clusterStopped": "/tmp/nevora-ui-preview-6a9a0134e2",
+    "generatedDependenciesRemoved": true
+  },
+  {
+    "ownership": "/tmp/nevora-wa-paused/evidence-2026-10-19T20-30-53-321Z/owned-next-He8AyV/ownership.json",
+    "closedPid": 5853,
+    "clusterStopped": "/tmp/nevora-ui-preview-646c7acf16",
+    "generatedDependenciesRemoved": true
+  }
+]

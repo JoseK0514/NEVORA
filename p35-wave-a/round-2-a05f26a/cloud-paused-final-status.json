@@ -1,0 +1,60 @@
+{
+  "sourceCheckpoint": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+  "candidateCheckpoint": "64f15e6",
+  "verdict": "incomplete; not zero",
+  "checkerCoverage": {
+    "cells": 4,
+    "passed": 4,
+    "page": "Add shift",
+    "role": "AUDIT-M",
+    "width": 320,
+    "text": [
+      100,
+      200
+    ],
+    "browsers": [
+      "chromium",
+      "webkit"
+    ],
+    "axe": true
+  },
+  "customCoverage": {
+    "completeCases": 3,
+    "browser": "chromium",
+    "page": "Swap",
+    "role": "AUDIT-E",
+    "conditions": [
+      "320/200 held press",
+      "1440/100 pending",
+      "1440/200 pending then320 resize"
+    ],
+    "fullMatrixStarted": false,
+    "thirdCaseAggregateNonGetRequests": 2,
+    "thirdCaseActionPathClassification": "unverified; no double-submit finding inferred"
+  },
+  "TC-WA-16": {
+    "sourceObservation": "rendered screenshot foreground161,165,167 on239,242,241;2.205:1",
+    "candidateSourceFixPresent": true,
+    "candidateSourceFixLocations": [
+      "src/components/kit/kit.css:347",
+      "src/app/app/portal-premium.css:1431"
+    ],
+    "computedStyleVerified": false,
+    "webkitReproduced": false,
+    "candidateBrowserFixVerified": false,
+    "independentlyClosed": false
+  },
+  "processes": "owned preview cleanly closed; no new browser work after pause",
+  "closureEvidence": "cloud-paused-closure.json",
+  "mainRemoteReportHashesUnchanged": {
+    "README.md": "f9f6163730d99845f4bfb8c03897acc3898f40d838ab42c6904362eeb5a5bb89",
+    "alignment.md": "46a02df54674372a734cbdcbc6c6d678c11a00ac3e7aff93ee1973132d9afebf",
+    "stability.md": "8546ef15d3444f71e4a369d1c0da7156a2863e47843e3dc11c7b2ba8190441b8",
+    "type-colour-copy.md": "640f3d0749cc06a937790f3cd82293160996210e1ec6e2db8afa949a54402a5b",
+    "interaction-states.md": "124748d2ed41da0e2cf5ef649199aba347a57c6a8b83303bff7c16688a1d84b5",
+    "widths-roles.md": "9207938c3b56085e4dffd34be018275d7137df2baeb421f52f76a8e836e4c532"
+  },
+  "sourceModified": false,
+  "committed": false,
+  "statusMdEdited": false
+}

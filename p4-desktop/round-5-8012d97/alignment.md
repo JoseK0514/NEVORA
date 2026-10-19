@@ -1,28 +1,30 @@
 # Alignment and geometry — Desktop round 5
 
-**Verdict: not zero; incomplete.** No new P0/P1/P2 finding has been certified by measured geometry yet. Do not interpret that as a zero result.
+**Verdict: not zero; incomplete.** No new alignment P0/P1/P2 was established in the limited measurements. This is not a zero exit.
 
 ## Earlier findings
 
-| IDs | Status at this checkpoint |
+| IDs | Recheck status |
 |---|---|
-| AL4-21, AL4-22, AL4-23, AL4-25, AL4-28, AL4-29 | Fixes present in exact source; measured closure pending. |
-| AL4-30 | Shared coordinator rule still multiplies scaled rem by text scale (`portal-premium.css:502`); large-text measurement pending. |
-| Other prior IDs | Historical status retained in `evidence/source-alignment.md`; no new closure claimed. |
+| AL4-21/22/23/25/28/29 | Fixes present in source; responsive geometry recheck not completed. |
+| AL4-30 | Coordinator-owned; the frozen source still has the double-scaling expression at `portal-premium.css:502`; no new large-text geometry measurement. |
+| Other IDs | Historical results retained in `evidence/source-alignment.md`; no new closure. |
 
 ## Checked and correct
 
-- Source review confirms My time higher-specificity card treatment; employee timecard 20px inset; Time exports inner sections 20px; Request pages defaults to one column and changes to three at 36rem. This is implementation provenance, not visual certification.
+- Owner1440/100 Inbox: loading and ready band remains `(276,93)`,1120×192px. Content columns both start at y245; list x292,width 589.59; pane x897.59,width482.39; gap 16px. [Measured JSON](evidence/limited-proof.json).
+- Request pages’ three whole labels fit one row at 1440/100: [viewport](evidence/shots/planning-controlled-1-ready.png). Other widths/text sizes were not judged.
+- Owner and Employee checker cells report no document overflow or undersized mouse targets.
 
 ## Gaps
 
-All geometry, screenshot and responsive judgments remain pending.
+Every unmeasured earlier precision issue, other widths/text sizes/roles, WebKit, collapsed sidebar, phone baseline comparisons, and full per-page geometry.
 
 
-Exact source: `claude/p4-desktop-240fe0` at `8012d9790e72987140f939c7d70e1df9612ea009`, detached `/workspace/inspect-desktop`. Read only. No app source edits, saves, decisions, sign-outs or production access. Fictional fixture-only owned preview.
+Exact source: `claude/p4-desktop-240fe0` at `8012d9790e72987140f939c7d70e1df9612ea009`, detached `/workspace/inspect-desktop`. Read only; fictional owned preview only. No app source edits or app mutations. No production access.
 
-The parent paused browser work for the candidate publication’s isolated gate runs. This is a checkpoint report, not an exit certification. Required matrix: 320, 360, 390, 430, landscape 844×390, 761, 768, 1023, 1024, 1179, 1180, 1440 and collapsed 1440; root text 100/125/150/200%; Chromium and WebKit; all brief roles/states. It remains incomplete.
+The unchanged checker completed **35 unique cells**: Owner 21 + Employee 14, Chromium 1440×900/100%, axe enabled; **14 raw pass / 21 raw fail**. Owner 19 cells include the documented absent `/api/manager/inbox-count`404; legacy folded-request/Reports/Settings/manager-Updates body floors are retained as out-of-scope observations. Employee’s two failures are TC-P4-22/23. Raw JSON is unchanged. See [checker summary](evidence/checker-summary.json), [Owner raw](evidence/checks-QAOWNER-chromium-1440-100.json), [Employee raw](evidence/checks-AUDIT-E-chromium-1440-100.json), [source round](evidence/source-ROUND.md).
 
-Evidence: [round metadata](evidence/round-metadata.json), [checker summary](evidence/checker-summary.json), [source round](evidence/source-ROUND.md). `checks.mjs` runs unchanged under the external-origin guard. Raw 404 failures are retained; `/api/manager/inbox-count` is absent by this branch’s documented contract and belongs to backend integration.
+**Exit matrix incomplete.** Gates required pausing browser work; the resumed scope was limited to font crops, a sidebar reference, and controlled Inbox CLS attribution. No WebKit, other widths, collapsed sidebar, full role/state matrix or full manual five-area sweep was completed. No earlier finding is independently closed beyond the measurements stated here. Full matrix requirements are retained in [metadata](evidence/round-metadata.json).
 
-Checkpoint addition: Employee 12/14 routes passed at 1440/100 Chromium with axe (Availability and My pay have small text). Combined raw result 14/35 pass; see unchanged JSON. Browser work is idle after this batch.
+All owned browser/checker/Next/PostgreSQL processes were stopped. Final closure verifies unchanged source and mirror, PostgreSQL stopped, and zero closure errors: [audit](evidence/closure-audit.json). Runtime substitutions are disclosed in [adapter manifest](evidence/runtime-adapter-manifest.json) and [source hashes](evidence/source-manifest.json).

@@ -10,12 +10,23 @@
   "observed": 48,
   "passed": 45,
   "failed": 3,
-  "matrixStatus": "Paused after smoke at coordinator request for uncontended candidate gates",
+  "matrixStatus": "Incomplete by coordinator limit: smoke plus targeted manual proofs; full matrix never started",
   "limitations": [
     "Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.",
     "Viewport emulation is not physical iPhone/iPad testing.",
     "Automated axe and keyboard checks do not certify a screen-reader audit.",
     "Route visual inspection is not complete business workflow regression or production verification."
   ],
-  "sourceClean": true
+  "sourceClean": true,
+  "completedAt": "2026-10-19T21:03:26.332265+00:00",
+  "reproducedP2": [
+    "TC-B-32",
+    "TC-B-16",
+    "IS-B12",
+    "IS-B31"
+  ],
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true,
+  "ownershipClosed": true,
+  "runtimeExitCode": 0
 }

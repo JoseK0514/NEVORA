@@ -1,0 +1,71 @@
+[
+ {
+  "atomic": false,
+  "cls": 0.06383193027826004,
+  "shifts": [
+   {
+    "value": 0.06383193027826004,
+    "at": 1754,
+    "sources": [
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Set deadline: Availability deadline not set, Set the availability deadline before employees finalize availability.\" data-inbox-key=\"SETUP:DEADLINE\" href=\"/app/schedule?week=2026-10-19#schedule-deadlin",
+      "previousY": 465,
+      "currentY": 0
+     },
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Review timecard: Period timecard needs review, Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.\" data-inbox-key=\"TIMECARD:AUDIT-BREAK:2026-10-19:2026-10-25\" href=\"/app/time",
+      "previousY": 569,
+      "currentY": 0
+     },
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Review timecard: Period timecard needs review, Jordan Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.\" data-inbox-key=\"TIMECARD:AUDIT-ON:2026-10-19:2026-10-25\" href=\"/app/timeca",
+      "previousY": 673,
+      "currentY": 0
+     },
+     {
+      "html": "<summary class=\"nv-row\" data-leading=\"true\"><span class=\"nv-tile\" data-tone=\"neutral\" aria-hidden=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" fill=\"currentColor\" viewBox=\"0 0 256 256\"><path d=\"M208,28H188V24a12,12,0,0,0-24,0",
+      "previousY": 777,
+      "currentY": 0
+     },
+     {
+      "html": "<summary class=\"nv-row\" data-leading=\"true\"><span class=\"nv-tile\" data-tone=\"neutral\" aria-hidden=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" fill=\"currentColor\" viewBox=\"0 0 256 256\"><path d=\"M208,28H188V24a12,12,0,0,0-24,0",
+      "previousY": 841,
+      "currentY": 0
+     }
+    ]
+   }
+  ],
+  "groupOpens": [
+   {
+    "at": 1581.8999999999069,
+    "text": "13 people with no weekly hour target",
+    "height": 64,
+    "stack": "Error\n    at Element.setAttribute (<anonymous>:6:274)\n    at InboxSurface.useEffect (http://127.0.0.1:39643/_next/static/chunks/src_1vpbplo._.js:3979:115)\n    at Object.react_stack_bottom_frame (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:14944:22)\n    at runWithFiberInDEV (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:761:74)\n    at commitHookEffectListMount (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:7082:167)\n    at commitHookPassiveMountEffects (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:7117:60)\n    at commitPassiveMountOnFiber (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8519:33)\n    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8506:316)\n    at commitPassiveMountOnFiber (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8518:17)\n    at recursivelyTraversePassiveMountEff"
+   }
+  ],
+  "atomicOpens": [],
+  "openDetails": [
+   {
+    "text": "13 people with no weekly hour target",
+    "height": 1436
+   }
+  ],
+  "rootFont": "16px"
+ },
+ {
+  "atomic": true,
+  "cls": 0,
+  "shifts": [],
+  "groupOpens": [
+   {
+    "at": 2114.1999999997206,
+    "text": "13 people with no weekly hour target",
+    "height": 64,
+    "stack": "Error\n    at Element.setAttribute (<anonymous>:6:274)\n    at InboxSurface.useEffect (http://127.0.0.1:39643/_next/static/chunks/src_1vpbplo._.js:3979:115)\n    at Object.react_stack_bottom_frame (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:14944:22)\n    at runWithFiberInDEV (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:761:74)\n    at commitHookEffectListMount (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:7082:167)\n    at commitHookPassiveMountEffects (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:7117:60)\n    at commitPassiveMountOnFiber (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8519:33)\n    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8506:316)\n    at commitPassiveMountOnFiber (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8518:17)\n    at recursivelyTraversePassiveMountEff"
+   }
+  ],
+  "atomicOpens": [],
+  "openDetails": [],
+  "rootFont": "16px"
+ }
+]

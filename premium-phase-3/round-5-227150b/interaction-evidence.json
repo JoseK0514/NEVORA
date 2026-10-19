@@ -885,5 +885,979 @@
     "errors": [],
     "error": "page.goto: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:34019/app/updates\", waiting until \"networkidle\"\u001b[22m\n\n    at go (/workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:14:888)\n    at /workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:23:83\n    at run (/workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:14:1090)\n    at async file:///workspace/nevora-inspections/premium-phase-3/round-5-227150b/scripts/interactions.mjs:23:2",
     "current": null
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "updates",
+    "errors": [],
+    "pending": {
+      "url": "/app/updates/fe089ead-12e5-4b15-835b-2e5872e6490d",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 190,
+      "documentHeight": 1034,
+      "text": "All updates\n\nLocation announcement\n\nAcknowledgement required\nFictional inspection schedule update\nManagement\n\nPublished Oct 19, 2026, 4:33 PM\n\nPlease review the fictional upcoming schedule. This update exists only in the disposable inspection preview.\nConfirm you received this update\n\nAcknowledgement confirms receipt of this version. It does not indicate agreement or attendance.\n\nI have reviewed this update\nConfirming…",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    },
+    "failure": {
+      "url": "/app/updates/fe089ead-12e5-4b15-835b-2e5872e6490d",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 0,
+      "documentHeight": 844,
+      "text": "All updates\nAccess changed\n\nYour current permission does not allow this update. Refresh to check access.\n\nRetry",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Access changedYour current permission does not allow this update. Refresh to check access.",
+          "box": {
+            "x": 40,
+            "y": 252,
+            "width": 310,
+            "height": 89.1875,
+            "top": 252,
+            "right": 350,
+            "bottom": 341.1875,
+            "left": 40
+          }
+        }
+      ],
+      "logins": []
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "timecards",
+    "errors": [],
+    "before": {
+      "url": "/app/timecards",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 0,
+      "documentHeight": 1082,
+      "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "1 timecard in this period.",
+          "box": {
+            "x": 16,
+            "y": 481,
+            "width": 358,
+            "height": 24,
+            "top": 481,
+            "right": 374,
+            "bottom": 505,
+            "left": 16
+          }
+        }
+      ],
+      "logins": []
+    },
+    "offline": {
+      "url": "/app/timecards",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 0,
+      "documentHeight": 844,
+      "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "1 timecard in this period.",
+          "box": {
+            "x": 16,
+            "y": 481,
+            "width": 358,
+            "height": 24,
+            "top": 481,
+            "right": 374,
+            "bottom": 505,
+            "left": 16
+          }
+        }
+      ],
+      "logins": []
+    },
+    "refreshDisabled": false,
+    "denied": {
+      "url": "/app/timecards",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 0,
+      "documentHeight": 844,
+      "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nSign in again to view your timecards.\n\nRequest a correction",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Sign in again to view your timecards.",
+          "box": {
+            "x": 16,
+            "y": 481,
+            "width": 358,
+            "height": 24,
+            "top": 481,
+            "right": 374,
+            "bottom": 505,
+            "left": 16
+          }
+        }
+      ],
+      "logins": []
+    },
+    "done": true
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "swap",
+    "errors": [],
+    "options": 2,
+    "before": {
+      "url": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Send swap request",
+        "disabled": false
+      },
+      "scrollY": 1134,
+      "documentHeight": 1978,
+      "text": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nFind a shift that works for you. Review the exchange, then send your request.\n\nYour shift\n8:00 AM – 4:00 PM\nMonday, Oct 26, 2026 · Main Office\nHow a swap works\nAvailable shifts this week\nAvailable shifts this week\nOct 26 – Nov 1\n2 shifts\n\nChoose one to review the swap.\n\nSat\n31\nOct\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nSun\n1\nNov\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nReview your swap\n\nCheck both assignments before you send.\n\nSelected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nYou receive\n\nSaturday, Oct 31, 2026\n\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nSending this request gives your consent to this swap. Your schedule changes only after the required consent and review.\n\nCancel\nSend swap request",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Selected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.",
+          "box": {
+            "x": 35,
+            "y": -52.046875,
+            "width": 1,
+            "height": 1,
+            "top": -52.046875,
+            "right": 36,
+            "bottom": -51.046875,
+            "left": 35
+          }
+        }
+      ],
+      "logins": []
+    },
+    "pending": {
+      "url": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Send swap request",
+        "disabled": false
+      },
+      "scrollY": 1134,
+      "documentHeight": 2056,
+      "text": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nFind a shift that works for you. Review the exchange, then send your request.\n\nYour shift\n8:00 AM – 4:00 PM\nMonday, Oct 26, 2026 · Main Office\nHow a swap works\nAvailable shifts this week\nAvailable shifts this week\nOct 26 – Nov 1\n2 shifts\n\nChoose one to review the swap.\n\nSat\n31\nOct\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nSun\n1\nNov\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nReview your swap\n\nCheck both assignments before you send.\n\nSelected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nYou receive\n\nSaturday, Oct 31, 2026\n\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nSending this request gives your consent to this swap. Your schedule changes only after the required consent and review.\n\nCancel\nSend swap request\n\nProcessing…",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Selected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.",
+          "box": {
+            "x": 35,
+            "y": -52.046875,
+            "width": 1,
+            "height": 1,
+            "top": -52.046875,
+            "right": 36,
+            "bottom": -51.046875,
+            "left": 35
+          }
+        },
+        {
+          "role": "status",
+          "text": "Processing…",
+          "box": {
+            "x": 16,
+            "y": 768.328125,
+            "width": 358,
+            "height": 58,
+            "top": 768.328125,
+            "right": 374,
+            "bottom": 826.328125,
+            "left": 16
+          }
+        }
+      ],
+      "logins": [],
+      "fieldsDisabled": true
+    },
+    "posts": 1,
+    "failure": {
+      "url": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 1134,
+      "documentHeight": 2184,
+      "text": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nFind a shift that works for you. Review the exchange, then send your request.\n\nYour shift\n8:00 AM – 4:00 PM\nMonday, Oct 26, 2026 · Main Office\nHow a swap works\nAvailable shifts this week\nAvailable shifts this week\nOct 26 – Nov 1\n2 shifts\n\nChoose one to review the swap.\n\nSat\n31\nOct\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nSun\n1\nNov\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nReview your swap\n\nCheck both assignments before you send.\n\nSelected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nYou receive\n\nSaturday, Oct 31, 2026\n\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nSending this request gives your consent to this swap. Your schedule changes only after the required consent and review.\n\nCancel\nSend swap request\n\nOutcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.\n\nCheck & retry same request",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Selected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.",
+          "box": {
+            "x": 35,
+            "y": -52.046875,
+            "width": 1,
+            "height": 1,
+            "top": -52.046875,
+            "right": 36,
+            "bottom": -51.046875,
+            "left": 35
+          }
+        },
+        {
+          "role": "alert",
+          "text": "Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.",
+          "box": {
+            "x": 16,
+            "y": 768.328125,
+            "width": 358,
+            "height": 130,
+            "top": 768.328125,
+            "right": 374,
+            "bottom": 898.328125,
+            "left": 16
+          }
+        }
+      ],
+      "logins": []
+    },
+    "done": true
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "calendar",
+    "errors": [],
+    "before": {
+      "url": "/app/profile",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Create link",
+        "disabled": false
+      },
+      "scrollY": 802,
+      "documentHeight": 1984,
+      "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nCalendar subscription\n\nYour shifts, alongside your plans.\n\nView your published shifts in Apple Calendar, Google Calendar, or Outlook.\n\nNo calendar link\n\nCreate a private link, then add it to your calendar app.\n\nCreate link\n\nThis private link includes your shift times and location labels. Anyone with the link can view these details.\n\nSubscribe in your calendar app\nApple Calendar\niPhone, iPad, and Mac\nGoogle Calendar\nSet up on a computer\nOutlook\nSet up on the web\n\nCalendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Creating or copying a link does not confirm a calendar connection.\n\nSign out",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    },
+    "pending": {
+      "url": "/app/profile",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Saving…",
+        "disabled": true
+      },
+      "scrollY": 802,
+      "documentHeight": 1984,
+      "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nCalendar subscription\n\nYour shifts, alongside your plans.\n\nView your published shifts in Apple Calendar, Google Calendar, or Outlook.\n\nNo calendar link\n\nCreate a private link, then add it to your calendar app.\n\nSaving…\n\nThis private link includes your shift times and location labels. Anyone with the link can view these details.\n\nSubscribe in your calendar app\nApple Calendar\niPhone, iPad, and Mac\nGoogle Calendar\nSet up on a computer\nOutlook\nSet up on the web\n\nCalendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Creating or copying a link does not confirm a calendar connection.\n\nSign out",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    },
+    "failure": {
+      "url": "/app/profile",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 802,
+      "documentHeight": 2124,
+      "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nCalendar subscription\n\nYour shifts, alongside your plans.\n\nView your published shifts in Apple Calendar, Google Calendar, or Outlook.\n\nNo calendar link\n\nCreate a private link, then add it to your calendar app.\n\nCreate link\n\nThis private link includes your shift times and location labels. Anyone with the link can view these details.\n\nSubscribe in your calendar app\nApple Calendar\niPhone, iPad, and Mac\nGoogle Calendar\nSet up on a computer\nOutlook\nSet up on the web\n\nCalendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Creating or copying a link does not confirm a calendar connection.\n\nThe result is unknown. Retry the same operation to check it.\n\n\nTry again to load the calendar link\nSign out",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "The result is unknown. Retry the same operation to check it.",
+          "box": {
+            "x": 36,
+            "y": 1013,
+            "width": 318,
+            "height": 72,
+            "top": 1013,
+            "right": 354,
+            "bottom": 1085,
+            "left": 36
+          }
+        }
+      ],
+      "logins": []
+    },
+    "disabled": true,
+    "retry": {
+      "x": 36,
+      "y": 1101,
+      "width": 142.578125,
+      "height": 52
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "correction",
+    "errors": [],
+    "pending": {
+      "url": "/app/my-time",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Sending…",
+        "disabled": true
+      },
+      "scrollY": 1011,
+      "documentHeight": 1903,
+      "text": "Statements\nHours\nTimecards\n\nPayday Tue, Oct 27 · for Oct 19 – Oct 25\n\nMy time\n\nYour punches, breaks and correction requests.\n\nCurrent status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUse your location’s Clocker to record punches.\n\nUpdated Oct 19, 4:58 PM\n\nRefresh\nRecord details\nToday\nOctober 19, 2026\nRecorded time\n0h\nBreak time\n0h\n\nToday’s totals. Hours include breaks and aren’t payroll hours.\n\nNo recorded punches today.\n\nRecent entries\n0 entries\n\nNo earlier entries.\n\nCorrections\n\nYour manager reviews each request. Your original times are kept.\n\nCancel\nTry again\nLocation\nStart\nEnd\nReason\n\nMissing time is submitted as a correction record. It does not create a recorded Clocker punch.\n\nSending…\n\nNo correction requests yet.",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    },
+    "failure": {
+      "url": "/app/my-time",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 1011,
+      "documentHeight": 1913,
+      "text": "Statements\nHours\nTimecards\n\nPayday Tue, Oct 27 · for Oct 19 – Oct 25\n\nMy time\n\nYour punches, breaks and correction requests.\n\nCurrent status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUse your location’s Clocker to record punches.\n\nUpdated Oct 19, 4:58 PM\n\nRefresh\nRecord details\nToday\nOctober 19, 2026\nRecorded time\n0h\nBreak time\n0h\n\nToday’s totals. Hours include breaks and aren’t payroll hours.\n\nNo recorded punches today.\n\nRecent entries\n0 entries\n\nNo earlier entries.\n\nCorrections\n\nYour manager reviews each request. Your original times are kept.\n\nCancel\n\nWe couldn’t send your correction. Try again. If this keeps happening, sign in again.\n\nLocation\nStart\nEnd\nReason\n\nMissing time is submitted as a correction record. It does not create a recorded Clocker punch.\n\nSend request\n\nNo correction requests yet.",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "We couldn’t send your correction. Try again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 130,
+            "width": 318,
+            "height": 48,
+            "top": 130,
+            "right": 354,
+            "bottom": 178,
+            "left": 36
+          }
+        }
+      ],
+      "logins": []
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "updates",
+    "errors": [],
+    "pending": {
+      "url": "/app/updates/fe089ead-12e5-4b15-835b-2e5872e6490d",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Confirming…",
+        "disabled": true
+      },
+      "scrollY": 190,
+      "documentHeight": 1034,
+      "text": "All updates\n\nLocation announcement\n\nAcknowledgement required\nFictional inspection schedule update\nManagement\n\nPublished Oct 19, 2026, 4:33 PM\n\nPlease review the fictional upcoming schedule. This update exists only in the disposable inspection preview.\nConfirm you received this update\n\nAcknowledgement confirms receipt of this version. It does not indicate agreement or attendance.\n\nI have reviewed this update\n\nConfirming…",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [],
+      "logins": []
+    },
+    "failure": {
+      "url": "/app/updates/fe089ead-12e5-4b15-835b-2e5872e6490d",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 0,
+      "documentHeight": 844,
+      "text": "All updates\nAccess changed\n\nYour current permission does not allow this update. Refresh to check access.\n\nRetry",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Access changedYour current permission does not allow this update. Refresh to check access.",
+          "box": {
+            "x": 40,
+            "y": 252,
+            "width": 310,
+            "height": 89.1875,
+            "top": 252,
+            "right": 350,
+            "bottom": 341.1875,
+            "left": 40
+          }
+        }
+      ],
+      "logins": []
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "timecards",
+    "errors": [],
+    "before": {
+      "url": "/app/timecards",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 0,
+      "documentHeight": 1082,
+      "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "1 timecard in this period.",
+          "box": {
+            "x": 16,
+            "y": 481,
+            "width": 358,
+            "height": 24,
+            "top": 481,
+            "right": 374,
+            "bottom": 505,
+            "left": 16
+          }
+        }
+      ],
+      "logins": []
+    },
+    "offline": {
+      "url": "/app/timecards",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 0,
+      "documentHeight": 844,
+      "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "1 timecard in this period.",
+          "box": {
+            "x": 16,
+            "y": 481,
+            "width": 358,
+            "height": 24,
+            "top": 481,
+            "right": 374,
+            "bottom": 505,
+            "left": 16
+          }
+        }
+      ],
+      "logins": []
+    },
+    "refreshDisabled": false,
+    "denied": {
+      "url": "/app/timecards",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 0,
+      "documentHeight": 844,
+      "text": "Statements\nHours\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nSign in again to view your timecards.\n\nRequest a correction",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Sign in again to view your timecards.",
+          "box": {
+            "x": 16,
+            "y": 481,
+            "width": 358,
+            "height": 24,
+            "top": 481,
+            "right": 374,
+            "bottom": 505,
+            "left": 16
+          }
+        }
+      ],
+      "logins": []
+    },
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "swap",
+    "errors": [],
+    "options": 2,
+    "before": {
+      "url": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Send swap request",
+        "disabled": false
+      },
+      "scrollY": 1134,
+      "documentHeight": 1978,
+      "text": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nFind a shift that works for you. Review the exchange, then send your request.\n\nYour shift\n8:00 AM – 4:00 PM\nMonday, Oct 26, 2026 · Main Office\nHow a swap works\nAvailable shifts this week\nAvailable shifts this week\nOct 26 – Nov 1\n2 shifts\n\nChoose one to review the swap.\n\nSat\n31\nOct\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nSun\n1\nNov\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nReview your swap\n\nCheck both assignments before you send.\n\nSelected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nYou receive\n\nSaturday, Oct 31, 2026\n\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nSending this request gives your consent to this swap. Your schedule changes only after the required consent and review.\n\nCancel\nSend swap request",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Selected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.",
+          "box": {
+            "x": 35,
+            "y": -52.046875,
+            "width": 1,
+            "height": 1,
+            "top": -52.046875,
+            "right": 36,
+            "bottom": -51.046875,
+            "left": 35
+          }
+        }
+      ],
+      "logins": []
+    },
+    "pending": {
+      "url": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 1134,
+      "documentHeight": 2056,
+      "text": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nFind a shift that works for you. Review the exchange, then send your request.\n\nYour shift\n8:00 AM – 4:00 PM\nMonday, Oct 26, 2026 · Main Office\nHow a swap works\nAvailable shifts this week\nAvailable shifts this week\nOct 26 – Nov 1\n2 shifts\n\nChoose one to review the swap.\n\nSat\n31\nOct\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nSun\n1\nNov\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nReview your swap\n\nCheck both assignments before you send.\n\nSelected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nYou receive\n\nSaturday, Oct 31, 2026\n\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nSending this request gives your consent to this swap. Your schedule changes only after the required consent and review.\n\nCancel\nSend swap request\n\nProcessing…",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Selected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.",
+          "box": {
+            "x": 35,
+            "y": -52.046875,
+            "width": 1,
+            "height": 1,
+            "top": -52.046875,
+            "right": 36,
+            "bottom": -51.046875,
+            "left": 35
+          }
+        },
+        {
+          "role": "status",
+          "text": "Processing…",
+          "box": {
+            "x": 16,
+            "y": 768.328125,
+            "width": 358,
+            "height": 58,
+            "top": 768.328125,
+            "right": 374,
+            "bottom": 826.328125,
+            "left": 16
+          }
+        }
+      ],
+      "logins": [],
+      "fieldsDisabled": true
+    },
+    "posts": 1,
+    "failure": {
+      "url": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 1134,
+      "documentHeight": 2184,
+      "text": "Shift requests\n\nSwap a shift\n\nChoose a shift\n\nFind a shift that works for you. Review the exchange, then send your request.\n\nYour shift\n8:00 AM – 4:00 PM\nMonday, Oct 26, 2026 · Main Office\nHow a swap works\nAvailable shifts this week\nAvailable shifts this week\nOct 26 – Nov 1\n2 shifts\n\nChoose one to review the swap.\n\nSat\n31\nOct\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nSun\n1\nNov\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support · No designated Lead\nPuerto Rico time\nReview your swap\n\nCheck both assignments before you send.\n\nSelected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.\n\nYou give\n\nMonday, Oct 26, 2026\n\n8:00 AM – 4:00 PM\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nYou receive\n\nSaturday, Oct 31, 2026\n\n8:00 AM – 4:00 PM\nRiley Rivera\nMain Office\nCustomer Support\nNo designated Lead\n\nTimes in Puerto Rico time\n\nSending this request gives your consent to this swap. Your schedule changes only after the required consent and review.\n\nCancel\nSend swap request\n\nOutcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.\n\nCheck & retry same request",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Selected Saturday, Oct 31, 2026, 8:00 AM – 4:00 PM, with Riley Rivera. Review both assignments below.",
+          "box": {
+            "x": 35,
+            "y": -52.046875,
+            "width": 1,
+            "height": 1,
+            "top": -52.046875,
+            "right": 36,
+            "bottom": -51.046875,
+            "left": 35
+          }
+        },
+        {
+          "role": "alert",
+          "text": "Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.",
+          "box": {
+            "x": 16,
+            "y": 768.328125,
+            "width": 358,
+            "height": 130,
+            "top": 768.328125,
+            "right": 374,
+            "bottom": 898.328125,
+            "left": 16
+          }
+        }
+      ],
+      "logins": []
+    },
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "calendar-auth",
+    "errors": [],
+    "denied": {
+      "url": "/app/profile",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside"
+      },
+      "scrollY": 778,
+      "documentHeight": 2048,
+      "text": "Profile\n\nYour work information and app settings.\n\nWork details\nName\nAlexandra Rivera\nCompany\nNorthside QA Workforce\nWork locations\nMain Office · West Office\nApp access\nEmployee\nTime zone\nPuerto Rico time\n\nSomething wrong here? Ask your manager to update it.\n\nRefresh details\nApp settings\nNotifications\nUpdates about your schedule and requests\n\nAlerts on this device aren’t turned on for your workplace yet.\n\nAdd shifts to your calendar\nApple Calendar, Google Calendar or Outlook\nCalendar subscription\n\nYour shifts, alongside your plans.\n\nView your published shifts in Apple Calendar, Google Calendar, or Outlook.\n\nNo calendar link\n\nCreate a private link, then add it to your calendar app.\n\nCreate link\n\nThis private link includes your shift times and location labels. Anyone with the link can view these details.\n\nSubscribe in your calendar app\nApple Calendar\niPhone, iPad, and Mac\nGoogle Calendar\nSet up on a computer\nOutlook\nSet up on the web\n\nCalendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Creating or copying a link does not confirm a calendar connection.\n\nYour session may have ended. Sign in again, then create the link.\n\nSign out",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "Your session may have ended. Sign in again, then create the link.",
+          "box": {
+            "x": 36,
+            "y": 1013,
+            "width": 318,
+            "height": 72,
+            "top": 1013,
+            "right": 354,
+            "bottom": 1085,
+            "left": 36
+          }
+        }
+      ],
+      "logins": []
+    },
+    "posts": 1,
+    "done": true
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "size": 390,
+    "text": 100,
+    "name": "withdraw-auth",
+    "errors": [],
+    "denied": {
+      "url": "/app/requests?tab=my",
+      "title": "NEVORA Workforce",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Try againWithdrawing…",
+        "disabled": false
+      },
+      "scrollY": 0,
+      "documentHeight": 1740,
+      "text": "Overview\nTime off\nShift requests\nAvailability\nTime off\n\n1 request waiting for approval.\n\nNew request\nMy requests (5)\nMy requests\n5 requests\nOct 29, 2026 – Oct 30, 2026\nWaiting\nFull day\nNote: Fictional family appointment\nSent Oct 19\nWaiting for approval\nWithdraw this request\nYes, withdraw this request\nTry again\n\nWe couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.\n\nNov 28, 2026\nWithdrawn\nFull day\nNote: Fictional appointment\nSent Oct 14\nWithdrawn · Oct 17\nNov 18, 2026 – Nov 19, 2026\nDeclined\nFull day\nNote: Fictional appointment\nSent Oct 14\nDeclined by Morgan Rivera · Oct 17\nNov 13, 2026\nApproved\nPartial day · 9:00 AM – 1:00 PM\nNote: Fictional appointment\nSent Oct 14\nApproved by Fictional Owner · Oct 17\nNov 8, 2026 – Nov 9, 2026\nApproved\nFull day\nNote: Fictional appointment\nSent Oct 14\nApproved by Morgan Rivera · Oct 17",
+      "tabbar": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "alerts": [
+        {
+          "role": "status",
+          "text": "We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.",
+          "box": {
+            "x": 48,
+            "y": 724,
+            "width": 294,
+            "height": 72,
+            "top": 724,
+            "right": 342,
+            "bottom": 796,
+            "left": 48
+          }
+        }
+      ],
+      "logins": []
+    },
+    "posts": 1,
+    "done": true
   }
 ]

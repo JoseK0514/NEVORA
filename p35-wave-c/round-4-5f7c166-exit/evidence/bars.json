@@ -1,0 +1,4437 @@
+{
+  "checkpoint": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+  "records": [
+    {
+      "key": "chromium-320-100-features-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 424,
+        "width": 320,
+        "height": 76,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 208,
+            "height": 52,
+            "bottom": 488,
+            "right": 224
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-320-100-features-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 368,
+        "width": 320,
+        "height": 132,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 380,
+            "width": 288,
+            "height": 52,
+            "bottom": 432,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 483,
+      "active": ""
+    },
+    {
+      "key": "chromium-320-100-features-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 246,
+        "width": 320,
+        "height": 254,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 258,
+        "width": 288,
+        "height": 110,
+        "bottom": 368,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 258,
+        "width": 288,
+        "height": 110,
+        "bottom": 368,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 272,
+        "width": 224,
+        "height": 20,
+        "bottom": 292,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 294,
+        "width": 224,
+        "height": 60,
+        "bottom": 354,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 110,
+        "scroll": 110
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 380,
+            "width": 288,
+            "height": 52,
+            "bottom": 432,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 483,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-320-100-features-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 246,
+        "width": 320,
+        "height": 254,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 258,
+        "width": 288,
+        "height": 110,
+        "bottom": 368,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 258,
+        "width": 288,
+        "height": 110,
+        "bottom": 368,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 272,
+        "width": 224,
+        "height": 20,
+        "bottom": 292,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 294,
+        "width": 224,
+        "height": 60,
+        "bottom": 354,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 110,
+        "scroll": 110
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 380,
+            "width": 288,
+            "height": 52,
+            "bottom": 432,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 483,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-320-100-company-policies-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 424,
+        "width": 320,
+        "height": 76,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save policies",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 288,
+            "height": 52,
+            "bottom": 488,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-320-100-company-policies-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 424,
+        "width": 320,
+        "height": 76,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 288,
+            "height": 52,
+            "bottom": 488,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-320-100-company-policies-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 282,
+        "width": 320,
+        "height": 218,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 294,
+        "width": 288,
+        "height": 130,
+        "bottom": 424,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 294,
+        "width": 288,
+        "height": 130,
+        "bottom": 424,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 308,
+        "width": 224,
+        "height": 20,
+        "bottom": 328,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 330,
+        "width": 224,
+        "height": 80,
+        "bottom": 410,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 130,
+        "scroll": 130
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 288,
+            "height": 52,
+            "bottom": 488,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-320-100-company-policies-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 282,
+        "width": 320,
+        "height": 218,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 294,
+        "width": 288,
+        "height": 130,
+        "bottom": 424,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 294,
+        "width": 288,
+        "height": 130,
+        "bottom": 424,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 308,
+        "width": 224,
+        "height": 20,
+        "bottom": 328,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 330,
+        "width": 224,
+        "height": 80,
+        "bottom": 410,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 130,
+        "scroll": 130
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 288,
+            "height": 52,
+            "bottom": 488,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-320-200-features-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 337,
+        "width": 320,
+        "height": 148,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 349,
+            "width": 288,
+            "height": 68,
+            "bottom": 417,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-320-200-features-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 337,
+        "width": 320,
+        "height": 148,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 349,
+            "width": 288,
+            "height": 68,
+            "bottom": 417,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 1502,
+      "active": ""
+    },
+    {
+      "key": "chromium-320-200-features-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 15,
+        "width": 320,
+        "height": 470,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 27,
+        "width": 288,
+        "height": 310,
+        "bottom": 337,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 27,
+        "width": 288,
+        "height": 310,
+        "bottom": 337,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 41,
+        "width": 224,
+        "height": 40,
+        "bottom": 81,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 83,
+        "width": 224,
+        "height": 240,
+        "bottom": 323,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 310,
+        "scroll": 310
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 349,
+            "width": 288,
+            "height": 68,
+            "bottom": 417,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 1502,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-320-200-features-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 165.96875,
+        "width": 320,
+        "height": 319.03125,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 177.96875,
+        "width": 288,
+        "height": 159.03125,
+        "bottom": 337,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 177.96875,
+        "width": 288,
+        "height": 310,
+        "bottom": 487.96875,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 191.96875,
+        "width": 224,
+        "height": 40,
+        "bottom": 231.96875,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 233.96875,
+        "width": 224,
+        "height": 240,
+        "bottom": 473.96875,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 159,
+        "scroll": 310
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 349,
+            "width": 288,
+            "height": 68,
+            "bottom": 417,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 1502,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-320-200-company-policies-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 393,
+        "width": 320,
+        "height": 92,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save policies",
+          "box": {
+            "x": 16,
+            "y": 405,
+            "width": 288,
+            "height": 68,
+            "bottom": 473,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-320-200-company-policies-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 393,
+        "width": 320,
+        "height": 92,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 405,
+            "width": 288,
+            "height": 68,
+            "bottom": 473,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-320-200-company-policies-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": -53,
+        "width": 320,
+        "height": 538,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": -41,
+        "width": 288,
+        "height": 390,
+        "bottom": 349,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": -41,
+        "width": 288,
+        "height": 390,
+        "bottom": 349,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": -27,
+        "width": 224,
+        "height": 40,
+        "bottom": 13,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 15,
+        "width": 224,
+        "height": 320,
+        "bottom": 335,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 390,
+        "scroll": 390
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 361,
+            "width": 288,
+            "height": 112,
+            "bottom": 473,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-320-200-company-policies-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 177.96875,
+        "width": 320,
+        "height": 307.03125,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 189.96875,
+        "width": 288,
+        "height": 159.03125,
+        "bottom": 349,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 189.96875,
+        "width": 288,
+        "height": 390,
+        "bottom": 579.96875,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 203.96875,
+        "width": 224,
+        "height": 40,
+        "bottom": 243.96875,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 245.96875,
+        "width": 224,
+        "height": 320,
+        "bottom": 565.96875,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 159,
+        "scroll": 390
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 361,
+            "width": 288,
+            "height": 112,
+            "bottom": 473,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-390-100-features-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 700,
+        "width": 390,
+        "height": 76,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 278,
+            "height": 52,
+            "bottom": 764,
+            "right": 294
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-390-100-features-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 700,
+        "width": 390,
+        "height": 76,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 219,
+            "height": 52,
+            "bottom": 764,
+            "right": 235
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-390-100-features-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 598,
+        "width": 390,
+        "height": 178,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 610,
+        "width": 358,
+        "height": 90,
+        "bottom": 700,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 610,
+        "width": 358,
+        "height": 90,
+        "bottom": 700,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 624,
+        "width": 294,
+        "height": 20,
+        "bottom": 644,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 646,
+        "width": 294,
+        "height": 40,
+        "bottom": 686,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 90,
+        "scroll": 90
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 219,
+            "height": 52,
+            "bottom": 764,
+            "right": 235
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-390-100-features-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 598,
+        "width": 390,
+        "height": 178,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 610,
+        "width": 358,
+        "height": 90,
+        "bottom": 700,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 610,
+        "width": 358,
+        "height": 90,
+        "bottom": 700,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 624,
+        "width": 294,
+        "height": 20,
+        "bottom": 644,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 646,
+        "width": 294,
+        "height": 40,
+        "bottom": 686,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 90,
+        "scroll": 90
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 219,
+            "height": 52,
+            "bottom": 764,
+            "right": 235
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-390-100-company-policies-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 700,
+        "width": 390,
+        "height": 76,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save policies",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 358,
+            "height": 52,
+            "bottom": 764,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-390-100-company-policies-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 700,
+        "width": 390,
+        "height": 76,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 358,
+            "height": 52,
+            "bottom": 764,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-390-100-company-policies-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 578,
+        "width": 390,
+        "height": 198,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 590,
+        "width": 358,
+        "height": 110,
+        "bottom": 700,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 590,
+        "width": 358,
+        "height": 110,
+        "bottom": 700,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 604,
+        "width": 294,
+        "height": 20,
+        "bottom": 624,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 626,
+        "width": 294,
+        "height": 60,
+        "bottom": 686,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 110,
+        "scroll": 110
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 358,
+            "height": 52,
+            "bottom": 764,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-390-100-company-policies-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 578,
+        "width": 390,
+        "height": 198,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 590,
+        "width": 358,
+        "height": 110,
+        "bottom": 700,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 590,
+        "width": 358,
+        "height": 110,
+        "bottom": 700,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 604,
+        "width": 294,
+        "height": 20,
+        "bottom": 624,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 626,
+        "width": 294,
+        "height": 60,
+        "bottom": 686,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 110,
+        "scroll": 110
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 358,
+            "height": 52,
+            "bottom": 764,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-390-200-features-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 613,
+        "width": 390,
+        "height": 148,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 625,
+            "width": 358,
+            "height": 68,
+            "bottom": 693,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-390-200-features-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 613,
+        "width": 390,
+        "height": 148,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 625,
+            "width": 358,
+            "height": 68,
+            "bottom": 693,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 1117,
+      "active": ""
+    },
+    {
+      "key": "chromium-390-200-features-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 371,
+        "width": 390,
+        "height": 390,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 383,
+        "width": 358,
+        "height": 230,
+        "bottom": 613,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 383,
+        "width": 358,
+        "height": 230,
+        "bottom": 613,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 397,
+        "width": 294,
+        "height": 40,
+        "bottom": 437,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 439,
+        "width": 294,
+        "height": 160,
+        "bottom": 599,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 230,
+        "scroll": 230
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 625,
+            "width": 358,
+            "height": 68,
+            "bottom": 693,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 1117,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-390-200-features-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 371,
+        "width": 390,
+        "height": 390,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 383,
+        "width": 358,
+        "height": 230,
+        "bottom": 613,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 383,
+        "width": 358,
+        "height": 230,
+        "bottom": 613,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 397,
+        "width": 294,
+        "height": 40,
+        "bottom": 437,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 439,
+        "width": 294,
+        "height": 160,
+        "bottom": 599,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 230,
+        "scroll": 230
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 625,
+            "width": 358,
+            "height": 68,
+            "bottom": 693,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 1117,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-390-200-company-policies-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 669,
+        "width": 390,
+        "height": 92,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save policies",
+          "box": {
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 68,
+            "bottom": 749,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-390-200-company-policies-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 669,
+        "width": 390,
+        "height": 92,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 68,
+            "bottom": 749,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "chromium-390-200-company-policies-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 347,
+        "width": 390,
+        "height": 414,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 359,
+        "width": 358,
+        "height": 310,
+        "bottom": 669,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 359,
+        "width": 358,
+        "height": 310,
+        "bottom": 669,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 373,
+        "width": 294,
+        "height": 40,
+        "bottom": 413,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 415,
+        "width": 294,
+        "height": 240,
+        "bottom": 655,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 310,
+        "scroll": 310
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 68,
+            "bottom": 749,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "chromium-390-200-company-policies-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 420.6875,
+        "width": 390,
+        "height": 340.3125,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 432.6875,
+        "width": 358,
+        "height": 236.3125,
+        "bottom": 669,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 432.6875,
+        "width": 358,
+        "height": 310,
+        "bottom": 742.6875,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 446.6875,
+        "width": 294,
+        "height": 40,
+        "bottom": 486.6875,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 488.6875,
+        "width": 294,
+        "height": 240,
+        "bottom": 728.6875,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 236,
+        "scroll": 310
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 68,
+            "bottom": 749,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-320-100-features-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 424,
+        "width": 320,
+        "height": 76,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 208.09375,
+            "height": 52,
+            "bottom": 488,
+            "right": 224.09375
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-320-100-features-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 368,
+        "width": 320,
+        "height": 132,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 380,
+            "width": 288,
+            "height": 52,
+            "bottom": 432,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 463,
+      "active": ""
+    },
+    {
+      "key": "webkit-320-100-features-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 246,
+        "width": 320,
+        "height": 254,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 258,
+        "width": 288,
+        "height": 110,
+        "bottom": 368,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 258,
+        "width": 288,
+        "height": 110,
+        "bottom": 368,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 272,
+        "width": 224,
+        "height": 20,
+        "bottom": 292,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 294,
+        "width": 224,
+        "height": 60,
+        "bottom": 354,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 110,
+        "scroll": 110
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 380,
+            "width": 288,
+            "height": 52,
+            "bottom": 432,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 463,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-320-100-features-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 246,
+        "width": 320,
+        "height": 254,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 258,
+        "width": 288,
+        "height": 110,
+        "bottom": 368,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 258,
+        "width": 288,
+        "height": 110,
+        "bottom": 368,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 272,
+        "width": 224,
+        "height": 20,
+        "bottom": 292,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 294,
+        "width": 224,
+        "height": 60,
+        "bottom": 354,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 110,
+        "scroll": 110
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 380,
+            "width": 288,
+            "height": 52,
+            "bottom": 432,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 463,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-320-100-company-policies-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 424,
+        "width": 320,
+        "height": 76,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save policies",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 288,
+            "height": 52,
+            "bottom": 488,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-320-100-company-policies-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 424,
+        "width": 320,
+        "height": 76,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 288,
+            "height": 52,
+            "bottom": 488,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-320-100-company-policies-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 282,
+        "width": 320,
+        "height": 218,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 294,
+        "width": 288,
+        "height": 130,
+        "bottom": 424,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 294,
+        "width": 288,
+        "height": 130,
+        "bottom": 424,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 308,
+        "width": 224,
+        "height": 20,
+        "bottom": 328,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 330,
+        "width": 224,
+        "height": 80,
+        "bottom": 410,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 130,
+        "scroll": 130
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 288,
+            "height": 52,
+            "bottom": 488,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-320-100-company-policies-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 68,
+        "bottom": 68,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 500,
+        "width": 320,
+        "height": 68,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 282,
+        "width": 320,
+        "height": 218,
+        "bottom": 500,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 294,
+        "width": 288,
+        "height": 130,
+        "bottom": 424,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 294,
+        "width": 288,
+        "height": 130,
+        "bottom": 424,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 308,
+        "width": 224,
+        "height": 20,
+        "bottom": 328,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 330,
+        "width": 224,
+        "height": 80,
+        "bottom": 410,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 130,
+        "scroll": 130
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 436,
+            "width": 288,
+            "height": 52,
+            "bottom": 488,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-320-200-features-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 337,
+        "width": 320,
+        "height": 148,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 349,
+            "width": 288,
+            "height": 68,
+            "bottom": 417,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-320-200-features-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 337,
+        "width": 320,
+        "height": 148,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 349,
+            "width": 288,
+            "height": 68,
+            "bottom": 417,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 1630,
+      "active": ""
+    },
+    {
+      "key": "webkit-320-200-features-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": -25,
+        "width": 320,
+        "height": 510,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": -13,
+        "width": 288,
+        "height": 350,
+        "bottom": 337,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": -13,
+        "width": 288,
+        "height": 350,
+        "bottom": 337,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 1,
+        "width": 224,
+        "height": 40,
+        "bottom": 41,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 43,
+        "width": 224,
+        "height": 280,
+        "bottom": 323,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 350,
+        "scroll": 350
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 349,
+            "width": 288,
+            "height": 68,
+            "bottom": 417,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 1630,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-320-200-features-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 165.96875,
+        "width": 320,
+        "height": 319.03125,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 177.96875,
+        "width": 288,
+        "height": 159.03125,
+        "bottom": 337,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 177.96875,
+        "width": 288,
+        "height": 350,
+        "bottom": 527.96875,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 191.96875,
+        "width": 224,
+        "height": 40,
+        "bottom": 231.96875,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 233.96875,
+        "width": 224,
+        "height": 280,
+        "bottom": 513.96875,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 159,
+        "scroll": 350
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 349,
+            "width": 288,
+            "height": 68,
+            "bottom": 417,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 1630,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-320-200-company-policies-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 393,
+        "width": 320,
+        "height": 92,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save policies",
+          "box": {
+            "x": 16,
+            "y": 405,
+            "width": 288,
+            "height": 68,
+            "bottom": 473,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-320-200-company-policies-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 393,
+        "width": 320,
+        "height": 92,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 405,
+            "width": 288,
+            "height": 68,
+            "bottom": 473,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-320-200-company-policies-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": -93,
+        "width": 320,
+        "height": 578,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": -81,
+        "width": 288,
+        "height": 430,
+        "bottom": 349,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": -81,
+        "width": 288,
+        "height": 430,
+        "bottom": 349,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": -67,
+        "width": 224,
+        "height": 40,
+        "bottom": -27,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": -25,
+        "width": 224,
+        "height": 360,
+        "bottom": 335,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 430,
+        "scroll": 430
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 361,
+            "width": 288,
+            "height": 112,
+            "bottom": 473,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-320-200-company-policies-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "bottom": 76.515625,
+        "right": 320
+      },
+      "nav": {
+        "x": 0,
+        "y": 485,
+        "width": 320,
+        "height": 83,
+        "bottom": 568,
+        "right": 320
+      },
+      "bar": {
+        "x": 0,
+        "y": 177.96875,
+        "width": 320,
+        "height": 307.03125,
+        "bottom": 485,
+        "right": 320
+      },
+      "feedback": {
+        "x": 16,
+        "y": 189.96875,
+        "width": 288,
+        "height": 159.03125,
+        "bottom": 349,
+        "right": 304
+      },
+      "notice": {
+        "x": 16,
+        "y": 189.96875,
+        "width": 288,
+        "height": 430,
+        "bottom": 619.96875,
+        "right": 304
+      },
+      "title": {
+        "x": 64,
+        "y": 203.96875,
+        "width": 224,
+        "height": 40,
+        "bottom": 243.96875,
+        "right": 288
+      },
+      "body": {
+        "x": 64,
+        "y": 245.96875,
+        "width": 224,
+        "height": 360,
+        "bottom": 605.96875,
+        "right": 288
+      },
+      "feedbackScroll": {
+        "client": 159,
+        "scroll": 430
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 361,
+            "width": 288,
+            "height": 112,
+            "bottom": 473,
+            "right": 304
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-390-100-features-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 700,
+        "width": 390,
+        "height": 76,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 278.09375,
+            "height": 52,
+            "bottom": 764,
+            "right": 294.09375
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-390-100-features-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 700,
+        "width": 390,
+        "height": 76,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 218.96875,
+            "height": 52,
+            "bottom": 764,
+            "right": 234.96875
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-390-100-features-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 598,
+        "width": 390,
+        "height": 178,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 610,
+        "width": 358,
+        "height": 90,
+        "bottom": 700,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 610,
+        "width": 358,
+        "height": 90,
+        "bottom": 700,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 624,
+        "width": 294,
+        "height": 20,
+        "bottom": 644,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 646,
+        "width": 294,
+        "height": 40,
+        "bottom": 686,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 90,
+        "scroll": 90
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 218.96875,
+            "height": 52,
+            "bottom": 764,
+            "right": 234.96875
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-390-100-features-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 598,
+        "width": 390,
+        "height": 178,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 610,
+        "width": 358,
+        "height": 90,
+        "bottom": 700,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 610,
+        "width": 358,
+        "height": 90,
+        "bottom": 700,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 624,
+        "width": 294,
+        "height": 20,
+        "bottom": 644,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 646,
+        "width": 294,
+        "height": 40,
+        "bottom": 686,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 90,
+        "scroll": 90
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 218.96875,
+            "height": 52,
+            "bottom": 764,
+            "right": 234.96875
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-390-100-company-policies-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 700,
+        "width": 390,
+        "height": 76,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save policies",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 358,
+            "height": 52,
+            "bottom": 764,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-390-100-company-policies-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 700,
+        "width": 390,
+        "height": 76,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 358,
+            "height": 52,
+            "bottom": 764,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-390-100-company-policies-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 578,
+        "width": 390,
+        "height": 198,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 590,
+        "width": 358,
+        "height": 110,
+        "bottom": 700,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 590,
+        "width": 358,
+        "height": 110,
+        "bottom": 700,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 604,
+        "width": 294,
+        "height": 20,
+        "bottom": 624,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 626,
+        "width": 294,
+        "height": 60,
+        "bottom": 686,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 110,
+        "scroll": 110
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 358,
+            "height": 52,
+            "bottom": 764,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-390-100-company-policies-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "16px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 68,
+        "bottom": 68,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 578,
+        "width": 390,
+        "height": 198,
+        "bottom": 776,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 590,
+        "width": 358,
+        "height": 110,
+        "bottom": 700,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 590,
+        "width": 358,
+        "height": 110,
+        "bottom": 700,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 604,
+        "width": 294,
+        "height": 20,
+        "bottom": 624,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 626,
+        "width": 294,
+        "height": 60,
+        "bottom": 686,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 110,
+        "scroll": 110
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 712,
+            "width": 358,
+            "height": 52,
+            "bottom": 764,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-390-200-features-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 613,
+        "width": 390,
+        "height": 148,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 625,
+            "width": 358,
+            "height": 68,
+            "bottom": 693,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-390-200-features-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 613,
+        "width": 390,
+        "height": 148,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 625,
+            "width": 358,
+            "height": 68,
+            "bottom": 693,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 1198,
+      "active": ""
+    },
+    {
+      "key": "webkit-390-200-features-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 331,
+        "width": 390,
+        "height": 430,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 343,
+        "width": 358,
+        "height": 270,
+        "bottom": 613,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 343,
+        "width": 358,
+        "height": 270,
+        "bottom": 613,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 357,
+        "width": 294,
+        "height": 40,
+        "bottom": 397,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 399,
+        "width": 294,
+        "height": 200,
+        "bottom": 599,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 270,
+        "scroll": 270
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 625,
+            "width": 358,
+            "height": 68,
+            "bottom": 693,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 1198,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-390-200-features-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 364.6875,
+        "width": 390,
+        "height": 396.3125,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 376.6875,
+        "width": 358,
+        "height": 236.3125,
+        "bottom": 613,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 376.6875,
+        "width": 358,
+        "height": 270,
+        "bottom": 646.6875,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 390.6875,
+        "width": 294,
+        "height": 40,
+        "bottom": 430.6875,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 432.6875,
+        "width": 294,
+        "height": 200,
+        "bottom": 632.6875,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 236,
+        "scroll": 270
+      },
+      "buttons": [
+        {
+          "text": "Save changes",
+          "box": {
+            "x": 16,
+            "y": 625,
+            "width": 358,
+            "height": 68,
+            "bottom": 693,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 1198,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-390-200-company-policies-idle",
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 669,
+        "width": 390,
+        "height": 92,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Save policies",
+          "box": {
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 68,
+            "bottom": 749,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-390-200-company-policies-pending",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 669,
+        "width": 390,
+        "height": 92,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": null,
+      "notice": null,
+      "title": null,
+      "body": null,
+      "feedbackScroll": null,
+      "buttons": [
+        {
+          "text": "Saving…",
+          "box": {
+            "x": 16,
+            "y": 681,
+            "width": 358,
+            "height": 68,
+            "bottom": 749,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": ""
+    },
+    {
+      "key": "webkit-390-200-company-policies-failed",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 303,
+        "width": 390,
+        "height": 458,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 315,
+        "width": 358,
+        "height": 310,
+        "bottom": 625,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 315,
+        "width": 358,
+        "height": 310,
+        "bottom": 625,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 329,
+        "width": 294,
+        "height": 40,
+        "bottom": 369,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 371,
+        "width": 294,
+        "height": 240,
+        "bottom": 611,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 310,
+        "scroll": 310
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 637,
+            "width": 358,
+            "height": 112,
+            "bottom": 749,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    },
+    {
+      "key": "webkit-390-200-company-policies-browser-proof",
+      "posts": 1,
+      "hydration": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "rootFont": "32px",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 78.015625,
+        "bottom": 78.015625,
+        "right": 390
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 390,
+        "height": 83,
+        "bottom": 844,
+        "right": 390
+      },
+      "bar": {
+        "x": 0,
+        "y": 376.6875,
+        "width": 390,
+        "height": 384.3125,
+        "bottom": 761,
+        "right": 390
+      },
+      "feedback": {
+        "x": 16,
+        "y": 388.6875,
+        "width": 358,
+        "height": 236.3125,
+        "bottom": 625,
+        "right": 374
+      },
+      "notice": {
+        "x": 16,
+        "y": 388.6875,
+        "width": 358,
+        "height": 310,
+        "bottom": 698.6875,
+        "right": 374
+      },
+      "title": {
+        "x": 64,
+        "y": 402.6875,
+        "width": 294,
+        "height": 40,
+        "bottom": 442.6875,
+        "right": 358
+      },
+      "body": {
+        "x": 64,
+        "y": 444.6875,
+        "width": 294,
+        "height": 240,
+        "bottom": 684.6875,
+        "right": 358
+      },
+      "feedbackScroll": {
+        "client": 236,
+        "scroll": 310
+      },
+      "buttons": [
+        {
+          "text": "Retry the same save",
+          "box": {
+            "x": 16,
+            "y": 637,
+            "width": 358,
+            "height": 112,
+            "bottom": 749,
+            "right": 374
+          }
+        }
+      ],
+      "scrollY": 0,
+      "active": "wc-feedback"
+    }
+  ]
+}

@@ -1,25 +1,26 @@
 # Interaction and states — Desktop round 5
 
-**Verdict: not zero; incomplete.** No new interaction P0/P1/P2 is certified at this checkpoint. The required keyboard, state and submitting checks have not yet run.
+**Verdict: not zero; incomplete.** No new interaction-area P0/P1/P2 was established. Keyboard, menus, submitting and state recovery were not fully inspected.
 
 ## Earlier findings
 
-IS-P4-06/20/21 fixes are present in source: closed-group rows excluded from arrow traversal; deeper section links use `aria-current=true`; status card sticky and status focus effect added. Measured closure is pending. IS-P4-05/11/19 remain under the ownership notes in the source round. Historical measurements are retained in `evidence/source-interaction-states.md`.
+IS-P4-06/20/21 fixes are present in source (closed-group traversal, deeper-section current semantics, sticky status/focus). Their manual rechecks remain incomplete. IS-P4-05/11/19 follow ownership notes in the source round. Historical evidence: `evidence/source-interaction-states.md`.
 
 ## Checked and correct
 
-- No visible target under 24px and no axe violation in the completed Owner 1440/100 Chromium batch (21 routes).
-- Source review confirms Request pages comes first in DOM; Refresh keeps native focus and exposes busy label with `aria-disabled`.
+- No visible mouse target below24px and no axe violation in all 35 initial checker cells.
+- Controlled protected reads were held/released in the browser; every other non-read mutation was blocked. No app save, decision, sign-out or publication reached the server.
+- ST-P4-13’s late selected-group expansion is filed under stability; the chosen group is visible in the final ready viewport. Its before-paint correction remains the owning branch’s work.
 
 ## Gaps
 
-All manual focus/keyboard, menus, panes, closed groups, offline/paused/error/session/empty/partial/decided states, pending/double press, reduced motion and the remainder of the matrix. No mutation was sent to an app.
+All manual focus/keyboard, account menus, closed-group navigation, panes, offline/paused/failure/session/empty/partial/decided states, pending/double press, reduced motion and remaining matrix.
 
 
-Exact source: `claude/p4-desktop-240fe0` at `8012d9790e72987140f939c7d70e1df9612ea009`, detached `/workspace/inspect-desktop`. Read only. No app source edits, saves, decisions, sign-outs or production access. Fictional fixture-only owned preview.
+Exact source: `claude/p4-desktop-240fe0` at `8012d9790e72987140f939c7d70e1df9612ea009`, detached `/workspace/inspect-desktop`. Read only; fictional owned preview only. No app source edits or app mutations. No production access.
 
-The parent paused browser work for the candidate publication’s isolated gate runs. This is a checkpoint report, not an exit certification. Required matrix: 320, 360, 390, 430, landscape 844×390, 761, 768, 1023, 1024, 1179, 1180, 1440 and collapsed 1440; root text 100/125/150/200%; Chromium and WebKit; all brief roles/states. It remains incomplete.
+The unchanged checker completed **35 unique cells**: Owner 21 + Employee 14, Chromium 1440×900/100%, axe enabled; **14 raw pass / 21 raw fail**. Owner 19 cells include the documented absent `/api/manager/inbox-count`404; legacy folded-request/Reports/Settings/manager-Updates body floors are retained as out-of-scope observations. Employee’s two failures are TC-P4-22/23. Raw JSON is unchanged. See [checker summary](evidence/checker-summary.json), [Owner raw](evidence/checks-QAOWNER-chromium-1440-100.json), [Employee raw](evidence/checks-AUDIT-E-chromium-1440-100.json), [source round](evidence/source-ROUND.md).
 
-Evidence: [round metadata](evidence/round-metadata.json), [checker summary](evidence/checker-summary.json), [source round](evidence/source-ROUND.md). `checks.mjs` runs unchanged under the external-origin guard. Raw 404 failures are retained; `/api/manager/inbox-count` is absent by this branch’s documented contract and belongs to backend integration.
+**Exit matrix incomplete.** Gates required pausing browser work; the resumed scope was limited to font crops, a sidebar reference, and controlled Inbox CLS attribution. No WebKit, other widths, collapsed sidebar, full role/state matrix or full manual five-area sweep was completed. No earlier finding is independently closed beyond the measurements stated here. Full matrix requirements are retained in [metadata](evidence/round-metadata.json).
 
-Checkpoint addition: Employee 12/14 routes passed at 1440/100 Chromium with axe (Availability and My pay have small text). Combined raw result 14/35 pass; see unchanged JSON. Browser work is idle after this batch.
+All owned browser/checker/Next/PostgreSQL processes were stopped. Final closure verifies unchanged source and mirror, PostgreSQL stopped, and zero closure errors: [audit](evidence/closure-audit.json). Runtime substitutions are disclosed in [adapter manifest](evidence/runtime-adapter-manifest.json) and [source hashes](evidence/source-manifest.json).

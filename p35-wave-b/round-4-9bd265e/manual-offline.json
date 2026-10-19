@@ -1,0 +1,242 @@
+[
+  {
+    "key": "compose-offline-QAOWNER",
+    "account": "QAOWNER",
+    "width": 390,
+    "text": "Updates\n\nUnpublished\n\nCreate update\n\nWrite your message, choose its audience, then review before publishing.\n\nYou’re offline\n\nConnect to the internet, then try again.\n\nTry again",
+    "height": 844,
+    "route": "/app/updates/compose",
+    "shot": "crops/compose-offline-QAOWNER.png",
+    "scrollX": 0,
+    "scrollY": 0,
+    "documentWidth": 390,
+    "active": {
+      "textBox": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "right": 390
+      },
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "whiteSpace": "normal",
+      "tag": "BODY",
+      "text": "Workforce Search Updates Unpublished Create update Write your message, choose its audience, then review before publishing. You’re offline Co",
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 844,
+      "right": 390,
+      "bottom": 844,
+      "font": "14px",
+      "line": "20.3px",
+      "padding": "0px",
+      "margin": "0px",
+      "ariaDisabled": null
+    },
+    "items": [
+      {
+        "textBox": {
+          "x": 88,
+          "y": 329,
+          "width": 103.4375,
+          "height": 20,
+          "right": 191.4375
+        },
+        "scrollWidth": 266,
+        "clientWidth": 266,
+        "whiteSpace": "normal",
+        "tag": "H2",
+        "text": "You’re offline",
+        "x": 88,
+        "y": 328,
+        "width": 266,
+        "height": 22,
+        "right": 354,
+        "bottom": 350,
+        "font": "17px",
+        "line": "22px",
+        "padding": "0px",
+        "margin": "0px",
+        "ariaDisabled": null
+      },
+      {
+        "textBox": {
+          "x": 88,
+          "y": 354,
+          "width": 206,
+          "height": 39,
+          "right": 294
+        },
+        "scrollWidth": 266,
+        "clientWidth": 266,
+        "whiteSpace": "normal",
+        "tag": "P",
+        "text": "Connect to the internet, then try again.",
+        "x": 88,
+        "y": 354,
+        "width": 266,
+        "height": 40,
+        "right": 354,
+        "bottom": 394,
+        "font": "15px",
+        "line": "20px",
+        "padding": "0px",
+        "margin": "0px",
+        "ariaDisabled": null
+      },
+      {
+        "textBox": {
+          "x": 157,
+          "y": 426,
+          "width": 76,
+          "height": 20,
+          "right": 233
+        },
+        "scrollWidth": 318,
+        "clientWidth": 318,
+        "whiteSpace": "normal",
+        "tag": "BUTTON",
+        "text": "Try again",
+        "x": 36,
+        "y": 410,
+        "width": 318,
+        "height": 52,
+        "right": 354,
+        "bottom": 462,
+        "font": "17px",
+        "line": "22px",
+        "padding": "0px 20px",
+        "margin": "0px",
+        "disabled": true,
+        "ariaDisabled": null
+      }
+    ]
+  },
+  {
+    "key": "compose-reconnect-QAOWNER",
+    "titleValue": "Fictional retained draft",
+    "active": "communication-title"
+  },
+  {
+    "key": "compose-offline-AUDIT-E",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": "Updates\n\nUnpublished\n\nMessage today’s team\n\nWrite your message, choose its audience, then review before publishing.\n\nYou’re offline\n\nConnect to the internet, then try again.\n\nTry again",
+    "height": 844,
+    "route": "/app/updates/compose",
+    "shot": "crops/compose-offline-AUDIT-E.png",
+    "scrollX": 0,
+    "scrollY": 0,
+    "documentWidth": 390,
+    "active": {
+      "textBox": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "right": 390
+      },
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "whiteSpace": "normal",
+      "tag": "BODY",
+      "text": "Workforce Updates Unpublished Message today’s team Write your message, choose its audience, then review before publishing. You’re offline Co",
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 844,
+      "right": 390,
+      "bottom": 844,
+      "font": "14px",
+      "line": "20.3px",
+      "padding": "0px",
+      "margin": "0px",
+      "ariaDisabled": null
+    },
+    "items": [
+      {
+        "textBox": {
+          "x": 88,
+          "y": 329,
+          "width": 103.4375,
+          "height": 20,
+          "right": 191.4375
+        },
+        "scrollWidth": 266,
+        "clientWidth": 266,
+        "whiteSpace": "normal",
+        "tag": "H2",
+        "text": "You’re offline",
+        "x": 88,
+        "y": 328,
+        "width": 266,
+        "height": 22,
+        "right": 354,
+        "bottom": 350,
+        "font": "17px",
+        "line": "22px",
+        "padding": "0px",
+        "margin": "0px",
+        "ariaDisabled": null
+      },
+      {
+        "textBox": {
+          "x": 88,
+          "y": 354,
+          "width": 206,
+          "height": 39,
+          "right": 294
+        },
+        "scrollWidth": 266,
+        "clientWidth": 266,
+        "whiteSpace": "normal",
+        "tag": "P",
+        "text": "Connect to the internet, then try again.",
+        "x": 88,
+        "y": 354,
+        "width": 266,
+        "height": 40,
+        "right": 354,
+        "bottom": 394,
+        "font": "15px",
+        "line": "20px",
+        "padding": "0px",
+        "margin": "0px",
+        "ariaDisabled": null
+      },
+      {
+        "textBox": {
+          "x": 157,
+          "y": 426,
+          "width": 76,
+          "height": 20,
+          "right": 233
+        },
+        "scrollWidth": 318,
+        "clientWidth": 318,
+        "whiteSpace": "normal",
+        "tag": "BUTTON",
+        "text": "Try again",
+        "x": 36,
+        "y": 410,
+        "width": 318,
+        "height": 52,
+        "right": 354,
+        "bottom": 462,
+        "font": "17px",
+        "line": "22px",
+        "padding": "0px 20px",
+        "margin": "0px",
+        "disabled": true,
+        "ariaDisabled": null
+      }
+    ]
+  },
+  {
+    "key": "compose-reconnect-AUDIT-E",
+    "titleValue": "Fictional retained draft",
+    "active": "communication-title"
+  }
+]

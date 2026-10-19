@@ -1,0 +1,44 @@
+{
+  "controllerPid": 23373,
+  "controllerAbsent": true,
+  "runs": [
+    {
+      "checkpoint": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+      "startedAt": "2026-10-19T20:36:28.333Z",
+      "completedAt": null,
+      "sourceAndMirrorVerified": true,
+      "postgresStopped": true,
+      "errors": [
+        "Error: POPULATION_CONFLICT\n    at savePeriodPopulation (/workspace/inspect-wave-a-a05f26a/src/lib/period-close/service.ts:393:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async seedPayrollFixture (/workspace/inspect-wave-a-a05f26a/src/test/integration/payroll-fixture.ts:157:3)\n    at async seedPayrollPreviewFixture (/workspace/nevora-inspection-runtime/helpers/a05f26a74b2979ce0efe1532f7f70d7064261bb9/bee02a7b29a5/scripts/ui-checks/payroll-preview-fixture.ts:13:15)\n    at async <anonymous> (/workspace/nevora-inspection-runtime/helpers/a05f26a74b2979ce0efe1532f7f70d7064261bb9/bee02a7b29a5/scripts/ui-checks/preview-runtime.mjs:93:16)"
+      ],
+      "run": "/workspace/paused-previews/wave-a-a05f26a/evidence-2026-10-19T20-36-25-668Z",
+      "processes": [
+        {
+          "ownership": "/workspace/paused-previews/wave-a-a05f26a/evidence-2026-10-19T20-36-25-668Z/owned-next-8D2X7g/ownership.json",
+          "nextPid": 22024,
+          "nextAlive": false,
+          "cluster": "/workspace/paused-previews/pg/nevora-ui-preview-e340cdbfae",
+          "postgresPidFileExists": false
+        }
+      ]
+    },
+    {
+      "checkpoint": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+      "startedAt": "2026-10-19T20:37:59.497Z",
+      "completedAt": "2026-10-19T21:04:18.459Z",
+      "sourceAndMirrorVerified": true,
+      "postgresStopped": true,
+      "errors": [],
+      "run": "/workspace/paused-previews/wave-a-a05f26a/evidence-2026-10-19T20-37-56-829Z",
+      "processes": [
+        {
+          "ownership": "/workspace/paused-previews/wave-a-a05f26a/evidence-2026-10-19T20-37-56-829Z/owned-next-Psv2lN/ownership.json",
+          "nextPid": 24282,
+          "nextAlive": false,
+          "cluster": "/workspace/paused-previews/pg/nevora-ui-preview-a6c75186d8",
+          "postgresPidFileExists": false
+        }
+      ]
+    }
+  ]
+}

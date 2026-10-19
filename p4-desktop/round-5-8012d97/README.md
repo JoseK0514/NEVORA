@@ -1,13 +1,22 @@
-# Desktop exit round 5 — paused checkpoint
+# Desktop exit round 5 — final limited report
 
-Source `8012d9790e72987140f939c7d70e1df9612ea009`. **Not zero: incomplete.** Five area reports are checkpoint drafts. No Desktop finding is independently closed. One measured CLS signal (0.1465) requires controlled reproduction.
+**Not zero: 0 P0, 2 P1, 1 P2; exit matrix incomplete.** UI/QA recommendation: **NO-GO for closing Desktop’s exit gate** from this round. Local fictional evidence does not certify hosted/production readiness.
 
-Current browser work is pausing after the current unchanged checker batch while the parent runs candidate publication gates without competing CPU. Do not merge this branch based on these reports.
+| Finding | Owner/action | Evidence |
+|---|---|---|
+| TC-P4-22 · P1 | Desktop Availability field-label floor; candidate-only correction for Claude’s review. Frozen branch remains unfixed. | [Type report](type-colour-copy.md),11px labels versus 14px floor. |
+| TC-P4-23 · P2 | Desktop personal My pay text floor; candidate-only correction for Claude’s review. No pay/legal text changes. | [Type report](type-colour-copy.md),13px filenames and 12px payday line. |
+| ST-P4-13 · P1 | **Desktop source owner must fix before merge.** The offending desktop selection effect is absent from the current candidate; do not import an unzero branch to fix it. | [Stability report](stability.md), controlled CLS 0.06383 versus 0 when the exact late group-open call is suppressed in the browser. |
 
-The preview uses fictional owned PostgreSQL, Next dev, physically copied dependencies and the coordinator’s bounded scratch SQL test transport (pool12). A fixture-only bootstrap replaces browser publication. These disclosed test/runtime substitutions do not change production app source. The exact-source application hashes and closure audit are retained outside source; the final report will attach closure evidence when stopped.
+The frozen Desktop sidebar’s group/nav/footer text measures 14px. It is a reference for inherited candidate shell finding RC-CB-TC-01, not an additional Desktop finding.
 
-UI and QA recommendation: **NO-GO for closing Desktop’s exit gate from this incomplete checkpoint.** Local fictional preview checks do not certify hosted or production readiness.
+The first temp startup failed on the dependency symlink, a second helper startup lacked an older branch’s fixture import, and a successful temp runtime was closed and moved to disk when /tmp pressure was identified. None was filed as an app defect. The final disk runtime closed cleanly.
 
-Safe checkpoint: **35 unique checker cells** (Owner 21 + Employee 14; Chromium, 1440px,100%,axe), **14 raw pass / 21 raw fail**. Employee 12/14 passed; Availability and My pay have small-text findings. Owner’s known count404 and out-of-scope body floors remain raw; the planning Inbox CLS0.1465 observation awaits reproduction. All browser processes for this preview are closed; checker wrapper 22516 is stopped before WebKit, with preview idle.
 
-Source-mapped measured findings now filed in type report: **TC-P4-22 P1** (Availability From/Until 11px), **TC-P4-23 P2** (My pay document filenames 13px, payday line 12px); both below 14px desktop floor. Screenshots wait for resumed browser work. No pay/legal copy change is proposed.
+Exact source: `claude/p4-desktop-240fe0` at `8012d9790e72987140f939c7d70e1df9612ea009`, detached `/workspace/inspect-desktop`. Read only; fictional owned preview only. No app source edits or app mutations. No production access.
+
+The unchanged checker completed **35 unique cells**: Owner 21 + Employee 14, Chromium 1440×900/100%, axe enabled; **14 raw pass / 21 raw fail**. Owner 19 cells include the documented absent `/api/manager/inbox-count`404; legacy folded-request/Reports/Settings/manager-Updates body floors are retained as out-of-scope observations. Employee’s two failures are TC-P4-22/23. Raw JSON is unchanged. See [checker summary](evidence/checker-summary.json), [Owner raw](evidence/checks-QAOWNER-chromium-1440-100.json), [Employee raw](evidence/checks-AUDIT-E-chromium-1440-100.json), [source round](evidence/source-ROUND.md).
+
+**Exit matrix incomplete.** Gates required pausing browser work; the resumed scope was limited to font crops, a sidebar reference, and controlled Inbox CLS attribution. No WebKit, other widths, collapsed sidebar, full role/state matrix or full manual five-area sweep was completed. No earlier finding is independently closed beyond the measurements stated here. Full matrix requirements are retained in [metadata](evidence/round-metadata.json).
+
+All owned browser/checker/Next/PostgreSQL processes were stopped. Final closure verifies unchanged source and mirror, PostgreSQL stopped, and zero closure errors: [audit](evidence/closure-audit.json). Runtime substitutions are disclosed in [adapter manifest](evidence/runtime-adapter-manifest.json) and [source hashes](evidence/source-manifest.json).

@@ -1,4 +1,4 @@
-**Not zero — known source finding TC-WC-28 (P1); full exit evidence incomplete.** Exact `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8`. This preserves the independently measured finding in `../round-4/type-colour-copy.md` at inspection commit `c05d594`; the fresh local contrast re-check is queued.
+**Not zero — known source finding TC-WC-28 (P1); full exit evidence incomplete.** Exact `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8`. This preserves the independently measured finding in `../round-4/type-colour-copy.md` at inspection commit `c05d594`; the fresh local contrast recheck was not run before the coordinator freeze.
 
 ## Earlier findings
 
@@ -19,6 +19,6 @@ The coordinator reports that candidate `cbaadbc` already contains the shared-bor
 
 ## Gaps
 
-Fresh contrast, all earlier TC IDs, expanded/custom states, full width/text matrix and broader wording judgment remain incomplete. Browser work was paused at the coordinator's request for uncontended candidate release tests. No payroll/legal wording is changed or proposed.
+Fresh contrast, all earlier TC IDs, expanded/custom states, full width/text matrix and broader wording judgment remain incomplete. Further browser work stopped at the coordinator's candidate freeze. No payroll/legal wording is changed or proposed.
 
 Zero open P0–P2 in this area: **no**.

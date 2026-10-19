@@ -1,31 +1,32 @@
 # Bars and stability — Desktop round 5
 
-**Verdict: not zero; incomplete.** One measured loading-instability signal requires reproduction and a screenshot before a finding/fix is prescribed. No new P0/P1/P2 is certified at this checkpoint.
+**Verdict: not zero: 0 P0, 1 P1, 0 P2 in this area; exit matrix incomplete.** Planning Inbox visibly rearranges after its ready list appears.
 
-## Measured observation
+## Finding
 
-| ID | Screen, role, width | Measurement | Evidence | Status |
-|---|---|---|---|---|
-| R5-ST-OBS-01 | `/app/inbox?filter=planning`, QAOWNER, Chromium, 1440×900, 100% | Loading CLS **0.1465**, above 0.01. | `evidence/checks-QAOWNER-chromium-1440-100.json` | RISK: needs held-response geometry, screenshot and specific cause/fix. No server 5xx was recorded in this cell. |
+| ID | Screen · role · width | Element | Measured defect | Screenshot | Cause | Specific fix | Severity |
+|---|---|---|---|---|---|---|---|
+| ST-P4-13 | `/app/inbox?filter=planning` · QAOWNER · Chromium 1440×900 ·100% | Default selected `TARGET_MISSING` group (`.premium-group details`) | After the ready list paints, “13 people with no weekly hour target” opens **64→1436px (+1372px)**. Deadline/timecard rows initially at y465/569/673 move below the viewport. Original checker CLS **0.1465**; font-ready held-read runs **0.06393/0.06388**; a final source run **0.06383**. Suppressing only that late open call in the browser yields **CLS 0** (attribution control, not a fix). Threshold0.01. | [Ready viewport](evidence/shots/planning-controlled-1-ready.png), [loading viewport](evidence/shots/planning-controlled-1-loading.png), [control](evidence/shots/cls-suppression-control-2-suppressed.png). Exact shift sources/stack: `evidence/limited-proof.json`, `evidence/cls-suppression-control.json`. | `src/components/manager-inbox.tsx:261-264`: `InboxSurface.useEffect` calls `setAttribute('open','')` after paint. Intercepted stack identifies `commitHookPassiveMountEffects`. | Open the selected group before its first painted ready frame: minimum candidate for the owning branch is this effect as `useLayoutEffect` (already imported), or declarative initial `open`. Recheck CLS≤0.01, selected row visibility and later user toggling. **No fix was applied or certified.** Current candidate lacks this desktop effect; owning Desktop source must fix before merge. | P1 |
 
 ## Earlier findings
 
-ST-P4-03/05/09/10/11/12 fixes are present in source; measured closure pending. ST-P4-06 remains the documented accepted band reservation; ST-P4-08 is coordinator-owned. Historical measurements remain in `evidence/source-stability.md`.
+ST-P4-03/05/09/10/11/12 fixes are present in source; controlled rechecks for those IDs were not completed. ST-P4-06 remains the documented decision. ST-P4-08 is coordinator-owned. Historical results: `evidence/source-stability.md`.
 
 ## Checked and correct
 
-- The first Owner checker batch completed 21 routes at 1440/100 Chromium with no overflow, target-size or axe failure.
-- Other batch cells did not report CLS above 0.01. This does not cover controlled held reads or other text sizes.
+- The planning Inbox band is 192px in both loading and ready states, with identical 1120px width. The reproduced shift comes from the selected group, not band growth.
+- Font readiness was awaited before releasing the protected read in controlled runs.
+- The source effect opens exactly one group; browser-only suppression leaves it closed and removes the measured shift. No server data changed.
 
 ## Gaps
 
-Pending: controlled loading/ready, paused/offline/error/session transitions, pending button geometry, polling, route placeholders at large text, sticky behavior, phone regressions and the remaining matrix.
+Before-paint fix has not been tested. MutationObserver “atomic open” experiments did not beat the passive effect and are retained as unsuccessful controls (`evidence/cls-attribution.json`); do not treat them as validation. Polling, pending button size, route placeholders, scroll holds, sticky behavior and all other matrix cells remain incomplete.
 
 
-Exact source: `claude/p4-desktop-240fe0` at `8012d9790e72987140f939c7d70e1df9612ea009`, detached `/workspace/inspect-desktop`. Read only. No app source edits, saves, decisions, sign-outs or production access. Fictional fixture-only owned preview.
+Exact source: `claude/p4-desktop-240fe0` at `8012d9790e72987140f939c7d70e1df9612ea009`, detached `/workspace/inspect-desktop`. Read only; fictional owned preview only. No app source edits or app mutations. No production access.
 
-The parent paused browser work for the candidate publication’s isolated gate runs. This is a checkpoint report, not an exit certification. Required matrix: 320, 360, 390, 430, landscape 844×390, 761, 768, 1023, 1024, 1179, 1180, 1440 and collapsed 1440; root text 100/125/150/200%; Chromium and WebKit; all brief roles/states. It remains incomplete.
+The unchanged checker completed **35 unique cells**: Owner 21 + Employee 14, Chromium 1440×900/100%, axe enabled; **14 raw pass / 21 raw fail**. Owner 19 cells include the documented absent `/api/manager/inbox-count`404; legacy folded-request/Reports/Settings/manager-Updates body floors are retained as out-of-scope observations. Employee’s two failures are TC-P4-22/23. Raw JSON is unchanged. See [checker summary](evidence/checker-summary.json), [Owner raw](evidence/checks-QAOWNER-chromium-1440-100.json), [Employee raw](evidence/checks-AUDIT-E-chromium-1440-100.json), [source round](evidence/source-ROUND.md).
 
-Evidence: [round metadata](evidence/round-metadata.json), [checker summary](evidence/checker-summary.json), [source round](evidence/source-ROUND.md). `checks.mjs` runs unchanged under the external-origin guard. Raw 404 failures are retained; `/api/manager/inbox-count` is absent by this branch’s documented contract and belongs to backend integration.
+**Exit matrix incomplete.** Gates required pausing browser work; the resumed scope was limited to font crops, a sidebar reference, and controlled Inbox CLS attribution. No WebKit, other widths, collapsed sidebar, full role/state matrix or full manual five-area sweep was completed. No earlier finding is independently closed beyond the measurements stated here. Full matrix requirements are retained in [metadata](evidence/round-metadata.json).
 
-Checkpoint addition: Employee 12/14 routes passed at 1440/100 Chromium with axe (Availability and My pay have small text). Combined raw result 14/35 pass; see unchanged JSON. Browser work is idle after this batch.
+All owned browser/checker/Next/PostgreSQL processes were stopped. Final closure verifies unchanged source and mirror, PostgreSQL stopped, and zero closure errors: [audit](evidence/closure-audit.json). Runtime substitutions are disclosed in [adapter manifest](evidence/runtime-adapter-manifest.json) and [source hashes](evidence/source-manifest.json).

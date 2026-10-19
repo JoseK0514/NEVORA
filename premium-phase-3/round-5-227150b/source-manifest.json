@@ -5,7 +5,7 @@
   "tree": "b932405014d8db54439027d855cdcc7b19e35d28",
   "sourceTrackedClean": true,
   "browserPath": "Regular Playwright; Browser plugin not available",
-  "reportStatus": "paused interim; not an exit certificate",
+  "reportStatus": "limited source proofs complete; full exit sweep incomplete; owned preview closed",
   "previewRoot": "/workspace/paused-previews/phase3",
   "scope": "Phase3 exit round5; shared phone shell; placeholders; large-data requested; desktop pages owned by separate worker",
   "historyRead": {
@@ -66,6 +66,80 @@
       "account": "AUDIT-E",
       "size": 390,
       "text": 100
+    },
+    {
+      "name": "updates",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "timecards",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "swap",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "calendar",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "correction",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "updates",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "timecards",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "swap",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "calendar-auth",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
+    },
+    {
+      "name": "withdraw-auth",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "size": 390,
+      "text": 100
     }
-  ]
+  ],
+  "completedMutationPostsIntercepted": 15,
+  "previewClosed": true,
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true
 }

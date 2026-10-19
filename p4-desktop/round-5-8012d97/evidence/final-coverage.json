@@ -1,0 +1,38 @@
+{
+  "status": "not-zero-incomplete",
+  "source": "8012d9790e72987140f939c7d70e1df9612ea009",
+  "findings": {
+    "P0": 0,
+    "P1": [
+      "TC-P4-22",
+      "ST-P4-13"
+    ],
+    "P2": [
+      "TC-P4-23"
+    ]
+  },
+  "checker": {
+    "unique": 35,
+    "rawPass": 14,
+    "rawFail": 21,
+    "browser": "chromium",
+    "width": 1440,
+    "text": 100,
+    "axe": true,
+    "roles": {
+      "QAOWNER": 21,
+      "AUDIT-E": 14
+    }
+  },
+  "limitedProofs": [
+    "TC-P4-22/23 crops100/requested200",
+    "Desktop sidebar14px reference",
+    "font-ready planning-Inbox held reads",
+    "exact passive group-open call trace",
+    "browser-only exact-open suppression attribution: CLS0"
+  ],
+  "candidateScope": "ST-P4-13 effect absent from current release candidate; source owner must fix before Desktop merge",
+  "fullMatrixCompleted": false,
+  "productionAccess": false,
+  "applicationMutations": false
+}

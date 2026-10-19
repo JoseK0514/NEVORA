@@ -1,0 +1,19 @@
+{
+  "ownerId": "af7f280c-a716-4246-91ec-b56a249d0945",
+  "source": "/workspace/inspect-phase3",
+  "root": "/workspace/paused-previews/phase3/evidence-2026-10-19T20-33-01-904Z/owned-next-Vegj62",
+  "runtime": "Next production-mode review build + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 14492,
+  "port": 34019,
+  "url": "http://127.0.0.1:34019",
+  "identity": {
+    "name": "nevora_exchange_test_audit_740cad825bb2",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:1cdc285b-4c7c-4aae-afa4-dbdc455575d6"
+  },
+  "closed": true,
+  "closedAt": "2026-10-19T21:01:37.276Z",
+  "sourceVerified": true,
+  "mirrorVerified": true
+}

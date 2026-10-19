@@ -1,0 +1,194 @@
+[
+  {
+    "file": "manual-typography.json",
+    "key": "payroll-document-filenames-390",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-typography.json",
+    "key": "payroll-corrections-summary-390",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-typography.json",
+    "key": "payroll-job-labels-390",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-offline.json",
+    "key": "compose-offline-QAOWNER",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-offline.json",
+    "key": "compose-offline-AUDIT-E",
+    "account": "AUDIT-E",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-rules.json",
+    "key": "rules-768-t200",
+    "account": "QAOWNER",
+    "width": 768,
+    "height": 900,
+    "textPercentFromHarnessCase": 200
+  },
+  {
+    "file": "manual-rules.json",
+    "key": "rules-768-t150",
+    "account": "QAOWNER",
+    "width": 768,
+    "height": 900,
+    "textPercentFromHarnessCase": 150
+  },
+  {
+    "file": "manual-rules.json",
+    "key": "rules-1024-t200",
+    "account": "QAOWNER",
+    "width": 1024,
+    "height": 900,
+    "textPercentFromHarnessCase": 200
+  },
+  {
+    "file": "manual-rules.json",
+    "key": "rules-1440-t100",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-rules.json",
+    "key": "rules-390-t100",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-rules.json",
+    "key": "rules-320-t200",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "textPercentFromHarnessCase": 200
+  },
+  {
+    "file": "manual-rules.json",
+    "key": "rules-844-t100",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-rules.json",
+    "key": "rules-manager-facts-390",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-payroll.json",
+    "key": "payroll-save-held",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-payroll.json",
+    "key": "payroll-save-failed",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-states.json",
+    "key": "detail-read-failed-QAOWNER",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-states.json",
+    "key": "detail-recovered-QAOWNER",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-states.json",
+    "key": "detail-read-failed-AUDIT-E",
+    "account": "AUDIT-E",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-states.json",
+    "key": "detail-recovered-AUDIT-E",
+    "account": "AUDIT-E",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-states.json",
+    "key": "detail-401-QAOWNER",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-states.json",
+    "key": "detail-401-AUDIT-E",
+    "account": "AUDIT-E",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-states.json",
+    "key": "rules-enter-held",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-states.json",
+    "key": "rules-enter-failed",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "textPercentFromHarnessCase": 100
+  },
+  {
+    "file": "manual-confirms.json",
+    "key": "detail-withdraw-confirm-landscape",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "textPercentFromHarnessCase": 100
+  }
+]

@@ -1,0 +1,79 @@
+{
+  "polledAt": "2026-10-19T20:53:53.280173+00:00",
+  "method": "Read-only local remote refs; root coordinated fetch, latest refs reported20:49 UTC. No independent fetch.",
+  "heads": [
+    {
+      "chat": "Phase 3",
+      "branch": "claude/premium-phase-1",
+      "head": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+      "round": "docs/product/specs/premium-phase-3/ROUND.md",
+      "zero": false
+    },
+    {
+      "chat": "Profile",
+      "branch": "claude/p35-profile-6cdee8",
+      "head": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+      "round": "docs/product/specs/p35-profile/ROUND.md",
+      "zero": true
+    },
+    {
+      "chat": "Wave A",
+      "branch": "claude/p35-wave-a-1283c8",
+      "head": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+      "round": "docs/product/specs/p35-wave-a/ROUND.md",
+      "zero": false
+    },
+    {
+      "chat": "Wave B",
+      "branch": "claude/p35-wave-b-808dfd",
+      "head": "564d19380e933278c73bb79cb1ea239465e0ab89",
+      "round": "docs/product/specs/p35-wave-b/ROUND.md",
+      "zero": false
+    },
+    {
+      "chat": "Wave C",
+      "branch": "claude/p35-wave-c-93e13c",
+      "head": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+      "round": "docs/product/specs/p35-wave-c/ROUND.md",
+      "zero": false
+    },
+    {
+      "chat": "Desktop",
+      "branch": "claude/p4-desktop-240fe0",
+      "head": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "round": "docs/product/specs/p4-desktop/ROUND.md",
+      "zero": false
+    }
+  ],
+  "profileReports": [
+    {
+      "area": "alignment",
+      "report": "docs/product/specs/p35-profile/inspection/alignment.md",
+      "claimsZero": true
+    },
+    {
+      "area": "stability",
+      "report": "docs/product/specs/p35-profile/inspection/stability.md",
+      "claimsZero": true
+    },
+    {
+      "area": "type-colour-copy",
+      "report": "docs/product/specs/p35-profile/inspection/type-colour-copy.md",
+      "claimsZero": true
+    },
+    {
+      "area": "interaction-states",
+      "report": "docs/product/specs/p35-profile/inspection/interaction-states.md",
+      "claimsZero": true
+    },
+    {
+      "area": "widths-roles",
+      "report": "docs/product/specs/p35-profile/inspection/widths-roles.md",
+      "claimsZero": true
+    }
+  ],
+  "waveBApplicationDriftSince9bd265e": [],
+  "newZeroSincePrior": "none; Profile already known and merged",
+  "waveAHeadDrift": "7f75dc4 -> a05f26a74b2979ce0efe1532f7f70d7064261bb9; ST-WA-11 pending width held within available space on rotation, not zero",
+  "browserStatus": "CPU-paused; no browser work resumed"
+}

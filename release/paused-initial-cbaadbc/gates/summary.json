@@ -1,0 +1,42 @@
+{
+  "checkpoint": "cbaadbc8688eb4deb172ae22b1ee2607f5c5ca64",
+  "installLockBlob": "76af83a326821ae23720673ac2e5f5aeccb99787",
+  "typecheck": "pass",
+  "lint": "pass;0warnings",
+  "initialFull": {
+    "passed": 7343,
+    "timedOut": 9,
+    "skipped": 801,
+    "pending": 55
+  },
+  "isolated": [
+    {
+      "file": "planner",
+      "passed": 56,
+      "failed": 0,
+      "maxWorkers": 1,
+      "unchangedTimeouts": true
+    },
+    {
+      "file": "typed-guarded-backfill",
+      "passed": 68,
+      "failed": 0,
+      "maxWorkers": 1,
+      "unchangedTimeouts": true
+    },
+    {
+      "file": "typed-journal",
+      "passed": 64,
+      "failed": 0,
+      "maxWorkers": 1,
+      "unchangedTimeouts": true
+    },
+    {
+      "file": "phase-e-runner",
+      "passed": 83,
+      "failed": 0,
+      "maxWorkers": 1,
+      "unchangedTimeouts": true
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+[
+ {
+  "atomic": false,
+  "cls": 0.1135849940923997,
+  "shifts": [
+   {
+    "value": 0.1135849940923997,
+    "at": 2117.899999999907,
+    "sources": [
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Set deadline: Availability deadline not set, Set the availability deadline before employees finalize availability.\" data-inbox-key=\"SETUP:DEADLINE\" href=\"/app/schedule?week=2026-10-19#schedule-deadlin",
+      "previousY": 465,
+      "currentY": 0
+     },
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Review timecard: Period timecard needs review, Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.\" data-inbox-key=\"TIMECARD:AUDIT-BREAK:2026-10-19:2026-10-25\" href=\"/app/time",
+      "previousY": 569,
+      "currentY": 0
+     },
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Review timecard: Period timecard needs review, Jordan Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.\" data-inbox-key=\"TIMECARD:AUDIT-ON:2026-10-19:2026-10-25\" href=\"/app/timeca",
+      "previousY": 673,
+      "currentY": 0
+     },
+     {
+      "html": "<summary class=\"nv-row\" data-leading=\"true\"><span class=\"nv-tile\" data-tone=\"neutral\" aria-hidden=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" fill=\"currentColor\" viewBox=\"0 0 256 256\"><path d=\"M208,28H188V24a12,12,0,0,0-24,0",
+      "previousY": 777,
+      "currentY": 0
+     },
+     {
+      "html": "<summary class=\"nv-row\" data-leading=\"true\"><span class=\"nv-tile\" data-tone=\"neutral\" aria-hidden=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" fill=\"currentColor\" viewBox=\"0 0 256 256\"><path d=\"M208,28H188V24a12,12,0,0,0-24,0",
+      "previousY": 841,
+      "currentY": 0
+     }
+    ]
+   }
+  ],
+  "groupOpens": [
+   {
+    "at": 1933.6000000000931,
+    "text": "13 people with no weekly hour target",
+    "height": 64,
+    "stack": "Error\n    at Element.setAttribute (<anonymous>:6:274)\n    at InboxSurface.useEffect (http://127.0.0.1:39643/_next/static/chunks/src_1vpbplo._.js:3979:115)\n    at Object.react_stack_bottom_frame (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:14944:22)\n    at runWithFiberInDEV (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:761:74)\n    at commitHookEffectListMount (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:7082:167)\n    at commitHookPassiveMountEffects (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:7117:60)\n    at commitPassiveMountOnFiber (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8519:33)\n    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8506:316)\n    at commitPassiveMountOnFiber (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8518:17)\n    at recursivelyTraversePassiveMountEff"
+   }
+  ],
+  "atomicOpens": [],
+  "openDetails": [
+   {
+    "text": "13 people with no weekly hour target",
+    "height": 1436
+   }
+  ],
+  "rootFont": "16px"
+ },
+ {
+  "atomic": true,
+  "cls": 0.11390732954362782,
+  "shifts": [
+   {
+    "value": 0.00011175411522633745,
+    "at": 3079,
+    "sources": [
+     {
+      "html": "<div class=\"mobile-header-actions\"><button type=\"button\" class=\"command-finder-trigger\" aria-haspopup=\"dialog\" aria-keyshortcuts=\"Meta+K Control+K\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" fill=\"currentColor\" viewBox=\"0 0 256 25",
+      "previousY": 10,
+      "currentY": 10
+     }
+    ]
+   },
+   {
+    "value": 0.11379557542840149,
+    "at": 4038.8000000002794,
+    "sources": [
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Set deadline: Availability deadline not set, Set the availability deadline before employees finalize availability.\" data-inbox-key=\"SETUP:DEADLINE\" href=\"/app/schedule?week=2026-10-19#schedule-deadlin",
+      "previousY": 465,
+      "currentY": 0
+     },
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Review timecard: Period timecard needs review, Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.\" data-inbox-key=\"TIMECARD:AUDIT-BREAK:2026-10-19:2026-10-25\" href=\"/app/time",
+      "previousY": 569,
+      "currentY": 0
+     },
+     {
+      "html": "<a class=\"nv-row\" data-leading=\"true\" aria-label=\"Review timecard: Period timecard needs review, Jordan Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.\" data-inbox-key=\"TIMECARD:AUDIT-ON:2026-10-19:2026-10-25\" href=\"/app/timeca",
+      "previousY": 673,
+      "currentY": 0
+     },
+     {
+      "html": "<summary class=\"nv-row\" data-leading=\"true\"><span class=\"nv-tile\" data-tone=\"neutral\" aria-hidden=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" fill=\"currentColor\" viewBox=\"0 0 256 256\"><path d=\"M208,28H188V24a12,12,0,0,0-24,0",
+      "previousY": 777,
+      "currentY": 0
+     },
+     {
+      "html": "<summary class=\"nv-row\" data-leading=\"true\"><span class=\"nv-tile\" data-tone=\"neutral\" aria-hidden=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" fill=\"currentColor\" viewBox=\"0 0 256 256\"><path d=\"M208,28H188V24a12,12,0,0,0-24,0",
+      "previousY": 841,
+      "currentY": 0
+     }
+    ]
+   }
+  ],
+  "groupOpens": [
+   {
+    "at": 3816.600000000093,
+    "text": "13 people with no weekly hour target",
+    "height": 64,
+    "stack": "Error\n    at Element.setAttribute (<anonymous>:6:274)\n    at InboxSurface.useEffect (http://127.0.0.1:39643/_next/static/chunks/src_1vpbplo._.js:3979:115)\n    at Object.react_stack_bottom_frame (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:14944:22)\n    at runWithFiberInDEV (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:761:74)\n    at commitHookEffectListMount (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:7082:167)\n    at commitHookPassiveMountEffects (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:7117:60)\n    at commitPassiveMountOnFiber (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8519:33)\n    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8506:316)\n    at commitPassiveMountOnFiber (http://127.0.0.1:39643/_next/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:8518:17)\n    at recursivelyTraversePassiveMountEff"
+   }
+  ],
+  "atomicOpens": [
+   {
+    "at": 3964,
+    "text": "13 people with no weekly hour target",
+    "before": 64
+   }
+  ],
+  "openDetails": [
+   {
+    "text": "13 people with no weekly hour target",
+    "height": 1436
+   }
+  ],
+  "rootFont": "16px"
+ }
+]

@@ -1,8 +1,8 @@
 # Candidate-only fix review for the coordinator
 
-Exact inspected source: `227150bb2658cb5a30db3c644b6b8f76031d3c79`. Browser work paused at the coordinator's request so the first candidate gates and isolated retries can run uncontended. These are client/UI proposals; no server behavior change is proposed. Only the root edits the candidate.
+Exact inspected source: `227150bb2658cb5a30db3c644b6b8f76031d3c79`. Browser work initially paused for uncontended candidate gates, then resumed for the authorized limited source proofs. Those proofs are complete; the full exit sweep remains incomplete. These are client/UI proposals; no server behavior change is proposed. Only the root edits the candidate.
 
-## IS-77 — Timecards pause state (source-confirmed; browser recheck pending)
+## IS-77 — Timecards pause state (browser-verified in Chromium and WebKit)
 
 `timecards.tsx:90` clears data/private actor state but leaves the ready-count message untouched and sets busy=false. Refresh at line177 is disabled only by busy. Preserve clearing of private data. Add a paused state, update the message when pausing, and disable both Refresh and View period while paused. Offline copy: “You’re offline. Reconnect to see timecards.” Hidden/blur copy: “Timecards paused. Return to this page to refresh.” `sync` should resume/refresh only when visible and online; protect `refresh` itself against offline/hidden invocation. Do not retain cards simply to make the old count truthful. Keep expiry distinct: an expired snapshot may offer refresh while online.
 
@@ -18,7 +18,7 @@ Smallest precise client-only solution: keep `state:'unavailable'` for compatibil
 
 **Timecards:** add explicit auth UI state on the existing401/403 read/action branches and render Sign in beside the message. Clear protected cards as today. A fresh successful read clears auth UI state; a pause gets paused/offline wording rather than an old count or old sign-in notice.
 
-## IS-79 — Updates acknowledge401 and pending announcement (source-confirmed; browser recheck pending)
+## IS-79 — Updates acknowledge401 and pending announcement (browser-verified in Chromium and WebKit)
 
 `communications/client.ts:13` merges401 and403 into one unauthorized response; `recovery.ts:24` maps that to notice=blocked; `communication-detail.tsx:38,43` then shows Access changed/Retry, no Sign in. Preserve401 vs403 in client-local reason metadata and use a distinct signed-out notice or explicit auth-status field. The existing not-ready message already has `role=status` at line42; put the correct session-ended text in it and render Sign in for401. Do not remove the existing operation fences/authority checks.
 
@@ -42,3 +42,13 @@ One source weakness to check in this same flow: `submit` currently rejects any r
 - **IS-P3-02:** center scrolling fixes the measured portrait cells. When an alert is taller than the usable landscape/keyboard viewport, align its top below measured `.mobile-header` plus8px instead. Respect `.mobile-nav`, `visualViewport` where available, and reduced motion; focus with preventScroll after revealing. Do not assume the whole alert can fit at landscape200. Verify a second failed retry also triggers reveal.
 
 No app source, CSS, tests or STATUS.md were edited by this inspector. No candidate commit is independently closed here; fixes still need targeted candidate browser reproduction after the pause.
+
+## Additional read-only review of the candidate's Wave A swap form
+
+The candidate has a newer ReviewedSwapForm using FormActions/PendingButton, unlike the frozen Phase3 source. An optional `actions?: ReactNode` slot on ShiftChangeForm is a narrow compatibility change: keep the existing main fieldset and its pending/unknown/resolved disabling, then render the slot outside it. Only ReviewedSwapForm needs to supply it; other callers retain their current tree.
+
+Move the existing FormActions (and its adjacent noscript if preserving exact order) from `.wa-swap-body` into the slot. The body ref remains inside the main fieldset, so its `closest('form')`, capture submit observer, selected-pair capture and `:scope > .form-success` observation remain unchanged. Target radio/hidden reviewed terms still join FormData before pending disables the fieldset.
+
+The actions must retain **unknown/resolved locking**. A second direct child fieldset wrapping the slot, disabled for `view.uncertain || resolved` but not for pending, is a small way to preserve that. Otherwise moving Send outside the first fieldset leaves an enabled button that silently does nothing after unknown/completed outcomes. Candidate Wave A CSS already styles direct form fieldsets with zero border/margin/padding and16px column gaps; the same16px between last card and actions is preserved.
+
+PendingButton still resolves `button.form` and observes form aria-busy after the move. Use aria-disabled for its busy state and a click guard reading the current form aria-busy; keep guardSingleSubmit and ShiftChangeFormState's synchronous checks intact. Required validation: pending button retains focus, radio fields remain disabled, double tap emits one request, unknown/resolved Send is locked, retry reuses the original operation, and SwapSentBoundary's success observer still runs. No code was edited during this review, and this proposal is not candidate browser verification.

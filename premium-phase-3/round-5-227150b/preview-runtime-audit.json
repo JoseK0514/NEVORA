@@ -29,5 +29,8 @@
     "employee": "AUDIT-E",
     "payrollOwner": "payroll-qa-owner",
     "payrollEmployee": "payroll-qa-a"
-  }
+  },
+  "completedAt": "2026-10-19T21:01:36.869Z",
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true
 }
