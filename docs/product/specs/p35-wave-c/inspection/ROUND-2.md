@@ -24,7 +24,7 @@ October 19, 2026. Every round-1 finding was worked through. The fixes are live o
   - Outcomes show inside the bar.
   - Company policies has only Save in its bar; "Reload policies" is in the history card.
   - On phones the guide comes first on pages with a save bar.
-  - Toasts sit at the top on those pages.
+  - The phone toast lifts above any save bar (shared fix `aae87e4`, cherry-picked).
 - **Dialogs:** one scroll lock (the root element). Destructive confirms (Archive, Revoke, New setup code) open on Cancel.
 - **Copy:**
   - Company words on the Locations pages.
@@ -39,7 +39,7 @@ October 19, 2026. Every round-1 finding was worked through. The fixes are live o
 - **States:**
   - Branding and Company policies are guarded until hydration, with their finished look kept.
   - The 401 notices on Branding, Features and Policies have a "Go to sign in" link.
-  - After a Features save, focus lands on "All changes saved".
+  - After a Features save, focus lands on the "Saved" state beside the button (the state now reads "Saved" / "Unsaved changes", so the bar stays one row).
   - Clear filters returns focus to the search field.
   - An unknown location has its own not-found page in the Settings frame.
 - **Loading:** the Settings segment's placeholder takes the destination's band. The parent placeholder (`root-loading.tsx`) now has one entry per route, with band heights in `premium-wave-c.css`.
@@ -49,7 +49,11 @@ October 19, 2026. Every round-1 finding was worked through. The fixes are live o
   - Footnotes and draft-status lines sit on the card text edge.
   - Disclosure carets sit on the first line.
   - The receipt card keeps one height.
-- **Shared fixes cherry-picked:** `9f7b649` (landscape phone type) and `a62cc79` (fields have 3:1 edges and grow with text, `min-height: 3rem`).
+- **Shared fixes cherry-picked:**
+  - `9f7b649`: landscape phone type.
+  - `a62cc79`: fields have 3:1 edges and grow with text (`min-height: 3rem`).
+  - `aae87e4`: the validation focus trap, the toast above save bars, unfaded kit buttons, an Inter preload, and apostrophes in the presentation library.
+  - Wave C keeps `noValidate`, so each field shows exactly one error.
 
 ## Decided or out of Wave C's hands (don't refile)
 
@@ -59,9 +63,9 @@ October 19, 2026. Every round-1 finding was worked through. The fixes are live o
 | Search fields white with a border | Shared WR-49, same as Team |
 | Filter pills wrap to a second row on Wave C list pages | These lists have 3–4 pills with counts; wrapping keeps every count visible. Team's pills also wrap (`premium-team-status`) |
 | No access: Owner-only pages redirect to Home with no message, and the band shows for a moment first | Server redirect in `permissions.ts`; listed in `CODEX.md` for Codex |
-| Toast covering a save bar on other pages; Inter loading without preload (font swap, ST-11); desktop parent placeholder with no band (ST-12) | Shared files, sent to the coordinator |
+| Desktop parent placeholder with no band (ST-12) | The desktop chat's, sent on |
 | Home's row describes Clocker recovery as "Reconnect a shared clock-in device" (`premium-home.tsx`) | Desktop session's file, sent on |
-| Strings from `src/lib/workspace-presentation/` (module "off" notes with straight apostrophes, "at least 5:1") | Shared library, sent to the coordinator |
+| "at least 5:1" in Branding's adjustment note vs "needs 4.5:1" in the checks | Accurate: NEVORA darkens the accent to 5:1 on purpose, above the 4.5:1 minimum (coordinator) |
 | Policy terms next to legal text ("Observation cutoff", "Aggregation", "Recorded elapsed", "Effective elapsed after corrections") | Policy and legal wording: Jose decides |
 | "These rules do not determine pay, discipline, or legal entitlements." | Legal wording, kept exactly |
 | Server-written sentences (`CODEX.md` §3) | Server code |

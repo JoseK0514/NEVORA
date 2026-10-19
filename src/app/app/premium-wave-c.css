@@ -433,7 +433,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-save-state { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font: var(--nv-t-callout); color: var(--nv-ink-2); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-save-state--done { color: var(--nv-done-ink); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-save-state--done svg { color: var(--nv-done-mark); }
-@media (max-width: 599px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .wc-save-state { flex: 1 1 100%; justify-content: center; min-height: 0; order: -1; } }
+/* The save state sits beside the button, so the bar stays one 76px row and the shared toast lift clears it. */
+@media (max-width: 599px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .wc-save-state { flex: 0 1 auto; } }
 
 /* ---------- Company policies ---------- */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page fieldset.wc-rule { min-width: 0; margin: 0; padding: 0; border: 0; }
@@ -512,15 +513,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .n
 }
 /* ST-04: a save's outcome shows inside the save bar, in view, so focusing it doesn't scroll the page. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions > .wc-feedback { flex: 1 1 100%; order: -2; }
-/* ST-02: on pages with a save bar, phone toasts sit at the top, clear of the bar and the tab bar. */
-@media (max-width: 760px) {
-  html body:has(.wc-page .wc-actions.nv-actionbar) .nevora-toaster { top: calc(76px + env(safe-area-inset-top, 0px)); bottom: auto; }
-}
 /* ST-10: the receipt card keeps one height idle, checking and failed. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-result { min-height: 216px; }
 
-/* TC-09: disabled kit buttons keep the kit's 5:1 disabled look (an older shared rule faded them to 55%). */
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(.nv-btn, .nv-link, .nv-band-control):disabled, html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page label.nv-btn[aria-disabled="true"] { opacity: 1; }
+/* TC-09: the shared layer keeps disabled .nv-btn and band controls unfaded; links and the upload label too. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(button.nv-link):disabled, html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page label.nv-btn[aria-disabled="true"] { opacity: 1; }
 /* TC-08, TC-10: long words hyphenate or break inside their card; a card head lets its pill drop under the title. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(.nv-row__title, .nv-row__meta, .nv-card__title, .wc-choice__name, .wc-switch-row__label) { hyphens: auto; overflow-wrap: break-word; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-location .nv-card__head { flex-wrap: wrap; }
