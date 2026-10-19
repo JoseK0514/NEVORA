@@ -22,7 +22,8 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
     } catch (failure) {
       if (generation.current.value === current) {
         setData(null);
-        setError(failure instanceof Error ? failure.message : 'Payroll could not load.');
+        // A dropped connection surfaces as the browser's own TypeError ("Failed to fetch"); show the existing words instead.
+        setError(failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'Payroll could not load.');
       }
     } finally { if (generation.current.value === current) setLoading(false); }
   }, [path, decode]);
@@ -118,7 +119,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
       }
       else if (failure instanceof PayrollRequestError && [400, 401, 403, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
       else setRetryAvailable(true);
-      setError(failure instanceof Error ? failure.message : 'The action response was interrupted. Check its reference.');
+      setError(failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'The action response was interrupted. Check its reference.');
     } finally { inFlight.current = false; setBusy(false); }
   };
   const submit = async (input: WithoutOperation<Command>) => {
