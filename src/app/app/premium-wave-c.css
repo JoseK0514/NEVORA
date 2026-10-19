@@ -33,7 +33,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .n
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .nv-link { min-height: 44px; font: var(--nv-t-label); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .nv-btn { min-height: 52px; padding-block: 12px; font: var(--nv-t-headline); white-space: normal; text-align: center; text-wrap: balance; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .nv-btn svg { flex: none; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page button.nv-link { padding: 0; border: 0; background: transparent; cursor: pointer; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page button.nv-link { padding-inline: 0; border: 0; background: transparent; cursor: pointer; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .nv-sr { position: absolute; }
 /* Links inside sentences. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-inline-link { color: var(--nv-accent); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
@@ -137,9 +137,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 /* The label swap inside a pending button keeps the button's width. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap { display: inline-grid; justify-items: center; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span { grid-area: 1 / 1; display: block; text-align: center; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg { display: inline-block; vertical-align: -3px; margin-inline: var(--nv-s-2); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg:first-child { margin-left: 0; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg:last-child { margin-right: 0; }
+/* AL-13: an icon in a wrapping label keeps an 8px gap to its word and sits on the text line at any size. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg { display: inline-block; vertical-align: -0.2em; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg.wc-icon-before { margin-right: var(--nv-s-2); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg.wc-icon-after { margin-left: var(--nv-s-2); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap[data-state="idle"] > span + span,
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap[data-state="pending"] > span:first-child { visibility: hidden; }
 
@@ -567,3 +568,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [d
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar .wc-notice__body { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar .wc-notice { padding-block: 10px; }
 }
+
+/* AL-18: a hub card head's title and note never run past the card's 20px inset. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-card__head > * { max-width: 100%; }

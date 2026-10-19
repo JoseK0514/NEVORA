@@ -97,3 +97,58 @@ October 19, 2026 · Same preview, frozen. Chromium at 320, 390, 844×390 and 144
 - **For the coordinator (shell, not filed):** at 844×390 with root text ≥125%, every Wave C page renders the desktop shell (cards at x 260, sidebar shown) instead of the phone layout. It does the same in round-1 data. The landscape-phone rule seems to be dropped when the text size grows.
 
 Zero open P0–P2 in alignment and geometry after round 2: **no** (5 open P2: AL-08 partly fixed, AL-13, AL-14, AL-15, AL-16).
+
+## Round 4 (exit)
+
+October 19, 2026 · Preview `http://127.0.0.1:50431` (code `5f7c166`).
+- **Chromium:** all 13 routes as Owner, and Account recovery and Clocker recovery as Manager. Widths 320, 390, 844×390, 768, 1024 and 1440, at 100% and 200% text, plus baselines.
+- **Dialogs and editors:** every dialog (Add, Edit and Archive break type; Add device, Rename, Replace tablet and Revoke access), the Positions inline editor, Custom threshold, the Locations no-match state, and the profile disclosure. All at 390 and 1440, at 100% and 200%.
+- **WebKit:** Company policies, Clocker devices, Branding and Account recovery at 320, 390 and 1440, plus the Edit break type and Replace tablet sheets at 390.
+
+Data is in `.../scratchpad/inspect/alignment/data/r4*`, crops in `crops2/r4-*`. Round 3 wasn't reported separately; its fixes are judged here.
+
+**Verdict:** not zero, at **0 P0, 0 P1, 3 P2**. Every round-2 ID is fixed except AL-13, which is partly fixed: the icon now stays with its word, but touches it. The round-3 link fix brought one new issue (button-type teal links sit 12px high), and removing auto-hyphenation brought another (a hub title pushes into the card inset at 320 and 200%). At 100% the frame is exact on every page, width and role.
+
+### Status of open IDs
+
+| ID | Status | Measurement |
+|---|---|---|
+| AL-08 | Fixed | The disclosure caret's centre is 0 from the first line's centre at 320 and 1440 at 200% ("Why is the timezone protected?", "What changes after a reset?", "Can others still use the tablet?"). |
+| AL-13 | Partly fixed | The icon moves with its word: the → follows "code" and the magnifier precedes "Check". It **touches** the word, though: svg left 232.2 = text right 232.2 at 320 and 100%, and 188.3 = 188.3 at 200%; the same on Check receipt (93.4/93.4). Other icon buttons have a gap of 6–8. At 200% the icon centre is **5.5 below** the word's centre (2361.5 against 2356, and 1231.5 against 1226). Crops: `crops2/r4-acct-issue-320-200.png`, `r4-clk-check-320-200.png`. Cause: `premium-wave-c.css:141–142`. The svg is the only element child, so `:first-child` and `:last-child` both zero its 8px margins. `:140` `vertical-align:-3px` is fixed px. Fix: mark the side, e.g. `svg.wc-icon-end{margin-inline-start:8px}` and `svg.wc-icon-start{margin-inline-end:8px}` set in `ButtonLabel`'s callers, and size the glyph with the text: `width:1.125em; height:1.125em; vertical-align:-0.2em`. **P2** |
+| AL-14 | Fixed | Footnote 16 below the tallest card: 1013 → 1029 at 1440 and 100%, 1837 → 1853 at 200%, 1153 → 1169 at 1024. |
+| AL-15 | Fixed | When Add drops under Back, the "+" is at x 16, the same as Back's caret (Break types and Locations, 320 at 200%). |
+| AL-16 | Fixed | Link chevrons sit −1 from the first line's centre ("Manage locations", "Review scheduling rules", "Review timecards"; 320 and 1440 at 200%). |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL-17 | Clocker devices · O · 844×390, 768, 1024 and 1440 (Chromium and WebKit) | "Refresh devices" (`button.nv-link`) beside "Status shows registration, not a live connection." | The link's text sits at the top of its 44px box. Its centre is **893.5 against the note's 905.5** (12px high) at 1024 and 1440; WebKit 894/906; 844×390 866.5/878.5. Every `button.nv-link` is affected: the row actions Edit, Archive, Rename, Replace tablet and Revoke access are 12px high in their targets too, but they align with each other. | `shots/r4-QAOWNER_app_settings_clocker-1440.png` | `premium-wave-c.css:36` `button.nv-link{padding:0}` (one element more specific) beats `:540` `.nv-link{align-items:flex-start; padding-block:12px}`, so buttons get flex-start with no padding. | `:36` → `padding-inline: 0` (keep the 12px block padding from `:540`). Or `:540` → `:is(a, button).nv-link`. | P2 |
+| AL-18 | Settings hub · O · 320 at 200% | "Team & communications" card head (title and meta) | The title box is 257 wide in a 248 content box. "communications" runs to x **293**, 11 from the card edge (inset 20). The meta line follows it to 293. Nothing is clipped. This came back once automatic hyphenation was removed (AL-06 had hyphenated it). | `crops/r4-hub-320-200.png` | `premium-wave-c.css:233` `.wc-hub .nv-card__head{flex-direction:column; align-items:flex-start}`: column items size to min-content (257). `overflow-wrap:break-word` doesn't lower min-content. | `:233` add `> *{max-width:100%}` (or `align-items:stretch`). `break-word` then breaks "communications" inside the 248 box. | P2 |
+
+### Checked and correct
+
+- **Frame, every route, width and role at 100%:**
+  - Cards at 16/304, 16/374 and 16/828 on phones and landscape; 260–720 at 768; 260–976 at 1024. At 1440: 298–1050 with aside 1066–1386, and Branding 298–970 with preview 986–1386.
+  - Card text inset 20, titles at x 20; band text equals card text (16 on phones, 280 at 768–1024, 318 at 1440). Overlap 72/32/56; stacked gaps 16; no sideways scroll. Manager matches Owner exactly.
+- **Bands:** heights 208–300 on phones and 196–264 on desktop, depending on eyebrow and summary. The Back and Add baselines are within 0.8 (1.6 at 1440 and 200%).
+- **Phone save bars** (Features, Company policies):
+  - Portrait: `position:fixed`, bottom on the tab bar's top (776 = 776, and 761 = 761 at 200%). 16 of clearance under the last card at the page end, at 320 and 390 at 100% and 200%.
+  - Landscape: static in the page. Desktop: sticky.
+  - Features' Save button (52) and "Saved" (44) share a centre (738/737.5).
+- **Dialogs:**
+  - Phones: bottom sheets with x 0, full width, bottom gap 0, radius 20 20 0 0.
+  - Desktop: centred, 480 wide, equal top and bottom gaps.
+  - Title inset 20 and close centre 42 against the title line's 42.5 everywhere. Actions are 52 (68 at 200%), stacked on phones and 214 + 12 + 214 at 1440, 20 from the bottom. Taller sheets scroll at 200%.
+  - WebKit identical (Edit break type, Replace tablet).
+- **Forms:** label → field 8, field → help 8, field → field 16, edges equal (Positions editor, Custom threshold, every page). The color well is 64×48, beside a 48 hex field with equal tops (530/530).
+- **Pill heads:** baselines within 0.6 at 100% and 1.8 at 1440 and 200% (Locations "Ready", Clocker link "Active", the policies' "Off by default").
+- **Hub:** balanced columns with 16 gaps, column tops equal (233/233), footnote icon on card text (36/318).
+
+### Gaps
+
+- **Loading placeholder against ready:** still not caught. Client navigation and direct loads both finished streaming before the first 50 ms poll on this faster preview. The ready bands above are the comparison values.
+- **Two states not run:** the Account recovery invalid state and Clocker recovery's malformed reference. My scripted selectors timed out on this build, so neither ran.
+- **Kit pattern, not filed:** on Branding, the "Passes" pills in the Readability card and the change-history row's date centre on wrapped two-line rows.
+
+Zero open P0–P2 in alignment and geometry (exit round): **no** (3 open P2: AL-13 partly fixed, AL-17, AL-18).
