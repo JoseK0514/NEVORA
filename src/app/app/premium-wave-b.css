@@ -440,7 +440,7 @@
 /* AL-B05: a success-only feedback block leaves no gap (its message shows as the toast). */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback:not(:has(> :not(.form-success[role="status"]))) { display: contents; }
 /* AL-B06: the success toast sits above the Scheduling rules save bar. */
-@media (max-width: 760px), (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal:has(.wb-rules .wb-savebar) .page-frame .form-success[role="status"] { bottom: calc(68px + 76px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); }
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
@@ -595,3 +595,20 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :
 /* TC-B-24: field edges at 3:1 also on textareas and search fields (the shared WR-49 rule sets the lighter border). */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(textarea, input).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control { border-color: var(--nv-field-border, var(--nv-border)); }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto.wb-auto.wb-auto.wb-auto :is(textarea, input[type="search"]):not(.wb-x):not(.wb-y):not(.wb-z) { border-color: var(--nv-field-border, var(--nv-border)); }
+
+/* ---------- Round 3 fixes (alignment) ---------- */
+/* AL-B16: the facts' end margin outranks the content margin reset. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-content .wb-facts { margin-right: calc(-1 * var(--nv-s-5)); }
+/* AL-B31: selects inside shared-markup forms keep room for their chevron (outranks the field padding). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto select:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u):not(.wb-t) { padding-right: calc(1.125rem + 22px); }
+/* AL-B29: from 1180 a setting's name sits on its field's centre line. */
+@media (min-width: 1180px) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting-list > .wb-setting { align-items: end; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__name { justify-content: center; min-height: 3rem; }
+}
+/* AL-B32: the save bar's button keeps its label on one line beside the note. */
+@media (min-width: 761px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > .nv-btn { flex: 0 0 auto; white-space: nowrap; } }
+/* AL-B30: on a landscape phone, page toasts on Wave B pages sit just above the tab bar. */
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal:has(.wb-page) .page-frame .form-success[role="status"]:not(form *) { bottom: calc(68px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); }
+}
