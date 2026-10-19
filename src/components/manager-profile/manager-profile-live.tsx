@@ -90,7 +90,14 @@ function Email({ address }: { address: string }) {
   return <Parts parts={[...local, ...domain]} />;
 }
 function Phone({ number }: { number: string }) {
-  return <Parts parts={number.split(/\s+/).map((part, index) => index ? ` ${part}` : part)} />;
+  // An extension word stays with its number ("ext. 4021" is one part), so the number never sits alone (WR-4).
+  const words = number.split(/\s+/), parts: string[] = [];
+  for (let index = 0; index < words.length; index++) {
+    const word = words[index];
+    if (/^(ext\.?|extension|x)$/i.test(word) && index + 1 < words.length) { parts.push(`${word} ${words[++index]}`); continue; }
+    parts.push(word);
+  }
+  return <Parts parts={parts.map((part, index) => index ? ` ${part}` : part)} />;
 }
 
 const SHOWN_LOCATIONS = 5;

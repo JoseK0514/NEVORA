@@ -89,6 +89,11 @@ describe('Owner and Manager Profile', () => {
     expect(html).not.toMatch(/missing|missed/i);
   });
 
+  it('keeps a phone extension with its number', () => {
+    const large = parseManagerProfile(fixture('owner-large'));
+    expect(render(owner, large)).toContain('<span class="pmp-part">ext. 4021</span>');
+  });
+
   it('says All N locations in one line, and puts Show all before a long assigned list', () => {
     const all = render(owner, parseManagerProfile(fixture('owner-large')));
     expect(all).toContain('All 60 locations');
