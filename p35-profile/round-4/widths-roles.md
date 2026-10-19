@@ -1,21 +1,18 @@
-**Zero in the completed re-check scope — 0 P0, 0 P1, 0 P2.** Round 4 on `829dfe6cf45beb71b77db573c0263c60a5f69856`, a re-check round. The complete matrix is still running; this is not an exit certificate.
+**Incomplete — 0 P0, 0 P1, 0 P2 newly verified in this area; no zero certificate.** Exit round 4 on `ea58610bf3bdc85319895689c3d88e064f6a76d5`. Both management roles have been sampled in both browsers; full matrix and role-regression coverage remain incomplete.
 
 ## Status of earlier findings
 
-| ID | Status | Measurement |
-|---|---|---|
-| WR-5 | Fixed | Manager-empty fixture: Email and Phone both say **Not added**, both stacked at **+20px**, **4px** below their labels, at 320/390/430/1024 and 100/200%. |
+**WR-5:** the earlier empty-contact fix is preserved in the [original source report](history/829dfe6/widths-roles.md); its empty-fixture exit re-check is still outstanding. No full exit closure is claimed here.
 
 ## Findings
 
-None in the measured scope.
+None newly verified in this area's completed scope. IS-PROFILE-17 counts the off-screen focused recovery link once.
 
 ## Checked and correct
 
-- [390/100 empty rows](crops/WR-5-empty-390-t100.png), [390/200](crops/WR-5-empty-390-t200.png).
-- Owner/Manager use the new page; Employee/Lead retain the legacy page with **0** management API calls in their role probes.
-- The separate band and first-read height defects remain counted in stability only.
+- Eight ready/failed-save page probes: Owner/Manager × Chromium/WebKit × 390/100 and 320/200. Document width equals viewport width in **8/8**; no sideways page overflow. All **32** recorded card boxes keep **16px** page insets.
+- The 32-cell phone band-height check has **0px** mismatch in every cell.
 
 ## Gaps
 
-The matrix and axe remain incomplete; this re-check round is not an exit certificate.
+Empty/large fixtures, Employee/Lead management-API regressions, landscape/desktop, other states and remaining matrix/axe coverage are incomplete. This report does not certify a zero exit.

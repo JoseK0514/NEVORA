@@ -1,0 +1,258 @@
+[
+  {
+    "engine": "chromium",
+    "before": {
+      "rows": [
+        {
+          "row": "email",
+          "box": {
+            "x": 36,
+            "y": 471,
+            "width": 308,
+            "height": 77,
+            "top": 471,
+            "right": 344,
+            "bottom": 548,
+            "left": 36
+          },
+          "text": "–\nNot shown yet"
+        },
+        {
+          "row": "phone",
+          "box": {
+            "x": 36,
+            "y": 548,
+            "width": 308,
+            "height": 77,
+            "top": 548,
+            "right": 344,
+            "bottom": 625,
+            "left": 36
+          },
+          "text": "–\nNot shown yet"
+        },
+        {
+          "row": "locations",
+          "box": {
+            "x": 36,
+            "y": 625,
+            "width": 308,
+            "height": 53,
+            "top": 625,
+            "right": 344,
+            "bottom": 678,
+            "left": 36
+          },
+          "text": "–\nNot shown yet"
+        }
+      ],
+      "signout": {
+        "x": 16,
+        "y": 1544,
+        "width": 328,
+        "height": 64,
+        "top": 1544,
+        "right": 344,
+        "bottom": 1608,
+        "left": 16
+      },
+      "shifts": [
+        {
+          "value": 0.013298585374192953,
+          "recent": false
+        }
+      ],
+      "scroll": 0,
+      "visibility": "visible"
+    },
+    "after": {
+      "rows": [
+        {
+          "row": "email",
+          "box": {
+            "x": 36,
+            "y": 471,
+            "width": 308,
+            "height": 99,
+            "top": 471,
+            "right": 344,
+            "bottom": 570,
+            "left": 36
+          },
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        {
+          "row": "phone",
+          "box": {
+            "x": 36,
+            "y": 570,
+            "width": 308,
+            "height": 77,
+            "top": 570,
+            "right": 344,
+            "bottom": 647,
+            "left": 36
+          },
+          "text": "787-555-0101"
+        },
+        {
+          "row": "locations",
+          "box": {
+            "x": 36,
+            "y": 647,
+            "width": 308,
+            "height": 75,
+            "top": 647,
+            "right": 344,
+            "bottom": 722,
+            "left": 36
+          },
+          "text": "Main OfficeWest Office"
+        }
+      ],
+      "signout": {
+        "x": 16,
+        "y": 1588,
+        "width": 328,
+        "height": 64,
+        "top": 1588,
+        "right": 344,
+        "bottom": 1652,
+        "left": 16
+      },
+      "shifts": [
+        {
+          "value": 0.013298585374192953,
+          "recent": false
+        },
+        {
+          "value": 0.02974175420338467,
+          "recent": false
+        }
+      ],
+      "scroll": 0,
+      "visibility": "visible"
+    }
+  },
+  {
+    "engine": "webkit",
+    "before": {
+      "rows": [
+        {
+          "row": "email",
+          "box": {
+            "x": 36,
+            "y": 471,
+            "width": 308,
+            "height": 77,
+            "top": 471,
+            "right": 344,
+            "bottom": 548,
+            "left": 36
+          },
+          "text": "–Not shown yet"
+        },
+        {
+          "row": "phone",
+          "box": {
+            "x": 36,
+            "y": 548,
+            "width": 308,
+            "height": 77,
+            "top": 548,
+            "right": 344,
+            "bottom": 625,
+            "left": 36
+          },
+          "text": "–Not shown yet"
+        },
+        {
+          "row": "locations",
+          "box": {
+            "x": 36,
+            "y": 625,
+            "width": 308,
+            "height": 53,
+            "top": 625,
+            "right": 344,
+            "bottom": 678,
+            "left": 36
+          },
+          "text": "–Not shown yet"
+        }
+      ],
+      "signout": {
+        "x": 16,
+        "y": 1544,
+        "width": 328,
+        "height": 64,
+        "top": 1544,
+        "right": 344,
+        "bottom": 1608,
+        "left": 16
+      },
+      "shifts": [],
+      "scroll": 0,
+      "visibility": "visible"
+    },
+    "after": {
+      "rows": [
+        {
+          "row": "email",
+          "box": {
+            "x": 36,
+            "y": 471,
+            "width": 308,
+            "height": 99,
+            "top": 471,
+            "right": 344,
+            "bottom": 570,
+            "left": 36
+          },
+          "text": "morgan.rivera@northside-qa.example"
+        },
+        {
+          "row": "phone",
+          "box": {
+            "x": 36,
+            "y": 570,
+            "width": 308,
+            "height": 77,
+            "top": 570,
+            "right": 344,
+            "bottom": 647,
+            "left": 36
+          },
+          "text": "787-555-0101"
+        },
+        {
+          "row": "locations",
+          "box": {
+            "x": 36,
+            "y": 647,
+            "width": 308,
+            "height": 75,
+            "top": 647,
+            "right": 344,
+            "bottom": 722,
+            "left": 36
+          },
+          "text": "Main OfficeWest Office"
+        }
+      ],
+      "signout": {
+        "x": 16,
+        "y": 1588,
+        "width": 328,
+        "height": 64,
+        "top": 1588,
+        "right": 344,
+        "bottom": 1652,
+        "left": 16
+      },
+      "shifts": [],
+      "scroll": 0,
+      "visibility": "visible"
+    }
+  }
+]

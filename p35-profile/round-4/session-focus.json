@@ -1,0 +1,690 @@
+[
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "count": 1,
+    "before": {
+      "scroll": 2168,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+        "html": "<button type=\"button\" role=\"switch\" aria-checked=\"true\" class=\"nv-row pmp-switch-row\" data-topic=\"time-off\"><span class=\"nv-row__text\"><span class=\"nv-row__title\">Time-off requests</span><span class=\"nv-row__meta pmp-meta-stack\"><span data-shown=\"true\">When someone asks for time off</span><span data-shown=\"false\">Saving…</span><span data-shown=\"false\" class=\"pmp-save-error\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" fill=\"cu",
+        "box": {
+          "x": 16,
+          "y": 306.515625,
+          "width": 288,
+          "height": 234,
+          "top": 306.515625,
+          "right": 304,
+          "bottom": 540.515625,
+          "left": 16
+        },
+        "focusVisible": true
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 306.515625,
+        "width": 288,
+        "height": 1342,
+        "top": 306.515625,
+        "right": 304,
+        "bottom": 1648.515625,
+        "left": 16
+      }
+    },
+    "denied": {
+      "scroll": 2168,
+      "active": {
+        "tag": "A",
+        "text": "Sign in",
+        "html": "<a class=\"nv-btn\" data-kind=\"secondary\" href=\"/login\">Sign in</a>",
+        "box": {
+          "x": 0,
+          "y": 1059.515625,
+          "width": 320,
+          "height": 52,
+          "top": 1059.515625,
+          "right": 320,
+          "bottom": 1111.515625,
+          "left": 0
+        },
+        "focusVisible": true
+      },
+      "signIn": {
+        "x": 0,
+        "y": 1059.515625,
+        "width": 320,
+        "height": 52,
+        "top": 1059.515625,
+        "right": 320,
+        "bottom": 1111.515625,
+        "left": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 306.515625,
+        "width": 288,
+        "height": 1342,
+        "top": 306.515625,
+        "right": 304,
+        "bottom": 1648.515625,
+        "left": 16
+      }
+    },
+    "browserReveal": {
+      "scroll": 2516,
+      "active": {
+        "tag": "A",
+        "text": "Sign in",
+        "html": "<a class=\"nv-btn\" data-kind=\"secondary\" href=\"/login\">Sign in</a>",
+        "box": {
+          "x": 0,
+          "y": 711.515625,
+          "width": 320,
+          "height": 52,
+          "top": 711.515625,
+          "right": 320,
+          "bottom": 763.515625,
+          "left": 0
+        },
+        "focusVisible": true
+      },
+      "signIn": {
+        "x": 0,
+        "y": 711.515625,
+        "width": 320,
+        "height": 52,
+        "top": 711.515625,
+        "right": 320,
+        "bottom": 763.515625,
+        "left": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": -41.484375,
+        "width": 288,
+        "height": 1342,
+        "top": -41.484375,
+        "right": 304,
+        "bottom": 1300.515625,
+        "left": 16
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "count": 1,
+    "before": {
+      "scroll": 2352,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+        "html": "<button type=\"button\" role=\"switch\" aria-checked=\"true\" class=\"nv-row pmp-switch-row\" data-topic=\"time-off\"><span class=\"nv-row__text\"><span class=\"nv-row__title\">Time-off requests</span><span class=\"nv-row__meta pmp-meta-stack\"><span data-shown=\"true\">When someone asks for time off</span><span data-shown=\"false\">Saving…</span><span data-shown=\"false\" class=\"pmp-save-error\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" fill=\"cu",
+        "box": {
+          "x": 16,
+          "y": 306.515625,
+          "width": 288,
+          "height": 234,
+          "top": 306.515625,
+          "right": 304,
+          "bottom": 540.515625,
+          "left": 16
+        },
+        "focusVisible": true
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 306.515625,
+        "width": 288,
+        "height": 1064,
+        "top": 306.515625,
+        "right": 304,
+        "bottom": 1370.515625,
+        "left": 16
+      }
+    },
+    "denied": {
+      "scroll": 2352,
+      "active": {
+        "tag": "A",
+        "text": "Sign in",
+        "html": "<a class=\"nv-btn\" data-kind=\"secondary\" href=\"/login\">Sign in</a>",
+        "box": {
+          "x": 0,
+          "y": 920.515625,
+          "width": 320,
+          "height": 52,
+          "top": 920.515625,
+          "right": 320,
+          "bottom": 972.515625,
+          "left": 0
+        },
+        "focusVisible": true
+      },
+      "signIn": {
+        "x": 0,
+        "y": 920.515625,
+        "width": 320,
+        "height": 52,
+        "top": 920.515625,
+        "right": 320,
+        "bottom": 972.515625,
+        "left": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 306.515625,
+        "width": 288,
+        "height": 1064,
+        "top": 306.515625,
+        "right": 304,
+        "bottom": 1370.515625,
+        "left": 16
+      }
+    },
+    "browserReveal": {
+      "scroll": 2561,
+      "active": {
+        "tag": "A",
+        "text": "Sign in",
+        "html": "<a class=\"nv-btn\" data-kind=\"secondary\" href=\"/login\">Sign in</a>",
+        "box": {
+          "x": 0,
+          "y": 711.515625,
+          "width": 320,
+          "height": 52,
+          "top": 711.515625,
+          "right": 320,
+          "bottom": 763.515625,
+          "left": 0
+        },
+        "focusVisible": true
+      },
+      "signIn": {
+        "x": 0,
+        "y": 711.515625,
+        "width": 320,
+        "height": 52,
+        "top": 711.515625,
+        "right": 320,
+        "bottom": 763.515625,
+        "left": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 97.515625,
+        "width": 288,
+        "height": 1064,
+        "top": 97.515625,
+        "right": 304,
+        "bottom": 1161.515625,
+        "left": 16
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "count": 1,
+    "before": {
+      "scroll": 2272,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+        "html": "<button type=\"button\" role=\"switch\" aria-checked=\"true\" class=\"nv-row pmp-switch-row\" data-topic=\"time-off\"><span class=\"nv-row__text\"><span class=\"nv-row__title\">Time-off requests</span><span class=\"nv-row__meta pmp-meta-stack\"><span data-shown=\"true\">When someone asks for time off</span><span data-shown=\"false\">Saving…</span><span data-shown=\"false\" class=\"pmp-save-error\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" fill=\"cu",
+        "box": {
+          "x": 16,
+          "y": 286.515625,
+          "width": 288,
+          "height": 274,
+          "top": 286.515625,
+          "right": 304,
+          "bottom": 560.515625,
+          "left": 16
+        },
+        "focusVisible": true
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 286.515625,
+        "width": 288,
+        "height": 1422,
+        "top": 286.515625,
+        "right": 304,
+        "bottom": 1708.515625,
+        "left": 16
+      }
+    },
+    "denied": {
+      "scroll": 2360,
+      "active": {
+        "tag": "A",
+        "text": "Sign in",
+        "html": "<a class=\"nv-btn\" data-kind=\"secondary\" href=\"/login\">Sign in</a>",
+        "box": {
+          "x": 0,
+          "y": 1079.515625,
+          "width": 320,
+          "height": 52,
+          "top": 1079.515625,
+          "right": 320,
+          "bottom": 1131.515625,
+          "left": 0
+        },
+        "focusVisible": true
+      },
+      "signIn": {
+        "x": 0,
+        "y": 1079.515625,
+        "width": 320,
+        "height": 52,
+        "top": 1079.515625,
+        "right": 320,
+        "bottom": 1131.515625,
+        "left": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 286.515625,
+        "width": 288,
+        "height": 1422,
+        "top": 286.515625,
+        "right": 304,
+        "bottom": 1708.515625,
+        "left": 16
+      }
+    },
+    "browserReveal": {
+      "scroll": 2728,
+      "active": {
+        "tag": "A",
+        "text": "Sign in",
+        "html": "<a class=\"nv-btn\" data-kind=\"secondary\" href=\"/login\">Sign in</a>",
+        "box": {
+          "x": 0,
+          "y": 711.515625,
+          "width": 320,
+          "height": 52,
+          "top": 711.515625,
+          "right": 320,
+          "bottom": 763.515625,
+          "left": 0
+        },
+        "focusVisible": true
+      },
+      "signIn": {
+        "x": 0,
+        "y": 711.515625,
+        "width": 320,
+        "height": 52,
+        "top": 711.515625,
+        "right": 320,
+        "bottom": 763.515625,
+        "left": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": -81.484375,
+        "width": 288,
+        "height": 1422,
+        "top": -81.484375,
+        "right": 304,
+        "bottom": 1340.515625,
+        "left": 16
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "count": 1,
+    "before": {
+      "scroll": 2496,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Time-off requestsWhen someone asks for time offSaving…Not saved. You’re offline.",
+        "html": "<button type=\"button\" role=\"switch\" aria-checked=\"true\" class=\"nv-row pmp-switch-row\" data-topic=\"time-off\"><span class=\"nv-row__text\"><span class=\"nv-row__title\">Time-off requests</span><span class=\"nv-row__meta pmp-meta-stack\"><span data-shown=\"true\">When someone asks for time off</span><span data-shown=\"false\">Saving…</span><span data-shown=\"false\" class=\"pmp-save-error\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" fill=\"cu",
+        "box": {
+          "x": 16,
+          "y": 286.515625,
+          "width": 288,
+          "height": 274,
+          "top": 286.515625,
+          "right": 304,
+          "bottom": 560.515625,
+          "left": 16
+        },
+        "focusVisible": true
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 286.515625,
+        "width": 288,
+        "height": 1144,
+        "top": 286.515625,
+        "right": 304,
+        "bottom": 1430.515625,
+        "left": 16
+      }
+    },
+    "denied": {
+      "scroll": 2540,
+      "active": {
+        "tag": "A",
+        "text": "Sign in",
+        "html": "<a class=\"nv-btn\" data-kind=\"secondary\" href=\"/login\">Sign in</a>",
+        "box": {
+          "x": 0,
+          "y": 940.515625,
+          "width": 320,
+          "height": 52,
+          "top": 940.515625,
+          "right": 320,
+          "bottom": 992.515625,
+          "left": 0
+        },
+        "focusVisible": true
+      },
+      "signIn": {
+        "x": 0,
+        "y": 940.515625,
+        "width": 320,
+        "height": 52,
+        "top": 940.515625,
+        "right": 320,
+        "bottom": 992.515625,
+        "left": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 286.515625,
+        "width": 288,
+        "height": 1144,
+        "top": 286.515625,
+        "right": 304,
+        "bottom": 1430.515625,
+        "left": 16
+      }
+    },
+    "browserReveal": {
+      "scroll": 2769,
+      "active": {
+        "tag": "A",
+        "text": "Sign in",
+        "html": "<a class=\"nv-btn\" data-kind=\"secondary\" href=\"/login\">Sign in</a>",
+        "box": {
+          "x": 0,
+          "y": 711.515625,
+          "width": 320,
+          "height": 52,
+          "top": 711.515625,
+          "right": 320,
+          "bottom": 763.515625,
+          "left": 0
+        },
+        "focusVisible": true
+      },
+      "signIn": {
+        "x": 0,
+        "y": 711.515625,
+        "width": 320,
+        "height": 52,
+        "top": 711.515625,
+        "right": 320,
+        "bottom": 763.515625,
+        "left": 0
+      },
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 76.515625,
+        "top": 0,
+        "right": 320,
+        "bottom": 76.515625,
+        "left": 0
+      },
+      "topics": {
+        "x": 16,
+        "y": 57.515625,
+        "width": 288,
+        "height": 1144,
+        "top": 57.515625,
+        "right": 304,
+        "bottom": 1201.515625,
+        "left": 16
+      }
+    }
+  }
+]

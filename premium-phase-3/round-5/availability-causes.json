@@ -1,0 +1,338 @@
+[
+  {
+    "engine": "chromium",
+    "preventReset": false,
+    "count": 1,
+    "before": {
+      "active": "BUTTON",
+      "buttonFocused": true,
+      "button": {
+        "x": 36,
+        "y": 469.515625,
+        "width": 248,
+        "height": 132,
+        "top": 469.515625,
+        "right": 284,
+        "bottom": 601.515625,
+        "left": 36
+      },
+      "disabled": false,
+      "scroll": 3906,
+      "height": 4750,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 0,
+      "alert": null
+    },
+    "pending": {
+      "active": "BODY",
+      "buttonFocused": false,
+      "button": {
+        "x": 36,
+        "y": 549.515625,
+        "width": 248,
+        "height": 52,
+        "top": 549.515625,
+        "right": 284,
+        "bottom": 601.515625,
+        "left": 36
+      },
+      "disabled": true,
+      "scroll": 3826,
+      "height": 4670,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 0,
+      "alert": null
+    },
+    "failed": {
+      "active": "BODY",
+      "buttonFocused": false,
+      "button": {
+        "x": 36,
+        "y": 549.515625,
+        "width": 248,
+        "height": 132,
+        "top": 549.515625,
+        "right": 284,
+        "bottom": 681.515625,
+        "left": 36
+      },
+      "disabled": false,
+      "scroll": 4208,
+      "height": 5132,
+      "mondayChecked": true,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 1,
+      "alert": {
+        "box": {
+          "x": 36,
+          "y": -2651.484375,
+          "width": 248,
+          "height": 366,
+          "top": -2651.484375,
+          "right": 284,
+          "bottom": -2285.484375,
+          "left": 36
+        },
+        "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+        "focused": false
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "preventReset": true,
+    "count": 1,
+    "before": {
+      "active": "BUTTON",
+      "buttonFocused": true,
+      "button": {
+        "x": 36,
+        "y": 469.515625,
+        "width": 248,
+        "height": 132,
+        "top": 469.515625,
+        "right": 284,
+        "bottom": 601.515625,
+        "left": 36
+      },
+      "disabled": false,
+      "scroll": 3906,
+      "height": 4750,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 0,
+      "alert": null
+    },
+    "pending": {
+      "active": "BODY",
+      "buttonFocused": false,
+      "button": {
+        "x": 36,
+        "y": 549.515625,
+        "width": 248,
+        "height": 52,
+        "top": 549.515625,
+        "right": 284,
+        "bottom": 601.515625,
+        "left": 36
+      },
+      "disabled": true,
+      "scroll": 3826,
+      "height": 4670,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 0,
+      "alert": null
+    },
+    "failed": {
+      "active": "BODY",
+      "buttonFocused": false,
+      "button": {
+        "x": 36,
+        "y": 549.515625,
+        "width": 248,
+        "height": 132,
+        "top": 549.515625,
+        "right": 284,
+        "bottom": 681.515625,
+        "left": 36
+      },
+      "disabled": false,
+      "scroll": 4208,
+      "height": 5132,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 1,
+      "alert": {
+        "box": {
+          "x": 36,
+          "y": -2651.484375,
+          "width": 248,
+          "height": 366,
+          "top": -2651.484375,
+          "right": 284,
+          "bottom": -2285.484375,
+          "left": 36
+        },
+        "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+        "focused": false
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "preventReset": false,
+    "count": 1,
+    "before": {
+      "active": "BUTTON",
+      "buttonFocused": true,
+      "button": {
+        "x": 36,
+        "y": 469.515625,
+        "width": 248,
+        "height": 132,
+        "top": 469.515625,
+        "right": 284,
+        "bottom": 601.515625,
+        "left": 36
+      },
+      "disabled": false,
+      "scroll": 4106,
+      "height": 4950,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 0,
+      "alert": null
+    },
+    "pending": {
+      "active": "BODY",
+      "buttonFocused": false,
+      "button": {
+        "x": 36,
+        "y": 549.515625,
+        "width": 248,
+        "height": 52,
+        "top": 549.515625,
+        "right": 284,
+        "bottom": 601.515625,
+        "left": 36
+      },
+      "disabled": true,
+      "scroll": 3978,
+      "height": 4822,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 0,
+      "alert": null
+    },
+    "failed": {
+      "active": "BODY",
+      "buttonFocused": false,
+      "button": {
+        "x": 36,
+        "y": 597.515625,
+        "width": 248,
+        "height": 132,
+        "top": 597.515625,
+        "right": 284,
+        "bottom": 729.515625,
+        "left": 36
+      },
+      "disabled": false,
+      "scroll": 4429,
+      "height": 5401,
+      "mondayChecked": true,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 1,
+      "alert": {
+        "box": {
+          "x": 36,
+          "y": -2720.484375,
+          "width": 248,
+          "height": 435,
+          "top": -2720.484375,
+          "right": 284,
+          "bottom": -2285.484375,
+          "left": 36
+        },
+        "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+        "focused": false
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "preventReset": true,
+    "count": 1,
+    "before": {
+      "active": "BUTTON",
+      "buttonFocused": true,
+      "button": {
+        "x": 36,
+        "y": 469.515625,
+        "width": 248,
+        "height": 132,
+        "top": 469.515625,
+        "right": 284,
+        "bottom": 601.515625,
+        "left": 36
+      },
+      "disabled": false,
+      "scroll": 4106,
+      "height": 4950,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 0,
+      "alert": null
+    },
+    "pending": {
+      "active": "BODY",
+      "buttonFocused": false,
+      "button": {
+        "x": 36,
+        "y": 549.515625,
+        "width": 248,
+        "height": 52,
+        "top": 549.515625,
+        "right": 284,
+        "bottom": 601.515625,
+        "left": 36
+      },
+      "disabled": true,
+      "scroll": 3978,
+      "height": 4822,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 0,
+      "alert": null
+    },
+    "failed": {
+      "active": "BODY",
+      "buttonFocused": false,
+      "button": {
+        "x": 36,
+        "y": 597.515625,
+        "width": 248,
+        "height": 132,
+        "top": 597.515625,
+        "right": 284,
+        "bottom": 729.515625,
+        "left": 36
+      },
+      "disabled": false,
+      "scroll": 4429,
+      "height": 5401,
+      "mondayChecked": false,
+      "mondayText": "MondayOct 26UnavailableNo available hours",
+      "dayClass": "av-day-row",
+      "resetEvents": 1,
+      "alert": {
+        "box": {
+          "x": 36,
+          "y": -2720.484375,
+          "width": 248,
+          "height": 435,
+          "top": -2720.484375,
+          "right": 284,
+          "bottom": -2285.484375,
+          "left": 36
+        },
+        "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+        "focused": false
+      }
+    }
+  }
+]
