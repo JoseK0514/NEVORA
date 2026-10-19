@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { guardSingleSubmit } from "./single-submit";
 import { unstable_rethrow } from "next/navigation";
+import { revealFeedback } from "@/lib/reveal-feedback";
 import { Notice } from "./parts";
 
 /** A form for a server action that redirects when it's done (Approve, Decline, Delete).
@@ -15,13 +16,15 @@ export function ActionForm({ action, children, className, label, failure }: {
   label?: string;
   failure: { title: string; body: string };
 }) {
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState(0);
+  const failures = useRef(0);
   const [busy, setBusy] = useState(false);
   const notice = useRef<HTMLDivElement>(null);
   const form = useRef<HTMLFormElement>(null);
   useEffect(() => { if (form.current) guardSingleSubmit(form.current); }, []);
+  useEffect(() => { if (failed && notice.current) revealFeedback(notice.current); }, [failed]);
   async function run(data: FormData) {
-    setFailed(false);
+    setFailed(0);
     setBusy(true);
     try {
       await action(data);
@@ -29,8 +32,7 @@ export function ActionForm({ action, children, className, label, failure }: {
     } catch (error) {
       setBusy(false);
       unstable_rethrow(error);
-      setFailed(true);
-      requestAnimationFrame(() => { notice.current?.scrollIntoView({ block: "center" }); notice.current?.focus({ preventScroll: true }); });
+      setFailed(++failures.current);
     }
   }
   return <form ref={form} action={run} className={className} aria-label={label} aria-busy={busy}>
