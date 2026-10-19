@@ -72,7 +72,7 @@ export function CreateShiftForm({ action, employees, locations, positions, weekS
         <Card title="Summary" id="shift-summary">
           <Facts label="Shift summary">
             <Fact label="Day">{selectedDay ? keepWhole(`${selectedDay.weekday},\u00a0${selectedDay.day}`) : <span className="wa-muted">Choose a date</span>}</Fact>
-            <Fact label="Time">{start && end ? <>{keepWhole(`${formatTime(start)} – ${formatTime(end)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(start, end))}</span></> : <span className="wa-muted">Choose times</span>}</Fact>
+            <Fact label="Time">{start && end ? <>{keepWhole(`${formatTime(start)} – ${formatTime(end)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(durationMinutes(start, end))}</span></> : <span className="wa-muted">Choose times</span>}</Fact>
             <Fact label="Person">{employee ? `${employee.firstName} ${employee.lastName}` : <span className="wa-muted">Choose someone</span>}</Fact>
             <Fact label="Location">{selectedLocation?.shortName ?? <span className="wa-muted">Choose a location</span>}</Fact>
             <Fact label="Position">{position?.name ?? <span className="wa-muted">None</span>}</Fact>
