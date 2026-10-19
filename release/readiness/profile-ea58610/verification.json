@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-10-19T19:56:57.876254+00:00",
+  "handoffCommit": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+  "applicationCommit": "caef3956827c9796de1183f2c35c6cf82a145c95",
+  "exitRound": 4,
+  "status": "zero",
+  "appChangesAfterApplicationCommit": [],
+  "verifiedFinalOpenCounts": {
+    "alignment": 0,
+    "stability": 0,
+    "type-colour-copy": 0,
+    "interaction-states": 0,
+    "widths-roles": 0
+  },
+  "reports": [
+    {
+      "source": "docs/product/specs/p35-profile/ROUND.md",
+      "sha256": "3b579d31af2dfbb018d941ed50d80d700caafbf62cc92b45995ea5ac899985f2",
+      "copy": "source-reports/ROUND.md"
+    },
+    {
+      "source": "docs/product/specs/p35-profile/CODEX.md",
+      "sha256": "8ad16857fa7e79062bccf65585c12e3e081fb49a35739ef90ab0b5d6de09ddfe",
+      "copy": "source-reports/CODEX.md"
+    },
+    {
+      "source": "docs/product/specs/p35-profile/inspection/alignment.md",
+      "sha256": "b75de31579168ab104850f9253aa2193ddaee90f1aef49cb3bb5f9dedfd54918",
+      "copy": "source-reports/inspection--alignment.md"
+    },
+    {
+      "source": "docs/product/specs/p35-profile/inspection/stability.md",
+      "sha256": "3fc59c38cf9e6f411b0eb4c3ac16175f01c6d11b5669afbd3ad0968dc971647b",
+      "copy": "source-reports/inspection--stability.md"
+    },
+    {
+      "source": "docs/product/specs/p35-profile/inspection/type-colour-copy.md",
+      "sha256": "03b3acbfa87558a6b74444d8330dc988c18c8b219c839ca231fe2b1973a4a8df",
+      "copy": "source-reports/inspection--type-colour-copy.md"
+    },
+    {
+      "source": "docs/product/specs/p35-profile/inspection/interaction-states.md",
+      "sha256": "75f6fc71de0d4160e04ea80b4d0e08598c08dbf34a2f7495814976273f1919c9",
+      "copy": "source-reports/inspection--interaction-states.md"
+    },
+    {
+      "source": "docs/product/specs/p35-profile/inspection/widths-roles.md",
+      "sha256": "38b7ce13bd2f65766f30958e2a5dbb6a719d7b142baa3e171036036b8862df8d",
+      "copy": "source-reports/inspection--widths-roles.md"
+    }
+  ]
+}

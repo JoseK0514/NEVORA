@@ -1,0 +1,14 @@
+{
+  "bf6c030": {
+    "planner.ts": "e5ad3d2102e2dbf747c7f2aafee39080b9fda46c",
+    "planner.test.ts": "2911a7e35e678b53da520f56bc7f3e5aa00d9c7f"
+  },
+  "origin/claude/premium-phase-1": {
+    "planner.ts": "e5ad3d2102e2dbf747c7f2aafee39080b9fda46c",
+    "planner.test.ts": "2911a7e35e678b53da520f56bc7f3e5aa00d9c7f"
+  },
+  "origin/codex/premium-backend": {
+    "planner.ts": "e5ad3d2102e2dbf747c7f2aafee39080b9fda46c",
+    "planner.test.ts": "2911a7e35e678b53da520f56bc7f3e5aa00d9c7f"
+  }
+}

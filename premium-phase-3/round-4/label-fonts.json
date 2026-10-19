@@ -1,0 +1,36 @@
+[
+  {
+    "engine": "chromium",
+    "labels": [
+      {
+        "text": "From",
+        "size": "11px",
+        "lineHeight": "16.5px",
+        "color": "rgb(95, 99, 104)"
+      },
+      {
+        "text": "Until",
+        "size": "11px",
+        "lineHeight": "16.5px",
+        "color": "rgb(95, 99, 104)"
+      }
+    ]
+  },
+  {
+    "engine": "webkit",
+    "labels": [
+      {
+        "text": "From",
+        "size": "11px",
+        "lineHeight": "16.5px",
+        "color": "rgb(95, 99, 104)"
+      },
+      {
+        "text": "Until",
+        "size": "11px",
+        "lineHeight": "16.5px",
+        "color": "rgb(95, 99, 104)"
+      }
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "frozenAt": "2026-10-19T20:14:40.265238+00:00",
+  "candidate": "c34043b4349633275b2ca75368564178c99c33dc",
+  "tree": "0152429b83c6e1416bfaf6d35b0680a6728616d9",
+  "base": "0e010464aeb5f532981ac6071c48e1527e9419db",
+  "coordinator": "4d469a4ed95edee38086eeb8e43a268142278d07",
+  "backend": "da2a4e51cef1dd70aa465fa187ce5321b143d8d3",
+  "profile": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+  "coordinatorMerge": "9a3516885197a522be1262d79b7694513ca235c6",
+  "backendMerge": "cf066dc23b8e57a1b9f3f3a3c798eee89286e4be",
+  "profileMerge": "b444813f0c444a07827b493e9907806f66dc01bf",
+  "premiumCssBlob": "aaf3b9dc47a9b6d1d4572132d244e449abc619c9",
+  "waveA7f75dc4Included": false,
+  "node": "v24.19.0"
+}

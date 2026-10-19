@@ -1,0 +1,98 @@
+{
+  "sourceCommit": "98b037b855b30d0494885e0e8c5b0c3bc78d228f",
+  "reviewKind": "Secondary read-only review of another publishing task\u2019s preserved artifacts; no fresh browser run",
+  "cards": 142,
+  "checkerCells": 256,
+  "checkerPass": 128,
+  "checkerFail": 128,
+  "checkerNonTextFailures": 0,
+  "moreCases": 8,
+  "moreAllPassed": true,
+  "heldForms": 4,
+  "mutationsReachedServer": 0,
+  "artifactHashes": {
+    "checks.json": "31ae6767e62cb70915d35f310dad477035d06fe9212828e935b7a129d8ca3b91",
+    "probe.json": "734c7e3eb1b5efa58c60c3f319fa1b1b7c469ef7927c611f9e3da54d7d6e0a91",
+    "pending.json": "7b34190825f3d92e00cc6b55bf101b0a39faa75832f5ac84e1085bcf595a4b96"
+  },
+  "renderedSamples": 60,
+  "renderedStatusCounts": {
+    "200": 60
+  },
+  "renderedPageErrorSamples": 0,
+  "homeInboxCapturesWithPendingText": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "path": "/app",
+      "markers": [
+        "Checking your shifts\u2026",
+        "Loading Home\u2026"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app",
+      "markers": [
+        "Checking what needs you\u2026",
+        "Checking what needs you\u2026"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "path": "/app/inbox",
+      "markers": [
+        "Checking what needs you\u2026",
+        "Loading your Inbox\u2026"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "path": "/app",
+      "markers": [
+        "Checking what needs you\u2026",
+        "Checking what needs you\u2026"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "path": "/app",
+      "markers": [
+        "Checking your shifts\u2026",
+        "Loading Home\u2026"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "path": "/app",
+      "markers": [
+        "Checking your shifts\u2026",
+        "Loading Home\u2026"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "account": "AUDIT-M",
+      "path": "/app",
+      "markers": [
+        "Checking what needs you\u2026",
+        "Checking what needs you\u2026"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "path": "/app/inbox",
+      "markers": [
+        "Checking what needs you\u2026",
+        "Loading your Inbox\u2026"
+      ]
+    }
+  ],
+  "homeInboxTotalCaptures": 16
+}

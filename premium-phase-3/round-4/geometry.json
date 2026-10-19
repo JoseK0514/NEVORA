@@ -1,0 +1,1898 @@
+[
+  {
+    "id": "TC-P3-32",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "route": "/app/availability",
+    "width": 390,
+    "text": 100,
+    "fields": [
+      {
+        "label": "From",
+        "font": "",
+        "color": "rgb(95, 99, 104)",
+        "labelBox": {
+          "x": 36,
+          "y": 543,
+          "width": 141,
+          "height": 16.5,
+          "top": 543,
+          "right": 177,
+          "bottom": 559.5,
+          "left": 36
+        },
+        "fieldBox": {
+          "x": 36,
+          "y": 564.5,
+          "width": 141,
+          "height": 48,
+          "top": 564.5,
+          "right": 177,
+          "bottom": 612.5,
+          "left": 36
+        },
+        "gap": "5px"
+      },
+      {
+        "label": "Until",
+        "font": "",
+        "color": "rgb(95, 99, 104)",
+        "labelBox": {
+          "x": 213,
+          "y": 543,
+          "width": 141,
+          "height": 16.5,
+          "top": 543,
+          "right": 354,
+          "bottom": 559.5,
+          "left": 213
+        },
+        "fieldBox": {
+          "x": 213,
+          "y": 564.5,
+          "width": 141,
+          "height": 48,
+          "top": 564.5,
+          "right": 354,
+          "bottom": 612.5,
+          "left": 213
+        },
+        "gap": "5px"
+      }
+    ]
+  },
+  {
+    "id": "TC-P3-32",
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "route": "/app/availability",
+    "width": 390,
+    "text": 100,
+    "fields": [
+      {
+        "label": "From",
+        "font": "",
+        "color": "rgb(95, 99, 104)",
+        "labelBox": {
+          "x": 36,
+          "y": 543,
+          "width": 141,
+          "height": 16.5,
+          "top": 543,
+          "right": 177,
+          "bottom": 559.5,
+          "left": 36
+        },
+        "fieldBox": {
+          "x": 36,
+          "y": 564.5,
+          "width": 141,
+          "height": 48,
+          "top": 564.5,
+          "right": 177,
+          "bottom": 612.5,
+          "left": 36
+        },
+        "gap": "5px"
+      },
+      {
+        "label": "Until",
+        "font": "",
+        "color": "rgb(95, 99, 104)",
+        "labelBox": {
+          "x": 213,
+          "y": 543,
+          "width": 141,
+          "height": 16.5,
+          "top": 543,
+          "right": 354,
+          "bottom": 559.5,
+          "left": 213
+        },
+        "fieldBox": {
+          "x": 213,
+          "y": 564.5,
+          "width": 141,
+          "height": 48,
+          "top": 564.5,
+          "right": 354,
+          "bottom": 612.5,
+          "left": 213
+        },
+        "gap": "5px"
+      }
+    ]
+  },
+  {
+    "id": "TC-P3-32",
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "route": "/app/availability?week=2026-10-26",
+    "width": 390,
+    "text": 100,
+    "fields": [
+      {
+        "label": "From",
+        "font": "",
+        "color": "rgb(95, 99, 104)",
+        "labelBox": {
+          "x": 36,
+          "y": 942,
+          "width": 141,
+          "height": 16.5,
+          "top": 942,
+          "right": 177,
+          "bottom": 958.5,
+          "left": 36
+        },
+        "fieldBox": {
+          "x": 36,
+          "y": 963.5,
+          "width": 141,
+          "height": 48,
+          "top": 963.5,
+          "right": 177,
+          "bottom": 1011.5,
+          "left": 36
+        },
+        "gap": "5px"
+      },
+      {
+        "label": "Until",
+        "font": "",
+        "color": "rgb(95, 99, 104)",
+        "labelBox": {
+          "x": 213,
+          "y": 942,
+          "width": 141,
+          "height": 16.5,
+          "top": 942,
+          "right": 354,
+          "bottom": 958.5,
+          "left": 213
+        },
+        "fieldBox": {
+          "x": 213,
+          "y": 963.5,
+          "width": 141,
+          "height": 48,
+          "top": 963.5,
+          "right": 354,
+          "bottom": 1011.5,
+          "left": 213
+        },
+        "gap": "5px"
+      }
+    ]
+  },
+  {
+    "id": "TC-P3-32",
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "route": "/app/availability",
+    "width": 390,
+    "text": 100,
+    "fields": [
+      {
+        "label": "From",
+        "font": "",
+        "color": "rgb(95, 99, 104)",
+        "labelBox": {
+          "x": 36,
+          "y": 543,
+          "width": 141,
+          "height": 16.5,
+          "top": 543,
+          "right": 177,
+          "bottom": 559.5,
+          "left": 36
+        },
+        "fieldBox": {
+          "x": 36,
+          "y": 564.5,
+          "width": 141,
+          "height": 48,
+          "top": 564.5,
+          "right": 177,
+          "bottom": 612.5,
+          "left": 36
+        },
+        "gap": "5px"
+      },
+      {
+        "label": "Until",
+        "font": "",
+        "color": "rgb(95, 99, 104)",
+        "labelBox": {
+          "x": 213,
+          "y": 543,
+          "width": 141,
+          "height": 16.5,
+          "top": 543,
+          "right": 354,
+          "bottom": 559.5,
+          "left": 213
+        },
+        "fieldBox": {
+          "x": 213,
+          "y": 564.5,
+          "width": 141,
+          "height": 48,
+          "top": 564.5,
+          "right": 354,
+          "bottom": 612.5,
+          "left": 213
+        },
+        "gap": "5px"
+      }
+    ]
+  },
+  {
+    "test": "More sheet",
+    "account": "AUDIT-E",
+    "opened": {
+      "box": {
+        "x": 0,
+        "y": 876,
+        "width": 320,
+        "height": 508,
+        "top": 876,
+        "right": 320,
+        "bottom": 1384,
+        "left": 0
+      },
+      "scroll": 0,
+      "scrollHeight": 508,
+      "close": {
+        "x": 16,
+        "y": 1315,
+        "width": 288,
+        "height": 53,
+        "top": 1315,
+        "right": 304,
+        "bottom": 1368,
+        "left": 16
+      },
+      "closePosition": "sticky",
+      "bodyOverflow": "hidden",
+      "focus": "Updates",
+      "links": [
+        {
+          "text": "Updates",
+          "box": {
+            "x": 16,
+            "y": 950,
+            "width": 288,
+            "height": 68,
+            "top": 950,
+            "right": 304,
+            "bottom": 1018,
+            "left": 16
+          }
+        },
+        {
+          "text": "Notifications",
+          "box": {
+            "x": 16,
+            "y": 1018,
+            "width": 288,
+            "height": 68,
+            "top": 1018,
+            "right": 304,
+            "bottom": 1086,
+            "left": 16
+          }
+        },
+        {
+          "text": "Profile",
+          "box": {
+            "x": 16,
+            "y": 1086,
+            "width": 288,
+            "height": 68,
+            "top": 1086,
+            "right": 304,
+            "bottom": 1154,
+            "left": 16
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 149,
+            "y": 1213,
+            "width": 151,
+            "height": 56,
+            "top": 1213,
+            "right": 300,
+            "bottom": 1269,
+            "left": 149
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 16,
+            "y": 1315,
+            "width": 288,
+            "height": 53,
+            "top": 1315,
+            "right": 304,
+            "bottom": 1368,
+            "left": 16
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "box": {
+        "x": 0,
+        "y": 390.4945373535156,
+        "width": 320,
+        "height": 507.9999694824219,
+        "top": 390.4945373535156,
+        "right": 320,
+        "bottom": 898.4945068359375,
+        "left": 0
+      },
+      "scroll": 0,
+      "scrollHeight": 508,
+      "close": {
+        "x": 16,
+        "y": 829.4945068359375,
+        "width": 288,
+        "height": 53,
+        "top": 829.4945068359375,
+        "right": 304,
+        "bottom": 882.4945068359375,
+        "left": 16
+      },
+      "closePosition": "sticky",
+      "bodyOverflow": "hidden",
+      "focus": "Updates",
+      "links": [
+        {
+          "text": "Updates",
+          "box": {
+            "x": 16,
+            "y": 464.4945373535156,
+            "width": 288,
+            "height": 67.99996948242188,
+            "top": 464.4945373535156,
+            "right": 304,
+            "bottom": 532.4945068359375,
+            "left": 16
+          }
+        },
+        {
+          "text": "Notifications",
+          "box": {
+            "x": 16,
+            "y": 532.4945068359375,
+            "width": 288,
+            "height": 68,
+            "top": 532.4945068359375,
+            "right": 304,
+            "bottom": 600.4945068359375,
+            "left": 16
+          }
+        },
+        {
+          "text": "Profile",
+          "box": {
+            "x": 16,
+            "y": 600.4945068359375,
+            "width": 288,
+            "height": 68,
+            "top": 600.4945068359375,
+            "right": 304,
+            "bottom": 668.4945068359375,
+            "left": 16
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 149,
+            "y": 727.4945068359375,
+            "width": 151,
+            "height": 56,
+            "top": 727.4945068359375,
+            "right": 300,
+            "bottom": 783.4945068359375,
+            "left": 149
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 16,
+            "y": 829.4945068359375,
+            "width": 288,
+            "height": 53,
+            "top": 829.4945068359375,
+            "right": 304,
+            "bottom": 882.4945068359375,
+            "left": 16
+          }
+        }
+      ]
+    },
+    "stillOpen": 0,
+    "afterEscape": {
+      "tag": "BUTTON",
+      "label": "More",
+      "text": "More"
+    }
+  },
+  {
+    "test": "More sheet",
+    "account": "AUDIT-LEAD",
+    "opened": {
+      "box": {
+        "x": 0,
+        "y": 386.97418212890625,
+        "width": 320,
+        "height": 464,
+        "top": 386.97418212890625,
+        "right": 320,
+        "bottom": 850.9741821289062,
+        "left": 0
+      },
+      "scroll": 0,
+      "scrollHeight": 464,
+      "close": {
+        "x": 16,
+        "y": 781.9741821289062,
+        "width": 288,
+        "height": 53,
+        "top": 781.9741821289062,
+        "right": 304,
+        "bottom": 834.9741821289062,
+        "left": 16
+      },
+      "closePosition": "sticky",
+      "bodyOverflow": "hidden",
+      "focus": "Updates",
+      "links": [
+        {
+          "text": "Updates",
+          "box": {
+            "x": 16,
+            "y": 460.97418212890625,
+            "width": 288,
+            "height": 68,
+            "top": 460.97418212890625,
+            "right": 304,
+            "bottom": 528.9741821289062,
+            "left": 16
+          }
+        },
+        {
+          "text": "Notifications",
+          "box": {
+            "x": 16,
+            "y": 528.9741821289062,
+            "width": 288,
+            "height": 68,
+            "top": 528.9741821289062,
+            "right": 304,
+            "bottom": 596.9741821289062,
+            "left": 16
+          }
+        },
+        {
+          "text": "Profile",
+          "box": {
+            "x": 16,
+            "y": 596.9741821289062,
+            "width": 288,
+            "height": 68,
+            "top": 596.9741821289062,
+            "right": 304,
+            "bottom": 664.9741821289062,
+            "left": 16
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 149,
+            "y": 701.9741821289062,
+            "width": 151,
+            "height": 56,
+            "top": 701.9741821289062,
+            "right": 300,
+            "bottom": 757.9741821289062,
+            "left": 149
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 16,
+            "y": 781.9741821289062,
+            "width": 288,
+            "height": 53,
+            "top": 781.9741821289062,
+            "right": 304,
+            "bottom": 834.9741821289062,
+            "left": 16
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "box": {
+        "x": 0,
+        "y": 380,
+        "width": 320,
+        "height": 464,
+        "top": 380,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "scroll": 0,
+      "scrollHeight": 464,
+      "close": {
+        "x": 16,
+        "y": 775,
+        "width": 288,
+        "height": 53,
+        "top": 775,
+        "right": 304,
+        "bottom": 828,
+        "left": 16
+      },
+      "closePosition": "sticky",
+      "bodyOverflow": "hidden",
+      "focus": "Updates",
+      "links": [
+        {
+          "text": "Updates",
+          "box": {
+            "x": 16,
+            "y": 454,
+            "width": 288,
+            "height": 68,
+            "top": 454,
+            "right": 304,
+            "bottom": 522,
+            "left": 16
+          }
+        },
+        {
+          "text": "Notifications",
+          "box": {
+            "x": 16,
+            "y": 522,
+            "width": 288,
+            "height": 68,
+            "top": 522,
+            "right": 304,
+            "bottom": 590,
+            "left": 16
+          }
+        },
+        {
+          "text": "Profile",
+          "box": {
+            "x": 16,
+            "y": 590,
+            "width": 288,
+            "height": 68,
+            "top": 590,
+            "right": 304,
+            "bottom": 658,
+            "left": 16
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 149,
+            "y": 695,
+            "width": 151,
+            "height": 56,
+            "top": 695,
+            "right": 300,
+            "bottom": 751,
+            "left": 149
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 16,
+            "y": 775,
+            "width": 288,
+            "height": 53,
+            "top": 775,
+            "right": 304,
+            "bottom": 828,
+            "left": 16
+          }
+        }
+      ]
+    },
+    "stillOpen": 0,
+    "afterEscape": {
+      "tag": "BUTTON",
+      "label": "More",
+      "text": "More"
+    }
+  },
+  {
+    "test": "More sheet",
+    "account": "AUDIT-M",
+    "opened": {
+      "box": {
+        "x": 0,
+        "y": 96.30143737792969,
+        "width": 320,
+        "height": 748,
+        "top": 96.30143737792969,
+        "right": 320,
+        "bottom": 844.3014373779297,
+        "left": 0
+      },
+      "scroll": 0,
+      "scrollHeight": 936,
+      "close": {
+        "x": 16,
+        "y": 775.3014526367188,
+        "width": 288,
+        "height": 53,
+        "top": 775.3014526367188,
+        "right": 304,
+        "bottom": 828.3014526367188,
+        "left": 16
+      },
+      "closePosition": "sticky",
+      "bodyOverflow": "hidden",
+      "focus": "Search",
+      "links": [
+        {
+          "text": "Search",
+          "box": {
+            "x": 16,
+            "y": 124.30143737792969,
+            "width": 288,
+            "height": 66,
+            "top": 124.30143737792969,
+            "right": 304,
+            "bottom": 190.3014373779297,
+            "left": 16
+          }
+        },
+        {
+          "text": "Timecards",
+          "box": {
+            "x": 16,
+            "y": 241.3014373779297,
+            "width": 288,
+            "height": 66.00001525878906,
+            "top": 241.3014373779297,
+            "right": 304,
+            "bottom": 307.30145263671875,
+            "left": 16
+          }
+        },
+        {
+          "text": "Time exports",
+          "box": {
+            "x": 16,
+            "y": 307.30145263671875,
+            "width": 288,
+            "height": 66,
+            "top": 307.30145263671875,
+            "right": 304,
+            "bottom": 373.30145263671875,
+            "left": 16
+          }
+        },
+        {
+          "text": "Insights",
+          "box": {
+            "x": 16,
+            "y": 373.30145263671875,
+            "width": 288,
+            "height": 66,
+            "top": 373.30145263671875,
+            "right": 304,
+            "bottom": 439.30145263671875,
+            "left": 16
+          }
+        },
+        {
+          "text": "Templates",
+          "box": {
+            "x": 16,
+            "y": 494.30145263671875,
+            "width": 288,
+            "height": 66,
+            "top": 494.30145263671875,
+            "right": 304,
+            "bottom": 560.3014526367188,
+            "left": 16
+          }
+        },
+        {
+          "text": "Scheduling rules",
+          "box": {
+            "x": 16,
+            "y": 560.3014526367188,
+            "width": 288,
+            "height": 66,
+            "top": 560.3014526367188,
+            "right": 304,
+            "bottom": 626.3014526367188,
+            "left": 16
+          }
+        },
+        {
+          "text": "Updates",
+          "box": {
+            "x": 16,
+            "y": 681.3014526367188,
+            "width": 288,
+            "height": 66,
+            "top": 681.3014526367188,
+            "right": 304,
+            "bottom": 747.3014526367188,
+            "left": 16
+          }
+        },
+        {
+          "text": "My pay",
+          "box": {
+            "x": 16,
+            "y": 802.3014526367188,
+            "width": 288,
+            "height": 66,
+            "top": 802.3014526367188,
+            "right": 304,
+            "bottom": 868.3014526367188,
+            "left": 16
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 16,
+            "y": 887.3014526367188,
+            "width": 288,
+            "height": 66,
+            "top": 887.3014526367188,
+            "right": 304,
+            "bottom": 953.3014526367188,
+            "left": 16
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 16,
+            "y": 775.3014526367188,
+            "width": 288,
+            "height": 53,
+            "top": 775.3014526367188,
+            "right": 304,
+            "bottom": 828.3014526367188,
+            "left": 16
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "box": {
+        "x": 0,
+        "y": 96,
+        "width": 320,
+        "height": 748,
+        "top": 96,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "scroll": 188,
+      "scrollHeight": 936,
+      "close": {
+        "x": 16,
+        "y": 775,
+        "width": 288,
+        "height": 53,
+        "top": 775,
+        "right": 304,
+        "bottom": 828,
+        "left": 16
+      },
+      "closePosition": "sticky",
+      "bodyOverflow": "hidden",
+      "focus": "Search",
+      "links": [
+        {
+          "text": "Search",
+          "box": {
+            "x": 16,
+            "y": -64,
+            "width": 288,
+            "height": 66,
+            "top": -64,
+            "right": 304,
+            "bottom": 2,
+            "left": 16
+          }
+        },
+        {
+          "text": "Timecards",
+          "box": {
+            "x": 16,
+            "y": 53,
+            "width": 288,
+            "height": 66,
+            "top": 53,
+            "right": 304,
+            "bottom": 119,
+            "left": 16
+          }
+        },
+        {
+          "text": "Time exports",
+          "box": {
+            "x": 16,
+            "y": 119,
+            "width": 288,
+            "height": 66,
+            "top": 119,
+            "right": 304,
+            "bottom": 185,
+            "left": 16
+          }
+        },
+        {
+          "text": "Insights",
+          "box": {
+            "x": 16,
+            "y": 185,
+            "width": 288,
+            "height": 66,
+            "top": 185,
+            "right": 304,
+            "bottom": 251,
+            "left": 16
+          }
+        },
+        {
+          "text": "Templates",
+          "box": {
+            "x": 16,
+            "y": 306,
+            "width": 288,
+            "height": 66,
+            "top": 306,
+            "right": 304,
+            "bottom": 372,
+            "left": 16
+          }
+        },
+        {
+          "text": "Scheduling rules",
+          "box": {
+            "x": 16,
+            "y": 372,
+            "width": 288,
+            "height": 66,
+            "top": 372,
+            "right": 304,
+            "bottom": 438,
+            "left": 16
+          }
+        },
+        {
+          "text": "Updates",
+          "box": {
+            "x": 16,
+            "y": 493,
+            "width": 288,
+            "height": 66,
+            "top": 493,
+            "right": 304,
+            "bottom": 559,
+            "left": 16
+          }
+        },
+        {
+          "text": "My pay",
+          "box": {
+            "x": 16,
+            "y": 614,
+            "width": 288,
+            "height": 66,
+            "top": 614,
+            "right": 304,
+            "bottom": 680,
+            "left": 16
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 16,
+            "y": 699,
+            "width": 288,
+            "height": 66,
+            "top": 699,
+            "right": 304,
+            "bottom": 765,
+            "left": 16
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 16,
+            "y": 775,
+            "width": 288,
+            "height": 53,
+            "top": 775,
+            "right": 304,
+            "bottom": 828,
+            "left": 16
+          }
+        }
+      ]
+    },
+    "stillOpen": 0,
+    "afterEscape": {
+      "tag": "BUTTON",
+      "label": "More navigation",
+      "text": "More"
+    }
+  },
+  {
+    "test": "More sheet",
+    "account": "QAOWNER",
+    "opened": {
+      "box": {
+        "x": 0,
+        "y": 127.09768676757812,
+        "width": 320,
+        "height": 748,
+        "top": 127.09768676757812,
+        "right": 320,
+        "bottom": 875.0976867675781,
+        "left": 0
+      },
+      "scroll": 0,
+      "scrollHeight": 1068,
+      "close": {
+        "x": 16,
+        "y": 806.09765625,
+        "width": 288,
+        "height": 53,
+        "top": 806.09765625,
+        "right": 304,
+        "bottom": 859.09765625,
+        "left": 16
+      },
+      "closePosition": "sticky",
+      "bodyOverflow": "hidden",
+      "focus": "Search",
+      "links": [
+        {
+          "text": "Search",
+          "box": {
+            "x": 16,
+            "y": 155.09768676757812,
+            "width": 288,
+            "height": 66,
+            "top": 155.09768676757812,
+            "right": 304,
+            "bottom": 221.09768676757812,
+            "left": 16
+          }
+        },
+        {
+          "text": "Timecards",
+          "box": {
+            "x": 16,
+            "y": 272.0976867675781,
+            "width": 288,
+            "height": 66,
+            "top": 272.0976867675781,
+            "right": 304,
+            "bottom": 338.0976867675781,
+            "left": 16
+          }
+        },
+        {
+          "text": "Payroll",
+          "box": {
+            "x": 16,
+            "y": 338.0976867675781,
+            "width": 288,
+            "height": 66,
+            "top": 338.0976867675781,
+            "right": 304,
+            "bottom": 404.0976867675781,
+            "left": 16
+          }
+        },
+        {
+          "text": "Time exports",
+          "box": {
+            "x": 16,
+            "y": 404.0976867675781,
+            "width": 288,
+            "height": 66,
+            "top": 404.0976867675781,
+            "right": 304,
+            "bottom": 470.0976867675781,
+            "left": 16
+          }
+        },
+        {
+          "text": "Insights",
+          "box": {
+            "x": 16,
+            "y": 470.0976867675781,
+            "width": 288,
+            "height": 65.99996948242188,
+            "top": 470.0976867675781,
+            "right": 304,
+            "bottom": 536.09765625,
+            "left": 16
+          }
+        },
+        {
+          "text": "Templates",
+          "box": {
+            "x": 16,
+            "y": 591.09765625,
+            "width": 288,
+            "height": 66,
+            "top": 591.09765625,
+            "right": 304,
+            "bottom": 657.09765625,
+            "left": 16
+          }
+        },
+        {
+          "text": "Scheduling rules",
+          "box": {
+            "x": 16,
+            "y": 657.09765625,
+            "width": 288,
+            "height": 66,
+            "top": 657.09765625,
+            "right": 304,
+            "bottom": 723.09765625,
+            "left": 16
+          }
+        },
+        {
+          "text": "Updates",
+          "box": {
+            "x": 16,
+            "y": 778.09765625,
+            "width": 288,
+            "height": 66,
+            "top": 778.09765625,
+            "right": 304,
+            "bottom": 844.09765625,
+            "left": 16
+          }
+        },
+        {
+          "text": "Settings",
+          "box": {
+            "x": 16,
+            "y": 844.09765625,
+            "width": 288,
+            "height": 66,
+            "top": 844.09765625,
+            "right": 304,
+            "bottom": 910.09765625,
+            "left": 16
+          }
+        },
+        {
+          "text": "My pay",
+          "box": {
+            "x": 16,
+            "y": 965.09765625,
+            "width": 288,
+            "height": 66,
+            "top": 965.09765625,
+            "right": 304,
+            "bottom": 1031.09765625,
+            "left": 16
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 16,
+            "y": 1050.09765625,
+            "width": 288,
+            "height": 66,
+            "top": 1050.09765625,
+            "right": 304,
+            "bottom": 1116.09765625,
+            "left": 16
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 16,
+            "y": 806.09765625,
+            "width": 288,
+            "height": 53,
+            "top": 806.09765625,
+            "right": 304,
+            "bottom": 859.09765625,
+            "left": 16
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "box": {
+        "x": 0,
+        "y": 96,
+        "width": 320,
+        "height": 748,
+        "top": 96,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "scroll": 320,
+      "scrollHeight": 1068,
+      "close": {
+        "x": 16,
+        "y": 775,
+        "width": 288,
+        "height": 53,
+        "top": 775,
+        "right": 304,
+        "bottom": 828,
+        "left": 16
+      },
+      "closePosition": "sticky",
+      "bodyOverflow": "hidden",
+      "focus": "Search",
+      "links": [
+        {
+          "text": "Search",
+          "box": {
+            "x": 16,
+            "y": -196,
+            "width": 288,
+            "height": 66,
+            "top": -196,
+            "right": 304,
+            "bottom": -130,
+            "left": 16
+          }
+        },
+        {
+          "text": "Timecards",
+          "box": {
+            "x": 16,
+            "y": -79,
+            "width": 288,
+            "height": 66,
+            "top": -79,
+            "right": 304,
+            "bottom": -13,
+            "left": 16
+          }
+        },
+        {
+          "text": "Payroll",
+          "box": {
+            "x": 16,
+            "y": -13,
+            "width": 288,
+            "height": 66,
+            "top": -13,
+            "right": 304,
+            "bottom": 53,
+            "left": 16
+          }
+        },
+        {
+          "text": "Time exports",
+          "box": {
+            "x": 16,
+            "y": 53,
+            "width": 288,
+            "height": 66,
+            "top": 53,
+            "right": 304,
+            "bottom": 119,
+            "left": 16
+          }
+        },
+        {
+          "text": "Insights",
+          "box": {
+            "x": 16,
+            "y": 119,
+            "width": 288,
+            "height": 66,
+            "top": 119,
+            "right": 304,
+            "bottom": 185,
+            "left": 16
+          }
+        },
+        {
+          "text": "Templates",
+          "box": {
+            "x": 16,
+            "y": 240,
+            "width": 288,
+            "height": 66,
+            "top": 240,
+            "right": 304,
+            "bottom": 306,
+            "left": 16
+          }
+        },
+        {
+          "text": "Scheduling rules",
+          "box": {
+            "x": 16,
+            "y": 306,
+            "width": 288,
+            "height": 66,
+            "top": 306,
+            "right": 304,
+            "bottom": 372,
+            "left": 16
+          }
+        },
+        {
+          "text": "Updates",
+          "box": {
+            "x": 16,
+            "y": 427,
+            "width": 288,
+            "height": 66,
+            "top": 427,
+            "right": 304,
+            "bottom": 493,
+            "left": 16
+          }
+        },
+        {
+          "text": "Settings",
+          "box": {
+            "x": 16,
+            "y": 493,
+            "width": 288,
+            "height": 66,
+            "top": 493,
+            "right": 304,
+            "bottom": 559,
+            "left": 16
+          }
+        },
+        {
+          "text": "My pay",
+          "box": {
+            "x": 16,
+            "y": 614,
+            "width": 288,
+            "height": 66,
+            "top": 614,
+            "right": 304,
+            "bottom": 680,
+            "left": 16
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 16,
+            "y": 699,
+            "width": 288,
+            "height": 66,
+            "top": 699,
+            "right": 304,
+            "bottom": 765,
+            "left": 16
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 16,
+            "y": 775,
+            "width": 288,
+            "height": 53,
+            "top": 775,
+            "right": 304,
+            "bottom": 828,
+            "left": 16
+          }
+        }
+      ]
+    },
+    "stillOpen": 0,
+    "afterEscape": {
+      "tag": "BUTTON",
+      "label": "More navigation",
+      "text": "More"
+    }
+  },
+  {
+    "test": "Week strip",
+    "engine": "chromium",
+    "width": 320,
+    "text": 200,
+    "metrics": {
+      "box": {
+        "x": 16,
+        "y": 738.515625,
+        "width": 288,
+        "height": 129.796875,
+        "top": 738.515625,
+        "right": 304,
+        "bottom": 868.3125,
+        "left": 16
+      },
+      "scrollWidth": 636,
+      "clientWidth": 288,
+      "scrollLeft": 0,
+      "labels": [
+        {
+          "text": "Mon",
+          "box": {
+            "x": 40,
+            "y": 753.515625,
+            "width": 60,
+            "height": 40,
+            "top": 753.515625,
+            "right": 100,
+            "bottom": 793.515625,
+            "left": 40
+          }
+        },
+        {
+          "text": "Tue",
+          "box": {
+            "x": 133.5,
+            "y": 753.515625,
+            "width": 49,
+            "height": 40,
+            "top": 753.515625,
+            "right": 182.5,
+            "bottom": 793.515625,
+            "left": 133.5
+          }
+        },
+        {
+          "text": "Wed",
+          "box": {
+            "x": 216,
+            "y": 753.515625,
+            "width": 60,
+            "height": 40,
+            "top": 753.515625,
+            "right": 276,
+            "bottom": 793.515625,
+            "left": 216
+          }
+        },
+        {
+          "text": "Thu",
+          "box": {
+            "x": 307.5,
+            "y": 753.515625,
+            "width": 53,
+            "height": 40,
+            "top": 753.515625,
+            "right": 360.5,
+            "bottom": 793.515625,
+            "left": 307.5
+          }
+        },
+        {
+          "text": "Fri",
+          "box": {
+            "x": 405,
+            "y": 753.515625,
+            "width": 34,
+            "height": 40,
+            "top": 753.515625,
+            "right": 439,
+            "bottom": 793.515625,
+            "left": 405
+          }
+        },
+        {
+          "text": "Sat",
+          "box": {
+            "x": 487.5,
+            "y": 753.515625,
+            "width": 45,
+            "height": 40,
+            "top": 753.515625,
+            "right": 532.5,
+            "bottom": 793.515625,
+            "left": 487.5
+          }
+        },
+        {
+          "text": "Sun",
+          "box": {
+            "x": 571.5,
+            "y": 753.515625,
+            "width": 53,
+            "height": 40,
+            "top": 753.515625,
+            "right": 624.5,
+            "bottom": 793.515625,
+            "left": 571.5
+          }
+        }
+      ],
+      "overlaps": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "focused": {
+      "box": {
+        "x": 206,
+        "y": 640.515625,
+        "width": 88,
+        "height": 117.796875,
+        "top": 640.515625,
+        "right": 294,
+        "bottom": 758.3125,
+        "left": 206
+      },
+      "scroll": 348,
+      "outline": "rgb(7, 117, 114) solid 2px"
+    }
+  },
+  {
+    "test": "Week strip",
+    "engine": "chromium",
+    "width": 390,
+    "text": 200,
+    "metrics": {
+      "box": {
+        "x": 16,
+        "y": 612.015625,
+        "width": 358,
+        "height": 129.796875,
+        "top": 612.015625,
+        "right": 374,
+        "bottom": 741.8125,
+        "left": 16
+      },
+      "scrollWidth": 656,
+      "clientWidth": 358,
+      "scrollLeft": 0,
+      "labels": [
+        {
+          "text": "Mon",
+          "box": {
+            "x": 50,
+            "y": 627.015625,
+            "width": 60,
+            "height": 40,
+            "top": 627.015625,
+            "right": 110,
+            "bottom": 667.015625,
+            "left": 50
+          }
+        },
+        {
+          "text": "Tue",
+          "box": {
+            "x": 143.5,
+            "y": 627.015625,
+            "width": 49,
+            "height": 40,
+            "top": 627.015625,
+            "right": 192.5,
+            "bottom": 667.015625,
+            "left": 143.5
+          }
+        },
+        {
+          "text": "Wed",
+          "box": {
+            "x": 226,
+            "y": 627.015625,
+            "width": 60,
+            "height": 40,
+            "top": 627.015625,
+            "right": 286,
+            "bottom": 667.015625,
+            "left": 226
+          }
+        },
+        {
+          "text": "Thu",
+          "box": {
+            "x": 317.5,
+            "y": 627.015625,
+            "width": 53,
+            "height": 40,
+            "top": 627.015625,
+            "right": 370.5,
+            "bottom": 667.015625,
+            "left": 317.5
+          }
+        },
+        {
+          "text": "Fri",
+          "box": {
+            "x": 415,
+            "y": 627.015625,
+            "width": 34,
+            "height": 40,
+            "top": 627.015625,
+            "right": 449,
+            "bottom": 667.015625,
+            "left": 415
+          }
+        },
+        {
+          "text": "Sat",
+          "box": {
+            "x": 497.5,
+            "y": 627.015625,
+            "width": 45,
+            "height": 40,
+            "top": 627.015625,
+            "right": 542.5,
+            "bottom": 667.015625,
+            "left": 497.5
+          }
+        },
+        {
+          "text": "Sun",
+          "box": {
+            "x": 581.5,
+            "y": 627.015625,
+            "width": 53,
+            "height": 40,
+            "top": 627.015625,
+            "right": 634.5,
+            "bottom": 667.015625,
+            "left": 581.5
+          }
+        }
+      ],
+      "overlaps": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "focused": {
+      "box": {
+        "x": 266,
+        "y": 618.015625,
+        "width": 88,
+        "height": 117.796875,
+        "top": 618.015625,
+        "right": 354,
+        "bottom": 735.8125,
+        "left": 266
+      },
+      "scroll": 298,
+      "outline": "rgb(7, 117, 114) solid 2px"
+    }
+  },
+  {
+    "test": "Week strip",
+    "engine": "webkit",
+    "width": 320,
+    "text": 200,
+    "metrics": {
+      "box": {
+        "x": 16,
+        "y": 738.7098999023438,
+        "width": 288,
+        "height": 129.796875,
+        "top": 738.7098999023438,
+        "right": 304,
+        "bottom": 868.5067749023438,
+        "left": 16
+      },
+      "scrollWidth": 636,
+      "clientWidth": 288,
+      "scrollLeft": 0,
+      "labels": [
+        {
+          "text": "Mon",
+          "box": {
+            "x": 38.21875,
+            "y": 753.7098999023438,
+            "width": 63.546875,
+            "height": 40,
+            "top": 753.7098999023438,
+            "right": 101.765625,
+            "bottom": 793.7098999023438,
+            "left": 38.21875
+          }
+        },
+        {
+          "text": "Tue",
+          "box": {
+            "x": 131.46875,
+            "y": 753.7098999023438,
+            "width": 53.046875,
+            "height": 40,
+            "top": 753.7098999023438,
+            "right": 184.515625,
+            "bottom": 793.7098999023438,
+            "left": 131.46875
+          }
+        },
+        {
+          "text": "Wed",
+          "box": {
+            "x": 213.625,
+            "y": 753.7098999023438,
+            "width": 64.75,
+            "height": 40,
+            "top": 753.7098999023438,
+            "right": 278.375,
+            "bottom": 793.7098999023438,
+            "left": 213.625
+          }
+        },
+        {
+          "text": "Thu",
+          "box": {
+            "x": 306.15625,
+            "y": 753.7098999023438,
+            "width": 55.6875,
+            "height": 40,
+            "top": 753.7098999023438,
+            "right": 361.84375,
+            "bottom": 793.7098999023438,
+            "left": 306.15625
+          }
+        },
+        {
+          "text": "Fri",
+          "box": {
+            "x": 403.84375,
+            "y": 753.7098999023438,
+            "width": 36.3125,
+            "height": 40,
+            "top": 753.7098999023438,
+            "right": 440.15625,
+            "bottom": 793.7098999023438,
+            "left": 403.84375
+          }
+        },
+        {
+          "text": "Sat",
+          "box": {
+            "x": 486.671875,
+            "y": 753.7098999023438,
+            "width": 46.640625,
+            "height": 40,
+            "top": 753.7098999023438,
+            "right": 533.3125,
+            "bottom": 793.7098999023438,
+            "left": 486.671875
+          }
+        },
+        {
+          "text": "Sun",
+          "box": {
+            "x": 570.25,
+            "y": 753.7098999023438,
+            "width": 55.484375,
+            "height": 40,
+            "top": 753.7098999023438,
+            "right": 625.734375,
+            "bottom": 793.7098999023438,
+            "left": 570.25
+          }
+        }
+      ],
+      "overlaps": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "focused": {
+      "box": {
+        "x": 206,
+        "y": 639.515625,
+        "width": 88,
+        "height": 117.796875,
+        "top": 639.515625,
+        "right": 294,
+        "bottom": 757.3125,
+        "left": 206
+      },
+      "scroll": 348,
+      "outline": "2px solid rgb(7, 117, 114)"
+    }
+  },
+  {
+    "test": "Week strip",
+    "engine": "webkit",
+    "width": 390,
+    "text": 200,
+    "metrics": {
+      "box": {
+        "x": 16,
+        "y": 616.34423828125,
+        "width": 358,
+        "height": 129.796875,
+        "top": 616.34423828125,
+        "right": 374,
+        "bottom": 746.14111328125,
+        "left": 16
+      },
+      "scrollWidth": 656,
+      "clientWidth": 358,
+      "scrollLeft": 0,
+      "labels": [
+        {
+          "text": "Mon",
+          "box": {
+            "x": 48.21875,
+            "y": 631.34423828125,
+            "width": 63.546875,
+            "height": 40,
+            "top": 631.34423828125,
+            "right": 111.765625,
+            "bottom": 671.34423828125,
+            "left": 48.21875
+          }
+        },
+        {
+          "text": "Tue",
+          "box": {
+            "x": 141.46875,
+            "y": 631.34423828125,
+            "width": 53.046875,
+            "height": 40,
+            "top": 631.34423828125,
+            "right": 194.515625,
+            "bottom": 671.34423828125,
+            "left": 141.46875
+          }
+        },
+        {
+          "text": "Wed",
+          "box": {
+            "x": 223.625,
+            "y": 631.34423828125,
+            "width": 64.75,
+            "height": 40,
+            "top": 631.34423828125,
+            "right": 288.375,
+            "bottom": 671.34423828125,
+            "left": 223.625
+          }
+        },
+        {
+          "text": "Thu",
+          "box": {
+            "x": 316.15625,
+            "y": 631.34423828125,
+            "width": 55.6875,
+            "height": 40,
+            "top": 631.34423828125,
+            "right": 371.84375,
+            "bottom": 671.34423828125,
+            "left": 316.15625
+          }
+        },
+        {
+          "text": "Fri",
+          "box": {
+            "x": 413.84375,
+            "y": 631.34423828125,
+            "width": 36.3125,
+            "height": 40,
+            "top": 631.34423828125,
+            "right": 450.15625,
+            "bottom": 671.34423828125,
+            "left": 413.84375
+          }
+        },
+        {
+          "text": "Sat",
+          "box": {
+            "x": 496.671875,
+            "y": 631.34423828125,
+            "width": 46.640625,
+            "height": 40,
+            "top": 631.34423828125,
+            "right": 543.3125,
+            "bottom": 671.34423828125,
+            "left": 496.671875
+          }
+        },
+        {
+          "text": "Sun",
+          "box": {
+            "x": 580.25,
+            "y": 631.34423828125,
+            "width": 55.484375,
+            "height": 40,
+            "top": 631.34423828125,
+            "right": 635.734375,
+            "bottom": 671.34423828125,
+            "left": 580.25
+          }
+        }
+      ],
+      "overlaps": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "focused": {
+      "box": {
+        "x": 266,
+        "y": 618.015625,
+        "width": 88,
+        "height": 117.796875,
+        "top": 618.015625,
+        "right": 354,
+        "bottom": 735.8125,
+        "left": 266
+      },
+      "scroll": 298,
+      "outline": "2px solid rgb(7, 117, 114)"
+    }
+  }
+]
