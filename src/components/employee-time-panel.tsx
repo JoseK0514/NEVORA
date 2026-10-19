@@ -79,7 +79,9 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
     {ready.today.entries.length?<div className="employee-time-entries">{ready.today.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div>:<p className="employee-time-empty">No recorded punches today.</p>}
    </section>:null}
  </>;
- return <div className="employee-time-panel">
+ // While loading, what sits under the status keeps its space but stays hidden: a clocked-in status is taller than the
+ // loading line, so anything visible under it would jump when it arrives.
+ return <div className="employee-time-panel" data-time-loading={placeholder?'true':undefined}>
   {corporate?<div className="employee-time-overview">{overview}</div>:overview}
   {ready?<>
    <section className="employee-view-surface employee-time-recent" aria-labelledby="employee-time-recent-title">
