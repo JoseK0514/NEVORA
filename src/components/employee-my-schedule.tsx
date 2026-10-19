@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { FilterPills, PageBand } from './kit/kit';
 import { ALL_MODULES_ON, type EnabledModules } from '@/lib/workspace-presentation/modules';
 import type { ReactNode } from 'react';
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
@@ -104,6 +105,17 @@ function OpenShifts({ open }: { open: EmployeeMyScheduleProps['openShifts'] }) {
   </section>;
 }
 
+/** "40h" or "37h 30m" scheduled across the listed published shifts (overnight and 24:00 ends included). */
+function scheduledHours(shifts: readonly {startTime: string; endTime: string}[]) {
+  const minutes = shifts.reduce((total, shift) => {
+    const toMinutes = (time: string) => { const [h, m] = time.split(':').map(Number); return h * 60 + (m || 0); };
+    const start = toMinutes(shift.startTime), end = toMinutes(shift.endTime);
+    return total + (end > start ? end - start : end + 1440 - start);
+  }, 0);
+  const hours = Math.floor(minutes / 60), rest = minutes % 60;
+  return rest ? `${hours}h ${rest}m` : `${hours}h`;
+}
+
 export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
   const modules = props.modules ?? ALL_MODULES_ON;
   const view = modules.marketplace ? props.view ?? 'mine' : 'mine';
@@ -122,14 +134,19 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
   const unpublishedNames = (props.unpublishedLocationIds ?? []).map(nameOf).filter(Boolean);
   const publishedNames = [...new Set(shifts.map(shift => nameOf(shift.locationId)).filter(Boolean))];
   return <EmployeeScheduleMotion weekStart={weekStart}>
-    <div className="employee-view employee-schedule-view my-schedule">
-      <header className="my-schedule-heading my-schedule-enter">
-        <div><h1>My schedule</h1><p>Review your week and manage your shifts.</p></div>
-      </header>
-      {modules.marketplace ? <nav className="my-schedule-views my-schedule-enter" aria-label="Schedule views">
-        <Link href={`/app/schedule?week=${weekStart}`} aria-current={view === 'mine' ? 'page' : undefined}>My shifts</Link>
-        <Link href={`/app/schedule?week=${weekStart}&view=open`} aria-current={view === 'open' ? 'page' : undefined}>Open shifts{openCount ? <><span className="my-schedule-views-count" aria-hidden="true">{openCount}</span><span className="sr-only">, {openCount} available</span></> : null}</Link>
-      </nav> : null}
+    <div className="nv-page employee-view employee-schedule-view my-schedule premium-employee-schedule" data-nv-page="">
+      {/* Phase 3: the kit band. Its line says what this week holds, from the published shifts already listed. */}
+      <PageBand title="My schedule" overlap={false}
+        summary={view === 'open'
+          ? (openCount ? `${openCount}\u00a0open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up.` : 'Shifts your teammates offer show up here.')
+          : state === 'unavailable' ? 'Your schedule couldn’t be checked.'
+          : shifts.length ? `${shifts.length}\u00a0${shifts.length === 1 ? 'shift' : 'shifts'} · ${scheduledHours(shifts)} scheduled.`
+          : 'No published shifts this week.'}
+        extra={modules.marketplace ? <FilterPills label="Schedule views" items={[
+          { href: `/app/schedule?week=${weekStart}`, label: 'My shifts', current: view === 'mine' },
+          { href: `/app/schedule?week=${weekStart}&view=open`, label: openCount ? `Open shifts (${openCount})` : 'Open shifts', current: view === 'open' },
+        ]} /> : undefined} />
+      <div className="premium-employee-content">
       {view === 'open' ? <OpenShifts open={props.openShifts} /> : <>
 
       <section className="my-week-overview my-schedule-enter" aria-labelledby="my-week-title">
@@ -202,6 +219,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
           <li><Link href="/app/profile#employee-calendar-title" className="my-schedule-row"><CalendarPlusIcon size={20} aria-hidden="true" /><span>Add shifts to your calendar</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li>
         </ul>
       </footer>
+      </div>
     </div>
   </EmployeeScheduleMotion>;
 }

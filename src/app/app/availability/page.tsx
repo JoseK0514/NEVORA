@@ -1,4 +1,5 @@
 import { getWorkspace } from "@/lib/data/workspaces";
+import { FilterPills, PageBand } from "@/components/kit/kit";
 import { businessDate, formatBusinessDateTime } from "@/lib/business-time";
 import Link from "next/link";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
@@ -148,22 +149,26 @@ export default async function AvailabilityPage({
     : null;
 
   return (
-    <div className="availability-page employee-view employee-availability-view">
-        <header className="av-page-heading">
-          <div><h1>Availability</h1>
-            <p>Let your team know when you can work.</p>
-          </div>
-          {selectedWeek ? <Link className="av-button secondary" href="/app/availability">Normal availability</Link> : null}
-        </header>
+    <div className="nv-page availability-page employee-view employee-availability-view premium-employee-availability" data-nv-page="">
+      {/* Phase 3 + Codex M5: the band names the scope, and "Usual week | Specific week" is a visible switch. */}
+      <PageBand title="Availability" overlap={false}
+        summary={selectedWeek ? `Changes here apply only to ${formatWeekRange(selectedWeek)}.` : "Your usual week. Let your team know when you can work."}
+        extra={<FilterPills label="Availability scope" items={[
+          { href: "/app/availability", label: "Usual week", current: !selectedWeek },
+          { href: `/app/availability?week=${selectedWeek ?? upcomingWeek?.weekStart ?? addDays(currentWeek, 7)}`, label: "Specific week", current: Boolean(selectedWeek) },
+        ]} />} />
+      <div className="premium-employee-content">
 
-      <section className="av-week-panel" aria-label={selectedWeek ? "Weekly availability context" : "Normal availability context"}>
+      {/* Phase 3: for the usual week the band already says what this page edits; the context card is for a specific week. */}
+      {selectedWeek ? <section className="av-week-panel" aria-label="Weekly availability context">
         <div className="av-week-context"><span className="av-icon-tile"><CalendarBlankIcon size={24} aria-hidden="true" /></span><div><p>{selectedWeek ? "Weekly submission" : "Normal availability"}</p><strong>{selectedWeek ? formatWeekRange(selectedWeek) : "Your usual week"}</strong><span>{selectedWeek ? "These hours apply to this schedule week." : "Your regular hours. Submit separately for a specific week."}</span></div></div>
         {selectedWeek ? <div className={`av-deadline${locked ? " locked" : ""}`}><ClockIcon size={20} aria-hidden="true" /><div><strong>{locked ? "Submissions closed" : "Availability deadline"}</strong><p>{settings?.availabilityDeadline ? formatBusinessDateTime(settings.availabilityDeadline, workspace.timeZone) : "No deadline set"}</p><span>{locked ? "This week's submitted hours are locked." : settings?.availabilityDeadline ? "You can update your submission until the cutoff." : "No cutoff has been set for this week."}</span></div></div> : null}
         {selectedWeek && submissionStatus && submissionCopy ? <div className={`av-submission-detail${submissionStatus.submitted ? " submitted" : ""}`}><strong>{submissionCopy.label}</strong><p>{submissionCopy.detail}</p>{submissionStatus.updatedAt ? <small>Last updated {formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone)}</small> : null}</div> : null}
-      </section>
+      </section> : null}
 
       {/* Codex mobile review M5: a specific week is always reachable, with or without a cutoff. */}
-      {!selectedWeek ? (
+      {/* The pills always reach a specific week (M5); this card only appears when a real deadline is coming. */}
+      {!selectedWeek && upcomingWeek?.availabilityDeadline ? (
         <section className="av-upcoming-banner">
           <div>
             <p>{upcomingWeek?.availabilityDeadline ? "Upcoming schedule" : "A specific week"}</p>
@@ -210,6 +215,7 @@ export default async function AvailabilityPage({
         locked={locked}
         employeeView
       />
+      </div>
     </div>
   );
 }

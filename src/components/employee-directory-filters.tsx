@@ -8,7 +8,7 @@ const TYPE_DELAY = 300;
 /** Filters apply as you type (after a short pause) and as soon as a select
  * changes. The Apply button stays for keyboard users and no-JS forms. Typed
  * queries replace the history entry, so Back doesn't replay every keystroke. */
-export function EmployeeDirectoryFilters({ children }: { children: ReactNode }) {
+export function EmployeeDirectoryFilters({ children, className }: { children: ReactNode; className?: string }) {
   const router = useRouter();
   const form = useRef<HTMLFormElement>(null);
   const timer = useRef<number | null>(null);
@@ -38,7 +38,8 @@ export function EmployeeDirectoryFilters({ children }: { children: ReactNode }) 
       if (form.current) navigate(new FormData(form.current, applyButton()), true);
     }, TYPE_DELAY);
   }
-  function applyButton() { return form.current?.querySelector<HTMLButtonElement>('button[type="submit"]') ?? null; }
+  // The Apply button carries the current status; status segments are submit buttons too.
+  function applyButton() { return form.current?.querySelector<HTMLButtonElement>('button[data-apply]') ?? form.current?.querySelector<HTMLButtonElement>('button[type="submit"]') ?? null; }
 
   useEffect(() => {
     if (pending || !restore.current) return;
@@ -47,9 +48,14 @@ export function EmployeeDirectoryFilters({ children }: { children: ReactNode }) 
     restore.current = null;
   }, [pending]);
   useEffect(() => () => { if (timer.current) window.clearTimeout(timer.current); }, []);
+  // Filters apply as you type once scripts run, so the Apply button stops being a tab stop (IS-35).
+  useEffect(() => {
+    const apply = form.current?.querySelector<HTMLButtonElement>("button[data-apply]");
+    if (apply) { apply.tabIndex = -1; apply.setAttribute("aria-hidden", "true"); }
+  }, []);
 
-  return <form ref={form} action="/app/employees" method="get" className={styles.toolbar} onSubmit={submit} onChange={typed} aria-busy={pending}>
+  return <form ref={form} action="/app/employees" method="get" className={className ?? styles.toolbar} onSubmit={submit} onChange={typed} aria-busy={pending}>
     {children}
-    {pending ? <p className={styles.pending} role="status">Updating employees...</p> : null}
+    {pending ? <p className={className ? "premium-note" : styles.pending} role="status">Updating employees…</p> : null}
   </form>;
 }

@@ -1,5 +1,5 @@
 import { RouteSkeleton } from "@/components/route-skeleton";
 
 export default function Loading() {
-  return <RouteSkeleton label="inbox" shape="list" />;
+  return <RouteSkeleton route="inbox" label="inbox" shape="list" band={308} />;
 }

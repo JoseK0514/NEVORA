@@ -11,9 +11,12 @@ vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () =>
   { id: 'approved', status: 'APPROVED', startDate: '2030-10-09', endDate: '2030-10-10', allDay: true, reason: 'Fictional approved request' },
 ] }));
 
-it('uses neutral for an employee awaiting review and green for approval', async () => {
+it('marks a waiting request amber and an approval green, with a timeline', async () => {
   const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) }));
-  expect(html).toContain('class="status-pill neutral">Pending');
-  expect(html).toContain('class="status-pill success">Approved');
+  // Phase 3: kit status tags. Waiting is amber ("review"), approval is green ("done"); each row carries its timeline.
+  expect(html).toMatch(/data-tone="review"><svg[^]*?<\/svg>Waiting<\/span>/);
+  expect(html).toMatch(/data-tone="done"><svg[^]*?<\/svg>Approved<\/span>/);
+  expect(html).toContain('aria-label="Request timeline"');
+  expect(html).toContain('Waiting for your manager');
   expect(html).toContain('Fictional pending request');
 });

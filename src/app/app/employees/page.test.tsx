@@ -33,8 +33,9 @@ import EmployeesPage from "./page";
 
 it("keeps inactive employees discoverable with an explicit status", async () => {
   const html = renderToStaticMarkup(await EmployeesPage());
-  expect(html).toContain('class="status-pill success">Active</span>');
-  expect(html).toContain('class="status-pill neutral">Inactive</span>');
+  // Inactive people keep an explicit condition pill; active is the default and isn't repeated on every row.
+  expect(html).toMatch(/class="nv-status" data-tone="neutral">[^]*?Inactive<\/span>/);
+  expect(html).toContain('aria-label="Inactive Person, LEAD, Main, inactive"');
   expect(html).toContain('href="/app/employees/inactive"');
 });
 
@@ -44,7 +45,7 @@ it("renders the retained inactive primary location truthfully in the employee di
   expect(html).toMatch(/Main[^<]*Inactive/);
   expect(html).not.toContain("Location not assigned");
   expect(html).toContain('href="/app/employees/inactive"');
-  expect(html).toContain('class="status-pill neutral">Inactive</span>');
+  expect(html).toMatch(/data-tone="neutral">[^]*?Inactive<\/span>/);
 });
 
 it("authorizes before loading any employee data", async () => {
@@ -75,6 +76,7 @@ it("shows inactive matches and retains the active state in segment selection", a
 it("distinguishes no matches from a genuinely empty workforce", async () => {
   const noMatch = renderToStaticMarkup(await EmployeesPage({ searchParams: Promise.resolve({ q: "nobody" }) }));
   expect(noMatch).toContain("No matching employees");
+  expect(noMatch).toContain('<h1 class="nv-masthead__title"');
   expect(noMatch).toContain("Clear filters");
   expect(noMatch).not.toContain("Your team starts here");
   fixture.empty = true;

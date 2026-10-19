@@ -35,3 +35,23 @@ it.each([
  const data=new FormData();data.set('requestId',input.requestId);data.set('startDate',input.startDate);data.set('endDate',input.startDate);
  await expect(requestTimeOffAction(data)).rejects.toThrow('error=invalid');expect(createTimeOffRequest).not.toHaveBeenCalled();
 });
+
+it('returns a focused review to the Inbox or Home and never to an arbitrary address (D-5)', async () => {
+  vi.mocked(requireRoles).mockResolvedValue({id:'M',role:'MANAGER'} as never);
+  vi.mocked(reviewTimeOffRequest).mockResolvedValue(true);
+  const form = (returnTo: string, decision = 'APPROVED') => { const data = new FormData(); data.set('requestId', 'r1'); data.set('decision', decision); data.set('returnTo', returnTo); return data; };
+  await expect(reviewTimeOffAction(form('inbox'))).rejects.toThrow('redirect:/app/inbox?filter=requests&decided=timeoff-approved');
+  await expect(reviewTimeOffAction(form('home', 'DENIED'))).rejects.toThrow('redirect:/app?decided=timeoff-declined');
+  await expect(reviewTimeOffAction(form('https://example.invalid'))).rejects.toThrow('redirect:/app/requests?tab=pending&reviewed=1');
+  vi.mocked(reviewTimeOffRequest).mockResolvedValue(false);
+  await expect(reviewTimeOffAction(form('inbox'))).rejects.toThrow('redirect:/app/requests?tab=pending&error=review&requestId=r1&from=inbox');
+});
+
+it('returns to the Inbox filter it came from, from a fixed list only (IS-14)', async () => {
+  vi.mocked(requireRoles).mockResolvedValue({id:'M',role:'MANAGER'} as never);
+  vi.mocked(reviewTimeOffRequest).mockResolvedValue(true);
+  const form = (returnFilter: string) => { const data = new FormData(); data.set('requestId', 'r1'); data.set('decision', 'APPROVED'); data.set('returnTo', 'inbox'); data.set('returnFilter', returnFilter); return data; };
+  await expect(reviewTimeOffAction(form('planning'))).rejects.toThrow('redirect:/app/inbox?filter=planning&decided=timeoff-approved');
+  await expect(reviewTimeOffAction(form('all'))).rejects.toThrow('redirect:/app/inbox?decided=timeoff-approved');
+  await expect(reviewTimeOffAction(form('//evil'))).rejects.toThrow('redirect:/app/inbox?filter=requests&decided=timeoff-approved');
+});

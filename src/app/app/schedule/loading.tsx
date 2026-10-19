@@ -1,5 +1,5 @@
 import { RouteSkeleton } from "@/components/route-skeleton";
 
 export default function Loading() {
-  return <RouteSkeleton label="schedule" shape="grid" />;
+  return <RouteSkeleton route="schedule" label="schedule" shape="grid" band={244} />;
 }

@@ -14,6 +14,7 @@ import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, Publishe
 import styles from './employee-home-reviewed.module.css';
 import {formatDisplayDate} from '../lib/date-utils';
 import {unpublishedNote} from '../lib/publication-note';
+import {KitStack, PageBand} from './kit/kit';
 
 export type EmployeeHomeReviewedViewProps = {
   home: EmployeeHomeRead | null;
@@ -248,16 +249,25 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   const underWay = snapshot?.currentShift && snapshot.publicationState !== 'unavailable' ? snapshot.currentShift : null;
   const recovery = paused ? 'Home paused — return online to refresh.' : denied ? 'Sign in again to view Home.' : loading ? 'Loading Home…' : 'Home unavailable — try again.';
 
-  return <div className={styles.root} data-home-state={viewState} aria-busy={refreshing || loading}>
-    <header className={styles.arrival}>
-      <h1>{name ? `Hi, ${name}.` : 'Home'}</h1>
-      {snapshot ? <p>{greeting(snapshot.observedAt, snapshot.timeZone)} · <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {
-        timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-      }).format(new Date(snapshot.observedAt))}</time></p> : null}
-      {/* Codex mobile review M8: required work is noticed on the first screen; the full list stays below. */}
-      {snapshot && actions.length ? <a className={styles.todoJump} href="#employee-reviewed-actions-heading">{actions.length === 1 ? '1 item needs your review' : `${actions.length} items need your review`}</a> : null}
-    </header>
-    <div className={styles.content}>
+  const zone = snapshot?.timeZone;
+  const clock = (at: string) => new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(at));
+  // Phase 3: the band says the one thing an employee opens Home for, in one line.
+  const summary = paused ? 'Paused while you’re away.' : denied ? 'Sign in again to view Home.' : loading ? 'Checking your shifts…'
+    : !snapshot ? 'Couldn’t load Home.'
+    : snapshot.publicationState === 'unavailable' ? 'Your schedule couldn’t be checked.'
+    : underWay ? `On shift until ${clock(underWay.endAt)}.`
+    : snapshot.nextShift ? `Next shift ${(relativeDay(snapshot.nextShift.date, snapshot.observedAt, snapshot.timeZone) ?? formatDisplayDate(snapshot.nextShift.date)).replace(/^(Today|Tomorrow)$/, word => word.toLowerCase())}, ${clock(snapshot.nextShift.startAt)}.`
+    : 'No published shifts coming up.';
+
+  return <div className={`nv-page premium-employee-home ${styles.root}`} data-nv-page="" data-home-state={viewState} aria-busy={refreshing || loading}>
+    <PageBand
+      eyebrow={snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)} · <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt))}</time></> : undefined}
+      title={name ? `Hi, ${name}.` : 'Home'}
+      summary={summary}
+      // Codex mobile review M8: required work is noticed on the first screen; the full list stays below.
+      extra={snapshot && actions.length ? <a className="premium-band-link" href="#employee-reviewed-actions-heading">{actions.length === 1 ? '1 item needs your review' : `${actions.length} items need your review`}</a> : undefined}
+    />
+    <KitStack className={styles.content}>
       <div className={styles.primary}>
         {/* The shift card is always the green pass (Jose, 2026-10-18), whatever its state. */}
         <section className={styles.assignment} aria-labelledby="employee-reviewed-next-heading"
@@ -313,6 +323,6 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
             {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Retry home'}
           </button>}
       </footer>
-    </div>
+    </KitStack>
   </div>;
 }

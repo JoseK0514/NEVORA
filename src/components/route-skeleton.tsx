@@ -3,9 +3,16 @@ import { SkeletonRows } from "./skeleton";
 /** Page-shaped placeholder for a route segment while its server data loads.
  * The visible shape matches the page (grid, list or cards); the status line
  * tells assistive tech what is loading. */
-export function RouteSkeleton({ label, shape = "list" }: { label: string; shape?: "grid" | "list" | "cards" }) {
-  return <section className="route-skeleton" data-shape={shape} role="status" aria-busy="true">
+export function RouteSkeleton({ label, shape = "list", band, overlap = true, route }: {
+  label: string; shape?: "grid" | "list" | "cards"; route?: string;
+  /** Phase 7 (ST-05): the teal band's final height at 390, so the band doesn't pop in after loading.
+   * Shown only in the Manager and Owner shell (the employee app keeps its own until phase 3). */
+  band?: number; overlap?: boolean;
+}) {
+  return <section className="route-skeleton" data-shape={shape} data-route={route} data-band={band ? (overlap ? "overlap" : "flat") : undefined}
+    style={band && !route ? { ["--route-band" as string]: `${band}px` } : undefined} role="status" aria-busy="true">
     <span className="sr-only">Loading {label}…</span>
+    {band ? <div className="route-skeleton-band" aria-hidden="true"><i /><i /><i /></div> : null}
     <div className="route-skeleton-header" aria-hidden="true"><i /><i /></div>
     {shape === "grid" ? <div className="route-skeleton-grid" aria-hidden="true">{Array.from({ length: 21 }, (_, index) => <i key={index} />)}</div>
       : shape === "cards" ? <div className="route-skeleton-cards" aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <i key={index} />)}</div>

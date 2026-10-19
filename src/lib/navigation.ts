@@ -89,6 +89,21 @@ export function managementNavigationGroups(items: NavigationItem[]) {
   return definitions.map(group=>({...group,items:group.hrefs.flatMap(href=>items.filter(item=>item.href===href))})).filter(group=>group.items.length);
 }
 
+/** MG3: the phone More sheet grouped by job. Grouping grants nothing: it only
+ * orders the items the role already has, and anything unlisted stays under "More". */
+export function moreNavigationGroups(items: NavigationItem[]) {
+  const definitions = [
+    {label: 'Time and reporting', hrefs: ['/app/timecards', '/app/payroll', '/app/payroll-export', '/app/reports']},
+    {label: 'Scheduling tools', hrefs: ['/app/schedule/templates', '/app/schedule/settings', '/app/availability', '/app/exchange']},
+    {label: 'Workplace', hrefs: ['/app/updates', '/app/requests', '/app/settings']},
+    {label: 'My account', hrefs: ['/app/my-pay', '/app/profile']},
+  ];
+  const listed = new Set(definitions.flatMap(group => group.hrefs));
+  const groups = definitions.map(group => ({label: group.label, items: group.hrefs.flatMap(href => items.filter(item => item.href === href))}));
+  groups.push({label: 'More', items: items.filter(item => !listed.has(item.href))});
+  return groups.filter(group => group.items.length);
+}
+
 /** Canonical workflows keep their URLs, queries and commands. Only their
  * employee navigation owner is the Requests group. Manager owners are unchanged. */
 export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {

@@ -15,10 +15,13 @@ vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () =>
   { id:'cancelled',employeeId:'fictional',status:'CANCELLED',startDate:'2030-10-09',endDate:'2030-10-10'},
 ] }));
 
-it('uses neutral for an employee awaiting review and green for approval', async () => {
+it('marks a waiting request amber and an approval green, with a timeline', async () => {
   const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) }));
-  expect(html).toContain('class="status-pill neutral">Pending');
-  expect(html).toContain('class="status-pill success">Approved');
+  // Phase 3: kit status tags. Waiting is amber ("review"), approval is green ("done"); each row carries its timeline.
+  expect(html).toMatch(/data-tone="review"><svg[^]*?<\/svg>Waiting<\/span>/);
+  expect(html).toMatch(/data-tone="done"><svg[^]*?<\/svg>Approved<\/span>/);
+  expect(html).toContain('aria-label="Request timeline"');
+  expect(html).toContain('Waiting for your manager');
   expect(html).toContain('Fictional pending request');
 });
 
@@ -29,21 +32,17 @@ it('offers a confirmed withdrawal only for the current employee pending request'
  expect(html).toContain('name="confirmed"');expect(html).toContain('required=""');
 });
 
-import {Children,isValidElement,type ReactElement,type ReactNode} from 'react';
+import {isValidElement,type ReactElement,type ReactNode} from 'react';
 import {TimeOffWithdrawal} from '@/components/time-off-withdrawal';
 function pageNodes(value:ReactNode):ReactElement<Record<string,unknown>>[]{
  if(Array.isArray(value))return value.flatMap(pageNodes);
  if(!isValidElement<Record<string,unknown>>(value))return [];
  return [value,...pageNodes(value.props.children as ReactNode)];
 }
-it('groups withdrawal with its request facts, leaving the existing status column as the only row sibling',async()=>{
+it('keeps withdrawal inside its own request row, next to the facts and the waiting status',async()=>{
  const page=await RequestsPage({searchParams:Promise.resolve({tab:'my'})});
  const row=pageNodes(page).find(node=>node.props.id==='request-dc6b44c9-6e3f-4f0e-890c-328067ebfe9e')!;
- const children=Children.toArray(row.props.children as ReactNode).filter(isValidElement) as ReactElement<Record<string,unknown>>[];
- expect(children).toHaveLength(2);
- expect(children[0].props.className).toBe('request-row-copy');
- expect(pageNodes(children[0]).some(node=>node.type===TimeOffWithdrawal)).toBe(true);
- expect(pageNodes(children[0]).some(node=>node.type==='strong')).toBe(true);
- expect(children.some(node=>node.type===TimeOffWithdrawal)).toBe(false);
- expect(children[1].props.children).toBe('Pending');
+ expect(pageNodes(row).some(node=>node.type===TimeOffWithdrawal)).toBe(true);
+ expect(renderToStaticMarkup(row as ReactElement)).toContain('Waiting</span>');
+ expect(row.props['data-employee-status']).toBe('PENDING');
 });

@@ -1,0 +1,17 @@
+/* Layout for the kit preview only. */
+.kit-preview {min-height: 100vh; background: #E6EAE9;}
+.kit-preview-tools {padding: 12px 16px; background: #FFFFFF; border-bottom: 1px solid #D5DAD9; color: #16191C; font-family: var(--design-font-body, Inter, sans-serif);}
+.kit-preview-tools strong {display: block; font-size: 1rem; font-weight: 600;}
+.kit-preview-tools p {margin: 2px 0 0; font-size: .9375rem; color: #5F666A;}
+.kit-preview-grid {display: grid; gap: 24px;}
+.kit-preview-screen {overflow: hidden;}
+.kit-preview-wrap {display: flex; flex-wrap: wrap; gap: 8px;}
+.kit-preview-stack {display: flex; flex-direction: column; align-items: stretch; gap: 12px;}
+.kit-preview-stack > .nv-link, .kit-preview-stack > .nv-fresh {align-self: flex-start;}
+.kit-preview-figure {font: var(--nv-t-headline); color: var(--nv-ink);}
+@media (min-width: 1100px) {
+  .kit-preview-grid {grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 24px; padding: 24px 32px;}
+  .kit-preview-screen {border-radius: 24px; box-shadow: 0 2px 6px rgba(16, 40, 38, .08), 0 16px 40px rgba(16, 40, 38, .14);}
+  .kit-preview-screen .nv-masthead, .kit-preview-screen .nv-content {--nv-gutter: 16px;}
+}
+.kit-preview-nowrap {white-space: nowrap;}

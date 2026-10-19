@@ -17,13 +17,17 @@ it("loads the current Action Center without exposing unverified server-provided 
     locations:[],days:[],hours:[],latestRevision:null,
   };
   const html = renderToStaticMarkup(<ManagerDashboard {...props}/>);
-  expect(html).toContain("Northside Services");
-  expect(html).toContain('class="mobile-home-week-facts"');
-  expect(html).toContain('Includes drafts');
-  expect(html).toContain('Locations published');
+  // One band, one h1, and no count until the live read confirms it (F1).
+  expect(html.match(/<h1/g)).toHaveLength(1);
+  expect(html).toContain('data-nv-band');
+  expect(html).toContain('Checking what needs you…');
+  expect(html).not.toContain('Sam Cruz is waiting');expect(html).not.toMatch(/\b7 things need you/);expect(html).not.toContain('All caught up');
   expect(html).not.toContain("at Fuel.");
-  expect(html).toContain('Loading tasks');expect(html).not.toContain('All caught up');expect(html).not.toContain('Sam Cruz is waiting');expect(html).not.toContain('aria-label="Total tasks"');
+  expect(html.replace(/\u00a0/g, ' ')).toContain('planned, drafts included');
+  expect(html).toContain('Schedules published');
+  // Team tools keep every former shortcut reachable.
   expect(html).toContain('href="/app/clocker-recovery"');expect(html).toContain('href="/app/account-recovery"');
+  expect(html).toContain('view=attendance');expect(html).toContain('view=team');expect(html).toContain('view=activity');
 });
 
 vi.mock("@/lib/business-time",()=>import("../lib/business-time"));
@@ -41,17 +45,20 @@ it("summarizes the selected planning week and counts only explicitly published s
       {locationId:"unspecified",locationName:"West",state:"PUBLISHED",totalBlocks:1,coveredBlocks:1,uncoveredBlocks:0},
     ]}
   />);
-  const summary = html.split('class="mobile-home-week-facts"')[1]?.split('</dl>')[0];
-  expect(summary).toContain('<dt>Planned shifts <small>Includes drafts</small></dt><dd><span class="home-fact-value">7</span></dd>');
+  const week = (html.split('id="home-week"')[1] ?? '').replace(/\u00a0/g, ' ');
+  expect(week).toContain('7 shifts planned, drafts included');
   // O2: the denominator is the people asked for availability, not every active role.
-  expect(summary).toContain('<dt>Availability received <small>Employees and leads</small></dt><dd class="home-fraction"><span class="home-fact-value">2<span> of 3</span>');
-  expect(summary).not.toContain('of 10');
-  expect(summary).toContain('<dt>Locations published</dt><dd class="home-fraction"><span class="home-fact-value">1<span> of 3</span>');
+  expect(week).toContain('>2 of 3 people<');
+  expect(week).toContain('Employees and leads only');
+  expect(week).not.toContain('of 10');
+  // Only an explicit PUBLISHED status counts; the others are named as drafts.
+  expect(week).toContain('1 of 3 locations');
+  expect(week).toContain('2 locations aren’t published yet.');
 });
 
 it("offers Home's own views only; Schedule and Requests live in one place each (R1)", () => {
   const html = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="team"/>);
-  const tabs = html.split('aria-label="Dashboard views"')[1]?.split('</nav>')[0] ?? '';
+  const tabs = html.split('aria-label="Home views"')[1]?.split('</nav>')[0] ?? '';
   expect(tabs).toContain('>Team overview<');
   expect(tabs).not.toContain('view=schedule');
   expect(tabs).not.toContain('view=requests');

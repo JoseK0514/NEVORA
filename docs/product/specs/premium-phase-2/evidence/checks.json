@@ -1,0 +1,1484 @@
+{
+  "base": "http://127.0.0.1:51346",
+  "ranAt": "2026-10-19T01:44:28.781Z",
+  "results": [
+    {
+      "name": "MANAGER 390 home: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 home: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 390 home: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 390 home: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 home: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 home: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 inbox: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 inbox: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 390 inbox: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 390 inbox: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 inbox: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 inbox: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 review: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 review: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 390 review: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 390 review: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 review: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 review: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 schedule: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 schedule: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 390 schedule: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 390 schedule: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 schedule: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 schedule: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 team: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 team: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 390 team: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 390 team: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 team: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 team: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 timecards: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 timecards: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 390 timecards: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 390 timecards: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 timecards: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 timecards: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 390 F1: Home and Inbox say the same count",
+      "passed": true,
+      "detail": {
+        "homeLine": "7 things need you today.",
+        "inboxLine": "3 shifts with no clock-in, 3 urgent items and 1 request need you."
+      }
+    },
+    {
+      "name": "MANAGER 390 F5: no \"missed\" or \"missing punch\" wording on Home or Inbox",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 O1: Inbox has no Approve or Decline",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 filter Planning updates the URL",
+      "passed": true,
+      "detail": "http://127.0.0.1:51346/app/inbox?filter=planning"
+    },
+    {
+      "name": "MANAGER 390 Planning shows setup, not Act now",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 F6: review opened from Home says Back to Home",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 F6: review opened from Inbox says Back to Inbox",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 390 decision bar is on the first screen above the tab bar",
+      "passed": true,
+      "detail": {
+        "x": 0,
+        "y": 710,
+        "width": 390,
+        "height": 68
+      }
+    },
+    {
+      "name": "MANAGER 390 tab icons share one baseline",
+      "passed": true,
+      "detail": [
+        {
+          "t": "Home",
+          "icon": 789,
+          "active": true,
+          "h": 55
+        },
+        {
+          "t": "Schedule",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "Inbox",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "Team",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "More",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        }
+      ]
+    },
+    {
+      "name": "MANAGER 390 tabs at least 44px",
+      "passed": true,
+      "detail": [
+        {
+          "t": "Home",
+          "icon": 789,
+          "active": true,
+          "h": 55
+        },
+        {
+          "t": "Schedule",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "Inbox",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "Team",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "More",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        }
+      ]
+    },
+    {
+      "name": "MANAGER 390 More is grouped by job",
+      "passed": true,
+      "detail": [
+        "Time and reporting",
+        "Scheduling tools",
+        "Workplace",
+        "My account"
+      ]
+    },
+    {
+      "name": "MANAGER 390 keyboard: every Home stop shows a 2px ring",
+      "passed": true,
+      "detail": [
+        {
+          "t": "NEVORA Workforce home",
+          "ring": true,
+          "kit": false
+        },
+        {
+          "t": "Search⌘K",
+          "ring": true,
+          "kit": false
+        },
+        {
+          "t": "Notifications, 0 unread in y",
+          "ring": true,
+          "kit": false
+        },
+        {
+          "t": "Scheduled today3",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Clocked in now0",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "No clock-in3 shifts with no ",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Review in Inbox",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "View coverage gap: Coverage ",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "View coverage gap: Coverage ",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "View coverage gap: Coverage ",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Open Inbox",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Open schedule",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Planning and setup18 items t",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "AttendanceWho clocked in tod",
+          "ring": true,
+          "kit": true
+        }
+      ]
+    },
+    {
+      "name": "MANAGER 320 home: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 320 home: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 320 home: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 320 home: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 home: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 home: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 inbox: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 320 inbox: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 320 inbox: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 320 inbox: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 inbox: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 inbox: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 review: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 320 review: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 320 review: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 320 review: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 review: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 review: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 schedule: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 320 schedule: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 320 schedule: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 320 schedule: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 schedule: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 schedule: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 team: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 320 team: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 320 team: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 320 team: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 team: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 team: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 timecards: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 320 timecards: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 320 timecards: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 320 timecards: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 timecards: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 320 timecards: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 home: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 1440 home: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 1440 home: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 1440 home: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 home: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 inbox: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 1440 inbox: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 1440 inbox: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 1440 inbox: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 inbox: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 review: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 1440 review: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 1440 review: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 1440 review: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 review: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 schedule: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 1440 schedule: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 1440 schedule: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 1440 schedule: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 schedule: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 team: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 1440 team: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 1440 team: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 1440 team: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 team: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 timecards: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "MANAGER 1440 timecards: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "MANAGER 1440 timecards: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "MANAGER 1440 timecards: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER 1440 timecards: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "MANAGER reduced motion: no transitions on tabs, rows or buttons",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 home: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 home: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 390 home: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 390 home: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 home: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 home: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 inbox: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 inbox: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 390 inbox: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 390 inbox: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 inbox: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 inbox: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 review: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 review: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 390 review: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 390 review: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 review: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 review: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 schedule: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 schedule: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 390 schedule: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 390 schedule: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 schedule: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 schedule: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 team: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 team: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 390 team: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 390 team: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 team: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 team: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 timecards: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 timecards: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 390 timecards: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 390 timecards: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 timecards: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 timecards: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 payroll: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 payroll: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 390 payroll: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 390 payroll: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 payroll: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 payroll: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 390 F1: Home and Inbox say the same count",
+      "passed": true,
+      "detail": {
+        "homeLine": "7 things need you today.",
+        "inboxLine": "3 shifts with no clock-in, 3 urgent items and 1 request need you."
+      }
+    },
+    {
+      "name": "OWNER 390 F5: no \"missed\" or \"missing punch\" wording on Home or Inbox",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 O1: Inbox has no Approve or Decline",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 filter Planning updates the URL",
+      "passed": true,
+      "detail": "http://127.0.0.1:51346/app/inbox?filter=planning"
+    },
+    {
+      "name": "OWNER 390 Planning shows setup, not Act now",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 F6: review opened from Home says Back to Home",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 F6: review opened from Inbox says Back to Inbox",
+      "passed": true
+    },
+    {
+      "name": "OWNER 390 decision bar is on the first screen above the tab bar",
+      "passed": true,
+      "detail": {
+        "x": 0,
+        "y": 710,
+        "width": 390,
+        "height": 68
+      }
+    },
+    {
+      "name": "OWNER 390 tab icons share one baseline",
+      "passed": true,
+      "detail": [
+        {
+          "t": "Home",
+          "icon": 789,
+          "active": true,
+          "h": 55
+        },
+        {
+          "t": "Schedule",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "Inbox",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "Team",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "More",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        }
+      ]
+    },
+    {
+      "name": "OWNER 390 tabs at least 44px",
+      "passed": true,
+      "detail": [
+        {
+          "t": "Home",
+          "icon": 789,
+          "active": true,
+          "h": 55
+        },
+        {
+          "t": "Schedule",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "Inbox",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "Team",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        },
+        {
+          "t": "More",
+          "icon": 789,
+          "active": false,
+          "h": 55
+        }
+      ]
+    },
+    {
+      "name": "OWNER 390 More is grouped by job",
+      "passed": true,
+      "detail": [
+        "Time and reporting",
+        "Scheduling tools",
+        "Workplace",
+        "My account"
+      ]
+    },
+    {
+      "name": "OWNER 390 keyboard: every Home stop shows a 2px ring",
+      "passed": true,
+      "detail": [
+        {
+          "t": "NEVORA Workforce home",
+          "ring": true,
+          "kit": false
+        },
+        {
+          "t": "Search⌘K",
+          "ring": true,
+          "kit": false
+        },
+        {
+          "t": "Notifications, 0 unread in y",
+          "ring": true,
+          "kit": false
+        },
+        {
+          "t": "Set weekly hour targets",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Scheduled today3",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Clocked in now0",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "No clock-in3 shifts with no ",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Review in Inbox",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "View coverage gap: Coverage ",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "View coverage gap: Coverage ",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "View coverage gap: Coverage ",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Open Inbox",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Open schedule",
+          "ring": true,
+          "kit": true
+        },
+        {
+          "t": "Planning and setup8 items to",
+          "ring": true,
+          "kit": true
+        }
+      ]
+    },
+    {
+      "name": "OWNER 320 home: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 320 home: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 320 home: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 320 home: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 home: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 home: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 inbox: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 320 inbox: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 320 inbox: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 320 inbox: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 inbox: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 inbox: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 review: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 320 review: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 320 review: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 320 review: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 review: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 review: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 schedule: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 320 schedule: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 320 schedule: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 320 schedule: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 schedule: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 schedule: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 team: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 320 team: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 320 team: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 320 team: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 team: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 team: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 timecards: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 320 timecards: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 320 timecards: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 320 timecards: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 timecards: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 timecards: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 payroll: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 320 payroll: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 320 payroll: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 320 payroll: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 payroll: kit text at least 15px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 320 payroll: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 home: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 1440 home: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 1440 home: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 1440 home: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 home: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 inbox: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 1440 inbox: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 1440 inbox: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 1440 inbox: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 inbox: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 review: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 1440 review: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 1440 review: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 1440 review: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 review: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 schedule: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 1440 schedule: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 1440 schedule: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 1440 schedule: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 schedule: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 team: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 1440 team: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 1440 team: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 1440 team: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 team: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 timecards: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 1440 timecards: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 1440 timecards: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 1440 timecards: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 timecards: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 payroll: no sideways scroll",
+      "passed": true
+    },
+    {
+      "name": "OWNER 1440 payroll: one h1",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "OWNER 1440 payroll: teal band with white title",
+      "passed": true,
+      "detail": "rgb(255, 255, 255)"
+    },
+    {
+      "name": "OWNER 1440 payroll: kit controls at least 44px",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER 1440 payroll: axe WCAG 2.2 AA",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "OWNER reduced motion: no transitions on tabs, rows or buttons",
+      "passed": true,
+      "detail": []
+    }
+  ]
+}

@@ -12,6 +12,8 @@ import { SchedulePublicationChange } from "@/components/schedule-publication-cha
 import { listCapturedShiftPositions } from "@/lib/data/publication-revisions";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
+import { NextUp, PageBand } from "@/components/kit/kit";
+import { FocusOnArrival } from "@/components/kit/focus-on-arrival";
 import { ManagerWeeklyRoster } from "@/components/manager-weekly-roster";
 import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-roster-presentation";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
@@ -101,6 +103,7 @@ export default async function SchedulePage({
     deadlineSaved?: string;
     acknowledged?: string;
     publishCheck?: string;
+    plan?: string;
     day?: string;
     view?: string;
     intent?: string;
@@ -260,13 +263,25 @@ export default async function SchedulePage({
   const rosterShifts = roster.flatMap(employee => employee.shifts);
 
   return (
-    <div className="manager-schedule-page">
-      <header className="mws-header">
-        <div><h1>Weekly schedule</h1><p>Plan your team’s week. Review each location, then publish.</p></div>
-        <Link className="button primary schedule-add-shift" href={`/app/schedule/new?week=${weekStart}${selectedLocation === "all" ? "" : `&locationId=${encodeURIComponent(selectedLocation)}`}`}>
-          <PlusIcon size={18} aria-hidden="true" />Add shift
-        </Link>
-      </header>
+    <div className="manager-schedule-page premium-legacy-page" data-nv-page="">
+      {/* F8: the summary says what each number counts. */}
+      <PageBand eyebrow={formatWeekRange(weekStart)} title="Schedule"
+        summary={`${publishedCount !== null && locations.length ? `${publishedCount} of ${locations.length} ${locations.length === 1 ? "location" : "locations"} published · ` : ""}${rosterShifts.length} ${rosterShifts.length === 1 ? "shift" : "shifts"} this week`}
+        aside={<Link className="nv-band-control schedule-add-shift" href={`/app/schedule/new?week=${weekStart}${selectedLocation === "all" ? "" : `&locationId=${encodeURIComponent(selectedLocation)}`}`}>
+          <PlusIcon size={18} weight="bold" aria-hidden="true" />Add shift
+        </Link>} />
+      <div className="nv-content premium-legacy-content">
+      {/* Next up: the first location the team can't see yet. It opens the existing publish check. */}
+      {(() => {
+        if (!scheduleStatuses || params.publishCheck || params.published) return null;
+        const open = locations.find(location => statusFor(location.id) !== "PUBLISHED");
+        if (!open) return null;
+        const drafted = statusFor(open.id) === "DRAFT";
+        return <NextUp tone="review" icon={<CalendarCheckIcon size={22} weight="bold" />}
+          title={drafted ? `Publish ${open.shortName}` : `${open.shortName} isn’t started`}
+          body={drafted ? "Employees there can’t see this week yet." : "Nothing is planned there for this week yet."}
+          action={{ href: `/app/schedule?week=${weekStart}&location=${encodeURIComponent(open.id)}${drafted ? `&publishCheck=${encodeURIComponent(open.id)}` : "&plan=1"}#schedule-planning`, label: drafted ? "Review and publish" : `Plan ${open.shortName}` }} />;
+      })()}
 
       {params.error ? (
         <p className="form-error" role="alert">
@@ -371,11 +386,11 @@ export default async function SchedulePage({
           </ScheduleLocationControl>
         </div>
         <dl className="mws-week-summary" aria-label="Displayed weekly assignments">
-          <div><dt>assignments</dt><dd>{rosterShifts.length}</dd></div>
-          <div><dt>people assigned</dt><dd>{roster.filter(employee => employee.shifts.length).length}</dd></div>
-          <div><dt>hours assigned</dt><dd>{assignedHours(rosterShifts)}</dd></div>
+          <div><dt>Shifts</dt><dd>{rosterShifts.length}</dd></div>
+          <div><dt>People assigned</dt><dd>{roster.filter(employee => employee.shifts.length).length}</dd></div>
+          <div><dt>Hours assigned</dt><dd>{assignedHours(rosterShifts)}</dd></div>
         </dl>
-        <details className={`mws-planning manager-issue-target${publicationReview || params.publishCheck ? " review-open" : ""}`} id="schedule-planning" tabIndex={-1} open={!!publicationReview || !!params.publishCheck}>
+        <details className={`mws-planning manager-issue-target${publicationReview || params.publishCheck ? " review-open" : ""}`} id="schedule-planning" tabIndex={-1} open={!!publicationReview || !!params.publishCheck || params.plan === "1"}>
           <summary><CalendarCheckIcon size={22} aria-hidden="true" /><span><strong>Build and publish</strong><small>Automatic scheduling and publication by location</small></span><CaretRightIcon size={18} aria-hidden="true" /></summary>
           <div className="mws-planning-body"><p>Build or fill your draft, review the assignments, then publish to make the schedule visible to your team.</p>
             <ScheduleGenerationControls key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} selectedLocation={selectedLocation} review={generationReview} />
@@ -387,7 +402,9 @@ export default async function SchedulePage({
       <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
       <ManagerIssueFocus prefix="schedule-" />
       {reviewDay?<div className="manager-schedule-context manager-issue-target" id="schedule-review" tabIndex={-1}><p>Opened for review: {formatDayLabel(reviewDay).weekday} {formatDayLabel(reviewDay).day} · {selectedLocation==='all'?'All locations':locations.find(location=>location.id===selectedLocation)?.shortName}</p><Link href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link></div>:null}
+      {params.plan === "1" || params.publishCheck ? <FocusOnArrival targetId="schedule-planning" /> : null}
       <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone} locationId={selectedLocation === "all" ? undefined : selectedLocation} />
+      </div>
     </div>
   );
 }

@@ -52,7 +52,8 @@ it('My shifts and Open shifts are real URLs with an announced count',()=>{
  const mine=html({openShifts:{available:[open],requested:[]}});
  expect(mine).toContain('href="/app/schedule?week=2026-10-12" aria-current="page">My shifts');
  expect(mine).toContain('href="/app/schedule?week=2026-10-12&amp;view=open">Open shifts');
- expect(mine).toMatch(/<span class="sr-only">, (<!-- -->)?1(<!-- -->)? available<\/span>/);
+ // Phase 3: the count is part of the pill's visible name, so it is announced with it.
+ expect(mine).toContain('view=open">Open shifts (1)</a>');
  expect(mine).toContain('employee-schedule-agenda');
 });
 it('Open shifts lists claimable shifts and own claims waiting for approval without the week agenda',()=>{

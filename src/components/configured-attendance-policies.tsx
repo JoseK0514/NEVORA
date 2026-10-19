@@ -3,12 +3,16 @@ import { useEffect, useState } from "react";
 import type { readAttendancePolicies } from "@/lib/business-improvements/attendance-policy/service";
 type Result = Awaited<ReturnType<typeof readAttendancePolicies>>;
 const names: Record<string, string> = {
-  missing_clock_in: "Missing clock-in",
-  missing_clock_out: "Missing clock-out",
+  missing_clock_in: "No clock-in",
+  missing_clock_out: "No clock-out",
   policy_lateness: "Lateness",
   policy_early_departure: "Early departure",
   unusually_long_entry: "Unusually long entry",
   overtime_risk: "Actual-time overtime risk",
+};
+const checkedAt = (value: string) => {
+  const date = new Date(value.replace(" ", "T").replace(/([+-]\d{2})$/, "$1:00"));
+  return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(date) : "just now";
 };
 const minutes = (ns: string) =>
   `${(Number(BigInt(ns) / BigInt(1000000000)) / 60).toFixed(1)} minutes`;
@@ -100,10 +104,8 @@ export function ConfiguredAttendancePolicies() {
       {status && <p role="status">{status}</p>}
       {result?.state === "ready" && (
         <>
-          <p>
-            Observed {result.observedAt} · Source{" "}
-            {result.sourceHash.slice(0, 12)}
-          </p>
+          {/* TC-32: a readable check time; source hashes and revision numbers stay out of the manager's view. */}
+          <p>Checked {checkedAt(result.observedAt)}</p>
           {result.locations.map((location) => (
             <section key={location.locationId}>
               <h3>
@@ -111,10 +113,6 @@ export function ConfiguredAttendancePolicies() {
                   (l) => l.id === location.locationId,
                 )?.name ?? location.locationId}
               </h3>
-              <p>
-                Company revision {location.companyRevision}; location revision{" "}
-                {location.locationRevision}
-              </p>
               <ul>
                 {location.detectors.map((d) => (
                   <li key={d.kind}>

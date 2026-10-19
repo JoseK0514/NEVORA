@@ -24,8 +24,31 @@ const mobileSnapshot = () => window.matchMedia("(max-width: 600px)").matches;
 const serverMobileSnapshot = () => false;
 
 /** "8:00 AM" → "8 am", "4:30 PM" → "4:30 pm" so a chip fits on one line. */
+/** AL-37: when the last day is chosen, the row must still be able to start on a whole day.
+ * A trailing spacer adds exactly the room that start needs, and nothing when it isn't needed. */
+function fitDayTail(row: HTMLElement) {
+  const tail = row.querySelector<HTMLElement>(".mws-day-tail");
+  if (!tail) return;
+  tail.hidden = true;
+  tail.style.width = "0px";
+  if (row.scrollWidth <= row.clientWidth) return;
+  const buttons = Array.from(row.querySelectorAll<HTMLElement>("button"));
+  const last = buttons.at(-1);
+  if (!last) return;
+  const at = (element: HTMLElement) => element.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft;
+  const width = row.clientWidth, lastRight = at(last) + last.offsetWidth;
+  const start = buttons.map(button => Math.max(0, at(button) - 4)).filter(value => value >= lastRight - width).sort((a, b) => a - b)[0];
+  // Without the spacer the row already reaches that start: nothing to add.
+  if (start === undefined || start <= row.scrollWidth - width + 0.5) return;
+  tail.hidden = false;
+  const deficit = Math.ceil(start + width - row.scrollWidth);
+  if (deficit > 0) tail.style.width = `${deficit}px`;
+}
+
+/** One time style across the app (TC-25): "8:00 AM", kept whole on one line. */
 function compactTime(time: string) {
-  return formatTime(time).replace(":00", "").replace(/\s?(AM|PM)$/, (_, period: string) => ` ${period.toLowerCase()}`);
+  if (time.startsWith("00:00") || time.startsWith("24:00")) return "midnight";
+  return formatTime(time).replace(" ", "\u00a0");
 }
 
 /** Header total for one day, e.g. "3 shifts · 24 h". */
@@ -45,9 +68,11 @@ function HoursMeter({ hours }: { hours: NonNullable<RosterEmployee["hours"]> }) 
   </span>;
 }
 
-function Shift({ shift }: { shift: RosterShift }) {
+function Shift({ shift, person }: { shift: RosterShift; person: string }) {
   const overnight = shift.endTime < shift.startTime || shift.endTime === "24:00";
-  return <Link className={`mws-shift${shift.lead ? " lead" : ""}${shift.status === "DRAFT" ? " draft" : ""}`} data-tint={shift.tint ?? positionTint(shift.position)} href={`/app/schedule/edit?shiftId=${encodeURIComponent(shift.id)}`}>
+  // IS-28: each shift link names whose shift it is and when, so no two read the same.
+  const label = `Edit ${person}’s shift, ${formatDayLabel(shift.date).weekday} ${formatDayLabel(shift.date).day}, ${compactTime(shift.startTime)} to ${compactTime(shift.endTime)}, ${shift.location}${shift.status === "DRAFT" ? ", draft" : ""}`;
+  return <Link className={`mws-shift${shift.lead ? " lead" : ""}${shift.status === "DRAFT" ? " draft" : ""}`} data-tint={shift.tint ?? positionTint(shift.position)} href={`/app/schedule/edit?shiftId=${encodeURIComponent(shift.id)}`} aria-label={label}>
     <span className="mws-shift-day">{formatDayLabel(shift.date).weekday}</span>
     <strong>{compactTime(shift.startTime)}<span> – {compactTime(shift.endTime)}</span></strong>
     {overnight ? <small>Ends {formatDayLabel(addDays(shift.date, 1)).day}</small> : null}
@@ -80,34 +105,45 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   const visibleDates = day === "all" ? dates : dates.filter(date => date === day);
 
   // Keep the chosen day in view inside the picker, which scrolls sideways on phones.
-  // On load only the picker scrolls (the page stays put: the picker can sit at the fold);
-  // after a tap or key press in the picker, the browser brings the segment in nearest-first.
+  // Only the picker scrolls (the page stays put: the picker can sit at the fold).
   useEffect(() => {
     const row = picker.current;
     const chosen = row?.querySelector<HTMLElement>('[aria-pressed="true"]');
     if (!row || !chosen) return;
-    if (pickedByUser.current) {
-      pickedByUser.current = false;
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      chosen.scrollIntoView({ inline: "nearest", block: "nearest", behavior: reduce ? "auto" : "smooth" });
-      return;
-    }
+    const byUser = pickedByUser.current;
+    pickedByUser.current = false;
+    fitDayTail(row);
     if (row.scrollWidth <= row.clientWidth) return;
-    const left = chosen.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft;
-    if (left < row.scrollLeft || left + chosen.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollLeft = left - (row.clientWidth - chosen.offsetWidth) / 2;
+    // AL-37: the row always starts on a whole day (4px in), and the chosen day is fully visible.
+    // On load the chosen day sits as near the middle as that allows; after a tap the row moves as little as possible.
+    const at = (element: HTMLElement) => element.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft;
+    const left = at(chosen), right = left + chosen.offsetWidth, width = row.clientWidth;
+    const candidates = Array.from(row.querySelectorAll<HTMLElement>("button")).map(button => Math.max(0, at(button) - 4))
+      .filter(start => left >= start && right <= start + width && start <= row.scrollWidth - width + 1);
+    // The tail spacer keeps a whole-day start reachable at the far end; the row's own end is only a fallback.
+    const end = row.scrollWidth - width;
+    if (!candidates.length && left >= end && right <= end + width + 1) candidates.push(end);
+    if (!candidates.length) return;
+    const aim = byUser ? row.scrollLeft : left - (width - chosen.offsetWidth) / 2;
+    const target = candidates.reduce((best, start) => Math.abs(start - aim) < Math.abs(best - aim) ? start : best);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    row.scrollTo({ left: target, behavior: byUser && !reduce ? "smooth" : "auto" });
   }, [day]);
   // Fade whichever edge still has days beyond it, as the section tabs do.
   useEffect(() => {
     const row = picker.current;
     if (!row) return;
     const edges = () => {
-      row.toggleAttribute("data-more-start", row.scrollLeft > 1);
-      row.toggleAttribute("data-more-end", row.scrollLeft + row.clientWidth < row.scrollWidth - 1);
+      // IS-53: a few pixels of overflow (large text on a wide screen) is not "more days"; no fade for it.
+      const overflow = row.scrollWidth - row.clientWidth;
+      row.toggleAttribute("data-more-start", overflow > 8 && row.scrollLeft > 1);
+      row.toggleAttribute("data-more-end", overflow > 8 && row.scrollLeft + row.clientWidth < row.scrollWidth - 1);
     };
+    const resize = () => { fitDayTail(row); edges(); };
     edges();
     row.addEventListener("scroll", edges, { passive: true });
-    window.addEventListener("resize", edges);
-    return () => { row.removeEventListener("scroll", edges); window.removeEventListener("resize", edges); };
+    window.addEventListener("resize", resize);
+    return () => { row.removeEventListener("scroll", edges); window.removeEventListener("resize", resize); };
   }, []);
   const choose = (next: string) => { pickedByUser.current = next !== day; setDay(next); };
 
@@ -131,7 +167,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
           {visibleDates.map(date => {
             const shifts = employee.shifts.filter(shift => shift.date === date);
             return <div className={`mws-day-cell${!shifts.length ? " empty" : ""}${date === today ? " today" : ""}`} key={date} role="group" aria-label={`${formatDayLabel(date).weekday}, ${formatDayLabel(date).day}`}>
-              {shifts.length ? shifts.map(shift => <Shift shift={shift} key={shift.id} />) : <><span className="mws-no-assignment">No assignment</span><Link className="mws-add" tabIndex={-1} aria-hidden="true" href={`/app/schedule/new?week=${encodeURIComponent(dates[0])}&date=${encodeURIComponent(date)}&employeeId=${encodeURIComponent(employee.id)}${locationId ? `&locationId=${encodeURIComponent(locationId)}` : ""}`}>+ Add</Link></>}
+              {shifts.length ? shifts.map(shift => <Shift shift={shift} person={employee.name} key={shift.id} />) : <><span className="mws-no-assignment">No assignment</span><Link className="mws-add" tabIndex={-1} aria-hidden="true" href={`/app/schedule/new?week=${encodeURIComponent(dates[0])}&date=${encodeURIComponent(date)}&employeeId=${encodeURIComponent(employee.id)}${locationId ? `&locationId=${encodeURIComponent(locationId)}` : ""}`}>+ Add</Link></>}
             </div>;
           })}
           {!shownShifts.length ? <p className="mws-mobile-empty">{day === "all" ? "No assignments this week" : "No assignments on this day"}</p> : null}
@@ -152,6 +188,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       {dates.map(date => <button type="button" className={`${day === date ? "selected" : ""}${date === today ? " today" : ""}`} aria-pressed={day === date} aria-label={`${formatDayLabel(date).weekday}, ${formatDayLabel(date).day}${date === today ? ", today" : ""}`} key={date} onClick={() => choose(date)}>
         <span>{formatDayLabel(date).weekday}</span><strong>{Number(date.slice(8))}</strong>
       </button>)}
+      <span className="mws-day-tail" aria-hidden="true" hidden />
     </div>
     <div className="mws-result-summary" role="status">{filtered.length} of {employees.length} team members{day !== "all" ? ` · ${formatDayLabel(day).weekday}, ${formatDayLabel(day).day}` : " · Full week"}</div>
     {filtered.length ? <div className={`mws-roster-content${day !== "all" ? " day-view" : ""}`}>

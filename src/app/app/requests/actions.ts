@@ -73,9 +73,21 @@ export async function reviewTimeOffAction(formData: FormData) {
     status: decision,
   });
 
-  if (!reviewed) redirect("/app/requests?tab=pending&error=review");
+  // D-5: a focused review returns to where the manager came from. Only two fixed
+  // destinations are accepted; anything else keeps the list's own redirect.
+  const returnTo = String(formData.get("returnTo") ?? "");
+  const origin = returnTo === "inbox" || returnTo === "home" ? returnTo : null;
+  if (!reviewed) redirect(origin ? `/app/requests?tab=pending&error=review&requestId=${encodeURIComponent(requestId)}&from=${origin}` : "/app/requests?tab=pending&error=review");
 
   revalidatePath("/app/requests");
+  if (origin) {
+    revalidatePath("/app/inbox");
+    const outcome = decision === "APPROVED" ? "approved" : "declined";
+    // The Inbox filter the manager came from, from a fixed list (never a free-form address).
+    const filter = String(formData.get("returnFilter") ?? "requests");
+    const back = filter === "all" ? "" : ["now", "requests", "planning"].includes(filter) ? `filter=${filter}&` : "filter=requests&";
+    redirect(origin === "home" ? `/app?decided=timeoff-${outcome}` : `/app/inbox?${back}decided=timeoff-${outcome}`);
+  }
   redirect("/app/requests?tab=pending&reviewed=1");
 }
 

@@ -4,13 +4,14 @@ import type {ComponentProps} from 'react';
 
 vi.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => <a {...props}>{children}</a>}));
 vi.mock('../manager-action-center', () => ({ManagerActionCenter: () => <div data-live-reader="actions"/>,
-  HomeActionCenterProvider: ({children}: {children: React.ReactNode}) => <>{children}</>, useHomeSetupSteps: () => null}));
+  HomeActionCenterProvider: ({children}: {children: React.ReactNode}) => <>{children}</>, useHomeSetupSteps: () => null,
+  useSharedHomeRead: () => null, mobileActionDetail: (detail: string) => detail}));
 vi.mock('../manager-clock-monitor', () => ({ManagerClockMonitor: () => <div data-live-reader="clock"/>}));
 vi.mock('next/navigation', () => ({notFound: () => {throw new Error('preview-disabled');}}));
 vi.mock('./home-preview', () => ({HomePreview: () => <div>Sample Home</div>}));
 
 import {ManagerDashboard} from '../manager-dashboard';
-import {homePreviewRecords, previewEmployeeHome, previewManagerHome, previewActionCenter} from './home-fixtures';
+import {homePreviewRecords, previewEmployeeHome, previewManagerHome, previewActionCenter, previewToday} from './home-fixtures';
 import HomePreviewPage from '@/app/ui-preview/home/page';
 
 afterEach(() => vi.unstubAllEnvs());
@@ -36,25 +37,23 @@ it('copies only fictional display fields with the original people, locations and
 
 it('the preview composition replaces private readers while the native Home keeps both readers by default', () => {
   const native = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome}/>);
-  expect(native).toContain('data-live-reader="actions"');
-  expect(native).toContain('data-live-reader="clock"');
-  const preview = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} overviewSlots={{actions: <div>Sample actions</div>, activity: <div>Sample activity</div>}}/>);
+  expect(native).toContain('data-live-readers="today actions"');
+  const preview = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} overviewSlots={{actions: null, activity: null, snapshots: {today: previewToday, actions: previewActionCenter}}}/>);
   expect(preview).not.toContain('data-live-reader');
-  expect(preview).toContain('Sample actions');
-  expect(preview).toContain('Sample activity');
+  expect(preview).toContain('Updated');
 });
 
-it('the Gusto-style Overview leads with a greeting, drops the tab row and keeps every team view reachable', () => {
+it('the premium Overview leads with a greeting, drops the tab row and keeps every team view reachable', () => {
   const html = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome}/>);
   expect(html).toMatch(/Good (morning|afternoon|evening), /);
-  expect(html).not.toContain('aria-label="Dashboard views"');
+  expect(html).not.toContain('aria-label="Home views"');
   expect(html).not.toContain('manager-planning-summary');
   expect(html).toContain('This week');
-  expect(html).toContain('Shortcuts');
+  expect(html).toContain('Team tools');
   for (const view of ['attendance', 'team', 'activity']) expect(html).toContain(`&amp;view=${view}`);
-  expect(html).toContain('href="/app/inbox?filter=requests"');
   const team = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} view="team"/>);
-  expect(team).toContain('aria-label="Dashboard views"');
+  expect(team).toContain('aria-label="Home views"');
+  expect(team).toContain('class="nv-masthead__back"');
 });
 
 it('the sample route is closed in production and opens only in development or by explicit preview configuration', () => {

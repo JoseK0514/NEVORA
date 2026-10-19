@@ -16,7 +16,7 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
+import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, moreNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { CommandFinder, OPEN_FINDER_EVENT, type OpenFinderDetail } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
@@ -91,6 +91,23 @@ export function AppShell({
     else if (item.bottom > bottom) nav.scrollTop += item.bottom - bottom + 8;
   }, [sidebarActive]);
 
+  // Phase 7 (IS-3, IS-5): a focused pill in a sideways-scrolling row scrolls into view, and
+  // the More sheet closes when keyboard focus moves out of it, so focus never lands behind it.
+  useEffect(() => {
+    function follow(event: FocusEvent) {
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      if (!target) return;
+      const sheet = document.getElementById("manager-more-navigation");
+      if (sheet?.matches(":popover-open") && !sheet.contains(target) && !target.closest('[popovertarget="manager-more-navigation"]')) sheet.hidePopover();
+      if (target.closest(".nv-filters, .section-tabs-track, .segmented, .mws-day-navigation")) {
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        target.scrollIntoView({ inline: "nearest", block: "nearest", behavior: reduce ? "auto" : "smooth" });
+      }
+    }
+    document.addEventListener("focusin", follow);
+    return () => document.removeEventListener("focusin", follow);
+  }, []);
+
   // Arrow keys move between rows of dense lists that opt in (D6).
   useEffect(() => {
     document.addEventListener("keydown", handleRowNavigation);
@@ -144,7 +161,8 @@ export function AppShell({
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
-      data-mobile-workforce={pathname && pathname !== "/app" ? "true" : undefined}
+      // Managers and Owners get one phone shell on every tab, Home included (Phase 7, WR-03).
+      data-mobile-workforce={pathname && (pathname !== "/app" || !employee) ? "true" : undefined}
       data-employee-corporate={user.role === "EMPLOYEE" && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}>
       <aside className="sidebar" data-collapsed={collapsed}>
         <div className="sidebar-heading">
@@ -204,7 +222,7 @@ export function AppShell({
         </div>
       </aside>
 
-      <main className="app-main">
+      <div className="app-main">
         <header className="mobile-header">
           <span className="portal-workspace-name" title={workspaceName}>{workspaceName}</span>
           {activeItem ? <nav className="portal-location-nav" aria-label="You are here">
@@ -233,7 +251,7 @@ export function AppShell({
           </div>
         </header>
 
-        <div className="page-frame">{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></div>
+        <main className="page-frame" id="main-content" tabIndex={-1}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></main>
 
         <nav className="mobile-nav" aria-label="Mobile navigation">
           {employee ? (
@@ -294,9 +312,9 @@ export function AppShell({
                   <div><strong>{user.firstName} {user.lastName}</strong></div>
                   <PortalSignout><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></PortalSignout>
                 </div>
-                <button className="mobile-workforce-sheet-close" type="button" aria-label="Close actions"
+                <button className="mobile-workforce-sheet-close" type="button" aria-label="Close"
                   onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-                  <XIcon size={20} aria-hidden="true"/><span>Close actions</span>
+                  <XIcon size={20} aria-hidden="true"/><span>Close</span>
                 </button>
               </div>
             </>
@@ -330,13 +348,17 @@ export function AppShell({
                   <MagnifyingGlassIcon size={22} aria-hidden="true" /><span>Search</span>
                 </button>
                 <div className="nevora-action-menu-divider nevora-more-search-divider" />
-                {mobileMore.map(item => (
-                  <Link key={item.href} href={item.href} className="nevora-action-menu-item"
-                    aria-current={item.href === activeHref ? 'page' : undefined}
-                    onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-                    {item.label}
-                  </Link>
-                ))}
+                {/* MG3: grouped by job. Headings are labels only; every link is unchanged. */}
+                {moreNavigationGroups(mobileMore).map(group => <div key={group.label} className="nevora-more-group" role="group" aria-label={group.label}>
+                  <p className="nevora-more-group-label" aria-hidden="true">{group.label}</p>
+                  {group.items.map(item => (
+                    <Link key={item.href} href={item.href} className="nevora-action-menu-item"
+                      aria-current={item.href === activeHref ? 'page' : undefined}
+                      onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>)}
                 {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings" aria-label="Profile and device settings">Profile and device settings</button> : null}
                 <div className="nevora-action-menu-divider" />
                 <PortalSignout><button className="nevora-action-menu-item" type="submit">Sign out</button></PortalSignout>
@@ -344,7 +366,7 @@ export function AppShell({
             </>
           )}
         </nav>
-      </main>
+      </div>
       <SheetGestures />
       <Toaster />
       <FormValidation />

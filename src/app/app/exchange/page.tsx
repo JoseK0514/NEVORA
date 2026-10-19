@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import { FilterPills, PageBand } from "@/components/kit/kit";
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import {ShiftChangeForm} from '@/components/shift-change-form';
 import {ExchangeAssignment as ShiftSlot} from '@/components/exchange-assignment';
@@ -188,14 +189,17 @@ export default async function ExchangePage({
   if (!manager) {
     return (
       <ExchangeReviewShell view={activeView} className="employee-view employee-shift-requests-view">
-        <div className="exchange-page-heading"><header className="employee-view-heading"><div><p className="employee-view-eyebrow">Schedule flexibility</p><h1>Shift requests</h1></div></header><p>Pick up a shift, review a swap, or manage your requests.</p></div>
+        {/* Phase 3: the kit band carries the title, one line, and the two views as pills. */}
+        <div className="nv-page premium-employee-exchange" data-nv-page="">
+        <PageBand eyebrow="Schedule flexibility" title="Shift requests" overlap={false}
+          summary={activeView === "available" ? (claimable.length ? `${claimable.length}\u00a0open ${claimable.length === 1 ? "shift" : "shifts"} you can pick up.` : "Pick up a shift, review a swap, or manage your requests.") : "Pick up a shift, review a swap, or manage your requests."}
+          extra={<FilterPills label="Shift marketplace views" items={[
+            { href: "/app/exchange?tab=available", label: "Available shifts", current: activeView === "available" },
+            { href: "/app/exchange?tab=requests", label: "Your requests", current: activeView === "requests" },
+          ]} />} />
+        <div className="premium-employee-content">
         {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The exchange could not be processed."}</p> : null}
         {operation ? <p className="employee-notice" role="status">{shiftChangeFeedback(operation)}</p> : null}
-
-        <nav className="employee-view-tabs exchange-view-tabs" aria-label="Shift marketplace views">
-          <Link className={activeView === "available" ? "selected" : ""} href="/app/exchange?tab=available" aria-current={activeView === "available" ? "page" : undefined}>Available shifts</Link>
-          <Link className={activeView === "requests" ? "selected" : ""} href="/app/exchange?tab=requests" aria-current={activeView === "requests" ? "page" : undefined}>Your requests</Link>
-        </nav>
 
         <div className="employee-view-surface employee-exchange-feed">
           {activeView === "available" ? (
@@ -221,11 +225,14 @@ export default async function ExchangePage({
                       <ShiftSlot shift={shift}/>
                       {!offerViews.get(shift.id)?.allowed||!offerViews.get(shift.id)?.fields?<span className="shift-change-unavailable">{offerViews.get(shift.id)?.notice??'Swap unavailable. You can still report that you can’t work.'}</span>:null}
                     </div>
+                    {/* Phase 3: the three shift actions sit behind one "Shift options" disclosure, as on My schedule. */}
+                    <details className="premium-shift-options"><summary><span>Shift options</span><NavIcon name="chevronRight" size={16} /></summary>
                     <div className="employee-shift-entry-actions">
                       <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${encodeURIComponent(shift.id)}`}><span>Unable to Work</span></Link>
                       {offerViews.get(shift.id)?.allowed&&offerViews.get(shift.id)?.fields?<ShiftChangeForm fields={{kind:'OFFER_COVERAGE',...offerViews.get(shift.id)!.fields!}}><button className="employee-action" type="submit"><span>Offer for coverage</span></button></ShiftChangeForm>:null}
                       {offerViews.get(shift.id)?.fields?<Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><span>Swap shift</span></Link>:null}
                     </div>
+                    </details>
                   </div>
                 ))}
               </section> : null}
@@ -283,6 +290,8 @@ export default async function ExchangePage({
               {(selectedHistory===null||selectedHistory.length>0)&&!visibleActivity.some(e=>e.id===params.requestId)&&!visibleCallouts.some(e=>e.id===params.requestId)?<section className="employee-exchange-section"><h2>Original request history</h2><ShiftChangeHistory events={selectedHistory}/></section>:null}
             </>
           ) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>No swap requests yet</strong><p>Your offers, swaps, and coverage requests will appear here.</p></div>}
+        </div>
+        </div>
         </div>
       </ExchangeReviewShell>
     );

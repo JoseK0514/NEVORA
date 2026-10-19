@@ -12,6 +12,16 @@ export function ScheduleLocationControl({
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
+  // IS-29: the selected location is scrolled into its row on load, so it is never off screen.
+  useLayoutEffect(() => {
+    const selected = ref.current?.querySelector<HTMLElement>("a.selected, a[aria-current]");
+    const row = selected?.closest<HTMLElement>(".segmented");
+    if (!selected || !row || row.scrollWidth <= row.clientWidth) return;
+    const start = selected.offsetLeft - row.offsetLeft, end = start + selected.offsetWidth;
+    if (start >= row.scrollLeft && end <= row.scrollLeft + row.clientWidth - 28) return;
+    row.scrollLeft = start < row.scrollLeft ? Math.max(0, start - 4) : end - row.clientWidth + 28;
+  });
+
   useLayoutEffect(() => {
     const control = ref.current;
     const toolbar = control?.closest<HTMLElement>(".schedule-operations-toolbar");

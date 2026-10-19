@@ -62,8 +62,10 @@ export function groupInboxItems(items: ActionItem[], minimum = 3): InboxEntry[] 
   return entries;
 }
 
-export type InboxFilter = 'all' | 'exceptions' | 'requests';
-/** The Inbox filter carried in its URL (?filter=), so links and Back return to it. */
+export type InboxFilter = 'all' | 'now' | 'requests' | 'planning';
+/** The Inbox filter carried in its URL (?filter=), so links and Back return to it.
+ * The older ?filter=exceptions (everything that wasn't a request) now opens Planning. */
 export function inboxFilter(value: unknown): InboxFilter {
-  return value === 'exceptions' || value === 'requests' ? value : 'all';
+  if (value === 'exceptions') return 'planning';
+  return value === 'now' || value === 'requests' || value === 'planning' ? value : 'all';
 }

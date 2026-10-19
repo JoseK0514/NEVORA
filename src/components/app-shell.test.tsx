@@ -37,8 +37,13 @@ it.each(['EMPLOYEE', 'LEAD', 'MANAGER', 'OWNER'] as const)('keeps %s outside the
   }
 });
 
-it.each(['EMPLOYEE','LEAD','MANAGER','OWNER'] as const)('keeps the approved %s Home outside the remaining mobile-page variant', role => {
+it.each(['EMPLOYEE','LEAD'] as const)('keeps the approved %s Home outside the remaining mobile-page variant', role => {
   expect(render(role, '/app').html).not.toContain('data-mobile-workforce="true"');
+});
+// Phase 7 (WR-03, AL-03): Manager and Owner Home share the phone shell of every other tab,
+// so the header and the More sheet don't change when you switch tabs.
+it.each(['MANAGER','OWNER'] as const)('gives %s Home the same phone shell as every other tab', role => {
+  expect(render(role, '/app').html).toContain('data-mobile-workforce="true"');
 });
 it.each(['/app/schedule','/app/availability','/app/requests','/app/settings/locations/loc-1','/app/profile'])('scopes the remaining mobile variant to the actual %s destination', pathname => {
   expect(render('OWNER', pathname).html).toContain('data-mobile-workforce="true"');
@@ -136,9 +141,11 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
  expect(header).not.toContain('manager-more-navigation');
  expect(mobile).toContain('popoverTarget="manager-more-navigation"');
  const menu=mobile.split('id="manager-more-navigation"')[1] ?? '';
- expect([...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual([
-  '/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),
- ]);
+ const hrefs=[...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1]);
+ // The same destinations as before, now grouped by job (MG3).
+ expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[])].sort());
+ expect(hrefs).toEqual(['/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...(role==='OWNER'?['/app/settings']:[])]);
+ expect(menu).toContain('aria-label="Time and reporting"');
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessible shell affordances for %s',role=>{

@@ -134,6 +134,8 @@ export function HomeActionCenterProvider({weekStart,actorId,owner,initialItems,c
 }
 /** The setup steps to show on Home, or null (not an Owner, no gaps, or no shared read). */
 export const useHomeSetupSteps=()=>useContext(SharedHomeActionCenter)?.setup??null;
+/** The shared Home read and whether the Owner setup card holds the setup items, or null off Home. */
+export const useSharedHomeRead=()=>useContext(SharedHomeActionCenter);
 export function ManagerActionCenter(props:{weekStart:string;actorId:string;timeZone?:string}){
  const shared=useContext(SharedHomeActionCenter);
  return shared?<ActionCenterTasks {...props} read={shared.read} hideSetup={!!shared.setup}/>:<OwnActionCenterTasks {...props}/>;

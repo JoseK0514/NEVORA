@@ -39,6 +39,7 @@ it('Today strip and rail read one fixture source at one frozen moment', () => {
   expect(previewToday.state === 'ready' && previewToday.counts.clockedIn).toBe(rows);
   expect(previewActionCenter.state === 'ready' && previewActionCenter.observedAt).toBe(previewObservedAt);
   const html = renderToStaticMarkup(<HomePreview/>);
-  expect(html.match(/Updated <time[^>]*>4:49 PM<\/time>/g)?.length).toBeGreaterThanOrEqual(2);
+  // Home's Today card reads the frozen moment (the rail's clock card moved to Attendance).
+  expect(html.match(/Updated <time[^>]*>4:49 PM<\/time>/g)?.length).toBeGreaterThanOrEqual(1);
   expect(html).not.toContain('No one is clocked in right now');
 });

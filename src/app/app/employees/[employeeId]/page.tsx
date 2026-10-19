@@ -60,7 +60,7 @@ export default async function EmployeeProfilePage({
     <div className="employee-profile-page">
       <Link className="profile-back" href="/app/employees">
         <ArrowLeftIcon size={18} aria-hidden="true" focusable="false" />
-        Back to Employees
+        Back to Team
       </Link>
       <header className="profile-overview">
         <div className="profile-identity">

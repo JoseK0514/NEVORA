@@ -121,8 +121,8 @@ export function ClockerRecoveryReview({actorId, timeZone}: {actorId: string; tim
 
   return <div ref={root} className={['clocker-review-page', styles.root].join(' ')}>
     <header className={styles.heading} data-review-enter>
-      <Link href="/app" className={styles.back}><ArrowLeftIcon {...iconProps}/> Back to overview</Link>
-      <h1>Action recovery review</h1>
+      <Link href="/app" className={styles.back}><ArrowLeftIcon {...iconProps}/> Home</Link>
+      <h1>Clocker recovery</h1>
       <p>Check a saved Clocker action and help the employee finish recovery.</p>
     </header>
 

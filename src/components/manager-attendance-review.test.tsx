@@ -106,7 +106,7 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
       onRefresh={() => {}}
     />,
   );
-  expect(unavailableHtml).toContain('Attendance review unavailable');
+  expect(unavailableHtml).toContain('Attendance unavailable');
   expect(unavailableHtml).not.toContain('Nothing to review');
 });
 

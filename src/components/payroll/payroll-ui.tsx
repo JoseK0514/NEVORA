@@ -1,19 +1,19 @@
 'use client';
+import { focusAfterRetry } from '@/components/kit/focus-after-retry';
 
-import { usePathname } from 'next/navigation';
-import { DownloadSimpleIcon, FileTextIcon, FileCodeIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
+import { ArrowsClockwiseIcon, DownloadSimpleIcon, FileTextIcon, FileCodeIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import type { ReactNode } from 'react';
 import type { PayrollDocument } from '@/lib/payroll/contracts';
 import type { usePayrollOperation } from './use-payroll';
-import { PayrollExportMotion } from '@/components/payroll-export-motion';
+import { PageBand } from '@/components/kit/kit';
 
 /** Page frame for payroll pages. Tabs between Timecards, Payroll runs, Time
  * exports and Payroll settings come from the shell's section tabs. */
 export function PayrollFrame({ title, description, personal = false, children }: { title: string; description: string; personal?: boolean; children: ReactNode }) {
-  const pathname = usePathname();
-  return <div className="employee-view payroll-page payroll-workflow">
-    <header className="payroll-page-heading"><div className="payroll-page-mark"><PayrollExportMotion kind={personal ? 'statement' : pathname === '/app/settings/payroll' ? 'settings' : 'payroll'} /></div><div><h1>{title}</h1><p>{description}</p></div></header>
-    {children}
+  // Phase 3: the employee's own pay (personal) uses the same kit band as the Payroll pages.
+  return <div className={`employee-view payroll-page payroll-workflow premium-legacy-page${personal ? " premium-employee-pay" : ""}`} data-nv-page="">
+    <PageBand title={title} summary={description} overlap={false} />
+    <div className="nv-content premium-legacy-content">{children}</div>
   </div>;
 }
 export function PayrollPanel({ title, description, children, aside }: { title: string; description?: string; children: ReactNode; aside?: ReactNode }) {
@@ -22,7 +22,7 @@ export function PayrollPanel({ title, description, children, aside }: { title: s
 export function PayrollState({ title, children, error = false, retry }: { title: string; children: ReactNode; error?: boolean; retry?: () => void }) {
   return <div className={`pw-state${error ? ' pw-state-error' : ''}`} role={error ? 'alert' : 'status'}>
     {error ? <WarningCircleIcon size={25} aria-hidden /> : <FileTextIcon size={25} aria-hidden />}
-    <div><strong>{title}</strong><p>{children}</p>{retry && <button type="button" className="pw-button pw-secondary" onClick={retry}>Try again</button>}</div>
+    <div><strong>{title}</strong><p>{children}</p>{retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} aria-hidden />Try again</button>}</div>
   </div>;
 }
 export function OperationFeedback({ operation }: { operation: ReturnType<typeof usePayrollOperation> }) {

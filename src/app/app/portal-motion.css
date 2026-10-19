@@ -34,7 +34,8 @@ html body .app-shell.nevora-portal .nevora-action-menu-popover:popover-open {
 
 /* 2. Phone sheets slide up from the bottom edge, leave the same way, dim the
  * page behind them and show a grab handle (swipe-to-dismiss lives in SheetGestures). */
-@media (max-width: 760px) {
+/* Landscape phones get the same sheet (Phase 7, ST-11). */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal:is([data-mobile-workforce="true"]) .nevora-action-menu-popover,
   html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation,
   html body .app-shell.nevora-portal .employee-more-navigation {

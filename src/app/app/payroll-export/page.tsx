@@ -4,7 +4,7 @@ import {isManagerRole} from '@/lib/auth/permissions';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {parsePeriod} from '@/lib/timecards/project';
 import {PayrollExport} from '@/components/payroll-export';
-import {PayrollExportMotion} from '@/components/payroll-export-motion';
+import {PageBand} from '@/components/kit/kit';
 import {redirect} from 'next/navigation';
 import './payroll-page.css';
 export default async function PayrollExportPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
@@ -14,6 +14,9 @@ export default async function PayrollExportPage({searchParams}:{searchParams:Pro
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
-  return <div className="employee-view payroll-page"><header className="payroll-page-heading"><div className="payroll-page-mark"><PayrollExportMotion /></div><div><h1>Time exports</h1><p>Review finalized time and prepare files for your payroll system.</p></div></header>
-    <PayrollExport key={session.id} initialPeriod={period} actorId={session.id}/></div>;
+  // Managers and Owners only (redirect above): the teal band, same title and wording.
+  return <div className="employee-view payroll-page premium-legacy-page premium-exports" data-nv-page="">
+    <PageBand title="Time exports" summary="Review finalized time and prepare files for your payroll system." overlap={false}/>
+    <div className="nv-content premium-legacy-content"><PayrollExport key={session.id} initialPeriod={period} actorId={session.id}/></div>
+  </div>;
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import {PageBand} from './kit/kit';
 import Link from 'next/link';
 import {useState} from 'react';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
@@ -37,11 +38,12 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  const emptyTitle = current?.state === 'partial' ? 'No updates available in this view' : filter === 'all' ? 'No current updates' : mode === 'manager' ? filter === 'to-review' ? 'No updates requiring acknowledgement' : 'No optional updates' : filter === 'to-review' ? 'No updates waiting for review' : 'No reviewed updates yet';
  const emptyDescription = current?.state === 'partial' ? 'Some updates could not be checked. Refresh to try again.' : filter === 'all' ? 'New workplace updates will appear here.' : mode === 'manager' ? 'View all updates to check other review requirements.' : filter === 'reviewed' ? 'Updates you mark read or acknowledge will appear here.' : 'You can still find your reviewed updates in All.';
 
+ // Phase 3: the kit band; the compose action leads the content column.
  return <UpdateEntrance className="employee-view communication-view updates-page">
-  <header className="updates-heading">
-   <div><h1 data-update-heading>Updates</h1><p>Workplace news and notes, all in one place.</p></div>
-   <Link className="button primary updates-compose" href="/app/updates/compose"><NavIcon name={mode === 'manager' ? 'updates' : 'employees'} />{mode === 'manager' ? 'Create update' : "Message today's team"}</Link>
-  </header>
+  <div className="nv-page premium-updates" data-nv-page="">
+  <PageBand title="Updates" summary="Workplace news and notes, all in one place." overlap={false}/>
+  <div className="premium-employee-content">
+  <Link className="nv-btn updates-compose" data-kind="secondary" href="/app/updates/compose"><NavIcon name={mode === 'manager' ? 'updates' : 'employees'} />{mode === 'manager' ? 'Create update' : "Message today's team"}</Link>
   <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
    <div className="updates-toolbar">
     {current ? <fieldset className="updates-filters"><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{option.count}</span></button>)}</fieldset> : <h2>Your updates</h2>}
@@ -61,6 +63,8 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
    </section>)}</div> : <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{emptyTitle}</h2><p>{emptyDescription}</p>{filter !== 'all' ? <button className="button secondary" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
   </section>
   <p className="updates-footnote">{mode === 'manager' ? 'Open an update to review the message and recipient acknowledgement status.' : 'Opening an update doesn’t confirm it. Read the full message, then confirm.'}</p>
+  </div>
+  </div>
  </UpdateEntrance>;
 }
 

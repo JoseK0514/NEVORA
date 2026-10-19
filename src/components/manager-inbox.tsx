@@ -1,7 +1,8 @@
 "use client";
+import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import Link from "next/link";
-import { MissedPunches } from "./manager-today";
+import { useToday } from "./manager-today";
 import { useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
@@ -9,40 +10,120 @@ import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from
 import { actionCenterNavigation } from "./action-center-navigation";
 import { EmptyState } from "./empty-state";
 import { Celebration } from "./celebration";
-import { SkeletonRows } from "./skeleton";
-import { groupInboxItems, inboxFilter, inboxSections, type InboxFilter } from "@/lib/action-center/inbox";
+import { Avatar, Card, Freshness, KitStack, MetaParts, PageBand, Status, Tile } from "./kit/kit";
+import { KeepSelectedVisible } from "./kit/keep-selected-visible";
+import { CLOCK_IN, groupHeading, presentItem } from "@/lib/action-center/present";
+import { groupInboxItems, inboxFilter, type InboxFilter } from "@/lib/action-center/inbox";
+import { needsYou, needsYouDetail } from "@/lib/action-center/needs-you";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
+import type { Today, TodayShift } from "@/lib/today/project";
 
 const statusText = {
-  loading: "Loading inbox…", reconnecting: "Reconnecting…", offline: "Inbox unavailable offline", paused: "Updates paused — return to this tab to refresh.",
-  unavailable: "Inbox unavailable — try again.", access_lost: "Sign in again to view the inbox.", ready: "Inbox unavailable — try again.",
+  loading: "Loading your Inbox…", reconnecting: "Reconnecting…", offline: "You’re offline. This updates when you reconnect.", paused: "Paused while you’re away. It updates when you come back.",
+  unavailable: "The Inbox isn’t available right now.", access_lost: "Sign in again to see your Inbox.", ready: "The Inbox isn’t available right now.",
 } as const;
 
-/** O1: no decision from here. The Inbox item carries no dates, duration or
- * note, so every request opens its full review, which shows them first. */
-function Row({ item, calm = false }: { item: ActionItem; /** Past work (C2): no urgent styling. */ calm?: boolean }) {
+const filters: { value: InboxFilter; label: string }[] = [
+  { value: "all", label: "All" }, { value: "now", label: "Act now" }, { value: "requests", label: "Requests" }, { value: "planning", label: "Plan ahead" },
+];
+
+const emptyText: Record<InboxFilter, string> = {
+  all: "Nothing needs you right now.",
+  now: "Nothing to act on now. Shifts with no clock-in and urgent gaps show up here.",
+  requests: "No requests are waiting. New time-off and shift requests show up here.",
+  planning: "Nothing to plan ahead right now.",
+};
+
+const clock = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
+
+/** One row. The whole row opens the item's full review; its action is a teal link line (F4),
+ * its condition a status pill. O1: never a decision from here. */
+function KitRow({ href, label, leading, title, meta, action, status, urgent = false }: {
+  href: string; label: string; leading: ReactNode; title: ReactNode; meta?: ReactNode; action: string; status?: ReactNode; urgent?: boolean;
+}) {
+  return <li className="inbox-row" data-urgent={urgent || undefined}>
+    <Link className="nv-row" data-leading="true" href={href} aria-label={label}>
+      {leading}
+      <span className="nv-row__text">
+        <span className="nv-row__title">{title}</span>
+        {meta ? <span className="nv-row__meta">{meta}</span> : null}
+        <span className="nv-row__status">{status}<span className="inbox-action" aria-hidden="true">{action}</span></span>
+      </span>
+    </Link>
+  </li>;
+}
+
+/** Review links remember the Inbox filter, so Back and the decision return to it (IS-14). */
+function withFilter(href: string, filter: InboxFilter) {
+  const url = new URL(href, "https://nevora.invalid");
+  if (url.pathname !== "/app/requests") return href;
+  url.searchParams.set("filter", filter);
+  url.hash = "";
+  return url.pathname + url.search;
+}
+
+function ItemRow({ item, calm = false, filter = "all", timeZone = "UTC" }: { item: ActionItem; /** Past work (C2): no urgent styling. */ calm?: boolean; filter?: InboxFilter; timeZone?: string }) {
   const urgent = item.priority === "URGENT" && !calm;
-  const Icon = urgent ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : item.category === "requests" ? UserCheckIcon : CalendarBlankIcon;
+  const request = item.category === "requests";
+  const Icon = urgent ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : request ? UserCheckIcon : CalendarBlankIcon;
   const action = actionCenterNavigation(item);
-  return <li className={`inbox-row${urgent ? " is-urgent" : ""}`}><div className="inbox-row-content">
-    <span className="inbox-icon" aria-hidden="true"><Icon size={20} /></span>
-    <div className="inbox-copy">
-      <strong>{item.title}</strong>
-      <p>{mobileActionDetail(item.detail)}</p>
-      <Link className="inbox-link" href={action.href} aria-label={`${action.label}: ${item.title}`}>{action.label}</Link>
-    </div>
-  </div></li>;
+  const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
+  return <KitRow href={withFilter(action.href, filter)} label={`${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`} urgent={urgent}
+    leading={request && shown.person ? <Avatar initials={initials(shown.person)} waiting /> : <Tile tone={urgent ? "urgent" : request ? "review" : "neutral"}><Icon size={20} weight="bold" /></Tile>}
+    title={shown.title} meta={<MetaParts text={shown.detail} />} action={shown.action}
+    status={request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined} />;
+}
+
+function ShiftRow({ shift, timeZone }: { shift: TodayShift; timeZone: string }) {
+  const running = shift.status === "not_clocked_in";
+  const href = running ? `/app/employees/${encodeURIComponent(shift.employeeId)}` : `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`;
+  const action = running ? "Contact" : "Review timecard";
+  // The pill says what happened, so the meta line is only when and where.
+  const when = running ? `Started ${clock(shift.startAt, timeZone)}` : `${clock(shift.startAt, timeZone)}\u00a0– ${clock(shift.endAt, timeZone)}`;
+  const condition = running ? "Not clocked in" : `No ${CLOCK_IN}`;
+  return <KitRow href={href} label={`${action} for ${shift.employeeName}: ${condition}`} urgent
+    leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName}
+    meta={<><span className="nv-nowrap">{when}</span> · <span className="nv-nowrap">{shift.locationName}</span></>} action={action}
+    status={<Status tone="urgent">{condition}</Status>} />;
+}
+
+function Group({ items, calm, filter, timeZone }: { items: ActionItem[]; calm: boolean; filter: InboxFilter; timeZone: string }) {
+  return <ul className="nv-rows inbox-list">{groupInboxItems(items).map(entry => entry.kind === "item"
+    ? <ItemRow key={entry.item.id} item={entry.item} calm={calm} filter={filter} timeZone={timeZone} />
+    : <li key={entry.key} className="premium-group">
+      <details>
+        <summary className="nv-row" data-leading="true">
+          <Tile tone={entry.items[0].priority === "URGENT" && !calm ? "urgent" : "neutral"}><CalendarBlankIcon size={20} weight="bold" /></Tile>
+          <span className="nv-row__text"><span className="nv-row__title">{groupHeading(entry.items[0].type, entry.items.length, entry.title)}</span>
+            {entry.items.some(item => item.dateTime) ? <span className="nv-row__meta">Oldest first</span> : null}</span>
+          <span className="nv-row__trail"><CaretDownIcon className="inbox-group-caret" size={18} aria-hidden="true" /></span>
+        </summary>
+        <ul className="nv-rows inbox-list">{entry.items.map(item => <ItemRow key={item.id} item={item} calm={calm} filter={filter} timeZone={timeZone} />)}</ul>
+      </details>
+    </li>)}</ul>;
+}
+
+function Section({ id, title, count, note, children }: { id: string; title: string; count: number; note?: string; children: ReactNode }) {
+  return <Card id={`inbox-${id}`} titleLabel={`${title}, ${count}`} title={<>{title}<span className="inbox-section-count" aria-hidden="true">{count}</span></>}>
+    {note ? <p className="inbox-section-note">{note}</p> : null}
+    {children}
+  </Card>;
 }
 
 export function ManagerInbox({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
+  const { snapshot: today, refresh: refreshToday } = useToday();
   // W2: ?filter= is the source of truth, so Back from a review restores it.
   const initialFilter = inboxFilter(useSearchParams()?.get("filter"));
-  return <InboxSurface snapshot={snapshot} connection={connection} onRefresh={refresh} timeZone={timeZone} lead={<MissedPunches />} initialFilter={initialFilter} />;
+  // Refresh asks both reads again: the action center and today's clock-ins.
+  return <InboxSurface snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} initialFilter={initialFilter} />;
 }
 
-/** Presentation only: receives the released action center observation. */
-export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZone, lead, initialFilter = "all" }: { snapshot: ActionCenter | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; /** Shown under the page header (D1), e.g. missed punches. */ lead?: ReactNode; initialFilter?: InboxFilter }) {
+/** Presentation only: receives the released action center observation and today's shifts. */
+export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = "all" }: {
+  snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; initialFilter?: InboxFilter;
+}) {
   const [filter, setFilter] = useState<InboxFilter>(initialFilter);
   // Follow the URL when it changes underneath us (Back, a new link).
   const [urlFilter, setUrlFilter] = useState(initialFilter);
@@ -56,52 +137,77 @@ export function InboxSurface({ snapshot, connection, onRefresh: refresh, timeZon
   };
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
   // The workspace's date at the time of this observation, so server and browser agree.
-  const today = ready ? new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ready.observedAt)) : undefined;
-  const sections = ready ? inboxSections(ready.items, today) : [];
-  const counts = { all: ready?.items.length ?? 0, exceptions: ready?.items.filter(item => item.category !== "requests").length ?? 0, requests: ready?.counts.requests ?? 0 };
-  const shown = sections.map(section => ({ ...section, items: section.items.filter(item => filter === "all" || (filter === "requests" ? item.category === "requests" : item.category !== "requests")) })).filter(section => section.items.length);
-  const updated = ready ? new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(ready.observedAt)) : null;
+  const day = ready ? new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ready.observedAt)) : undefined;
+  const shifts = today?.state === "ready" ? today.missed : [];
+  // IS-6: when clock-ins can't be read, say so instead of quietly dropping them.
+  const todayFailed = today?.state === "unavailable";
+  const value = ready ? needsYou(ready.items, day, shifts) : null;
+  const total = value ? value.count + value.planning.length + value.past.length : 0;
+  const updated = ready ? clock(ready.observedAt, timeZone) : null;
+  const show = (group: InboxFilter) => filter === "all" || filter === group;
 
-  return <div className="manager-inbox" data-inbox-state={ready ? (ready.items.length ? "ready" : "clear") : connection}>
-    <header className="inbox-header">
-      <div><h1>Inbox</h1><p>Exceptions first, then requests from your team.</p></div>
-      <div className="inbox-freshness">
-        {updated ? <small>Updated <time dateTime={ready!.observedAt}>{updated}</time></small> : null}
-        <button type="button" className="inbox-refresh" onClick={refresh} disabled={connection === "loading" || connection === "reconnecting"}>
-          <ArrowsClockwiseIcon size={18} aria-hidden="true" />Refresh
-        </button>
-      </div>
-    </header>
-    {lead}
-    {ready && ready.items.length ? <div className="inbox-filters" role="group" aria-label="Show">
-      {(["all", "exceptions", "requests"] as const).map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => choose(value)}>
-        {value === "all" ? "All" : value === "exceptions" ? "To review" : "Requests"}<span className="sr-only">,</span> <span className="inbox-filter-count">{counts[value]}</span>
-      </button>)}
-    </div> : null}
-    {!ready ? <div className="inbox-status">
-      {connection === "loading" || connection === "reconnecting" ? <SkeletonRows rows={4} /> : null}
-      <p role="status">{statusText[connection]}</p>
-      {connection === "access_lost" ? <Link className="inbox-link" href="/login">Sign in</Link> : null}
-    </div> : ready.items.length === 0 ? <div className="inbox-clear">
-      <EmptyState illustration="all-caught-up" status title="Inbox clear">
-        Nothing needs a decision in the checked sources.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}
-      </EmptyState>
-      {ready.limitedAttendance ? null : <Celebration kind="INBOX_CLEAR" eventKey={ready.observedAt.slice(0, 10)} confirmed />}
-    </div> : <>
-      {shown.map(section => <section key={section.id} className="inbox-section" data-section={section.id} aria-labelledby={`inbox-${section.id}`}>
-        <h2 id={`inbox-${section.id}`}>{section.title}<span className="sr-only">,</span> <span className="inbox-section-count">{section.items.length}</span></h2>
-        {section.id === "past" ? <p className="inbox-section-note">These times have passed. Review them for the record; they don’t need action now.</p> : null}
-        <ul className="inbox-list">{groupInboxItems(section.items).map(entry => entry.kind === "item" ? <Row key={entry.item.id} item={entry.item} calm={section.id === "past"} />
-          : <li key={entry.key} className={`inbox-group${entry.items[0].priority === "URGENT" && section.id !== "past" ? " is-urgent" : ""}`}>
-            <details>
-              <summary><span className="inbox-icon" aria-hidden="true">{entry.items[0].priority === "URGENT" && section.id !== "past" ? <WarningCircleIcon size={20} /> : <CalendarBlankIcon size={20} />}</span>
-                <span className="inbox-copy"><strong>{entry.title}</strong><p>{entry.items.length} items · earliest first</p></span>
-                <span className="inbox-section-count">{entry.items.length}</span><CaretDownIcon className="inbox-group-caret" size={18} aria-hidden="true" /></summary>
-              <ul className="inbox-list">{entry.items.map(item => <Row key={item.id} item={item} calm={section.id === "past"} />)}</ul>
-            </details>
-          </li>)}</ul>
-      </section>)}
-      {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
-    </>}
+  return <div className="nv-page manager-inbox premium-inbox" data-nv-page="" data-inbox-state={ready ? (total ? "ready" : "clear") : connection}>
+    <PageBand title="Inbox"
+      eyebrow={updated ? <Freshness>Updated <time dateTime={ready!.observedAt}>{updated}</time></Freshness>
+        : connection === "offline" ? <Freshness state="offline">Offline</Freshness> : connection === "paused" ? <Freshness state="stale">Paused</Freshness>
+        : connection === "loading" || connection === "reconnecting" ? "Checking…" : <Freshness state="stale">Not available</Freshness>}
+      summary={<span className="premium-inbox-summary">{value ? `${needsYouDetail(value)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : connection === "loading" || connection === "reconnecting" ? "Checking what needs you…" : "Requests and problems to resolve."}</span>}
+      aside={<button type="button" className="nv-band-control" onClick={refresh} disabled={connection === "loading" || connection === "reconnecting"}>
+        <ArrowsClockwiseIcon size={18} aria-hidden="true" />Refresh
+      </button>}
+      // ST-02: the filters are there from the first paint (disabled until the read is ready), so the band never grows.
+      // IS-59: while they are disabled the scrolling row would become an empty Tab stop; tabIndex -1 keeps it out.
+      extra={!ready || total ? <div className="nv-filters premium-inbox-filters" role="group" aria-label="Show" tabIndex={ready ? undefined : -1}>
+        {filters.map(entry => <button key={entry.value} type="button" className="nv-filter" aria-pressed={filter === entry.value} disabled={!ready} onClick={() => choose(entry.value)}>{entry.label}</button>)}
+        <KeepSelectedVisible />
+      </div> : null} />
+    <KitStack>
+      {!ready ? <Card><div className="inbox-status nv-card__body">
+        {/* ST-26: the status line comes first, so it stays put when the placeholder rows go. */}
+        <p role="status">{statusText[connection]}</p>
+        {connection === "loading" || connection === "reconnecting" ? <div className="premium-skeleton" aria-hidden="true">{[0, 1, 2].map(i => <span key={i} className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span>)}</div> : null}
+        {connection === "access_lost" ? <Link className="nv-link" href="/login">Sign in</Link>
+          : connection === "unavailable" || connection === "ready" ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .nv-content .nv-card:not(:has(.inbox-status)) :is(.nv-card__title, h2, h3)", ".inbox-status .nv-btn"); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button> : null}
+      </div></Card> : total === 0 ? <Card><div className="inbox-clear nv-card__body">
+        <EmptyState illustration="all-caught-up" status title="All caught up">
+          Nothing needs you right now.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}
+        </EmptyState>
+        {ready.limitedAttendance ? null : <Celebration kind="INBOX_CLEAR" eventKey={ready.observedAt.slice(0, 10)} confirmed />}
+      </div></Card> : <>
+        {show("now") && todayFailed ? <Card title="Clock-ins">
+          <div className="nv-card__body"><p className="premium-note">Today’s clock-ins can’t be checked right now, so shifts with no clock-in aren’t listed. Everything else here is current.</p>
+            <button type="button" className="nv-btn" data-kind="secondary" onClick={refresh}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button></div>
+        </Card> : null}
+        {show("now") && (value!.noClockIn.length || value!.now.length) ? <div id="missed-punches">
+          <Section id="urgent" title="Act now" count={value!.noClockIn.length + value!.now.length}>
+            <ul className="nv-rows inbox-list">
+              {value!.noClockIn.map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} />)}
+              {value!.now.map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}
+            </ul>
+          </Section>
+        </div> : null}
+        {show("requests") && value!.requests.length ? <Section id="requests" title="Requests" count={value!.requests.length}>
+          <Group items={value!.requests} calm={false} filter={filter} timeZone={timeZone} />
+        </Section> : null}
+        {show("planning") && value!.planning.length ? <Section id="exceptions" title="Plan ahead" count={value!.planning.length} note="Setup and planning for the coming weeks. None of it is urgent.">
+          <Group items={value!.planning} calm={false} filter={filter} timeZone={timeZone} />
+        </Section> : null}
+        {show("planning") && value!.past.length ? <Section id="past" title="Earlier this week" count={value!.past.length} note="These times have passed. Review them for the record; they don’t need action now.">
+          <Group items={value!.past} calm filter={filter} timeZone={timeZone} />
+        </Section> : null}
+        {filter !== "all" && !hasEntries(filter, value!) ? <Card title={filters.find(entry => entry.value === filter)?.label}>
+          <div className="nv-card__body"><p className="premium-note">{emptyText[filter]}</p>
+            {filter === "requests" ? <Link className="nv-link" href="/app/requests?tab=approved">See decided time off</Link> : null}</div>
+        </Card> : null}
+        {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
+      </>}
+    </KitStack>
   </div>;
+}
+
+function hasEntries(filter: InboxFilter, value: ReturnType<typeof needsYou>) {
+  if (filter === "now") return value.noClockIn.length + value.now.length > 0;
+  if (filter === "requests") return value.requests.length > 0;
+  if (filter === "planning") return value.planning.length + value.past.length > 0;
+  return true;
 }

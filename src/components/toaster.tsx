@@ -14,6 +14,12 @@ const DURATION = 4500;
 /** Redirect flags that carry a one-time success message; removed after display. */
 export const SUCCESS_FLAGS = ["submitted", "reviewed", "published", "updated", "deleted", "deadlineSaved", "claimed", "cancelled", "offered", "saved", "created"];
 
+/** D-5: a focused review returns with ?decided=; the page it returns to confirms the outcome once. */
+export const DECISION_MESSAGES: Record<string, string> = {
+  "timeoff-approved": "Time off approved. The employee will be told.",
+  "timeoff-declined": "Time off declined. The employee will be told.",
+};
+
 export function toast(message: string, tone: Tone = "success") {
   window.dispatchEvent(new CustomEvent<Omit<Toast, "id">>(EVENT, { detail: { message, tone } }));
 }
@@ -23,8 +29,14 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
   const started = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [leaving, setLeaving] = useState(false);
-  const close = () => { setLeaving(true); setTimeout(() => onClose(item.id), 180); };
-  const run = () => { started.current = Date.now(); timer.current = setTimeout(close, remaining.current); };
+  // It holds while the pointer is over it or focus is inside it (IS-26); either one keeps it open.
+  const hovered = useRef(false), focused = useRef(false), self = useRef<HTMLLIElement>(null);
+  const close = () => {
+    // Focus inside the toast moves to the page, not to nowhere, when it closes.
+    if (self.current?.contains(document.activeElement)) document.getElementById("main-content")?.focus({ preventScroll: true });
+    setLeaving(true); setTimeout(() => onClose(item.id), 180);
+  };
+  const run = () => { if (timer.current || hovered.current || focused.current || document.hidden) return; started.current = Date.now(); timer.current = setTimeout(close, remaining.current); };
   const pause = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null; remaining.current -= Date.now() - started.current; } };
   useEffect(() => {
     run();
@@ -34,8 +46,9 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const Icon = item.tone === "success" ? CheckCircleIcon : InfoIcon;
-  return <li className="nevora-toast" data-tone={item.tone} data-leaving={leaving || undefined}
-    onPointerEnter={pause} onPointerLeave={run} onFocus={pause} onBlur={run}>
+  return <li ref={self} className="nevora-toast" data-tone={item.tone} data-leaving={leaving || undefined}
+    onPointerEnter={() => { hovered.current = true; pause(); }} onPointerLeave={() => { hovered.current = false; run(); }}
+    onFocus={() => { focused.current = true; pause(); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { focused.current = false; run(); } }}>
     <Icon size={20} weight="fill" aria-hidden="true" />
     <span>{item.message}</span>
     <button type="button" aria-label="Dismiss notification" onClick={close}><XIcon size={16} aria-hidden="true" /></button>
@@ -58,8 +71,14 @@ export function Toaster() {
   const pathname = usePathname(), search = useSearchParams()?.toString() ?? "";
   useEffect(() => {
     const url = new URL(window.location.href);
+    const decided = url.searchParams.get("decided");
+    if (decided !== null) {
+      const message = DECISION_MESSAGES[decided];
+      if (message) toast(message);
+      url.searchParams.delete("decided");
+    }
     const present = SUCCESS_FLAGS.filter(flag => url.searchParams.has(flag));
-    if (!present.length) return;
+    if (!present.length && decided === null) return;
     present.forEach(flag => url.searchParams.delete(flag));
     window.history.replaceState(window.history.state, "", url);
   }, [pathname, search]);

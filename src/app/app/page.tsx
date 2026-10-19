@@ -1,5 +1,7 @@
+import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
+import {Card,CardBody,KitStack,PageBand} from '@/components/kit/kit';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {businessDate} from '@/lib/business-time';
@@ -59,7 +61,19 @@ export default async function DashboardPage({
   const nextWeek = addDays(weekStart, 7);
 
   const dashboardData=await loadManagerDashboardData(weekStart,await requireSessionMutationProof()).catch(()=>null);
-  if(!dashboardData)return <section className="panel"><h1>Dashboard unavailable</h1><p>A current authorized read could not be verified.</p><Link className="button secondary" href="/app">Refresh dashboard</Link></section>;
+  // WR-59: the same kit error page as app/app/error.tsx. IS-50: "Try again" reloads this exact view (week, day, location, person).
+  // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
+  const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
+  if(!dashboardData)return <div className="nv-page premium-error" data-nv-page="">
+    <PageBand title="This page could not be loaded" summary="Your current information is unavailable."/>
+    <KitStack><Card><CardBody><div className="premium-error__body">
+      <p className="premium-error__text">Try loading the page again before taking an action.</p>
+      <div className="premium-error__actions">
+        <Link className="nv-btn" data-kind="primary" href={retry?`/app?${retry}`:'/app'}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again</Link>
+        {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to home</Link>:null}
+      </div>
+    </div></CardBody></Card></KitStack>
+  </div>;
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision}=dashboardData;
 
   const {modules}=await currentPresentation();

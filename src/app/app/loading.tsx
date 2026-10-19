@@ -1,3 +1,7 @@
+import { RootLoading } from "./root-loading";
+
+/** Home's placeholder matches every other tab's: the band at its final height, then cards (ST-05).
+ * During a tab change it takes the destination's shape instead (ST-22). */
 export default function Loading() {
- return <section className="portal-route-state" role="status" aria-busy="true"><h1>Loading your workspace…</h1><p>Checking current information and access.</p><div className="portal-loading-lines" aria-hidden="true"><span/><span/><span/></div></section>;
+  return <RootLoading />;
 }

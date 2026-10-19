@@ -17,7 +17,7 @@ export function BacklogReview({ data, operation }: { data: PayrollRunsResponse; 
   if (!backlog || (!backlog.overflow && backlog.missingCount === 0 && missing.length === 0)) return null;
   const key = (item: typeof missing[number]) => JSON.stringify(item);
   const visible = expanded ? missing : missing.slice(0, 3);
-  return <PayrollPanel title="Missing pay periods" description={backlogDescription(backlog)}>
+  return <PayrollPanel title="Pay periods with no payroll run" description={backlogDescription(backlog)}>
     <p className="pw-small">Checked {backlog.rangeStart ? `${formatDisplayDate(backlog.rangeStart)} – ` : 'through '}{formatDisplayDate(backlog.asOfDate)}. A draft doesn’t finalize hours, approve amounts or send a payment.</p>
     {backlog.ambiguousCount !== null && backlog.ambiguousCount > 0 && <p className="pw-notice">{backlog.ambiguousCount} {backlog.ambiguousCount === 1 ? 'period needs' : 'periods need'} schedule-transition review.</p>}
     <div className="pw-backlog-list">{visible.map(item => <div className="pw-backlog-period" key={key(item)}>

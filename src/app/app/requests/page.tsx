@@ -4,7 +4,6 @@ import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { ManagerTimeOff } from "@/components/manager-time-off";
 import { NavIcon } from "@/components/nav-icon";
-import { StatusPill } from "@/components/status-pill";
 import { isTimeOffReviewerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
 import { listEmployeeTimeOffRequests } from "@/lib/data/requests";
@@ -12,6 +11,8 @@ import { TimeOffForm } from "@/app/app/requests/time-off-form";
 import { formatTime } from "@/lib/date-utils";
 import { TimeOffMotion } from "@/components/time-off-motion";
 import "./time-off.css";
+import { Card, CardBody, FilterPills, PageBand, Status } from "@/components/kit/kit";
+import { getWorkspace } from "@/lib/data/workspaces";
 
 function dateLabel(date: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -20,11 +21,6 @@ function dateLabel(date: string) {
     year: "numeric",
     timeZone: "UTC",
   }).format(new Date(`${date}T12:00:00Z`));
-}
-
-function statusTone(status: string) {
-  if (status === "APPROVED") return "success" as const;
-  return "neutral" as const;
 }
 
 function statusLabel(status: string) {
@@ -40,6 +36,8 @@ export default async function RequestsPage({
     reviewed?: string;
     tab?: string;
     requestId?: string;
+    from?: string;
+    filter?: string;
   }>;
 }) {
   const moduleOff = await moduleGate("timeOff");
@@ -54,10 +52,20 @@ export default async function RequestsPage({
   const mine = await listEmployeeTimeOffRequests(session.id);
   const activeTab = params.tab === "my" ? "my" : "new";
 
-  return (
-    <TimeOffMotion><div className="timeoff-page employee-view employee-timeoff-view nto-page">
-      <header className="nto-header" data-timeoff-intro><div><h1>Time off</h1><p>Plan your time away. Keep every request in one place.</p></div><Link href="/app/requests/hub" className="nto-back-link">All requests <NavIcon name="arrowRight" size={18} /></Link></header>
+  const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
+  const sentOn = (at: string) => { try { return new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(at)); } catch { return ""; } };
+  const waiting = mine.filter(request => request.status === "PENDING").length;
 
+  // Phase 3: Time off on the kit. The band names what is waiting; New request and My requests are its pills.
+  return (
+    <TimeOffMotion><div className="nv-page timeoff-page employee-view employee-timeoff-view nto-page premium-employee-timeoff" data-nv-page="">
+      <PageBand title="Time off" overlap={false}
+        summary={waiting ? `${waiting}\u00a0${waiting === 1 ? "request is" : "requests are"} waiting on your manager.` : "Plan your time away. Keep every request in one place."}
+        extra={<FilterPills label="Time off sections" items={[
+          { href: "/app/requests?tab=new", label: "New request", current: activeTab === "new" },
+          { href: "/app/requests?tab=my", label: `My requests${mine.length ? ` (${mine.length})` : ""}`, current: activeTab === "my" },
+        ]} />} />
+      <div className="premium-employee-content" data-timeoff-intro>
       {params.error ? (
         <p className="form-error" role="alert">The request could not be saved. Check that the end date is on or after the start date. Partial-day requests need one date and an end time after the start time.</p>
       ) : null}
@@ -68,76 +76,49 @@ export default async function RequestsPage({
         <p className="form-success" role="status">The request was reviewed.</p>
       ) : null}
 
-      <nav className="nto-tabs" aria-label="Time off sections">
-        <Link
-          className={activeTab === "new" ? "selected" : ""}
-          href="/app/requests?tab=new"
-          aria-current={activeTab === "new" ? "page" : undefined}
-        >
-          New request
-        </Link>
-        <Link
-          className={activeTab === "my" ? "selected" : ""}
-          href="/app/requests?tab=my"
-          aria-current={activeTab === "my" ? "page" : undefined}
-        >
-          My requests
-        </Link>
-
-      </nav>
-
-      <section className="timeoff-workspace">
-        {activeTab === "new" ? (
-          <article className="nto-panel nto-request-panel">
-            <div className="nto-panel-heading">
-              <div>
-                <h2>Request time off</h2>
-                <p>Choose when you need to be away.</p>
-              </div>
-            </div>
+      {activeTab === "new" ? (
+        <Card title="Request time off" id="timeoff-new">
+          <CardBody>
+            <p className="premium-card-lead">Choose when you need to be away.</p>
             <TimeOffForm employeeView requestId={randomUUID()} draftOwner={session.id} />
-          </article>
-        ) : null}
+          </CardBody>
+        </Card>
+      ) : null}
 
-        {activeTab === "my" ? (
-          <article className="nto-panel nto-history-panel">
-            <div className="nto-panel-heading">
-              <div>
-                <h2>My requests</h2>
-                <p>Pending requests can be withdrawn before a decision.</p>
-              </div>
-              <span className="nto-count">{mine.length} request{mine.length === 1 ? "" : "s"}</span>
-            </div>
-
-            <div className="request-list timeoff-request-list">
-              {mine.length ? (
-                mine.map((request) => (
-                  <div className="request-list-row timeoff-request-row" id={`request-${request.id}`} tabIndex={-1} data-employee-status={request.status} key={request.id}>
-                    <div className="request-row-copy">
-                      <><strong>{request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`}</strong>
-                        <span>{request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : "Full day"}</span>
-                        {request.reason ? <span className="nto-request-note">{request.reason}</span> : null}
-                      </>
-                      {request.employeeId === session.id && request.status === "PENDING" ? <details className="nto-withdrawal"><summary>Withdraw this request <NavIcon name="chevronRight" size={16} /></summary><TimeOffWithdrawal requestId={request.id} dateLabel={request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`} /></details> : null}
-                    </div>
-                    <StatusPill tone={statusTone(request.status)}>
-                      {request.status === "DENIED" ? "Declined" : request.status === "CANCELLED" ? "Withdrawn" : statusLabel(request.status)}
-                    </StatusPill>
-                  </div>
-                ))
-              ) : (
-                <div className="nto-empty-state">
-                  <span className="nto-empty-icon"><NavIcon name="timeOff" size={28} /></span>
-                  <strong>No time-off requests yet</strong>
-                  <span>Choose your dates and send a request to your manager.</span>
-                  <Link className="nto-button nto-primary" href="/app/requests?tab=new">Request time off <NavIcon name="arrowRight" /></Link>
+      {activeTab === "my" ? (
+        <Card title="My requests" id="timeoff-mine" meta={`${mine.length}\u00a0request${mine.length === 1 ? "" : "s"}`}>
+          {mine.length ? <ul className="nv-rows premium-timeoff-list" aria-label="My requests">
+            {mine.map((request) => (
+              <li className="premium-timeoff-row" id={`request-${request.id}`} tabIndex={-1} data-employee-status={request.status} key={request.id}>
+                <div className="premium-timeoff-row__head">
+                  <span className="nv-row__title">{request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`}</span>
+                  <Status tone={request.status === "APPROVED" ? "done" : request.status === "PENDING" ? "review" : "neutral"}>
+                    {request.status === "DENIED" ? "Declined" : request.status === "CANCELLED" ? "Withdrawn" : request.status === "PENDING" ? "Waiting" : statusLabel(request.status)}
+                  </Status>
                 </div>
-              )}
-            </div>
-          </article>
-        ) : null}
-
-      </section>
+                <span className="nv-row__meta">{request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)}\u00a0– ${formatTime(request.endTime)}` : "Full day"}</span>
+                {request.reason ? <span className="nv-row__meta premium-timeoff-note">Note: {request.reason}</span> : null}
+                {/* Request timeline: when it was sent, and where it stands. Who decided and when needs a read-model field (flagged). */}
+                <ol className="premium-timeline" aria-label="Request timeline">
+                  <li data-done="true">Sent {sentOn(request.createdAt)}</li>
+                  <li data-done={request.status !== "PENDING" ? "true" : undefined}>{request.status === "PENDING" ? "Waiting for your manager" : request.status === "APPROVED" ? "Approved" : request.status === "DENIED" ? "Declined" : "Withdrawn"}</li>
+                </ol>
+                {request.employeeId === session.id && request.status === "PENDING" ? <details className="nto-withdrawal"><summary>Withdraw this request <NavIcon name="chevronRight" size={16} /></summary><TimeOffWithdrawal requestId={request.id} dateLabel={request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`} /></details> : null}
+              </li>
+            ))}
+          </ul> : (
+            <CardBody>
+              <div className="nto-empty-state">
+                <span className="nto-empty-icon"><NavIcon name="timeOff" size={28} /></span>
+                <strong>No time-off requests yet</strong>
+                <span>Choose your dates and send a request to your manager.</span>
+                <Link className="nv-btn" data-kind="primary" href="/app/requests?tab=new">Request time off</Link>
+              </div>
+            </CardBody>
+          )}
+        </Card>
+      ) : null}
+      </div>
     </div></TimeOffMotion>
   );
 }

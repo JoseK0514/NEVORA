@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {ConfiguredAttendancePolicies} from './configured-attendance-policies';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import {
   createAttendanceReviewController,
   fetchAttendanceReview,
@@ -98,6 +98,8 @@ export function AttendanceReviewSurface({
   onRefresh,
 }: { state: AttendancePanelState; onRefresh: () => void }) {
   const { review, refreshing, paused } = state;
+  // IS-47: offline and "window in the background" both pause; the footer names which.
+  const online = useSyncExternalStore(subscribeOnline, () => navigator.onLine, () => true);
   const ready = !paused && review?.state === 'ready' ? review : null;
   usePrivateFragmentFocus('attendance-',!!ready);
   const denied = review?.state === 'unavailable' && review.reason === 'access_denied';
@@ -113,22 +115,21 @@ export function AttendanceReviewSurface({
           <h2 id="attendance-review-title">Today’s clock-ins</h2>
           <span>Clock-ins and breaks that may need a look.</span>
         </div>
-        {ready ? (
-          <div className="attendance-review-summary" aria-label="Attendance exception summary">
-            <span>
-              <strong>{ready.signalCount}</strong>
-              {' to review'}
-            </span>
-            <span>
-              <strong>{ready.affectedEmployeeCount}</strong>
-              {ready.affectedEmployeeCount === 1 ? ' person' : ' people'}
-            </span>
-            <span>
-              <strong>{ready.pendingCorrectionCount}</strong>
-              {ready.pendingCorrectionCount === 1 ? ' correction' : ' corrections'}
-            </span>
-          </div>
-        ) : null}
+        {/* The summary row is there while loading too ("–" for each count), so nothing moves when the numbers arrive. */}
+        <div className="attendance-review-summary" aria-label="Attendance exception summary" aria-busy={ready ? undefined : true}>
+          <span>
+            <strong>{ready ? ready.signalCount : '–'}</strong>
+            {' to review'}
+          </span>
+          <span>
+            <strong>{ready ? ready.affectedEmployeeCount : '–'}</strong>
+            {ready?.affectedEmployeeCount === 1 ? ' person affected' : ' people affected'}
+          </span>
+          <span>
+            <strong>{ready ? ready.pendingCorrectionCount : '–'}</strong>
+            {ready?.pendingCorrectionCount === 1 ? ' correction' : ' corrections'}
+          </span>
+        </div>
       </header>
 
       {ready?.coverage.state === 'limited' ? (
@@ -178,35 +179,39 @@ export function AttendanceReviewSurface({
         <div className="attendance-review-empty" role="status">
           <strong>
             {paused
-              ? 'Attendance updates paused'
+              ? (online ? 'Attendance paused' : 'You’re offline')
               : denied
                 ? 'Sign in again'
                 : unavailable
-                  ? 'Attendance review unavailable'
-                  : 'Loading attendance review'}
+                  ? 'Attendance unavailable'
+                  : 'Loading attendance'}
           </strong>
           <small>
+            {/* TC-48: plain words, short enough for one line at 320 in every state (ST-23). */}
             {paused
-              ? 'Reconnect and return to this page to load a fresh protected snapshot.'
+              ? (online ? 'Updates when you’re back.' : 'Updates when you reconnect.')
               : denied
-                ? 'Current Manager or Owner access is required.'
+                ? 'Manager or Owner access is needed.'
                 : unavailable
-                  ? 'The latest recorded-time review could not be confirmed. Try refreshing.'
-                  : 'Checking the authorized recorded-time source.'}
+                  ? 'The latest records didn’t load.'
+                  : 'Checking today’s clock records.'}
           </small>
         </div>
       )}
 
       <footer className="attendance-review-footer">
         <div>
-          {ready ? (
-            <small>
-              Updated <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt, ready.timeZone)}</time>
-              <span>Updates every 30s while this page is active.</span>
-            </small>
-          ) : (
-            <small>Clock records only. Lateness and overtime rules aren’t applied here.</small>
-          )}
+          {/* ST-16: always two lines, so the footer keeps its height from loading to ready.
+              TC-48: each state says what is true now; the dot is green live, grey checking, a coral ring when it can't update. */}
+          <small data-state={ready ? 'live' : unavailable || denied || paused ? 'stale' : 'checking'}>
+            {ready ? <>Updated <time dateTime={ready.observedAt}>{checkedAt(ready.observedAt, ready.timeZone)}</time></>
+              : paused ? (online ? 'Paused.' : 'Offline.')
+                : denied ? 'No access.'
+                  : unavailable ? 'Couldn’t update.'
+                    : 'Checking…'}
+            {/* TC-50: offline, paused and no access say what to do in the main block; the footer keeps just the state word. */}
+            {ready || !(unavailable || denied || paused) ? <span>Updates every 30s.</span> : unavailable ? <span>Try Refresh.</span> : null}
+          </small>
         </div>
         {denied ? (
           <Link className="attendance-review-refresh" href="/login">Sign In</Link>
@@ -214,9 +219,11 @@ export function AttendanceReviewSurface({
           <button
             className="attendance-review-refresh"
             type="button"
-            onClick={onRefresh}
-            disabled={refreshing || paused}
-            aria-label="Refresh attendance review"
+            // IS-58: busy is aria-disabled, so keyboard focus stays on Refresh while it works.
+            onClick={() => { if (!refreshing) onRefresh(); }}
+            aria-disabled={refreshing || undefined}
+            disabled={paused}
+            aria-label={refreshing ? "Refreshing attendance review" : "Refresh attendance review"}
           >
             {refreshing ? 'Refreshing…' : 'Refresh'}
           </button>
@@ -279,4 +286,10 @@ export function ManagerAttendanceReview() {
       onRefresh={() => controller.current?.refresh()}
     />
   );
+}
+
+function subscribeOnline(change: () => void) {
+  window.addEventListener('online', change);
+  window.addEventListener('offline', change);
+  return () => { window.removeEventListener('online', change); window.removeEventListener('offline', change); };
 }

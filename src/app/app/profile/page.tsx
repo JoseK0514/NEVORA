@@ -12,11 +12,14 @@ import {NavIcon} from '@/components/nav-icon';
 import {ProfileCalendarDisclosure} from '@/components/profile-calendar-disclosure';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import './profile.css';
+import {PageBand} from '@/components/kit/kit';
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
  const authority=employeeViewAuthority(proof,'profile');
  const notificationsEnabled=readNotificationConfig(process.env).featureEnabled;
- return <ProfileFrame><header className="employee-view-heading"><div className="profile-heading-copy"><h1>Profile</h1><p>Your work information and app settings.</p></div></header>
+ // Phase 3: the kit band, then Work details, App settings and Sign out in the shared content column.
+ return <ProfileFrame><div className="nv-page premium-employee-profile" data-nv-page=""><PageBand title="Profile" summary="Your work information and app settings." overlap={false}/>
+  <div className="premium-employee-content">
   <noscript><p>Enable JavaScript to view your current profile and calendar settings. You can still sign out below.</p></noscript>
   {/* Codex mobile review M1-M4: Work details, then App settings (notifications, calendar on demand), then Sign out. */}
   <div className="profile-layout">
@@ -35,5 +38,6 @@ export default async function ProfilePage(){
   </section>
   </div>
   <section className="profile-signout" aria-label="Session"><PortalSignout><button type="submit" className="profile-setting-row profile-signout-row"><span className="profile-setting-copy"><NavIcon name="logout" size={20}/><strong>Sign out</strong></span></button></PortalSignout></section>
+  </div></div>
  </ProfileFrame>;
 }

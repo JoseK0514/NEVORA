@@ -161,9 +161,9 @@ export function ActionMenu({
         aria-label={ariaLabel ?? `${label} actions`}
       >
         {children}
-        <button className="mobile-workforce-sheet-close" type="button" aria-label="Close actions"
+        <button className="mobile-workforce-sheet-close" type="button" aria-label="Close"
           onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-          <XIcon size={20} aria-hidden="true"/><span>Close actions</span>
+          <XIcon size={20} aria-hidden="true"/><span>Close</span>
         </button>
       </div>
     </div>

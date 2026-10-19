@@ -74,3 +74,17 @@ describe('section tabs', () => {
     expect(sectionTabsFor('MANAGER', '/app/employees')).toBeNull();
   });
 });
+
+describe('More sheet groups (MG3)', () => {
+  it('groups every More item by job without adding or dropping any', async () => {
+    const {mobileMoreForRole, moreNavigationGroups} = await import('./navigation');
+    for (const role of ['OWNER', 'MANAGER'] as const) {
+      const items = mobileMoreForRole(role, {enabled: true} as never);
+      const groups = moreNavigationGroups(items);
+      expect(groups.flatMap(group => group.items).map(item => item.href).sort()).toEqual(items.map(item => item.href).sort());
+      expect(groups.every(group => group.items.length > 0)).toBe(true);
+    }
+    const own = moreNavigationGroups([{href: '/app/my-pay', label: 'My pay', icon: 'pay'} as never, {href: '/app/timecards', label: 'Timecards', icon: 'clock'} as never]);
+    expect(own.map(group => group.label)).toEqual(['Time and reporting', 'My account']);
+  });
+});
