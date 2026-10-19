@@ -3,6 +3,7 @@ import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwis
 import {useCallback,useEffect,useRef,useState} from 'react';
 import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from '@/lib/calendar/types';
 import Link from 'next/link';
+import {revealFeedback} from '@/lib/reveal-feedback';
 import {AppleLogoIcon} from '@phosphor-icons/react/dist/ssr/AppleLogo';
 import {GoogleLogoIcon} from '@phosphor-icons/react/dist/ssr/GoogleLogo';
 import {MicrosoftOutlookLogoIcon} from '@phosphor-icons/react/dist/ssr/MicrosoftOutlookLogo';
@@ -12,7 +13,8 @@ import {NavIcon} from './nav-icon';
 import './calendar-subscription-panel.css';
 type ViewProps={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
 export function CalendarSubscriptionView({status,url,paused,busy,notice,onCommand,onCopy,onRetry}:ViewProps){
- const link=useRef<HTMLTextAreaElement>(null),unknown=notice.includes('unknown');
+ const link=useRef<HTMLTextAreaElement>(null),feedback=useRef<HTMLDivElement>(null),unknown=notice.includes('unknown');
+ useEffect(()=>{if(notice&&feedback.current)revealFeedback(feedback.current);},[notice]);
  const active=status?.state==='active',available=status&&'generation' in status;
  const currentUrl=active&&!paused?url:null;
  return <section className="employee-view-surface employee-calendar" aria-labelledby="employee-calendar-title" data-calendar-setting>
@@ -30,6 +32,10 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
      <div className="employee-calendar-actions"><button type="button" className="button calendar-primary" onClick={onCopy} disabled={busy}>Copy link</button><button type="button" className="button secondary" onClick={()=>{link.current?.focus();link.current?.select();}} disabled={busy}>Select link</button></div>
      <p id="employee-calendar-link-hint" className="profile-supporting-copy">This URL is shown once. Copy it now, or replace it later.</p>
     </div>:null}
+    <div ref={feedback} tabIndex={-1}>
+   {notice?<p role="status" className="employee-notice">{notice}</p>:null}
+   {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="nv-btn" data-kind="primary" disabled={busy} onClick={onRetry}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again<span className="nv-sr"> to load the calendar link</span></button>:null}
+    </div>
    </div>
    <p className="employee-calendar-privacy"><LockKeyIcon size={18} aria-hidden="true"/><span>This private link includes your shift times and location labels. Anyone with the link can view these details.</span></p>
    <section className="employee-calendar-providers" aria-labelledby="calendar-provider-title">
@@ -40,8 +46,7 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
    </section>
    <p className="profile-supporting-copy">Calendar apps refresh on their own schedule. <Link href="/app/schedule">Check NEVORA</Link> for the latest schedule. Creating or copying a link does not confirm a calendar connection.</p>
    {active?<details className="employee-calendar-management"><summary>Manage private link<CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><p>Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p><div className="employee-calendar-actions">{currentUrl?<button type="button" className="button secondary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}>{busy?'Saving…':'Replace link'}</button>:null}<button type="button" className="button secondary calendar-revoke" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('REVOKE')}>Revoke link</button></div></details>:null}
-   {notice?<p role="status" className="employee-notice">{notice}</p>:null}
-   {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="nv-btn" data-kind="primary" disabled={busy} onClick={onRetry}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again<span className="nv-sr"> to load the calendar link</span></button>:null}
+
   </>}
  </section>;
 }
@@ -69,8 +74,10 @@ export function CalendarSubscriptionPanel({authority}:{authority:string}){
  // Authority is server-bound; replacing it destroys all transient private state.
  },[authority,refresh]);
  async function submit(kind:'ISSUE'|'ROTATE'|'REVOKE',retry=false){
-  if(!visible.current||busyNow.current||pending.current&&!retry||!status||!('generation' in status))return;
-  const command=retry&&pending.current?pending.current:{kind,operationId:crypto.randomUUID(),authority,expectedGeneration:status.generation};pending.current=command;
+  if(!visible.current||busyNow.current||pending.current&&!retry||status?.state==='unauthorized')return;
+  const original=retry?pending.current:null;
+  if(!original&&(!status||!('generation' in status)))return;
+  const command:CalendarCommand=original??{kind,operationId:crypto.randomUUID(),authority,expectedGeneration:status&&'generation'in status?status.generation:''};pending.current=command;
   const at=++generation.current,operation=++work.current,controller=new AbortController();request.current?.abort();request.current=controller;busyNow.current=true;setBusy(true);setUrl(null);setNotice('');
   try{const response=await fetch('/api/employee/calendar-subscriptions',{method:'POST',headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json','Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal,body:JSON.stringify(command)});
    if(at!==generation.current||!visible.current)return;
