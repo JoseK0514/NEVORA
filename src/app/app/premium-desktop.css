@@ -323,7 +323,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* AL4-04, AL4-05, AL4-12, TCD-14: Time exports figures under their headers, an inset on the totals, kit card insets and gaps, names in the row role. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class$="__hours"] { justify-content: flex-end; }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class$="__totals"] { padding: var(--nv-s-3) var(--nv-s-4); }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"]:is([class$="__card"], [class*="__card "]):not([class*="__employeeCard"]) { padding: var(--nv-s-5); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"]:is([class$="__card"], [class*="__card "]):not([class*="__employeeCard"]):not([class*="__mapping"]) { padding: var(--nv-s-5); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class*="__mapping"] > summary { padding: var(--nv-s-5); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class*="__employeeCard"] > * { padding-inline: var(--nv-s-5); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports :is([class*="payroll-export-module"][class$="__root"], [class*="payroll-export-module"][class$="__workspace"]) { gap: var(--nv-s-4); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports.premium-exports.premium-exports form.employee-form > fieldset > legend[class], html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports.premium-exports.premium-exports form.employee-form > fieldset > legend { font: var(--nv-t-row); color: var(--nv-ink); }
@@ -431,7 +432,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 }
 
 /* Round 2 alignment fixes. */
-@media (min-width: 1100px) {
+@media (min-width: 1060px) {
   /* AL4-21: at this width every location chip fits, so the strip has no edge fade. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page .schedule-location-control .segmented { -webkit-mask-image: none; mask-image: none; }
 }
@@ -552,4 +553,16 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-week-day > span { font-size: .875rem; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-week-day strong { font-size: 1.25rem; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-shift-copy > strong { font-size: 1.0625rem; }
+}
+
+/* Round 5 alignment fixes. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* AL4-32: open Shift options span the whole row, from the time's edge, instead of a 150px column. */
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-shift:has(> details.my-shift-options[open]) { grid-template-columns: minmax(0, 1fr); }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-shift > details.my-shift-options[open] { grid-column: 1 / -1; justify-self: stretch; width: auto; max-width: none; }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule details.my-shift-options[open] > .my-shift-options-body { max-width: none; width: auto; }
+  /* AL4-33: Employee Home's clock Refresh starts on the card's text edge (its 12px hit area overhangs to the left). */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-home .employee-time-controls > .employee-time-refresh:first-child { margin-inline-start: -12px; }
+  /* AL4-34: the collapsed sidebar shows the wordmark alone. */
+  html body .app-shell.nevora-portal.nevora-portal .sidebar[data-collapsed="true"] .login-brand-module { display: none; }
 }

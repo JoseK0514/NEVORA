@@ -247,3 +247,88 @@ Chromium. New images are in `…/scratchpad/inspect/alignment/r4/` and `shots/r4
 - **For the widths-roles inspector, not my area:** as `AUDIT-E`, `/app/updates` shows the "Message today's team" button (292–1380). Confirm employees should see it.
 
 Open: 0 P0, 3 P1, 4 P2
+
+## Round 5 (exit round)
+
+October 19, 2026, evening · Preview on `8012d97`, same URL and states. Coverage:
+- **Manager and Owner:** every page at 761, 1023, 1179, 1180 and 1440 (Owner adds Payroll runs).
+- **Text size:** 125% and 150% at 1024 and 1440 on Home, Inbox, Team overview, Team, Schedule and Timecards.
+- **Sidebar collapsed:** at 1024 and 1440.
+- **Employee:** all twelve pages at 1023 and 1440, including `?view=open` and `?intent=swap`.
+- **Lead:** Home, My schedule, Requests overview, Shift requests, My time, My pay, Profile and Notifications at 1023 and 1440.
+- **Special Home states:** `AUDIT-ON`, `AUDIT-BREAK` and `AUDIT-LONG` Home at 1024 and 1440.
+- **Phones:** 320 and 390 for Manager and Employee.
+- **Browsers:** Chromium throughout; WebKit spot checks on Time exports, Inbox, My time and the tab-row bands.
+
+I ran an automated sweep on every page. For each card it checks:
+- the first text or icon against the card's 20px edge
+- radius and shadow
+- the gap to the card below in the same column
+- band height and sideways overflow
+
+I then judged each flag by screenshot and measurement; false flags are noted below. New images are in `…/scratchpad/inspect/alignment/r5/` and `shots/r5*`. References are to `8012d97`.
+
+### Status of open findings
+
+| ID | Status | Measurement now |
+|---|---|---|
+| AL4-21 | **Partly fixed** | No fade from 1100. But the strip already fits from about 1068 (at 1099 scrollWidth 760 = clientWidth 760), and the fade is still on at 1068–1099, dimming the last 24px of "Not started". It's a 32px-wide window, and it moves with the number of locations. Fix: switch the fade on by overflow (`data-overflow`, as WR-52 does), not by width. P2. |
+| AL4-22 | **Fixed** | Current status and Today are radius 16 with the kit shadow at 1024 and 1440, padded 20 with equal bottoms (601/601). WebKit is the same. |
+| AL4-23 | **Fixed** | The Employee "Your timecard" card has 20px side padding, so content starts at 312 (280 at 1024). The period panel is a kit card. My time, Profile and Updates sit on the text edge. |
+| AL4-25 | **Fixed** | Every sibling under one tab row has its title baseline at 212. That covers Employee Requests (Overview, Time off, Shift requests, Availability) and Pay (My pay, My time, Timecards), and Owner's Timecards, Payroll and Time exports.<br>From 1024 every band is 184. At 761–1023 they're 176–200, all within the cap. WebKit: 212.5 and 184. |
+| AL4-26 / AL4-29 | **Fixed** | At 768–1179 Request pages is a list: three 52px rows, icons at 280/312, one-line labels at 324/356. At 1440 it's three across (292/489/685), one line each. At 200% it's a list at both 1024 and 1440. No word splits anywhere. WebKit is the same. |
+| AL4-28 | **Fixed** | The employee card heading is at 364, the same as Pay period's 364. The selection bar, column header and rows start at 312 (names at 366), and the footnote at 312. WebKit is the same. |
+| AL4-30 | Coordinator's, not counted | Still present: Inbox's band is 234px at 125% and 282px at 150%, with the empty area below the summary visible at 150% (`shots/r5z150-AUDIT-M-_app_inbox-1440.png`). |
+
+### New findings, round 5
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL4-31 | Time exports · M and O · 761–1440 | "Import mapping" card (`[class*="__mapping"]`, a `details`) | **Its content is 24px right of every other card:** icon tile at 336 against Pay period's 312, and title at 384 against 364 (1440); 304 against 280 at 1024 and 761. The collapsed card is 124px tall (it was 84 in round 2). | r5/c-ex-1440.png (lower card); JSON `r5/j-imp.json` | `premium-desktop.css` AL4-12 rule: the 20px card padding now matches `__mapping` too. Its `summary` already has `padding: 20px 24px`, so the two add up. This is the same pattern as AL4-28, on the one card the round-4 fix didn't exclude. | Exclude it: `:not([class*="__employeeCard"], [class*="__mapping"])` on the card-padding rule. Then set `[class*="__mapping"] > summary { padding: var(--nv-s-5); }`, so its icon sits at 312/280 and the closed card is 84px. | P1 |
+| AL4-32 | My schedule `?intent=swap` (and any open "Shift options") · E and L · 1024, 1440 | The open shift options in each week row | The options body is held in the row's 150px button column (854–1004 at 1440; 806–956 at 1024):<br>• "Your shift stays yours until a swap completes or your manager approves Unable to work." wraps to **5 lines** (116px).<br>• Each row grows to about 196px.<br>• About 450px of the row to the left (from the time at 392) is empty.<br>Seven rows repeat it. | shots/r5E-AUDIT-E-_app_schedule_intent_swap-1440.png | `.employee-schedule-shift.my-shift` is a grid `450px 150px`, and the open `details.my-shift-options` stays in column 2. | In the desktop block: `.my-shift:has(> .my-shift-options[open]) > .my-shift-options { grid-column: 1 / -1; }`, with the options body left-aligned at the time's edge (392/364) and the summary kept at the right. The note then takes 1–2 lines. | P2 |
+| AL4-33 | Employee and Lead Home · all Employee accounts · 1024, 1440 | "Refresh" in the Clock status card | The Refresh button's icon is **12px right of the card's text edge**: 324 against the "Clock status" icon and text at 312 (292 against 280 at 1024). The button box starts on the edge, but has 12px padding inside it. | shots/r5H-AUDIT-LONG-_app-1024.png | A ghost button with `padding: 0 12px` and no negative margin. | `margin-inline-start: -12px` on that button (desktop block), so the icon sits on the text edge and the 44px target stays. | P2 |
+| AL4-34 | Shell, sidebar collapsed · every role · 1024, 1440 | Brand lockup | The wordmark shrinks to 54px (12.5–66.5), but "Workforce" stays at 13px and measures 66.4px (6.28–72.72). The label is **wider than the wordmark** and overhangs the lockup box by 6px on each side, ending 7px from the sidebar's edges (0–80). The expanded sidebar is fine (wordmark 136px, label 78px centred). | shots/r5c-AUDIT-M-_app_inbox-1440.png | The collapsed state scales the wordmark SVG to the 70px lockup but keeps the module label's text size (TCD-12, 13px in rem). | `.sidebar[data-collapsed="true"] .login-brand-module { display: none; }`, leaving the wordmark alone (the brand link keeps its accessible name), or shorten the label to fit the wordmark. Judgment: small, but it's the first thing in the collapsed shell. | P2 |
+
+### Checked and correct in round 5
+
+- **Manager and Owner, every page:**
+  - Band text equals card text: 280 at 761 and 1023, 312 at 1179–1440, and 112/148 with the sidebar collapsed (header trail at 112, the same as the band edge).
+  - Kit cards have radius 16, the kit shadow and 16px gaps.
+  - No sideways overflow.
+  - Bands at 100% text are 156–200px.
+  - False sweep flags, checked:
+    - Schedule toolbar: its first text follows the period control, which starts on the edge.
+    - Location chips: inner selected chip.
+    - Timecards: rows start with the checkbox column at 312.
+    - Payroll: the 58px "gap" holds the "Next step" line.
+    - Updates: the compose button and note.
+- **Collapsed sidebar (1024 and 1440):**
+  - The rail is 80px wide.
+  - Item icons are centred at x 39.5 (rail centre 40), with items 12–67, 36px tall, and icons on the row centre.
+  - The toggle is centred.
+  - Group gaps are kept.
+- **Header (1023 and 1179):** actions centred at y 32. The account menu's right edge equals the band's right edge (991 and 1147). The trail starts at the band edge.
+- **Employee and Lead, all twelve pages:**
+  - Band text equals card text (280/312).
+  - Sibling tab rows share one title line.
+  - My schedule's two columns (gap 16, equal tops) and Profile's two panels (tops 263/263) hold.
+  - Quick actions use a 2×2 grid with 12px gaps.
+  - `AUDIT-LONG`'s name stays on one line at 1024 ("Hi, María José.").
+  - `AUDIT-ON` and `AUDIT-BREAK` Home cards sit on the same edges.
+- **Large text (125% and 150%):** bands grow as expected (cap applies at 100%). Titles keep their width, filters and chips move to their own row, and Request pages stays a list.
+- **WebKit spot checks:**
+  - Time exports, Request pages, My time and the tab bands match Chromium to the pixel.
+  - Pay title baselines are 212.5 against Chromium's 212.
+  - The Inbox list, Request pages and pane all start at 245.
+- **Phones (320, 390):**
+  - **Manager:** Home, Inbox, Team, Schedule, Timecards and Time exports are unchanged from round 4, apart from live data. After 4 PM the Inbox rows read "8:00 AM – 4:00 PM / No clock-in / Review timecard", and hour totals grew.
+  - **Employee:** Home, My schedule, Profile and Requests overview have identical card edges, radii and padding. Home's band at 320 is 24px taller only because the summary changed with the time of day ("Next shift tomorrow…" wraps one more line).
+
+### Gaps
+
+- No new pass at 200% text this round; round 4 covered it on Inbox, Team overview and Schedule.
+- Owner Payroll runs was checked for band and card edges only; its inner layout is Wave B's.
+- **For the type inspector, not my area:** at 1023 the header still shows the account name, although ROUND.md says it gives way below 1100px.
+- `/api/manager/inbox-count` returns 404 on this branch (known; Codex's route).
+
+Open: 0 P0, 1 P1, 4 P2
