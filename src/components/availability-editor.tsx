@@ -91,7 +91,8 @@ export function AvailabilityEditor({ initialAvailability, weekStart, locked = fa
     catch (error) { unstable_rethrow(error); setFailed(true); }
   }
   return <form action={save} className={`av-editor${employeeView ? " av-employee-editor" : ""}`} aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
-    {failed ? <p className="form-error" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
     <AvailabilityFields initialAvailability={initialAvailability} weekStart={weekStart} locked={locked} />
+    {/* IS-75: the alert sits next to Save, where the person is looking. */}
+    {failed ? <p className="form-error" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
   </form>;
 }

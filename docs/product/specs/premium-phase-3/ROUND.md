@@ -15,6 +15,14 @@
   - AL-P3-13, -22, -25, -26, -29, -30, -31.
   - The TC-P3 wording items.
   - The shared submit button keeps its size while sending.
+- **Round 4 interaction (local) open items, for Codex to fix on the candidate if still present (Jose approved):**
+  - IS-74: focus falls to `<body>` while sending in Availability, the My time correction, the calendar link, the swap and the Updates acknowledge. Keep the button focusable (`aria-disabled`) like `EmployeeSubmitButton`.
+  - IS-77: Timecards removes the card on blur or offline but keeps "1 timecard" and Refresh enabled (`timecards.tsx:90,94`).
+  - IS-78: withdraw, correction, calendar and Timecards 401 messages need a Sign in link.
+  - IS-79: Updates acknowledge 401 copy and announcement.
+  - IS-80: calendar link failure: Create link stays disabled and the retry sits out of view.
+  - IS-82: a failed withdraw unchecks the confirmation box.
+  - **Already fixed here:** IS-75 (Availability alert next to Save), IS-76 (= P3-ST-14), IS-81 (inset focus rings).
 - **Known, not to file:**
   - One console 404 for `/api/manager/inbox-count` per Manager or Owner load before the backend merge.
   - Next's dev-only "negative time stamp" warning.
