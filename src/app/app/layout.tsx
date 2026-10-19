@@ -16,6 +16,7 @@ import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { preload } from "react-dom";
 import { AppShell } from "@/components/app-shell";
 import { readNotificationConfig } from "@/lib/notifications/config";
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -37,6 +38,8 @@ export async function generateViewport(): Promise<Viewport> {
 }
 
 export default async function PlatformLayout({ children }: { children: ReactNode }) {
+  // Wave C ST-11: fetch Inter with the page, so the first visit doesn't paint in a fallback font and then rewrap.
+  preload("/fonts/typeface/inter/variable.ttf", { as: "font", type: "font/ttf", crossOrigin: "anonymous" });
   const session = await requireSession();
   const workspace = await getWorkspace();
   const payrollCapabilities = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;
