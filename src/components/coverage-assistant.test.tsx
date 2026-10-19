@@ -53,7 +53,7 @@ it("keeps signed replacement review links and selected requirements intact", () 
 it("labels overnight context and empty results without an assignment action", () => {
   // Dates and times are kept whole with no-break spaces; compare the words.
   const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/\u00a0/g, " ");
-  expect(html).toContain("Ends Tue, Oct 13"); expect(html).toContain("· 8h");
+  expect(html).toContain("Ends Tue, Oct 13"); expect(html.replace(/<[^>]*>/g, "")).toContain("· 8h");
   expect(html).toContain("0 people"); expect(html).not.toContain("/app/schedule/new?");
   expect(html).toContain(props.backHref.replaceAll("&", "&amp;"));
 });
