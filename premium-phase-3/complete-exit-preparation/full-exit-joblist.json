@@ -13380,7 +13380,9 @@
         ]
       }
     ],
-    "engineScope": "Chromium320/390/landscape; WebKit390spots plus earlier engine-specific reproductions. Broaden only where recorded concerns or prior IDs require it."
+    "engineScope": "Chromium320/390/landscape; WebKit390spots plus earlier engine-specific reproductions. Broaden only where recorded concerns or prior IDs require it.",
+    "sourceContractNotApplicableConfigurations": 16,
+    "applicableConfigurations": 224
   },
   "fontSwap": {
     "routes": [
@@ -14174,5 +14176,11 @@
     "extraCandidateFindings": [
       "IS-RC-UPDATES-AUTH-01"
     ]
+  },
+  "sourceEligibilityClassifications": {
+    "file": "source-contract-classifications.json",
+    "notApplicableManualIDs": 16,
+    "manualIDsPreserved": 1546,
+    "runtimePasses": 0
   }
 }

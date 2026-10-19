@@ -92,5 +92,8 @@ plan['largeData'].update({'cells':320,'texts':[100,125,150,200],'requiredBriefCe
 plan['sharedManagementNormalSupplement']={'scopeFile':'normal-shared-scope.json','cells':480,'axe':True}
 plan['reconciledPhoneBaselineCells']=5280
 plan['staticCandidateAudit']={'sha':sha,'all135Crosswalk':'historical-all-135-crosswalk-cd764f6.json','extraCandidateFindings':['IS-RC-UPDATES-AUTH-01']}
+plan['sourceEligibilityClassifications']={'file':'source-contract-classifications.json','notApplicableManualIDs':16,'manualIDsPreserved':1546,'runtimePasses':0}
+plan['actionStateSweeps']['sourceContractNotApplicableConfigurations']=16
+plan['actionStateSweeps']['applicableConfigurations']=224
 (out/'full-exit-joblist.json').write_text(json.dumps(plan,indent=2))
 print(json.dumps({'baseline':4480,'passiveGeometry':776,'duplicateGeometryVisits':0,'shell':320,'largeData':320,'readStateSequences':plan['readStateSweeps']['sequences'],'readStateObservations':plan['readStateSweeps']['maximumStateObservations'],'actionConfigurations':plan['actionStateSweeps']['surfaceConfigurations'],'fontSwap':plan['fontSwap']['cells'],'priorIDs':len(ledger),'allAppRouteTemplates':len(route_pages),'previewStarted':False,'browserStarted':False}))

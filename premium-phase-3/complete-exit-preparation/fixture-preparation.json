@@ -104,5 +104,27 @@
     "target": "/workspace/NEVORA/node_modules",
     "sourcePackageLockSha256": "eb022d968acfd69c7c44d5df1ecca537e987e01ef0a945b52645fad6ed1f670c",
     "rule": "Ignored source link only; approved launcher must dereference physical node_modules inside owned Turbopack mirror. No app files changed."
+  },
+  "phase3OwnEntryExtension": {
+    "module": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-lead-fixture.mts",
+    "export": "seedPhase3LeadFixture",
+    "moduleSha256": "dfed9bd759ad54d8c91f7495a1553dc8286156b64463470f0f870c5cf4b65065",
+    "receipt": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-lead-fixture-preparation.json",
+    "initialOnly": true,
+    "initializedBeforeListen": false,
+    "runtimeRun": false,
+    "requiredEnvironment": {
+      "INSPECTION_PHASE3_ENTRY_FIXTURE": "yes",
+      "INSPECTION_INITIAL_EXTENSION": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-lead-fixture.mts"
+    },
+    "slot": "After exact-source seed-extra/templates; before communication publication/listen; exclusive with supplemental Payroll fixture",
+    "canonicalReadback": "Both own time and correction context must confirm real entry+break targets before listen",
+    "domReadbackModule": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-entry-fixture-readback.mjs",
+    "domReadbackModuleSha256": "0efb0914e5609c1ac481e89a8836cd52a897124e14c4c21aeeb6f5b57fa01d9b",
+    "domReadbackPending": true
+  },
+  "canonicalRuntimeResolvers": {
+    "file": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/read-contract-resolvers.json",
+    "preserveCaseIDs": true
   }
 }

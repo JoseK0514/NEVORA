@@ -18,6 +18,18 @@ for engine in p['engines']:
 for prior in json.loads((out/'prior-findings-ledger.json').read_text())['findings']:add('prior-id',finding=prior['id'],area=prior['area'],sourceReport=prior.get('sourceReport'),sourceLine=prior.get('sourceLine'))
 for route in json.loads((out/'all-route-placeholder-inventory.json').read_text())['routes']:add('placeholder-route-access',routeTemplate=route['routeTemplate'],checks='Resolve authorized roles, fixture ID and actual loading boundary on exact candidate. Then create every required size/text/browser case for that admissible role-route pair.')
 for finding in p.get('staticCandidateAudit',{}).get('extraCandidateFindings',[]):add('candidate-finding',finding=finding,checks='Exact-final-source reproduction and fresh closure; preserve original135-ID ledger separately.')
-(out/'manual-queue.json').write_text(json.dumps({'sha':p['sourcePreparedAgainst'],'status':'pending-resource-release','rules':'Every case is pending. Chromium320/390/landscape judgment and WebKit spots/reproduction cases follow the brief. Full4480-cell baseline retained. A record with errors or an unmeasured state cannot close as passed. Parent independent exact-candidate evidence may be linked where case dimensions and state match.','cases':rows},indent=1))
+classification_file=out/'source-contract-classifications.json'
+if classification_file.exists():
+ classification=json.loads(classification_file.read_text())
+ assert classification['sha']==p['sourcePreparedAgainst'],'Source-contract classifications must match the exact prepared source'
+ ids=set(classification['caseIDs'])
+ assert len(ids)==classification['count']==16
+ for row in rows:
+  if row['id'] in ids:
+   assert row['stage']=='action-state' and row['surface']=='Notification mark read' and row['account'] in ['AUDIT-E','AUDIT-LEAD']
+   row.update({'status':'not-applicable','evidence':[str(classification_file)],'note':'Exact combined-source Notifications page grants Mark read only to Manager/Owner; source-based exclusion, no runtime pass.','classificationBasis':'source-contract','sha':p['sourcePreparedAgainst']})
+ assert len([row for row in rows if row['status']=='not-applicable'])==16
+rules='Required Chromium320/390/landscape judgment and WebKit spots/reproductions remain. Full4480 core/5280 combined baseline retained. Explicit source-contract exclusions grant no runtime pass. Every other applicable case remains pending; errors or unmeasured required states cannot close as passed. Parent exact-source evidence may be linked only where dimensions and state match.'
+(out/'manual-queue.json').write_text(json.dumps({'sha':p['sourcePreparedAgainst'],'status':'pending-resource-release','rules':rules,'cases':rows},indent=1))
 from collections import Counter
 print(json.dumps({'manualQueue':len(rows),'byStage':dict(Counter(r['stage'] for r in rows))}))

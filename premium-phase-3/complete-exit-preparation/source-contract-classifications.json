@@ -1,0 +1,56 @@
+{
+  "sha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "classification": "not-applicable",
+  "basis": "Exact-source role contract, not a runtime pass",
+  "createdAt": "2026-10-19T22:47:48.785026+00:00",
+  "parentInstruction": "Root explicitly requested Employee/Lead Notification Mark-read source-based not-applicable classification while preserving all1546 IDs",
+  "sourceCitations": [
+    {
+      "file": "src/app/app/notifications/page.tsx",
+      "line": 13,
+      "rule": "markReadAllowed={manager}; manager is OWNER or MANAGER at line10"
+    },
+    {
+      "file": "src/components/employee-account-panel.tsx",
+      "line": 52,
+      "rule": "onMarkRead callback supplied only when markReadAllowed is true"
+    },
+    {
+      "file": "src/components/notification-inbox.tsx",
+      "line": 83,
+      "rule": "Mark read action rendered only when onMarkRead and unread"
+    }
+  ],
+  "sourceHashes": {
+    "src/app/app/notifications/page.tsx": "dc7b5ba1285b448ceadd1edad2a9eead0295cdee81c4da2a137c6431780204ef",
+    "src/components/employee-account-panel.tsx": "6fa6d60bdfbb776aff4bac637203916bbd6bbf77e5556d15bb708e279844933b",
+    "src/components/notification-inbox.tsx": "91e67414ae8b07f95024fcb2b2aec0853db1c77cb21474931bc35f5dd0a920a8"
+  },
+  "surface": "Notification mark read",
+  "accounts": [
+    "AUDIT-E",
+    "AUDIT-LEAD"
+  ],
+  "caseIDs": [
+    "action-state-0610d86f803fb1661e58",
+    "action-state-53214c45782f2916e344",
+    "action-state-81a401a8bbe40a89a426",
+    "action-state-3d7da11242d3669c3463",
+    "action-state-0c4a013e70f569021712",
+    "action-state-fdd22add7880fa92387e",
+    "action-state-7778cec288145e3ff17e",
+    "action-state-0bdbfe43f7a6816907d1",
+    "action-state-1d55adb953304dbd3d04",
+    "action-state-a7a1e5198c647e8c0c6d",
+    "action-state-95a8d627b06913ca5259",
+    "action-state-a594bbb05967a46e26d4",
+    "action-state-cc0c0c000e85c716e009",
+    "action-state-e9b3f525e7a00069f3f2",
+    "action-state-e59d86058eef77729573",
+    "action-state-a791335c8da067ce9db2"
+  ],
+  "count": 16,
+  "managerOwnerAction": "Remains admissible and requires separate own Manager/Owner evidence; no pass inferred",
+  "runtimeStarted": false,
+  "appEdited": false
+}
