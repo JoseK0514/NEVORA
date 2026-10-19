@@ -433,10 +433,12 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame [data-nv-page] [class*="timecards-module"][class*="__periodPanel"] {
     padding: var(--nv-s-5); border: 0; border-radius: var(--nv-r-card); box-shadow: var(--nv-e1); background: var(--nv-canvas);
   }
-  /* AL4-25: sibling pages under one tab row keep one band height and title line: a band with no eyebrow keeps the eyebrow line's 20px. */
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband:not(:has(.nv-pageband__eyebrow-row, .nv-pageband__bar)) { padding-top: calc(var(--nv-s-4) + 48px + 20px); }
 }
 @media (min-width: 1024px) {
   /* AL4-24: Profile's two panels start on one line (the settings column's label sits in the space above the work card). */
   html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-layout > .employee-account-panel { margin-top: 2.375rem; }
+}
+@media (min-width: 1024px) {
+  /* AL4-25: sibling pages under one tab row keep one band height and title line: a band with no eyebrow keeps the eyebrow line's 20px. */
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband:not(:has(.nv-pageband__eyebrow-row, .nv-pageband__bar)) { padding-top: calc(var(--nv-s-4) + 48px + 20px); }
 }
