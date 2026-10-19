@@ -536,3 +536,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* Controls on the title row overhang it by 2px each side, so the row is the title's 40px and every title sits on the same line. */
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] > .nv-pageband .nv-masthead__title { align-self: start; }
 }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* TC-DESKTOP-KBD-01 (header TC-P4-22): the visible shortcut uses the desktop callout floor and scales with text. */
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger kbd { font: var(--nv-t-callout); }
+}
