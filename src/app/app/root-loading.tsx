@@ -23,7 +23,7 @@ const shapes: [string | RegExp, Shape][] = [
   ["/app/my-pay", { route: "mypay", label: "your pay", shape: "cards", band: 128, overlap: false }],
   ["/app/profile", { route: "profile", label: "profile", shape: "cards", band: 128, overlap: false }],
   // Wave B: a direct load of one update draws Update detail's shape; its band heights are in premium-wave-b.css.
-  [/^\/app\/updates\/[^/]+$/, { route: "wb-update", label: "update", shape: "cards", band: 288, overlap: false }],
+  [/^\/app\/updates\/[^/]+$/, { route: "wb-update", label: "update", shape: "cards", band: 288 }],
   ["/app/updates", { route: "updates", label: "updates", shape: "list", band: 128, overlap: false }],
   ["/app/notifications", { route: "notifications", label: "notifications", shape: "list", band: 128, overlap: false }],
 ];
