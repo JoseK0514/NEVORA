@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T21:50:18.625Z. p35-wave-a-1283c8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T21:52:19.540Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,9 +22,9 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1658 | 1674 | 3332 / 12580 |
-| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 2115 | 1213 | 3328 / 12716 |
-| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 1074 | 866 | 1940 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1691 | 1677 | 3368 / 12580 |
+| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 2144 | 1216 | 3360 / 12716 |
+| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 1091 | 869 | 1960 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / pending inventory |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1658 passed; 1674 failed. Completed checker batches: 239. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1691 passed; 1677 failed. Completed checker batches: 242. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -2207,6 +2207,9 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1658 passed;
 | /app/updates/compose | AUDIT-BREAK | 430 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-BREAK 430 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
 | /app/exchange/callout?shiftId=cloud-payroll-qa-a | payroll-qa-a | 430 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium payroll-qa-a 430 100% /app/exchange/callout?shiftId=cloud-payroll-qa-a small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · No designat» 12px; strong. «This shift is still assigned t» 13px |
 | /app/exchange/swap?sourceShiftId=cloud-payroll-qa-a | payroll-qa-a | 430 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium payroll-qa-a 430 100% /app/exchange/swap?sourceShiftId=cloud-payroll-qa-a small=span. «Your shift» 13px; span. «Monday, Oct 26, 2026 · Main Of» 12px; summary. «How a swap works» 14px |
+| /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f | payroll-qa-a | 430 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium payroll-qa-a 430 100% /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f small=span.communication-status.attention «Acknowledgement required» 12px; strong. «Management» 14px |
+| /app/updates/compose | payroll-qa-a | 430 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium payroll-qa-a 430 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
+| /app/updates/compose | payroll-qa-a | 430 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium payroll-qa-a 430 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -2216,7 +2219,7 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1658 passed;
 
 ## claude/p35-profile-6cdee8
 
-Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2115 passed; 1213 failed. Completed checker batches: 244. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
+Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2144 passed; 1216 failed. Completed checker batches: 246. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -3458,6 +3461,9 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2115 passed;
 | /app/schedule/coverage | AUDIT-E | 430 | 125 | chromium | error | UI — claude/premium-phase-1 | FAIL chromium AUDIT-E 430 125% /app/schedule/coverage errors=console: A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:  - A server/client bran |
 | /app/updates/compose | AUDIT-E | 430 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-E 430 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
 | /app/updates/compose | AUDIT-E | 430 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-E 430 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
+| /app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0 | AUDIT-LEAD | 430 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-LEAD 430 100% /app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0 small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · Designated » 12px; strong. «This shift is still assigned t» 13px |
+| /app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-0 | AUDIT-LEAD | 430 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-LEAD 430 100% /app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-0 small=span. «Your shift» 13px; span. «Monday, Oct 26, 2026 · Main Of» 12px; summary. «How a swap works» 14px |
+| /app/my-time | AUDIT-LEAD | 430 | 100 | chromium | layout shift | UI — claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 430 100% /app/my-time cls=0.0137 |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -3467,7 +3473,7 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2115 passed;
 
 ## claude/p35-wave-a-1283c8
 
-Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1074 passed; 866 failed. Completed checker batches: 137. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
+Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1091 passed; 869 failed. Completed checker batches: 139. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -4350,6 +4356,10 @@ Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1074 passed;
 | /app/my-time | AUDIT-LONG | 320 | 100 | chromium | layout shift | UI — claude/premium-phase-1 | FAIL chromium AUDIT-LONG 320 100% /app/my-time cls=0.0154 |
 | /app/profile | AUDIT-LONG | 320 | 100 | chromium | layout shift | UI — claude/p35-profile-6cdee8 (management) / claude/premium-phase-1 (Employee/Lead) | FAIL chromium AUDIT-LONG 320 100% /app/profile cls=0.016 |
 | /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 | AUDIT-LONG | 320 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LONG 320 100% /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 small=span.communication-status.attention «Acknowledgement required» 12px; strong. «Management» 14px |
+| /app/updates/compose | AUDIT-LONG | 320 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LONG 320 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
+| /app/updates/compose | AUDIT-LONG | 320 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LONG 320 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
+| /app | AUDIT-ON | 320 | 100 | chromium | small text | UI — claude/premium-phase-1 | FAIL chromium AUDIT-ON 320 100% /app small=strong. «Main Office» 14px cls=0.0261 |
+| /app | AUDIT-ON | 320 | 100 | chromium | layout shift | UI — claude/premium-phase-1 | FAIL chromium AUDIT-ON 320 100% /app small=strong. «Main Office» 14px cls=0.0261 |
 
 ### Timeout and server observations (separate from UI findings)
 

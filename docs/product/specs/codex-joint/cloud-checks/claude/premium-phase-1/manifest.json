@@ -5504,6 +5504,75 @@
       "code": 1,
       "passed": 15,
       "failed": 1
+    },
+    {
+      "name": "00240-matrix-payroll-qa-a-chromium-430",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T21-50-54-208Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00240-matrix-payroll-qa-a-chromium-430.log",
+      "args": [
+        "--routes",
+        "/app/profile,/app/requests,/app/requests/hub,/app/schedule",
+        "--accounts",
+        "payroll-qa-a",
+        "--widths",
+        "430",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "2017abc13ea9f6a6bcbcd9b4158f5d88dd2e1ba374ff5d065004197bffad1061",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
+    },
+    {
+      "name": "00241-matrix-payroll-qa-a-chromium-430",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T21-51-56-017Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00241-matrix-payroll-qa-a-chromium-430.log",
+      "args": [
+        "--routes",
+        "/app/schedule/coverage,/app/timecards,/app/updates,/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+        "--accounts",
+        "payroll-qa-a",
+        "--widths",
+        "430",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "cb325da5106a826611c9662c2652eaba4b4ae7c9215b577ddb052570c7e3e22d",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
+    },
+    {
+      "name": "00242-matrix-payroll-qa-a-chromium-430",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T21-52-11-781Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00242-matrix-payroll-qa-a-chromium-430.log",
+      "args": [
+        "--routes",
+        "/app/updates/compose",
+        "--accounts",
+        "payroll-qa-a",
+        "--widths",
+        "430",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "faab3c788deccd84cf3aa50f41fae9b343cd83ca2dc87adcc3717ade7d94cc00",
+      "code": 1,
+      "passed": 2,
+      "failed": 2
     }
   ],
   "planned": 12580,
