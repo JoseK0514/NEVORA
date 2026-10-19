@@ -1,0 +1,30 @@
+{
+  "finding": "AL-WA-10",
+  "severity": "P1",
+  "candidateOnlyCommit": "06be59aee4ab8869656209fa65dc04b3dc912449",
+  "parent": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "branch": "codex/release-candidate",
+  "appRefPublished": false,
+  "immutable33Changed": false,
+  "sourceFile": "src/app/app/schedule/new/page.tsx",
+  "beforeBlob": "8880ede81152b0827e7c4567758f141e1f4d2daa",
+  "afterBlob": "ad0ff222c298ef0f8bcc7d565cdb751cb3d6b947",
+  "beforeByteIdenticalTo": [
+    "cd764f614be8ca5b5215be19d46e07cf968638d7",
+    "15a0fcd70d49060bb21738de67f4d8feb9b96d58"
+  ],
+  "changes": "Outer div owns nv-content wa-narrow; nested ConfigurationForm keeps wa-form. Business command/hidden fields/wording/authorization unchanged.",
+  "focusedTests": {
+    "passed": 14,
+    "failed": 0,
+    "files": 3,
+    "exitCode": 0
+  },
+  "focusedLintExitCode": 0,
+  "typecheckExitCode": 0,
+  "browserFixProof": "pending; original finding remains open on frozen source; no fresh fixed-SHA browser pass claimed",
+  "fullCandidateGates": "not rerun on06be; parent45 checkpoint had6knownlint errors inunrelated IS-P4-19 closureguard, whose exported correction remains required",
+  "report": "../../../p35-wave-a/combined-cd764f6-cloud-full/alignment.md",
+  "reviewPatch": "../later-unpublished-patches/46-AL-WA-10.patch",
+  "recordedAt": "2026-10-19T23:25:38.651699+00:00"
+}

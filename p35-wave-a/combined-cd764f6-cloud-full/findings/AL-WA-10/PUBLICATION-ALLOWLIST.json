@@ -1,0 +1,70 @@
+{
+  "id": "AL-WA-10",
+  "sourceSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "candidateRepairSha": "06be59aee4ab8869656209fa65dc04b3dc912449",
+  "freezeAt": "2026-10-19T23:28:12.671605+00:00",
+  "measurementCount": 32,
+  "root": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full",
+  "files": [
+    {
+      "path": "alignment.md",
+      "bytes": 3209,
+      "sha256": "632a398696e83b575efdd9d63e0a47540a600f8ecd21f7c068b4a83b6529d09a"
+    },
+    {
+      "path": "findings/AL-WA-10/README.md",
+      "bytes": 1049,
+      "sha256": "9eefd0c9430983f35de4166b99173805de7c9075ea83f86f040b35e6c5e9e4c7"
+    },
+    {
+      "path": "findings/AL-WA-10/measurement-and-uniqueness.json",
+      "bytes": 53131,
+      "sha256": "c3a67e2130f9017fd7b1666f501e7924a03520932a06a2ce8355ca52a70f224e"
+    },
+    {
+      "path": "findings/AL-WA-10/REDACTION-CUSTODY.md",
+      "bytes": 2023,
+      "sha256": "a722940348afad98f4e1fa305b53f3e725e26f9265c194223735a96deb5b0742"
+    },
+    {
+      "path": "findings/AL-WA-10/chromium390-100-top.png",
+      "bytes": 55949,
+      "sha256": "d7f93bb154675263dd44dfcf908c28b2b4d7db0a31cb4058e9d6ac53a3a001d4"
+    },
+    {
+      "path": "findings/AL-WA-10/chromium390-100-bottom.png",
+      "bytes": 49426,
+      "sha256": "12aa3a2ef4d768e341157f655d082a4e30cec06495794a9988042a97100f5e9b"
+    },
+    {
+      "path": "findings/AL-WA-10/chromium320-200-top.png",
+      "bytes": 52271,
+      "sha256": "0d0fe5b4d6005764e62a8b16811f4c4018723859d4782af1949445004bbeab42"
+    },
+    {
+      "path": "findings/AL-WA-10/chromium320-200-bottom.png",
+      "bytes": 57116,
+      "sha256": "cafff4b2564eca590ce32ad5d3cb8f13637b22fef2ab54a11ce00154d74cd84c"
+    },
+    {
+      "path": "findings/AL-WA-10/webkit390-100-top.png",
+      "bytes": 72939,
+      "sha256": "2d4de13c331aa28d7ef0fc0248f9f47014282b5b6e2b91254ca4d3f93eda7651"
+    },
+    {
+      "path": "findings/AL-WA-10/chromium1440-100-top.png",
+      "bytes": 92268,
+      "sha256": "5265ab8dd725d1279511cd5e03bfbffa576c0688049cd63e9ab196c14dde8aa8"
+    }
+  ],
+  "allowlistManifestMayBeIncluded": true,
+  "excluded": [
+    "serial-evidence/**",
+    "analysis/**",
+    "progress.json",
+    "README.md",
+    "findings/AL-WA-10/AL-WA-10.patch",
+    "all private preview files"
+  ],
+  "claim": "Confirmed open on immutable cd; no fixed-source browser or full exit credit"
+}

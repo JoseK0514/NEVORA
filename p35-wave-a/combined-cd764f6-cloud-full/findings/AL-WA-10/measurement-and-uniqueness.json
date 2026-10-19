@@ -1,0 +1,2200 @@
+{
+  "id": "AL-WA-10",
+  "severity": "P1",
+  "status": "confirmed open; full exit in progress",
+  "reviewSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "sourceFile": "src/app/app/schedule/new/page.tsx",
+  "sourceBlob": "8880ede81152b0827e7c4567758f141e1f4d2daa",
+  "candidateHeadAtComparison": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "candidateFileByteIdentical": true,
+  "priorIdsCompared": [
+    "AL-WA-1",
+    "AL-WA-2",
+    "AL-WA-3",
+    "AL-WA-4",
+    "AL-WA-5",
+    "AL-WA-6",
+    "AL-WA-7",
+    "AL-WA-8",
+    "AL-WA-9",
+    "ST-WA-1",
+    "ST-WA-2",
+    "ST-WA-3",
+    "ST-WA-4",
+    "ST-WA-5",
+    "ST-WA-6",
+    "ST-WA-7",
+    "ST-WA-8",
+    "ST-WA-9",
+    "ST-WA-10",
+    "ST-WA-11",
+    "TC-WA-1",
+    "TC-WA-2",
+    "TC-WA-3",
+    "TC-WA-4",
+    "TC-WA-5",
+    "TC-WA-6",
+    "TC-WA-7",
+    "TC-WA-8",
+    "TC-WA-9",
+    "TC-WA-10",
+    "TC-WA-11",
+    "TC-WA-12",
+    "TC-WA-13",
+    "TC-WA-14",
+    "TC-WA-15",
+    "TC-WA-16",
+    "IS-WA-1",
+    "IS-WA-2",
+    "IS-WA-3",
+    "IS-WA-4",
+    "IS-WA-5",
+    "IS-WA-6",
+    "IS-WA-7",
+    "IS-WA-8",
+    "IS-WA-9",
+    "IS-WA-10",
+    "IS-WA-11",
+    "IS-WA-12",
+    "WR-WA-1",
+    "WR-WA-2",
+    "WR-WA-3"
+  ],
+  "uniqueCauseVersusPrior51": true,
+  "priorClosest": "AL-WA-8: a14px1024px narrow-column inset due old max-width including padding, not this form reset or real Review replacement. AL-WA-1 is Add split collapse; AL-WA-2 is Coverage split collapse.",
+  "sourceCauses": [
+    "src/app/app/schedule/new/page.tsx:73",
+    "src/app/app/premium-wave-a.css:17",
+    "src/components/kit/kit.css:106"
+  ],
+  "route": "/app/schedule/new?review=<actual actor-bound candidate hint; URL retained privately>",
+  "fixtureProof": "wave-a-positive-fixture.json repairReads/readCoverageRepairSelection + actual ready h1/facts/Save replacement captured",
+  "measurements": [
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00017/passive-geometry/cells/3665388b5aea3fd003aa.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "320",
+      "text": 125,
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 422,
+            "width": 320,
+            "height": 486,
+            "top": 422,
+            "right": 320,
+            "bottom": 908,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 354,
+            "top": 68,
+            "right": 320,
+            "bottom": 422,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1154,
+            "width": 320,
+            "height": 52,
+            "top": 1154,
+            "right": 320,
+            "bottom": 1206,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1218,
+            "width": 320,
+            "height": 52,
+            "top": 1218,
+            "right": 320,
+            "bottom": 1270,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00017/passive-geometry/cells/5e01ddea1e718f3c36a5.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "320",
+      "text": 100,
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 356,
+            "width": 320,
+            "height": 339,
+            "top": 356,
+            "right": 320,
+            "bottom": 695,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 288,
+            "top": 68,
+            "right": 320,
+            "bottom": 356,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 885,
+            "width": 320,
+            "height": 52,
+            "top": 885,
+            "right": 320,
+            "bottom": 937,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 949,
+            "width": 320,
+            "height": 52,
+            "top": 949,
+            "right": 320,
+            "bottom": 1001,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00017/passive-geometry/cells/b476fe9de669eafa477f.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "320",
+      "text": 200,
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 592.515625,
+            "width": 320,
+            "height": 789,
+            "top": 592.515625,
+            "right": 320,
+            "bottom": 1381.515625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 320,
+            "height": 516,
+            "top": 76.515625,
+            "right": 320,
+            "bottom": 592.515625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1859.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1859.515625,
+            "right": 320,
+            "bottom": 1911.515625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1923.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1923.515625,
+            "right": 320,
+            "bottom": 1975.515625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00017/passive-geometry/cells/e86dfe7050932431a28e.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "320",
+      "text": 150,
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 452.515625,
+            "width": 320,
+            "height": 608,
+            "top": 452.515625,
+            "right": 320,
+            "bottom": 1060.515625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68.515625,
+            "width": 320,
+            "height": 384,
+            "top": 68.515625,
+            "right": 320,
+            "bottom": 452.515625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1342.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1342.515625,
+            "right": 320,
+            "bottom": 1394.515625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1406.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1406.515625,
+            "right": 320,
+            "bottom": 1458.515625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00018/passive-geometry/cells/2220982537da21393436.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "390",
+      "text": 125,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 347,
+            "width": 390,
+            "height": 377.5,
+            "top": 347,
+            "right": 390,
+            "bottom": 724.5,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 279,
+            "top": 68,
+            "right": 390,
+            "bottom": 347,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 945.5,
+            "width": 390,
+            "height": 52,
+            "top": 945.5,
+            "right": 390,
+            "bottom": 997.5,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1009.5,
+            "width": 390,
+            "height": 52,
+            "top": 1009.5,
+            "right": 390,
+            "bottom": 1061.5,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00018/passive-geometry/cells/2bbc395298c490c1b22f.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "390",
+      "text": 200,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 522.015625,
+            "width": 390,
+            "height": 789,
+            "top": 522.015625,
+            "right": 390,
+            "bottom": 1311.015625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 78.015625,
+            "width": 390,
+            "height": 444,
+            "top": 78.015625,
+            "right": 390,
+            "bottom": 522.015625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1665.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1665.015625,
+            "right": 390,
+            "bottom": 1717.015625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1729.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1729.015625,
+            "right": 390,
+            "bottom": 1781.015625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00018/passive-geometry/cells/bcfa8903f760c94a1361.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "390",
+      "text": 100,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 332,
+            "width": 390,
+            "height": 339,
+            "top": 332,
+            "right": 390,
+            "bottom": 671,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 264,
+            "top": 68,
+            "right": 390,
+            "bottom": 332,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 819,
+            "width": 390,
+            "height": 52,
+            "top": 819,
+            "right": 390,
+            "bottom": 871,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 883,
+            "width": 390,
+            "height": 52,
+            "top": 883,
+            "right": 390,
+            "bottom": 935,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00018/passive-geometry/cells/fae5249317b28b9e8046.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "390",
+      "text": 150,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 454.015625,
+            "width": 390,
+            "height": 448,
+            "top": 454.015625,
+            "right": 390,
+            "bottom": 902.015625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 70.015625,
+            "width": 390,
+            "height": 384,
+            "top": 70.015625,
+            "right": 390,
+            "bottom": 454.015625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1154.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1154.015625,
+            "right": 390,
+            "bottom": 1206.015625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1218.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1218.015625,
+            "right": 390,
+            "bottom": 1270.015625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00019/passive-geometry/cells/3016d062ec743f8c2318.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "844x390",
+      "text": 125,
+      "documentWidth": 844,
+      "viewportWidth": 844,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 307,
+            "width": 844,
+            "height": 377.5,
+            "top": 307,
+            "right": 844,
+            "bottom": 684.5,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 844,
+            "height": 239,
+            "top": 68,
+            "right": 844,
+            "bottom": 307,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 624,
+            "y": 828,
+            "width": 220,
+            "height": 52,
+            "top": 828,
+            "right": 844,
+            "bottom": 880,
+            "left": 624
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 398,
+            "y": 828,
+            "width": 214,
+            "height": 52,
+            "top": 828,
+            "right": 612,
+            "bottom": 880,
+            "left": 398
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00019/passive-geometry/cells/49cdf9674b78079c87ee.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "844x390",
+      "text": 200,
+      "documentWidth": 844,
+      "viewportWidth": 844,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 360.515625,
+            "width": 844,
+            "height": 493,
+            "top": 360.515625,
+            "right": 844,
+            "bottom": 853.515625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 844,
+            "height": 284,
+            "top": 76.515625,
+            "right": 844,
+            "bottom": 360.515625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 524,
+            "y": 1043.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1043.515625,
+            "right": 844,
+            "bottom": 1095.515625,
+            "left": 524
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 192,
+            "y": 1043.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1043.515625,
+            "right": 512,
+            "bottom": 1095.515625,
+            "left": 192
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00019/passive-geometry/cells/7ffade6001dbdf615fc3.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "844x390",
+      "text": 150,
+      "documentWidth": 844,
+      "viewportWidth": 844,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 322.515625,
+            "width": 844,
+            "height": 416,
+            "top": 322.515625,
+            "right": 844,
+            "bottom": 738.515625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68.515625,
+            "width": 844,
+            "height": 254,
+            "top": 68.515625,
+            "right": 844,
+            "bottom": 322.515625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 595,
+            "y": 897.515625,
+            "width": 249,
+            "height": 52,
+            "top": 897.515625,
+            "right": 844,
+            "bottom": 949.515625,
+            "left": 595
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 339,
+            "y": 897.515625,
+            "width": 244,
+            "height": 52,
+            "top": 897.515625,
+            "right": 583,
+            "bottom": 949.515625,
+            "left": 339
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00019/passive-geometry/cells/c0ba3c0c082c7ef1a387.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "844x390",
+      "text": 100,
+      "documentWidth": 844,
+      "viewportWidth": 844,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 292,
+            "width": 844,
+            "height": 339,
+            "top": 292,
+            "right": 844,
+            "bottom": 631,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 844,
+            "height": 224,
+            "top": 68,
+            "right": 844,
+            "bottom": 292,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 656,
+            "y": 739,
+            "width": 188,
+            "height": 52,
+            "top": 739,
+            "right": 844,
+            "bottom": 791,
+            "left": 656
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 461,
+            "y": 739,
+            "width": 183,
+            "height": 52,
+            "top": 739,
+            "right": 644,
+            "bottom": 791,
+            "left": 461
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00020/passive-geometry/cells/86668dcc3945ef44521f.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "1440",
+      "text": 200,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 276,
+            "y": 409,
+            "width": 752,
+            "height": 493,
+            "top": 409,
+            "right": 1028,
+            "bottom": 902,
+            "left": 276
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 276,
+            "y": 93,
+            "width": 1120,
+            "height": 316,
+            "top": 93,
+            "right": 1396,
+            "bottom": 409,
+            "left": 276
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 708,
+            "y": 1092,
+            "width": 320,
+            "height": 52,
+            "top": 1092,
+            "right": 1028,
+            "bottom": 1144,
+            "left": 708
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 376,
+            "y": 1092,
+            "width": 320,
+            "height": 52,
+            "top": 1092,
+            "right": 696,
+            "bottom": 1144,
+            "left": 376
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00020/passive-geometry/cells/b800c68cf7fcfe9872a3.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "1440",
+      "text": 100,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 276,
+            "y": 345,
+            "width": 752,
+            "height": 339,
+            "top": 345,
+            "right": 1028,
+            "bottom": 684,
+            "left": 276
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 276,
+            "y": 93,
+            "width": 1120,
+            "height": 252,
+            "top": 93,
+            "right": 1396,
+            "bottom": 345,
+            "left": 276
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 852,
+            "y": 812,
+            "width": 176,
+            "height": 52,
+            "top": 812,
+            "right": 1028,
+            "bottom": 864,
+            "left": 852
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 667,
+            "y": 812,
+            "width": 173,
+            "height": 52,
+            "top": 812,
+            "right": 840,
+            "bottom": 864,
+            "left": 667
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00020/passive-geometry/cells/bc70767bcab1d5f12437.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "1440",
+      "text": 125,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 276,
+            "y": 361,
+            "width": 752,
+            "height": 377.5,
+            "top": 361,
+            "right": 1028,
+            "bottom": 738.5,
+            "left": 276
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 276,
+            "y": 93,
+            "width": 1120,
+            "height": 268,
+            "top": 93,
+            "right": 1396,
+            "bottom": 361,
+            "left": 276
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 816,
+            "y": 882,
+            "width": 212,
+            "height": 52,
+            "top": 882,
+            "right": 1028,
+            "bottom": 934,
+            "left": 816
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 600,
+            "y": 882,
+            "width": 204,
+            "height": 52,
+            "top": 882,
+            "right": 804,
+            "bottom": 934,
+            "left": 600
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00020/passive-geometry/cells/f020e9d5cee7e2f1c288.json",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "size": "1440",
+      "text": 150,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 276,
+            "y": 377,
+            "width": 752,
+            "height": 416,
+            "top": 377,
+            "right": 1028,
+            "bottom": 793,
+            "left": 276
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 276,
+            "y": 93,
+            "width": 1120,
+            "height": 284,
+            "top": 93,
+            "right": 1396,
+            "bottom": 377,
+            "left": 276
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 787,
+            "y": 952,
+            "width": 241,
+            "height": 52,
+            "top": 952,
+            "right": 1028,
+            "bottom": 1004,
+            "left": 787
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 535,
+            "y": 952,
+            "width": 240,
+            "height": 52,
+            "top": 952,
+            "right": 775,
+            "bottom": 1004,
+            "left": 535
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00022/passive-geometry/cells/a1a86f542d94d47dba5c.json",
+      "account": "QAOWNER",
+      "engine": "webkit",
+      "size": "390",
+      "text": 200,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 522.015625,
+            "width": 390,
+            "height": 789,
+            "top": 522.015625,
+            "right": 390,
+            "bottom": 1311.015625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 78.015625,
+            "width": 390,
+            "height": 444,
+            "top": 78.015625,
+            "right": 390,
+            "bottom": 522.015625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1709.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1709.015625,
+            "right": 390,
+            "bottom": 1761.015625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1773.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1773.015625,
+            "right": 390,
+            "bottom": 1825.015625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00022/passive-geometry/cells/d64d8fcd3a3365e8b81c.json",
+      "account": "QAOWNER",
+      "engine": "webkit",
+      "size": "390",
+      "text": 100,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 332,
+            "width": 390,
+            "height": 339,
+            "top": 332,
+            "right": 390,
+            "bottom": 671,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 264,
+            "top": 68,
+            "right": 390,
+            "bottom": 332,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 819,
+            "width": 390,
+            "height": 52,
+            "top": 819,
+            "right": 390,
+            "bottom": 871,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 883,
+            "width": 390,
+            "height": 52,
+            "top": 883,
+            "right": 390,
+            "bottom": 935,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00024/passive-geometry/cells/247467297220669d85f6.json",
+      "account": "QAOWNER",
+      "engine": "webkit",
+      "size": "1440",
+      "text": 100,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 276,
+            "y": 345,
+            "width": 752,
+            "height": 339,
+            "top": 345,
+            "right": 1028,
+            "bottom": 684,
+            "left": 276
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 276,
+            "y": 93,
+            "width": 1120,
+            "height": 252,
+            "top": 93,
+            "right": 1396,
+            "bottom": 345,
+            "left": 276
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 849.171875,
+            "y": 812,
+            "width": 178.828125,
+            "height": 52,
+            "top": 812,
+            "right": 1028,
+            "bottom": 864,
+            "left": 849.171875
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 663.515625,
+            "y": 812,
+            "width": 173.65625,
+            "height": 52,
+            "top": 812,
+            "right": 837.171875,
+            "bottom": 864,
+            "left": 663.515625
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00024/passive-geometry/cells/3df28e1a7fa4a5dcf8c8.json",
+      "account": "QAOWNER",
+      "engine": "webkit",
+      "size": "1440",
+      "text": 200,
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 276,
+            "y": 409,
+            "width": 752,
+            "height": 493,
+            "top": 409,
+            "right": 1028,
+            "bottom": 902,
+            "left": 276
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 276,
+            "y": 93,
+            "width": 1120,
+            "height": 316,
+            "top": 93,
+            "right": 1396,
+            "bottom": 409,
+            "left": 276
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 708,
+            "y": 1132,
+            "width": 320,
+            "height": 52,
+            "top": 1132,
+            "right": 1028,
+            "bottom": 1184,
+            "left": 708
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 376,
+            "y": 1132,
+            "width": 320,
+            "height": 52,
+            "top": 1132,
+            "right": 696,
+            "bottom": 1184,
+            "left": 376
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00025/passive-geometry/cells/06e9be0b83ca1ffef04e.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "320",
+      "text": 150,
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 452.515625,
+            "width": 320,
+            "height": 608,
+            "top": 452.515625,
+            "right": 320,
+            "bottom": 1060.515625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68.515625,
+            "width": 320,
+            "height": 384,
+            "top": 68.515625,
+            "right": 320,
+            "bottom": 452.515625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1342.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1342.515625,
+            "right": 320,
+            "bottom": 1394.515625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1406.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1406.515625,
+            "right": 320,
+            "bottom": 1458.515625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00025/passive-geometry/cells/45024de49c5b7c00a973.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "320",
+      "text": 125,
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 422,
+            "width": 320,
+            "height": 486,
+            "top": 422,
+            "right": 320,
+            "bottom": 908,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 354,
+            "top": 68,
+            "right": 320,
+            "bottom": 422,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1154,
+            "width": 320,
+            "height": 52,
+            "top": 1154,
+            "right": 320,
+            "bottom": 1206,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1218,
+            "width": 320,
+            "height": 52,
+            "top": 1218,
+            "right": 320,
+            "bottom": 1270,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00025/passive-geometry/cells/4d98db442bef3587f3ef.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "320",
+      "text": 100,
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 356,
+            "width": 320,
+            "height": 339,
+            "top": 356,
+            "right": 320,
+            "bottom": 695,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 320,
+            "height": 288,
+            "top": 68,
+            "right": 320,
+            "bottom": 356,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 885,
+            "width": 320,
+            "height": 52,
+            "top": 885,
+            "right": 320,
+            "bottom": 937,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 949,
+            "width": 320,
+            "height": 52,
+            "top": 949,
+            "right": 320,
+            "bottom": 1001,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00025/passive-geometry/cells/b3d6b50d9d05ac44ecfe.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "320",
+      "text": 200,
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 592.515625,
+            "width": 320,
+            "height": 789,
+            "top": 592.515625,
+            "right": 320,
+            "bottom": 1381.515625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 320,
+            "height": 516,
+            "top": 76.515625,
+            "right": 320,
+            "bottom": 592.515625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1859.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1859.515625,
+            "right": 320,
+            "bottom": 1911.515625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1923.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1923.515625,
+            "right": 320,
+            "bottom": 1975.515625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00026/passive-geometry/cells/71a18ce327cea8d6946b.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "390",
+      "text": 125,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 347,
+            "width": 390,
+            "height": 377.5,
+            "top": 347,
+            "right": 390,
+            "bottom": 724.5,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 279,
+            "top": 68,
+            "right": 390,
+            "bottom": 347,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 945.5,
+            "width": 390,
+            "height": 52,
+            "top": 945.5,
+            "right": 390,
+            "bottom": 997.5,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1009.5,
+            "width": 390,
+            "height": 52,
+            "top": 1009.5,
+            "right": 390,
+            "bottom": 1061.5,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00026/passive-geometry/cells/b9077c92fe6efb8c9c56.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "390",
+      "text": 200,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 522.015625,
+            "width": 390,
+            "height": 789,
+            "top": 522.015625,
+            "right": 390,
+            "bottom": 1311.015625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 78.015625,
+            "width": 390,
+            "height": 444,
+            "top": 78.015625,
+            "right": 390,
+            "bottom": 522.015625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1665.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1665.015625,
+            "right": 390,
+            "bottom": 1717.015625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1729.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1729.015625,
+            "right": 390,
+            "bottom": 1781.015625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00026/passive-geometry/cells/beefb26b38b74b95807d.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "390",
+      "text": 100,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 332,
+            "width": 390,
+            "height": 339,
+            "top": 332,
+            "right": 390,
+            "bottom": 671,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 390,
+            "height": 264,
+            "top": 68,
+            "right": 390,
+            "bottom": 332,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 819,
+            "width": 390,
+            "height": 52,
+            "top": 819,
+            "right": 390,
+            "bottom": 871,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 883,
+            "width": 390,
+            "height": 52,
+            "top": 883,
+            "right": 390,
+            "bottom": 935,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00026/passive-geometry/cells/e1f23d5754c7d725eb35.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "390",
+      "text": 150,
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 454.015625,
+            "width": 390,
+            "height": 448,
+            "top": 454.015625,
+            "right": 390,
+            "bottom": 902.015625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 70.015625,
+            "width": 390,
+            "height": 384,
+            "top": 70.015625,
+            "right": 390,
+            "bottom": 454.015625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 0,
+            "y": 1154.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1154.015625,
+            "right": 390,
+            "bottom": 1206.015625,
+            "left": 0
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 0,
+            "y": 1218.015625,
+            "width": 390,
+            "height": 52,
+            "top": 1218.015625,
+            "right": 390,
+            "bottom": 1270.015625,
+            "left": 0
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00027/passive-geometry/cells/098a9a9024dfa168c99e.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "844x390",
+      "text": 100,
+      "documentWidth": 844,
+      "viewportWidth": 844,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 292,
+            "width": 844,
+            "height": 339,
+            "top": 292,
+            "right": 844,
+            "bottom": 631,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 844,
+            "height": 224,
+            "top": 68,
+            "right": 844,
+            "bottom": 292,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 656,
+            "y": 739,
+            "width": 188,
+            "height": 52,
+            "top": 739,
+            "right": 844,
+            "bottom": 791,
+            "left": 656
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 461,
+            "y": 739,
+            "width": 183,
+            "height": 52,
+            "top": 739,
+            "right": 644,
+            "bottom": 791,
+            "left": 461
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00027/passive-geometry/cells/431b3b0de981675b74bf.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "844x390",
+      "text": 200,
+      "documentWidth": 844,
+      "viewportWidth": 844,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 360.515625,
+            "width": 844,
+            "height": 493,
+            "top": 360.515625,
+            "right": 844,
+            "bottom": 853.515625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 76.515625,
+            "width": 844,
+            "height": 284,
+            "top": 76.515625,
+            "right": 844,
+            "bottom": 360.515625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 524,
+            "y": 1043.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1043.515625,
+            "right": 844,
+            "bottom": 1095.515625,
+            "left": 524
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 192,
+            "y": 1043.515625,
+            "width": 320,
+            "height": 52,
+            "top": 1043.515625,
+            "right": 512,
+            "bottom": 1095.515625,
+            "left": 192
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00027/passive-geometry/cells/db4b9ffd216ea890c9e0.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "844x390",
+      "text": 150,
+      "documentWidth": 844,
+      "viewportWidth": 844,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 322.515625,
+            "width": 844,
+            "height": 416,
+            "top": 322.515625,
+            "right": 844,
+            "bottom": 738.515625,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68.515625,
+            "width": 844,
+            "height": 254,
+            "top": 68.515625,
+            "right": 844,
+            "bottom": 322.515625,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 595,
+            "y": 897.515625,
+            "width": 249,
+            "height": 52,
+            "top": 897.515625,
+            "right": 844,
+            "bottom": 949.515625,
+            "left": 595
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 339,
+            "y": 897.515625,
+            "width": 244,
+            "height": 52,
+            "top": 897.515625,
+            "right": 583,
+            "bottom": 949.515625,
+            "left": 339
+          }
+        }
+      ]
+    },
+    {
+      "artifact": "/workspace/nevora-inspections/p35-wave-a/combined-cd764f6-cloud-full/serial-evidence/attempts/00027/passive-geometry/cells/f151d1d9051573cd08b8.json",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "size": "844x390",
+      "text": 125,
+      "documentWidth": 844,
+      "viewportWidth": 844,
+      "cards": [
+        {
+          "selector": "section#replacement-shift",
+          "box": {
+            "x": 0,
+            "y": 307,
+            "width": 844,
+            "height": 377.5,
+            "top": 307,
+            "right": 844,
+            "bottom": 684.5,
+            "left": 0
+          }
+        }
+      ],
+      "band": [
+        {
+          "box": {
+            "x": 0,
+            "y": 68,
+            "width": 844,
+            "height": 239,
+            "top": 68,
+            "right": 844,
+            "bottom": 307,
+            "left": 0
+          }
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Save replacementSaving\u2026",
+          "box": {
+            "x": 624,
+            "y": 828,
+            "width": 220,
+            "height": 52,
+            "top": 828,
+            "right": 844,
+            "bottom": 880,
+            "left": 624
+          }
+        },
+        {
+          "text": "Back to coverage",
+          "box": {
+            "x": 398,
+            "y": 828,
+            "width": 214,
+            "height": 52,
+            "top": 828,
+            "right": 612,
+            "bottom": 880,
+            "left": 398
+          }
+        }
+      ]
+    }
+  ],
+  "crops": {
+    "chromium390-100-top.png": "00018/passive-geometry/crops/bcfa8903f760c94a1361-top.png",
+    "chromium390-100-bottom.png": "00018/passive-geometry/crops/bcfa8903f760c94a1361-bottom.png",
+    "chromium320-200-top.png": "00017/passive-geometry/crops/b476fe9de669eafa477f-top.png",
+    "chromium320-200-bottom.png": "00017/passive-geometry/crops/b476fe9de669eafa477f-bottom.png",
+    "webkit390-100-top.png": "00022/passive-geometry/crops/d64d8fcd3a3365e8b81c-top.png",
+    "chromium1440-100-top.png": "00020/passive-geometry/crops/b800c68cf7fcfe9872a3-top.png"
+  },
+  "proposedPatch": "AL-WA-10.patch",
+  "patchSha256": "f07aaf22df31c4813aefb2acbac27c440bf3cbe39a9133ae544b56a478899f76",
+  "patchApplied": false,
+  "appEdits": false,
+  "browserOrTestsRunForPatch": false,
+  "createdAt": "2026-10-19T23:23:35.116296+00:00"
+}

@@ -65,6 +65,16 @@
       "status": "retainedbroaderP1 ownerfinding; currentboundedP2observationdoesnotdowngradeit",
       "measurement": "bothPayrollfixturesChrome320/100Recordedtimecard12px/CLS0.0226202; band296\u2192296, noST-RC-HOME01charge",
       "report": "combined-cd764f6/candidate-findings.md"
+    },
+    {
+      "id": "AL-WA-10",
+      "severity": "P1",
+      "owner": "WaveA",
+      "status": "measuredopenoncd; sourcefilebyteidentical15. Candidate-only06be59arepairswrapper; focused14tests/lint/typecheckpass; freshfixed-sourcebrowserpending",
+      "measurement": "Reviewreplacement at320/390 card/actionsx0..viewport ratherthan16pxgutters; desktop752vs720; missingband-overlap",
+      "report": "../../p35-wave-a/combined-cd764f6-cloud-full/alignment.md",
+      "candidateFixReceipt": "AL-WA-10-candidate-06be59a/receipt.json",
+      "patch": "later-unpublished-patches/46-AL-WA-10.patch"
     }
   ],
   "additionalUnderInvestigation": [
