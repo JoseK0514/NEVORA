@@ -39,7 +39,8 @@ it("explains a protected timezone without locking the workspace name", async () 
   const html = renderToStaticMarkup(await WorkspacePage());
   // A protected timezone reads in full as text, not as a disabled field (TC-06); it isn't submitted.
   expect(html).not.toContain('name="timeZone"');
-  expect(html).toContain(">America/Puerto_Rico</p>");
+  expect(html).toContain(">Puerto Rico time</p>");
+  expect(html).not.toContain(">America/Puerto_Rico</p>");
   expect(html).not.toMatch(/<input(?=[^>]*name="name")(?=[^>]*disabled="")[^>]*>/);
   expect(html).toContain("You can still change your business name.");
   expect(html).toContain("Changing the business timezone requires a separately reviewed conversion because operational records already exist.");

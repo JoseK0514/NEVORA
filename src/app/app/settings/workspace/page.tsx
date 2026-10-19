@@ -5,6 +5,7 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
 import { requireRoles } from "@/lib/auth/permissions";
 import { keepWhole } from "@/lib/keep-whole";
+import { timeZoneLabel } from "@/lib/time-zone-label";
 import {
   getWorkspace,
   isWorkspaceTimezoneLocked,
@@ -44,7 +45,7 @@ export default async function WorkspacePage() {
                 <span className="wc-label" id="workspace-timezone-label">Business timezone</span>
                 <span className="wc-tag"><LockKeyIcon size={14} weight="bold" aria-hidden="true" />Protected</span>
               </div>
-              <p className="wc-readonly" id="workspace-timezone" aria-labelledby="workspace-timezone-label" aria-describedby="timezone-help">{workspace.timeZone}</p>
+              <p className="wc-readonly" id="workspace-timezone" aria-labelledby="workspace-timezone-label" aria-describedby="timezone-help">{timeZoneLabel(workspace.timeZone)}</p>
               <div className="wc-help" id="timezone-help">
                 <p>Schedules and time records already use this timezone, so it’s protected. You can still change your business name.</p>
                 <details className="wc-disclosure">
