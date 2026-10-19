@@ -1572,6 +1572,52 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00069-matrix-AUDIT-M-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T20-50-07-984Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00069-matrix-AUDIT-M-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app/schedule/settings,/app/schedule/templates,/app/timecards,/app/updates",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "26222107fcecc1d27acb9dd0d4daea03aa9bd829d7ffc6c0f21582a60d92b7c1",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00070-matrix-AUDIT-M-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T20-50-39-942Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00070-matrix-AUDIT-M-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069,/app/updates/compose",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "13c31d6eded5144311e3371d9453917ce04fb8fdf635ec75aa42ea9a0132e74a",
+      "code": 1,
+      "passed": 0,
+      "failed": 8
     }
   ],
   "planned": 12580,

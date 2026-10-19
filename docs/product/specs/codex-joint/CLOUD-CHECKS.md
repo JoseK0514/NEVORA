@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T20:49:04.644Z. p35-wave-a-1283c8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T20:51:10.899Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,9 +22,9 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1019 | 1353 | 2372 / 12580 |
-| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 1322 | 1042 | 2364 / 12716 |
-| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 665 | 311 | 976 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1050 | 1354 | 2404 / 12580 |
+| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 1354 | 1054 | 2408 / 12716 |
+| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 665 | 335 | 1000 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / pending inventory |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1019 passed; 1353 failed. Completed checker batches: 170. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1050 passed; 1354 failed. Completed checker batches: 172. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -1817,6 +1817,7 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1019 passed;
 | /app/updates/compose | AUDIT-LEAD | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LEAD 360 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
 | /app/updates/compose | AUDIT-LEAD | 360 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-LEAD 360 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
 | /app/exchange/callout?shiftId=audit-next-0-2 | AUDIT-LONG | 360 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-LONG 360 100% /app/exchange/callout?shiftId=audit-next-0-2 small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · No designat» 12px; strong. «This shift is still assigned t» 13px |
+| /app/exchange/swap?sourceShiftId=audit-next-0-2 | AUDIT-LONG | 360 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-LONG 360 100% /app/exchange/swap?sourceShiftId=audit-next-0-2 small=span. «Your shift» 13px; span. «Monday, Oct 26, 2026 · Main Of» 12px; summary. «How a swap works» 14px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -1826,7 +1827,7 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1019 passed;
 
 ## claude/p35-profile-6cdee8
 
-Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 1322 passed; 1042 failed. Completed checker batches: 174. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
+Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 1354 passed; 1054 failed. Completed checker batches: 177. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -2895,6 +2896,18 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 1322 passed;
 | /app/settings/clocker | QAOWNER | 360 | 125 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 125% /app/settings/clocker small=span.status-pill.success «Registered» 13.75px; span. «1» 13.75px; span. «2» 13.75px; span. «3» 13.75px |
 | /app/settings/branding | QAOWNER | 360 | 150 | chromium | target | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 150% /app/settings/branding targets=input.brand-file «» 1x60 |
 | /app/settings/branding | QAOWNER | 360 | 200 | chromium | target | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 200% /app/settings/branding targets=input.brand-file «» 1x73 |
+| /app/settings/locations | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 100% /app/settings/locations small=span. «2» 11px; span. «0» 11px; span.status-pill.success «Ready» 12px; span. «13 eligible employees» 12px |
+| /app/settings/locations/loc-1 | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 100% /app/settings/locations/loc-1 small=span. «Edit» 13px; strong. «Active location» 14px; span. «Available for future shift ass» 12px |
+| /app/settings/locations/new | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 100% /app/settings/locations/new small=span. «Clocker link Optional» 13px; span.add-location-optional «Optional» 12px; span. «Short name» 13px |
+| /app/settings/locations | QAOWNER | 360 | 125 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 125% /app/settings/locations small=span. «2» 13.75px; span. «0» 13.75px |
+| /app/settings/payroll | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 360 100% /app/settings/payroll small=strong. «Future draft impact» 12px; strong. «Revision 1 · Effective Thu, Ja» 13px |
+| /app/settings/positions | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 100% /app/settings/positions small=span. «A new qualification for your t» 12px; span.positions-total «2 positions» 12px; span. «2» 11px; span. «0» 11px |
+| /app/settings/workspace | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 100% /app/settings/workspace small=span.workspace-access «Owner access» 11px; span.workspace-protected «Protected» 11px; span. «Workweek starts» 12px; strong. «Monday at 12:00 AM» 13px |
+| /app/settings/positions | QAOWNER | 360 | 125 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 125% /app/settings/positions small=span. «2» 13.75px; span. «0» 13.75px; span.positions-status.is-active «Active» 13.75px |
+| /app/settings/workspace | QAOWNER | 360 | 125 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium QAOWNER 360 125% /app/settings/workspace small=span.workspace-access «Owner access» 13.75px; span.workspace-protected «Protected» 13.75px; span.workspace-week-note «In your business timezone» 13.75px |
+| /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 360 100% /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca small=span.communication-status.attention «Acknowledgement required» 12px; strong. «Management» 14px; span.communication-recipient-status «No acknowledgement recorded» 13px |
+| /app/updates/compose | QAOWNER | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 360 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px |
+| /app/updates/compose | QAOWNER | 360 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 360 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -2904,7 +2917,7 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 1322 passed;
 
 ## claude/p35-wave-a-1283c8
 
-Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 665 passed; 311 failed. Completed checker batches: 68. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
+Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 665 passed; 335 failed. Completed checker batches: 70. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -3225,6 +3238,30 @@ Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 665 passed; 
 | /app/schedule/coverage | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/schedule/coverage small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
 | /app/schedule/edit?shiftId=audit-next-0-1 | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/schedule/edit?shiftId=audit-next-0-1 small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
 | /app/schedule/new | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/schedule/new small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/schedule/settings | AUDIT-M | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 100% /app/schedule/settings small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/schedule/templates | AUDIT-M | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 100% /app/schedule/templates small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/timecards | AUDIT-M | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 100% /app/timecards small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates | AUDIT-M | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 100% /app/updates small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/schedule/settings | AUDIT-M | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 125% /app/schedule/settings small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/schedule/templates | AUDIT-M | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 125% /app/schedule/templates small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/timecards | AUDIT-M | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 125% /app/timecards small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates | AUDIT-M | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 125% /app/updates small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/schedule/settings | AUDIT-M | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 150% /app/schedule/settings small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/schedule/templates | AUDIT-M | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 150% /app/schedule/templates small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/timecards | AUDIT-M | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 150% /app/timecards small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates | AUDIT-M | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 150% /app/updates small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/schedule/settings | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/schedule/settings small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/schedule/templates | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/schedule/templates small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/timecards | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/timecards small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/updates small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 | AUDIT-M | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 100% /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates/compose | AUDIT-M | 1440 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 100% /app/updates/compose small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 | AUDIT-M | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 125% /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates/compose | AUDIT-M | 1440 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 125% /app/updates/compose small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 | AUDIT-M | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 150% /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates/compose | AUDIT-M | 1440 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 150% /app/updates/compose small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/updates/618fdeae-273f-4de1-9745-5204f2f16069 small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
+| /app/updates/compose | AUDIT-M | 1440 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-M 1440 200% /app/updates/compose small=h2.sidebar-group-label «Plan» 12px; h2.sidebar-group-label «Team» 12px; h2.sidebar-group-label «Time & Pay» 12px; h2.sidebar-group-label «Workspace» 12px |
 
 ### Timeout and server observations (separate from UI findings)
 

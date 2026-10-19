@@ -4009,6 +4009,75 @@
       "code": 1,
       "passed": 8,
       "failed": 8
+    },
+    {
+      "name": "00175-matrix-QAOWNER-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T20-49-21-180Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00175-matrix-QAOWNER-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app/settings/features,/app/settings/locations,/app/settings/locations/loc-1,/app/settings/locations/new",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "6f249e54d60b75ad8db07bf0cad717c17717a138e1f7fef605bed3d2a846a94b",
+      "code": 1,
+      "passed": 12,
+      "failed": 4
+    },
+    {
+      "name": "00176-matrix-QAOWNER-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T20-50-22-343Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00176-matrix-QAOWNER-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app/settings/payroll,/app/settings/positions,/app/settings/workspace,/app/timecards",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "be8bc82099fed267fd430322ec0887c73d3ecc4a176199cf35395415e8bcd02d",
+      "code": 1,
+      "passed": 11,
+      "failed": 5
+    },
+    {
+      "name": "00177-matrix-QAOWNER-chromium-360",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T20-51-10-863Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00177-matrix-QAOWNER-chromium-360.log",
+      "args": [
+        "--routes",
+        "/app/updates,/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca,/app/updates/compose",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "360",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "e0e2673df727c74abd3f91a9d82bf3c3362be37e5fa44cd49bdee8c060802cc5",
+      "code": 1,
+      "passed": 9,
+      "failed": 3
     }
   ],
   "planned": 12716,
