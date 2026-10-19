@@ -80,12 +80,12 @@ function withFilter(href: string, filter: InboxFilter) {
 const requestNote = "The dates, the length and any note are on the request. Approve or decline it there.";
 /** TCD-02: what the pane's button leads to, item by item. */
 const typeNote: Partial<Record<ActionItem["type"], string>> = {
-  COVERAGE_GAP: "No one is scheduled for this yet. Open the coverage gap to fill it.",
+  COVERAGE_GAP: "This shift still needs people. Open the coverage gap to fill it.",
   TARGET_MISSING: "Set a weekly hour target in Scheduling rules.",
   HOURS_REVIEW: "Their scheduled hours are outside their weekly target. Check the schedule.",
   AVAILABILITY_MISSING: "Only they can send it. Open Availability to see who hasn’t.",
   ACKNOWLEDGEMENT_MISSING: "Only they can confirm it. Open the schedule to see who hasn’t.",
-  DEADLINE_MISSING: "Set when this week’s schedule is due in Scheduling rules.",
+  DEADLINE_MISSING: "Set when availability is due for this week, on the Schedule.",
   COVERAGE_RULES_MISSING: "Set how many people each shift needs in Scheduling rules.",
   TIMECARD: "Open the timecard to check it before it’s approved.",
   TIME_CORRECTION: "Open it to see the change they asked for.",

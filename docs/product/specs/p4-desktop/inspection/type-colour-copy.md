@@ -98,3 +98,81 @@ Judgment notes (not counted):
 The preview was under heavy load (load average 14–29; many 500s and 90s timeouts, each retried once and not filed). For part of the run, two of my own scans overlapped by mistake: a stopped process didn't exit. No result depends on that overlap; every finding was re-measured in a single-browser run.
 
 Open: 0 P0, 5 P1, 10 P2
+
+## Round 2
+
+October 19, 2026 · The latest build on the same preview · Scripts `r2a.mjs` (re-checks), `scan-r2.mjs` (Employee and Lead sweep), `wk2.mjs` (WebKit). Data and crops are under `S/r2/`.
+
+### How it was measured
+
+- **Re-checks.** Owner `QAOWNER`, Chromium, 1440 and 1024:
+  - Inbox: I selected one row of each item type and checked the pane.
+  - Timecards, Time exports, Payroll runs, Schedule and Team.
+  - The shell at 200% text.
+  - The trail on Home's views.
+  - The account menu.
+- **Employee and Lead, first pass:**
+  - **1440:** `AUDIT-E` and `AUDIT-LEAD` on all 14 URLs in ROUND-2.md; `AUDIT-ON`, `AUDIT-BREAK` and `AUDIT-LONG` on Home.
+  - **1024 and 768:** `AUDIT-E` on all 14 URLs; `AUDIT-LONG` on Home, Profile and My schedule; `AUDIT-LEAD` at 1024 on Home, My schedule, My time and Timecards.
+  - **Phones:** `AUDIT-E` at 390 and 320 on Home, My schedule, Requests, My time and Profile.
+  - **WebKit spot check at 1440:** My time, Requests and My schedule.
+- **Server load.** Load average was 8–20. One page, `AUDIT-LONG` Home at 768, came back in its failed-read state, and I used that capture for the trail.
+
+### Status of round 1 findings
+
+| ID | Status | Measured now |
+|---|---|---|
+| TCD-01 | Fixed | • The pane sticks at y 81, below the 65px header.<br>• On every selected type, scrolled up to 6111px, `elementFromPoint` on the title returns the title, at 1440 and 1024. `S/r2/shots/owner-pane-1440-TIMECARD.png` |
+| TCD-02 | **Partly fixed** | Now right:<br>• No weekly hour target: "Set a weekly hour target in Scheduling rules." (button: `/app/schedule/settings`)<br>• Availability not sent: "Only they can send it. Open Availability to see who hasn’t."<br>• Schedule not confirmed: "Only they can confirm it. Open the schedule to see who hasn’t."<br>• Timecard: "Open the timecard to check it before it’s approved."<br>Still wrong, two problems:<br>• **"Availability deadline not set"** says "Set when this week’s schedule is due in Scheduling rules." It names the wrong thing: the item is the availability cutoff, and its meta says so ("Set the availability deadline before employees finalize availability."). It also names the wrong place: "Set deadline" goes to `/app/schedule?week=…#schedule-deadline`, not Scheduling rules.<br>• **Coverage gap** says "No one is scheduled for this yet." That's false whenever a gap is only partly short, and for the "No lead scheduled at …" and "Position not covered at …" titles, which `present.ts:61` maps to the same type.<br>Cause: `src/components/manager-inbox.tsx:83` and `:88`.<br>Fix:<br>• `DEADLINE_MISSING`: "Set the availability cutoff on the schedule."<br>• `COVERAGE_GAP`: "Open the coverage gap to see who can fill it."<br>Still **P1**. `S/r2/shots/owner-pane-1440-SETUP.png` |
+| TCD-03 | Fixed | The overview figures are 22/28 at 600, the same as Schedule's strip. |
+| TCD-04 | Fixed | • "Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing." (`present.ts:20-29`)<br>• 2 lines in the 1024 pane, and no ISO dates anywhere. |
+| TCD-05 | Fixed | "Team member", "Mon" and "Today" are 14/20; date figures 18. |
+| TCD-06 | Fixed | "Plan › Home[link] › Team overview[current]". |
+| TCD-07 | Fixed | • "Request pages" is now a compact row of three links (Time off, Shift requests, Availability) at 16px, at the top of the list.<br>• Its title is kept for screen readers only.<br>• It shows as 1 row at 1440 and 2 rows at 1024. |
+| TCD-08 | Fixed | The shift pane says each thing once:<br>• title, then the "Not clocked in" pill<br>• facts: Shift "7:00 AM – 3:00 PM", Location "Main Office"<br>• note "Check in with them, or look at the Clocker."<br>• Contact / Open timecard |
+| TCD-09 | Fixed in this branch | `timecards.tsx:21` now reads "No clock-out yet". |
+| TCD-10 | Fixed | At 200% text: group labels 28/40, nav 28, footer 28, trail 28, "Workforce" 26. |
+| TCD-11 | Fixed | The bell count is 12/16 at 600 on desktop (Employee pages, count "3"). `premium-desktop.css:335`. |
+| TCD-12 | Fixed | "Workforce" is 13/16 in rem (`premium-desktop.css:337`). |
+| TCD-13 | Fixed | Items "Your profile", "My pay", "Sign out" are 14/20 at 500 in #16191C. A new item on the same menu is filed as TCD-19. |
+| TCD-14 | **Partly fixed** | • Names on Time exports are now 500 in #16191C, but still **14/20**, while Timecards names are 16/22.<br>• The new row-role rule (`premium-desktop.css:321`) sets `font`, but the older floor rule at `:169-174`, which still lists `form.employee-form > fieldset > legend`, outranks it and pulls the size back to `.875rem/1.25rem`.<br>• Fix: remove `form.employee-form > fieldset > legend` from the `:172` list.<br>Still P2. |
+| TCD-15 | Fixed | "María José Rivera Santiago With A Long Name" is on 1 line in a 367px Name column at 1440. Columns at x 364 / 747 / 910 / 1146 match their cells. |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| TCD-16 | Employee and Lead desktop pages · `AUDIT-E`, `AUDIT-LEAD` · 768, 1024, 1440 (WebKit the same) | Legacy text inside the kit pages | About 45 text roles per width are under the 14px desktop floor, and the same ones on every page at all three widths:<br>• **My time:** body notes ("No open time entry…", "Use your location’s Clocker…", "Today’s totals…", "No earlier entries.") 13/21.45; the "Updated Oct 19, 2:16 PM · Puerto Rico time · Updates every 30s while active." footer 12/19.8; metric labels 13.<br>• **Home (clock card):** "Refresh" and "My time" 13; "Times in Puerto Rico time" 12/18.<br>• **My schedule:** "Request a swap" and "Unable to work" 13/600; the 5-line note "Your shift stays yours…" 12/18; "Today" 12/600; "2026 · Puerto Rico time" 13; Lead "Designated lead" 12.<br>• **Time off (form side summary):** "Manager review comes next" and "Track the decision…" 12/19.8; "Your dates will appear here." 13.<br>• **Availability:** "Choose the days…" and "No available hours" 13; "An end time of midnight…" and "Your saved usual week." 12.<br>• **Timecards:** "Period start" and "Period end" labels 13; "Oct 13, 2026 – Oct 19, 2026" 12; metric labels and issues 13.<br>• **Profile:** setting descriptions and notes 13.<br>• **Updates:** "Review update" 12; footnote 12.<br>On phones the same lines are 15px (Phase 3). | `S/r2/shots/chromium-AUDIT-E-1440-_app_my-time.png`, `S/r2/shots/chromium-AUDIT-E-1440-_app_schedule.png` (shift options opened) | The legacy page sheets set `calc(12–13 * var(--type-unit))`, and Phase 3's kit fixes apply only under 761px. Examples:<br>• `src/app/app/my-time/my-time.css:46`<br>• `src/app/app/availability/availability.css:107`<br>• `src/app/app/requests/time-off.css:48`<br>• `src/app/app/schedule/employee-schedule.css:49`<br>• `src/app/app/profile/profile.css:59`<br>• `src/components/updates-review.css:48` | In `premium-desktop.css`, add an Employee and Lead desktop floor in the style of `:169`: `html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame [data-nv-page] :is(p, small, dt, label, .my-schedule-link, .employee-time-refresh, .employee-time-link, .updates-row-action, .employee-designated-lead, .employee-agenda-date small) { font-size: max(.875rem, 1em) }`. Or list the selectors above with `font: var(--nv-t-callout)`, and `var(--nv-t-label)` for the links. Badges and avatars stay as they are. | **P1** |
+| TCD-17 | Every Employee or Lead page · `AUDIT-LONG` · 768 | Top-bar trail beside a long account name | • The account button shows the full name "María José Rivera Santiago With A Long Name" (310px at 14px, from x 392).<br>• The trail's only entry, "Home" (text box x 244–284), is cut mid-letter at about x 279 and reads "Hom", with no ellipsis.<br>• The same squeeze happens on every page at 768 for this account. | `S/r2/shots/chromium-AUDIT-LONG-768-_app.png` | • The account name has no width limit at narrow desktop widths.<br>• `portal-premium.css:72` puts `text-overflow: ellipsis` on `li:last-child`, but that `li` is `display: flex` (`portal-desktop.css:34`), so no ellipsis is drawn. | • At 761–1100: `.portal-account-menu .button > span:not(.portal-account-avatar) { max-width: 12rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }`. The full name stays in the menu heading.<br>• Make the last trail item `display: block` so its ellipsis works. | **P1** |
+| TCD-18 | Account menu · all roles · 768–1440 | Menu heading "Signed in as Fictional Owner" | It's 12/16.8 in #5F6368, under the 14px floor. The items under it are 14/20/500. | `S/r2/shots/owner-menu-1440.png` | `src/app/app/portal-gusto.css:197` (`font: var(--g-t-caption)`) | `#portal-account-menu .portal-account-heading { font: var(--nv-t-callout); color: var(--nv-muted) }` (14/20 on desktop). | P2 |
+| TCD-19 | My time, My pay, Timecards · Employee and Lead · 768–1440 | Pay section tabs in the band | • The tabs read "Statements · Hours · Timecards".<br>• Beside them, the sidebar, the trail and the h1 say "My pay" and "My time".<br>• So "Hours" opens a page titled "My time", and "Statements" opens "My pay": two names for one page, side by side on desktop. (Payroll wording is deferred, but these are navigation names.) | `S/r2/shots/chromium-AUDIT-E-1440-_app_my-time.png` | `src/lib/navigation.ts:210-211` (section tab labels) against `:33-41` (sidebar labels) | Use one name per page: tabs "My pay · My time · Timecards", or rename the sidebar entries to "Statements" and "Hours". The tabs are shared with phones, so the coordinator decides. | P2 |
+| TCD-20 | Employee Home · `AUDIT-E` · all widths | Band summary next to the clock card | The band says "On shift until 4:00 PM." while the pass says "Scheduled now" and the Clock status card says "Off clock". "On shift" reads as working. Judgment call. | `S/r2/shots/chromium-AUDIT-E-1440-_app.png` | `src/components/employee-home-reviewed.tsx:278` | "Scheduled until 4:00 PM." while not clocked in; keep "On shift until…" for `AUDIT-ON`. | P2 |
+| TCD-21 | My schedule · Employee · 1440 | "What changed in your schedule" line | "After: Oct 19 · 8:00 AM – 4:00 PM · Main" / "Office · Customer Support". The location name breaks inside itself. | `S/r2/shots/chromium-AUDIT-E-1440-_app_schedule.png` | `src/components/schedule-publication-change.tsx:11`: `keepWhole()` protects dates and times, but not location or position names | Join each part with NBSPs inside the part (or wrap each in `nv-nowrap`), and break only at " · ". | P2 |
+
+Checked and correct in round 2:
+- **Section tabs inside the teal band** (Timecards, Payroll runs, Time exports, Payroll settings; Requests overview, Time off, Shift requests, Availability; Statements, Hours, Timecards):
+  - Unselected tabs are #CFE3E1 on #1C4A47 (7.42:1) at 14/20/500.
+  - The selected tab is white at 600 (9.91:1), with a white underline and `aria-current="page"`.
+  - Chromium and WebKit are identical.
+- **Request pages** row, the rewritten pane notes (except TCD-02) and the shift pane: all in plain sentence case with curly apostrophes.
+- **Wording:** no "missing", "missed" or straight apostrophe in any Employee or Lead page text at any width.
+- **Employee and Lead kit roles at desktop:**
+  - band titles 32/40
+  - card titles, rows and links 16, meta 14
+  - Home's "3 items need your review" link on the title row
+  - "Hi, María José." for `AUDIT-LONG`, on one line
+  - the Profile name on 2 lines at 768, not clipped
+- **Clipping:** none, except the Updates preview's intended 2-line clamp at 768.
+- **Phones (320 and 390, `AUDIT-E`):**
+  - Kit text is 15px or more, and tab labels are 13.
+  - No clipping.
+  - No Phase 4 element shows on phones.
+  - The phone bell count is still 10px. That's the phone header, so it's the coordinator's.
+
+**Not covered:**
+- Employee and Lead at 200% text.
+- Lead pages at 768.
+- Paused, offline and 401 states on Employee pages (the interaction inspector's area).
+- WebKit only on three Employee pages at 1440.
+
+Open: 0 P0, 3 P1, 5 P2

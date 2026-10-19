@@ -318,7 +318,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class$="__totals"] { padding: var(--nv-s-3) var(--nv-s-4); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class$="__card"] { padding: var(--nv-s-5); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports :is([class*="payroll-export-module"][class$="__root"], [class*="payroll-export-module"][class$="__workspace"]) { gap: var(--nv-s-4); }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports form.employee-form > fieldset > legend { font: var(--nv-t-row); color: var(--nv-ink); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports.premium-exports.premium-exports form.employee-form > fieldset > legend[class], html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports.premium-exports.premium-exports form.employee-form > fieldset > legend { font: var(--nv-t-row); color: var(--nv-ink); }
   /* AL4-06: Schedule's location chips stay one row and scroll, as on phones. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page .schedule-location-control .segmented { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
   /* AL4-07: the week toolbar is a white card with an inset, not a shadow around bare buttons. */
@@ -391,4 +391,28 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-home > .nv-content { padding-inline: 16px; }
+}
+
+/* Round 2: the Employee and Lead desktop text floor (TCD-16). Legacy page styles set 12–13px; desktop's floor is 14px
+ * in rem, so it follows text size. Phones keep their own 15px rules (Phase 3). */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame [data-nv-page] :is(
+    .profile-setting-copy small, .profile-setting-note, .profile-supporting-copy, .employee-corporate-desktop-copy, .employee-corporate-desktop-copy *,
+    [class*="timecards-module"][class*="__status"], [class*="timecards-module"][class*="__identity"] small, [class*="timecards-module"][class*="__definition"],
+    [class*="timecards-module"][class*="__issues"] p, [class*="timecards-module"][class*="__toolbar"] label, [class*="timecards-module"][class*="__totals"] dt,
+    .employee-time-section-heading p, .employee-time-metrics dt, .employee-time-empty, .employee-time-note,
+    .av-editor-heading p, .av-editor-footer p, .av-no-hours, .av-input-hint,
+    .updates-refresh span, .updates-footnote, .nto-next-step p, .nto-next-step strong, .nto-next-step span, .nto-summary-facts p,
+    .my-week-title p, .my-shift-options-body p, .my-shift-options-body .my-schedule-link, .employee-agenda-date small, .employee-designated-lead,
+    .profile-settings-list li, .employee-account-panel li) {
+    font-size: .875rem; line-height: 1.25rem;
+  }
+  /* TCD-17: a long account name gives way to the trail below 1100px; the trail's last item ends in an ellipsis. */
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .portal-account-menu .nevora-action-menu-trigger > span:not(.portal-account-avatar) { max-width: 12rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* TCD-18: "Signed in as …" in the kit callout role. */
+  html body .app-shell.nevora-portal.nevora-portal #portal-account-menu .portal-account-heading { font: var(--nv-t-callout); color: var(--nv-muted); }
+}
+@media (min-width: 761px) and (max-width: 1100px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .portal-location li:last-child { display: block; min-width: 0; }
+  html body .app-shell.nevora-portal.nevora-portal .mobile-header .portal-account-menu .nevora-action-menu-trigger > span:not(.portal-account-avatar) { max-width: 8rem; }
 }
