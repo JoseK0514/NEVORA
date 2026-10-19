@@ -106,3 +106,80 @@ The rest are precision and consistency issues.
 - Real devices, VoiceOver and Firefox (cut) were not covered. Landscape phones were not re-run (no Phase 4 change applies there).
 
 Open: 1 P0, 3 P1, 6 P2
+
+## Round 2
+
+October 19, 2026, on the latest build (`0abdc74`). I confirmed the preview's source copy matches the worktree. Read only: I changed no code or data and pressed nothing that saves. I opened the More sheets and followed Profile links, and collapsed the sidebar in my own browser only. The server load was lower than in round 1 (load average 7–11), and every page loaded on its first or second try.
+
+Evidence: `R2` = `S/r2/` (`shots/`, `crops/`, `data/`). The scripts are `resize2.mjs` and `probe3.js` (both under `S/`), `big.mjs` (large text), `phone.mjs`, and `r2/q.mjs` and `r2/q2.mjs`.
+
+Coverage:
+- **Manager and Owner:** 1440, 1180/1179, 1024/1023, 768 and 761. Sidebar collapsed at 1920, 1440 and 1024. 150% and 200% text at 761–1440.
+- **Employee and Lead (`AUDIT-E`, `AUDIT-LEAD`):** all 14 pages and variants at 1440, 1100/1099, 1024/1023, 768 and 761.
+- **`AUDIT-ON`, `AUDIT-BREAK`:** Home. **`AUDIT-LONG`:** Home, Profile and My schedule.
+- **Collapsed sidebar (Employee):** at 1440, 1024 and 768.
+- **Large text (`AUDIT-LONG` and Owner Home):** 150% and 200%.
+- **Phones:** 320 and 390 for all four roles.
+
+### Status of round-1 items
+
+| ID | Status | Measurement now |
+|---|---|---|
+| WR4-01 | **Fixed as filed, but the fix regressed (new WR4-11)** | No title breaks inside a word any more: <ul><li>Inbox: "Inbox" is one line at 761–1440 at 100%, 150% and 200%. The band at 761 is 188px (was 216).</li><li>"Schedule activity" is one line at 150% and 200% text at 761–1440 (was 16 lines at 200% at 1024).</li></ul>The filters and chips now scroll beside the title. But the title column can no longer wrap, so long titles are cut off at the band edge. See WR4-11. |
+| WR4-02 | Waiting on another owner (not counted) | Still lands on `/app` for Manager and Owner from More › Profile at 320 and 390 (measured). Employee and Lead open `/app/profile`. |
+| WR4-03 | **Fixed** | Collapsed at 1440 and 1920, and collapsed at 1024: the Timecards tab box, every kit band (Inbox, Timecards, Updates), Time off and Insights all start at x=112. Expanded at 1440 they all start at x=276. The band text and the tab text share x=148 (collapsed) and x=312 (expanded). |
+| WR4-04 | **Fixed** | Sidebar group labels are 14px and "Powered by" is 14px at 761–1440 (AUDIT-M, AUDIT-LONG). The rule is at `premium-desktop.css:273-275`, in rem. |
+| WR4-05 / WR-34 | Kept by the coordinator's decision (not counted) | Unchanged. Manager at 1440: left column ends at 1067, right at 1217. Owner: 1338 vs 1217. |
+| WR4-06 / WR-25 | **Partly fixed** | The tabs now sit inside the band at 761–1440 on Timecards, Payroll runs, Time exports, Payroll settings, and on the Employee Requests and Pay tabs. Every band starts at y=93, and the tab text starts on the band text edge (x=312, or 280 below 1100). The tabs scroll with a fade where they don't fit (Owner at 761). **Still open:** the title moves between sibling tabs. See "Still open" below. |
+| WR4-07 | **Fixed** | "Workspace › Settings › Payroll settings" at 1440 and 1180; "Payroll settings" alone at 1100 and below. Home's views: "Plan › Home › Schedule activity". |
+| WR4-08 | **Fixed** | The Updates title is at x=280 at 761–1023, the same as Team, Inbox and Timecards. At 1440 it is at x=312. |
+| WR4-09 | **Fixed** | Owner at 390×844 and 320×844: the sheet is 748px tall with 785px of content. "Close" stays at y=780–828, fully visible, and "Sign out" scrolls up from under it (`R2/crops/more-owner-390-foot.png`). Manager: 697px, no scroll. |
+| WR4-10 | **Fixed, with a new P2 (WR4-12)** | The "Request pages" row is first in the Inbox list (y=249) at every desktop width, for both roles. |
+| WR-35 | **Fixed** | At 100% text every band is 200px or less at 761–1440 for every Manager, Owner, Employee and Lead page I measured. The tallest are the Inbox at 196 (188 below 1024) and Employee My pay at 196 (768). |
+
+Still open from round 1, re-filed as **WR4-06 (P2)**:
+
+- **Timecards tab row:** Timecards' title is at y=181 (it has an eyebrow). Time exports, Payroll runs and Payroll settings are at y=161. That is 20px of movement between tabs in one row.
+- **Employee Requests tabs:** Overview 161, Time off 163, Shift requests 183 (161 below 1024), Availability 163.
+- **Fix:** reserve the eyebrow row on tabbed bands (`.nv-pageband__eyebrow-row { min-height: 20px }` even when it is empty, inside the `:has(> .section-tabs)` block at `premium-desktop.css:292`). The 2px offsets (161 vs 163) come from Time off and Availability, whose band chips sit on the title row (`premium-desktop.css:347-352`). Use `align-items: start` on those rows so the title keeps its own top.
+
+### New findings, round 2 (worst first)
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| WR4-11 | Every banded page, every role, at 150–200% text from 761 to 1024. Worst: Employee Home | Band title column and title-row controls | The round-1 fix gives the title `max-content`, so it never wraps. The leftover column for the controls can shrink to almost nothing, and both get clipped by the band.<ul><li>**Employee Home (AUDIT-LONG), 200% text, 768:** the "3 items need your review" link gets a **3px** column, 205px tall. It is cut to "3 / iter / nee / you / rev" at the band edge, and the band is 409px tall. At 150% it wraps to 4 lines in 104px.</li><li>**Owner Home, 150% text, 768:** "Good afternoon, Fictio". The title is 519px wide in a 420px text area, so it runs past the band's edge (x=736) and is cut by 63px. At 200%: 692px wide, 272px over the text edge at 768 and 16px over at 1024.</li><li>**"Schedule activity", 200% text, 768:** the title is 478px in a 420px area and is cut ("activit"). The eyebrow-row week pager is cut ("Oct 19 – Oct 25" at the edge), and the chip row (494px) runs 38px past the band.</li></ul>Same in Chromium; WebKit not re-run. | `R2/crops/home-large-r2.png`, `R2/crops/large-r2.png`; `R2/data/big-*.json` | `premium-desktop.css:18` (`grid-template-columns: max-content minmax(0, 1fr)`) for every banded page. Employee Home's link is placed in column 2 at `:345-346` with no `min-width`. The eyebrow row is `nowrap` at `:32`. | Let the title wrap between words but never inside them:<ol><li>Change the grid to `grid-template-columns: minmax(min-content, auto) minmax(0, max-content)`.</li><li>Give the title `overflow-wrap: normal; word-break: normal`, so its min-content is its longest word.</li><li>Give the band `container-type: inline-size` and add `@container (max-width: 36rem) { .nv-masthead__extra { grid-column: 1 / -1; justify-self: start; } .nv-pageband__eyebrow-row { flex-wrap: wrap; } }`. Because this is in rem, it switches the controls to their own row only at large text or on narrow bands.</li><li>Keep the Employee Home link on one line (`white-space: nowrap`).</li></ol> | P0 |
+| WR4-13 | Desktop header · every role (measured on AUDIT-LONG; the same code serves Manager and Owner) · 761–800 | Trail vs account trigger | The account trigger shows the full name. For "María José Rivera Santiago With A Long Name" it is **390px** wide at every width. At 768 that leaves the trail **34px**, so "Home" (40px) is cut to "Hom"; at 761 it gets 27px. Longer page names lose more: "Notifications" or "Shift requests" (about 85–100px) show 2–3 letters. AUDIT-M's trigger is 177px and the trail fits. | `R2/crops/long-hdr.png`; `r2/q2.mjs` output | `portal-gusto.css:184` (the trigger has no cap on its label); the name comes from `portal-account-menu.tsx:10` | Cap the name: `.portal-account-menu .nevora-action-menu-trigger > span:not(.portal-account-avatar) { max-width: 12rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }`. Below 1100, show only the avatar and chevron; the name stays in the button's label and the menu heading. | P1 |
+| WR4-16 | Employee Home · Employee and Lead · phones at 320 (not a Phase 4 change; Phase 3 owns phones, reported for the owner) | To do row meta "Week of …" | The year breaks inside the number: "Week of Mon, October 19, 202 / 6" and "October 26, 202 / 6". Earlier rounds didn't capture this screen at 320 in this form, so I can't tell whether it's new. | `R2/crops/e-320.png` (first column) | `employee-home-reviewed.module.css:88` (`.itemCopy { overflow-wrap: anywhere }`) with `dateLabel()` not wrapped in `keepWhole()` (`employee-home-reviewed.tsx:46,167`) | `keepWhole(dateLabel(...))`, and `overflow-wrap: break-word` instead of `anywhere` on `.itemCopy`. | P1 |
+| WR4-12 | Inbox · both roles · 761–1179 | "Request pages" row | The three links don't fit on one line. They split 2 + 1: "Time off · Shift requests" on the first line and "Availability" alone on the second. The row is 112px tall here and 60px at 1180 and above. Measured: the list column is 385px at 1024, 453 at 1179, 460 at 768 and 715 at 1023. | `R2/crops/reqrow.png` | `premium-desktop.css:356` (`repeat(auto-fit, minmax(11.5rem, 1fr))`, which needs 3 × 184 + padding) | When the row can't hold three, drop the 32px tiles and use a text-only row: `@media (max-width: 1179px) { … #inbox-all-requests .nv-tile { display: none } … > .nv-rows { grid-template-columns: repeat(3, auto); justify-content: start; column-gap: 24px } }`. "Time off", "Shift requests" and "Availability" take about 290px. | P2 |
+| WR4-14 | My schedule · Employee and Lead · 1100 to about 1180 | Shift meta (location · position) | From 1100 the week column is only **436px**, so position drops to a second line and starts with its "·". At 1100: location at y=571, then "· Customer Support" at x=360, y=593. At 1099 (one column) the stacked layout shows no dot. At 1279 and above it's one line (both at y=582). | `R2/crops/sched-meta.png` | `src/app/app/schedule/employee-schedule.css:123-125` (the dot is a `::before` on the wrapped item) with the 340px side column at `premium-desktop.css:365-370` | In the two-column rule, while the week column is narrow, stack the meta as at 1099: `@media (min-width: 1100px) and (max-width: 1279px) { .my-shift-copy > .my-shift-position { flex-basis: 100%; } .my-shift-copy > .my-shift-position::before { content: none; } }`. Or start the two columns at 1280. | P2 |
+| WR4-15 | Profile · Employee and Lead · 1024–1440 | The two side-by-side panels | The two panels don't start at the same height. Work details is a white card starting at y=225, with its heading inside at y=253. App settings has its heading on the grey canvas at y=225 and its card at y=263. So the card tops are **38px** apart and the headings 28px apart, at both 1440 and 1024. | `R2/crops/on-break.png` (lower row) | `profile/page.tsx` (`.profile-settings` puts its `h2` outside the list card) with the two-column grid at `premium-desktop.css:385-387` | Put "App settings" inside its card head like Work details (in the side-by-side layout, `.profile-settings { background: var(--nv-canvas); border-radius: var(--nv-r-card); box-shadow: var(--nv-e1); padding-top: 28px }` with the `h2` at 28px inset). Or move Work details' heading out onto the canvas, so both panels have the same structure. | P2 |
+
+### Employee and Lead desktop: checked and correct
+
+- **Bands:**
+  - Every page is 200px or less at 761–1440 at 100% text.
+  - Titles are one line, starting on the band text edge (x=312, or 280 below 1100, or 148 with the sidebar collapsed).
+  - My schedule's and Shift requests' chips get their own row at 761–1023: My schedule band 172px, Shift requests band 188px with its eyebrow and description hidden.
+  - From 1024 the chips sit on the title row: My schedule band 120px, Shift requests band 188px.
+- **Section tabs inside the band:**
+  - Requests (Overview, Time off, Shift requests, Availability) and Pay (Statements, Hours, Timecards) sit inside the band at every desktop width.
+  - Sidebar entry lit: "Requests" on all four request pages; "My time" on Hours and Timecards; "My pay" on Statements.
+  - The trail ends with the page name.
+- **My schedule:** one column at 1099. From 1100 the week is beside a 340px column (confirm and changes); the side column is 340px at 1100–1440. The week strip has 7 days on one row at every width.
+- **Profile:** stacked at 1023 and below; side by side at 1024 and above (panels 350/350 at 1024, 536/536 at 1440).
+- **Employee vs Lead:** band geometry is identical on all 14 pages at all 7 widths. Clocked-in (AUDIT-ON) and on-break (AUDIT-BREAK) Homes match AUDIT-E's band (172px; "N items need your review" link at the right edge, x+w=1360 at 1440).
+- **Long name:** "Hi, María José." is one line at 761–1440. Profile wraps the full name in Work details. Header: see WR4-13.
+- **Sidebar collapsed (80px rail) at 1440, 1024 and 768:** every Employee page starts at x=112 and nothing scrolls sideways.
+- **No sideways scroll** on any Employee or Lead page at any desktop width or phone width (320 and 390).
+- **Phones 320 and 390:** Manager and Owner match the pre-Phase 4 capture apart from listed changes:
+  - The Inbox's Plan ahead group is 40px shorter because of the period dates (TCD-04).
+  - Home's Team tools card is 20px shorter at 390 (shared date wording).
+  - Team's new spans sit in the same places.
+- **Employee and Lead phones:** the More sheet is 335px with Profile, Sign out and Close visible, and Profile opens. No Phase 4 rule reaches phones: every Employee and Lead rule in `premium-desktop.css` is inside a `min-width: 761px` (or 1024/1100) query, which I checked by parsing the file.
+
+### Not covered in round 2
+
+- WebKit was not re-run this round (round 1 matched Chromium to the pixel). Landscape was not re-run.
+- The automated sweep (`checks-round-2`) was not cross-referenced.
+
+Open: 1 P0, 2 P1, 4 P2

@@ -105,7 +105,7 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
  const breaks=chosen.reduce((sum,c)=>sum+BigInt(c.card.breakNanoseconds),BigInt(0)).toString();
  const locked=busy||retry!==null||!currentActor;
  return <div className={styles.root}>
-  <section className={`${styles.card} ${styles.periodCard}`} aria-labelledby="payroll-period-title">
+  <section className={styles.card} aria-labelledby="payroll-period-title">
    <div className={styles.sectionHeading}><span className={styles.sectionIcon}><CalendarDotsIcon size={21} aria-hidden="true" /></span><div><h2 id="payroll-period-title">Pay period</h2><p>Choose up to 31 days of finalized time.</p></div></div>
    <form className={styles.toolbar} onSubmit={e=>{e.preventDefault();try{const nextPeriod=parsePeriod(draftPeriod.startDate,draftPeriod.endDate);if(nextPeriod.startDate===period.startDate&&nextPeriod.endDate===period.endDate){if(mutating.current){setNotice('Finish the current operation before refreshing export data.');return;}reload.current();}else{if(mutating.current||retry!==null||saveRetry.current!==null){setNotice('Finish or retry the current export or mapping save before changing the period.');return;}clearProtected.current('Loading finalized time');setPeriod(nextPeriod);}setNotice('');}catch{setNotice('Choose a period of 1 to 31 days.');}}}>
     <label><span>Period start</span><input type="date" required value={draftPeriod.startDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,startDate:e.target.value})} /></label>

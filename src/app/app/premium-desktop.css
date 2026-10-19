@@ -94,9 +94,9 @@
 
   /* The detail pane. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-detail { padding: var(--nv-s-5); }
-  .premium-inbox .inbox-detail__head { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
+  .premium-inbox .inbox-detail__head { display: flex; align-items: center; gap: var(--nv-s-3); }
   .premium-inbox .inbox-detail__head > :is(.nv-avatar, .nv-tile) { width: 48px; height: 48px; border-radius: 24px; }
-  .premium-inbox .inbox-detail__heading { flex: 1; min-width: 0; padding-top: 2px; }
+  .premium-inbox .inbox-detail__heading { flex: 1; min-width: 0; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-inbox .inbox-detail__title { margin: 0; font: var(--nv-t-title-3); letter-spacing: -.012em; color: var(--nv-ink); overflow-wrap: break-word; text-wrap: balance; }
   .premium-inbox .inbox-detail__title:focus { outline: none; }
   .premium-inbox .inbox-detail__title:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 4px; border-radius: 4px; }
@@ -309,20 +309,20 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 /* Round 1, alignment and type fixes (AL4-, TCD-). */
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* AL4-01: Timecards' "Details" follows the name instead of being drawn at a fixed spot over a wrapped name. */
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-legacy-page [class*="timecards-module"][class$="__rowMain"] { padding-bottom: var(--nv-s-1); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-legacy-page [class*="timecards-module"][class*="__rowMain"] { min-height: 0; padding-bottom: var(--nv-s-1); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-legacy-page [class*="timecards-module"][class$="__rowDetails"] > summary { position: static; margin: 0 0 var(--nv-s-2); }
   /* AL4-18: the period status line centres on the buttons beside it. */
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-legacy-page [class*="timecards-module"][class$="__periodPanel"] > p { align-self: center; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-legacy-page [class*="timecards-module"][class$="__periodPanel"] > p { align-self: flex-end; margin-bottom: 14px; }
   /* AL4-04, AL4-05, AL4-12, TCD-14: Time exports figures under their headers, an inset on the totals, kit card insets and gaps, names in the row role. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class$="__hours"] { justify-content: flex-end; }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class$="__totals"] { padding: var(--nv-s-3) var(--nv-s-4); }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"][class$="__card"] { padding: var(--nv-s-5); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports [class*="payroll-export-module"]:is([class$="__card"], [class*="__card "]) { padding: var(--nv-s-5); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports :is([class*="payroll-export-module"][class$="__root"], [class*="payroll-export-module"][class$="__workspace"]) { gap: var(--nv-s-4); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports.premium-exports.premium-exports form.employee-form > fieldset > legend[class], html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports.premium-exports.premium-exports form.employee-form > fieldset > legend { font: var(--nv-t-row); color: var(--nv-ink); }
   /* AL4-06: Schedule's location chips stay one row and scroll, as on phones. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page .schedule-location-control .segmented { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
   /* AL4-07: the week toolbar is a white card with an inset, not a shadow around bare buttons. */
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page .schedule-operations-shell > .mws-toolbar { background: var(--nv-canvas); padding: var(--nv-s-3) var(--nv-s-4); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page .schedule-operations-shell > .mws-toolbar { background: var(--nv-canvas); padding: var(--nv-s-3) var(--nv-s-5); }
   /* AL4-13: "Powered by" on the sidebar's 12px column. */
   html body .app-shell.nevora-portal.nevora-portal .sidebar .sidebar-platform-footer { padding-inline: 12px; }
   /* AL4-14, TCD-13: account menu heading and divider on the items' edges; items in the kit label role. */
@@ -344,8 +344,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* The compact Request pages row: one line per link, no chevrons. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests .nv-row__chev { display: none; }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests .nv-row__title { white-space: nowrap; }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests > .nv-rows { grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr)); }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests .nv-row__title { white-space: normal; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests > .nv-rows { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox #inbox-all-requests .nv-row { padding-inline: var(--nv-s-5) var(--nv-s-3); }
   /* The location chips keep their words on one line while the row scrolls. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page .schedule-location-control .segmented > * { flex: none; white-space: nowrap; }
@@ -415,4 +415,28 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 @media (min-width: 761px) and (max-width: 1100px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal .portal-location li:last-child { display: block; min-width: 0; }
   html body .app-shell.nevora-portal.nevora-portal .mobile-header .portal-account-menu .nevora-action-menu-trigger > span:not(.portal-account-avatar) { max-width: 8rem; }
+}
+
+/* Round 2 alignment fixes. */
+@media (min-width: 1180px) {
+  /* AL4-21: at this width every location chip fits, so the strip has no edge fade. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .manager-schedule-page .schedule-location-control .segmented { -webkit-mask-image: none; mask-image: none; }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* AL4-22: My time's "Current status" and "Today" are kit cards on desktop (the phone groups them in one card), one height side by side. */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-time .employee-time-overview .employee-view-surface {
+    border-radius: var(--nv-r-card); box-shadow: var(--nv-e1); background: var(--nv-canvas); border: 0; padding: var(--nv-s-5); align-self: stretch;
+  }
+  /* AL4-23: Employee cards put their text 20px in, like every kit card. */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-time .employee-view-surface { padding-inline: var(--nv-s-5); }
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .employee-account-panel { padding-inline: var(--nv-s-5); }
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame [data-nv-page] [class*="timecards-module"][class*="__periodPanel"] {
+    padding: var(--nv-s-5); border: 0; border-radius: var(--nv-r-card); box-shadow: var(--nv-e1); background: var(--nv-canvas);
+  }
+  /* AL4-25: sibling pages under one tab row keep one band height and title line: a band with no eyebrow keeps the eyebrow's 24px. */
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband:not(:has(.nv-pageband__eyebrow-row, .nv-pageband__bar)) { padding-top: calc(var(--nv-s-4) + 48px + 24px); }
+}
+@media (min-width: 1024px) {
+  /* AL4-24: Profile's two panels start on one line (the settings column's label sits in the space above the work card). */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-layout > .employee-account-panel { margin-top: 2.375rem; }
 }

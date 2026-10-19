@@ -107,3 +107,85 @@ Scripts, JSON and images are in `/private/tmp/claude-501/-Users-josek0514-Deskto
 - I didn't press anything that saves. The account menu was opened and measured only.
 
 Open: 1 P0, 7 P1, 10 P2
+
+## Round 2
+
+October 19, 2026, afternoon · Preview synced to the latest branch build (HEAD `41de13a`, after `0abdc74` and the coordinator's shared fixes), same URL and states. What I covered:
+- Manager and Owner at 768, 1024, 1440 and 1920 (left edge only).
+- Employee `AUDIT-E` at 768, 1024, 1440, 320 and 390, and Lead `AUDIT-LEAD` at 1440.
+- Chromium, with viewport captures where a popover was involved.
+
+New images are in `…/scratchpad/inspect/alignment/r2/` and `shots/r2*`. File and line references are to HEAD.
+
+### Status of round-1 findings
+
+| ID | Status | Measurement now |
+|---|---|---|
+| AL4-01 | **Fixed** | "Details" now follows the name in flow, so nothing is drawn over it. At 1440 the 3-line name runs 1389–1455 and Details 1459–1503; at 768 the name runs 1619–1685 and Details 1717–1761. The new gap is AL4-20. |
+| AL4-02 | **Fixed** | At 768, band text equals card text (280/280) on Home, Inbox, Schedule, Team, Timecards, Time exports, Team overview and Updates. Inbox's filters stay on the title row (band 188). |
+| AL4-03 | **Fixed** | Scrolled 1500px, the header ends at 1565 and the pane starts at 1581 (16px below it) at 1024 and 1440. The pane alone sticks: 448px at 1024 and 376px at 1440, both within the window. |
+| AL4-04 | **Fixed** | Values end under their headers: "8h 5m" and "0h" end at 866 (header 866) and "5h 15m" and "0h" at 952 (header 952) at 1024; 807.3/807.33 and 893.3/893.33 at 1440. |
+| AL4-05 | **Fixed** | Totals panel inset 12/16: labels at 973.33 (panel 957.33 + 16) and values end at 1340 (panel 1356 − 16). |
+| AL4-06 | **Fixed** | One row at every width. It scrolls at 768 and 1024 (scrollWidth 760 against 460 and 716) and fits at 1440. A new P2 for the fade is AL4-21. |
+| AL4-07 | **Partly fixed** | The toolbar is now a white card with the kit shadow. But its padding is 12/16, so the period control starts at 308 (1440) and 276 (768/1024), 4px left of the text edge of every other card on the page (312 and 280). Fix: `padding: var(--nv-s-3) var(--nv-s-5)` at `premium-desktop.css:325`. P2. |
+| AL4-08 | **Fixed** | Manager Home gap between "Also needs you" and "This week" is 16px (1107→1123 at 768; 1067→1083 at 1024). |
+| AL4-09 | Kept by decision | Not refiled (ROUND-2: data-dependent; the DOM order can't be rebalanced without masonry). Employee and Lead Home show the same pattern: left ends 1043.89 and right 1155 (E); left 1097.89 and right 957 (Lead). |
+| AL4-10 | **Fixed** | Every page starts at x 276 at 1440 and at 1920, the same as the header trail: Home, Inbox, Time off, Updates, Settings and Payroll. Bands run 276–1396 with text at 312, cards at 292 with text at 312. |
+| AL4-11 | **Fixed** | Columns are 2 / .8 / 1.2 / 1. At 1024 the long name takes 2 lines (was 3), and Role, Location and Phone share its first baseline (866/866/866/866). Headers sit over their cells to 0px (332/566.4/669.8/816.8 at 1024; 364/747.2/910.1/1146.4 at 1440). |
+| AL4-12 | **Partly fixed** | The gaps are 16 now: Pay period → workspace 466.5→482.5, and between the columns 917.33→933.33. The cards are still padded **24**: text at 316 against 312 at 1440 (284 against 280 at 1024).<br>The rule at `premium-desktop.css:319` (`[class$="__card"]`) never matches. The class attributes end in `…__card undefined`, `…__employeeCard`, `…__exportCard` and `…__mapping`, because `payroll-export.tsx:108` passes `styles.periodCard`, which is undefined.<br>Fix: use `:is([class$="__card"], [class*="__card "])`, keep the employee card's 0 side padding, and drop the undefined class. P2. |
+| AL4-13 | **Fixed** | "Powered by" text at 28 at 1440 and 24 at 768, the same as the group labels (28/24). |
+| AL4-14 | **Fixed** | "Signed in as" at 1109 = items 1109; the divider runs 1099–1399 = the item edges. |
+| AL4-15 | **Withdrawn** | It was a capture artifact. Chromium's *full-page* screenshot draws the top-layer popover see-through. A viewport screenshot shows it opaque (`r2/c-menu-1440-vp.png`; the full-page `r2/c-menu-1440.png` still shows the artifact). The header is now solid (`rgba(255,255,255,.97)`, no backdrop filter). Not a defect, and I should have checked a viewport capture in round 1. |
+| AL4-16 | **Fixed** | At 200% text, Team avatars are 80px and the initials (28px) sit inside them, 333–371 within 312–392. |
+| AL4-17 | **Fixed** | Plan ahead: card 727–803, row 731–799, tile 745–785. The tile is 18px from the top and 18px from the bottom. |
+| AL4-18 | **Not fixed** | The direction flipped. The status line's cap centre is 329.9 against the buttons' centre of 343: now **13px high**. `align-self:center` (`premium-desktop.css:315`) centres it in a row that includes the field labels above the inputs. Fix: `align-self: flex-end; line-height: 48px` (or `margin-bottom: 14px`), so it centres on the 48px buttons. P2. |
+
+### New findings, round 2
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL4-22 | My time · Employee (Lead same component) · 768, 1024, 1440 | "Current status" and "Today" | These two are **square, flat panels** (radius 0, no shadow) on a page whose other cards ("Recent entries", "Corrections") are rounded 16 with the kit shadow.<br>At 1440 they sit side by side with unequal bottoms: Current status 293–591, Today 293–555 (36px).<br>Their text is inset 24 (284 and 316 against the band text at 280 and 312). | shots/r2e-AUDIT-E-_app_my-time-1440.png | `portal-premium.css:1084` flattens `.employee-time-overview .employee-view-surface` (radius 0, no shadow) for the phone's single grouped card. On desktop `.employee-time-overview` is `display: contents`, so the two halves stand alone as bare panels. | In the `premium-desktop.css` desktop block, give `.premium-employee-time .employee-time-overview > .employee-view-surface` `border-radius: var(--nv-r-card); box-shadow: var(--nv-e1); padding: var(--nv-s-5)`, and stretch them to one height in their row (`align-self: stretch`). | P1 |
+| AL4-23 | Employee desktop · E · 768–1440 | Card text insets against the band text edge | Kit cards put text 20px in (280 and 312), and Requests, Notifications, My pay and My schedule do. These don't:<br>• **My time:** Recent entries and Corrections padded 24 (316 / 284)<br>• **Timecards:** "Choose a period" panel padded 24 plus a 1px border, radius 12 and no shadow (317 / 285). It's a different card style from the timecard below it (radius 16 with the kit shadow, also padded 24).<br>• **Profile:** Work details padded 28 (320 / 288; phones use 20)<br>• **Updates:** "Filter updates" 28 inside its card (320 / 288) | shots/r2e-AUDIT-E-_app_my-time-1440.png, r2e-AUDIT-E-_app_profile-1440.png | Component paddings (`employee-view-surface` 24 and 28, timecards module period panel) aren't mapped to the kit on desktop. | In the desktop block, use `padding: var(--nv-s-5)` on those surfaces. Give the Timecards period panel the kit card (`border: 0; border-radius: var(--nv-r-card); box-shadow: var(--nv-e1)`). Inset Updates' inbox head 20. | P2 |
+| AL4-24 | Profile · E · 1024, 1440 | The two panels' tops | Work details is a card starting at y 225 with its title inside. The right column starts with an "App settings" heading on the canvas, and its first card starts at **263**: the two panels' tops are 38px apart. | shots/r2e-AUDIT-E-_app_profile-1440.png | The right column keeps the phone pattern (section label above a list card). | Judgment. Put "App settings" inside the settings card as its head, the same as Work details, so both cards start at 225. Or move "Work details" out to a label of the same kind. | P2 |
+| AL4-25 | Tabbed sections · E · 1024, 1440 (768 similar) | Band height and title position between sibling tabs | Switching tabs in the same tab row moves the title and the band's bottom edge:<br>• **Requests:** Overview 164 (title baseline 192), Time off 168 (194), Shift requests **188 (214)**, Availability 168 (194)<br>• **Pay:** Statements 172 (200), Hours 184 (212), Timecards 184 (212)<br>The title jumps up to 20px, and the card edge up to 24px. | (JSON `r2/j-tabs.json`) | Some sibling pages have an eyebrow (Shift requests "Schedule flexibility", Hours "Payday …") and others don't (the same pattern as Phase 2's AL-40). | Give every sibling the same rows: an eyebrow on each (date or section line), or none on any. Then the title stays at one y and the bands at one height within a tab row. | P2 |
+| AL4-19 | Inbox detail pane · M and O · 1024, 1440 | Pane head for a shift item (no meta line since TCD-08) | The title's cap centre is 282.45 and the 48px avatar's centre 293, so the name sits **10.5px above** the avatar's middle. Items that keep a meta line ("Coverage gap…" with "Mon, Oct 19") are balanced (block 271–318 against 269–317). | r2/c-inbox-top-1440.png | `premium-desktop.css:97` `align-items: flex-start` with `:99` `padding-top: 2px`. | `align-items: center` at `:97` and `padding-top: 0` at `:99`. It centres the one-line and the two-line heads alike. | P2 |
+| AL4-20 | Timecards · M and O · 1440 (and 768, 1024) | "Details" under one-line names | "Details" is now in flow but sits after the 68px row block plus its 26px bottom padding. For a one-line name it starts **40px** below the name (name 1260–1282, Details 1322); for a 3-line name, 4px. Rows grew from 77 to 129px. Details reads as detached from the person it belongs to. | r2/c-tc-rows-1440.png | `timecards.module.css:191` `.rowMain{min-height:68px; padding:12px 16px 26px}` was meant for the old absolutely placed link. | At `premium-desktop.css:313`, also set `[class$="__rowMain"] { min-height: 0; padding-bottom: var(--nv-s-1); }`. Details then sits about 4px under every name, and rows return to about 84px. | P2 |
+| AL4-21 | Schedule · M and O · 1440 | Location chip strip fade | The right-edge fade is applied while the strip doesn't scroll (scrollWidth 760 = clientWidth 760). The last 24px, the end of "Not started" (track ends 1051.7), are dimmed. | shots/r2s-AUDIT-M-_app_schedule-1440.png | The `mask-image` on `.segmented` (`portal-premium.css:370`) is unconditional. | Apply the fade only when it overflows (a `data-overflow` attribute, as WR-52 does for the band filters), or remove the mask at 1440 when everything fits. | P2 |
+| AL4-26 | Inbox · M and O · 768, 1024 | "Request pages" row (Time off, Shift requests, Availability) | It's three across at 1440 (60px), but at 768 and 1024 it wraps **2 + 1**: "Availability" sits alone on a second line under "Time off" (card 112px). | r2/c-inbox-top-1024.png | A wrapping flex row with fixed-width items. | `display: grid; grid-template-columns: repeat(3, minmax(0, 1fr))` with labels allowed to wrap. Or show the three as a one-column list below 1024. | P2 |
+| AL4-27 | Timecards · M and O · 390 (phone) | Period line under each name | On phones the per-row line "Oct 13, 2026 – Oct 19, 2026" (88,743, 195×19 in the pre-Phase-4 baseline) is now visually hidden (`position:absolute; width:1px; clip-path:inset(50%)`). That's a visible phone change not on ROUND-2's list. Rows are otherwise the same; they're 24px taller only from longer hour values in today's data. | (diff against `rt/phone-base.json`) | `timecards.module.css:187` hides `.rowIdentity small` at every width (the D2 desktop intent). Whatever kept it visible on phones no longer applies. | Confirm whether this is intended (the band eyebrow already shows the period). If not, scope `:187` to desktop. | P2 |
+
+### Checked and correct in round 2
+
+- **Manager phones (320, 390):** I diffed the geometry of Home, Inbox, Team, Schedule, Timecards and Time exports against the pre-Phase-4 baseline. The only changes are:
+  - text: shorter "Clocker recovery" meta, readable dates in Inbox's Plan ahead (cards 20 and 40px shorter), 15px header Search
+  - data: hour values
+  - AL4-27
+- **Employee phones (320, 390):** Home, My schedule, Profile and Requests overview use the kit. Cards run 16–304 and 16–374 with text at 36 and radius 20; bands have text at 16.
+- **Employee and Lead desktop bands:** every band runs 276–1396 with text at 312 (244–736 and 280 at 768). Heights are 116–188, all at most 200 (My pay is 196 at 768).
+  - Section tabs inside the band start at the band text edge: 312 at 1440 and 280 at 1024 and 768 on Requests, Pay, Timecards and Time exports.
+  - View chips on the title row end at the band text edge (1360/956).
+  - Home's "3 items need your review" link sits on the title row and ends at 1360.
+- **My schedule, two columns from 1100:**
+  - The week (292–1024) and the confirm column (1040–1380) have a 16px gap and equal tops (470.19/470.19).
+  - The week card's day strip spans 312–1360.
+  - "Published assignments only" ends at 1004 (20px in).
+  - Planning ahead rows put their icons at 312.
+  - Lead is the same.
+- **Profile, two panels from 1024:** 260–610 and 626–976 (350 each, gap 16); 292–828 and 844–1380 at 1440.
+- **Employee Home at 1440:** two columns 292–853.52 and 869.52–1380 with a 16px gap and equal tops. Quick actions run in a 2×2 grid with 12px gaps.
+- **Inbox pane:** status pill, facts and actions as in round 1. The button and link are centred together (579/579). The selected row has its 3px edge and wash, and avatars are kit size.
+- **Shell:**
+  - Sidebar items are 36px, with icon and label centred (154/153.81).
+  - Group labels are 14px at 28/24.
+  - Header is 65px with actions centred at 32, and the trail starts at 276.
+  - Account menu edges are as above.
+
+### Gaps
+
+- Lead was checked only on Home and My schedule at 1440. `AUDIT-ON`, `AUDIT-BREAK` and `AUDIT-LONG` Home weren't measured.
+- `?view=open` and `?intent=swap` weren't opened.
+- Requests overview, Time off, Availability and Notifications were checked for band and card edges only; I didn't look at their inner layouts closely.
+- There's no pre-Phase-4 phone baseline for Employee pages, so their phones were checked against the kit, not diffed.
+- Nothing was saved. Only the account menu was opened and Inbox rows selected.
+
+Open: 0 P0, 1 P1, 11 P2
