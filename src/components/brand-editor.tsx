@@ -220,7 +220,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
           <ArrowCounterClockwiseIcon size={18} aria-hidden="true" />Reset to NEVORA teal
         </button>
       </FormActions>
-      <p className="wc-muted wc-draft-status">{dirty ? "You have unsaved changes." : "No changes to save."}</p>
+      <p className="wc-muted wc-draft-status">{dirty ? "Unsaved changes" : "Saved"}</p>
     </div>
 
     {history.length ? <section className="nv-card wc-brand__history" aria-labelledby="brand-history-title">

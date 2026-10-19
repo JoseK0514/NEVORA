@@ -13,6 +13,7 @@ import { X } from '@phosphor-icons/react/dist/ssr/X';
 import type { ClockerDeviceView, ClockerLocationView, ClockerOwnerResult } from '../lib/clocker/views';
 import { Status, type KitTone } from './kit/kit';
 import { toast } from './toaster';
+import { keepWhole } from '../lib/keep-whole';
 import { EmptyState, GuideCard, Notice, SettingsFrame } from '../app/app/settings/wave-c-kit';
 import { ButtonLabel, Field, FieldErrors, FormActions, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 
@@ -60,7 +61,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true,
     }).formatToParts(new Date(value));
     const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value ?? '';
-    return `${part('month')} ${part('day')}, ${part('hour')}:${part('minute')} ${part('dayPeriod')}`;
+    return keepWhole(`${part('month')} ${part('day')}, ${part('hour')}:${part('minute')} ${part('dayPeriod')}`);
   };
 
   useEffect(() => {
@@ -128,7 +129,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const locationForSetup = locations.find(location => location.id === setup?.device.locationId);
   const title = selection?.operation === 'REGISTER' ? 'Add device' : selection?.operation === 'RENAME' ? 'Rename device'
     : selection?.operation === 'REVOKE' ? 'Revoke this device’s access?' : 'Create a new setup code?';
-  const submitLabel = selection?.operation === 'REGISTER' ? 'Create setup code' : selection?.operation === 'RENAME' ? 'Save name' : selection?.operation === 'REVOKE' ? 'Revoke device' : 'Create new code';
+  const submitLabel = selection?.operation === 'REGISTER' ? 'Create setup code' : selection?.operation === 'RENAME' ? 'Save name' : selection?.operation === 'REVOKE' ? 'Revoke access' : 'Create new code';
 
   return <SettingsFrame title="Clocker devices" eyebrow={`${devices.length} ${devices.length === 1 ? 'device' : 'devices'}`}
     summary="A shared tablet at each location, with access you control."
@@ -179,7 +180,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       <div className="wc-find">
         <span className="wc-search"><MagnifyingGlass size={20} aria-hidden="true" /><input ref={searchField} className="wc-control" type="search" aria-label="Search devices" placeholder="Search device or location" value={query} onChange={event => setQuery(event.target.value)} autoComplete="off" /></span>
         <div className="wc-pills" role="group" aria-label="Filter devices">
-          {([['ALL', 'All devices', devices.length], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Revoked', revoked]] as const).map(([value, label, count]) =>
+          {([['ALL', 'All', devices.length], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Revoked', revoked]] as const).map(([value, label, count]) =>
             <button key={value} type="button" className="nv-filter" aria-pressed={filter === value} aria-label={`${label}, ${count}`} onClick={() => setFilter(value)}>{label} <span className="wc-count" aria-hidden="true">{count}</span></button>)}
         </div>
         <p className="wc-count-line" role="status">Showing {visibleDevices.length} of {devices.length} {devices.length === 1 ? 'device' : 'devices'}</p>

@@ -23,8 +23,8 @@ function directoryLink(query: string, status: Filter) {
   return directoryPath + (params.size ? `?${params}` : "");
 }
 
-function issueAction(code: LocationSetupIssueCode) {
-  if (code === "NO_ELIGIBLE_EMPLOYEES") return { href: "/app/employees", label: "Employee eligibility" };
+function issueAction(code: LocationSetupIssueCode, person = "Employee") {
+  if (code === "NO_ELIGIBLE_EMPLOYEES") return { href: "/app/employees", label: `${person} eligibility` };
   if (code === "WORKSPACE_INACTIVE") return { href: "/app/settings/workspace", label: "Company profile" };
   if (code === "LOCATION_INACTIVE") return null;
   return { href: "/app/schedule/settings", label: "Scheduling rules" };
@@ -119,7 +119,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
                       <CaretDown className="wc-caret" size={16} weight="bold" aria-hidden="true" />
                     </summary>
                     <ul className="wc-issues">{readiness.issues.map(issue => {
-                      const action = issueAction(issue.code);
+                      const action = issueAction(issue.code, words.person);
                       return <li key={issue.code + JSON.stringify(issue.details)}><span>{issue.message}</span>{action ? <Link className="nv-link" href={action.href}>{action.label}<CaretRight size={16} weight="bold" aria-hidden="true" /></Link> : null}</li>;
                     })}</ul>
                   </details>
@@ -144,7 +144,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
           ) : (
             <EmptyState icon={<Storefront size={22} weight="bold" />} titleId="locations-empty-title" title="Your first workplace starts here"
               action={<Link className="nv-btn" data-kind="primary" href={`${directoryPath}/new`}><Plus size={20} aria-hidden="true" />Add {place}</Link>}>
-              Add a location, then set up staffing, coverage, and your eligible team.
+              Add a {place}, then set up staffing, coverage and your eligible team.
             </EmptyState>
           )}
         </section>

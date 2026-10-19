@@ -130,7 +130,7 @@ export function EditLocationForm({ location, action, words = { location: "Locati
                 action={unconfirmed ? <Link className="nv-link" href="/app/settings/locations">Check {Places}</Link> : undefined}>{result.error || successBody(result.success)}</Notice>
             </div>
           ) : null}
-          <p role="status" className="wc-muted wc-draft-status">{pending ? "Saving your changes…" : dirty ? "You have unsaved changes." : result.success ? "All changes saved." : "No changes yet."}</p>
+          <p role="status" className="wc-muted wc-draft-status">{dirty ? "Unsaved changes" : "Saved"}</p>
           <FormActions>
             <button type="submit" className="nv-btn" data-kind="primary" disabled={pending || !dirty}><ButtonLabel pending={pending} idle="Save changes" busy="Saving…" /></button>
             <Link className="nv-btn" data-kind="secondary" href="/app/settings/locations" aria-disabled={pending || undefined}

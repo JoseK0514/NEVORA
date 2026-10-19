@@ -152,7 +152,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: strin
         <div className="nv-card__body">
           <FormActions>
             <button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated || pending}>
-              <ButtonLabel pending={pending} idle={<><MagnifyingGlassIcon size={20} aria-hidden="true"/>Check receipt</>} busy={<><SpinnerGapIcon size={20} className="wc-spin" aria-hidden="true"/>Checking receipt…</>}/>
+              <ButtonLabel pending={pending} idle={<><MagnifyingGlassIcon size={20} aria-hidden="true"/>Check receipt</>} busy={<><SpinnerGapIcon size={20} className="wc-spin" aria-hidden="true"/>Checking…</>}/>
             </button>
           </FormActions>
         </div>

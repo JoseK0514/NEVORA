@@ -247,7 +247,7 @@ export function CompanyPolicyEditor({
         <p className="nv-sr" role="status" aria-live="polite">{busy ? "Saving…" : ""}</p>
         <FormActions sticky>
           {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "urgent" ? "alert" : "status"}><Notice tone={notice.tone} title={notice.title} action={notice.title === "Sign in again" ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
-          <button className="nv-btn" data-kind="primary" disabled={busy} type="submit"><ButtonLabel pending={busy} idle={retry ? "Retry the same save" : "Save policies"} busy="Saving…" /></button>
+          <button className="nv-btn" data-kind="primary" disabled={busy} type="submit"><ButtonLabel pending={busy} idle={retry && !busy ? "Retry the same save" : "Save policies"} busy="Saving…" /></button>
         </FormActions>
       </form>
       <section className="nv-card" aria-labelledby="policy-history-title">

@@ -176,7 +176,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
       {selection ? <form noValidate key={selection.operation + '-' + (selection.type?.id ?? 'new')} onSubmit={submit} aria-busy={pending} className="wc-dialog__form" {...handlers}>
         <div className="wc-dialog__head">
           <div><h2 className="wc-dialog__title" id="break-editor-title">{title}</h2>
-            <p className="wc-dialog__text" id="break-editor-description">{editing ? 'Changes apply to future breaks only.' : selection.operation === 'ARCHIVE' ? 'It won’t be offered for new breaks.' : 'It will be offered for new breaks again.'}</p></div>
+            <p className="wc-dialog__text" id="break-editor-description">{selection.operation === 'CREATE' ? 'It’s offered for new breaks as soon as you create it.' : editing ? 'Changes apply to future breaks only.' : selection.operation === 'ARCHIVE' ? 'It won’t be offered for new breaks.' : 'It will be offered for new breaks again.'}</p></div>
           <button type="button" className="wc-dialog__close" aria-label="Close break editor" disabled={pending} onClick={close}><XIcon size={22} aria-hidden="true" /></button>
         </div>
         <fieldset className="wc-fieldset" disabled={pending || Boolean(error?.refresh)}>
@@ -199,7 +199,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
         {error ? <div ref={errorMessage} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title="Not saved">{error.message}</Notice></div> : null}
         <p role="status" className="nv-sr">{pending ? 'Saving your changes…' : ''}</p>
         <FormActions>
-          {error?.refresh ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => window.location.reload()}><ArrowClockwiseIcon size={18} aria-hidden="true" />Reload break types</button>
+          {error?.refresh ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => window.location.reload()}><ArrowClockwiseIcon size={18} aria-hidden="true" />Reload</button>
             : <button className="nv-btn" data-kind={selection.operation === 'ARCHIVE' ? 'danger' : 'primary'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={saveLabel} busy="Saving…" /></button>}
           <button className="nv-btn" data-kind="secondary" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
         </FormActions>

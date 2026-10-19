@@ -65,7 +65,7 @@ it("distinguishes a true empty directory from a search without matches", async (
   data.locations.mockResolvedValueOnce([]);
   const html = await render();
   expect(html).toContain("Your first workplace starts here"); expect(html).not.toContain("No matching locations");
-  expect(html).toContain("Add a location, then set up staffing, coverage, and your eligible team.");
+  expect(html).toContain("Add a location, then set up staffing, coverage and your eligible team.");
 });
 it("fails before data reads when Owner authorization is rejected", async () => {
   data.requireRoles.mockRejectedValueOnce(new Error("Forbidden"));

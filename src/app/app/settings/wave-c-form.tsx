@@ -134,7 +134,27 @@ export function SwitchRow({ id, name, label, description, checked, defaultChecke
 
 /** Buttons at the end of a form: primary first (full width on phones), then the secondary action. */
 export function FormActions({ children, sticky = false }: { children: ReactNode; sticky?: boolean }) {
-  return <div className={sticky ? "wc-actions nv-actionbar" : "wc-actions"} role={sticky ? "group" : undefined} aria-label={sticky ? "Save" : undefined}>{children}</div>;
+  const bar = useRef<HTMLDivElement>(null);
+  // ST-13, ST-15: on phones a save bar is fixed above the tab bar. Measure both, so the bar sits exactly on the
+  // tab bar at any text size and the page keeps room for the bar under its last card.
+  useEffect(() => {
+    if (!sticky || !bar.current) return;
+    const root = document.documentElement, element = bar.current;
+    const measure = () => {
+      const nav = document.querySelector<HTMLElement>(".mobile-nav");
+      const navHeight = nav && getComputedStyle(nav).display !== "none" ? nav.getBoundingClientRect().height : 0;
+      root.style.setProperty("--wc-tabbar", `${Math.round(navHeight)}px`);
+      root.style.setProperty("--wc-bar", `${Math.round(element.getBoundingClientRect().height)}px`);
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    const nav = document.querySelector(".mobile-nav");
+    if (nav) observer.observe(nav);
+    window.addEventListener("resize", measure);
+    measure();
+    return () => { observer.disconnect(); window.removeEventListener("resize", measure); root.style.removeProperty("--wc-tabbar"); root.style.removeProperty("--wc-bar"); };
+  }, [sticky]);
+  return <div ref={bar} className={sticky ? "wc-actions nv-actionbar" : "wc-actions"} role={sticky ? "group" : undefined} aria-label={sticky ? "Save" : undefined}>{children}</div>;
 }
 
 /** The settings save form: the browser posts once per tap, entries stay on failure,
@@ -184,7 +204,7 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
       onResult?.(next);
       if (saved.success && !saved.error && saved.updatedAt && draftUpdatedAt !== undefined) setDraftUpdatedAt(saved.updatedAt);
     } catch {
-      const failed = { error: "Changes could not be saved. Your entries are kept; try again." };
+      const failed = { error: "Your entries are kept. Try again." };
       setResult(failed);
       onResult?.(failed);
     } finally {

@@ -31,7 +31,7 @@ type Props={
  * the private-data clearing and the lifecycle; this is presentation only. */
 export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,timeZone,onSubmit,onStartAgain}:Props){
  // The band's Back names where it goes: the employee it was opened from, Settings, or Home.
- const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:employeeId}:from==='settings'?{href:'/app/settings',label:'Settings'}:{href:'/app',label:'Home'};
+ const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:employeeId.length<=16?employeeId:'Employee'}:from==='settings'?{href:'/app/settings',label:'Settings'}:{href:'/app',label:'Home'};
  const feedback=useRef<HTMLDivElement>(null),proof=useRef<HTMLInputElement>(null);
  const previousProof=useRef<AssistedRecoveryProof|null>(null),employee=useRef<HTMLInputElement&HTMLSelectElement&HTMLTextAreaElement>(null);
  const {errors,handlers}=useFieldErrors({employeeId:{missing:'Enter the employee’s ID.'},attestation:{missing:'Describe how you verified their identity.',length:'Write at least 10 characters about how you verified them.'},confirm:{missing:'Confirm you verified their identity yourself.'}});
@@ -106,7 +106,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
    <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
    {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('access ended')?'Sign in again':message.includes('expired')?'Recovery code expired':'Code not issued'}
     action={message.includes('access ended')?<Link className="nv-link" href="/login">Go to sign in</Link>:undefined}>{message}</Notice></div>:null}
-   <FormActions><button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={<>Issue recovery code<ArrowRightIcon size={20} aria-hidden="true"/></>} busy="Issuing recovery code…"/></button></FormActions>
+   <FormActions><button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={<>Issue recovery code<ArrowRightIcon size={20} aria-hidden="true"/></>} busy="Issuing code…"/></button></FormActions>
   </form>}
  </SettingsFrame>;
 }
