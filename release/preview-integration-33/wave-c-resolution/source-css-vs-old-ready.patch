@@ -1,0 +1,57 @@
+diff --git a/src/app/app/premium-wave-c.css b/src/app/app/premium-wave-c.css
+index 9e4e1993..752cfaea 100644
+--- a/src/app/app/premium-wave-c.css
++++ b/src/app/app/premium-wave-c.css
+@@ -33,7 +33,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .n
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .nv-link { min-height: 44px; font: var(--nv-t-label); }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .nv-btn { min-height: 52px; padding-block: 12px; font: var(--nv-t-headline); white-space: normal; text-align: center; text-wrap: balance; }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .nv-btn svg { flex: none; }
+-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page button.nv-link { padding: 0; border: 0; background: transparent; cursor: pointer; }
++html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page button.nv-link { padding-inline: 0; border: 0; background: transparent; cursor: pointer; }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .nv-sr { position: absolute; }
+ /* Links inside sentences. */
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-inline-link { color: var(--nv-accent); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+@@ -137,9 +137,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
+ /* The label swap inside a pending button keeps the button's width. */
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap { display: inline-grid; justify-items: center; }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span { grid-area: 1 / 1; display: block; text-align: center; }
+-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg { display: inline-block; vertical-align: -3px; margin-inline: var(--nv-s-2); }
+-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg:first-child { margin-left: 0; }
+-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg:last-child { margin-right: 0; }
++/* AL-13: an icon in a wrapping label keeps an 8px gap to its word and sits on the text line at any size. */
++html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg { display: inline-block; vertical-align: -0.2em; }
++html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg.wc-icon-before { margin-right: var(--nv-s-2); }
++html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap > span > svg.wc-icon-after { margin-left: var(--nv-s-2); }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap[data-state="idle"] > span + span,
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swap[data-state="pending"] > span:first-child { visibility: hidden; }
+ 
+@@ -544,6 +545,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-card, html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-editables { container-type: inline-size; }
+ @container (max-width: 17.5rem) {
+   html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-row > .nv-tile, html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-editables .wc-edit-label { display: none; }
++  /* WR-25: with the tile hidden, row separators start on the text edge. */
++  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-rows > li + li > .nv-row[data-leading="true"]::before { left: var(--nv-s-5); }
+ }
+ /* TC-24: date and time fields give the browser's format room beside its calendar button. */
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page input.wc-control:is([type="datetime-local"], [type="time"]) { padding-right: var(--nv-s-3); }
+@@ -558,13 +561,13 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [d
+   .route-skeleton:is([data-route="settings-locations"], [data-route="settings-breaks"], [data-route="settings-positions"], [data-route="settings-devices"]) { --route-band: 212px; }
+ }
+ 
+-/* WR-WC-25: staged for the unmerged Wave C dialogs; preserve full button labels on narrow phones. */
++/* ST-18: on the narrowest phones the save state says "Unsaved", so it stays beside Save on one row. */
++@media (max-width: 359px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-wide-state { display: none; } }
++/* ST-13: on phones an outcome in the save bar is at most two lines; the full sentence stays in the page for screen readers. */
+ @media (max-width: 599px) {
+- html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-dialog .wc-actions > .nv-btn { flex: 0 0 auto; }
+- html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-dialog .wc-swap > span { align-self: center; }
++  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar .wc-notice__body { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
++  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar .wc-notice { padding-block: 10px; }
+ }
+ 
+-/* ST-13: keep long failed-save feedback scrollable inside the docked action bar. */
+-@media (max-width: 599px) {
+- html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .wc-feedback { max-height: min(28dvh, 12rem); overflow-y: auto; overscroll-behavior: contain; }
+-}
++/* AL-18: a hub card head's title and note never run past the card's 20px inset. */
++html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-card__head > * { max-width: 100%; }

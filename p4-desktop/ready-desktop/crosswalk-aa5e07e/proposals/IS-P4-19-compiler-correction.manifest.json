@@ -1,0 +1,23 @@
+{
+  "base": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "finding": "IS-P4-19",
+  "supersedes": "Only the per-render local guard implementation from finding commit4314266; native disabled/aria-disabled behavior and all existing affected tests remain intact.",
+  "validation": "Static preparation only. No app edits, tests, lint, browser or preview execution.",
+  "files": [
+    {
+      "path": "src/components/employee-time-panel.tsx",
+      "beforeSha256": "f3d947c9b2d7990e8c9a519ca9c2822a3ebd8cbd5029039849c5bf7640289841",
+      "afterSha256": "20ad39b70e304cfba67584c6c9fdaf719894fb2e2c25b878a54de249d34d7574"
+    },
+    {
+      "path": "src/components/employee-home-reviewed.tsx",
+      "beforeSha256": "5cff0f19af4a26fcb97c66b4e814b2a580abb2e82415f8a1827eb0d697817426",
+      "afterSha256": "5f844809c8577e3f32d820f932fc0debdd3a6a827d35c1de9b1f54c4e753ea01"
+    },
+    {
+      "path": "src/lib/refresh-handler.ts",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "fcc7b7aed27aa84ad9ae24aca4185571b0fa685a5c1bbeb880d42f9b8c9a39d0"
+    }
+  ]
+}

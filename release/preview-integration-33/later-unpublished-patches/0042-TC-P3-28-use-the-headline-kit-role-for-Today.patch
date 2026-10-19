@@ -1,0 +1,25 @@
+From 2bc174ce648e927f5f6771cebb4037c3f4713a5a Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 22:12:24 +0000
+Subject: [PATCH 42/45] TC-P3-28: use the headline kit role for Today
+
+---
+ src/app/app/schedule/employee-schedule.css | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/app/app/schedule/employee-schedule.css b/src/app/app/schedule/employee-schedule.css
+index 4f3a0106..8d2fad6a 100644
+--- a/src/app/app/schedule/employee-schedule.css
++++ b/src/app/app/schedule/employee-schedule.css
+@@ -143,3 +143,8 @@ html body .app-shell.nevora-portal .page-frame .my-schedule-footer h2 { margin:
+ .my-week-note { display:flex; align-items:flex-start; gap:8px; margin:14px 0 0; padding:10px 12px; border-radius:10px; background:var(--g-inset, #f4f5f6); color:var(--g-ink, #111827); font-size:calc(14 * var(--type-unit, 1px)); line-height:1.5; }
+ .my-week-note > svg { flex:none; margin-top:2px; color:var(--g-muted, #5f6368); }
+ @media (max-width:760px) { .my-week-note { font-size:0.9375rem; } }
++
++/* TC-P3-28: Today uses the kit headline role with the other week controls. */
++@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
++  html body .app-shell.nevora-portal[data-mobile-workforce="true"] .page-frame .premium-employee-schedule .my-week-today:not(#nv-kit) { font: var(--nv-t-headline); }
++}
+-- 
+2.52.0
+

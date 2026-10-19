@@ -1,0 +1,30 @@
+{
+  "source": "4aaa79383f82a3c6023f9d2a2c2f492ba3152fce",
+  "candidate": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "oldReadyComparisonOnly": "de8b15851d6280fd31fba3db63dcbe976a19584a",
+  "appTreesEdited": false,
+  "indexEdited": false,
+  "refsEdited": false,
+  "browserOrCiRun": false,
+  "resolvedCss": {
+    "path": "src/app/app/premium-wave-c.css",
+    "sourceSha256": "46d321a9d3fe37e7a9ab150cb275341e31edfbbf8b50a0c8628db77fde7c6fa4",
+    "candidateFullCssSha256": "e70163625c0a30bf0d009212632a0183dc71df699a7754777c8eeda664ec8f17",
+    "candidateTailSha256": "66b44bbf3445dc842cc2756ee75bfaf76938248b0b25af31d45fc3d756ace5be",
+    "resolvedSha256": "077118872d9be4642f440a41d0c251f3afccc4f0bd663d6de75db5d8fa58fb8c",
+    "sourcePrefixByteIdentical": true,
+    "candidateTailByteIdentical": true,
+    "sourceLines": 573,
+    "resolvedLines": 584
+  },
+  "assistedRecovery": {
+    "obsoletePath": "src/app/app/account-recovery/assisted-recovery.css",
+    "deletedInSource": true,
+    "sourceImports": [],
+    "componentSha256": "a343002a4b8a04a0feff1887cad2aa63c93dec988c01eff68e5c78936b9b61a0",
+    "accountLifecycleComponentByteIdenticalToOldReady": true,
+    "onlySourceAssistedAdditionVersusOldReady": "wc-icon-after class on Issue recovery code arrow (plus trailing whitespace difference)",
+    "disposition": "Keep deleted; old legacy DOM/classes and import replaced. Preserve exact source component, including icon addition. Shared field-edge contrast remains a live gate."
+  },
+  "laterProposalsApplied": []
+}

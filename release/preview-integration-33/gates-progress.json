@@ -1,0 +1,48 @@
+{
+  "candidate": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "startedAt": "2026-10-19T22:24:00.765455+00:00",
+  "sourceClean": true,
+  "checksSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "premiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+  "coordinatorPremiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+  "lockBlob": "76af83a326821ae23720673ac2e5f5aeccb99787",
+  "runs": [
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "startedAt": "2026-10-19T22:24:00.773396+00:00",
+      "exitCode": 0,
+      "seconds": 31.691,
+      "completedAt": "2026-10-19T22:24:32.465000+00:00"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-10-19T22:24:32.466060+00:00",
+      "exitCode": 0,
+      "seconds": 42.94,
+      "completedAt": "2026-10-19T22:25:15.406618+00:00"
+    },
+    {
+      "name": "full-tests",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers",
+        "1",
+        "--reporter=json",
+        "--outputFile=/workspace/paused-evidence/final-8640247/vitest.json"
+      ],
+      "startedAt": "2026-10-19T22:25:15.407749+00:00"
+    }
+  ]
+}

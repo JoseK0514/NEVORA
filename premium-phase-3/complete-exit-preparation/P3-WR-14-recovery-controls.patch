@@ -1,14 +1,14 @@
 --- a/src/components/employee-updates.tsx
 +++ b/src/components/employee-updates.tsx
-@@ -50,7 +50,7 @@
+@@ -53,7 +53,7 @@
     <div className="updates-toolbar">
      {/* P3-ST-05: the filters are there from the first frame (disabled, counts "–" until read), so the list never jumps down. */}
      <fieldset className="updates-filters" disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
--    <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason && unavailableReason !== 'access_denied' ? 'Try again' : 'Refresh'}</span></button>
-+    {unavailableReason !== 'access_denied' ? <button type="button" className={unavailableReason ? "nv-btn" : "updates-refresh"} data-kind={unavailableReason ? "primary" : undefined} disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason ? 'Try again' : 'Refresh'}</span></button> : null}
+-    <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason && !requiresSignIn ? 'Try again' : 'Refresh'}</span></button>
++    {!requiresSignIn ? <button type="button" className={unavailableReason ? "nv-btn" : "updates-refresh"} data-kind={unavailableReason ? "primary" : undefined} disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason ? 'Try again' : 'Refresh'}</span></button> : null}
     </div>
     {current?.state === 'partial' ? <p className="updates-partial" role="status"><NavIcon name="alert" />Some updates couldn’t load. Try again to check for the rest.</p> : null}
-    {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : unavailableReason === 'access_denied' ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : unavailableReason === 'access_denied' ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.'}</p>{unavailableReason === 'access_denied' ? <Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link> : null}</div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
+    {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : signedOut ? 'Your session ended' : accessDenied ? 'Access changed' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : requiresSignIn ? 'Sign in again to check your current access.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.'}</p>{requiresSignIn ? <Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link> : null}</div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
 --- a/src/components/timecards.tsx
 +++ b/src/components/timecards.tsx
 @@ -166,9 +166,9 @@
@@ -52,7 +52,7 @@
          <HoldHeight as="aside" holding={!snapshot} memory="employee-home-clock" className={styles.recordedSlot} aria-label="Own recorded time">
            {snapshot ? ownTimeSlot : <div className={styles.recordedFallback}>
 -            <EmployeeTimeView compact state={{
-+            <EmployeeTimeView compact showRecovery={false} state={{
++            <EmployeeTimeView compact showRecovery={!denied} state={{
                time: loading || paused ? null : {state: 'unavailable', reason: denied ? 'access_denied' : 'read_failed'},
                refreshing: refreshing || loading, paused,
              }} onRefresh={refreshHome}/>

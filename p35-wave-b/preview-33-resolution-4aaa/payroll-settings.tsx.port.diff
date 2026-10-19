@@ -1,0 +1,59 @@
+--- a/src/components/payroll/payroll-settings.tsx
++++ b/src/components/payroll/payroll-settings.tsx
+@@ -1,6 +1,6 @@
+ 'use client';
+ 
+-import { createContext, useContext, useEffect, useState, type FormEvent } from 'react';
++import { createContext, useContext, useEffect, useRef, useState, type FormEvent } from 'react';
+ import { PlusIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
+ import type { PayrollPreferences, PayrollRule, PayrollSettingsResponse } from '@/lib/payroll/contracts';
+ import { readSettings } from './api';
+@@ -12,6 +12,7 @@
+ import { noticeReadiness, reminderWindow } from './workflow-status';
+ import { formatDateRange } from '@/lib/date-utils';
+ import { keepWhole } from '@/lib/keep-whole';
++import { revealFeedback } from '@/lib/reveal-feedback';
+ 
+ /** IS-B27: which form sent the running save, so only its button says "Saving…". */
+ const SavingForm = createContext<[string | null, (id: string) => void]>([null, () => {}]);
+@@ -82,8 +83,15 @@
+   const [noticesEnabled, setNoticesEnabled] = useState(preferences.automation.reminders);
+   const locked = operation.locked;
+   const [savingId, setSaving] = useContext(SavingForm);
++  const form = useRef<HTMLFormElement>(null),sent=useRef(false);
++  useEffect(()=>{
++    if(operation.busy||!sent.current)return;
++    sent.current=false;
++    const feedback=form.current?.closest('.payroll-workflow')?.querySelector<HTMLElement>('.pw-feedback');
++    if(feedback?.textContent?.trim()){feedback.tabIndex=-1;revealFeedback(feedback);}
++  },[operation.busy]);
+   const save = (event: FormEvent<HTMLFormElement>) => {
+-    event.preventDefault(); setSaving('company'); setError(''); const values = new FormData(event.currentTarget);
++    event.preventDefault(); if(locked)return; setSaving('company'); setError(''); const values = new FormData(event.currentTarget);
+     try {
+       const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), 'Preparation reminder window', 0, 31)] : [];
+       const next: PayrollPreferences = {
+@@ -97,10 +105,11 @@
+       const provider = values.get('sourceProvider'), channel = values.get('bankChannel');
+       if (provider === 'ADP_RUN' || provider === 'QUICKBOOKS_PAYROLL' || provider === 'PAYCHEX' || provider === 'GUSTO' || provider === 'OTHER') next.sourceProvider = provider;
+       if (channel === 'POPULAR_WCM_TEXT' || channel === 'POPULAR_WCM_NACHA' || channel === 'POPULAR_COMMERCIAL_MANUAL' || channel === 'OTHER') next.bankChannel = channel;
++      sent.current=true;
+       void operation.submit({ action: 'SAVE_SETTINGS', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), preferences: next });
+     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Check payroll preferences.'); }
+   };
+-  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form className="wb-form" data-form="company" onSubmit={save}><fieldset disabled={locked} className="wb-form">
++  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form ref={form} className="wb-form" data-form="company" onSubmit={save}><fieldset disabled={locked} className="wb-form">
+     <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Company and documents</h3></div><div className="wb-body"><div className="wb-grid">
+       <label>Company name on documents<input name="companyName" defaultValue={preferences.companyName} maxLength={160} required /></label>
+       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
+@@ -117,8 +126,8 @@
+       <label>Output profile<select aria-label="Output profile" name="bankProfile" defaultValue={preferences.bankProfile ?? ''}><option value="">No payment output configured</option><option value="NEUTRAL_UNVERIFIED">Neutral instructions · compatibility unverified</option></select></label>
+       <label>Desired bank channel<select aria-label="Desired bank channel" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No channel preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or channel</option></select></label>
+     </div><p className="wb-note">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p></div></section>
+-    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}<button type="submit" className="nv-btn" data-kind="primary">{operation.busy && savingId === 'company' ? 'Saving…' : 'Save company preferences'}</button></div></section>
+-  </fieldset></form></section>;
++    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}</div></section>
++  </fieldset><div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={locked}>{operation.busy && savingId === 'company' ? 'Saving…' : 'Save company preferences'}</button></div></form></section>;
+ }
+ 
+ function newRule(): PayrollRule { return { id: crypto.randomUUID(), name: '', kind: 'EMPLOYEE_DEDUCTION', method: 'FIXED', amountMinor: null, basisPoints: null, base: 'GROSS', applicability: 'ALL', effectiveFrom: today(), effectiveTo: null, capMinor: null, remittance: 'EMPLOYER' }; }

@@ -1,0 +1,9 @@
+--- a/src/app/app/premium-wave-b.css
++++ b/src/app/app/premium-wave-b.css
+@@ -633,3 +633,6 @@
+ /* checks.mjs r3: Payroll runs' "Next step" guidance on the kit callout role (13px at desktop before; Owner and Manager). */
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance, html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance > strong { font: var(--nv-t-callout); }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance > strong { font-weight: 600; }
++
++/* TC-WA-16 / IS-RC-COMPOSE-01 preservation: guarded pending actions keep kit contrast, focus and geometry. */
++.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn[aria-disabled="true"] { background: var(--nv-inset); color: var(--nv-muted); box-shadow: inset 0 0 0 1px var(--nv-hairline); opacity: 1; cursor: progress; transform: none; }

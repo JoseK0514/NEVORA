@@ -1,0 +1,26 @@
+{
+  "source": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "tree": "fc83886c2f3d2d7a2f2d6ef6894aedf469f01ac1",
+  "parents": [
+    "4aaa79383f82a3c6023f9d2a2c2f492ba3152fce",
+    "b68f250129e2d21731624652e0aad7412b042bc3"
+  ],
+  "acceptedFindingCommits": 33,
+  "acceptedCandidate": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "later45Checkpoint": "historical e8e947e; interrupted by user target switch; no pass inherited",
+  "baselineCheckerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "phoneAxes": {
+    "core": 4480,
+    "managementNormalSupplement": 480,
+    "separateLarge": 320,
+    "total": 5280
+  },
+  "manualRowsExpected": 1500,
+  "priorIDs": 135,
+  "previewStarted": false,
+  "browserStarted": false,
+  "runtimeTestsRun": false,
+  "resourceRelease": "not yet granted",
+  "previousProofProvenance": "b956152 andb6880Home retain original checkpoints; all current required cells/states remain fresh review obligations",
+  "createdAt": "2026-10-19T22:25:45.481092+00:00"
+}

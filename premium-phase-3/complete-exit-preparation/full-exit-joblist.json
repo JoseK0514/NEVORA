@@ -1,5 +1,5 @@
 {
-  "sourcePreparedAgainst": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "sourcePreparedAgainst": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
   "sourceReleasedForExecution": null,
   "status": "standby-no-preview-no-browser",
   "roles": [
@@ -102,6 +102,8 @@
     ],
     "texts": [
       100,
+      125,
+      150,
       200
     ],
     "engines": [
@@ -116,7 +118,10 @@
       "loading to ready CLS",
       "text wraps",
       "50 shifts/day and 200 fictional people visible for the intended location"
-    ]
+    ],
+    "requiredBriefCellsAt100And200": 160,
+    "legacyAdditionalCellsAt125And150": 160,
+    "totalCells": 320
   },
   "readStateSweeps": {
     "families": [
@@ -13255,15 +13260,29 @@
     "read/action/shell/font/placeholder cases serially",
     "close normal preview with verified PG and source audit",
     "start separate owned large-data preview, --large fixture only",
-    "run160large-data cells and shared-boundary cases",
+    "run320large-data cells and shared-boundary cases",
     "close owned processes, audit source cleanliness, finish five reports and summary"
   ],
   "acceptedFixBase": {
-    "candidate": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
-    "findingCommits": 32,
+    "candidate": "b68f250129e2d21731624652e0aad7412b042bc3",
+    "validationSource": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+    "findingCommits": 33,
     "ledger": "candidate-fix-ledger.json",
     "previousTargetedProofsCheckpoint": "b9567abc26b977a517b77622a1661b16172f5b16",
-    "provenanceAssessment": "freeze-update-9ec3adc.json",
+    "provenanceAssessment": "freeze-update-8640247.json",
     "fullCurrentBaselineRequired": true
+  },
+  "sharedManagementNormalSupplement": {
+    "scopeFile": "normal-shared-scope.json",
+    "cells": 480,
+    "axe": true
+  },
+  "reconciledPhoneBaselineCells": 5280,
+  "staticCandidateAudit": {
+    "sha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+    "all135Crosswalk": "historical-all-135-crosswalk-8640247.json",
+    "extraCandidateFindings": [
+      "IS-RC-UPDATES-AUTH-01"
+    ]
   }
 }

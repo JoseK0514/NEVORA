@@ -1,0 +1,201 @@
+--- a/src/components/communication-compose.tsx
++++ b/src/components/communication-compose.tsx
+@@ -11,6 +11,8 @@
+ import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
+ import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
+ import {PageBand,Tile} from './kit/kit';
++import {PendingLabel} from './employee-submit-button';
++import {revealFeedback} from '@/lib/reveal-feedback';
+ import {keepWhole} from '../lib/keep-whole';
+ import {formatDisplayDate,formatTimeRange} from '../lib/date-utils';
+ import {timeZoneLabel} from '../lib/time-zone-label';
+@@ -30,7 +32,7 @@
+  const setType=(value:ComposeValues['type'])=>set('type',value),setScopeKind=(value:ComposeValues['scopeKind'])=>set('scopeKind',value),setLocationId=(value:string)=>set('locationId',value),setShiftId=(value:string)=>set('shiftId',value),setTitle=(value:string)=>set('title',value),setBody=(value:string)=>set('body',value),setAck=(value:ComposeValues['ack'])=>set('ack',value),setExpiration=(value:string)=>set('expiration',value),setUseExpiry=(value:boolean)=>set('useExpiry',value);
+  const [error,setError]=useState<string|null>(null),[errorField,setErrorField]=useState<'title'|'body'|'expiration'|null>(null),[preview,setPreview]=useState<{count:number;fingerprint:string}|null>(null),[previewing,setPreviewing]=useState(false);const previewGeneration=useRef(0);
+  const formRef=useRef<HTMLFormElement>(null);
+- const feedbackRef=useRef<HTMLDivElement>(null);
++ const feedbackRef=useRef<HTMLDivElement>(null),recoveryRef=useRef<HTMLDivElement>(null);
+  const previewHeadingRef=useRef<HTMLHeadingElement>(null);
+  useGSAP(()=>{
+   const media=gsap.matchMedia();
+@@ -39,8 +41,14 @@
+   });
+   return ()=>media.revert();
+  },{scope:formRef,dependencies:[preview],revertOnUpdate:true});
+- // IS-B21: a ready preview takes focus on its own heading (with the kit ring); notices and audience errors on the feedback block.
+- useEffect(()=>{if(preview)previewHeadingRef.current?.focus();else if(action.notice||error?.startsWith('Audience'))feedbackRef.current?.focus();},[preview,error,action.notice]);
++ useEffect(()=>{
++  if((action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown)&&recoveryRef.current){
++   revealFeedback(recoveryRef.current);
++   const next=recoveryRef.current.querySelector<HTMLButtonElement>('button');
++   if(next)revealFeedback(next);
++  }else if((action.notice==='conflict'||error?.startsWith('Audience'))&&feedbackRef.current)revealFeedback(feedbackRef.current);
++ },[error,action.notice,action.hasUnknown]);
++ useEffect(()=>{if(preview&&previewHeadingRef.current)revealFeedback(previewHeadingRef.current);},[preview]);
+  useEffect(()=>()=>{previewGeneration.current++;},[]);
+  const titleCount=[...title.trim()].length,bodyCount=[...body.trim()].length;
+  function changed(){previewGeneration.current++;setPreview(null);setPreviewing(false);setError(null);setErrorField(null);action.setNotice(null);}
+@@ -58,6 +66,7 @@
+  function publish(){if(staleEdit)return;const value=draft();if(!value||!preview)return;retain(values,reviewedRevisionId);void action.send({kind:editing?'REVISE':'PUBLISH',operationId:crypto.randomUUID(),authority,draft:value,audienceFingerprint:preview.fingerprint,...(editing?{communicationId:editing.id,expectedRevisionId:reviewedRevisionId}:{})});}
+  const disabled=action.pending||action.notice==='unknown'||staleEdit;
+  const location=context.locations.find(l=>l.id===locationId)?.label;
++ if(action.notice==='signed-out')return <section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon aria-hidden="true" size={24}/><div><h2 className="wb-notice__title">Your session ended</h2><p>Sign in again to continue.</p><div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div></div></section>;
+  if(action.notice==='blocked')return <section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon aria-hidden="true" size={24}/><div><h2 className="wb-notice__title">Publication unavailable</h2><p>Your current permission does not allow publication.</p><div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in again</Link><Link className="nv-btn" data-kind="secondary" href="/app/updates">Return to updates</Link></div></div></section>;
+  return <form ref={formRef} className="wb-form" onSubmit={e=>{e.preventDefault();void review();}}>
+   <fieldset disabled={disabled} className="wb-form"><legend className="nv-sr">{editing?'Edit update':context.management?'Create update':'Message today’s team'}</legend>
+@@ -97,9 +106,9 @@
+   <div ref={feedbackRef} tabIndex={-1} className="wb-form" aria-label="Update review feedback">
+    <p id="communication-form-error" className={errorField?'nv-sr':'wb-error'} role={error?'alert':undefined}>{error?errorField?error:<><WarningCircleIcon size={18} aria-hidden="true"/><span>{error}</span></>:null}</p>
+    {action.notice==='conflict'||staleEdit?<div className="wb-notice" data-tone="review" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><strong>Review the latest information</strong><p>{staleEdit?'A newer version is available. Your retained draft belongs to the version you originally reviewed. Review latest before editing again.':'This update or its audience changed. Review the latest context and preview again.'}</p>{editing?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href={'/app/updates/'+editing.id}>Review latest</Link></div>:null}</div></div>:action.notice==='unavailable'?<div className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><p>We could not confirm the result. Check status before trying again.</p></div></div>:null}
+-   {preview&&action.notice!=='conflict'&&!staleEdit?<section className="nv-card compose-reviewed" aria-label="Audience preview"><div className="nv-card__head"><h2 className="nv-card__title" ref={previewHeadingRef} tabIndex={-1}>Audience preview</h2></div><div className="wb-body"><div className="wb-receipt"><Tile tone={preview.count===0?'review':'done'}><UsersThreeIcon size={22}/></Tile><div><p className="wb-strong">{preview.count} eligible {preview.count===1?'recipient':'recipients'}</p><p className="wb-note">At {location}.</p>{scopeKind==='SHIFT'?<p className="wb-note">{context.shifts.filter(s=>s.id===shiftId&&s.locationId===locationId).map(s=><span key={s.id}>{keepWhole(`${s.assigneeLabel}${s.positionLabel?` · ${s.positionLabel}`:''} · ${formatDisplayDate(s.date)} · ${formatTimeRange(s.startTime,s.endTime)}`)}</span>)}</p>:null}</div></div><p className="wb-note">{preview.count===0?'No eligible recipients in this audience. You can change the delivery settings before publishing.':'Check your message and delivery settings, then publish.'}</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" type="button" disabled={action.notice==='unknown'||staleEdit} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}>{action.pending?'Publishing…':editing?'Publish new version':'Publish update'}<PaperPlaneTiltIcon size={20} aria-hidden="true"/></button></div><p className="wb-help">Eligibility is checked again when you publish. Changing any field requires a new preview.</p></div></section>:<section className="nv-card" aria-label="Review before publishing"><div className="nv-card__head"><h2 className="nv-card__title">Review before publishing</h2></div><div className="wb-body"><p className="wb-note">Check the eligible audience before your update goes live.</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" disabled={disabled||previewing} aria-busy={previewing||undefined} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} aria-hidden="true"/></button></div></div></section>}
++   {preview&&action.notice!=='conflict'&&!staleEdit?<section className="nv-card compose-reviewed" aria-label="Audience preview"><div className="nv-card__head"><h2 className="nv-card__title" ref={previewHeadingRef} tabIndex={-1}>Audience preview</h2></div><div className="wb-body"><div className="wb-receipt"><Tile tone={preview.count===0?'review':'done'}><UsersThreeIcon size={22}/></Tile><div><p className="wb-strong">{preview.count} eligible {preview.count===1?'recipient':'recipients'}</p><p className="wb-note">At {location}.</p>{scopeKind==='SHIFT'?<p className="wb-note">{context.shifts.filter(s=>s.id===shiftId&&s.locationId===locationId).map(s=><span key={s.id}>{keepWhole(`${s.assigneeLabel}${s.positionLabel?` · ${s.positionLabel}`:''} · ${formatDisplayDate(s.date)} · ${formatTimeRange(s.startTime,s.endTime)}`)}</span>)}</p>:null}</div></div><p className="wb-note">{preview.count===0?'No eligible recipients in this audience. You can change the delivery settings before publishing.':'Check your message and delivery settings, then publish.'}</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" type="button" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><PendingLabel pending={action.pending} pendingText="Publishing…">{editing?'Publish new version':'Publish update'}</PendingLabel><PaperPlaneTiltIcon size={20} aria-hidden="true"/></button></div><p className="wb-help">Eligibility is checked again when you publish. Changing any field requires a new preview.</p></div></section>:<section className="nv-card" aria-label="Review before publishing"><div className="nv-card__head"><h2 className="nv-card__title">Review before publishing</h2></div><div className="wb-body"><p className="wb-note">Check the eligible audience before your update goes live.</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" disabled={disabled||previewing} aria-busy={previewing||undefined} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} aria-hidden="true"/></button></div></div></section>}
+    {previewing||action.pending?<p className="nv-sr" role="status">{previewing?'Checking audience…':'Confirming publication…'}</p>:null}
+-   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><strong>Publication needs a status check</strong><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div></div>:null}
++   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><strong>Publication needs a status check</strong><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div></div>:null}
+   </div>
+  </form>;
+ }
+--- a/src/components/communication-detail.tsx
++++ b/src/components/communication-detail.tsx
+@@ -15,6 +15,8 @@
+ import type {CommunicationRead} from '../lib/communications/types';
+ import {MetaParts,PageBand,Status,Tile} from './kit/kit';
+ import {SkeletonRows} from './skeleton';
++import {PendingLabel} from './employee-submit-button';
++import {revealFeedback} from '@/lib/reveal-feedback';
+ import {keepWhole} from '../lib/keep-whole';
+ 
+ gsap.registerPlugin(useGSAP);
+@@ -29,7 +31,7 @@
+  const noticeRef=useRef<HTMLElement>(null);
+  const receiptRef=useRef<HTMLElement>(null),withdrawRef=useRef<HTMLButtonElement>(null),confirmRef=useRef<HTMLButtonElement>(null),askedWithdraw=useRef(false);
+  const surface=useRef<HTMLElement>(null);
+- const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&read?.state==='ready'?read:null;
++ const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&notice!=='signed-out'&&read?.state==='ready'?read:null;
+  useGSAP(()=>{
+   if(!ready?.ownAcknowledgedAt&&!ready?.ownReadAt)return;
+   const media=gsap.matchMedia();
+@@ -54,8 +56,9 @@
+  if(!ready){
+   const loading=pending&&!read;
+   const offline=paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
+-  const title=offline?'You’re offline':paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'Your session may have ended':loading?'Loading update…':'Couldn’t load this update';
+-  const description=offline?'Connect to the internet, then try again.':paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Sign in again to see this update. If you still can’t, your access may have changed.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
++  const signedOut=notice==='signed-out'||read?.state==='unauthorized'&&read.reason==='session_ended';
++  const title=signedOut?'Your session ended':offline?'You’re offline':paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'Access changed':loading?'Loading update…':'Couldn’t load this update';
++  const description=signedOut?'Sign in again to check your current access.':offline?'Connect to the internet, then try again.':paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Your current permission does not allow this update. Sign in to check your access.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
+   // The band says what happened; the card holds only what to do next (TC-B-16).
+   return <>
+    <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow="Update" title={title} summary={description}/>
+@@ -63,7 +66,7 @@
+     <section ref={surface} className="nv-card" aria-busy={loading} aria-label={title}>
+      <div className="wb-body">
+       <p className="nv-sr" role="status">{title}. {description}</p>
+-      {loading?<SkeletonRows rows={3} variant="line"/>:read?.state==='unauthorized'||notice==='blocked'?<div className="wb-actions"><Link href="/login" className="nv-btn" data-kind="secondary">Sign in</Link></div>:read?.state==='withdrawn'?<div className="wb-actions"><Link href="/app/updates" className="nv-btn" data-kind="secondary">All updates</Link></div>:<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={onRefresh} disabled={paused||pending}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{notice==='conflict'?'Review latest':'Try again'}</button></div>}
++      {loading?<SkeletonRows rows={3} variant="line"/>:signedOut||read?.state==='unauthorized'||notice==='blocked'?<div className="wb-actions"><Link href="/login" className="nv-btn" data-kind="secondary">Sign in</Link></div>:read?.state==='withdrawn'?<div className="wb-actions"><Link href="/app/updates" className="nv-btn" data-kind="secondary">All updates</Link></div>:<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={onRefresh} disabled={paused||pending}><ArrowClockwiseIcon size={20} aria-hidden="true"/>{notice==='conflict'?'Review latest':'Try again'}</button></div>}
+      </div>
+     </section>
+    </div>
+@@ -95,14 +98,15 @@
+ 
+    <section className="nv-card" aria-label="Your review status" aria-busy={pending} ref={receiptRef} tabIndex={-1}>
+     <div className="wb-body">
++     <p role="status" aria-live="polite" className="nv-sr">{pending?'Confirming your review…':''}</p>
+      <div className="wb-receipt"><span className="communication-result-icon"><Tile tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged||markedRead?<CheckCircleIcon size={22}/>:required?<FileTextIcon size={22}/>:<CircleIcon size={22}/>}</Tile></span>
+       {acknowledged?<div role="status"><h2 className="wb-strong">Acknowledged</h2><p className="wb-note">You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<div><h2 className="wb-strong">{required?ACK_REQUIRED:'Informational update'}</h2><p className="wb-note">{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></div>:required?<div><h2 className="wb-strong">Confirm you received this update</h2><p className="wb-note" id="communication-acknowledgement-help">{ACK_WORD} confirms receipt of this version. It does not indicate agreement or attendance.</p></div>:markedRead?<div role="status"><h2 className="wb-strong">Marked read</h2><p className="wb-note">Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<div><h2 className="wb-strong">No acknowledgement needed</h2><p className="wb-note">You can mark this update as read to keep your updates organized.</p></div>}
+      </div>
+      {!acknowledged&&!ready.management&&required?<>
+       <label className="wb-check"><input type="checkbox" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label>
+-      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} aria-hidden="true"/>{pending?'Confirming…':'Acknowledge update'}</button></div>
++      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Acknowledge update</PendingLabel></button></div>
+      </>:null}
+-     {!acknowledged&&!ready.management&&!required&&!markedRead?<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><CheckCircleIcon size={20} aria-hidden="true"/>{pending?'Saving…':'Mark read'}</button></div>:null}
++     {!acknowledged&&!ready.management&&!required&&!markedRead?<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><CheckCircleIcon size={20} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button></div>:null}
+     </div>
+    </section>
+ 
+@@ -129,6 +133,15 @@
+  return <CommunicationDetailView read={read} paused={false} pending={action.pending} notice={action.notice} onAction={send} onRefresh={()=>{if(action.notice!=='conflict')action.setNotice(null);refresh();}}/>;
+ }
+ export function CommunicationDetail({id,authority,mode}:{id:string;authority:string;mode:CommunicationMode}){
++ const recovery=useRef<HTMLElement|null>(null),root=useRef<HTMLDivElement>(null);
+  const resource=useCommunicationResource(mode,authority,'/'+id);const read=resource.value&&'id'in resource.value?resource.value as CommunicationRead:null;
+- return <div className="nv-page wb-page wb-narrow wb-update" data-nv-page="">{read?<CurrentDetail key={read.state==='ready'?read.revisionId:'unavailable'} read={read} mode={mode} authority={authority} refresh={resource.refresh}/>:<CommunicationDetailView read={resource.state.snapshot?.state==='unavailable'?{state:resource.state.snapshot.reason==='access_denied'?'unauthorized':resource.state.snapshot.reason==='withdrawn'?'withdrawn':'unavailable',reason:'read_failed'}:null} paused={resource.state.paused} pending={resource.state.refreshing} notice={null} onAction={()=>{}} onRefresh={resource.refresh}/>}</div>;
++ useEffect(()=>{
++  if(read?.state!=='ready'||!recovery.current)return;
++  const initiator=recovery.current;recovery.current=null;
++  if(document.activeElement!==document.body&&document.activeElement!==initiator)return;
++  const article=root.current?.querySelector<HTMLElement>('article[data-update-revision]');
++  if(article)revealFeedback(article);
++ },[read]);
++ const retry=()=>{recovery.current=document.activeElement instanceof HTMLElement?document.activeElement:null;resource.refresh();};
++ return <div ref={root} className="nv-page wb-page wb-narrow wb-update" data-nv-page="">{read?<CurrentDetail key={read.state==='ready'?read.revisionId:'unavailable'} read={read} mode={mode} authority={authority} refresh={resource.refresh}/>:<CommunicationDetailView read={resource.state.snapshot?.state==='unavailable'?{state:['access_denied','session_ended'].includes(resource.state.snapshot.reason)?'unauthorized':resource.state.snapshot.reason==='withdrawn'?'withdrawn':'unavailable',reason:resource.state.snapshot.reason}:null} paused={resource.state.paused} pending={resource.state.refreshing} notice={null} onAction={()=>{}} onRefresh={retry}/>}</div>;
+ }
+--- a/src/components/payroll/payroll-settings.tsx
++++ b/src/components/payroll/payroll-settings.tsx
+@@ -1,6 +1,6 @@
+ 'use client';
+ 
+-import { createContext, useContext, useEffect, useState, type FormEvent } from 'react';
++import { createContext, useContext, useEffect, useRef, useState, type FormEvent } from 'react';
+ import { PlusIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
+ import type { PayrollPreferences, PayrollRule, PayrollSettingsResponse } from '@/lib/payroll/contracts';
+ import { readSettings } from './api';
+@@ -12,6 +12,7 @@
+ import { noticeReadiness, reminderWindow } from './workflow-status';
+ import { formatDateRange } from '@/lib/date-utils';
+ import { keepWhole } from '@/lib/keep-whole';
++import { revealFeedback } from '@/lib/reveal-feedback';
+ 
+ /** IS-B27: which form sent the running save, so only its button says "Saving…". */
+ const SavingForm = createContext<[string | null, (id: string) => void]>([null, () => {}]);
+@@ -82,8 +83,15 @@
+   const [noticesEnabled, setNoticesEnabled] = useState(preferences.automation.reminders);
+   const locked = operation.locked;
+   const [savingId, setSaving] = useContext(SavingForm);
++  const form = useRef<HTMLFormElement>(null),sent=useRef(false);
++  useEffect(()=>{
++    if(operation.busy||!sent.current)return;
++    sent.current=false;
++    const feedback=form.current?.closest('.payroll-workflow')?.querySelector<HTMLElement>('.pw-feedback');
++    if(feedback?.textContent?.trim()){feedback.tabIndex=-1;revealFeedback(feedback);}
++  },[operation.busy]);
+   const save = (event: FormEvent<HTMLFormElement>) => {
+-    event.preventDefault(); setSaving('company'); setError(''); const values = new FormData(event.currentTarget);
++    event.preventDefault(); if(locked)return; setSaving('company'); setError(''); const values = new FormData(event.currentTarget);
+     try {
+       const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), 'Preparation reminder window', 0, 31)] : [];
+       const next: PayrollPreferences = {
+@@ -97,10 +105,11 @@
+       const provider = values.get('sourceProvider'), channel = values.get('bankChannel');
+       if (provider === 'ADP_RUN' || provider === 'QUICKBOOKS_PAYROLL' || provider === 'PAYCHEX' || provider === 'GUSTO' || provider === 'OTHER') next.sourceProvider = provider;
+       if (channel === 'POPULAR_WCM_TEXT' || channel === 'POPULAR_WCM_NACHA' || channel === 'POPULAR_COMMERCIAL_MANUAL' || channel === 'OTHER') next.bankChannel = channel;
++      sent.current=true;
+       void operation.submit({ action: 'SAVE_SETTINGS', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), preferences: next });
+     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Check payroll preferences.'); }
+   };
+-  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form className="wb-form" data-form="company" onSubmit={save}><fieldset disabled={locked} className="wb-form">
++  return <section className="wb-section" aria-labelledby="payroll-company-defaults"><div className="wb-section-head"><h2 className="wb-section-title" id="payroll-company-defaults">Company defaults</h2><p className="wb-note">{`Revision ${revision} · Currency USD`}</p></div><form ref={form} className="wb-form" data-form="company" onSubmit={save}><fieldset disabled={locked} className="wb-form">
+     <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Company and documents</h3></div><div className="wb-body"><div className="wb-grid">
+       <label>Company name on documents<input name="companyName" defaultValue={preferences.companyName} maxLength={160} required /></label>
+       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
+@@ -117,8 +126,8 @@
+       <label>Output profile<select aria-label="Output profile" name="bankProfile" defaultValue={preferences.bankProfile ?? ''}><option value="">No payment output configured</option><option value="NEUTRAL_UNVERIFIED">Neutral instructions · compatibility unverified</option></select></label>
+       <label>Desired bank channel<select aria-label="Desired bank channel" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No channel preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or channel</option></select></label>
+     </div><p className="wb-note">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p></div></section>
+-    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}<button type="submit" className="nv-btn" data-kind="primary">{operation.busy && savingId === 'company' ? 'Saving…' : 'Save company preferences'}</button></div></section>
+-  </fieldset></form></section>;
++    <section className="nv-card"><div className="nv-card__head"><h3 className="nv-card__title">Review the change</h3></div><div className="wb-body"><div className="wb-grid"><label>Effective date<input type="date" name="effectiveFrom" required defaultValue={today()} /></label><label>Reason for change<input name="reason" required maxLength={300} /></label></div><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}</div></section>
++  </fieldset><div className="wb-actions"><button type="submit" className="nv-btn" data-kind="primary" aria-disabled={locked}>{operation.busy && savingId === 'company' ? 'Saving…' : 'Save company preferences'}</button></div></form></section>;
+ }
+ 
+ function newRule(): PayrollRule { return { id: crypto.randomUUID(), name: '', kind: 'EMPLOYEE_DEDUCTION', method: 'FIXED', amountMinor: null, basisPoints: null, base: 'GROSS', applicability: 'ALL', effectiveFrom: today(), effectiveTo: null, capMinor: null, remittance: 'EMPLOYER' }; }
+--- a/src/app/app/premium-wave-b.css
++++ b/src/app/app/premium-wave-b.css
+@@ -633,3 +633,6 @@
+ /* checks.mjs r3: Payroll runs' "Next step" guidance on the kit callout role (13px at desktop before; Owner and Manager). */
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance, html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance > strong { font: var(--nv-t-callout); }
+ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance > strong { font-weight: 600; }
++
++/* TC-WA-16 / IS-RC-COMPOSE-01 preservation: guarded pending actions keep kit contrast, focus and geometry. */
++.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn[aria-disabled="true"] { background: var(--nv-inset); color: var(--nv-muted); box-shadow: inset 0 0 0 1px var(--nv-hairline); opacity: 1; cursor: progress; transform: none; }

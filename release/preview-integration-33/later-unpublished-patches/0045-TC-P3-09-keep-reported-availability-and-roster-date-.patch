@@ -1,0 +1,51 @@
+From e8e947eafabc61b9ed62a08c1762e8c896737c0b Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 22:13:42 +0000
+Subject: [PATCH 45/45] TC-P3-09: keep reported availability and roster date
+ values whole
+
+---
+ src/app/app/availability/page.tsx        | 4 ++--
+ src/components/manager-weekly-roster.tsx | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/app/app/availability/page.tsx b/src/app/app/availability/page.tsx
+index ad5cc39f..19263586 100644
+--- a/src/app/app/availability/page.tsx
++++ b/src/app/app/availability/page.tsx
+@@ -162,9 +162,9 @@ export default async function AvailabilityPage({
+ 
+       {/* Phase 3: for the usual week the band already says what this page edits; the context card is for a specific week. */}
+       {selectedWeek ? <section className="av-week-panel" aria-label="Weekly availability context">
+-        <div className="av-week-context"><span className="av-icon-tile"><CalendarBlankIcon size={24} aria-hidden="true" /></span><div><p>{selectedWeek ? "Weekly submission" : "Normal availability"}</p><strong>{selectedWeek ? formatWeekRange(selectedWeek) : "Your usual week"}</strong><span>{selectedWeek ? "These hours apply to this schedule week." : "Your regular hours. Submit separately for a specific week."}</span></div></div>
++        <div className="av-week-context"><span className="av-icon-tile"><CalendarBlankIcon size={24} aria-hidden="true" /></span><div><p>{selectedWeek ? "Weekly submission" : "Normal availability"}</p><strong>{selectedWeek ? keepWhole(formatWeekRange(selectedWeek)) : "Your usual week"}</strong><span>{selectedWeek ? "These hours apply to this schedule week." : "Your regular hours. Submit separately for a specific week."}</span></div></div>
+         {selectedWeek ? <div className={`av-deadline${locked ? " locked" : ""}`}><ClockIcon size={20} aria-hidden="true" /><div><strong>{locked ? "Submissions closed" : "Availability deadline"}</strong><p>{settings?.availabilityDeadline ? formatBusinessDateTime(settings.availabilityDeadline, workspace.timeZone) : "No deadline set"}</p><span>{locked ? "This week’s submitted hours are locked." : settings?.availabilityDeadline ? "You can update your submission until the deadline." : "No deadline has been set for this week."}</span></div></div> : null}
+-        {selectedWeek && submissionStatus && submissionCopy ? <div className={`av-submission-detail${submissionStatus.submitted ? " submitted" : ""}`}><strong>{submissionCopy.label}</strong><p>{submissionCopy.detail}</p>{submissionStatus.updatedAt ? <small>Last updated {formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone)}</small> : null}</div> : null}
++        {selectedWeek && submissionStatus && submissionCopy ? <div className={`av-submission-detail${submissionStatus.submitted ? " submitted" : ""}`}><strong>{submissionCopy.label}</strong><p>{submissionCopy.detail}</p>{submissionStatus.updatedAt ? <small>Last updated {keepWhole(formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone))}</small> : null}</div> : null}
+       </section> : null}
+ 
+       {/* Codex mobile review M5: a specific week is always reachable, with or without a cutoff. */}
+diff --git a/src/components/manager-weekly-roster.tsx b/src/components/manager-weekly-roster.tsx
+index c16585e8..d378dc91 100644
+--- a/src/components/manager-weekly-roster.tsx
++++ b/src/components/manager-weekly-roster.tsx
+@@ -2,6 +2,7 @@
+ 
+ import Link from "next/link";
+ import { timeZoneLabel } from "../lib/time-zone-label";
++import { keepWhole } from "../lib/keep-whole";
+ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+ import { useGSAP } from "@gsap/react";
+ import { gsap } from "gsap";
+@@ -191,7 +192,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
+       </button>)}
+       <span className="mws-day-tail" aria-hidden="true" hidden />
+     </div>
+-    <div className="mws-result-summary" role="status">{filtered.length} of {employees.length} team members{day !== "all" ? ` · ${formatDayLabel(day).weekday}, ${formatDayLabel(day).day}` : " · Full week"}</div>
++    <div className="mws-result-summary" role="status">{filtered.length} of {employees.length} team members{day !== "all" ? keepWhole(` · ${formatDayLabel(day).weekday}, ${formatDayLabel(day).day}`) : " · Full week"}</div>
+     {filtered.length ? <div className={`mws-roster-content${day !== "all" ? " day-view" : ""}`}>
+       <div className="mws-grid-heading" aria-hidden="true"><span>Team member</span>{visibleDates.map(date => <div className={date === today ? "today" : ""} key={date} data-day-total={dayTotal(filtered, date)}><span>{formatDayLabel(date).weekday}</span><strong>{Number(date.slice(8))}</strong>{date === today ? <small>Today</small> : null}</div>)}</div>
+       {(collapse ? scheduled : filtered).map(renderRow)}
+-- 
+2.52.0
+

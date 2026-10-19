@@ -1,0 +1,110 @@
+From be7e73a767dcb487943818a4bafe989f17a0d669 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 22:12:24 +0000
+Subject: [PATCH 39/45] IS-B12-COMPLETION: preserve lookup focus and recover
+ failed reads and sign-in
+
+---
+ src/components/communication-compose.tsx |  2 +-
+ src/components/communication-detail.tsx  | 25 ++++++++++++++++++++----
+ src/components/payroll/payroll-ui.tsx    |  2 +-
+ src/lib/communications/recovery.ts       |  2 +-
+ 4 files changed, 24 insertions(+), 7 deletions(-)
+
+diff --git a/src/components/communication-compose.tsx b/src/components/communication-compose.tsx
+index 9e2549e8..bb763f9f 100644
+--- a/src/components/communication-compose.tsx
++++ b/src/components/communication-compose.tsx
+@@ -98,7 +98,7 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
+    {action.notice==='conflict'||staleEdit?<div className="compose-alert" role="alert"><WarningCircleIcon size={22} aria-hidden="true"/><div><strong>Review the latest information</strong><p>{staleEdit?'A newer version is available. Your retained draft belongs to the version you originally reviewed. Review latest before editing again.':'This update or its audience changed. Review the latest context and preview again.'}</p>{editing?<Link className="button secondary" href={'/app/updates/'+editing.id}>Review latest</Link>:null}</div></div>:action.notice==='unavailable'?<p className="compose-alert" role="alert">We could not confirm the result. Check status before trying again.</p>:null}
+    {preview&&action.notice!=='conflict'&&!staleEdit?<section className="communication-audience compose-review compose-reviewed" aria-label="Audience preview"><div className="compose-review-copy"><span className="compose-review-icon"><UsersThreeIcon size={24} aria-hidden="true"/></span><div><h2>Audience preview</h2><p><strong>{preview.count} eligible {preview.count===1?'recipient':'recipients'}</strong> at {context.locations.find(l=>l.id===locationId)?.label}.</p>{scopeKind==='SHIFT'?<p>{context.shifts.filter(s=>s.id===shiftId&&s.locationId===locationId).map(s=><span key={s.id}>{s.assigneeLabel}{s.positionLabel?` · ${s.positionLabel}`:''} · {s.date} · {s.startTime}–{s.endTime}</span>)}</p>:null}<p className="compose-hint">{preview.count===0?'No eligible recipients in this audience. You can change the delivery settings before publishing.':'Check your message and delivery settings, then publish.'}</p></div></div><button className="button primary compose-action" type="button" disabled={action.notice==='unknown'||staleEdit} aria-disabled={action.pending || undefined} onClick={()=>{if(!action.pending)publish();}}><PendingLabel pending={action.pending} pendingText="Publishing…">{editing?'Publish new version':'Publish update'}</PendingLabel><PaperPlaneTiltIcon size={20} aria-hidden="true"/></button><p className="compose-review-footnote">Eligibility is checked again when you publish. Changing any field requires a new preview.</p></section>:<section className="compose-review" aria-label="Review before publishing"><div className="compose-review-copy"><span className="compose-review-icon"><UsersThreeIcon size={24} aria-hidden="true"/></span><div><h2>Review before publishing</h2><p>Check the eligible audience before your update goes live.</p></div></div><button className="button primary compose-action" disabled={disabled||previewing} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} aria-hidden="true"/></button></section>}
+    {previewing||action.pending?<p className="compose-live" role="status">{previewing?'Checking audience…':'Confirming publication…'}</p>:null}
+-   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="compose-alert compose-recovery" role="status"><div><strong>Publication needs a status check</strong><p>We couldn&apos;t confirm the result. Check status before trying again.</p></div><div className="compose-recovery-actions"><button className="button secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="button secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div>:null}
++   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="compose-alert compose-recovery" role="status"><div><strong>Publication needs a status check</strong><p>We couldn&apos;t confirm the result. Check status before trying again.</p></div><div className="compose-recovery-actions"><button className="button secondary" type="button" aria-disabled={action.pending} onClick={()=>{if(!action.pending)void action.lookup();}}>Check status</button>{action.canRetry?<button className="button secondary" type="button" aria-disabled={action.pending} onClick={()=>{if(!action.pending)void action.retry();}}>Retry original publication</button>:null}</div></div>:null}
+   </div>
+  </form>;
+ }
+diff --git a/src/components/communication-detail.tsx b/src/components/communication-detail.tsx
+index 54af3577..013462a0 100644
+--- a/src/components/communication-detail.tsx
++++ b/src/components/communication-detail.tsx
+@@ -25,6 +25,23 @@ gsap.registerPlugin(useGSAP);
+ export function CommunicationDetailView({read,paused,pending,notice,onAction,onRefresh}:{read:CommunicationRead|null;paused:boolean;pending:boolean;notice:CommunicationNotice;onAction:(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP')=>void;onRefresh:()=>void}){
+  const [reviewed,setReviewed]=useState(false);
+  const surface=useRef<HTMLElement>(null);
++ const actionFocus=useRef<{origin:HTMLElement;moved:boolean}|null>(null);
++ function sendAction(kind:Parameters<typeof onAction>[0]){
++  const origin=document.activeElement;
++  actionFocus.current=origin instanceof HTMLElement&&origin!==document.body?{origin,moved:false}:null;
++  onAction(kind);
++ }
++ useEffect(()=>{
++  const moved=(event:FocusEvent)=>{const tracked=actionFocus.current;if(tracked&&event.target!==tracked.origin&&event.target!==document.body)tracked.moved=true;};
++  document.addEventListener('focusin',moved);return()=>document.removeEventListener('focusin',moved);
++ },[]);
++ useEffect(()=>{
++  if(notice!=='signed-out')return;
++  const tracked=actionFocus.current;actionFocus.current=null;
++  if(!tracked||tracked.moved||document.visibilityState==='hidden'||document.activeElement!==document.body&&document.activeElement!==tracked.origin)return;
++  const signIn=surface.current?.querySelector<HTMLElement>('a[href="/login"]');
++  if(signIn)revealFeedback(signIn);
++ },[notice]);
+  const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&notice!=='signed-out'&&read?.state==='ready'?read:null;
+  useGSAP(()=>{
+   if(!ready?.ownAcknowledgedAt&&!ready?.ownReadAt)return;
+@@ -66,13 +83,13 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
+    {ready.expiresAt?<p className="communication-expiry"><ClockIcon size={17} aria-hidden="true"/><span>Available until <time dateTime={ready.expiresAt}>{stamp(ready.expiresAt)}</time></span></p>:null}
+   </section>
+ 
+-  {notice==='unknown'?<section className="communication-feedback" role="status"><WarningCircleIcon size={23} aria-hidden="true"/><div><h2>Result not yet confirmed</h2><p>We couldn&apos;t confirm the result. Check status before trying again.</p><button type="button" className="button secondary" disabled={pending} onClick={()=>onAction('LOOKUP')}><ArrowClockwiseIcon size={18} aria-hidden="true"/>{pending?'Checking…':'Check status'}</button></div></section>:notice==='unavailable'?<section className="communication-feedback" role="alert"><WarningCircleIcon size={23} aria-hidden="true"/><div><h2>Unable to confirm</h2><p>We could not confirm this update. Retry to check current information.</p><button type="button" className="button secondary" disabled={pending} onClick={onRefresh}><ArrowClockwiseIcon size={18} aria-hidden="true"/>Retry</button></div></section>:null}
++  {notice==='unknown'?<section className="communication-feedback" role="status"><WarningCircleIcon size={23} aria-hidden="true"/><div><h2>Result not yet confirmed</h2><p>We couldn&apos;t confirm the result. Check status before trying again.</p><button type="button" className="button secondary" aria-disabled={pending} onClick={()=>{if(!pending)sendAction('LOOKUP');}}><ArrowClockwiseIcon size={18} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Checking…">Check status</PendingLabel></button></div></section>:notice==='unavailable'?<section className="communication-feedback" role="alert"><WarningCircleIcon size={23} aria-hidden="true"/><div><h2>Unable to confirm</h2><p>We could not confirm this update. Retry to check current information.</p><button type="button" className="button secondary" disabled={pending} onClick={onRefresh}><ArrowClockwiseIcon size={18} aria-hidden="true"/>Retry</button></div></section>:null}
+ 
+   <section className={'communication-receipt employee-view-surface'+(acknowledged||markedRead?' is-complete':'')} aria-label="Your review status" aria-busy={pending}>
+    <span className="communication-result-icon" aria-hidden="true">{acknowledged||markedRead?<CheckCircleIcon size={26} weight="regular"/>:required?<FileTextIcon size={26}/>:<CircleIcon size={26}/>}</span>
+    <div className="communication-receipt-copy">
+     <p role="status" aria-live="polite" className="sr-only">{pending?'Confirming your review…':''}</p>
+-    {acknowledged?<div role="status"><h2>Acknowledged</h2><p>You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<><h2>{required?'Acknowledgement required':'Informational update'}</h2><p>{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></>:required?<><h2>Confirm you received this update</h2><p id="communication-acknowledgement-help">Acknowledgement confirms receipt of this version. It does not indicate agreement or attendance.</p><label className="communication-review-check"><input type="checkbox" checked={reviewed} disabled={pending||notice==='unknown'} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label><button type="button" className="button primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&onAction('ACKNOWLEDGE')}><CheckCircleIcon size={19} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Acknowledge update</PendingLabel></button></>:markedRead?<div role="status"><h2>Marked read</h2><p>Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<><h2>No acknowledgement needed</h2><p>You can mark this update as read to keep your updates organized.</p><button type="button" className="button secondary" disabled={notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&onAction('MARK_READ')}><CheckCircleIcon size={19} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button></>}
++    {acknowledged?<div role="status"><h2>Acknowledged</h2><p>You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<><h2>{required?'Acknowledgement required':'Informational update'}</h2><p>{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></>:required?<><h2>Confirm you received this update</h2><p id="communication-acknowledgement-help">Acknowledgement confirms receipt of this version. It does not indicate agreement or attendance.</p><label className="communication-review-check"><input type="checkbox" checked={reviewed} disabled={pending||notice==='unknown'} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label><button type="button" className="button primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&sendAction('ACKNOWLEDGE')}><CheckCircleIcon size={19} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Acknowledge update</PendingLabel></button></>:markedRead?<div role="status"><h2>Marked read</h2><p>Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<><h2>No acknowledgement needed</h2><p>You can mark this update as read to keep your updates organized.</p><button type="button" className="button secondary" disabled={notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&sendAction('MARK_READ')}><CheckCircleIcon size={19} aria-hidden="true"/><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button></>}
+    </div>
+   </section>
+ 
+@@ -82,8 +99,8 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
+     {ready.management.recipients.length?<ul>{ready.management.recipients.map((recipient,index)=><li key={index}><span className="communication-recipient-name">{recipient.name}</span><span className={'communication-recipient-status'+(recipient.acknowledgedAt?' success':'')}>{recipient.acknowledgedAt?<CheckCircleIcon size={17} aria-hidden="true"/>:<CircleIcon size={17} aria-hidden="true"/>}{recipient.acknowledgedAt?'Acknowledged':'No acknowledgement recorded'}</span></li>)}</ul>:<p className="communication-empty-recipients">No recipients are available in your current view.</p>}
+    </details>
+    {ready.sentCount!==undefined?<p className="communication-delivery">Sent to {ready.sentCount} {ready.sentCount===1?'recipient':'recipients'}. Delivery does not confirm reading.</p>:null}
+-   <div className="communication-management-actions"><Link className="button secondary" href={'/app/updates/compose?update='+ready.id}><PencilSimpleIcon size={18} aria-hidden="true"/>Edit update</Link>{ready.canWithdraw?<button type="button" className="button communication-withdraw" disabled={notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&onAction('WITHDRAW')}>Withdraw update</button>:null}</div>
+-  </section>:<>{ready.sentCount!==undefined?<p className="communication-delivery">Sent to {ready.sentCount} {ready.sentCount===1?'recipient':'recipients'}. Delivery does not confirm reading.</p>:null}{ready.canWithdraw?<button type="button" className="button communication-withdraw" disabled={notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&onAction('WITHDRAW')}>Withdraw update</button>:null}</>}
++   <div className="communication-management-actions"><Link className="button secondary" href={'/app/updates/compose?update='+ready.id}><PencilSimpleIcon size={18} aria-hidden="true"/>Edit update</Link>{ready.canWithdraw?<button type="button" className="button communication-withdraw" disabled={notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&sendAction('WITHDRAW')}>Withdraw update</button>:null}</div>
++  </section>:<>{ready.sentCount!==undefined?<p className="communication-delivery">Sent to {ready.sentCount} {ready.sentCount===1?'recipient':'recipients'}. Delivery does not confirm reading.</p>:null}{ready.canWithdraw?<button type="button" className="button communication-withdraw" disabled={notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&sendAction('WITHDRAW')}>Withdraw update</button>:null}</>}
+  </article>;
+ }
+ function CurrentDetail({read,mode,authority,refresh}:{read:CommunicationRead;mode:CommunicationMode;authority:string;refresh:()=>void}){
+diff --git a/src/components/payroll/payroll-ui.tsx b/src/components/payroll/payroll-ui.tsx
+index 73bf9615..1fff05ee 100644
+--- a/src/components/payroll/payroll-ui.tsx
++++ b/src/components/payroll/payroll-ui.tsx
+@@ -23,7 +23,7 @@ export function PayrollPanel({ title, description, children, aside }: { title: s
+ export function PayrollState({ title, children, error = false, retry }: { title: string; children: ReactNode; error?: boolean; retry?: () => void }) {
+   return <div className={`pw-state${error ? ' pw-state-error' : ''}`} role={error ? 'alert' : 'status'}>
+     {error ? <WarningCircleIcon size={25} aria-hidden /> : <FileTextIcon size={25} aria-hidden />}
+-    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} aria-hidden />Try again</button>}</div>
++    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar, .payroll-workflow #payroll-company-defaults, .payroll-workflow .pw-panel-heading h2', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} aria-hidden />Try again</button>}</div>
+   </div>;
+ }
+ export function OperationFeedback({ operation }: { operation: ReturnType<typeof usePayrollOperation> }) {
+diff --git a/src/lib/communications/recovery.ts b/src/lib/communications/recovery.ts
+index 05c8c7bd..3c71ba51 100644
+--- a/src/lib/communications/recovery.ts
++++ b/src/lib/communications/recovery.ts
+@@ -17,7 +17,7 @@ export function createCommunicationRecovery(request:(path:string,body:unknown,si
+    if(command&&JSON.stringify(command)!==JSON.stringify(body))return;
+    command=structuredClone(body);operationId=String(body.operationId);
+   }
+-  const sequence=++generation,controller=new AbortController();abort=controller;publish({pending:true,notice:null,canRetry:false});
++  const sequence=++generation,controller=new AbortController();abort=controller;publish({pending:true,notice:state.hasUnknown?state.notice:null,canRetry:false});
+   try{
+    const result=await request(lookup?'/operations/'+operationId:'',lookup?undefined:command,controller.signal) as CommandResult;
+    if(sequence!==generation||!authorized)return;
+-- 
+2.52.0
+

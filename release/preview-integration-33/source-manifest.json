@@ -1,0 +1,12 @@
+{
+  "verificationTarget": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "claudeIntegration": "4aaa79383f82a3c6023f9d2a2c2f492ba3152fce",
+  "candidate33": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "later45FixesIncluded": false,
+  "mergeParents": [
+    "4aaa79383f82a3c6023f9d2a2c2f492ba3152fce",
+    "b68f250129e2d21731624652e0aad7412b042bc3"
+  ],
+  "sourceClean": true,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d"
+}

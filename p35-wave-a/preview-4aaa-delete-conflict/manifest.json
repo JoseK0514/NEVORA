@@ -1,0 +1,17 @@
+{
+  "authoritativeBase": "4aaa79383f82a3c6023f9d2a2c2f492ba3152fce",
+  "sourceWaveA": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+  "candidate33": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "preparedReadyWaveA": "563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea",
+  "baseBlob": "a65a799592d641062afb32cfc822dbc7733c4c37",
+  "sourceBlob": "a65a799592d641062afb32cfc822dbc7733c4c37",
+  "proposedBlob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+  "candidate33Blob": "0d873878194b2724fa83d786182b7b693e74aaa9",
+  "baseMatchesSourceExactly": true,
+  "proposedMatchesReadyAndCandidateExactly": true,
+  "sourceEdited": false,
+  "refsOrIndexEdited": false,
+  "testsOrRuntimeExecuted": false,
+  "patchSha256": "af8cc8faac27f0991efd80b30cbe72891b7c6d0740894b19cab714b99257b460",
+  "dependency": "b68 employee-submit-button.tsx PendingLabel export and existing nv-label-swap CSS must survive +33 merge"
+}

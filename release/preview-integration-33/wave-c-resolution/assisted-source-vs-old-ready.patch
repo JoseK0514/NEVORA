@@ -1,0 +1,14 @@
+diff --git a/src/components/assisted-recovery.tsx b/src/components/assisted-recovery.tsx
+index 11dd6dee..ea6e18cf 100644
+--- a/src/components/assisted-recovery.tsx
++++ b/src/components/assisted-recovery.tsx
+@@ -106,7 +106,8 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
+    <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
+    {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not issued'}
+     action={message.includes('session ended')?<Link className="nv-link" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
+-   <FormActions><button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={<>Issue recovery code<ArrowRightIcon size={20} aria-hidden="true"/></>} busy="Issuing code…"/></button></FormActions>
++   <FormActions><button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={<>Issue recovery code<ArrowRightIcon size={20} className="wc-icon-after" aria-hidden="true"/></>} busy="Issuing code…"/></button></FormActions>
+   </form>}
+  </SettingsFrame>;
+ }
++

@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-19T22:23:11.621804+00:00",
+  "checkpoint": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "reason": "User redirected validation to Claude preview integration4aaa793 plus exact33fixes, published while validating. Obsolete45-fix full run interrupted after typecheck pass/lint6 guard errors; full tests incomplete; production/markers not reached.",
+  "newVerificationTarget": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "signal": "SIGINT",
+  "ownedProcessGroup": 99082
+}

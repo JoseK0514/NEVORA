@@ -1,0 +1,288 @@
+From b5e02c9bda534e1ccdca8567d5831591ce7c7864 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 22:03:21 +0000
+Subject: [PATCH 34/45] TC-P3-25: align failed-read recovery wording and
+ timecards retry
+
+---
+ src/app/app/error.tsx                         |  4 ++--
+ src/app/app/page.tsx                          |  2 +-
+ src/components/app-error-screen.test.tsx      |  8 ++++----
+ src/components/app-error-screen.tsx           |  4 ++--
+ .../calendar-subscription-panel.tsx           |  2 +-
+ .../employee-home-reviewed.test.tsx           |  6 +++---
+ src/components/employee-home-reviewed.tsx     |  6 +++---
+ src/components/employee-my-schedule.test.tsx  |  2 +-
+ src/components/employee-my-schedule.tsx       |  4 ++--
+ src/components/timecards.batch.test.tsx       | 19 +++++++++++++++++++
+ src/components/timecards.tsx                  | 13 +++++++------
+ 11 files changed, 45 insertions(+), 25 deletions(-)
+
+diff --git a/src/app/app/error.tsx b/src/app/app/error.tsx
+index 788d9d0b..0a799656 100644
+--- a/src/app/app/error.tsx
++++ b/src/app/app/error.tsx
+@@ -8,9 +8,9 @@ import { focusAfterRetry } from '@/components/kit/focus-after-retry';
+ export default function Error({reset}:{error:Error & {digest?:string};reset:()=>void}) {
+  return <>
+   <div className="nv-page premium-error" data-nv-page="">
+-   <PageBand title="This page could not be loaded" summary="Your current information is unavailable." />
++   <PageBand title="Couldn’t load this page." summary="Your current information is unavailable." />
+    {/* IS-49: one live region with the whole message; the buttons sit outside it. */}
+-   <p className="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>
++   <p className="nv-sr" role="alert">Couldn’t load this page. Your current information is unavailable. Try loading the page again before taking an action.</p>
+    <KitStack>
+     <Card>
+      <CardBody>
+diff --git a/src/app/app/page.tsx b/src/app/app/page.tsx
+index adf5cbd7..44c2c801 100644
+--- a/src/app/app/page.tsx
++++ b/src/app/app/page.tsx
+@@ -65,7 +65,7 @@ export default async function DashboardPage({
+   // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
+   const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
+   if(!dashboardData)return <div className="nv-page premium-error" data-nv-page="">
+-    <PageBand title="This page could not be loaded" summary="Your current information is unavailable."/>
++    <PageBand title="Couldn’t load this page." summary="Your current information is unavailable."/>
+     <KitStack><Card><CardBody><div className="premium-error__body">
+       <p className="premium-error__text">Try loading the page again before taking an action.</p>
+       <div className="premium-error__actions">
+diff --git a/src/components/app-error-screen.test.tsx b/src/components/app-error-screen.test.tsx
+index aa368980..22c2b4d0 100644
+--- a/src/components/app-error-screen.test.tsx
++++ b/src/components/app-error-screen.test.tsx
+@@ -10,9 +10,9 @@ vi.mock("@/components/kit/kit.css", () => ({}));
+ 
+ it("uses the portal's own error words, with a retry and a full-load link home", () => {
+   const html = renderToStaticMarkup(createElement(AppErrorScreen, { reset: () => {} }));
+-  expect(html).toContain('<p class="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>');
++  expect(html).toContain('<p class="nv-sr" role="alert">Couldn’t load this page. Your current information is unavailable. Try loading the page again before taking an action.</p>');
+   expect(html.match(/role="alert"/g)).toHaveLength(1);
+-  expect(html).toContain("This page could not be loaded");
++  expect(html).toContain("Couldn’t load this page.");
+   expect(html).toContain("Try loading the page again before taking an action.");
+   expect(html).toMatch(/<button type="button" class="nv-btn" data-kind="primary"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/button>/);
+   expect(html).toContain('aria-label="NEVORA"');
+@@ -24,8 +24,8 @@ it("the root boundary and the global boundary render the same screen", () => {
+   const error = Object.assign(new Error("statement timeout"), { digest: "4074344408" });
+   const root = renderToStaticMarkup(createElement(RootError, { error, reset: () => {} }));
+   const global = renderToStaticMarkup(createElement(GlobalError, { error, reset: () => {} }));
+-  expect(root).toContain("This page could not be loaded");
++  expect(root).toContain("Couldn’t load this page.");
+   expect(global).toMatch(/^<html lang="en">(<head><\/head>)?<body/);
+-  expect(global).toContain("This page could not be loaded");
++  expect(global).toContain("Couldn’t load this page.");
+   for (const html of [root, global]) expect(html).not.toContain("4074344408");
+ });
+diff --git a/src/components/app-error-screen.tsx b/src/components/app-error-screen.tsx
+index 976ab0ee..4d2b849b 100644
+--- a/src/components/app-error-screen.tsx
++++ b/src/components/app-error-screen.tsx
+@@ -9,10 +9,10 @@ import { focusAfterRetry } from '@/components/kit/focus-after-retry';
+  * Same words as that boundary, drawn with the kit itself: the teal band with the wordmark, a white card, kit buttons. */
+ export function AppErrorScreen({reset}: {reset: () => void}) {
+   return <main className="nv-page app-error-screen">
+-    <Masthead title="This page could not be loaded" summary="Your current information is unavailable." />
++    <Masthead title="Couldn’t load this page." summary="Your current information is unavailable." />
+     <KitStack>
+       {/* IS-49: one live region with the whole message; the buttons sit outside it. */}
+-      <p className="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>
++      <p className="nv-sr" role="alert">Couldn’t load this page. Your current information is unavailable. Try loading the page again before taking an action.</p>
+       <section className="nv-card">
+         <CardBody>
+           <p className="app-error-screen__text">Try loading the page again before taking an action.</p>
+diff --git a/src/components/calendar-subscription-panel.tsx b/src/components/calendar-subscription-panel.tsx
+index 86cfbb88..d90d6e42 100644
+--- a/src/components/calendar-subscription-panel.tsx
++++ b/src/components/calendar-subscription-panel.tsx
+@@ -23,7 +23,7 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
+   {paused?<p role="status">Calendar settings paused. Return to this window to check the link.</p>:<>
+    <p>View your published shifts in Apple Calendar, Google Calendar, or Outlook.</p>
+    <div className="employee-calendar-status-box">
+-    {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">Calendar settings unavailable. {status.state==='unauthorized'?'Sign in again.':'Retry to check the current link.'}</p>:<>
++    {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">{status.state==='unauthorized'?'Calendar settings unavailable. Sign in again.':'Couldn’t load your calendar link.'}</p>:<>
+      <span className={`employee-calendar-state${active?' is-active':''}`}>{active?'Link active':status.state==='revoked'?'Link revoked':'No calendar link'}</span>
+      {!active?<><p>Create a private link, then add it to your calendar app.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ISSUE')}><PendingLabel pending={busy} pendingText="Saving…">Create link</PendingLabel></button></>:null}
+      {active&&!currentUrl?<><p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button></>:null}
+diff --git a/src/components/employee-home-reviewed.test.tsx b/src/components/employee-home-reviewed.test.tsx
+index 89782a37..c1f3596c 100644
+--- a/src/components/employee-home-reviewed.test.tsx
++++ b/src/components/employee-home-reviewed.test.tsx
+@@ -151,7 +151,7 @@ describe('released Home data and navigation', () => {
+     expect(markup).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+     expect(none).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+     const unavailable = html(props(projectEmployeeHome(snapshot({currentShift: current, nextShift: null, publicationState: 'unavailable'}))));
+-    expect(unavailable).toContain('Schedule unavailable');
++    expect(unavailable).toContain('Couldn’t load your schedule.');
+   });
+ 
+   it('keeps "Next shift" as the heading and names the day link when no shift is under way', () => {
+@@ -253,7 +253,7 @@ describe('truthful source states and refresh intent', () => {
+     const current = snapshot();
+     current.sources.schedule = {...current.sources.schedule, state: 'unavailable', reason: 'read_failed'};
+     const markup = html(props(projectEmployeeHome(current)));
+-    expect(markup).toContain('Schedule unavailable');
++    expect(markup).toContain('Couldn’t load your schedule.');
+     expect(markup).not.toContain('Private location');
+     expect(markup).not.toContain('Published');
+     expect(markup).toContain('Private own recorded-time slot');
+@@ -321,7 +321,7 @@ describe('Today Home (U2)', () => {
+     expect(none).not.toContain('>Published<');
+     const unavailable = html(props(projectEmployeeHome(snapshot({publicationState: 'unavailable', nextShift: null}))));
+     expect(unavailable).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+-    expect(unavailable).toContain('Schedule unavailable');
++    expect(unavailable).toContain('Couldn’t load your schedule.');
+   });
+   it('places quick actions after To do and before recent updates', () => {
+     const markup = html(props(projectEmployeeHome(snapshot({attention: [item('todo', {actionable: true}), item('news')]}))));
+diff --git a/src/components/employee-home-reviewed.tsx b/src/components/employee-home-reviewed.tsx
+index 38b1af69..a9e12a43 100644
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -283,7 +283,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
+   // Phase 3: the band says the one thing an employee opens Home for, in one line.
+   const summary = paused ? (online ? 'Paused while you’re away.' : 'You’re offline.') : denied ? 'Sign in again to view Home.' : loading ? 'Checking your shifts…'
+     : !snapshot ? 'Couldn’t load Home.'
+-    : snapshot.publicationState === 'unavailable' ? 'Your schedule couldn’t be checked.'
++    : snapshot.publicationState === 'unavailable' ? 'Couldn’t load your schedule.'
+     : underWay ? keepWhole(`Scheduled until ${clock(underWay.endAt)}.`)
+     : snapshot.nextShift ? keepWhole(`Next shift ${(relativeDay(snapshot.nextShift.date, snapshot.observedAt, snapshot.timeZone) ?? formatDisplayDate(snapshot.nextShift.date)).replace(/^(Today|Tomorrow)$/, word => word.toLowerCase())} at ${clock(snapshot.nextShift.startAt)}.`)
+     : 'No published shifts coming up.';
+@@ -320,7 +320,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
+             {snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? <span className={styles.published}>Published</span> : null}
+           </header>
+           {snapshot ? <>
+-            {snapshot.publicationState === 'unavailable' ? <p className={styles.assignmentMessage}>Schedule unavailable</p>
++            {snapshot.publicationState === 'unavailable' ? <p className={styles.assignmentMessage}>Couldn’t load your schedule.</p>
+               : underWay ? <>
+                 <section className={styles.current} aria-label="Scheduled now">
+                   <h3>Scheduled now</h3>
+@@ -367,7 +367,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
+         {snapshot ? <small data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
+         {/* P3-WR-14: a failed read gets the same control as every other page: a primary "Try again" with the refresh icon. */}
+         {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
+-          : !snapshot && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
++          : (!snapshot || snapshot.publicationState === 'unavailable') && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
+             <ArrowsClockwiseIcon size={18} aria-hidden="true"/>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
+           </button>
+           : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
+diff --git a/src/components/employee-my-schedule.test.tsx b/src/components/employee-my-schedule.test.tsx
+index 2f58debf..7d93f897 100644
+--- a/src/components/employee-my-schedule.test.tsx
++++ b/src/components/employee-my-schedule.test.tsx
+@@ -18,7 +18,7 @@ it('a published empty day is distinguished from an unpublished date',()=>{
+ });
+ it('unavailable reads hide private shifts, actions, confirmation and change history even when stale props remain',()=>{
+  const output=html({state:'unavailable',acknowledged:true,receipt:true,confirmation:createElement('button',null,'Confirm schedule'),changes:createElement('p',null,'Private change')});
+- expect(output).toContain('Schedule unavailable');
++ expect(output).toContain('Couldn’t load your schedule.');
+  for(const privateValue of ['8:00 AM','North Office','self-shift','Private change','Confirm schedule','Schedule confirmed.','You’re up to date']) expect(output).not.toContain(privateValue);
+ });
+ it('known confirmation succeeds only with actual confirmation state',()=>{
+diff --git a/src/components/employee-my-schedule.tsx b/src/components/employee-my-schedule.tsx
+index c1a1e30f..e6c21aad 100644
+--- a/src/components/employee-my-schedule.tsx
++++ b/src/components/employee-my-schedule.tsx
+@@ -145,7 +145,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
+       <PageBand title="My schedule" overlap={false}
+         summary={view === 'open'
+           ? (openCount ? `${openCount}\u00a0open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up.` : 'Shifts your team offers.')
+-          : state === 'unavailable' ? 'Your schedule couldn’t be checked.'
++          : state === 'unavailable' ? 'Couldn’t load your schedule.'
+           : shifts.length ? `${shifts.length}\u00a0${shifts.length === 1 ? 'shift' : 'shifts'} · ${scheduledHours(shifts)} scheduled.`
+           : 'No published shifts this week.'}
+         extra={modules.marketplace ? <FilterPills label="Schedule views" items={[
+@@ -186,7 +186,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
+       <section className="employee-view-surface employee-schedule-agenda my-schedule-agenda" aria-labelledby="my-agenda-title">
+         <div className="my-agenda-heading"><h2 id="my-agenda-title">Your week at a glance</h2><span>{state==='published'?'Published schedule':'Published assignments only'}</span></div>
+         {/* P3-WR-14: a failed read replaces the week list (no "–" days that read as days off) and offers the primary Try again. */}
+-        {state === 'unavailable' ? <div className="my-schedule-failure" role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule.</p><Link href={`/app/schedule?week=${weekStart}`} className="nv-btn" data-kind="primary"><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again<span className="nv-sr"> to load your schedule</span></Link></div> : null}
++        {state === 'unavailable' ? <div className="my-schedule-failure" role="status"><strong>Couldn’t load your schedule.</strong><p>Check your connection, then try again.</p><Link href={`/app/schedule?week=${weekStart}`} className="nv-btn" data-kind="primary"><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again<span className="nv-sr"> to load your schedule</span></Link></div> : null}
+         {state === 'unavailable' ? null : dates.map(date => { const label=formatDayLabel(date); const dayShifts=shifts.filter(shift=>shift.date===date); return <article className={`employee-schedule-day${date===today?' today':''}${date===selectedDay?' selected':''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
+           <time className="employee-agenda-date" dateTime={date}><span>{label.weekday}</span><strong>{Number(date.slice(8))}</strong>{date===today?<small>Today</small>:null}{date===selectedDay?<span className="sr-only">Selected day</span>:null}</time>
+           <div className="employee-schedule-day-copy">
+diff --git a/src/components/timecards.batch.test.tsx b/src/components/timecards.batch.test.tsx
+index b704a8ff..ba8eb47e 100644
+--- a/src/components/timecards.batch.test.tsx
++++ b/src/components/timecards.batch.test.tsx
+@@ -25,6 +25,25 @@ async function mount(){render();host.mounted=true;cleanup=host.effects[0]();awai
+ function transport(outcome:'success'|'unknown'='success',validForMs=45000){vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready(validForMs));const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);if(outcome==='unknown')throw Error('Interrupted');return Response.json({status:'approved',operationId:c.operationId,revision:1});});}
+ beforeEach(()=>{actorId='OWNER';manager=true;employeeCorporate=false;host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];commands=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});});
+ afterEach(()=>{cleanup?.();cleanup=undefined;vi.unstubAllGlobals();vi.useRealTimers();});
++it.each([false,true])('offers a named failed-read retry and restores Refresh only after recovery (corporate %s)',async(corporate)=>{
++ manager=!corporate;employeeCorporate=corporate;actorId=corporate?'E1':'OWNER';
++ const reads:unknown[]=[];let release!:(response:Response)=>void;
++ vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{
++  expect(path).toBe('/api/timecards');reads.push(JSON.parse(String(init?.body)));
++  return reads.length<3?new Response(null,{status:503}):new Promise<Response>(resolve=>{release=resolve;});
++ });
++ await mount();
++ expect(html()).toContain('Couldn’t load timecards.');
++ expect(control(n=>n.type==='button'&&n.props['aria-label']==='Try again to load timecards').children).toBe('Try again');
++ click('Try again to load timecards');await flush();
++ expect(html()).toContain('Couldn’t load timecards.');
++ click('Try again to load timecards');await flush();
++ expect(control(n=>n.type==='button'&&n.props['aria-label']==='Try again to load timecards').disabled).toBe(true);
++ release(Response.json(ready()));await flush();
++ expect(control(n=>n.type==='button'&&n.props['aria-label']==='Refresh timecards').disabled).toBe(false);
++ expect(html()).not.toContain('Try again to load timecards');
++ expect(reads).toEqual([period,period,period]);expect(commands).toHaveLength(0);
++});
+ it('shows employee period information and keeps approval controls out of the employee view',async()=>{
+  manager=false;employeeCorporate=true;actorId='E1';
+  vi.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[card('E1')]}));
+diff --git a/src/components/timecards.tsx b/src/components/timecards.tsx
+index 7d1c4089..e7548a84 100644
+--- a/src/components/timecards.tsx
++++ b/src/components/timecards.tsx
+@@ -64,10 +64,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
+   const running=useRef(false);
+   const [paused,setPaused]=useState(false);
+   const [signInRequired,setSignInRequired]=useState(false);
++  const [readFailed,setReadFailed]=useState(false);
+   const expires=useRef<ReturnType<typeof setTimeout>|null>(null);
+   const clearBatch=useCallback(()=>{setSelected([]);setReview(null);setConfirmed(false);setOutcomes(null);},[]);
+   const invalidate=useCallback(()=>{generation.current++;request.current?.abort();if(expires.current)clearTimeout(expires.current);expires.current=null;source.current=null;validUntil.current=0;},[]);
+-  const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setMessage('Timecards expired. Refresh a current protected snapshot.');},[invalidate,clearBatch]);
++  const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setReadFailed(false);setMessage('Timecards expired. Refresh a current protected snapshot.');},[invalidate,clearBatch]);
+   const refresh=useCallback(async(selected:Period)=>{
+     if(document.visibilityState==='hidden'||!navigator.onLine)return;
+     setPaused(false);setSignInRequired(false);
+@@ -77,21 +78,21 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
+       const response=await fetch('/api/timecards',{method:'POST',cache:'no-store',credentials:'same-origin',signal:abort.signal,
+         headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(selected)});
+       if(own!==generation.current)return;
+-      if(response.status===401||response.status===403){commandRef.current=null;setPending(null);setNotes({});setSignInRequired(true);setMessage(response.status===401?'Your session ended. Sign in again to view your timecards.':'Your access changed. Sign in again to check your timecards.');return;}
++      if(response.status===401||response.status===403){commandRef.current=null;setPending(null);setNotes({});setReadFailed(false);setSignInRequired(true);setMessage(response.status===401?'Your session ended. Sign in again to view your timecards.':'Your access changed. Sign in again to check your timecards.');return;}
+       if(!response.ok)throw new Error('Unavailable');
+       const next=parseCurrentTimecards(await response.json(),selected),remaining=next.validForMs-(performance.now()-started);
+       if(remaining<1)throw Error('Expired snapshot');
+       if(own!==generation.current)return;
+       validUntil.current=started+next.validForMs;source.current={period:selected,actorId,cards:next.cards};
+       expires.current=setTimeout(expireProtected,remaining);
+-      setSnapshotActor(actorId);setData(next);setMessage(`${next.cards.length} ${next.cards.length===1?'timecard':'timecards'} in this period.`);
+-    }catch{if(own===generation.current&&!abort.signal.aborted)setMessage(navigator.onLine?'Couldn’t load timecards. Check your connection, then try again.':'You’re offline. Reconnect to see timecards.');}
++      setSnapshotActor(actorId);setData(next);setReadFailed(false);setMessage(`${next.cards.length} ${next.cards.length===1?'timecard':'timecards'} in this period.`);
++    }catch{if(own===generation.current&&!abort.signal.aborted){setReadFailed(true);setMessage(navigator.onLine?'Couldn’t load timecards. Check your connection, then try again.':'You’re offline. Reconnect to see timecards.');}}
+     finally{if(own===generation.current)setBusy(false);}
+   },[actorId,invalidate,clearBatch,expireProtected]);
+   useEffect(()=>{
+     if(previousActor.current!==actorId){commandRef.current=null;setPending(null);}previousActor.current=actorId;
+     let active=false;
+-    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
++    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setReadFailed(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
+     const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;clear();active=document.visibilityState!=='hidden'&&navigator.onLine;if(active)void refresh(period);};
+     const account=()=>{commandRef.current=null;setPending(null);sync();};
+     document.addEventListener('visibilitychange',sync);window.addEventListener('pagehide',clear);window.addEventListener('pageshow',sync);
+@@ -165,7 +166,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
+       <label>Period start<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
+       <label>Period end<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
+       <button className={corporate?employeeButtonClass('primary','button primary'):'button primary'} disabled={paused||busy||!!pending}>View period</button>
+-      <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>{corporate?<><span className="employee-corporate-desktop-copy">Refresh timecards</span><span className="employee-corporate-mobile-copy">Refresh</span></>:<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>
++      <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label={readFailed?'Try again to load timecards':'Refresh timecards'} disabled={paused||busy} onClick={()=>void refresh(period)}>{readFailed?'Try again':corporate?<><span className="employee-corporate-desktop-copy">Refresh timecards</span><span className="employee-corporate-mobile-copy">Refresh</span></>:<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>
+     </form>
+     <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}{signInRequired?<> <Link href="/login">Sign in</Link></>:null}</p>
+     </div>
+-- 
+2.52.0
+

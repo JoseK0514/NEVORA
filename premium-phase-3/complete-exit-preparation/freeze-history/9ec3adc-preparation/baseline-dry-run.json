@@ -1,0 +1,19 @@
+{
+  "mode": "dry-run",
+  "source": "/workspace/inspect-phase3-final",
+  "sha": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "tree": "8dd5e121f6a5d5b961563b9f86d48be784d8b317",
+  "checkerHash": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "collectorHash": "9b822f38d45911a542823790a95d3404a922e16e957b4c060c61594173f1b5a5",
+  "report": "/workspace/nevora-inspections/premium-phase-3/round-5-9ec3adc-full",
+  "fixtureWeek": "2026-10-19",
+  "baselineCells": 4480,
+  "passiveJudgmentCells": 776,
+  "duplicateGeometryVisits": 0,
+  "groups": 280,
+  "maximumFourRouteBatches": 1120,
+  "minimumFixedWaitMinutes": 220,
+  "historicalEvidence": "227150b: 15 smoke cells without --axe and 17 interaction cases remain separately preserved; no cross-SHA substitution",
+  "previewStarted": false,
+  "browserStarted": false
+}

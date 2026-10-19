@@ -1,0 +1,50 @@
+--- a/src/components/employee-time-panel.tsx
++++ b/src/components/employee-time-panel.tsx
+@@ -1,4 +1,5 @@
+ 'use client';
++import {createRefreshHandler} from '../lib/refresh-handler';
+ 
+ import {keepWhole} from '@/lib/keep-whole';
+ import Link from 'next/link';
+@@ -54,8 +55,7 @@
+ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}:{state:EmployeeTimePanelState;compact?:boolean;corporate?:boolean;onRefresh:()=>void}){
+  const {time,paused,refreshing}=state;
+  // IS-P4-19: keep focus during a read and guard another activation before React renders the pending state.
+- let refreshStarted=false;
+- const refreshTime=()=>{if(paused||refreshing||refreshStarted)return;refreshStarted=true;onRefresh();};
++ const refreshTime=createRefreshHandler(paused||refreshing,onRefresh);
+  const ready=!paused&&time?.state==='ready'?time:null;
+  const denied=time?.state==='unavailable'&&time.reason==='access_denied';
+  const current=ready?.current??null;
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -1,4 +1,5 @@
+ 'use client';
++import {createRefreshHandler} from '../lib/refresh-handler';
+ 
+ import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
+ import Link from 'next/link';
+@@ -259,8 +260,7 @@
+   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
+   const paused = status === 'paused';
+   // IS-P4-19: both Home retry controls share one synchronous guard for the same read.
+-  let refreshStarted = false;
+-  const refreshHome = () => { if (paused || refreshing || refreshStarted) return; refreshStarted = true; onRetry(); };
++  const refreshHome = createRefreshHandler(paused || refreshing, onRetry);
+   const denied = !paused && (status === 'unauthorized' || home?.state === 'unauthorized');
+   const released = !paused && !denied && (status === 'ready' || status === 'partial') && home && 'snapshot' in home ? home : null;
+   const snapshot = released?.snapshot;
+--- /dev/null
++++ b/src/lib/refresh-handler.ts
+@@ -0,0 +1,11 @@
++/** One activation for the currently rendered read state. A new pending or settled
++ * render gets a new handler; synchronous controller publishing owns that cycle.
++ * Keep the mutable event state outside the pure React view functions. */
++export function createRefreshHandler(blocked:boolean,refresh:()=>void):()=>void {
++ let started=false;
++ return ()=>{
++  if(blocked||started)return;
++  started=true;
++  refresh();
++ };
++}

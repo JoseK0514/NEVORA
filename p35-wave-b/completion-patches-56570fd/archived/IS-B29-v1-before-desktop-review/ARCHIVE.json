@@ -1,0 +1,9 @@
+{
+  "reason": "Desktop review: releasePlace before fresh disclosure open geometry clamps saved scroll; ordinary motion200ms also matters",
+  "superseded": true,
+  "independentReview": "/workspace/nevora-inspections/p4-desktop/ready-desktop/crosswalk-aa5e07e/IS-B29-independent-review.md",
+  "hashes": {
+    "IS-B29-ready-only.md": "fcad5652b9a6ee26abe95813ddf9501112b399c4968496906e8ea6256cb04b6a",
+    "IS-B29-ready-only.patch": "1e69fae739594e478bd372b0c9e007d727068048950181a72d7c275214611d35"
+  }
+}

@@ -1,0 +1,34 @@
+From d04755e469ef68165410d53eeff0f2bf1ff8112c Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 22:12:24 +0000
+Subject: [PATCH 41/45] P3-WR-11: let Inbox shift metadata wrap between whole
+ values
+
+---
+ src/components/manager-inbox.tsx | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/components/manager-inbox.tsx b/src/components/manager-inbox.tsx
+index 6a5fe392..7a736516 100644
+--- a/src/components/manager-inbox.tsx
++++ b/src/components/manager-inbox.tsx
+@@ -2,6 +2,7 @@
+ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
+ 
+ import Link from "next/link";
++import { keepWhole } from "../lib/keep-whole";
+ import { useToday } from "./manager-today";
+ import { useState, type ReactNode } from "react";
+ import { useSearchParams } from "next/navigation";
+@@ -88,7 +89,7 @@ function ShiftRow({ shift, timeZone }: { shift: TodayShift; timeZone: string })
+   const condition = running ? "Not clocked in" : `No ${CLOCK_IN}`;
+   return <KitRow href={href} label={`${action} for ${shift.employeeName}: ${condition}`} urgent
+     leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName}
+-    meta={<><span className="nv-nowrap">{when}</span> · <span className="nv-nowrap">{shift.locationName}</span></>} action={action}
++    meta={<><span>{keepWhole(when)}</span> · <span className="nv-nowrap">{shift.locationName}</span></>} action={action}
+     status={<Status tone="urgent">{condition}</Status>} />;
+ }
+ 
+-- 
+2.52.0
+

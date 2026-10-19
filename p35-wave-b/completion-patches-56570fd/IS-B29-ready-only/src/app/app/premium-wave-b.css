@@ -1,0 +1,641 @@
+/* Phase 3.5 Wave B session: Insights, Templates, Scheduling rules, Update detail and Compose, Payroll settings, manager Payroll runs.
+ * Only that session edits this file. Shared rules (kit, shell, portal-premium.css) are changed by the coordinating
+ * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css. */
+
+/* Every Wave B page root carries .wb-page. The seven-fold class (0,7,0) outranks the older phone-wide rules
+ * (mobile-workforce.css :is(p,li,label,button) at 0,4,3; portal-premium.css at 0,6,2) without !important,
+ * so those layers stop shaping these pages. Their own legacy sheets are no longer imported. */
+
+/* ---------- Page frame ---------- */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page { color: var(--nv-ink); font: var(--nv-t-body); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-content :is(h2, h3, p, ul, ol, dl, dd, figure, fieldset, legend) { margin: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-content :is(ul, ol) { padding: 0; list-style: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card .nv-card__title { font: var(--nv-t-headline); color: var(--nv-ink); text-wrap: balance; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__meta { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__foot { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-row__title { font: var(--nv-t-row); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-row__meta { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-status { font: var(--nv-t-label); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-link { font: var(--nv-t-label); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn { min-height: 52px; padding: 0 var(--nv-s-5); font: var(--nv-t-headline); white-space: normal; text-align: center; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn svg { flex: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn[data-tone="urgent"]:not(:disabled) { color: var(--nv-urgent-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn[aria-busy="true"] { cursor: progress; }
+
+/* Card insides: text sits 20px in, 16px between blocks. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-body { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; padding: 0 var(--nv-s-5) var(--nv-s-5); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card > .wb-body:first-child { padding-top: var(--nv-s-5); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-content :is(p, li, dd, dt, span, small) { max-width: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-text { font: var(--nv-t-body); color: var(--nv-ink); text-wrap: pretty; overflow-wrap: break-word; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-note { font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-strong { font: var(--nv-t-headline); color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-inline-icon { display: flex; align-items: flex-start; gap: var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-inline-icon > svg { flex: none; margin-top: 2px; color: var(--nv-icon); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-box { padding: var(--nv-s-3) var(--nv-s-4); border-radius: var(--nv-r-control); background: var(--nv-inset); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-divider { height: 1px; margin: 0; border: 0; background: var(--nv-hairline); }
+
+/* Fields: height and text size come from the shared WR-55 rule (48px, kit body). Wave B sets only padding, the chevron and states. */
+/* ---------- Form pattern (PARALLEL.md): labels above, 52px fields, help 8px under, errors with icon and word ---------- */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-form { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-field { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-label-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--nv-s-1) var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-label, .wb-field > label:not(.wb-check), .wb-label-row > label) { font: var(--nv-t-label); color: var(--nv-ink-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-optional { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control {
+  box-sizing: border-box; width: 100%; min-width: 0; margin: 0; padding-inline: 14px;
+  border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background-color: var(--nv-canvas); box-shadow: none;
+  color: var(--nv-ink); text-overflow: ellipsis;
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page select.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control {
+  padding-right: 40px; -webkit-appearance: none; appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 256 256'%3E%3Cpath fill='%235F666A' d='M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 18px 18px;
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page textarea.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control { height: auto; min-height: 9.5rem; padding: 14px; resize: vertical; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control::placeholder { color: var(--nv-muted); opacity: 1; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control:hover:not(:disabled) { border-color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control:focus-visible { border-color: var(--nv-accent); outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control[aria-invalid="true"] { border-color: var(--nv-urgent-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control:disabled { background-color: var(--nv-inset); color: var(--nv-muted); cursor: not-allowed; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-help { font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-counter { font: var(--nv-t-callout); color: var(--nv-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-counter[data-over="true"] { color: var(--nv-urgent-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-error { display: flex; align-items: flex-start; gap: 6px; font: var(--nv-t-callout); color: var(--nv-urgent-ink); text-wrap: pretty; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-error > svg { flex: none; margin-top: 2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-error:empty { display: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check {
+  display: flex; align-items: flex-start; gap: var(--nv-s-3); min-height: 44px; margin: 0; padding: 10px 0;
+  font: var(--nv-t-body); color: var(--nv-ink); cursor: pointer;
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input { flex: none; width: 22px; height: 22px; min-height: 0; margin: 1px 0 0; accent-color: var(--nv-accent); cursor: pointer; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input:disabled { cursor: not-allowed; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input:disabled + span { color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-check > input:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--nv-s-4); }
+
+/* Actions: full width on phones, natural width from tablet. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions { display: flex; flex-wrap: wrap; gap: var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(.nv-btn, form, div) { flex: 1 1 100%; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(form, div) > .nv-btn { width: 100%; }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > :is(.nv-btn, form, div) { flex: 0 1 auto; min-width: min(100%, 12rem); }
+}
+
+/* Alerts and notices: a word and an icon, never colour alone. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice { display: flex; align-items: flex-start; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5); border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e1); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice > svg { flex: none; margin-top: 1px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice[data-tone="urgent"] > svg { color: var(--nv-urgent-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice[data-tone="done"] > svg { color: var(--nv-done-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice[data-tone="review"] > svg { color: var(--nv-review-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice > div { display: flex; flex-direction: column; gap: var(--nv-s-1); min-width: 0; flex: 1; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice :is(strong, .wb-notice__title) { font: var(--nv-t-headline); color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice p { font: var(--nv-t-callout); color: var(--nv-ink-2); text-wrap: pretty; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-notice .wb-actions { margin-top: var(--nv-s-2); }
+
+/* Disclosure row inside a card: a 56px summary that says what opens. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--nv-s-3); min-height: 56px; padding: var(--nv-s-3) var(--nv-s-5);
+  list-style: none; cursor: pointer; font: var(--nv-t-row); color: var(--nv-ink);
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure > summary::-webkit-details-marker { display: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure > summary > svg { flex: none; color: var(--nv-icon); transition: transform var(--nv-m-quick) var(--nv-ease-out); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure[open] > summary > svg { transform: rotate(180deg); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure > summary:hover { background: #F7F9F8; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure > summary:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-text > span:not(:first-child) { font: var(--nv-t-callout); color: var(--nv-muted); }
+
+/* Single-column pages stay readable on wide screens. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .wb-page.wb-page.wb-page.wb-page.wb-narrow[data-nv-page][data-nv-page] { max-width: 840px; }
+}
+
+/* ---------- Update detail ---------- */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-update-body { font: var(--nv-t-body); color: var(--nv-ink); white-space: pre-wrap; overflow-wrap: break-word; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-update-facts { display: flex; flex-direction: column; gap: var(--nv-s-1); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-update-facts > p { display: flex; align-items: flex-start; gap: var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-update-facts > p > svg { flex: none; margin-top: 2px; color: var(--nv-icon); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nv-s-2) var(--nv-s-3); min-height: 56px; padding: var(--nv-s-3) var(--nv-s-5); position: relative; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li > span:first-child { min-width: 0; font: var(--nv-t-row); overflow-wrap: break-word; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-receipt { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-receipt > div { display: flex; flex-direction: column; gap: var(--nv-s-1); min-width: 0; }
+
+/* ---------- Insights ---------- */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-insights, .wb-insights-view, .wb-insights-grid) { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nv-s-4); align-items: stretch; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--nv-s-4); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-applied { display: flex; flex-direction: column; gap: 2px; font: var(--nv-t-headline); color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-applied > span { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-applied > strong { display: flex; align-items: flex-start; gap: 6px; margin-top: var(--nv-s-1); font: var(--nv-t-callout); color: var(--nv-review-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-applied > strong > svg { flex: none; margin-top: 2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions--stack > :is(.nv-btn, form, div) { flex: 1 1 100%; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-body--tight { padding-bottom: var(--nv-s-4); }
+
+/* At a glance: hairline grid of six answers, each a link to its section. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); gap: 0; margin: var(--nv-s-2) -1px -1px 0; border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance > li { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; background: var(--nv-canvas); box-shadow: inset -1px 0 0 var(--nv-hairline), inset 0 -1px 0 var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: var(--nv-s-1); align-content: start; min-width: 0; padding: var(--nv-s-3) var(--nv-s-5) var(--nv-s-4); color: var(--nv-ink); text-decoration: none; transition: background-color var(--nv-m-press) linear; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a:hover { background: #F7F9F8; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__label { display: flex; align-items: flex-start; gap: 6px; font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__label > svg { flex: none; margin-top: 2px; color: var(--nv-review-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__value { font: var(--nv-t-title-2); letter-spacing: -.015em; color: var(--nv-ink); font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance a[data-tone="attention"] .wb-glance__value { color: var(--nv-review-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance__detail { font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stats { border-top: 1px solid var(--nv-hairline); margin-top: var(--nv-s-2); }
+
+/* Section shortcuts: real links, 44px pills on the canvas. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-jump { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-jump__label { flex: 1 0 100%; font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-jump > a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--nv-s-4); border-radius: var(--nv-r-pill); background: var(--nv-canvas); box-shadow: inset 0 0 0 1px var(--nv-border); color: var(--nv-accent); font: var(--nv-t-label); text-decoration: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-jump > a:hover { background: var(--nv-accent-wash); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#report-hours, #report-attendance, #report-changes, #report-approvals) { scroll-margin-top: 0; }
+@media (min-width: 761px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#report-hours, #report-attendance, #report-changes, #report-approvals) { scroll-margin-top: 84px; } }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#report-hours, #report-attendance, #report-changes, #report-approvals):focus { outline: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#report-hours, #report-attendance, #report-changes, #report-approvals):focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+
+/* Tables (AL-B01): a real table when the card is wide enough, label-and-value rows when it isn't.
+ * Decided by the card's own width, so half-width cards on desktop stack too. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card:has(> .wb-table-scroll) { container-type: inline-size; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table-scroll { min-width: 0; overflow-x: auto; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table-scroll:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table { width: 100%; border-collapse: collapse; font: var(--nv-t-callout); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table :is(th, td) { padding: 0; border: 0; background: none; text-align: left; vertical-align: top; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table th[role="rowheader"] { font: var(--nv-t-row); color: var(--nv-ink); overflow-wrap: break-word; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-cell-label { display: none; font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-cell-value { display: block; font: var(--nv-t-label); font-weight: 600; color: var(--nv-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table thead th { padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); font: var(--nv-t-callout); color: var(--nv-muted); white-space: nowrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody :is(th, td) { padding: var(--nv-s-3) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); vertical-align: middle; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table :is(thead th:not(:first-child), td) { text-align: right; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr:hover { background: #F7F9F8; }
+@container (max-width: 30rem) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody { display: block; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tr { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)); gap: var(--nv-s-2) var(--nv-s-4); padding: var(--nv-s-3) var(--nv-s-5); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr:first-child { border-top: 1px solid var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr + tr::before { content: ""; position: absolute; top: 0; left: var(--nv-s-5); right: 0; height: 1px; background: var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody :is(th, td) { padding: 0; border: 0; text-align: left; vertical-align: top; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tr > th[role="rowheader"] { grid-column: 1 / -1; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table td { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table .wb-cell-label { display: block; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table tbody tr:hover { background: none; }
+}
+@container (max-width: 40rem) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody { display: block; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tr { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)); gap: var(--nv-s-2) var(--nv-s-4); padding: var(--nv-s-3) var(--nv-s-5); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody tr:first-child { border-top: 1px solid var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody tr + tr::before { content: ""; position: absolute; top: 0; left: var(--nv-s-5); right: 0; height: 1px; background: var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody :is(th, td) { padding: 0; border: 0; text-align: left; vertical-align: top; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tr > th[role="rowheader"] { grid-column: 1 / -1; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four td { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four .wb-cell-label { display: block; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-table--four tbody tr:hover { background: none; }
+}
+
+/* Record lists (clock-in notes, requests, approvals). Rows are divided by inset hairlines, as kit rows are (AL-28). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting-list > .wb-setting + .wb-setting::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-periods > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history > div + div::before { content: ""; position: absolute; top: 0; left: var(--nv-s-5); right: 0; height: 1px; background: var(--nv-hairline); }
+@media (min-resolution: 2dppx) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-recipients > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting-list > .wb-setting + .wb-setting::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-periods > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li + li::before,
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history > div + div::before { height: .5px; } }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: var(--nv-s-3) var(--nv-s-5); position: relative; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-records > li:last-child { padding-bottom: var(--nv-s-4); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-record__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nv-s-1) var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-record__title { min-width: 0; font: var(--nv-t-row); color: var(--nv-ink); overflow-wrap: break-word; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-record__meta { font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-observations { display: flex; flex-direction: column; gap: var(--nv-s-1); margin-top: var(--nv-s-1); padding-left: 1.125rem; list-style: disc; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-observations > li { font: var(--nv-t-callout); color: var(--nv-ink-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-definitions { display: flex; flex-direction: column; gap: var(--nv-s-2); padding-left: 1.125rem; list-style: disc; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-definitions > li { font: var(--nv-t-callout); color: var(--nv-ink-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-foot-action { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-foot-action > span { flex: 1 1 14rem; padding-block: var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure--ruled > summary { border-top: 1px solid var(--nv-hairline); font: var(--nv-t-label); color: var(--nv-accent); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.nv-card.wb-disclosure > summary { min-height: 64px; padding: var(--nv-s-4) var(--nv-s-5); font: var(--nv-t-headline); }
+@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid:not(.wb-insights-grid--two) > :first-child { grid-column: 1 / -1; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-grid--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-jump__label { flex: none; }
+}
+
+/* ---------- Templates ---------- */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nv-s-3) var(--nv-s-4); padding: var(--nv-s-5); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__value { font: var(--nv-t-title-3); letter-spacing: -.012em; color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__nav { display: flex; flex: 1 1 15rem; align-items: center; gap: var(--nv-s-1); max-width: 22rem; padding: 4px; border-radius: var(--nv-r-control); background: var(--nv-inset); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__nav > a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; border-radius: var(--nv-r-inner); color: var(--nv-ink); font: var(--nv-t-label); text-decoration: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__arrow { flex: none; width: 44px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__today { flex: 1; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__nav > a:hover { background: var(--nv-canvas); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__today[aria-current] { background: var(--nv-canvas); box-shadow: var(--nv-e1); font-weight: 600; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback { display: flex; flex-direction: column; gap: var(--nv-s-3); outline: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback > :is(.form-error, .form-success, .form-warning) {
+  display: flex; align-items: flex-start; gap: var(--nv-s-3); margin: 0; padding: var(--nv-s-4) var(--nv-s-5); border: 0; border-radius: var(--nv-r-card);
+  background: var(--nv-canvas); box-shadow: var(--nv-e1); color: var(--nv-ink); font: var(--nv-t-body);
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback > * > svg { flex: none; margin-top: 1px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback > .form-error > svg { color: var(--nv-urgent-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback > .form-success > svg { color: var(--nv-done-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback > .form-warning > svg { color: var(--nv-review-mark); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback .nv-link { display: inline-flex; align-items: center; min-height: 44px; margin-block: -12px; vertical-align: baseline; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-templates-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nv-s-4); align-items: start; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-strong--small { font: var(--nv-t-label); font-weight: 600; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-box > p + p { margin-top: 2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-card-lead { padding: 0 var(--nv-s-5) var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li { display: flex; flex-direction: column; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5); position: relative; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-identity { display: flex; align-items: center; gap: var(--nv-s-3); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-identity > div { min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--nv-s-3); align-items: start; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions > div { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions > div > p { font: var(--nv-t-callout); color: var(--nv-ink-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions > div > p > a { color: var(--nv-accent); font: var(--nv-t-label); overflow-wrap: anywhere; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions .wb-apply { width: 100%; background: var(--nv-accent); color: #FFFFFF; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions .wb-apply:hover:not(:disabled) { background: var(--nv-accent-hover); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions .wb-apply:disabled { background: var(--nv-inset); color: var(--nv-muted); box-shadow: inset 0 0 0 1px var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-foot-stack { display: flex; flex-direction: column; gap: var(--nv-s-1); padding-block: var(--nv-s-4); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-foot-stack > p { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-empty { align-items: flex-start; padding-top: var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-empty > .wb-actions { align-self: stretch; }
+@media (max-width: 359px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-templates-layout { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li { flex-direction: row; align-items: center; justify-content: space-between; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { flex: none; grid-template-columns: auto auto; }
+}
+
+/* ---------- Fields inside forms built by shared components (.wb-auto) ----------
+ * The same field as .wb-control, for inputs whose markup comes from shared components
+ * (SelectField, PolicySaveForm, payroll forms). Height and text size stay with WR-55. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]), select, textarea):not(.wb-x):not(.wb-y) {
+  box-sizing: border-box; width: 100%; min-width: 0; margin: 0; padding-inline: 14px;
+  border: 1px solid var(--nv-field-border, var(--nv-border)); border-radius: var(--nv-r-control); background-color: var(--nv-canvas); box-shadow: none;
+  color: var(--nv-ink); text-overflow: ellipsis;
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto select:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v) {
+  padding-right: 40px; -webkit-appearance: none; appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 256 256'%3E%3Cpath fill='%235F666A' d='M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 18px 18px;
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .nevora-select-chevron { display: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .nevora-select-shell { display: block; position: relative; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto textarea:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v) { height: auto; min-height: 7.5rem; padding: 14px; resize: vertical; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(input, select, textarea):not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):focus-visible { border-color: var(--nv-accent); outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(input, select, textarea):not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):disabled { background-color: var(--nv-inset); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(input, select, textarea)::placeholder { color: var(--nv-muted); opacity: 1; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(.wb-field, .nevora-field) { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(.wb-field > span:first-child, .nevora-field-label) { font: var(--nv-t-label); color: var(--nv-ink-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(.configuration-fields, .wb-config fieldset) { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; margin: 0; padding: 0; border: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto form > p:is(.form-error, .form-success, [role="status"]) { display: flex; align-items: flex-start; gap: 6px; margin: 0; padding: 0; border: 0; background: none; font: var(--nv-t-callout); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto form > p.form-error { color: var(--nv-urgent-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto form > p.form-error::before { content: "Error:"; font-weight: 600; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto form > p.form-success { color: var(--nv-done-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto form > p.form-success::before { content: "Saved:"; font-weight: 600; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto form > p[role="status"]:not(.form-success) { color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto form > .button.secondary { align-self: stretch; min-height: 52px; border: 0; border-radius: var(--nv-r-control); background: var(--nv-canvas); box-shadow: inset 0 0 0 1px var(--nv-border); color: var(--nv-ink); font: var(--nv-t-headline); }
+
+/* ---------- Scheduling rules ---------- */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nv-s-4); align-items: start; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-content { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#coverage-staffing, #target-hours, #coverage-windows, #rules-policy) { scroll-margin-top: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#rules-staffing, #rules-hours, #rules-coverage) { scroll-margin-top: var(--nv-s-5); }
+@media (min-width: 761px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#coverage-staffing, #target-hours, #coverage-windows, #rules-policy) { scroll-margin-top: 84px; } .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(#rules-staffing, #rules-hours, #rules-coverage) { scroll-margin-top: 104px; } }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card.manager-issue-target:focus:not(:focus-visible), .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page #rules-policy:focus:not(:focus-visible) { outline: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting-list > li[hidden] { display: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: var(--nv-s-4) var(--nv-s-5); position: relative; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__name { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__name > .nv-status { margin-top: var(--nv-s-1); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields--pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--nv-s-4); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-suffix { position: relative; display: block; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-suffix > span { position: absolute; top: 50%; right: 14px; transform: translateY(-50%); font: var(--nv-t-callout); color: var(--nv-muted); pointer-events: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .wb-suffix > input:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u) { padding-right: 4.25rem; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-filterbar { display: flex; flex-wrap: wrap; gap: var(--nv-s-3); padding: 0 var(--nv-s-5) var(--nv-s-4); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-search { position: relative; display: block; flex: 1 1 12rem; min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-search > svg { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); color: var(--nv-icon); pointer-events: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .wb-search > input:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u) { padding-left: 44px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle { display: inline-flex; align-items: center; gap: var(--nv-s-2); min-height: 52px; padding: 0 var(--nv-s-4); border: 0; border-radius: var(--nv-r-pill); background: var(--nv-inset); color: var(--nv-ink-2); font: var(--nv-t-label); cursor: pointer; white-space: nowrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle[aria-pressed="true"] { background: var(--nv-accent-wash); box-shadow: inset 0 0 0 1px var(--nv-accent); color: var(--nv-accent-strong); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle .rules-hours-count { display: inline-grid; place-items: center; min-width: 24px; min-height: 24px; padding: 0 6px; border-radius: var(--nv-r-pill); background: var(--nv-canvas); font: var(--nv-t-badge); font-variant-numeric: tabular-nums; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-body--ruled { padding-top: var(--nv-s-4); border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-empty-row { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-empty-row > div { display: flex; flex-direction: column; align-items: flex-start; gap: var(--nv-s-1); min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { bottom: var(--nv-s-4); align-items: center; margin: 0; padding: var(--nv-s-3) var(--nv-s-4); border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > p { flex: 1 1 12rem; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > .nv-btn { flex: 1 1 12rem; }
+@media (max-width: 760px), (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  /* ST-B09: the tab bar grows with text size (68px at 100%, 83px at 200%), so the bar's offset does too. */
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { bottom: calc(53px + .9375rem + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); padding: var(--nv-s-2); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > p.wb-note { display: none; }
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-form { padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-quota { display: flex; flex-direction: column; gap: var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-quota > .wb-grid { margin-top: var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-quota > legend { float: left; width: 100%; margin-bottom: 0; padding: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-quota > legend + * { clear: both; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-periods > li { position: relative; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period__head { display: flex; align-items: flex-start; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5) var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period__copy { flex: 1; min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-day { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--nv-r-control); background: var(--nv-accent-wash); color: var(--nv-accent-strong); font: var(--nv-t-label); font-weight: 600; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-remove { min-height: 44px; margin: -11px -8px -11px 0; padding: 0 var(--nv-s-2); border: 0; border-radius: var(--nv-r-inner); background: transparent; color: var(--nv-urgent-ink); font: var(--nv-t-label); cursor: pointer; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-remove:hover { background: var(--nv-urgent-fill); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities { margin: 0 var(--nv-s-5) var(--nv-s-4) calc(var(--nv-s-5) + 44px + var(--nv-s-3)); }
+@media (max-width: 399px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities { margin-left: var(--nv-s-5); } }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--nv-s-2); min-height: 44px; list-style: none; color: var(--nv-accent); font: var(--nv-t-label); cursor: pointer; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities > summary::-webkit-details-marker { display: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities > summary > svg { color: var(--nv-accent); transition: transform var(--nv-m-quick) var(--nv-ease-out); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities[open] > summary > svg { transform: rotate(180deg); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities > form { padding-top: var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-period-group > summary .wb-record__title { font: var(--nv-t-row); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-card-end { height: var(--nv-s-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-add-period > summary .wb-inline-icon > svg { margin-top: 0; color: var(--nv-accent); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-policy > .wb-card-lead { padding-top: var(--nv-s-1); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-policy-scope { display: flex; flex-direction: column; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5) var(--nv-s-5); border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-policy-scope form { display: flex; flex-direction: column; gap: var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts { display: flex; flex-direction: column; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px var(--nv-s-3); padding: var(--nv-s-2) 0; border-top: 1px solid var(--nv-hairline); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts > div:first-child { border-top: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts dt { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts dd { font: var(--nv-t-label); font-weight: 600; color: var(--nv-ink); }
+@media (min-width: 1180px) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: center; gap: var(--nv-s-4); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__fields:not(.wb-setting__fields--pair) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); align-items: end; }
+}
+@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-layout { grid-template-columns: min(13rem, 26%) minmax(0, 1fr); gap: var(--nv-s-6); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav { position: sticky; top: 88px; padding-top: var(--nv-s-5); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav .wb-jump { flex-direction: column; align-items: stretch; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav .wb-jump__label { flex: none; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav .wb-jump > a { justify-content: flex-start; padding-inline: var(--nv-s-5); border-radius: var(--nv-r-control); }
+}
+
+/* ---------- Payroll settings (wording unchanged; payroll copy waits for Jose) ---------- */
+.wb-payroll-settings { display: contents; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto label:not(.wb-check):not(.wb-field):not(.nevora-field):has(> :is(input, select, textarea)) { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto label > small.wb-help { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section { display: flex; flex-direction: column; gap: var(--nv-s-4); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--nv-s-1) var(--nv-s-3); padding: var(--nv-s-2) 0 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section-title { margin: 0; font: var(--nv-t-title-3); letter-spacing: -.012em; color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rule-list { display: flex; flex-direction: column; gap: var(--nv-s-3); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page fieldset.wb-rule { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: var(--nv-s-4); border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page fieldset.wb-rule > legend { float: left; width: 100%; padding: 0; font: var(--nv-t-headline); color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page fieldset.wb-rule > legend + * { clear: both; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-impact { display: flex; flex-direction: column; gap: var(--nv-s-1); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-impact > strong { font: var(--nv-t-label); font-weight: 600; color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-impact :is(p, li) { font: var(--nv-t-callout); color: var(--nv-ink-2); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-impact > ul { display: flex; flex-direction: column; gap: var(--nv-s-1); padding-left: 1.125rem; list-style: disc; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history { display: flex; flex-direction: column; margin: 0 calc(-1 * var(--nv-s-5)) calc(-1 * var(--nv-s-5)); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history > div { display: flex; flex-direction: column; gap: 2px; padding: var(--nv-s-3) var(--nv-s-5); position: relative; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history strong { font: var(--nv-t-row); color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history p { font: var(--nv-t-body); color: var(--nv-ink-2); overflow-wrap: break-word; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-history small { font: var(--nv-t-callout); color: var(--nv-muted); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-form > .nv-btn, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-body > .nv-btn { width: 100%; }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-form > .nv-btn, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-body > .nv-btn { width: auto; align-self: flex-start; min-width: 12rem; }
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(p, h2, h3, ul, small, legend) { margin-block: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto :is(p, small).wb-note { font: var(--nv-t-callout); color: var(--nv-muted); max-width: none; }
+
+/* ---------- Insights: Print / Save PDF ----------
+ * The report prints as a plain document: no app chrome, no period or export controls, no shadows,
+ * and every disclosure open (reports.tsx opens them before printing). */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body:has(.wb-reports) :is(.sidebar, .mobile-header, .mobile-nav, .portal-location, .section-tabs, .portal-topbar, .nevora-toast) { display: none !important; }
+  body:has(.wb-reports) :is(.app-shell, .app-main, .page-frame, .main-content) { display: block; min-height: 0; margin: 0; padding: 0; max-width: none; width: 100%; background: #FFFFFF; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-reports { min-height: 0; padding: 0; background: #FFFFFF; max-width: none; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-reports > .nv-pageband { padding: 0 0 6mm; border-radius: 0; background: none; color: var(--nv-ink); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-reports > .nv-pageband :is(.nv-masthead__title, .nv-masthead__summary) { color: var(--nv-ink); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-reports > .nv-pageband .nv-masthead__mark { display: none; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-reports > .nv-content { margin: 0; padding: 0; gap: 4mm; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top > [aria-label="Export this period"], .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-jump, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top form .wb-actions, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top .wb-period-fields { display: none; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-insights-top { display: block; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card { box-shadow: none; border: 1px solid var(--nv-border); border-radius: 8px; break-inside: auto; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.nv-card__head, .wb-records > li, .wb-table tr, .wb-glance > li) { break-inside: avoid; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-disclosure > summary > svg { display: none; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-foot-action .nv-link { display: none; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-insights-grid, .wb-insights-grid--two) { display: flex; flex-direction: column; align-items: stretch; gap: 4mm; }
+}
+
+/* ---------- Round 1 fixes (alignment) ---------- */
+/* AL-B02: Period summary switches to the kit's one-column rows before a whole duration stops fitting. */
+@container (max-width: 27rem) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stats { grid-template-columns: 1fr; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat:first-child { flex-direction: row; align-items: baseline; justify-content: space-between; padding: var(--nv-s-3) var(--nv-s-5); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat + .nv-stat { border-left: 0; border-top: 1px solid var(--nv-hairline); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat__value { margin-top: 0; font: var(--nv-t-title-2); }
+}
+/* AL-B05: a success-only feedback block leaves no gap (its message shows as the toast). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-feedback:not(:has(> :not(.form-success[role="status"]))) { display: contents; }
+/* AL-B06: the success toast sits above the Scheduling rules save bar. */
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal.nevora-portal:has(.wb-rules .wb-savebar) .page-frame .form-success[role="status"] { bottom: calc(68px + 76px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal:has(.wb-rules .wb-savebar) .page-frame .form-success[role="status"] { bottom: calc(var(--nv-s-4) + 76px + var(--nv-s-2)); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-section-head { padding-inline: var(--nv-s-5); }
+}
+/* AL-B11: the period card's two actions share a row when they fit, like Export's stack. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions--fill > .nv-btn { flex: 1 1 10rem; min-width: 0; }
+/* AL-B21: on a landscape phone the save bar ends the form instead of sticking over a 390px screen. */
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { position: static; box-shadow: var(--nv-e1); }
+}
+
+/* ---------- Round 1 fixes (type, colour and copy) ---------- */
+/* TC-B-01: a condition pill wraps inside its card instead of losing its word; long single words break rather than clip. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-status { white-space: normal; max-width: 100%; min-width: 0; padding-block: 4px; border-radius: 14px; text-align: start; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__meta { min-width: 0; max-width: 100%; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-strong, .wb-record__title, .nv-card__title, .wb-glance__label, .wb-glance__detail, .wb-note, .wb-text, .wb-help) { overflow-wrap: break-word; hyphens: manual; }
+
+/* ---------- Round 1 fixes (interaction and states) ---------- */
+/* A destructive confirm: urgent fill, white text (6.2:1). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn[data-kind="danger"] { background: var(--nv-urgent-ink); color: #FFFFFF; box-shadow: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn[data-kind="danger"]:hover:not(:disabled):not([aria-disabled="true"]) { background: #8A2D19; color: #FFFFFF; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn[aria-disabled="true"] { cursor: progress; opacity: .72; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-confirm { display: flex; flex-direction: column; gap: var(--nv-s-3); padding: var(--nv-s-4); border-radius: var(--nv-r-control); background: var(--nv-urgent-fill); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-confirm > .wb-text { color: var(--nv-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-saved { display: flex; align-items: flex-start; gap: 6px; font: var(--nv-t-callout); color: var(--nv-done-ink); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-saved > svg { flex: none; margin-top: 2px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > :is(.wb-saved, .wb-error) { flex: 1 1 12rem; }
+@media (max-width: 760px), (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > :is(.wb-saved, .wb-error) { flex-basis: 100%; padding: var(--nv-s-1) var(--nv-s-2) 0; }
+}
+/* Coverage period remove: the confirm takes its own row under the period. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period__head { flex-wrap: wrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-remove { flex: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-remove[data-confirming] { flex: 1 1 100%; margin-left: calc(44px + var(--nv-s-3)); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-remove > .wb-error { margin-top: var(--nv-s-2); }
+@media (max-width: 399px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-remove[data-confirming] { margin-left: 0; } }
+/* Templates: archive confirm under the template's actions. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-archive[data-confirming] { grid-column: 1 / -1; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-archive > .wb-error { margin-top: var(--nv-s-2); }
+/* IS-B20: the week stepper while the next week loads. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-link-pending { display: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week__loading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week:not(:has([data-pending])) .wb-week__loading { display: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week:has([data-pending]) .wb-week__value { opacity: .45; transition: opacity var(--nv-m-quick) var(--nv-ease-out); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-week:has([data-pending]) .wb-week__nav { pointer-events: none; }
+/* IS-B21: the audience preview heading takes focus with the kit ring. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__title[tabindex="-1"]:focus { outline: none; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__title[tabindex="-1"]:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 4px; border-radius: 4px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+/* IS-B24: the "No target" toggle answers hover and press like the other controls. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle { transition: background-color var(--nv-m-quick) var(--nv-ease-out), transform var(--nv-m-press) linear; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle:hover:not([aria-pressed="true"]) { background: #E4E8E7; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle:active { transform: scale(.98); }
+@media (prefers-reduced-motion: reduce) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-toggle:active { transform: none; } }
+/* IS-B10: payroll save progress and failures float above the tab bar (phones) or in the corner (desktop) while they stand. */
+.wb-payroll-feedback { display: contents; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wb-payroll-feedback > .pw-feedback:has(> *) {
+  position: fixed; z-index: 118; left: var(--nv-gutter); right: var(--nv-gutter); bottom: calc(76px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: var(--nv-s-2); max-height: 50vh; overflow: auto; padding: var(--nv-s-4); border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e2);
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wb-payroll-feedback > .pw-feedback:has(> *) { left: auto; right: var(--nv-s-6); bottom: var(--nv-s-6); width: min(420px, calc(100vw - 48px)); }
+}
+
+/* ---------- Round 1 fixes (bars and stability) ---------- */
+/* ST-B02: on Scheduling rules, focus and in-page jumps stop clear of the sticky save bar as well as the tab bar
+ * (WCAG 2.4.11). Phone: tab bar (61px + .4375rem) + 8px gap + bar (3.25rem button + 16px padding) + 16px. Desktop: bar (3.25rem + 24px) + its 16px offset + 16px. */
+@media (max-width: 760px) {
+  html:has(.wb-rules .wb-savebar) { scroll-padding-bottom: calc(101px + 3.6875rem + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html:has(.wb-rules .wb-savebar) { scroll-padding-bottom: calc(56px + 3.25rem); }
+}
+
+/* ST-B03 to ST-B05, ST-B08: each Wave B placeholder band at its measured height for the phone width and text size
+ * (100% exact; larger text interpolated from the 200% measurement). Used by the routes' loading.tsx and root-loading.tsx. */
+@media (max-width: 339px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 12.75rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(64px + 12.75rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-176px + 24.75rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(-12px + 20.25rem); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: calc(-24px + 23.25rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-172px + 20.25rem); } }
+@media (min-width: 340px) and (max-width: 374px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 11.25rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(64px + 12.75rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-80px + 18.75rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(36px + 17.25rem); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: calc(18px + 19.125rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-172px + 20.25rem); } }
+@media (min-width: 375px) and (max-width: 409px) { .route-skeleton[data-route="wb-insights"] { --route-band: max(calc(116px + 5.25rem), min(calc(-64px + 14.25rem), calc(-28px + 12.75rem))); } .route-skeleton[data-route="wb-templates"] { --route-band: max(min(calc(40px + 12.75rem), calc(160px + 6.75rem)), calc(16px + 12.75rem)); } .route-skeleton[data-route="wb-rules"] { --route-band: max(min(calc(-32px + 14.25rem), calc(88px + 8.25rem)), calc(-416px + 29.25rem)); } .route-skeleton[data-route="wb-compose"] { --route-band: max(calc(204px + 6.75rem), calc(-156px + 21.75rem)); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: max(calc(24px + 16.5rem), calc(-156px + 24rem)); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: max(calc(-76px + 12.75rem), calc(-316px + 23.25rem)); } }
+@media (min-width: 410px) and (max-width: 760px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 11.25rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(112px + 9.75rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-80px + 18.75rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(156px + 9.75rem); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: calc(36px + 15.75rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-148px + 17.25rem); } }
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(72px + 4rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(116px + 4rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(108px + 4rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(160px + 4rem); } .route-skeleton[data-route="wb-update"], .wb-update { --route-band: calc(160px + 4rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(40px + 4rem); } }
+
+/* ---------- Round 1 fixes (widths and roles) ---------- */
+/* WR-B-05: number fields drop their spin buttons; "hrs" needs less room than "people". */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto input[type="number"]:not(.wb-x) { -moz-appearance: textfield; appearance: textfield; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto input[type="number"]::-webkit-inner-spin-button, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .wb-suffix--short > input:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u):not(.wb-t) { padding-right: 2.75rem; }
+/* WR-B-06: Apply and Archive stack when they can't share a row. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); }
+/* WR-B-08: the day tile grows with its text, and the period text keeps a readable width before Remove wraps. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-day { width: auto; min-width: 44px; height: auto; min-height: 44px; padding: 0 6px; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period__copy { flex: 1 1 9rem; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period__copy .wb-record__title { overflow-wrap: normal; hyphens: manual; }
+/* WR-B-10: payroll field grids keep wider columns, so selected values aren't cut. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+/* WR-B-11: Payroll runs' stepper shows its dots and the current step's line when five labels can't fit
+ * (labels stay for screen readers); the same on the Owner's and the Manager's view. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-stepper-wrap { container-type: inline-size; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-step-label { overflow-wrap: normal; }
+@container (max-width: 24rem) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-stepper .pw-step-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+
+/* ---------- Round 2 fixes ---------- */
+/* AL-B24: the side navigation's label and note line up with the link text only where the side layout applies. */
+@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-rules-nav :is(.wb-jump__label, .wb-rules-nav__note) { padding-inline: var(--nv-s-5); }
+}
+/* AL-B16: policy facts divide like kit rows: inset at the start, to the card's edge at the end. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts { margin-right: calc(-1 * var(--nv-s-5)); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-facts > div { padding-right: var(--nv-s-5); }
+/* AL-B20: the chevron and the search field grow with text. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto select:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v) { background-size: 1.125rem 1.125rem; padding-right: calc(1.125rem + 22px); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(input, select, textarea).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control { background-size: 1.125rem 1.125rem; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto .wb-search > input:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u):not(.wb-t) { height: auto; min-height: 3rem; padding-block: var(--nv-s-2); }
+/* AL-B23: At a glance takes two, three or six columns by the card's own width, so no row is left with holes. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card:has(> .wb-glance) { container-type: inline-size; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: minmax(0, 1fr); }
+/* TC-B-02: two columns only once a cell can hold its value at this text size. */
+@container (min-width: 21rem) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 34rem) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (min-width: 62rem) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-glance { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-glance__label, .wb-glance__detail) { hyphens: manual; }
+/* AL-B26: Remove stays at the end of its row when it wraps. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-remove:not([data-confirming]) { margin-left: auto; }
+/* AL-B27, WR-B-21: a confirm step takes the full row. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-actions > .wb-confirm { flex: 1 1 100%; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li:has([data-confirming]) { flex-direction: column; align-items: stretch; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li:has([data-confirming]) .wb-template-actions { grid-template-columns: minmax(0, 1fr); }
+/* WR-B-06: Apply and Archive share one width. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions > :is(div, form) > .nv-btn { width: 100%; }
+@media (min-width: 1024px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li:not(:has([data-confirming])) .wb-template-actions { grid-template-columns: repeat(2, minmax(0, 12rem)); }
+}
+/* WR-B-09: Period summary rows let the value drop under its label rather than clip at large text. */
+@container (max-width: 27rem) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stats { grid-template-columns: minmax(0, 1fr); }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat:first-child { flex-wrap: wrap; column-gap: var(--nv-s-3); }
+}
+/* WR-B-04: a single long word in a pill or button breaks rather than leaving its card. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.nv-status, .nv-btn) { overflow-wrap: break-word; hyphens: manual; min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__head > .nv-card__title { min-width: 0; }
+/* WR-B-11: payroll amounts stay whole (Payroll runs, Owner and Manager). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :is(.pw-money, .pw-totals dd, .pw-lines dd) { white-space: nowrap; }
+/* ST-B05: Lead and Employee Compose at 320 ("Message today’s team" takes two lines). */
+@media (max-width: 339px) { html body .app-shell.employee-shell .route-skeleton[data-route="wb-compose"] { --route-band: calc(24px + 20.25rem); } }
+/* ST-B02, ST-B12: phones keep focus clear of the save bar, its message line included; this outranks the shell's 80px (portal-gusto.css). */
+@media (max-width: 760px) {
+  html:has(body .app-shell.nevora-portal.nevora-portal .wb-rules .wb-savebar) { scroll-padding-bottom: calc(117px + 3.6875rem + 2.5rem + env(safe-area-inset-bottom, 0px)); }
+}
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities .wb-quota > legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* TC-B-24: field edges at 3:1 also on textareas and search fields (the shared WR-49 rule sets the lighter border). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(textarea, input).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control { border-color: var(--nv-field-border, var(--nv-border)); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto.wb-auto.wb-auto.wb-auto :is(textarea, input[type="search"]):not(.wb-x):not(.wb-y):not(.wb-z) { border-color: var(--nv-field-border, var(--nv-border)); }
+
+/* ---------- Round 3 fixes (alignment) ---------- */
+/* AL-B16: the facts' end margin outranks the content margin reset. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-content .wb-facts { margin-right: calc(-1 * var(--nv-s-5)); }
+/* AL-B31: selects inside shared-markup forms keep room for their chevron (outranks the field padding). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto select:not(.wb-x):not(.wb-y):not(.wb-z):not(.wb-w):not(.wb-v):not(.wb-u):not(.wb-t) { padding-right: calc(1.125rem + 22px); }
+/* AL-B29: from 1180 a setting's name sits on its field's centre line. */
+@media (min-width: 1180px) {
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting-list > .wb-setting { align-items: end; }
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-setting__name { justify-content: center; min-height: 3rem; }
+}
+/* AL-B32: the save bar's button keeps its label on one line beside the note. */
+@media (min-width: 761px) { .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > .nv-btn { flex: 0 0 auto; white-space: nowrap; } }
+/* AL-B30: the landscape toast position comes from the shared fix (62cd033, top of the screen) at the merge. */
+
+/* ---------- Round 3 fixes (type, colour and copy) ---------- */
+/* TC-B-27: Payroll runs (Owner and Manager) at narrow widths and large text: totals stack instead of clipping
+ * whole amounts; amount lines and names wrap at word boundaries; the import schema name may break. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-totals { grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-lines > div { flex-wrap: wrap; column-gap: var(--nv-s-3); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :is(.pw-employee-amount summary strong, .pw-run-option strong) { overflow-wrap: break-word; word-break: normal; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .pw-import-format .pw-small { overflow-wrap: anywhere; }
+
+/* ---------- Round 3 fixes (widths and roles) ---------- */
+/* WR-B-22: a template row wraps before its name gets squeezed; the action pair shrinks within its 12rem columns. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-list > li { flex-wrap: wrap; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-identity { flex: 1 1 12rem; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-template-actions { flex: 0 1 auto; min-width: 0; }
+/* WR-B-10: the payment output profile takes the whole row, so its long value fits from tablet up. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-payroll-settings .wb-grid > label:has(select[name="bankProfile"]) { grid-column: 1 / -1; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-focus-target:focus:not(:focus-visible) { outline: none; }
+/* ST-B14: Update detail's in-page loading band holds the placeholder's height, so content doesn't jump up and back. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-update:has(> .nv-content > section[aria-busy="true"]) > .nv-pageband { box-sizing: border-box; min-height: var(--route-band); }
+/* checks.mjs r3: Payroll runs' "Next step" guidance on the kit callout role (13px at desktop before; Owner and Manager). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance, html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance > strong { font: var(--nv-t-callout); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance > strong { font-weight: 600; }
+
+/* TC-WA-16 / IS-RC-COMPOSE-01 preservation: guarded pending actions keep kit contrast, focus and geometry. */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-btn[aria-disabled="true"] { background: var(--nv-inset); color: var(--nv-muted); box-shadow: inset 0 0 0 1px var(--nv-hairline); opacity: 1; cursor: progress; transform: none; }
+
+/* IS-B29: initialize only fresh restored disclosure geometry before releasing held scroll. */
+html body .app-shell.nevora-portal .page-frame .wb-insights-view[data-restoring-preferences] details::details-content { transition: none; }

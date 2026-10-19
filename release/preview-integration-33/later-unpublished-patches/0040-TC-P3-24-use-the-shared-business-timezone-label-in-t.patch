@@ -1,0 +1,34 @@
+From 9c6f98b722d576474516939eea0052840d1ba7fc Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 22:12:24 +0000
+Subject: [PATCH 40/45] TC-P3-24: use the shared business timezone label in the
+ roster
+
+---
+ src/components/manager-weekly-roster.tsx | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/components/manager-weekly-roster.tsx b/src/components/manager-weekly-roster.tsx
+index 703d659c..c16585e8 100644
+--- a/src/components/manager-weekly-roster.tsx
++++ b/src/components/manager-weekly-roster.tsx
+@@ -1,6 +1,7 @@
+ "use client";
+ 
+ import Link from "next/link";
++import { timeZoneLabel } from "../lib/time-zone-label";
+ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+ import { useGSAP } from "@gsap/react";
+ import { gsap } from "gsap";
+@@ -176,7 +177,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
+ 
+   return <section className="mws-roster manager-issue-target" id={reviewDay ? undefined : "schedule-review"} tabIndex={-1} ref={container} aria-labelledby="mws-roster-title">
+     <header className="mws-roster-heading">
+-      <div><h2 id="mws-roster-title">Team schedule</h2><p><span className="mws-timezone-full">Times in {timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? timeZone}. Select a shift to edit.</span><span className="mws-timezone-compact">Times in {timeZone.split("/").at(-1)?.replaceAll("_", " ")}</span></p></div>
++      <div><h2 id="mws-roster-title">Team schedule</h2><p><span className="mws-timezone-full">Times in {timeZoneLabel(timeZone)}. Select a shift to edit.</span><span className="mws-timezone-compact">Times in {timeZoneLabel(timeZone)}</span></p></div>
+       <div className="mws-search">
+         <MagnifyingGlassIcon size={18} aria-hidden="true" />
+         <input type="search" aria-label="Search team" placeholder="Search team" value={query} onChange={event => setQuery(event.target.value)} />
+-- 
+2.52.0
+

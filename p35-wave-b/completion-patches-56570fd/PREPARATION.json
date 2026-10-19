@@ -1,0 +1,38 @@
+{
+  "candidatePatchBase": "56570fd0fc5e23503dbb50550af9dfcd965861ec",
+  "readyPatchBase": "368e98a18c16d47df04a93f2bea560843e461e0e",
+  "sourceInspectionSHA": "9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7",
+  "sourceWorktreeClean": true,
+  "readyWorktreeClean": true,
+  "appEditsByThisPreparation": false,
+  "testOrBrowserExecution": false,
+  "activePatches": {
+    "IS-B12-COMPLETION.patch": "121fb10fdbf76c585b83081e75525b3e99470704ff4ebb8ca27e5826f30343d7",
+    "IS-B31-PAYROLL.patch": "677b15e717dc5283db8a7ff62762d4158c9b9377d94d57acb1f4deb636628359",
+    "IS-B33.patch": "a813ef9bd0e09ca9d599b3ac97d38604935c85115ab5544b72a875ad106a297b",
+    "IS-B12-COMPLETION-ready-port.patch": "4193f964e6d044723bdac927040141243a6fe763a0597324d3787a49a728b8c4",
+    "IS-B31-PAYROLL-ready-port.patch": "e108c1d99b4a1cd48503f0276b3472fafcbc90e16ce5538ea0af7af62005a277",
+    "IS-B33-ready-port.patch": "45b040e91bb4aa398661927b230ff5a5b21a4485283318d0ccf9884d38fc79d4",
+    "IS-B29-ready-only.patch": "450848d488ff742896f08dbd79fd7d6ad9c00a6b4f45e5946f11c1c51e6fb701"
+  },
+  "peerReviews": {
+    "IS-B33": "/workspace/nevora-inspections/p35-wave-a/is-b33-peer-review-4314266/revised/REVIEW.md",
+    "IS-B29": "/workspace/nevora-inspections/p4-desktop/ready-desktop/crosswalk-aa5e07e/IS-B29-independent-review.md"
+  },
+  "harness": {
+    "file": "/workspace/nevora-inspection-runtime/final-verification/scoped-wave-b.mjs",
+    "sha256": "810e65d4fbee431f9ac2a1fccb9ebb09d03c738fcc7d582384884438c5aa8215",
+    "readme": "/workspace/nevora-inspection-runtime/final-verification/scoped-wave-b.README.md",
+    "scopedBothEngineCells": 80,
+    "executedCells": 0,
+    "existingVerifierEdited": false
+  },
+  "fullReview": {
+    "requiredCells": 3008,
+    "axeEveryCell": true,
+    "allFiveManualAreas": true,
+    "readyExactSHAExecutedCells": 0,
+    "stillIncomplete": true
+  },
+  "rootOwns": "Actual candidate application/commits/STATUS and canonical gates; this agent prepared external proposals only; source-fixed IS-B10/14/27 remain integration-dependent, not duplicate fixes"
+}

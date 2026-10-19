@@ -24,13 +24,19 @@ const preview=arg('preview')?resolve(arg('preview')):null;
 const week=arg('week','2026-10-19');
 const next=new Date(week+'T12:00:00Z');next.setUTCDate(next.getUTCDate()+7);
 const routes=['/app','/app/schedule','/app/schedule?view=open','/app/requests/hub','/app/requests?tab=new','/app/requests?tab=my','/app/exchange?tab=available','/app/exchange?tab=requests','/app/availability','/app/availability?week='+next.toISOString().slice(0,10),'/app/my-time','/app/timecards','/app/my-pay','/app/profile','/app/updates','/app/notifications'];
-const accounts=['AUDIT-E','AUDIT-LONG','AUDIT-ON','AUDIT-BREAK','payroll-qa-a','AUDIT-LEAD','payroll-qa-b'];
-const sizes=['320','360','390','430','844x390'],texts=[100,125,150,200],engines=['chromium','webkit'];
+const scopePath=arg('scope');
+const scope=scopePath?JSON.parse(await readFile(resolve(scopePath),'utf8')):null;
+if(scope&&(!['normal','large'].includes(scope.dataset)||!scope.axe||!scope.scope||!Array.isArray(scope.sizes)||!Array.isArray(scope.texts)||!Array.isArray(scope.engines)))throw Error('Invalid supplemental role-route scope');
+const dataset=scope?.dataset??'normal';
+const accounts=scope?Object.keys(scope.scope):['AUDIT-E','AUDIT-LONG','AUDIT-ON','AUDIT-BREAK','payroll-qa-a','AUDIT-LEAD','payroll-qa-b'];
+const sizes=scope?.sizes??['320','360','390','430','844x390'],texts=scope?.texts??[100,125,150,200],engines=scope?.engines??['chromium','webkit'];
 const plan=[];
-for(const engine of engines)for(const account of accounts)for(const size of sizes)for(const text of texts)for(const route of routes)plan.push({engine,account,size,text,route,axe:true});
+for(const engine of engines)for(const account of accounts)for(const size of sizes)for(const text of texts)for(const route of scope?.scope[account]??routes)plan.push({engine,account,size,text,route,axe:true});
+if(scope&&plan.length!==scope.expectedCells)throw Error('Supplemental cell count differs from its explicit eligibility scope');
+const planScopeHash=hash(JSON.stringify({dataset,cells:plan}));
 const key=r=>JSON.stringify([r.engine,r.account,r.size,r.text,r.route,true]);
 const execute=process.argv.includes('--execute');
-if(!execute){console.log(JSON.stringify({mode:'dry-run',source,sha,tree:git('rev-parse','HEAD^{tree}'),checkerHash,collectorHash,report,fixtureWeek:week,baselineCells:plan.length,passiveJudgmentCells:plan.filter(collectionPolicy).length,duplicateGeometryVisits:0,groups:engines.length*accounts.length*sizes.length*texts.length,maximumFourRouteBatches:plan.length/4,minimumFixedWaitMinutes:Math.round((2500*plan.length+600*plan.filter(r=>r.text!==100).length)/60000),historicalEvidence:'227150b: 15 smoke cells without --axe and 17 interaction cases remain separately preserved; no cross-SHA substitution',previewStarted:false,browserStarted:false},null,2));process.exit(0);}
+if(!execute){console.log(JSON.stringify({mode:'dry-run',source,sha,tree:git('rev-parse','HEAD^{tree}'),checkerHash,collectorHash,planScopeHash,dataset,report,fixtureWeek:week,baselineCells:plan.length,passiveJudgmentCells:plan.filter(collectionPolicy).length,duplicateGeometryVisits:0,groups:engines.length*accounts.length*sizes.length*texts.length,maximumFourRouteBatches:engines.length*sizes.length*texts.length*accounts.reduce((n,a)=>n+Math.ceil((scope?.scope[a]??routes).length/4),0),minimumFixedWaitMinutes:Math.round((2500*plan.length+600*plan.filter(r=>r.text!==100).length)/60000),historicalEvidence:'227150b: 15 smoke cells without --axe and 17 interaction cases remain separately preserved; no cross-SHA substitution',previewStarted:false,browserStarted:false},null,2));process.exit(0);}
 if(process.env.PHASE3_RELEASED_SHA!==sha)throw Error('Root has not released this exact SHA: PHASE3_RELEASED_SHA must match --sha');
 if(!preview)throw Error('Supply --preview with the owned running preview');
 const runs=(await readdir(preview)).filter(n=>n.startsWith('evidence-')).sort();
@@ -43,7 +49,13 @@ const access=JSON.parse(await readFile(join(preview,run,'access.json'),'utf8'));
 const host=new URL(access.url).hostname;
 if(!['127.0.0.1','localhost','[::1]'].includes(host))throw Error('Preview must remain loopback-only');
 for(const account of accounts)await readFile(join(preview,'state',account+'.json'));
-const lineage=hash(JSON.stringify({sha,tree:audit.tree,fixtureDate:audit.fixtureDate,fixtureWeek:audit.fixtureWeek,previewRun:run,checkerHash,collectorHash,axe:true}));
+let largeReceipt;
+if(dataset==='large'){
+ const receiptPath=arg('large-receipt');if(!receiptPath)throw Error('Large scope needs the verified separate-preview seed receipt');
+ largeReceipt=JSON.parse(await readFile(resolve(receiptPath),'utf8'));
+ if(largeReceipt.sha!==sha||largeReceipt.dataset!=='large'||largeReceipt.previewRun!==run||resolve(largeReceipt.preview)!==preview||!largeReceipt.seedCompleted||!largeReceipt.ownedIdentityVerified||largeReceipt.normalPreviewClosed!==true)throw Error('Large fixture receipt does not prove the exact separate owned preview');
+}
+const lineage=hash(JSON.stringify({sha,tree:audit.tree,fixtureDate:audit.fixtureDate,fixtureWeek:audit.fixtureWeek,previewRun:run,checkerHash,collectorHash,planScopeHash,dataset,largeReceipt,axe:true}));
 await mkdir(join(report,'baseline'),{recursive:true});
 const lockfile=join(preview,'phase3-serial-checks.lock');
 const lock=await open(lockfile,'wx').catch(()=>{throw Error('Another checker owns the preview lock; inspect the owner before removing a stale lock');});

@@ -1,0 +1,18 @@
+{
+  "finding": "P3-ST-25",
+  "base": "e8e947eafabc61b9ed62a08c1762e8c896737c0b",
+  "sourceCitation": "docs/product/specs/premium-phase-3/inspection/stability.md:826 on227150b",
+  "files": [
+    "src/app/app/portal-motion.css"
+  ],
+  "scope": [
+    "Compensates exactly existing20px gridgap at first visible banded placeholder block; later blocks retain existing20px spacing.",
+    "Overlap -72-20 becomes -92; flat16-20 becomes -4 so totalgridgap20+margin-4 yields desired16.",
+    "Preserves existing nonfocusedManagerreview and EmployeeSchedule/Review flat exceptions.",
+    "Duplicate .route-skeleton raises local pre-premium CSS specificity to outrank frozen visible-first-child selectors.",
+    "Alternative simpler row-gap0 would also repair first-block position but would change later placeholder spacing; this patch avoids that extra change.",
+    "No band height change, no app source edit, runtime/test or CI executed."
+  ],
+  "applicationFilesEdited": false,
+  "testsOrRuntimeRun": false
+}

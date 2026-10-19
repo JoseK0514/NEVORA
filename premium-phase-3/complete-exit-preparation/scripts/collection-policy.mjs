@@ -1,6 +1,9 @@
 // The inspection brief requires Chromium judgment at320/390/landscape and WebKit spots.
 // Full baseline coverage is unchanged; these cells get passive extra evidence.
 export function collectionPolicy(cell){
+ const management=['AUDIT-M','QAOWNER'].includes(cell.account);
+ if(management&&cell.engine==='chromium'&&['320','390','844x390'].includes(cell.size))return 'shared-management-judgment';
+ if(management&&cell.engine==='webkit'&&cell.size==='390'&&[100,200].includes(cell.text))return 'shared-management-webkit-spot';
  const primary=['AUDIT-E','AUDIT-LEAD'].includes(cell.account);
  const judgeSize=['320','390','844x390'].includes(cell.size);
  const variantRoutes=['/app','/app/profile','/app/my-time','/app/timecards','/app/my-pay'];

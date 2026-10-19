@@ -1,0 +1,67 @@
+{
+  "authoritativeUI": "4aaa79383f82a3c6023f9d2a2c2f492ba3152fce",
+  "exact33FixCheckpoint": "b68f250129e2d21731624652e0aad7412b042bc3",
+  "reusedApprovedResolution": "368e98a18c16d47df04a93f2bea560843e461e0e",
+  "source9bd": "9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7",
+  "files": [
+    {
+      "file": "src/components/communication-compose.tsx",
+      "claudeBlob": "47db4b60936d043a2abaa72a70ed4488baae2597",
+      "sourceBlob": "47db4b60936d043a2abaa72a70ed4488baae2597",
+      "claudeMatchesFrozenSource": true,
+      "resolvedReadyBlob": "c70e6936ccaad7f8aca63c348070f20069c23fa5",
+      "resolvedSHA256": "3045912c3be0732a85960a0541a8249d307c7e2bf5d58bf525e909f9131e8044",
+      "changedLines": {
+        "add": 14,
+        "remove": 5
+      }
+    },
+    {
+      "file": "src/components/communication-detail.tsx",
+      "claudeBlob": "88352c21769112c4fcf23233ab71d94a5eb5c2cf",
+      "sourceBlob": "88352c21769112c4fcf23233ab71d94a5eb5c2cf",
+      "claudeMatchesFrozenSource": true,
+      "resolvedReadyBlob": "c2f373720db6af7c4739884ceb979c569cc688b0",
+      "resolvedSHA256": "0ed63d6db2580fbd4f03d428581ed6e639f291e14d0012db7fa8f06f930f7390",
+      "changedLines": {
+        "add": 20,
+        "remove": 7
+      }
+    },
+    {
+      "file": "src/components/payroll/payroll-settings.tsx",
+      "claudeBlob": "42b46bcf2050b96dde2d318089378bd641513c55",
+      "sourceBlob": "42b46bcf2050b96dde2d318089378bd641513c55",
+      "claudeMatchesFrozenSource": true,
+      "resolvedReadyBlob": "b46cc0cdc3ab2a46d9a1f9a926c600d2d85ae4e6",
+      "resolvedSHA256": "ee80b3cf0b5dbbe4dec10ad2155034c2bce9183cfb4888e1ae525cf903ff43e2",
+      "changedLines": {
+        "add": 14,
+        "remove": 5
+      }
+    },
+    {
+      "file": "src/app/app/premium-wave-b.css",
+      "claudeBlob": "a476f492f047288d36f7a016e433ea6b608c32a2",
+      "sourceBlob": "a476f492f047288d36f7a016e433ea6b608c32a2",
+      "claudeMatchesFrozenSource": true,
+      "resolvedReadyBlob": "85f57f86aea81c6d4fdb220ca3f6934c3fd2fd83",
+      "resolvedSHA256": "d6ec1e4b23d31dd658df3dbb21d3b787b8b914c72a52adf2e384d596c2eb5ba3",
+      "changedLines": {
+        "add": 3,
+        "remove": 0
+      }
+    }
+  ],
+  "composeCSS": "KEEP DELETED; no import; pending intent ported into premium-wave-b.css",
+  "prohibitedLaterScopesExcluded": [
+    "IS-B12-COMPLETION",
+    "IS-B31-PAYROLL",
+    "IS-B33",
+    "IS-B29-ready-only",
+    "IS-B31 Rules eb83869 (no wave-b-forms.tsx copied)"
+  ],
+  "sourceIndexRefWrites": false,
+  "browserOrCI": false,
+  "independentClosureClaim": false
+}

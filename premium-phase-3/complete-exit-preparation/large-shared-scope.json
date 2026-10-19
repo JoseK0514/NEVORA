@@ -1,6 +1,6 @@
 {
-  "preparedAgainst": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
-  "releaseTarget": "await final exact SHA",
+  "preparedAgainst": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "releaseTarget": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
   "dataset": "large",
   "scope": {
     "QAOWNER": [
@@ -34,5 +34,6 @@
     "webkit"
   ],
   "axe": true,
-  "expectedCells": 320
+  "expectedCells": 320,
+  "resourceStatus": "held until root gate release"
 }

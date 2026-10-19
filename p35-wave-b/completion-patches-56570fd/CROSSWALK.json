@@ -957,7 +957,7 @@
       "line": 209,
       "section": "## Round 3 (exit)",
       "row": "| IS-B33 | Payroll runs | Manager with payroll access, Owner | 390 (OK at 1440) | Prepare draft (and every runs action that uses the shared operation feedback) | Prepare draft with the request held: the whole form greys out and the button keeps \u201cPrepare draft\u201d. \u201cRecording action\u2026\u201d renders at \u2212401 to \u2212139, above the viewport. With the request aborted, \u201cThe action response was interrupted\u2026 Check action reference / Retry same action\u201d renders at \u2212539 to \u2212139. Focus falls to `<body>`. On a phone the user sees a dead form and no reason, which is IS-B10 again. At 1440 the feedback is at 306\u2013583, in view | `shots/r3/runs-prepare-abort-390.png`; log `runs-prep.log` | `payroll-runs.tsx:29` (`<OperationFeedback>` at the top of the frame, without the `.wb-payroll-feedback` float that Payroll settings got, `payroll-settings.tsx:64`, `premium-wave-b.css:501-507`) | Wrap it in the same `.wb-payroll-feedback` container so it floats above the tab bar on phones. Show a pending label on the pressed button. Payroll wording stays unchanged. This predates Wave B (not a regression), but it's this page and role | P1 |",
-      "classification": "Retained cause on both branches; IS-B33 + ready port prepared including BacklogReview initiating-surface distinction, runtime pending"
+      "classification": "Retained cause on both branches; revised IS-B33 + ready port includes BacklogReview initiating-surface distinction; Wave A static peer recommends apply; runtime pending"
     },
     {
       "id": "IS-B29",
@@ -966,7 +966,7 @@
       "line": 210,
       "section": "## Round 3 (exit)",
       "row": "| IS-B29 | Insights | Owner, Manager | 390 (timing is width-independent) | Quiet refresh on a slow network | When each read takes more than about a third of the snapshot's 14.6s life, the refresh lands after expiry. 4.5s delay: the report emptied once in 40s (10 of 80 samples). 5.2s: twice, at 21s and 36s (18 of 80). 6s: twice (20 of 80). Height and scroll were held (`scrollY` 3,000 kept), but focus fell to `<body>` and the open Report definitions closed each time. Validity is counted from the request start, so a slow read also shortens the next window: steady state needs the read time to be under (validity \u2212 read time) \u00f7 2 | log `r3/ins-slow.log` | `reports.tsx:110` (refresh at `remaining/2`), `:108` (expiry clears the view) | Start the quiet read earlier when reads are slow, e.g. at `min(remaining/2, remaining \u2212 2 \u00d7 lastReadMs)`. Then remember the focused element (by id or jump target) and open disclosures before `clear`, and restore them after the next snapshot lands. Keep the privacy expiry as is | P2 |",
-      "classification": "Retained source/ready cause; IS-B29-ready-only proposed, absent candidate implementation untouched"
+      "classification": "Retained source/ready cause; revision2 ready-only patch accepted by independent Desktop static review after archived initial scroll-order proposal; exact-final-SHA runtime still pending"
     },
     {
       "id": "IS-B30",
@@ -1249,10 +1249,13 @@
     "IS-B12-COMPLETION-ready-port.patch": "4193f964e6d044723bdac927040141243a6fe763a0597324d3787a49a728b8c4",
     "IS-B31-PAYROLL-ready-port.patch": "e108c1d99b4a1cd48503f0276b3472fafcbc90e16ce5538ea0af7af62005a277",
     "IS-B33-ready-port.patch": "45b040e91bb4aa398661927b230ff5a5b21a4485283318d0ccf9884d38fc79d4",
-    "IS-B29-ready-only.patch": "1e69fae739594e478bd372b0c9e007d727068048950181a72d7c275214611d35"
+    "IS-B29-ready-only.patch": "450848d488ff742896f08dbd79fd7d6ad9c00a6b4f45e5946f11c1c51e6fb701"
   },
   "withdrawnIntegrationDependent": [
     "IS-B10-PENDING",
     "IS-B14-SETTINGS"
-  ]
+  ],
+  "B12CandidateAppliedByRoot": "be7e73a",
+  "B31CandidateAppliedByRoot": "538caf3",
+  "candidateObservedAfterProposals": "e8e947e"
 }

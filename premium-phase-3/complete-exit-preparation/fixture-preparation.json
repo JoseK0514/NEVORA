@@ -1,6 +1,6 @@
 {
-  "checkpoint": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
-  "kind": "static fixture preparation only; nothing seeded or launched",
+  "checkpoint": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "kind": "static exact combined-source fixture preparation; nothing seeded or launched",
   "sourceHashes": {
     "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
     "scripts/ui-checks/login.mjs": "f796889550f067edec2451972c2f4bc7bfeb22937c810a218f97b65561fcd48e",

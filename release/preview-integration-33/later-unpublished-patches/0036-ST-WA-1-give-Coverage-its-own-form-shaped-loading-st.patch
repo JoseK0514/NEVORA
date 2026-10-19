@@ -1,0 +1,26 @@
+From 6aed3eaa3fd0f58fefe7173d40beea57f9d76c96 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Mon, 19 Oct 2026 22:09:05 +0000
+Subject: [PATCH 36/45] ST-WA-1: give Coverage its own form-shaped loading
+ state
+
+---
+ src/app/app/schedule/coverage/loading.tsx | 6 ++++++
+ 1 file changed, 6 insertions(+)
+ create mode 100644 src/app/app/schedule/coverage/loading.tsx
+
+diff --git a/src/app/app/schedule/coverage/loading.tsx b/src/app/app/schedule/coverage/loading.tsx
+new file mode 100644
+index 00000000..f4cff75b
+--- /dev/null
++++ b/src/app/app/schedule/coverage/loading.tsx
+@@ -0,0 +1,6 @@
++import { RouteSkeleton } from "@/components/route-skeleton";
++
++/** ST-WA-1 / IS-WA-5: Coverage uses its own form-shaped loading state and existing per-width band rules. */
++export default function Loading() {
++  return <RouteSkeleton route="wa-coverage" label="coverage" shape="cards" band={312} />;
++}
+-- 
+2.52.0
+

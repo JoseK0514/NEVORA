@@ -1,5 +1,5 @@
 {
-  "source": "9ec3adcf486bf4d18d6b9c8d5ed9af9e876d332b",
+  "source": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
   "count": 135,
   "rules": "Source inspection only. A candidate fix or source-only proof cannot close an owner finding. Every ID needs final-source measured evidence, or remains a gap/open. Payroll wording is suggestions, excluded from defect counts.",
   "findings": [
@@ -61,8 +61,8 @@
       "id": "TC-P3-07",
       "area": "type-colour-copy.md",
       "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
-      "sourceLine": 1122,
-      "lastPriorTableRow": "| TC-P3-22 | My time, Timecards \u00b7 Lead \u00b7 320\u2013430 | Whole page type | The Lead still gets the legacy set while the Employee gets the corporate kit set: \"Current status\" and \"Choose a period\" 20/28/**550** (Employee 20/27/600); \"Refresh\" 17/25.5 ink (Employee 15/20/500 teal); \"Period start\" and \"Period end\" 17/25.5 (Employee 15/24); \"Request a correction in My time \u2192\" vs the Employee's \"Request a correction\". This is TC-P3-07's role split coming back on these two pages. | `crops/lead-mytime-current-390.png` | `components/app-shell.tsx:170` sets `data-employee-corporate` only for `user.role === \"EMPLOYEE\"` | `[\"EMPLOYEE\",\"LEAD\"].includes(user.role)`, and one label, \"Request a correction\" | P2 |",
+      "sourceLine": 1045,
+      "lastPriorTableRow": "| TC-P3-07 | Fixed | The band title is 30/36 on My time and Timecards. The Lead's My time figures are kit figures. |",
       "status": "pending-final-source-measurement",
       "evidence": []
     },
@@ -79,8 +79,8 @@
       "id": "TC-P3-09",
       "area": "type-colour-copy.md",
       "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
-      "sourceLine": 1205,
-      "lastPriorTableRow": "| TC-P3-30 | **Partly fixed** | **Fixed:** Schedule band \"42 shifts\" / \"this week\"; Updates breaks only between date and time.<br>**Still split:** the roster summary \"\u00b7 Mon,\" / \"Oct 19\" (320@200); see TC-P3-09.<br>**Not seen:** the Home row clamp (Manager Home 320@200 failed to load). |",
+      "sourceLine": 1192,
+      "lastPriorTableRow": "| TC-P3-09 | **Partly fixed** | **Fixed:**<br>\u2022 Time off row titles break only after the dash (\"Oct 29, 2026 \u2013\" / \"Oct 30, 2026\").<br>\u2022 \"Partial day \u00b7\" / \"9:00 AM \u2013 1:00 PM\".<br>\u2022 \"Updated\" stamps.<br>\u2022 Manager Schedule \"42 shifts\" stays together.<br>**Still split:**<br>\u2022 Availability week \"Oct 26 \u2013 Nov\" / \"1\" (320@150, 390@200)<br>\u2022 \"Last updated Oct\" / \"19, 3:11 PM\" (320@200)<br>\u2022 My time entry \"Mon, Oct\" / \"19\" (`employee-time-panel.tsx:28`, `entryDate` without `keepWhole`)<br>\u2022 \"3h\" / \"13m\" in My time Today and Timecards totals (AUDIT-BREAK 390@200)<br>\u2022 Manager Schedule \"13 of 13 team members \u00b7 Mon,\" / \"Oct 19\" (320@200)<br>Causes: `availability/page.tsx:165, 167` (`formatBusinessDateTime` / week range without `keepWhole`), `employee-time-panel.tsx:28`, the Today and Timecards metric `dd`s, `manager-weekly-roster.tsx`.<br>The new regression is filed as TC-P3-32. |",
       "status": "pending-final-source-measurement",
       "evidence": []
     },
@@ -97,8 +97,8 @@
       "id": "TC-P3-11",
       "area": "type-colour-copy.md",
       "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/type-colour-copy.md",
-      "sourceLine": 1123,
-      "lastPriorTableRow": "| TC-P3-23 | My time, Home clock card \u00b7 clocked in / on break \u00b7 320\u2013430 | Current entry line | \u2022 \"Oct 19, 7:12:14 AM \u00b7 **Clock In**\": Title Case, which TC-P3-11 fixed elsewhere, plus seconds in a person-facing time (\"Record details\" also says \"10:52:52 AM\").<br>\u2022 The entry reads \"7:12 AM \u2013 In progress\" with an \"In progress\" pill under it, so the same words twice.<br>\u2022 On break at 390@150, \"4h 42m since clock-in \u00b7 1h\" / \"52m on break\" splits a duration. | `crops/on-mytime-today-390-150.png`, `states/\u2026home-ready-AUDIT-BREAK` text | `employee-time-panel.tsx:58` (hard-coded \"\u00b7 Clock In\", `stamp()` with `second:'2-digit'` at `:17`); `lib/duration-text.ts:7` | \"Clocked in at 7:12 AM\" via `checked()` (no seconds); NBSP inside durations; end the range \"7:12 AM \u2013 now\" or drop the pill | P2 |",
+      "sourceLine": 1049,
+      "lastPriorTableRow": "| TC-P3-11 | Fixed | \"Off clock\", \"Clock in\", \"Clock out\", curly apostrophes, \"Showing 1 earlier entry\", \"waiting for your manager\". Notifications says \"No notifications here.\" when empty (all filter). |",
       "status": "pending-final-source-measurement",
       "evidence": []
     },
@@ -592,8 +592,8 @@
       "id": "P3-ST-01",
       "area": "stability.md",
       "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
-      "sourceLine": 710,
-      "lastPriorTableRow": "| P3-ST-17 | Home, every employee account, 320\u2013430 at 125%, 150% and 200% text (Chromium and WebKit) | `[data-nv-band]` (eyebrow, title, summary) and everything below | The band only gets its final text when Home is read: the greeting eyebrow (blank while loading), the name (\"Home\" \u2192 \"Hi, Alexandra.\"), and the summary (\"Checking your shifts\u2026\" \u2192 \"On shift until 4:00 PM.\"). At large text these wrap to more lines, so the band grows on load and the visible pass moves down. Replayed: **320 at 200%:** title 72 \u2192 144px, summary 213 \u2192 321, pass 364 \u2192 508; CLS 0.185. **390 at 200%:** +36px, CLS 0.035. **320 at 150%:** +36 then +16px, CLS 0.064. **390 at 150%:** +16px, CLS 0.017. **320 at 125%:** the eyebrow wraps (25 \u2192 50px), +6px, CLS 0.014. Landscape at 150/200%: 0.000. The real server shows the same: 390/150% 0.0115, AUDIT-ON 320/200% 0.092. | `shots/R3-P3-ST-17-home-320-200-loading.png` vs `-ready.png` | `components/employee-home-reviewed.tsx:275-277`: the eyebrow is `'\u00a0'` and the title \"Home\" until the snapshot; `app/app/portal-premium.css:93` lets the eyebrow wrap. P3-ST-01's fix only keeps the band's line slots at 100%. | Hold the band's height like the pass (`useHoldHeight` memory `employee-home-band`, keyed by width and text size), keep the eyebrow to one line (`white-space: nowrap; overflow: hidden; text-overflow: ellipsis`, as Inbox does at `portal-premium.css:500-501`), and reserve two lines for the summary when the root text is 125% or more. On a cold load with no remembered height, keep the pass hidden with the other cards until the band has its final size. | P1 |",
+      "sourceLine": 695,
+      "lastPriorTableRow": "| P3-ST-01 Home load | **Fixed** | Cold load (replayed): CLS 0.0000 and no visible move at 320, 390, 430 and 844\u00d7390. The cards below the pass stay hidden until the pass is ready, then appear in place. With the real server (it fails): CLS 0.0000 at 390, 430 and landscape for every account. At larger text the band itself grows on load; that is new, filed as P3-ST-17. |",
       "status": "pending-final-source-measurement",
       "evidence": []
     },
@@ -601,8 +601,8 @@
       "id": "P3-ST-02",
       "area": "stability.md",
       "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
-      "sourceLine": 814,
-      "lastPriorTableRow": "| P3-ST-16 Home pass line | **Fixed** | The first pass line holds 2 lines (48px) while loading at 320, 390, 430 and 844\u00d7390. The pass keeps its height when a failed or paused message replaces it (see P3-ST-02). |",
+      "sourceLine": 810,
+      "lastPriorTableRow": "| P3-ST-02 Home paused, offline or failed | **Scroll fixed. P2 remains (was P1).** | **Scroll position:** scrolled to 300, it stayed at 300 in all 16 cases (320, 390 and 430 \u00d7 background, offline, return with a failed 500 read, and return with a 401). The pass keeps its exact height: 786 at 320, 682 at 390 and 430. **Still wrong:** the clock card grows while Home isn't ready. At 320 it goes from 181 to **207px** when paused or offline, and to **225px** while loading or after a failed read; the page goes from 2783 to 2836px. At 390 and 430 it goes from 181 to 187px. Cause: the footer's one-line \"Updated Oct 19, 3:44 PM\" is replaced by \"Only recorded punches appear here.\", which takes two lines at 320 (the `small` goes from 20 to 40px, the footer from 68 to 94px), at `components/employee-time-panel.tsx:73`. At 320 the card was below the visible area at scroll 300; at 390 its 6px growth is on screen. Crops: `R4-clock-320-ready.png` vs `R4-clock-320-paused.png`. **Fix:** keep the last \"Updated \u2026\" stamp in the footer when not ready (the band already says it's paused), or reserve 2 lines for the footer text at \u2264359px. Alternatively, make the clock `aside` a `HoldHeight` with `holding={!ready}`. |",
       "status": "pending-final-source-measurement",
       "evidence": []
     },
@@ -673,8 +673,8 @@
       "id": "P3-ST-10",
       "area": "stability.md",
       "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
-      "sourceLine": 711,
-      "lastPriorTableRow": "| P3-ST-18 | Profile, My time, Schedule (all three views), Time off, Shift requests, Availability, Notifications, Updates; every employee account and phone width | `.premium-employee-content` bottom | At max scroll the last card ends **68px** above the tab bar instead of 20px (390: last card bottom 708, tab bar top 776; also 320, 430 and landscape). The content wrapper keeps the kit's 48px bottom padding on top of the page's 88px. At 150% and 200% text the tab bar grows to 75/83px while the page's 88px stays fixed, so on Timecards and Home the last card is only 10\u201313px (Home 5px) above the bar. Regression of P3-ST-10, which the ST-12 rule fixed only for `.nv-content`. | `shots/bottom-AUDIT-E-390-_app_my_time.png` | `app/app/portal-premium.css:1004` (`padding: \u2026 var(--nv-s-12)`) is not covered by the ST-12 rule at `:465` (`> :is(.nv-content, form.nv-content)`); `:18` fixes the page padding at 88px. | Add `.premium-employee-content` to the `:465` selector so it gets `padding-bottom: 0`. Make the page padding follow the tab bar's real height: `padding-bottom: calc(var(--nv-tabbar-h, 68px) + 20px + env(safe-area-inset-bottom))`, with the tab bar height in rem. | P2 |",
+      "sourceLine": 701,
+      "lastPriorTableRow": "| P3-ST-10 Bottom clearance | **Regressed (filed as P3-ST-18)** | Home, Timecards and My pay are at 20px. The pages built on `.premium-employee-content` are at 68px. |",
       "status": "pending-final-source-measurement",
       "evidence": []
     },
@@ -763,8 +763,8 @@
       "id": "P3-ST-20",
       "area": "stability.md",
       "sourceReport": "/workspace/inspect-phase3-final/docs/product/specs/premium-phase-3/inspection/stability.md",
-      "sourceLine": 778,
-      "lastPriorTableRow": "| P3-ST-24 | Schedule (`/app/schedule`) and Time off (`/app/requests?tab=new`, `?tab=my`), employee (AUDIT-E), 320, **100% text** | `.route-skeleton-band` vs `[data-nv-band]` | At default text size the placeholder band has the wrong height at 320. **Schedule:** placeholder 168px, page band 192px (+24), so the band's edge and the first card drop 24px when the page arrives. **Time off (both tabs):** placeholder 192px, page band 168px (\u221224), so the content jumps up 24px. 390 matches (\u0394 0); 360 not measured. CLS reads 0 (replaced element). | \u2013 (`data/skel-emp.jsonl`, 320/100 rows) | `app/app/portal-premium.css:1167` gives Schedule 168px at every width (the 320 band now has a two-line summary), and `:1180` gives `review` 192px up to 389px, but the 320 Time off band is 168. | At `max-width: 359px`, set `[data-route=\"schedule\"] { --route-band: 192px }` and `[data-route=\"review\"] { --route-band: 168px }`. Measure 360 before choosing the 389px breakpoint for `review`. Or adopt the remembered-height fix in P3-ST-20, which covers this case too. | P2 |",
+      "sourceLine": 769,
+      "lastPriorTableRow": "| P3-ST-20 Placeholder bands at larger text | **Partly fixed, P1 remains** | **Exact now:** at 390, placeholder = page band at 100% and 200% on every employee route measured (Schedule, Requests overview, Time off, Shift requests, Availability, Timecards, Profile, Updates, Notifications: \u0394 0). **Still wrong:** (1) **150% at 390** is off because `--route-band-grow` is linear from 100% to 200%: Schedule \u221224, Shift requests \u221224, My time \u221226, Updates \u221224, Profile \u221212, Requests overview/Time off/Availability/Timecards/My pay/Notifications +12. (2) **320**, where the band grows more than at 390, but the single grow value per route was measured at 390. **Employee 320 at 200%:** Notifications 260 \u2192 428 (**+168**), Schedule 276 \u2192 396 (**+120**), Shift requests +48, Requests overview/Availability/My pay/Timecards +24. **Employee 320 at 150%:** \u221224 to +24 (Shift requests \u221224, Profile +24, Schedule/My time/Notifications +10 to +12, the rest \u221212). **Manager 320 at 200%:** Inbox 416 \u2192 636 (**+220**), Schedule +48, Home 508 \u2192 476 (\u221232). **Manager 320 at 150%:** Inbox +66, Schedule +28, Team +12, Timecards +12. Chromium's CLS stays at 0 on these because the band is a replaced element. The real move is the band's bottom edge and everything under it. Cause: `portal-premium.css:446` (`height: calc(var(--route-band) + var(--route-band-grow) * (var(--nv-text-scale) - 1))`) with one grow per route at `:1512-1531`, measured at 390 only. **Fix:** remember each route's real band height per width and text size (the `HoldHeight` memory key `nv-hold:<route>-band:<w>x<px>`) and give the placeholder that height, with the calc as a first-visit fallback. Or add 320 (`max-width: 359px`) grow values and a separate 150% step (`--route-band-150`), because the growth isn't linear. |",
       "status": "pending-final-source-measurement",
       "evidence": []
     },
@@ -1099,7 +1099,8 @@
       "sourceLine": null,
       "lastPriorTableRow": null,
       "status": "pending-final-source-measurement",
-      "evidence": []
+      "evidence": [],
+      "aliasOrDistinction": "Authoritative ROUND maps IS76 to P3-ST14. Earlier unnamed read-auth surface does not redefine this ID; candidate auth regression is separate IS-RC-UPDATES-AUTH-01."
     },
     {
       "id": "IS-77",
