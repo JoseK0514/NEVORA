@@ -133,7 +133,7 @@ export function CompanyPolicyEditor({
       say("done", "Your team’s attendance review uses them from their effective dates.", "Policies saved");
       router.refresh();
     } catch {
-      say("urgent", "Your changes may not have saved. Retry safely with the same request, or reload to check the current policies.", "Not saved yet");
+      say("urgent", "It may not have saved. Retry safely with the same request, or reload to check the current policies.", "Not saved yet");
     } finally {
       submitGate.current = false;
       setBusy(false);

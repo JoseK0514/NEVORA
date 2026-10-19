@@ -72,11 +72,11 @@ export function EditLocationForm({ location, action, words = { location: "Locati
           setResult({ success: response.success });
         } else {
           setUnconfirmed(true);
-          setResult({ error: `Your entries are kept. Check ${Places} to see whether the change was saved before trying again.` });
+          setResult({ error: `It may not have saved. Your entries are kept. Check ${Places} before you try again.` });
         }
       } catch {
         setUnconfirmed(true);
-        setResult({ error: `Your entries are kept. Check ${Places} to see whether the change was saved before trying again.` });
+        setResult({ error: `It may not have saved. Your entries are kept. Check ${Places} before you try again.` });
       } finally {
         submitting.current = false;
       }

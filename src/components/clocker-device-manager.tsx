@@ -245,7 +245,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
             </div> : null}
           </FieldErrors>
         </fieldset>
-        {error ? <div ref={errorBox} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title="Not saved">{error.message}</Notice></div> : null}
+        {error ? <div ref={errorBox} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</Notice></div> : null}
         <p role="status" className="nv-sr">{pending ? 'Saving…' : ''}</p>
         <FormActions>
           {error?.refresh ? <button className="nv-btn" data-kind="primary" type="button" onClick={() => window.location.reload()}><ArrowClockwise size={18} aria-hidden="true" />Refresh devices</button>

@@ -261,3 +261,82 @@ October 19, 2026 · Same preview, frozen at `0490d84`.
   - Break rows: "Reference time 15 min", with a non-breaking space before "min".
 
 Zero open P0–P2 in my area: **no** (9 P2 open: TC-10, 11, 15, 16, 17, 24, 25, 26 and 27; no P0 or P1).
+
+## Round 3
+
+I didn't run round 3. The round-3 scan was stopped before it ran, and the exit round below covers the same ground.
+
+## Round 4 (exit)
+
+October 19, 2026 · Preview `http://127.0.0.1:50431` (fresh, code at `5f7c166`) · The word rules come from the shared `INSPECTION-BRIEF.md`.
+
+**Verdict: not at zero. 1 P1 and 2 P2 are open.**
+
+**What's new.** The fresh preview has Branding history, which no earlier preview had. Its "Recent changes" rows collapse to 1–3 letters per line at 200% text.
+
+**Earlier IDs.** Of the nine still open, seven are fixed and two are decided (TC-24, TC-25). The only remainder is a stranded comma under TC-10.
+
+**Everything else measured clean:**
+- Type roles
+- Contrast
+- One error per field
+- Count lines
+- Save-state wording
+- Company words
+- Recovery strings
+
+**How it was checked.**
+- **Chromium, ready states:** all 13 routes at 320, 390, 844×390 and 1440, at 100% and 200%, plus 768 and 1024 at 100% (130 snapshots).
+- **Chromium, states:** 51 jobs (109 snapshots), mostly at 390, with 320 and 1440 where they matter. Every submission was aborted or answered by a mock, except the Clocker recovery unknown-reference read:
+  - every field error
+  - blocked saves
+  - mocked 401, 409 busy and success
+  - all four device dialogs and three break dialogs
+  - Positions editor
+  - every no-match
+  - unknown location
+  - Account recovery: from an employee, from Settings, as Manager, issued and expired
+  - Clocker recovery: malformed, unknown (real read), found (mocked), blocked and 401, also as Manager
+- **WebKit:** Hub 320, Branding 390, Location 320 and Policies 390.
+- **Not covered:** Firefox, the shell.
+- **Files:** crops in `S/r4/`, data in `S/data/`.
+
+### Status of open IDs
+
+| ID | Status | Measurement |
+|---|---|---|
+| TC-10 | Fixed, with a small remainder (P2, below) | At 320@200, "Scheduling rules" and "Operations" keep whole words: the hub tile and the Positions "Edit" step aside. The 90-character location `h1` still breaks "Distribution" at 320@200 at 60px; at that size the word can't fit 288px, so I accept it. Remainder: the Hub meta "Announcements" / ", audiences, and" at 320@200 (Chromium and WebKit) puts a comma at the start of a line (`S/r4/r4-hub-320-200-updates.png`). |
+| TC-11 | Fixed | Device dates use `keepWhole` (`clocker-device-manager.tsx:64`). Company profile and policy history were already kept whole. |
+| TC-15 | Fixed | The issue link reads "{Person} eligibility", the empty state "Add a {place}…", the error page "Your workplaces didn’t load", and the not-found page "{Location} not found" / "your list of {locations}". |
+| TC-16 | Fixed | Branding, Features and Location detail all say "Saved" / "Unsaved changes". It's "Revoke access" on the link and the button. The Add break type dialog reads "It’s offered for new breaks as soon as you create it." |
+| TC-17 | Fixed | "Not saved" / "Your entries are kept. Try again." (Company profile, Positions). |
+| TC-24 | Decided (round 3) | — |
+| TC-25 | Decided (round 3; shared library) | — |
+| TC-26 | Fixed | `hyphens: manual` (`premium-wave-c.css:526`). No hyphen splits at 320@100, 390@100, 844×390@200 or 1440@200. |
+| TC-27 | Fixed | Back reads "AUDIT-E" (7 characters). Longer than 16 falls back to "Employee" (`assisted-recovery.tsx:34`). |
+
+### New findings
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| TC-28 | Branding · Owner · 320@200, 390@200 (Chromium and WebKit); clamped at 390@200 in the Yellow and blocked states too | "Recent changes" rows `.wc-brand__history .nv-row__title` | The no-wrap date "Oct 19, 3:58 PM" takes the row, and the label column shrinks:<br>• 320@200: 27px wide. "Saved" reads "S / a / v." and "Color and logo changed" reads "C / ol / o.", both clamped at 3 lines (scrollHeight 748 against 132).<br>• 390@200: "Color and logo changed" is clamped at 97px; in WebKit it's 70px and "Saved" breaks too.<br>At 100% it's fine (`S/r4/r4-brand-history-390-100.png`). | `S/r4/r4-brand-history-320-200.png`, `S/r4/r4-brand-history-390-200.png` | `brand-editor.tsx:229-231`: the date sits in `.nv-row__trail` beside a clamped title, and the round-2 wrap rules don't cover this card | Put the date under the label as meta: `<span className="nv-row__meta"><time…/></span>` in `.nv-row__text`, and drop the trail. Or `.wc-brand__history .nv-row{flex-wrap:wrap}` `.wc-brand__history .nv-row__text{flex:1 1 9rem}` `.nv-row__title{-webkit-line-clamp:unset;display:block}`. | P1 |
+| TC-29 | Brand blocked, Features blocked, Break and Device dialogs blocked, vs Location, New location and Policies · Owner | Notices for a save that may not have gone through | Two titles describe the same uncertain outcome:<br>• "Not saved", with a body that says "Your change may not have saved." / "It may not have saved." The title contradicts the body.<br>• "Not saved yet": Location, New location, Policies.<br>Location's body is also worded differently from New location's: "Your entries are kept. Check Locations to see whether the change was saved before trying again." against "It may not have saved. Your entries are kept. Check Locations before you try again…". | `S/shots/brand-fail__390__100.png`, `S/shots/location-fail__390__100.png` | `brand-editor.tsx` and `features-editor.tsx` (title "Not saved" on every error); `clocker-break-types.tsx` and `clocker-device-manager.tsx` (dialog "Not saved"); `edit-location-form.tsx:75,79` | Use "Not saved yet" for every uncertain outcome, and keep "Not saved" for definite refusals (400, 409, busy). Location body: "It may not have saved. Your entries are kept. Check {Locations} before you try again." | P2 |
+| TC-30 | Hub · Owner · 320@200 (Chromium and WebKit) | Row meta "Announcements, audiences, and review requirements." | `overflow-wrap:break-word` puts the comma at the start of a line, ", audiences, and", because "Announcements," is wider than the 210px column at 30px (TC-10 remainder). | `S/r4/r4-hub-320-200-updates.png` | `premium-wave-c.css:526` (`overflow-wrap:break-word` on `.nv-row__meta`) | Shorten the Hub copy to "Announcements and who must read them." Or let the chevron step aside at that width, the way the tile does. | P2 |
+
+**Suggestions for Jose (not counted).** The policy option "Observation cutoff" uses the banned word "cutoff", but its policy wording is decided for Jose. "Availability deadline" is the house word for a different thing, so a fitting alternative is "Checked after".
+
+### Checked and correct (exit)
+
+- **Type:** every text uses a kit role. At 100% the sweep found only token values (phone 30, 17 and 15; desktop 32, 16 and 14; stats 30 and 28). None is under the floor on any route, at any of the six widths, at 100% or 200%. 844×390 keeps the phone tokens.
+- **Contrast:** all enabled text is at least 4.5:1, with muted text on the inset fill lowest at 5.14:1. Disabled buttons are 5.14:1. Field edges #858B8F are 3.45:1, and the off switch ring is 3.45:1.
+- **Errors:** exactly one per field on every form, each with an icon and words. Clocker recovery's malformed reference names the format.
+- **Words against the shared rules:**
+  - Sentence case and curly apostrophes everywhere scanned.
+  - No "missing", "denied", "rejected" or "could not be confirmed" in Wave C strings.
+  - Failures read "Couldn’t load break types.", "Couldn’t load Clocker devices.", "Couldn’t load positions." and "Couldn’t check the receipt."
+  - An ended session reads "Your session ended" with a "Sign in" link on Branding, Features, Policies and both recovery pages.
+- **Count lines:** "Showing n of m noun", singular for 1, on all four list pages.
+- **Times:** device dates, policy history, the Branding stamp and Account recovery's "Valid until 1:57 PM AST" are kept whole.
+- **Back labels:** Settings, {Locations}, Home, the employee ID, and "Settings" for the Owner only.
+
+Zero open P0–P2 in my area: **no** (1 P1: TC-28; 2 P2: TC-29, TC-30).

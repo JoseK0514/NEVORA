@@ -196,7 +196,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
               <span className="wc-fact__note">{selection.operation === 'ARCHIVE' ? 'Breaks already in progress can still end. Recorded settings stay unchanged.' : 'Earlier records stay unchanged.'}</span></div>
           </div>}
         </fieldset>
-        {error ? <div ref={errorMessage} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title="Not saved">{error.message}</Notice></div> : null}
+        {error ? <div ref={errorMessage} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</Notice></div> : null}
         <p role="status" className="nv-sr">{pending ? 'Saving your changes…' : ''}</p>
         <FormActions>
           {error?.refresh ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => window.location.reload()}><ArrowClockwiseIcon size={18} aria-hidden="true" />Reload</button>

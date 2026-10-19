@@ -79,7 +79,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
       toast("Brand saved");
       router.refresh();
     } catch {
-      setNotice({ tone: "error", text: "Your change may not have saved. Save again to retry safely, or reload to check." });
+      setNotice({ tone: "error", text: "It may not have saved. Save again to retry safely, or reload to check." });
     } finally { sending.current = false; setBusy(null); }
   }
 
@@ -210,7 +210,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
 
     <div className="wc-brand__save">
       {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
-        title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : "Not saved") : notice.tone === "success" ? "Brand saved" : undefined}
+        title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : notice.tone === "success" ? "Brand saved" : undefined}
         action={notice.text.startsWith("Sign in again") ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
       <p className="nv-sr" role="status">{busy === "save" ? "Saving…" : ""}</p>
       <FormActions>
@@ -227,8 +227,8 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
     {history.length ? <section className="nv-card wc-brand__history" aria-labelledby="brand-history-title">
       <div className="nv-card__head"><h2 className="nv-card__title" id="brand-history-title">Recent changes</h2></div>
       <ol className="nv-rows">{history.map(h => <li key={h.revision}><div className="nv-row">
-        <span className="nv-row__text"><span className="nv-row__title">{changeLabel(h.changedKeys)}</span></span>
-        <span className="nv-row__trail"><time dateTime={h.changedAt} className="wc-muted">{stamp(h.changedAt)}</time></span>
+        <span className="nv-row__text"><span className="nv-row__title">{changeLabel(h.changedKeys)}</span>
+          <span className="nv-row__meta"><time dateTime={h.changedAt}>{stamp(h.changedAt)}</time></span></span>
       </div></li>)}</ol>
     </section> : null}
   </div>;

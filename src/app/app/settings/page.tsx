@@ -51,7 +51,7 @@ const groups = [
     description: "People, access roles, and company announcements.",
     items: [
       {id:"employees",title:"Employees & access",description:"Employee information, access roles, and scheduling eligibility.",href:"/app/employees",icon:UsersThreeIcon},
-      {id:"updates",title:"Company updates",description:"Announcements, audiences, and review requirements.",href:"/app/updates",icon:MegaphoneIcon},
+      {id:"updates",title:"Company updates",description:"Share news with your team and ask them to read it.",href:"/app/updates",icon:MegaphoneIcon},
     ],
   },
   {
