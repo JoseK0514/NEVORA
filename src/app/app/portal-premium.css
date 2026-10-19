@@ -15,7 +15,8 @@
   html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):has([data-nv-band]) .mobile-header :is(a, button):focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
   /* The band runs edge to edge; the canvas ends above the tab bar. */
   html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none) .page-frame:has([data-nv-page]) { padding: 0; background: var(--nv-bg); }
-  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none) .page-frame [data-nv-page] { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+  /* ST-WA-6: 20px clear of the tab bar at any text size (the bar is 52px plus its 1rem label). */
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none) .page-frame [data-nv-page] { padding-bottom: calc(72px + 1rem + env(safe-area-inset-bottom, 0px)); }
   /* Section tabs on a band page belong to the band. */
   html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none) .page-frame:has([data-nv-page]) > .section-tabs {
     margin: 0; padding: 0 var(--nv-gutter); border: 0; background: var(--nv-masthead);
@@ -53,7 +54,7 @@
 
 /* Wider screens (not landscape phones): the band sits inside the page frame as a rounded panel (desktop work is phase 4). */
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] { max-width: 1120px; margin-inline: auto; width: 100%; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page] { max-width: 1120px; margin-inline: 0; width: 100%; } /* AL4-10: left edge, as the trail and older pages (D1: nothing is centred) */
   html body .app-shell.nevora-portal .page-frame [data-nv-page] > .nv-pageband { border-radius: 20px; padding-inline: 36px; }
   html body .app-shell.nevora-portal .page-frame [data-nv-page] > :is(.nv-content, form.nv-content) { padding-inline: 16px; }
   html body .app-shell.nevora-portal .page-frame [data-nv-page] .nv-actionbar { margin-inline: -16px; padding-inline: 16px; }
@@ -187,6 +188,8 @@ html body .app-shell.nevora-portal.nevora-portal #manager-more-navigation :is(.n
 /* A short kit page still fills the screen with its canvas. */
 @media (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none) .page-frame [data-nv-page] { min-height: calc(100dvh - 76px); }
+  /* ST-WA-5: a section-tab row above the page counts too, so a short page doesn't scroll over nothing. */
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none) .page-frame:has(> .section-tabs) [data-nv-page] { min-height: calc(100dvh - 76px - 2.75rem); }
 }
 .premium-inbox .nv-card__body > .premium-note + .nv-link { margin-top: var(--nv-s-1); }
 
@@ -607,7 +610,8 @@ html body .app-shell.nevora-portal .premium-team-status::-webkit-scrollbar { dis
   html body .app-shell.nevora-portal.nevora-portal :is(#manager-more-navigation, #employee-more-navigation):popover-open {
     inset: auto 0 0 0 !important; width: auto !important; max-width: 560px; margin: 0 auto !important; max-height: calc(100dvh - 24px); border-radius: 24px 24px 0 0;
   }
-  html body .app-shell.nevora-portal.nevora-portal :is(#manager-more-navigation, #employee-more-navigation) .mobile-workforce-sheet-close { position: static; }
+  /* WR4-09: Close stays in view at the sheet's foot when the list is taller than the sheet (Owner with Profile at 390). */
+  html body .app-shell.nevora-portal.nevora-portal :is(#manager-more-navigation, #employee-more-navigation) .mobile-workforce-sheet-close { position: sticky; bottom: 0; z-index: 1; background-color: var(--nv-canvas, #FFFFFF); box-shadow: 0 16px 0 var(--nv-canvas, #FFFFFF), 0 -8px 8px -8px rgb(28 28 28 / .12); }
   html body .app-shell.nevora-portal.nevora-portal #manager-more-navigation .nevora-action-menu-divider { margin-inline: 0; }
 }
 /* AL-10: the Waiting pill sits on the card title's baseline. */
@@ -1442,3 +1446,16 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame :is(.nv-btn, .nv-ba
 }
 /* TC-P3-30: Home's row titles are never cut at large text, as on the Inbox (TC-07). */
 html body .app-shell.nevora-portal .page-frame .premium-home-view .nv-row__title:not(#nv-kit) { -webkit-line-clamp: unset; display: block; }
+/* Wave A ST (Oct 19): the Manager and Owner shell's placeholders for the shared requests, exchange and availability
+ * segments match their real bands. All three are flat bands for managers (measured at 320, 390 and 844×390). */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="review"][data-band] { --route-band: 192px; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="exchange"][data-band] { --route-band: 168px; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="availability"][data-band] { --route-band: 220px; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="review"][data-band] > .route-skeleton-band + * { margin-top: var(--nv-s-4); }
+}
+@media (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="review"][data-band] { --route-band: 168px; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="exchange"][data-band] { --route-band: 172px; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="availability"][data-band] { --route-band: 184px; }
+}
