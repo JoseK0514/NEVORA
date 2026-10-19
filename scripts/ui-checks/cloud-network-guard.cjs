@@ -4,6 +4,7 @@
 // its preview origin; external requests, including redirects, are aborted.
 const { createRequire } = require('node:module');
 const { join } = require('node:path');
+const { appendFileSync } = require('node:fs');
 
 function install(playwright, explicitOrigin = process.env.NEVORA_CHECK_ORIGIN) {
   for (const name of ['chromium', 'webkit']) {
@@ -26,6 +27,27 @@ function install(playwright, explicitOrigin = process.env.NEVORA_CHECK_ORIGIN) {
           if (httpOrigin === origin) socket.connectToServer();
           else socket.close({ code: 1008, reason: 'Preview origin only' });
         });
+        if (context.on && process.env.NEVORA_CHECK_DIAGNOSTICS) context.on('page', page => {
+          page.on('response', response => {
+            if (response.status() < 400) return;
+            const item = { at: new Date().toISOString(), account: process.env.NEVORA_CHECK_ACCOUNT, page: new URL(page.url()).pathname, path: new URL(response.url()).pathname, status: response.status() };
+            appendFileSync(process.env.NEVORA_CHECK_DIAGNOSTICS, JSON.stringify(item) + '\n');
+          });
+        });
+        if (context.newPage && process.env.NEVORA_CHECK_VERIFY_ROUTE === '1') {
+          const newPage = context.newPage.bind(context);
+          context.newPage = async (...args) => {
+            const page = await newPage(...args);
+            const goto = page.goto.bind(page);
+            page.goto = async (url, options) => {
+              const response = await goto(url, options);
+              const expected = new URL(url).pathname, actual = new URL(page.url()).pathname;
+              if (expected !== actual) throw Error('Unexpected redirect: ' + expected + ' -> ' + actual);
+              return response;
+            };
+            return page;
+          };
+        }
         return context;
       };
       return browser;
