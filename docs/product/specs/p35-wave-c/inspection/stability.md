@@ -146,3 +146,57 @@ Note for the interaction inspector (not my area): the Archive break type, Revoke
 Gaps: no Manager-role pass this round; 200% text only at 390 on the two save-bar pages; no Firefox (cut).
 
 Zero open P0–P2 in my area: **no** (2 P1: ST-02, ST-13; 6 P2: ST-05, ST-08, ST-14, ST-15, ST-16, ST-17).
+
+## Round 3
+
+Not completed: the round-3 run was stopped when the exit round began. Round 4 below re-checks every open ID.
+
+## Round 4 (exit)
+
+October 19, 2026. Preview `http://127.0.0.1:50431`, code at `5f7c166`. Owner on all 13 pages. Manager on Account recovery and Clocker recovery. Chromium at 320×568, 390×844, 844×390 and 1440×900, plus 1024×768 for the save bars. 200% text at 320 and 390. WebKit spot checks at 320 and 390. Every save and dialog submit was blocked in the browser; only the Clocker recovery receipt read was let through. The server returned no 500s this round. Logs: `.../scratchpad/inspect/stability/r4-*.log`.
+
+**Open now: 0 P0, 0 P1, 2 P2.**
+
+### Earlier IDs
+
+| ID | Status | Measured now |
+|---|---|---|
+| ST-02 | Fixed | No overlap anywhere, in Chromium and WebKit. 390: toast 648–692, bar top 700 (8 px gap). 320 with the bar grown to 132 px: toast 316–360, bar top 368 (8 px). 1024 and 1440: the toast is beside the bar. 844×390: the toast is at the top. |
+| ST-05 | Fixed | Parent placeholder band = ready band on all 13 pages at 320, 390 and **844×390**. Landscape: 168 (hub, profile, policies, new location, both recovery pages), 192 (branding, features), 212 (locations, location detail, breaks, positions, devices). Layout shift while loading is 0.0000 on all 52 page loads. |
+| ST-08 | Fixed | The phone bar is `position: fixed` on the tab bar. At the page bottom the last card ends 16 px above the bar: Policies 390, the history card bottom ≈683 and the bar top 700. |
+| ST-13 | **Partly fixed** | The bar now stays on the tab bar (bottom = tab bar top at every scroll position), so Save and Retry are always visible. But a failure notice still makes the docked bar very tall: **Features 320: 254 px** (246–500), Policies 320: 218 px, Features 390: 178 px, Policies 390: 198 px. At 320 that leaves 178 of the 432 px between header and tab bar for the page, so the form is mostly hidden while the owner fixes what failed. P2, see below. |
+| ST-14 | Fixed | Policies 1440: the button is the same width while pending (Δ 0). The label changes only after a failure ("Retry the same save"). |
+| ST-15 | Fixed | At 200% text the bar bottom = tab bar top in both engines: 485/485 at 320, 761/761 at 390 (tab bar 83 px). |
+| ST-16 | Fixed | Branding before and after hydration: the swatch rows no longer differ. Remaining pixel differences are the sticky bar and tab bar in element captures. Policies selects keep their background, border and text color. |
+| ST-17 | Fixed | 844×390 Edit break type failure: "Reload" and "Cancel" are both 52 px at 394–446. |
+
+### New and remaining findings
+
+| ID | Screen, role, width | Element | What is wrong, measured | Screenshot | Cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| ST-13 (rest) | Features and Policies, Owner, 320×568 and 390×844, Chromium and WebKit | Fixed save bar after a failed save | The in-bar failure notice is three or four lines of text over the full width, so the docked bar grows to 254 px (Features 320), 218 (Policies 320), 178 (Features 390) or 198 px (Policies 390). At 320 the page shows only 178 px between header and bar until the owner saves again or the notice clears on input. | `shots/r3-fail-chromium-features-320.png` | `premium-wave-c.css:521` (`.wc-actions > .wc-feedback { flex: 1 1 100%; order: -2 }`) puts the whole notice inside the fixed bar | Keep the bar to one short line: "Not saved." with a "Details" link that scrolls to the full notice, placed in the page just above the bar's resting place. Or clamp the in-bar notice body to two lines (`-webkit-line-clamp: 2`) with the full text available. The target is a docked bar of ≤ 132 px at 320. | P2 |
+| ST-18 | Features & words, Owner, 320×568, Chromium and WebKit | Save bar, clean → dirty | Turning any switch on or off reflows the docked bar. "Saved" fits beside Save changes (bar 76 px, button 208 px wide). "Unsaved changes" (126 px) doesn't, so the button jumps to full width (288 px) and the state drops to a second row: **the bar grows 76 → 132 px** and the page view shrinks by 56 px on the first change. At 390 it stays one 76 px row. | `r4-sticky.log` (320 features, `dirty barH=132`) | `premium-wave-c.css:440` (`.wc-save-state { flex: 0 1 auto }`) with the state's single-line label; the button's `flex: 1 1 auto` (`:133`) then takes the row | Let the state wrap beside the button instead of under it: `.wc-actions.nv-actionbar > .wc-save-state { flex: 1 1 0; min-width: 0; white-space: normal; }` with `.nv-btn { flex: 0 0 auto }` at <600 px. "Unsaved changes" then sits on two lines in the 44 px state box and the bar stays 76 px. Or shorten it to "Unsaved" at ≤359 px. | P2 |
+
+### Checked and correct (exit sweep)
+
+- **Bands:** header joins the band with 0 px gap at 320, 390 and 844×390 on all 13 pages; desktop band at 93 px, 28 px under the header, on all pages. No sideways scroll anywhere (scrollWidth = viewport).
+- **Loading:** every route's own placeholder, where it showed, matches the ready band and title y. Branding 320: 280/120 = 280/120; Policies 1440: 196/145 = 196/145; Features 844×390: 192/120 = 192/120. Layout shift while loading is 0.0000 on every load, Owner and Manager.
+- **Save bars:**
+  - Fixed on the tab bar on portrait phones (gap 0 at every scroll step, 100% and 200%).
+  - In the page in landscape.
+  - Docked at the bottom at 1024 and 1440.
+  - The last card always clears the bar by 16 px.
+  - WebKit identical.
+- **Pending:** Features and Policies at 390 and 1440 hold button size, band and scrollY. A double tap sends exactly one request. Failure keeps scrollY (898 → 898, 0 → 0).
+- **Dialogs:**
+  - All of them hold page scroll at 390, 844×390 and 1440: Add, Edit and Archive break type; Add device, Replace tablet and Revoke access.
+  - The destructive confirms open on Cancel.
+  - Pending keeps the dialog's height.
+  - A failure grows the dialog upward, with buttons fixed and the same height.
+  - Escape returns focus to the trigger.
+- **Clocker recovery (Owner and Manager, 390):** the receipt card is 216 px idle, malformed, checking and failed.
+- **Sticky guides at 1440×900:** they dock below the header (top 89), as in round 2.
+
+Gaps: Manager's "unknown reference" read was still checking after 6 s, so that result's height wasn't measured for Manager; 768 checked only through the sweep's band numbers in earlier rounds; no Firefox (cut).
+
+Zero open P0–P2 in my area: **no** (2 P2: ST-13 rest, ST-18; 0 P0, 0 P1).

@@ -557,3 +557,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page [d
   .route-skeleton:is([data-route="settings-branding"], [data-route="settings-features"]) { --route-band: 192px; }
   .route-skeleton:is([data-route="settings-locations"], [data-route="settings-breaks"], [data-route="settings-positions"], [data-route="settings-devices"]) { --route-band: 212px; }
 }
+
+/* ST-18: on the narrowest phones the save state says "Unsaved", so it stays beside Save on one row. */
+@media (max-width: 359px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-wide-state { display: none; } }
+/* ST-13: on phones an outcome in the save bar is at most two lines; the full sentence stays in the page for screen readers. */
+@media (max-width: 599px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar .wc-notice__body { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar .wc-notice { padding-block: 10px; }
+}

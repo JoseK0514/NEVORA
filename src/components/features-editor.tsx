@@ -113,7 +113,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : "Not saved") : undefined}
         action={notice.text.startsWith("Sign in again") ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
       <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={busy || !changed}><ButtonLabel pending={busy} idle="Save changes" busy="Saving…" /></button>
-      {changed ? <span className="wc-save-state">Unsaved changes</span> : <span className="wc-save-state wc-save-state--done" ref={savedLine} tabIndex={-1}><CheckCircleIcon size={18} weight="fill" aria-hidden="true" />Saved</span>}
+      {changed ? <span className="wc-save-state">Unsaved<span className="wc-wide-state"> changes</span></span> : <span className="wc-save-state wc-save-state--done" ref={savedLine} tabIndex={-1}><CheckCircleIcon size={18} weight="fill" aria-hidden="true" />Saved</span>}
     </FormActions>
   </div>;
 }
