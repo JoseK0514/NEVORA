@@ -16,7 +16,8 @@ export function rowNavigationTarget(event: Pick<KeyboardEvent, 'key' | 'altKey' 
   const rows = [...list.querySelectorAll<HTMLElement>(list.dataset.rowNav || ':scope > *')].filter(visible);
   const row = rows.find(candidate => candidate.contains(target));
   if (!row) return null;
-  const controls = (container: HTMLElement) => [...container.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(visible);
+  // A row that is itself focusable (a group's <summary>) is its own control (IS-P4-06).
+  const controls = (container: HTMLElement) => [...(container.matches(FOCUSABLE) ? [container] : []), ...container.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(visible);
   const next = rows[rows.indexOf(row) + (event.key === 'ArrowDown' ? 1 : -1)];
   if (!next) return null;
   const options = controls(next);

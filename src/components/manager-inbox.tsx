@@ -195,6 +195,8 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const wide = useSyncExternalStore(wideSubscribe, () => window.matchMedia(WIDE).matches, () => false);
   const [selectedKey, setSelectedKey] = useState<string | null>(() => typeof window === "undefined" ? null : new URL(window.location.href).searchParams.get("item"));
   const focusPane = useRef(false);
+  // IS-P4-17: a Refresh the user asks for says so until the new read lands (background re-reads stay silent).
+  const [refreshFrom, setRefreshFrom] = useState<string | null>(null);
   // ST-P4-03: once the list has shown, a pause, an offline spell, a refresh or a failed read keeps both columns
   // and the list's last height on desktop (as Home does), so nothing collapses and the scroll position holds.
   const listColumn = useRef<HTMLDivElement>(null);
@@ -237,6 +239,8 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
     window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
   };
   const showing = !!ready && total > 0;
+  const userRefreshing = refreshFrom !== null && !!ready && ready.observedAt === refreshFrom;
+  if (refreshFrom !== null && !userRefreshing) setRefreshFrom(null);
   if (showing && !hasShown) setHasShown(true);
   useLayoutEffect(() => {
     const column = listColumn.current;
@@ -269,8 +273,10 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         : connection === "offline" ? <Freshness state="offline">Offline</Freshness> : connection === "paused" ? <Freshness state="stale">Paused</Freshness>
         : connection === "loading" || connection === "reconnecting" ? "Checking…" : <Freshness state="stale">Not available</Freshness>}
       summary={<span className="premium-inbox-summary">{value ? `${needsYouDetail(value)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : connection === "loading" || connection === "reconnecting" ? "Checking what needs you…" : "Requests and problems to resolve."}</span>}
-      aside={<button type="button" className="nv-band-control" onClick={refresh} disabled={connection === "loading" || connection === "reconnecting"}>
-        <ArrowsClockwiseIcon size={18} aria-hidden="true" />Refresh
+      aside={<button type="button" className="nv-band-control" onClick={() => { if (userRefreshing) return; if (ready) setRefreshFrom(ready.observedAt); refresh(); }}
+        disabled={connection === "loading" || connection === "reconnecting"} aria-disabled={userRefreshing || undefined}>
+        <ArrowsClockwiseIcon size={18} aria-hidden="true" />{userRefreshing ? "Refreshing…" : "Refresh"}
+        <span className="nv-sr" role="status">{userRefreshing ? "Refreshing the Inbox…" : ""}</span>
       </button>}
       // ST-02: the filters are there from the first paint (disabled until the read is ready), so the band never grows.
       // IS-59: while they are disabled the scrolling row would become an empty Tab stop; tabIndex -1 keeps it out.
@@ -284,6 +290,8 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
       <div className="inbox-columns" data-detail={!ready || total ? "true" : undefined}>
       {/* IS-P4-06: Up and Down move between rows and group headings (D6). */}
       <div className="inbox-list-column" ref={listColumn} data-row-nav=".inbox-row, .premium-group > details > summary">
+      {/* Desktop only, first in reading and Tab order (IS-P4-16). It appears once the list has shown, so it doesn't jump on load. */}
+      {ready || hasShown ? <AllRequests /> : null}
       {!ready ? <Card><div className="inbox-status nv-card__body">
         {/* ST-26: the status line comes first, so it stays put when the placeholder rows go. */}
         <p role="status">{statusText[connection]}</p>
@@ -323,8 +331,6 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         </Card> : null}
         {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
       </>}
-      {/* Desktop only, after the list. It appears once the list has shown, so it never moves down as items arrive. */}
-      {ready || hasShown ? <AllRequests /> : null}
       </div>
       <div className="inbox-side-column">
         {ready && total ? current ? <InboxDetail entry={current} /> : null
