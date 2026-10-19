@@ -1,0 +1,15 @@
+{
+  "checkpoint": "bf6c030e79c10bd4e115f15dadc80b59bc194ba2",
+  "tree": "4553beec8ab73db129d9d3d1c74d99636148ddcc",
+  "passed": 7332,
+  "failed": 4,
+  "skipped": 801,
+  "pending": 55,
+  "total": 8192,
+  "workers": 1,
+  "testTimeoutsChanged": false,
+  "processCleanupTestsPassed": 12,
+  "planner20LocationFirstPassMs": 184537,
+  "planner20LocationFullTest": "timed out at existing 300000ms limit",
+  "focusedRetry": "running; no green gate inferred"
+}
