@@ -87,7 +87,7 @@
     "resources": [
       {
         "name": "http://127.0.0.1:3100/fonts/typeface/inter/variable.woff2",
-        "bytes": 174764
+        "bytes": 242700
       }
     ]
   },
@@ -326,7 +326,7 @@
     "resources": [
       {
         "name": "http://127.0.0.1:3100/fonts/typeface/inter/variable.woff2",
-        "bytes": 174764
+        "bytes": 242700
       }
     ]
   },
@@ -418,7 +418,7 @@
     "resources": [
       {
         "name": "http://127.0.0.1:3100/fonts/typeface/inter/variable.woff2",
-        "bytes": 174764
+        "bytes": 242700
       }
     ]
   },
@@ -657,7 +657,7 @@
     "resources": [
       {
         "name": "http://127.0.0.1:3100/fonts/typeface/inter/variable.woff2",
-        "bytes": 174764
+        "bytes": 242700
       }
     ]
   }

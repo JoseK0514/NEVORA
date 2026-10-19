@@ -202,12 +202,18 @@ Jose’s remaining production risk: Manager Schedule p95 **10.6 s** and inbox-co
 
 Branch `codex/premium-backend`, implementation commit `2cc9a9f`. Based on latest pushed Phase 1 `62cd033` (merged without conflicts, preserving prior backend commits).
 
-Inter TTF: **876,576 bytes**. WOFF2: **174,464 bytes**, **80.1% smaller**. FontTools `pyftsubset` with Brotli retained Latin/Latin Extended (`0000–024F`, `1E00–1EFF`), General Punctuation, currency, trademark, arrows and minus. All requested Spanish/punctuation characters were checked in the cmap. Both original variable axes remain: weight **100–900**, optical size **14–32**. Reproduce:
+Inter TTF: **876,576 bytes**. WOFF2: **242,400 bytes**, **72.3% smaller**. FontTools `pyftsubset` with Brotli retained Latin/Latin Extended (`0000–036F`, `1D00–1EFF`, `2C60–2C7F`, `A720–A7FF`, `AB30–AB6F`, `10780–107BF`, `1DF00–1DFFF`), General Punctuation, currency, trademark, arrows and minus. All requested Spanish/punctuation characters were checked in the cmap. Both original variable axes remain: weight **100–900**, optical size **14–32**. Reproduce:
 
 ```sh
-pyftsubset public/fonts/typeface/inter/variable.ttf --output-file=public/fonts/typeface/inter/variable.woff2 --flavor=woff2 --unicodes='U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2122,U+2190-21FF,U+2212,U+FEFF,U+FFFD' --layout-features='*' --name-IDs='*' --name-languages='*'
+pyftsubset public/fonts/typeface/inter/variable.ttf --output-file=public/fonts/typeface/inter/variable.woff2 --flavor=woff2 --unicodes='U+0000-036F,U+1D00-1EFF,U+2000-206F,U+20A0-20CF,U+2122,U+2190-21FF,U+2212,U+2C60-2C7F,U+A720-A7FF,U+AB30-AB6F,U+10780-107BF,U+1DF00-1DFFF,U+FEFF,U+FFFD' --layout-features='*' --name-IDs='*' --name-languages='*'
 ```
 
 Only the two authorized UI files changed: Inter sources list WOFF2 then TTF; portal layout preloads `font/woff2`. Inter Fallback is byte-for-byte unchanged. Actual Chromium before/after captures at 390 and 1440, reduced motion, fonts ready, same fictional `/login` and `/ui-preview/home`: **zero changed pixels in all four pairs**. Network entries confirm WOFF2 loaded after the change. [Captures, metrics and pixel comparison](font-evidence/) are committed. Browser emulation does not replace real-device testing.
 
 Font verification used FontTools 4.x/Brotli and Chromium 151. Initial WOFF2 generation needed the Brotli extension; it was installed before the successful generation/captures. No failed setup attempt is counted as visual evidence.
+
+## October 20 release — item 2: server wording
+
+Branch `codex/premium-backend`, commit `a7a8a0c`. Both action-center producers now write `Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.` for that period. Plain workspace calendar dates are formatted with an explicit UTC calendar formatter; they are never converted from local midnight into another date. Employee Home writes waiting/declined/withdrawn states, including exchange outcomes. Shift history writes `Designated lead` and `No designated lead`. Notification builders, employee/management notification reads, notification presentation and report request descriptions use `Unable to work`. Persisted event/status keys and destinations are unchanged. Existing UI compatibility presentation remains available for older strings. Coverage/hour-target messages also avoid the old vocabulary.
+
+Evidence: **224 unit tests across 12 files passed**, targeted ESLint and TypeScript passed. Actual-Postgres new Home copy coverage plus existing premium pool/swap probes passed (**6 tests**); the subsequent preview payroll run also passed all **7 tests**. Updated existing correction/history integration expectations are included in the later full PostgreSQL checks. Full default-suite results follow in the candidate report; no component/page JSX was edited for this item.
