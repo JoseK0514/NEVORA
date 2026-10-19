@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode, type FormEvent } from "react";
+import { useRef, useState, type ReactNode, type FormEvent } from "react";
 export type ConfigurationResult = { error?: string; success?: string; updatedAt?: string };
 /** Keep entered values on validation/network failure; each form owns its feedback. */
 export function ConfigurationForm({
@@ -16,11 +16,15 @@ export function ConfigurationForm({
 }) {
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
+  // Double tap (Wave A ST, Oct 19): a second submit can arrive before the disabled fieldset renders; only one save runs.
+  const inFlight = useRef(false);
   // This version belongs to the mounted editable draft. An unrelated RSC refresh
   // can update server props without replacing dirty native/controlled inputs.
   const [draftUpdatedAt, setDraftUpdatedAt] = useState(reviewedUpdatedAt);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (inFlight.current) return;
+    inFlight.current = true;
     const data = new FormData(event.currentTarget);
     if (draftUpdatedAt !== undefined) data.set('expectedUpdatedAt', draftUpdatedAt);
     setPending(true);
@@ -35,6 +39,7 @@ export function ConfigurationForm({
           "Changes could not be saved. Your entries are preserved; try again.",
       });
     } finally {
+      inFlight.current = false;
       setPending(false);
     }
   }

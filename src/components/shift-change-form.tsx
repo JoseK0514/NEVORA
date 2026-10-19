@@ -11,7 +11,8 @@ export function ShiftChangeForm({fields,children,className='shift-change-form',r
  const [view,setView]=useState<View>({pending:false,result:null,uncertain:false,offline:false});
  function update(state:ShiftChangeFormState){setView({pending:state.pending,result:state.result,uncertain:state.uncertain,offline:!navigator.onLine});}
  function refresh(state:ShiftChangeFormState){if(state.result&&['completed','pending','closed'].includes(state.result.status))router.refresh();}
- async function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();const current=controller.current??=new ShiftChangeFormState(()=>crypto.randomUUID());if(current.pending||current.uncertain)return;
+ async function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();const current=controller.current??=new ShiftChangeFormState(()=>crypto.randomUUID());// Double tap (Wave A ST): a tap that lands after the answer but before the fieldset disables doesn't send again.
+  if(current.pending||current.uncertain||(current.result&&['completed','pending','closed'].includes(current.result.status)))return;
   if(!navigator.onLine){current.result={status:'unavailable'};update(current);return;}
   const data=new FormData(event.currentTarget);for(const [key,value] of Object.entries(fields))data.set(key,String(value));
   const submitter=(event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement|null;if(submitter?.name)data.set(submitter.name,submitter.value);

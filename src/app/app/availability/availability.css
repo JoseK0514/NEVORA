@@ -12,7 +12,7 @@
   --av-accent-ink: var(--design-accent-ink, #055C5A);
   --av-radius: var(--design-radius-card, 18px);
   --av-control-radius: var(--design-radius-control, 17px);
-  --av-body: var(--design-font-body, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  --av-body: var(--design-font-body, "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
   --av-mono: var(--design-font-mono, "JetBrains Mono", monospace);
   width: 100%; max-width: 1120px; margin: 0 auto; color: var(--av-ink); font-family: var(--av-body); font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.5;
 }
@@ -31,7 +31,7 @@
   --employee-rail-hover: color-mix(in srgb, var(--nevora-cyan) 10%, transparent);
   --employee-rail-active: color-mix(in srgb, var(--nevora-cyan) 16%, transparent);
   background: #FAFAFA;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 .app-shell:has(.availability-page) .app-main { background: #FAFAFA; }
 .availability-page :is(h1, h2, h3, p, dl, dd) { margin: 0; }
