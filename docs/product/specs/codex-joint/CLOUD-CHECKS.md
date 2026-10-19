@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T22:21:09.459Z. p35-wave-a-1283c8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T22:22:41.369Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,9 +22,9 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1862 | 1954 | 3816 / 12580 |
-| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 2521 | 1275 | 3796 / 12716 |
-| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 1502 | 922 | 2424 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 1879 | 1957 | 3836 / 12580 |
+| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 2546 | 1282 | 3828 / 12716 |
+| claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 1515 | 925 | 2440 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / pending inventory |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1862 passed; 1954 failed. Completed checker batches: 273. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1879 passed; 1957 failed. Completed checker batches: 275. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -2558,6 +2558,9 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1862 passed;
 | /app/updates/compose | AUDIT-E | 844x390 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-E 844x390 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
 | /app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0 | AUDIT-LEAD | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 844x390 100% /app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0 small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · Designated » 12px; strong. «This shift is still assigned t» 13px |
 | /app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-0 | AUDIT-LEAD | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 844x390 100% /app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-0 small=span. «Your shift» 13px; span. «Monday, Oct 26, 2026 · Main Of» 12px; summary. «How a swap works» 14px |
+| /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f | AUDIT-LEAD | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 844x390 100% /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f small=span.communication-status.attention «Acknowledgement required» 12px; strong. «Management» 14px |
+| /app/updates/compose | AUDIT-LEAD | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 844x390 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
+| /app/updates/compose | AUDIT-LEAD | 844x390 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium AUDIT-LEAD 844x390 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -2567,7 +2570,7 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 1862 passed;
 
 ## claude/p35-profile-6cdee8
 
-Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2521 passed; 1275 failed. Completed checker batches: 280. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
+Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2546 passed; 1282 failed. Completed checker batches: 282. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -3875,6 +3878,13 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2521 passed;
 | /app/exchange | QAOWNER | 844x390 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 125% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px |
 | /app/exchange | QAOWNER | 844x390 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 150% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px |
 | /app/exchange | QAOWNER | 844x390 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 200% /app/exchange small=a.selected «Pending» 14px; a. «Open coverage» 14px; a. «Team activity» 14px |
+| /app/reports | QAOWNER | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 100% /app/reports small=span.reports-module__Iv4GWq__insightLabel «Hours worked» 14px; span.reports-module__Iv4GWq__insightLabel «Scheduled vs worked» 14px; span.reports-module__Iv4GWq__insightLabel «Clock-in notes» 14px; span.reports-module__Iv4GWq__insightLabel «Time off and callouts» 14px |
+| /app/requests | QAOWNER | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 100% /app/requests small=a.selected «Pending» 14px; a. «Approved» 14px; a. «Declined» 14px; span.status-pill.warning «Pending» 11px |
+| /app/reports | QAOWNER | 844x390 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 125% /app/reports small=span. «Puerto Rico time» 13.75px; th. «Employee» 13.75px; th. «Published plan» 13.75px; th. «Recorded time» 13.75px |
+| /app/requests | QAOWNER | 844x390 | 125 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 125% /app/requests small=a.selected «Pending» 14px; a. «Approved» 14px; a. «Declined» 14px; span.status-pill.warning «Pending» 13.75px |
+| /app/requests | QAOWNER | 844x390 | 150 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 150% /app/requests small=a.selected «Pending» 14px; a. «Approved» 14px; a. «Declined» 14px |
+| /app/requests | QAOWNER | 844x390 | 200 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 200% /app/requests small=a.selected «Pending» 14px; a. «Approved» 14px; a. «Declined» 14px |
+| /app/schedule/edit?shiftId=audit-next-0-1 | QAOWNER | 844x390 | 100 | chromium | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL chromium QAOWNER 844x390 100% /app/schedule/edit?shiftId=audit-next-0-1 small=span. «Location» 12px; strong. «Northside Main Office» 14px; span.nevora-field-label «Employee» 12px; span.nevora-field-label «Position Optional» 12px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -3884,7 +3894,7 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 2521 passed;
 
 ## claude/p35-wave-a-1283c8
 
-Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1502 passed; 922 failed. Completed checker batches: 172. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
+Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1515 passed; 925 failed. Completed checker batches: 173. Raw evidence: [cloud-checks/claude/p35-wave-a-1283c8/](cloud-checks/claude/p35-wave-a-1283c8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -4826,6 +4836,9 @@ Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 1502 passed;
 | /app/updates/compose | QAOWNER | 360 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 360 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px |
 | /app/account-recovery | AUDIT-M | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium AUDIT-M 360 100% /app/account-recovery small=summary. «What changes after a reset?» 14px |
 | /app/clocker-recovery | AUDIT-M | 360 | 100 | chromium | small text | UI — claude/p35-wave-c-93e13c | FAIL chromium AUDIT-M 360 100% /app/clocker-recovery small=summary. «Can others still use the table» 13px |
+| /app/payroll-export | AUDIT-M | 360 | 100 | chromium | layout shift | UI — claude/premium-phase-1 | FAIL chromium AUDIT-M 360 100% /app/payroll-export cls=0.0213 |
+| /app/reports | AUDIT-M | 360 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-M 360 100% /app/reports small=span. «Puerto Rico time» 11px; span. «Jump to» 12px; th. «Employee» 11px; th. «Published plan» 11px |
+| /app/reports | AUDIT-M | 360 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-M 360 125% /app/reports small=span. «Puerto Rico time» 13.75px; th. «Employee» 13.75px; th. «Published plan» 13.75px; th. «Recorded time» 13.75px |
 
 ### Timeout and server observations (separate from UI findings)
 
