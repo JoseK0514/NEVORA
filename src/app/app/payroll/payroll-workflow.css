@@ -182,3 +182,6 @@
 
 /* TC-B32: kit labels for document names, correction disclosure and job labels. */
 html body .app-shell.nevora-portal .page-frame .payroll-workflow :is(.pw-document strong, .pw-secondary-actions > summary, .pw-job strong) { font: var(--nv-t-label); }
+
+/* TC-P4-23: the payday line follows the kit callout floor; filenames are TC-B32. */
+html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-statements header p { font: var(--nv-t-callout); }
