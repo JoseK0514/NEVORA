@@ -1,8 +1,8 @@
 # Desktop (Phase 4): inspection round for Codex
 
-- **Round:** 3
+- **Round:** 4 (round 3 at `2250275` wasn't picked up; this commit replaces it, with all round-2 fixes)
 - **Status:** not zero yet (rounds 1–2 ran locally; their reports are in `inspection/`)
-- **Exit round:** no. Round 3 re-checks everything open and is the first cloud round; the exit round is the first that reports zero in all five areas.
+- **Exit round:** no. Round 4 re-checks everything open; the exit round is the first that reports zero in all five areas.
 - **Branch and commit:** `claude/p4-desktop-240fe0`, the commit this file was pushed with (after `97d4611`).
 - **Chat prefix for IDs:** `P4` (for example `AL-P4-01`).
 
@@ -23,9 +23,11 @@ The desktop layout (761–1440) of the Manager and Owner pages, and the desktop 
 
 ## Re-check by ID
 
-Every finding in the five round-1 and round-2 reports under `docs/product/specs/p4-desktop/inspection/` (`alignment.md` AL4-, `stability.md` ST-P4-, `type-colour-copy.md` TCD-, `interaction-states.md` IS-P4-, `widths-roles.md` WR4-), except those listed as waiting on another owner or kept by decision in `inspection/ROUND-2.md` and the round-2 sections. The stability round-2 re-check was still running when this round was handed over; re-check all ST-P4 IDs.
+Every finding in the five round-1 and round-2 reports under `docs/product/specs/p4-desktop/inspection/` (`alignment.md` AL4-, `stability.md` ST-P4-, `type-colour-copy.md` TCD-, `interaction-states.md` IS-P4-, `widths-roles.md` WR4-), except those listed as waiting on another owner or kept by decision in `inspection/ROUND-2.md` and the round-2 sections. All five round-2 reports are fixed in this commit (stability's ST-P4-03, 05, 09, 10 and 11 included).
 
 ## What the fixes since round 2 touched
+
+- Since round 3's handover: the Inbox list holds its height in the same render, so the scroll position stays when paused, offline, refreshing or after a failed read (ST-P4-03); Employee and Lead route placeholders carry bands (ST-P4-09); section tabs don't slide when the page arrives (ST-P4-10); Home's loading rows match to 1px (ST-P4-05); My schedule's side column sticks (ST-P4-11); the large-text threshold for moving band controls is 24rem; Employee and Lead 14px floor completed; Pay tabs read My pay, My time, Timecards (TCD-19); the coordinator's e7671e6 shared fixes (WR4-14, WR4-16, TCD-20, TCD-21, Inbox count stops on 404) are cherry-picked.
 
 - Band grid: the title column is `minmax(min-content, max-content)` (wraps between words only), and at large text (band narrower than 30rem) the controls beside the title get a row of their own (WR4-11).
 - Section tabs inside the band for Employee pages too; at 1024 and up, a tab-row band with no eyebrow keeps the eyebrow's 20px, so sibling tabs share one title line (AL4-25, WR4-06).
