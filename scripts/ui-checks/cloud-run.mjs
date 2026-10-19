@@ -61,6 +61,16 @@ async function publish(reason) {
     '## Branch status','',
     '| Branch | Source commit | Status | Final passed | Final failed | Observed / planned |','|---|---|---|---:|---:|---:|'];
     const sections=[];
+    const bootstrap='/workspace/nevora-bootstrap-evidence';
+    if(await exists(bootstrap)){
+      const dest=join(evidence,'claude/premium-phase-1/bootstrap');await mkdir(dest,{recursive:true});
+      const records=[];
+      for(const file of await readdir(bootstrap)){if(file.endsWith('.json'))records.push(...JSON.parse(await readFile(join(bootstrap,file),'utf8')));await copyFile(join(bootstrap,file),join(dest,file));}
+      const failed=records.filter(r=>!r.ok);
+      sections.push('','## Initial Phase 1 smoke checks','',`Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture setup. **${records.length-failed.length}/${records.length} passed; ${failed.length} failed.** These diagnostic runs are separate from the full matrix counts above. Raw JSON and console detail logs: [bootstrap evidence](cloud-checks/claude/premium-phase-1/bootstrap/).`,'', '| Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |','|---|---|---|---:|---|---|---|---|');
+      const network=[];try{for(const line of (await readFile(join(bootstrap,'network-errors.jsonl'),'utf8')).trim().split('\n'))if(line)network.push(JSON.parse(line));}catch{}
+      for(const r of failed)for(const check of checks(r))sections.push('| '+[r.route,r.account,r.size,r.text,r.engine,check,classify(r,check,network),detail(r)].map(escape).join(' | ')+' |');
+    }
     for(const branch of branches){const m=metas.get(branch);if(!m){lines.push(`| claude/${branch} | Pending refresh | Queued | — | — | — |`);continue;}
       const records=new Map(),initials=[],network=[];let seen=0;
       try{for(const line of (await readFile(join(m.out,'network-errors.jsonl'),'utf8')).trim().split('\n'))if(line)network.push(JSON.parse(line));}catch{}
@@ -155,6 +165,10 @@ async function work(branch,index) {
 }
 
 console.log('CLOUD_RUN_STARTED '+new Date().toISOString());
+if(process.env.NEVORA_REPORT_ONLY==='1'){
+  for(const branch of branches){const file=join(stateRoot,branch+'.json');if(await exists(file))metas.set(branch,JSON.parse(await readFile(file,'utf8')));}
+  await publish('interim smoke and progress');
+}else{
 // Refresh all remote tips in one git operation, then freeze them per preview.
 git('fetch','origin');
 // /tmp is memory-backed in this executor. Keep app/dependency mirrors on disk
@@ -164,3 +178,4 @@ async function consume(){while(queue.length){const branch=queue.shift();await wo
 await Promise.allSettled(Array.from({length:3},consume));
 await publish('all branch workers finished');
 console.log('CLOUD_RUN_FINISHED '+new Date().toISOString());
+}
