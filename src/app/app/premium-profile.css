@@ -67,7 +67,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__meta { height: 1.25rem; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-head-action { margin-block: -12px; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error { display: grid; grid-template-columns: 1.0667em 1fr; column-gap: 6px; align-items: start; color: var(--nv-urgent-ink); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error > svg { width: 1.0667em; height: 1.0667em; margin-top: .1333em; color: var(--nv-urgent-mark); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error > svg { width: 1.0667em; height: 1.0667em; margin-top: calc((1lh - 1.0667em) / 2); color: var(--nv-urgent-mark); }
 /* A failed read keeps the alert rows' space (24px padding plus a title and a detail line each) as an error panel. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5); text-align: center; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note > p { max-width: 22em; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
@@ -109,9 +109,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 /* AL-1: when the title and its state word can't share a line (narrow card, large text), the head is two lines in
  * every state, with the state line reserved even when empty, so the rows never move as the state changes. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details { container-type: inline-size; }
-@container (max-width: 22rem) {
+@container (max-width: 16rem) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__head { flex-direction: column; align-items: flex-start; row-gap: var(--nv-s-1); }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__meta { height: auto; min-height: 1.25rem; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .pmp-head-action .pmp-label-stack > span { text-align: left; }
 }
 /* The details list takes focus after a successful retry; it shows the ring only for keyboard users, inside the card. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details-list:focus { outline: none; }
