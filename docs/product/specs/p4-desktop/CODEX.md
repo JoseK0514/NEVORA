@@ -42,3 +42,15 @@ request?: { startDate: string; endDate: string; partialDay?: { start: string; en
 ## 4. Dev-only error switch (PLAN)
 
 Home's failed server read and the in-app error page can't be forced from the browser. Phase 4 inspected their desktop layout only where the browser can force them (client reads). The switch described in PLAN.md is still needed for the server-rendered ones.
+
+## 5. Still open for Codex after tonight's merge (Oct 19 evening)
+
+1. **"Next request (2 of N)" after a decision (F6).** The redirect back to the Inbox works (item 2), but the toast and the pane can't say "2 of 5" without the count of requests still waiting. Add `remainingRequests: number` to the `decided=` redirect, or let the UI read it from `/api/manager/inbox-count`. UI: the toast says "Approved. Next request (2 of 5)", and the pane selects that request.
+2. **The dev-only error switch (item 4)**, still needed to inspect the server-rendered error screens on desktop.
+3. **Decisions in the Inbox pane** only if Jose approves changing O1. The request facts are already shown; Approve and Decline would reuse the review's server action with `returnTo=inbox`.
+
+## Joint tests once the merge lands
+
+- The sidebar badge, the phone tab badge, Home's summary and the Inbox summary all show the same number. There's no badge while the count is unavailable, or when it's 0.
+- Each request's pane facts (dates, time, length, location, note) match its full review.
+- A decision made from a review opened from the Inbox returns to the Inbox on the same filter, and the pane shows the next item.
