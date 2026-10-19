@@ -16,7 +16,7 @@ export function TimeOffWithdrawal({requestId,dateLabel}:{requestId:string;dateLa
  },{outcome:'idle'} as WithdrawalActionState);
  useEffect(()=>{if(state.outcome==='withdrawn'||state.outcome==='conflict')router.refresh();},[state.outcome,router]);
  const complete=state.outcome==='withdrawn'||state.outcome==='conflict'||state.outcome==='denied';
- return <form action={action} aria-label={`Withdraw request for ${dateLabel}`} aria-busy={pending}>
+ return <form action={action} onReset={event=>event.preventDefault()} aria-label={`Withdraw request for ${dateLabel}`} aria-busy={pending}>
   <input type="hidden" name="requestId" value={requestId}/>
   <input type="hidden" name="operationId" value={withdrawalIdentity(requestId)}/>
   {!complete?<>
