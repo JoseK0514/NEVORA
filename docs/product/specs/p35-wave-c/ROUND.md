@@ -11,7 +11,7 @@
 ## Combined candidate (Oct 19, evening)
 
 - **Branch now sits on the release candidate** `codex/verify-preview-33` at `cd764f6` (fast-forward; nothing of Wave C's was missing).
-- **Fixed on top of it (commit below the candidate head on this branch):** **TC-WC-iOS-1** (P2, from Jose's iOS keyboard check): Company profile's protected Business timezone showed the raw name `America/Puerto_Rico`; it now reads `Puerto Rico time` via `timeZoneLabel()`.
+- **Fixed on top of it (commit `f58b18e`):** **TC-WC-iOS-1** (P2, from Jose's iOS keyboard check): Company profile's protected Business timezone showed the raw name `America/Puerto_Rico`; it now reads `Puerto Rico time` via `timeZoneLabel()`.
 - **Already fixed in the candidate, nothing for Wave C to change:** WR-WC-25 (dialog buttons `flex: 0 0 auto` under 600px, `premium-wave-c.css` near line 575) and TC-WC-28 (shared field edge `--nv-field-border` on textareas, `portal-premium.css` line 1388).
 - **Codex's cd764f6 exit reports are prepared, not run;** no combined-SHA findings yet. Wave C is not zero until an exit round reports zero.
 
