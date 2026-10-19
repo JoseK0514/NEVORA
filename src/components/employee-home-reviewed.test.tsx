@@ -81,7 +81,7 @@ describe('released Home data and navigation', () => {
     for (const secret of ['Private location', 'Private own recorded-time slot', 'Alexandra', '2030-10-08', 'Checked <time', 'data-home-updated', at]) {
       expect(stale).not.toContain(secret);
     }
-    expect(stale).not.toContain("You're all set.");
+    expect(stale).not.toContain("You’re all set.");
     if (status === 'unauthorized') expect(stale).toContain('href="/login"');
   });
 
@@ -196,11 +196,11 @@ describe('released Home data and navigation', () => {
 describe('truthful source states and refresh intent', () => {
   it('pairs verified complete empty with partial/capped zero without carrying all-clear forward', () => {
     const complete = projectEmployeeHome(snapshot({nextShift: null}));
-    expect(html(props(complete))).toContain("You're all set.");
+    expect(html(props(complete))).toContain("You’re all set.");
     const current = snapshot({nextShift: null});
     current.sources.communications = {...current.sources.communications, state: 'partial', reason: 'source_cap'};
     const partial = html(props(projectEmployeeHome(current)));
-    expect(partial).not.toContain("You're all set.");
+    expect(partial).not.toContain("You’re all set.");
     expect(partial).toContain('0 known items');
     expect(partial).toContain('partially shown — more records are available');
     expect(partial).toContain('Open communications');
@@ -216,7 +216,7 @@ describe('truthful source states and refresh intent', () => {
     expect(markup).toContain('Another location you work at hasn’t published this week yet. Shifts shown are published.');
     expect(markup).toContain('Schedule reviews unavailable — a changed schedule needs review');
     expect(markup).toContain('Open schedule reviews');
-    expect(markup).not.toContain("You're all set.");
+    expect(markup).not.toContain("You’re all set.");
   });
 
   it('treats a week that is not fully published as known, not as a failed check', () => {

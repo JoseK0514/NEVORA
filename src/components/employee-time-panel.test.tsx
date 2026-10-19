@@ -12,7 +12,7 @@ it('keeps exact freshness and timezone available in the employee record disclosu
  const disclosure=html.split('<details class="employee-corporate-record-details">')[1]?.split('</details>')[0];
  expect(disclosure).toContain('Record details');
  expect(disclosure).toContain('dateTime="2030-10-07T16:00:00Z"');
- expect(disclosure).toContain('12:00:00\u00a0PM');
+ expect(disclosure).toContain('12:00\u00a0PM');
  expect(disclosure).toContain('Puerto Rico time');
  expect(disclosure).toContain('Updates every 30s while active.');
  expect(html.match(/aria-label="Refresh recorded time"/g)).toHaveLength(1);
@@ -60,6 +60,6 @@ it('makes an overnight entry end date explicit in the business timezone while re
  expect(text).toContain('Oct 6, 1:00 AM');
  expect(html).toContain('dateTime="2030-10-05T23:30:12Z"');
  expect(html).toContain('dateTime="2030-10-06T05:00:34Z"');
- expect(html).toContain('7:30:12\u00a0PM');
- expect(html).toContain('1:00:34\u00a0AM');
+ expect(html).toContain('7:30\u00a0PM');
+ expect(html).toContain('1:00\u00a0AM');
 });

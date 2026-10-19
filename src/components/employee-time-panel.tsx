@@ -21,8 +21,8 @@ function clockedInAt(at:string,zone:string,today:string){
  const day=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at));
  return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:zone,...(day===today?{}:{month:'short' as const,day:'numeric' as const}),hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at)));
 }
-/** The exact punch, to the second, as recorded (corrections are judged against it). */
-function stamp(at:string,zone:string){return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(new Date(at)));}
+/** TC-P3-23: punch times to the minute, like every other time a person reads. */
+function stamp(at:string,zone:string){return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at)));}
 /** TC-P3-09/23: "3h 40m" never splits across lines. */
 const duration=(seconds:number)=>keepWhole(formatRecordedDuration(seconds));
 function entryDate(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric'}).format(new Date(at));}
@@ -37,7 +37,7 @@ function EntryDetails({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
  return <details className="employee-time-entry">
   <summary>
    <span className="employee-time-entry-date" aria-hidden="true"><span>{new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short'}).format(new Date(entry.clockInAt))}</span><b>{new Intl.DateTimeFormat('en-US',{timeZone:zone,day:'numeric'}).format(new Date(entry.clockInAt))}</b></span>
-   <span className="employee-time-entry-label"><strong><time dateTime={entry.clockInAt}>{entryDate(entry.clockInAt,zone)}</time></strong><small className="employee-time-entry-range">{entryRange(entry,zone)}</small><small className="employee-time-entry-location"><MapPinIcon size={14} aria-hidden="true" />{entry.locationName}</small></span>
+   <span className="employee-time-entry-label"><strong><time dateTime={entry.clockInAt}>{keepWhole(entryDate(entry.clockInAt,zone))}</time></strong><small className="employee-time-entry-range">{entryRange(entry,zone)}</small><small className="employee-time-entry-location"><MapPinIcon size={14} aria-hidden="true" />{entry.locationName}</small></span>
    <span className="employee-time-entry-total">{duration(entry.elapsedSeconds)}<small>{entry.clockOutAt?'Completed':'In progress'}</small></span>
    <span className="employee-time-disclosure" aria-hidden="true"><PlusIcon className="entry-expand" size={18}/><MinusIcon className="entry-collapse" size={18}/></span>
   </summary>
@@ -85,7 +85,7 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
   {ready?
    <section className="employee-view-surface employee-time-today" aria-labelledby="employee-time-today-title">
     <header className="employee-time-section-heading"><h2 id="employee-time-today-title">Today</h2><time dateTime={ready.date}>{new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',day:'numeric',year:'numeric'}).format(new Date(ready.date+'T12:00:00Z'))}</time></header>
-    <dl className="employee-time-metrics"><div><dt><ClockIcon size={16} aria-hidden="true"/>Recorded time</dt><dd>{formatRecordedDuration(ready.today.recordedSeconds)}</dd></div><div><dt><CoffeeIcon size={16} aria-hidden="true"/>Break time</dt><dd>{formatRecordedDuration(ready.today.breakSeconds)}</dd></div></dl>
+    <dl className="employee-time-metrics"><div><dt><ClockIcon size={16} aria-hidden="true"/>Recorded time</dt><dd>{duration(ready.today.recordedSeconds)}</dd></div><div><dt><CoffeeIcon size={16} aria-hidden="true"/>Break time</dt><dd>{duration(ready.today.breakSeconds)}</dd></div></dl>
     <p className="employee-time-note">Today’s totals. Hours include breaks and aren’t payroll hours.</p>
     {ready.today.entries.length?<div className="employee-time-entries">{ready.today.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div>:<p className="employee-time-empty">No recorded punches today.</p>}
    </section>:null}
