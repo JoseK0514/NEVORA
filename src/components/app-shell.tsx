@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { NotificationBell } from "./notification-bell";
+import { useInboxCount } from "./use-inbox-count";
 import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname } from "next/navigation";
@@ -61,6 +62,7 @@ export function AppShell({
   }
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
+  const inboxCount = useInboxCount(!employee, pathname);
   const context = presentation ?? {};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);
   const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
@@ -326,6 +328,8 @@ export function AppShell({
             <>
               {mobileTabs.map((item) => {
                 const active = item.href === activeTab;
+                // F1: the Inbox tab carries the same "needs you" count as Home and Inbox, read aloud with the tab's name.
+                const needsYou = item.href === "/app/inbox" && inboxCount !== null && inboxCount > 0 ? inboxCount : null;
 
                 return (
                   <Link
@@ -333,9 +337,11 @@ export function AppShell({
                     href={item.href}
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     aria-current={active ? "page" : undefined}
+                    aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                   >
                     <NavIcon name={item.icon} size={22} />
                     <span>{item.label}</span>
+                    {needsYou !== null ? <span className="mobile-nav-count" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
                   </Link>
                 );
               })}
