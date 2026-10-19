@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {readFile,writeFile} from 'node:fs/promises';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 export async function runScenario({app,page,context,engine,width,evidenceDirectory}){
  const checks=[],receipt=join(evidenceDirectory,`calendar-case-${engine}-${width}.json`);
- const step=async(name,run)=>{await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks}));}catch{await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks}));throw Error('Calendar case failed: '+name);}};
+ const step=async(name,run)=>{await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks}));}catch(error){await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));throw Error('Calendar case failed: '+name);}};
  const panel=page.locator('[data-calendar-setting]');
  const retry=()=>panel.getByRole('button',{name:'Try again to load the calendar link',exact:true});
  const management=()=>panel.locator('details.employee-calendar-management');
