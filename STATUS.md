@@ -1,8 +1,8 @@
+In progress: Phase 3 round 4 on `f691decb5496377a35ca7777d3025674f45bb94e` is starting first; Wave A round 2 exit on `c05e0c7` has one verified P1 (ST-WA-7). Wave B round 3 exit on `9f32ca6` and Wave C round 4 exit on `5f7c166` previews are preparing; Profile round 4 on `829dfe6` continues. Desktop round 3 on `2250275` is queued. Wave C round 3 was checkpointed incomplete when round 4 arrived; its two P1s await independent re-check on round 4. No round has a completed zero verdict. This inspection session performs no merges or deployments; polling continues every ten minutes.
+
 Published 2026-10-19 18:57 UTC: `codex/release-candidate` is `0e010464aeb5f532981ac6071c48e1527e9419db` (Wave A `c05e0c7` + coordinator through `e7671e6` + lint cleanup). **Blocked / not zero.** [Validation and five combined reports](release/merge-1-wave-a/README.md). This replaced only rehearsal `bec0ed4` using an exact lease; all parallel inspection/backend-first records are preserved below. No deployment or device access.
 
 Additional backend-first validation track: `/workspace/nevora-release-candidate` holds `2fafc1a` (backend merge `29ebdc5` + separate lint fix), based on coordinator `634795d`. It applies the coordinator-supplied root-layout resolution verbatim and has no Wave A merge. TypeScript passes; lint has the existing Wave A swap-page error and 0 warnings; full Vitest and browser checks are running. At that track’s recorded checkpoint the remote was still rehearsal `bec0ed4`; the publication above is newer. This parallel track must preserve the now-published Wave A candidate and reconcile the recorded conflicts before any later candidate update. Details: [backend-first track](release/merge-1-backend/parallel-task.md).
-
-In progress: Wave A round 2 (exit) on `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, Wave C round 3 on `b109ec3fea10418fb9f5c9da2af0a1e561dc2678`, and Profile round 4 on `829dfe6cf45beb71b77db573c0263c60a5f69856`. Wave C has two verified P1s so far (WR-21 and ST-02); all rounds remain incomplete. The inspection session performs no merges or deployments. Queue polling continues every ten minutes.
 
 Parallel release task status (current, 2026-10-19 18:56 UTC): requested Wave A `c05e0c7` merged at `88a4e94`; separate lint cleanup `9df0f47`; coordinator refreshed through `e7671e6`, giving candidate `0e01046`. Latest premium CSS matches the coordinator exactly. Install/lint pass; TypeScript fails on `useHoldHeight`; full Vitest 7,280 passed / 7 failed / 801 skipped / 55 pending. Browser checker 0/64 after the Availability compiler failure; More passes all eight role/engine samples and both intercepted forms send one POST. Combined confirmed P0 1 / P1 0 / P2 0, with incomplete coverage: blocked, not zero. Backend Coverage test conflict remains; latest backend evidence-only head `1c8254a` rechecked. [Current reports](release/merge-1-wave-a/README.md). Local previews stopped; no deployment/device exposure.
 
@@ -47,12 +47,12 @@ Teardown: revoke the tunnel/access rule, stop the local app and its owned databa
 
 | Chat | Branch | Fetched head | Handoff |
 |---|---|---|---|
-| Phase 3 | `claude/premium-phase-1` | `e7671e65b5a54e171422b6dbca887c416a5b0e0c` | round 4 non-exit handoff at f691dec, newer shared fixes; no zero exit |
-| Wave A | `claude/p35-wave-a-1283c8` | `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0` | merged per Jose; exit/combined validation blocked, not zero |
-| Wave B | `claude/p35-wave-b-808dfd` | `b33b734` | exit round 3, status open; exact target 9f32ca6; no zero |
-| Wave C | `claude/p35-wave-c-93e13c` | `5f7c166` | exit round 4 now queued; older round 3 findings preserved pending recheck |
+| Phase 3 | `claude/premium-phase-1` | `e7671e65b5a54e171422b6dbca887c416a5b0e0c` | round 4, exact handoff-adding commit f691dec; preview starting |
+| Wave A | `claude/p35-wave-a-1283c8` | `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0` | round 2 exit; matrix running; ST-WA-7 P1 verified |
+| Wave B | `claude/p35-wave-b-808dfd` | `b33b734302dd31d3b102e00b7f2b0e5995b8e505` | round 3 exit; inspect nominated 9f32ca6 (head only adds handoff) |
+| Wave C | `claude/p35-wave-c-93e13c` | `5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8` | round 4 exit; new preview starting; round 3 incomplete/superseded |
 | Profile | `claude/p35-profile-6cdee8` | `829dfe6cf45beb71b77db573c0263c60a5f69856` | round 4 matrix running; exit round 5 still needed |
-| Desktop | `claude/p4-desktop-240fe0` | `2250275` | round 3 non-exit; status not zero |
+| Desktop | `claude/p4-desktop-240fe0` | `2250275c0ad9a3192622d446731bf71d83171c25` | round 3 queued; handoff now present |
 
 ## Inspection results
 
@@ -75,3 +75,7 @@ All page submissions must be answered, held or aborted in the browser. Only fict
 
 2026-10-19 18:56 UTC · merged Wave A at c05e0c7 (candidate 0e01046, coordinator e7671e6) · tests 7280/8143 (7 failed, 801 skipped, 55 pending) · checks fail 0/64 · combined P0 1 / P1 0 / P2 0 confirmed, partial coverage · blocked
 2026-10-19 18:56 UTC · candidate-only lint fix 9df0f47 · lint 0 warnings; full tests/checks rerun on 0e01046 as above · blocked by source integration, not lint
+
+2026-10-19T18:49:01.144936+00:00 · all six branches fetched · all six handoffs now available; Phase 3, Wave B and Desktop added; Wave C requests exit round 4
+
+2026-10-19 18:57:33 UTC · Wave A round 2 on c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0 · P0 0, P1 1, P2 0 · not zero
