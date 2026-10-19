@@ -189,3 +189,61 @@ New images are in `…/scratchpad/inspect/alignment/r2/` and `shots/r2*`. File a
 - Nothing was saved. Only the account menu was opened and Inbox rows selected.
 
 Open: 0 P0, 1 P1, 11 P2
+
+## Round 4
+
+October 19, 2026, late afternoon · Preview on `a6f009d`, same URL and states. Coverage:
+- Manager and Owner at 761, 768, 1024, 1179, 1180 and 1440, plus 200% text at 761, 1024 and 1440 on Inbox, Team overview and Schedule.
+- Employee at 768, 1024 and 1440.
+- Phones at 320 and 390 for both, compared with round 2's measurements.
+
+Chromium. New images are in `…/scratchpad/inspect/alignment/r4/` and `shots/r4*`. AL4-27 is intended per the coordinator, so it's not re-checked. References are to `a6f009d`.
+
+### Status of open findings
+
+| ID | Status | Measurement now |
+|---|---|---|
+| AL4-07 | **Fixed** | Toolbar padding is 12/20. The period control starts at 312 at 1180 and 1440 (280 at 1024), the same as the card text edge. |
+| AL4-12 | **Regressed** (see AL4-28) | Pay period and Export summary are padded 20 now (text at 312/280, as expected). But the selector now also matches the employee card. That card was 0 at the sides because its sections carry their own 24px, so its content is now double-inset. |
+| AL4-18 | **Fixed** | The status line's cap centre is 341.91 against the buttons' 343 (1.1px) at 1440. At 768 it takes its own line below the buttons. |
+| AL4-19 | **Fixed** | Shift pane head: the title's cap centre is 292.45 against the avatar's 293 at 1024 and 1440. |
+| AL4-20 | **Fixed** | At 1440, Details sits 14px under a one-line name (box 1206 against name 1192) and 4px under a three-line name (1343 against 1339). One-line rows are 103px (were 129). |
+| AL4-21 | **Partly fixed** | There's no fade from 1180 (`mask: none`). At 1179 (1100–1179) the strip still fits (scrollWidth 760 = clientWidth 760) but the fade is on, dimming the last 24px of "Not started". Fix: switch the fade on by overflow (`data-overflow`), not by width. P2. |
+| AL4-22 | **Partly fixed** | Insets are 20 and the two panels end together at 1440 (293–601 / 293–601). But "Current status" and "Today" are still **square with no shadow** (radius 0, `box-shadow: none`) at 768, 1024 and 1440. "Recent entries" and "Corrections" below them are radius 16 with e1 (`r4/c-mt-1440.png`). The flattening rule `portal-premium.css:1084` still wins. Fix: in the `premium-desktop.css` desktop block, set `border-radius: var(--nv-r-card); box-shadow: var(--nv-e1)` on `.premium-employee-time .employee-time-overview > .employee-view-surface` at higher specificity than `:1084`. P1. |
+| AL4-23 | **Partly fixed** | Now at kit insets:<br>• My time cards are padded 20.<br>• The Timecards period panel is a kit card (radius 16, e1, padding 20; text at 312/280).<br>• Profile Work details is padded 20 at the sides (icon tile at 312).<br>• Updates' controls start at 312 (the "Filter updates" heading I measured in round 2 is visually hidden; I withdraw that part).<br>Still at 24: the Employee "Your timecard" article (`employee-corporate-timecard`, 292–1380), with content at 316/284. Fix: `padding: var(--nv-s-5)` on it in the desktop block. P2. |
+| AL4-24 | **Fixed** | Profile at 1440: Work details and the settings card both start at 263. |
+| AL4-25 | **Partly fixed** | At 1024 and wider, the Requests tabs nearly share one line: Time off, Shift requests and Availability 188/214, Overview 184/212 (2px).<br>Pay still steps: My pay is **192/220** against My time and Timecards 184/212, so the title drops 8px when you go from My pay to My time.<br>Tab labels don't slide (≤0.5px between pages).<br>At 768, titles agree within 2px; band heights differ only where a chip row is added (by design). P2. |
+| AL4-26 | **Partly fixed** (see AL4-29) | Three across at every width: 768 (260–720, 68px tall) and 1440 (one line each). At 1024 the three cells are 128px wide and the labels break inside words. |
+
+### New findings, round 4
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| AL4-28 | Time exports · M and O · 1024, 1440 | "Choose finalized employees" card | The card's content is **24px right of every other card's**:<br>• Heading icon at 336 against Pay period's 312, and title at 388 against 364 (1440).<br>• The grey selection bar, column header ("Employee" 366) and rows sit inside a 20px card padding plus their own 24px (`sectionHeading`, `selectionBar` and `employeeFootnote` padded `0 24px`, `6px 24px` and `15px 24px`).<br>• At 1024: heading 304/356 against 280/332. | r4/c-ex-1440.png | `premium-desktop.css:321` now matches `[class*="__card "]`, which includes `__employeeCard`. That card was designed with 0 side padding and inner sections at 24. | Add `:not([class*="__employeeCard"])` to `:321`. Set the employee card's inner sections to `padding-inline: var(--nv-s-5)` (heading, selection bar, footnote, table header and rows), so its text starts at 312/280 like the cards above and beside it. | P1 |
+| AL4-29 | Inbox · M and O · 1024 (and 200% text at every desktop width) | "Request pages" row labels | At 1024 each cell is 128px (260–645 / 3), and the labels **break inside words**: "Time / off", "Shift / reque / sts", "Availa / bility" (card 90px tall). At 200% text it reads "Ti / me / off", "Shi / ft / re…", "Av / aila / bi…". | shots/r4i-AUDIT-M-_app_inbox-1024.png, shots/r4z-AUDIT-M-_app_inbox-1024.png | Three fixed columns in a 385px list column. The labels inherit the kit's `overflow-wrap: anywhere` (row title). | Below about 1180px, and whenever the band is in its large-text state, stack the three as a one-column list (kit rows), or drop the tiles and centre icon above label. Give the labels `overflow-wrap: normal; word-break: keep-all`, so a word never splits. | P1 |
+| AL4-30 | Inbox · M and O · 200% text (all widths, coordinator's shared rule) | Band summary against the filter row | At 200%:<br>• The summary reserves **192px** (`min-height`) for two 48px lines.<br>• The filters start 96px below the summary text (summary text ends about 337, filters at 445; the band is 452px at 1024).<br>• A large empty teal area sits between the summary and the filters. | shots/r4z-AUDIT-M-_app_inbox-1024.png | `portal-premium.css:502` `min-height: calc(3rem * var(--nv-text-scale, 1))`. `rem` already scales with text size, and `--nv-text-scale` scales it again. | Use `min-height: 2lh` (or `3rem` without the multiplier). The two reserved lines then follow the text size once. This is a coordinator file: send the change. | P2 |
+
+### Checked and correct in round 4
+
+- **Time exports:** values end under their headers (787.33/787.33, 873.33/873.33). The totals are inset 16. The Pay period and Export summary cards are padded 20, and the gaps are 16.
+- **Schedule:** the location chips scroll in one row at 1024 (760 > 716) and fit from 1100.
+- **Inbox:**
+  - The pane head is centred.
+  - Request pages sit first in the list column and run three across at 768 and 1440 (icons at 286/439/593 at 768).
+  - The pane sticks 16px below the header (unchanged from round 2).
+- **Large text, band title column:** the title never wraps inside a word ("Team overview" stays on one line at 761 and 200%). At 761 and 1024 at 200%, Inbox's filters take their own row starting at the band text edge (280). Home's view chips scroll sideways on the title row at 1440.
+- **Section tabs inside the band:** they start at the band text edge (312/280). Labels move ≤0.5px between sibling pages ("My time" 385.25 against 385.72; "Shift requests" 479.11–480.06).
+- **Phones:**
+  - **Manager at 320 and 390** (Home, Inbox, Team, Schedule, Timecards, Time exports) is unchanged from round 2 except:
+    - Inbox's DOM order (an added screen-reader span; positions identical)
+    - the Time exports card class (the `undefined` class is gone)
+    - a 2px move of the "Needs attention" heading inside Timecards' closed Details (icon now 20px rather than 18; not visible until opened)
+  - **Employee at 320 and 390** (Home, My schedule, Profile, Requests overview): card edges, radii and padding are identical to round 2.
+
+### Gaps
+
+- Not re-run this round: Lead pages, `AUDIT-ON`, `AUDIT-BREAK` and `AUDIT-LONG`. The sidebar collapsed at 1440, 1023, and 125/150% text weren't covered. WebKit wasn't run this round.
+- `/api/manager/inbox-count` returns 404 on this branch (known; Codex's route).
+- **For the widths-roles inspector, not my area:** as `AUDIT-E`, `/app/updates` shows the "Message today's team" button (292–1380). Confirm employees should see it.
+
+Open: 0 P0, 3 P1, 4 P2
