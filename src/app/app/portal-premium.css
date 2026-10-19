@@ -499,7 +499,11 @@ html body .app-shell.nevora-portal #main-content:focus-visible { outline: none; 
 .premium-skeleton--rows { padding: 0 var(--nv-s-5) var(--nv-s-3); }
 .premium-skeleton--rows .premium-skeleton__row { min-height: 64px; }
 /* P3-ST-21: larger text wraps the summary onto more lines, so its reserved lines scale with the text too. */
-html body .app-shell.nevora-portal .premium-inbox .nv-masthead__summary { min-height: calc(3rem * var(--nv-text-scale, 1)); }
+html body .app-shell.nevora-portal .premium-inbox .nv-masthead__summary { min-height: 3rem; }
+/* AL4-30: only on phones does larger text add lines; on desktop the summary stays two lines, so 3rem alone. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal .premium-inbox .nv-masthead__summary { min-height: calc(3rem * var(--nv-text-scale, 1)); }
+}
 @media (max-width: 360px) { html body .app-shell.nevora-portal .premium-inbox .nv-masthead__summary { min-height: calc(4.5rem * var(--nv-text-scale, 1)); } }
 html body .app-shell.nevora-portal .premium-inbox .nv-pageband__eyebrow-row { flex-wrap: nowrap; }
 html body .app-shell.nevora-portal .premium-inbox .nv-pageband__eyebrow-row > .nv-masthead__eyebrow { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
