@@ -7896,6 +7896,29 @@
       "code": 1,
       "passed": 0,
       "failed": 4
+    },
+    {
+      "name": "00344-matrix-payroll-qa-a-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T23-24-49-574Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00344-matrix-payroll-qa-a-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=cloud-payroll-qa-a",
+        "--accounts",
+        "payroll-qa-a",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "4e201f2741ec224e47941c31e350cbd1525c81e701a9f307c128e7197987d582",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12580,
