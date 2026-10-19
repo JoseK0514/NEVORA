@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T17:56:12.288Z. interim smoke and progress. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T17:57:25.356Z. branch workers starting. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -28,7 +28,7 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued after moving previews off memory-backed /tmp | 0 | 0 | 0 / pending inventory |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued after moving previews off memory-backed /tmp | 0 | 0 | 0 / pending inventory |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued after moving previews off memory-backed /tmp | 0 | 0 | 0 / pending inventory |
-| claude/premium-phase-1 (large data) | `62cd0338176020bfbb692ee75438c5642197b9f6` | Queued after moving previews off memory-backed /tmp | 0 | 0 | 0 / pending inventory |
+| claude/premium-phase-1 (large data) | `62cd0338176020bfbb692ee75438c5642197b9f6` | Running matrix | 0 | 0 | 0 / 952 |
 
 ## Initial Phase 1 smoke checks
 
@@ -143,7 +143,7 @@ Source: `578748d705b941d14f37c0b01bfcfb1332343e31`. Queued after moving previews
 
 ## claude/premium-phase-1 (large data)
 
-Source: `62cd0338176020bfbb692ee75438c5642197b9f6`. Queued after moving previews off memory-backed /tmp. 0 passed; 0 failed. Completed checker batches: 0. Raw evidence: [cloud-checks/claude/premium-phase-1/large/](cloud-checks/claude/premium-phase-1/large/).
+Source: `62cd0338176020bfbb692ee75438c5642197b9f6`. Running matrix. 0 passed; 0 failed. Completed checker batches: 0. Raw evidence: [cloud-checks/claude/premium-phase-1/large/](cloud-checks/claude/premium-phase-1/large/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|

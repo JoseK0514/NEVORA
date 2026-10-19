@@ -2,7 +2,7 @@
 // Run from the tools checkout after sourcing the non-secret cloud environment.
 import {spawn,execFileSync} from 'node:child_process';
 import {createWriteStream} from 'node:fs';
-import {readFile,writeFile,readdir,mkdir,copyFile,access} from 'node:fs/promises';
+import {readFile,writeFile,readdir,mkdir,copyFile,access,rename} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 
 const repo=resolve(process.env.NEVORA_REPORT_ROOT),tools=resolve(process.env.NEVORA_TOOLS_ROOT);
@@ -17,7 +17,7 @@ const git=(...args)=>execFileSync('git',args,{cwd:repo,encoding:'utf8',stdio:['i
 const metas=new Map();
 let publications=Promise.resolve();
 const exists=async p=>access(p).then(()=>true,()=>false);
-const save=async meta=>{await writeFile(join(stateRoot,meta.key+'.json'),JSON.stringify(meta,null,2));};
+const save=async meta=>{const file=join(stateRoot,meta.key+'.json');await writeFile(file+'.tmp',JSON.stringify(meta,null,2));await rename(file+'.tmp',file);};
 const key=r=>JSON.stringify([r.engine,r.account,r.size,r.text,r.route]);
 function run(script,args,options={}) {
   return new Promise((accept,reject)=>{
@@ -50,6 +50,7 @@ function classify(r,check,network){
 }
 async function publish(reason) {
   publications=publications.catch(()=>{}).then(async()=>{
+    for(const branch of branches){const file=join(stateRoot,branch+'.json');if(await exists(file))metas.set(branch,JSON.parse(await readFile(file,'utf8')));}
     const lines=['# Cloud screen checks — October 19, 2026','',`Updated ${new Date().toISOString()}. ${reason}. **Partial evidence until every branch is marked complete.**`,'','Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.','',
     '## Coordination with Setup NEVORA','',
     'Jose requested coordination with the separate Setup NEVORA chat. This session cannot open another ChatGPT conversation. Shared handoffs read: HANDOFF.md, README.md, CODEX-LOCAL-PROMPT.md, SNAPSHOTS-2026-10-19.md and LOAD-2026-10-19.md. This report is the cloud handoff; acknowledgement by the other chat is unverified. Existing Profile and inbox-count backend fixes remain separate from the Claude snapshots.','',
@@ -157,11 +158,11 @@ async function work(branch,index) {
       const text=pass==='axe'?'100':'100,125,150,200';const args=['--routes',job.routes.join(','),'--accounts',job.account,'--widths',width,'--text',text,'--browsers',browser,...(pass==='axe'?['--axe']:[])];
       if(done.has(JSON.stringify(args)))continue;
       await batch(meta,job,width,browser,pass,text);
-      if(Date.now()-lastPublish>1800000){await publish(branch+' partial');lastPublish=Date.now();}
+      if(meta.batches.length===1||Date.now()-lastPublish>1800000){await publish(branch+' partial');lastPublish=Date.now();}
     }
     meta.status='Complete';meta.completedAt=new Date().toISOString();await save(meta);await publish(branch+' complete');
   }catch(error){meta.status='Blocked';meta.error=error.message;await save(meta);console.error('BLOCKED '+branch+' '+error.message);await publish(branch+' blocked');}
-  finally{if(runtime)runtime.kill('SIGTERM');}
+  finally{if(runtime)runtime.kill('SIGTERM');else if(meta.runtimePid){try{process.kill(meta.runtimePid,'SIGTERM');}catch(error){if(error.code!=='ESRCH')throw error;}}}
 }
 
 console.log('CLOUD_RUN_STARTED '+new Date().toISOString());
@@ -175,7 +176,7 @@ git('fetch','origin');
 // and limit whole previews, not just individual browser processes.
 const queue=['premium-phase-1','p35-profile-6cdee8','premium-phase-1-large','p35-wave-a-1283c8','p35-wave-b-808dfd','p35-wave-c-93e13c','p4-desktop-240fe0'];
 async function consume(){while(queue.length){const branch=queue.shift();await work(branch,branches.indexOf(branch));}}
-await Promise.allSettled(Array.from({length:3},consume));
+await Promise.allSettled(Array.from({length:6},consume));
 await publish('all branch workers finished');
 console.log('CLOUD_RUN_FINISHED '+new Date().toISOString());
 }
