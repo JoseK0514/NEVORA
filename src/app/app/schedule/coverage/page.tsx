@@ -24,9 +24,9 @@ function needLabel({ target, label, count, positionName }: NeedTarget) {
   if (target === "LEAD") return "Shift lead needed";
   if (typeof count === "number" && target === "STAFFING") return people(count);
   if (typeof count === "number" && target === "POSITION" && positionName) return `${positionName}: ${count} more needed`;
-  const staff = /^(\d+) employees missing$/.exec(label);
+  const staff = /^(\d+) employees (?:missing|needed)$/.exec(label);
   if (staff) return people(Number(staff[1]));
-  const position = /^(.+): (\d+) missing$/.exec(label);
+  const position = /^(.+): (\d+) (?:missing|needed)$/.exec(label);
   if (position) return `${position[1]}: ${position[2]} more needed`;
   return label;
 }
