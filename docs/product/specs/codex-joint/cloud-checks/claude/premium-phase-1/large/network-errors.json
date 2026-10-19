@@ -7418,5 +7418,2392 @@
   "page": "/app/inbox",
   "path": "/api/manager/action-center",
   "status": 503
+ },
+ {
+  "at": "2026-10-19T19:21:23.349Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:29.351Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:31.356Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:36.942Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:44.482Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:51.320Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:21:57.800Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:05.706Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:07.791Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:14.812Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:22.499Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:29.863Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:37.540Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:42.682Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:46.260Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:46.998Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:22:47.098Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:22:49.618Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:22:54.331Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:01.714Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:05.469Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:06.015Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:23:06.039Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:23:09.522Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:14.827Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:20.114Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:24.399Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:25.205Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:23:28.347Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:34.249Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:40.130Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:43.925Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:44.693Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:23:47.956Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:52.850Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:53.700Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:23:56.878Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:23:57.611Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:23:57.629Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:24:01.418Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:02.230Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:24:07.441Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:07.959Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:24:12.068Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:17.683Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:20.246Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:24.322Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:31.362Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:33.959Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:38.554Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:45.614Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:52.660Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:24:57.066Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:04.131Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:06.986Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:12.677Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:17.653Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:21.231Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:22.037Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:25:24.812Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:29.442Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:35.243Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:38.801Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:39.501Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:25:42.646Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:47.325Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:53.059Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:56.892Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:25:57.563Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:26:00.985Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:05.940Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:11.436Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:15.130Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:16.237Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:26:19.101Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:24.957Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:25.537Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:26:29.521Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:30.118Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:26:34.357Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:35.049Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:26:39.032Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:39.796Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:26:43.908Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:49.728Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:54.137Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:26:57.550Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:04.530Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:09.037Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:13.525Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:20.270Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:24.441Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:28.903Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:36.072Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:41.087Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:46.294Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:51.288Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:55.010Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:27:56.111Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:27:58.537Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:03.750Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:09.538Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:13.282Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:13.798Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:28:17.180Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:22.608Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:28.121Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:31.855Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:32.706Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:28:36.346Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:41.199Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:46.729Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:50.607Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:51.382Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:28:54.883Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:28:59.647Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:00.367Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:29:00.416Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:29:03.318Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:04.285Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:29:08.446Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:09.300Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:29:13.387Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:13.962Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:29:14.040Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:29:19.059Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:25.345Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:27.961Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:32.520Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:38.749Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:43.180Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:48.239Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:29:56.085Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:03.433Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:07.758Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:14.635Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:18.585Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:24.633Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:29.616Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:32.909Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:33.607Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:30:36.542Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:41.696Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:47.454Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:50.829Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:51.605Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:30:54.726Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:30:59.389Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:05.393Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:09.297Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:10.065Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:31:13.727Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:18.122Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:23.675Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:27.262Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:27.811Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:31:31.202Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:36.292Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:36.791Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:31:40.429Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:41.343Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:31:45.238Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:45.791Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:31:50.529Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:31:51.419Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:31:55.141Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:01.245Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:04.752Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:07.715Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:14.490Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:17.415Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:22.878Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:28.805Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:32.495Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:36.615Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:43.771Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:50.145Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:32:56.052Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:00.803Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:04.328Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:04.962Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:33:07.888Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:12.038Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:18.180Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:21.896Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:22.910Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:33:26.199Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:30.338Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:36.113Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:39.806Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:40.892Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:33:44.224Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:50.294Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:56.524Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:33:59.572Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:00.270Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:34:03.549Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:08.341Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:08.979Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:34:09.124Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:34:13.183Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:13.906Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:34:13.959Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:34:17.971Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:18.657Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:34:22.681Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:23.502Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:34:28.759Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:35.237Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:37.482Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:41.560Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:47.761Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:51.169Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:34:55.529Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:02.598Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:05.879Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:11.016Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:18.614Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:21.176Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:27.265Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:32.430Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:35.428Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:36.037Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:35:38.967Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:43.583Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:50.554Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:53.273Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:35:53.992Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:35:57.306Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:02.180Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:08.239Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:12.043Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:13.036Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:36:15.850Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:20.476Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:26.680Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:31.023Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:31.522Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:36:35.232Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:40.273Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:41.007Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:36:44.205Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:44.892Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:36:48.674Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:49.371Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:36:53.107Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:36:54.793Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:36:57.661Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:04.767Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:07.342Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:10.398Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:17.904Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:22.502Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:26.681Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:33.326Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:38.090Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:42.803Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:49.759Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:52.157Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:37:57.415Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:38:03.315Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:38:08.814Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:38:09.291Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:38:12.302Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:38:18.176Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:38:19.090Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:38:22.424Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:38:34.119Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:38:46.163Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:38:56.292Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:02.016Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:06.654Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:07.280Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:39:10.288Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:16.644Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:17.413Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:39:20.963Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:34.062Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:43.469Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:53.933Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:39:58.708Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:03.209Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:03.657Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:40:03.723Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:40:06.884Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:15.235Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:15.725Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:40:19.258Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:30.352Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:41.458Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:50.556Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:55.359Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:59.239Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:40:59.764Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:41:02.780Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:41:10.425Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:41:10.829Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:41:14.498Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:41:25.696Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:41:37.266Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:41:47.136Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:41:52.579Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:41:58.586Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:41:59.516Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:42:01.999Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:42:08.113Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:42:08.770Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:42:12.684Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:42:27.472Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:42:38.916Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:42:55.833Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:43:02.047Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:43:07.723Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:43:08.752Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:43:11.674Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:43:18.051Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:43:18.664Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:43:22.703Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:43:36.431Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:43:46.471Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:44:05.089Z",
+  "account": "AUDIT-M",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:44:10.808Z",
+  "account": "AUDIT-M",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:44:16.262Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:44:16.918Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:44:20.767Z",
+  "account": "AUDIT-M",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:44:30.943Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:44:31.546Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/notifications",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:44:31.759Z",
+  "account": "AUDIT-M",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:44:35.232Z",
+  "account": "AUDIT-M",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:44:48.302Z",
+  "account": "AUDIT-M",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:44:58.313Z",
+  "account": "AUDIT-M",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:45:10.686Z",
+  "account": "QAOWNER",
+  "page": "/app",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:45:16.268Z",
+  "account": "QAOWNER",
+  "page": "/app/employees",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:45:21.155Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:45:21.753Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:45:25.442Z",
+  "account": "QAOWNER",
+  "page": "/app/payroll-export",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:45:34.313Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:45:35.107Z",
+  "account": "QAOWNER",
+  "page": "/app/inbox",
+  "path": "/api/manager/action-center",
+  "status": 503
+ },
+ {
+  "at": "2026-10-19T19:45:38.649Z",
+  "account": "QAOWNER",
+  "page": "/app/reports",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:45:50.968Z",
+  "account": "QAOWNER",
+  "page": "/app/schedule",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-19T19:46:02.389Z",
+  "account": "QAOWNER",
+  "page": "/app/timecards",
+  "path": "/api/manager/inbox-count",
+  "status": 404
  }
 ]
