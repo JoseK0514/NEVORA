@@ -49,7 +49,7 @@ describe('Owner and Manager Profile', () => {
     for (const text of ['Fictional Owner', 'Owner', 'Northside QA Workforce', 'Puerto Rico time', 'Checking…']) expect(html).toContain(text);
     expect(html.match(/Not shown yet/g)).toHaveLength(3);
     expect(html.match(/pmp-topic-placeholder/g)).toHaveLength(ALERT_TOPIC_COUNT.owner);
-    expect(html).not.toContain('role="alert"');
+    expect(html).toContain('<p class="sr-only" role="alert"></p>');
   });
 
   it('shows contact, locations and alert switches when ready', () => {
@@ -85,31 +85,33 @@ describe('Owner and Manager Profile', () => {
     expect(html).toContain('Show all 60');
   });
 
-  it('says a failed read in words with an icon and a retry, and an ended session with Sign in', () => {
+  it('says a failed read in words in the space it already has, with Try again in the head line', () => {
     const failed = render(manager, { state: 'unavailable', reason: 'read_failed' });
-    expect(failed).toContain('We couldn’t load your contact details and locations.');
-    expect(failed).toContain('Try again');
-    expect(failed).toContain('role="alert"');
+    expect(failed).toContain('We couldn’t load your contact details, locations and alert choices.');
+    expect(failed.match(/Couldn’t load</g)).toHaveLength(3);
+    expect(failed).toContain('Your alert choices couldn’t load.');
+    expect(failed).toContain('aria-label="Try loading your details again"');
     const denied = render(manager, { state: 'unavailable', reason: 'access_denied' });
     expect(denied).toContain('Your session ended.');
     expect(denied).toContain('href="/login"');
     expect(denied).not.toContain('Try again');
   });
 
-  it('pauses without an extra line, so the card keeps its height', () => {
+  it('pauses with words in the head line and placeholder rows, nothing added', () => {
     const html = render(manager, null, { state: { snapshot: null, paused: true, refreshing: false } });
     expect(html).toMatch(/Updates paused|You’re offline/);
-    expect(html).not.toContain('pmp-status');
+    expect(html.match(/pmp-topic-placeholder/g)).toHaveLength(ALERT_TOPIC_COUNT.manager);
   });
 
-  it('marks a pending save as Saving… and disabled, and a failed save with an icon and words', () => {
+  it('marks a pending save as Saving… and disabled, and a failed save in the row’s own space', () => {
     const ready = parseManagerProfile(fixture('manager'));
     const pending = render(manager, ready, { saves: { 'time-off': { pending: true, error: null } } });
     expect(pending).toMatch(/aria-checked="true"[^>]*disabled=""[^>]*aria-busy="true"/);
     expect(pending).toContain('data-shown="true">Saving…');
     const failed = render(manager, ready, { saves: { 'time-off': { pending: false, error: 'failed' } } });
-    expect(failed).toContain('Not saved. Try again.');
-    expect(failed).toContain('aria-describedby="alert-error-time-off"');
+    expect(failed).toMatch(/data-shown="true" class="pmp-save-error">.*Not saved. Try again./);
+    expect(failed).toContain('Time-off requests: Not saved. Try again.');
+    expect(failed).toContain('data-shown="false">When someone asks for time off');
   });
 
   it('keeps a saved choice on screen until a fresh read agrees', () => {

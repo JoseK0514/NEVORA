@@ -23,10 +23,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope + .pmp-locations { margin-top: var(--nv-s-1); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope + .pmp-locations > li { font: var(--nv-t-callout); color: var(--nv-muted); }
 
-/* Status line above the details while they load, pause or fail. Errors carry an icon and words, never colour alone. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-status { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--nv-s-2); margin: 0 var(--nv-s-5); padding-bottom: var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-urgent-ink); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-status > svg { flex: none; color: var(--nv-urgent-mark); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-status > span { flex: 1 1 12rem; min-width: 0; padding-block: 12px; }
 
 /* Text actions: teal, 44px tall, no box. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-text-button { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: var(--nv-r-inner); background: transparent; box-shadow: none; color: var(--nv-accent); font: var(--nv-t-label); text-decoration: none; cursor: pointer; }
@@ -62,11 +58,14 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch[data-on="true"]::after { transform: translateX(18px); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch-row:disabled .pmp-switch { opacity: .55; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topic-placeholder .pmp-switch { background: var(--nv-track); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar { display: block; width: 55%; height: 14px; margin: 4px 0; border-radius: 7px; background: var(--nv-inset); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar--short { width: 80%; height: 12px; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-save-error { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--nv-s-2); margin: -4px 0 0; padding: 0 var(--nv-s-5) var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-urgent-ink); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-save-error > svg { flex: none; color: var(--nv-urgent-mark); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-save-error > span { padding-block: 12px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .nv-card__meta { display: inline-flex; align-items: center; gap: var(--nv-s-3); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-head-action { margin-block: -12px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error { color: var(--nv-urgent-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error > svg { margin-right: 6px; vertical-align: -3px; color: var(--nv-urgent-mark); }
+/* Loading rows: the bars sit in the ready row's title and detail line boxes, so a loaded row is the same height. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar { display: inline-block; width: 55%; height: .875em; border-radius: 7px; background: var(--nv-inset); vertical-align: middle; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar--short { width: 80%; height: .75em; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note { display: flex; align-items: center; min-height: 64px; padding: var(--nv-s-3) var(--nv-s-5); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-empty { margin: 0; padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
 @media (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-switch, .pmp-switch::after) { transition: none; }

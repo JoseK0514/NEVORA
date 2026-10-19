@@ -21,9 +21,9 @@ The signed-in Owner or Manager's own contact details, locations and alert choice
 - Authority: the session's own employee, role `OWNER` or `MANAGER`, active. Never another person's data. An employee or lead gets `403`.
 - Responses:
   - `200` with the ready body below.
-  - `200` with `{ "state": "unavailable", "reason": "<short code>" }` when the read can't be served right now. The UI shows "We couldn't load your contact details and locations." with Try again.
-  - `401` (no session) or `403` (not Owner or Manager): the UI shows "Your session ended. Sign in again to see your details." with a Sign in link.
-  - Any other status, a network failure, or a body outside the contract: read as a failed read. The UI never shows partial data.
+  - `200` with `{ "state": "unavailable", "reason": "<short code>" }` when the read can't be served right now. The UI shows "Couldn’t load" in the email, phone and locations rows, "Your alert choices couldn’t load." in the alerts list, and Try again in the card's head line; a screen reader hears "We couldn’t load your contact details, locations and alert choices."
+  - `401` (no session) or `403` (not Owner or Manager): the UI shows "Sign in to see this" in those rows and a Sign in link in the card's head line; a screen reader hears "Your session ended. Sign in again to see your contact details, locations and alert choices."
+  - Any other status (including today's `404`, since the route doesn't exist yet), a network failure, a 10-second timeout, or a body outside the contract: read as a failed read. The UI never shows partial data.
 - `Cache-Control: no-store`.
 
 ### Ready body
@@ -73,8 +73,8 @@ Turns one alert topic on or off for the signed-in Owner or Manager.
 - The UI sends one request per tap. While it's in flight, that switch is disabled, shows "Saving…" in place of its detail line and ignores further taps (proven: three taps, one request). Other switches stay usable. It gives up after 10 seconds.
 - Responses the UI handles:
   - `2xx`: saved. The switch keeps the new value, and the UI re-reads `GET /api/management/profile`. From then on the read is the truth. The body isn't read; `{ "ok": true }` is enough.
-  - `401` / `403`: "Not saved. Your session ended." with Sign in.
-  - Anything else, a network failure or the timeout: "Not saved. Try again." (or "Check your connection and try again." when offline). The switch goes back to the stored value.
+  - `401` / `403`: "Not saved. Sign in again, then try." The UI re-reads the profile, so the card's head then offers Sign in.
+  - Anything else, a network failure or the timeout: "Not saved. Try again." (or "Not saved. Check your connection and try again." when offline). The message takes the place of the topic's detail line, so the row doesn't change height. The switch goes back to the stored value.
 - Must be idempotent: sending the same value twice is fine.
 - Validation: unknown `topicId`, a topic not in the role's set, or a non-boolean `on` → `400`.
 - Server side (Codex): store the choice per employee and topic, and make notification and push delivery honour it. Delivery is joint testing.

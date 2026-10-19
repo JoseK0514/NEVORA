@@ -33,21 +33,20 @@ type View = { identity: ManagerProfileIdentity; state: PrivatePanelState<Manager
 /** The fixed topic set per role (CODEX.md), so the loading rows match the ready card. */
 export const ALERT_TOPIC_COUNT = { owner: 5, manager: 4 } as const;
 
-/** Loading and pause sit in the card's head line, so the card keeps its height when the details arrive.
- * Only an outcome that needs the reader (a failed read, an ended session) adds a line with an action. */
-function headStatus(state: View['state']) {
-  if (state.paused) return typeof navigator !== 'undefined' && !navigator.onLine ? 'You’re offline' : 'Updates paused';
-  if (!state.snapshot) return 'Checking…';
-  return null;
-}
-function statusLine(state: View['state']) {
-  const snapshot = state.paused ? null : state.snapshot;
-  if (snapshot?.state === 'unavailable' && snapshot.reason === 'access_denied') return 'Your session ended. Sign in again to see your details.';
-  if (snapshot?.state === 'unavailable') return 'We couldn’t load your contact details and locations.';
-  return null;
+/** Every state of the read lives in space the card already has, so nothing moves when it changes: loading and
+ * pause are words in the head line; a failed read or an ended session puts its action there and its words in the
+ * rows it couldn't fill. A screen reader hears the full sentence once. */
+function readState(state: View['state']) {
+  if (state.paused) return { kind: 'paused' as const, head: typeof navigator !== 'undefined' && !navigator.onLine ? 'You’re offline' : 'Updates paused' };
+  const snapshot = state.snapshot;
+  if (!snapshot) return { kind: 'loading' as const, head: 'Checking…' };
+  if (snapshot.state === 'ready') return { kind: 'ready' as const, head: null };
+  if (snapshot.reason === 'access_denied') return { kind: 'denied' as const, head: null, row: 'Sign in to see this', said: 'Your session ended. Sign in again to see your contact details, locations and alert choices.' };
+  return { kind: 'failed' as const, head: null, row: 'Couldn’t load', said: 'We couldn’t load your contact details, locations and alert choices.' };
 }
 
-function Placeholder() {
+function Placeholder({ text }: { text?: string }) {
+  if (text) return <span className="pmp-muted">{text}</span>;
   return <><span aria-hidden="true">–</span><span className="sr-only">Not shown yet</span></>;
 }
 
@@ -90,35 +89,34 @@ function SignOutButton() {
 
 function saveMessage(error: AlertSave['error']) {
   if (error === 'offline') return 'Not saved. Check your connection and try again.';
-  if (error === 'signed_out') return 'Not saved. Your session ended.';
+  if (error === 'signed_out') return 'Not saved. Sign in again, then try.';
   return 'Not saved. Try again.';
 }
 
 export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle }: View) {
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
-  const status = statusLine(state), head = headStatus(state);
-  const denied = state.snapshot?.state === 'unavailable' && state.snapshot.reason === 'access_denied';
-  const failed = !state.paused && state.snapshot?.state === 'unavailable' && !denied;
+  const read = readState(state), row = 'row' in read ? read.row : undefined;
+  const saveError = Object.entries(saves).find(([, save]) => save.error);
   const topicCount = identity.owner ? ALERT_TOPIC_COUNT.owner : ALERT_TOPIC_COUNT.manager;
   return <div className="pmp-grid">
     <div className="pmp-col">
-      <Card id="profile-details" title="Your details" meta={<span role="status">{head}</span>} foot={identity.owner
+      <Card id="profile-details" title="Your details" meta={<>
+        {read.head ? <span role="status">{read.head}</span> : null}
+        {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" disabled={state.refreshing} onClick={onRetry} aria-label="Try loading your details again">{state.refreshing ? 'Trying again…' : 'Try again'}</button> : null}
+        {read.kind === 'denied' ? <Link className="pmp-text-button pmp-head-action" href="/login">Sign in</Link> : null}
+      </>} foot={identity.owner
         ? <KitLink href={`/app/employees/${encodeURIComponent(identity.employeeId)}`}>Edit your details</KitLink>
         : <p className="pmp-foot-copy">Something wrong here? Ask the account owner to update it.</p>}>
-        {status ? <div className="pmp-status" role="alert">
-          <WarningCircleIcon size={20} weight="fill" aria-hidden="true" />
-          <span>{status}</span>
-          {denied ? <Link className="pmp-text-button" href="/login">Sign in</Link> : null}
-          {failed ? <button type="button" className="pmp-text-button" disabled={state.refreshing} onClick={onRetry}>{state.refreshing ? 'Trying again…' : 'Try again'}</button> : null}
-        </div> : null}
+        <p className="sr-only" role="alert">{'said' in read ? read.said : ''}</p>
         <dl className="pmp-details">
           <div><dt>Name</dt><dd>{identity.name}</dd></div>
           <div><dt>Role</dt><dd>{identity.owner ? 'Owner' : 'Manager'}</dd></div>
           <div><dt>Company</dt><dd>{identity.company}</dd></div>
-          <div><dt>Email</dt><dd>{ready ? ready.contact.email ? <Email address={ready.contact.email} /> : <span className="pmp-muted">Not added</span> : <Placeholder />}</dd></div>
-          <div><dt>Phone</dt><dd>{ready ? ready.contact.phone ? <Phone number={ready.contact.phone} /> : <span className="pmp-muted">Not added</span> : <Placeholder />}</dd></div>
-          <div><dt>Locations</dt><dd>{ready ? <Locations snapshot={ready} owner={identity.owner} /> : <Placeholder />}</dd></div>
           <div><dt>Time zone</dt><dd>{identity.timeZone}</dd></div>
+          {/* The read's rows come last, so a value that arrives taller only pushes what is below the card. */}
+          <div><dt>Email</dt><dd>{ready ? ready.contact.email ? <Email address={ready.contact.email} /> : <span className="pmp-muted">Not added</span> : <Placeholder text={row} />}</dd></div>
+          <div><dt>Phone</dt><dd>{ready ? ready.contact.phone ? <Phone number={ready.contact.phone} /> : <span className="pmp-muted">Not added</span> : <Placeholder text={row} />}</dd></div>
+          <div><dt>Locations</dt><dd>{ready ? <Locations snapshot={ready} owner={identity.owner} /> : <Placeholder text={row} />}</dd></div>
         </dl>
       </Card>
     </div>
@@ -143,17 +141,23 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
             const save = saves[topic.id], on = overrides[topic.id] ?? topic.on, blocked = save?.pending || !onToggle;
             return <li key={topic.id}>
               <button type="button" role="switch" aria-checked={on} className="nv-row pmp-switch-row" disabled={blocked}
-                aria-busy={save?.pending || undefined} aria-describedby={save?.error ? `alert-error-${topic.id}` : undefined}
-                onClick={() => onToggle?.(topic, !on)}>
+                aria-busy={save?.pending || undefined} onClick={() => onToggle?.(topic, !on)}>
                 <span className="nv-row__text"><span className="nv-row__title">{topic.label}</span>
-                  {/* "Saving…" takes the detail's place in the same reserved space, so the row never changes height. */}
-                  <span className="nv-row__meta pmp-meta-stack"><span data-shown={!save?.pending}>{topic.detail}</span><span data-shown={!!save?.pending}>Saving…</span></span></span>
+                  {/* The detail, "Saving…" and a failed save share one reserved space, so the row never changes height. */}
+                  <span className="nv-row__meta pmp-meta-stack">
+                    <span data-shown={!save?.pending && !save?.error}>{topic.detail}</span>
+                    <span data-shown={!!save?.pending}>Saving…</span>
+                    <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><WarningCircleIcon size={16} weight="fill" aria-hidden="true" />{saveMessage(save?.error ?? null)}</span>
+                  </span></span>
                 <span className="pmp-switch" data-on={on} aria-hidden="true" />
               </button>
-              {save?.error ? <p className="pmp-save-error" id={`alert-error-${topic.id}`} role="alert"><WarningCircleIcon size={18} weight="fill" aria-hidden="true" /><span>{saveMessage(save.error)}</span>{save.error === 'signed_out' ? <Link className="pmp-text-button" href="/login">Sign in</Link> : null}</p> : null}
             </li>;
-          }) : Array.from({ length: topicCount }, (_, index) => <li key={index} aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder"><span className="nv-row__text"><span className="pmp-bar" /><span className="pmp-bar pmp-bar--short" /></span><span className="pmp-switch" data-on="false" /></div></li>)}
+          }) : row
+            ? <li className="pmp-topics-note"><span className="pmp-muted">{read.kind === 'denied' ? 'Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.'}</span></li>
+            // Placeholder rows use the ready row's two line boxes, so the list keeps its height when the choices arrive.
+            : Array.from({ length: topicCount }, (_, index) => <li key={index} aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder"><span className="nv-row__text"><span className="nv-row__title"><span className="pmp-bar" /></span><span className="nv-row__meta"><span className="pmp-bar pmp-bar--short" /></span></span><span className="pmp-switch" data-on="false" /></div></li>)}
         </ul>
+        <p className="sr-only" role="status">{saveError ? `${ready?.alerts.find(topic => topic.id === saveError[0])?.label ?? 'Alert'}: ${saveMessage(saveError[1].error)}` : ''}</p>
         {ready && !ready.alerts.length ? <p className="pmp-empty">No alert choices for your role yet.</p> : null}
       </Card>
       <section className="nv-card pmp-signout" aria-label="Session">
@@ -218,7 +222,8 @@ export function ManagerProfileLive({ identity }: { identity: ManagerProfileIdent
     inFlight.current.delete(topic.id);
     if (!error) setOverrides(current => ({ ...current, [topic.id]: { on, basis: savedBasis } }));
     setSaves(current => ({ ...current, [topic.id]: { pending: false, error } }));
-    if (!error) control.current?.refresh();
+    // A saved choice is re-read; an ended session is re-read too, so the card's head offers Sign in.
+    if (!error || error === 'signed_out') control.current?.refresh();
   }
 
   return <ManagerProfileView identity={identity} state={state} onRetry={() => control.current?.refresh()} saves={saves} overrides={shownOverrides} onToggle={toggle} />;
