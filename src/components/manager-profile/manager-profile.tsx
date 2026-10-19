@@ -2,7 +2,7 @@ import { KitStack, PageBand } from '@/components/kit/kit';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { navigationForRole } from '@/lib/navigation';
 import { readNotificationConfig } from '@/lib/notifications/config';
-import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/service';
+import { payrollFeatureEnabled } from '@/lib/payroll/service';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import { timeZoneLabel } from '@/lib/time-zone-label';
 import { currentBrand } from '@/lib/workspace-presentation/current.server';
@@ -13,7 +13,10 @@ import { ManagerProfileLive } from './manager-profile-live';
  * alert choices come from the management profile read in CODEX.md, which the client asks for. */
 export async function ManagerProfilePage({ proof }: { proof: SessionMutationProof }) {
   const [workspace, brand] = await Promise.all([getWorkspace(), currentBrand()]);
-  const payroll = payrollFeatureEnabled() ? await readPayrollCapabilities(proof) : undefined;
+  // My pay is offered exactly when the payroll feature is on and the company keeps pay statements: the rule its own
+  // page and the shell's navigation apply (readPayrollCapabilities' "enabled" is that flag). Asking navigationForRole
+  // with only that flag avoids a second workspace-locking payroll read on every load (WR-1); the layout already ran one.
+  const payroll = payrollFeatureEnabled() ? { enabled: true, canConfigure: false, canReview: false, canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' } as const : undefined;
   const offersPay = navigationForRole(proof.employee.role, payroll, { modules: brand.modules }).some(item => item.href === '/app/my-pay');
   const owner = proof.employee.role === 'OWNER';
   return <div className="nv-page premium-manager-profile" data-nv-page="">

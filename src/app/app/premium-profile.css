@@ -14,7 +14,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--nv-s-1) var(--nv-s-4); min-height: 52px; padding: 15px 0; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div + div { border-top: 1px solid var(--nv-hairline); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt { flex: 0 0 5.5rem; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd { flex: 1 1 11rem; min-width: 0; margin: 0; font: var(--nv-t-row); color: var(--nv-ink); overflow-wrap: break-word; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd { flex: 1 1 8rem; min-width: 0; margin: 0; font: var(--nv-t-row); color: var(--nv-ink); overflow-wrap: break-word; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .pmp-muted { font: var(--nv-t-callout); color: var(--nv-muted); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope { display: block; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations { margin: 0; padding: 0; list-style: none; }
@@ -68,7 +68,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar { display: inline-block; width: 55%; height: .875em; border-radius: 7px; background: var(--nv-inset); vertical-align: middle; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar--short { width: 80%; height: .75em; }
 /* A failed read keeps the alert rows' space (24px padding plus a title and a detail line each) as an error panel. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--nv-s-3); min-height: calc(var(--pmp-rows, 4) * (24px + 2.625rem + 2px)); padding: var(--nv-s-4) var(--nv-s-5); text-align: center; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics { --pmp-row: calc(24px + 2.625rem + 2px); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--nv-s-3); min-height: calc(var(--pmp-rows, 0) * var(--pmp-row)); padding: var(--nv-s-4) var(--nv-s-5); text-align: center; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note > p { max-width: 22em; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note > .nv-btn { min-width: 10rem; text-decoration: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-empty { margin: 0; padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
@@ -76,9 +77,23 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-switch, .pmp-switch::after) { transition: none; }
 }
 
-/* Loading: the placeholder band for Owner and Manager matches the real flat band (measured Oct 19: 104px on
- * phones 320–430 portrait, 108px on a landscape phone). The employee values stay in portal-premium.css. */
-html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: 104px; }
-@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: 108px; }
+/* Loading: the placeholder band for Owner and Manager matches the real flat band (measured Oct 19: 104px on phones,
+ * portrait and landscape, at 100% text). In rem, so it follows the reader's text size (212px at 200%). The phone band
+ * only shows up to 760px wide (shared rule in portal-premium.css); desktop placeholders are the shell's. */
+html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: 6.5rem; }
+
+/* Held sizes (ST-02): while paused, offline or failed, the last values keep their space, hidden, under the note. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold { display: grid; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold > * { grid-area: 1 / 1; min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold__value { visibility: hidden; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold__note { align-self: start; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-hold > .pmp-hold__note { align-self: stretch; }
+/* Busy labels (ST-05): both words share one cell, so a button keeps the wider width. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack { display: inline-grid; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack > span { grid-area: 1 / 1; text-align: center; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack > span[data-shown="false"] { visibility: hidden; }
+/* Narrow phones (ST-03): alert details wrap to two lines there, so loading rows and the failed panel reserve two. */
+@media (max-width: 379px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics { --pmp-row: calc(24px + 3.875rem + 2px); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topic-placeholder .nv-row__meta { min-height: 2.5rem; }
 }

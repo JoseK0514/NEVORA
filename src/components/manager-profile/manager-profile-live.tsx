@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
 import { BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { DeviceMobileIcon } from '@phosphor-icons/react/dist/ssr/DeviceMobile';
@@ -38,7 +38,11 @@ type View = {
   retried?: 'loaded' | 'failed' | null;
   /** The latest failed save, spoken once ("Time-off requests: Not saved. Try again."). */
   announcement?: string;
+  /** The last ready read. While paused, offline or failed it holds each row's size (hidden, under the note), and
+   * while re-reading after a return it stays on screen, so the page doesn't collapse and regrow. */
+  held?: Ready | null;
 };
+type Ready = Extract<ManagerProfileSnapshot, { state: 'ready' }>;
 
 /** The fixed topic set per role (CODEX.md), so the loading rows match the ready card. */
 export const ALERT_TOPIC_COUNT = { owner: 5, manager: 4 } as const;
@@ -53,6 +57,11 @@ function readState(state: View['state']) {
   if (snapshot.state === 'ready') return { kind: 'ready' as const, head: null };
   if (snapshot.reason === 'access_denied') return { kind: 'denied' as const, head: null, row: 'Sign in to see this', said: 'Your session ended. Sign in again to see your contact details, locations and alert choices.' };
   return { kind: 'failed' as const, head: null, row: 'Couldn’t load', said: 'We couldn’t load your contact details, locations and alert choices.' };
+}
+
+/** Two labels in one cell: the button keeps the wider one's width, so it never moves under the finger. */
+function Labels({ busy, idle, working }: { busy: boolean; idle: string; working: string }) {
+  return <span className="pmp-label-stack"><span data-shown={!busy}>{idle}</span><span data-shown={busy}>{working}</span></span>;
 }
 
 function Placeholder({ text }: { text?: string }) {
@@ -103,13 +112,41 @@ function SignOutButton() {
 
 function saveMessage(error: AlertSave['error']) {
   if (error === 'offline') return 'Not saved. You’re offline.';
-  if (error === 'signed_out') return 'Not saved. Sign in again, then try.';
+  if (error === 'signed_out') return 'Not saved. Sign in again.';
   return 'Not saved. Try again.';
 }
 
-export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '' }: View) {
+/** One alert switch. Without onToggle (re-reading, or a size-holding copy) it reads as busy and ignores presses. */
+function TopicRow({ topic, save, on, onToggle }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void }) {
+  const busy = !!save?.pending || !onToggle;
+  return <li>
+    {/* While busy it says so and ignores presses, but stays enabled, so keyboard focus stays on it. */}
+    <button type="button" role="switch" aria-checked={on} className="nv-row pmp-switch-row"
+      aria-disabled={busy || undefined} aria-busy={save?.pending || undefined} onClick={() => { if (!busy) onToggle?.(topic, !on); }}>
+      <span className="nv-row__text"><span className="nv-row__title">{topic.label}</span>
+        {/* The detail, "Saving…" and a failed save share one cell sized to the longest, so the row never changes height. */}
+        <span className="nv-row__meta pmp-meta-stack">
+          <span data-shown={!save?.pending && !save?.error}>{topic.detail}</span>
+          <span data-shown={!!save?.pending}>Saving…</span>
+          <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><WarningCircleIcon size={16} weight="fill" aria-hidden="true" />{saveMessage(save?.error ?? 'offline')}</span>
+        </span></span>
+      <span className="pmp-switch" data-on={on} aria-hidden="true" />
+    </button>
+  </li>;
+}
+
+export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null }: View) {
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
   const read = readState(state), row = 'row' in read ? read.row : undefined;
+  // Re-reading after a return keeps the last values on screen; paused, offline and failed keep only their size.
+  const shown = ready ?? (read.kind === 'loading' ? held : null);
+  const sized = !shown && read.kind !== 'denied' ? held : null;
+  const cell = (value: (snapshot: Ready) => ReactNode) => shown ? value(shown)
+    : sized ? <span className="pmp-hold"><span className="pmp-hold__value" aria-hidden="true">{value(sized)}</span><span className="pmp-hold__note"><Placeholder text={row} /></span></span>
+    : <Placeholder text={row} />;
+  const note = read.kind === 'paused'
+    ? read.head === 'You’re offline' ? 'You’re offline. Your alert choices show again when you’re back online.' : 'Updates paused. Your alert choices show again when you come back to this window.'
+    : read.kind === 'denied' ? 'Your session ended. Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.';
   const said = read.kind === 'failed' && retried === 'failed' ? 'Still couldn’t load your contact details, locations and alert choices.' : 'said' in read ? read.said : '';
   const topicCount = identity.owner ? ALERT_TOPIC_COUNT.owner : ALERT_TOPIC_COUNT.manager;
   return <div className="pmp-grid">
@@ -118,7 +155,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         {/* Never empty: the head lines up on this text's baseline in every state. */}
         <span role="status">{read.head ?? '\u00a0'}<span className="sr-only">{read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</span></span>
         {/* Never disabled while busy, so focus stays on it; a second press only restarts the same read. */}
-        {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}>{retrying ? 'Trying again…' : 'Try again'}</button> : null}
+        {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
         {read.kind === 'denied' ? <Link className="pmp-text-button pmp-head-action" href="/login">Sign in</Link> : null}
       </>} foot={identity.owner
         ? <KitLink href={`/app/employees/${encodeURIComponent(identity.employeeId)}`}>Edit your details</KitLink>
@@ -130,9 +167,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
           <div><dt>Company</dt><dd>{identity.company}</dd></div>
           <div><dt>Time zone</dt><dd>{identity.timeZone}</dd></div>
           {/* The read's rows come last, so a value that arrives taller only pushes what is below the card. */}
-          <div><dt>Email</dt><dd>{ready ? ready.contact.email ? <Email address={ready.contact.email} /> : <span className="pmp-muted">Not added</span> : <Placeholder text={row} />}</dd></div>
-          <div><dt>Phone</dt><dd>{ready ? ready.contact.phone ? <Phone number={ready.contact.phone} /> : <span className="pmp-muted">Not added</span> : <Placeholder text={row} />}</dd></div>
-          <div><dt>Locations</dt><dd>{ready ? <Locations snapshot={ready} owner={identity.owner} /> : <Placeholder text={row} />}</dd></div>
+          <div><dt>Email</dt><dd>{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
+          <div><dt>Phone</dt><dd>{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
+          <div><dt>Locations</dt><dd>{cell(snapshot => <Locations snapshot={snapshot} owner={identity.owner} />)}</dd></div>
         </dl>
       </Card>
     </div>
@@ -153,37 +190,23 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         </Rows>
         <h3 className="pmp-subhead" id="profile-alerts-title">You’re told about</h3>
         <ul className="nv-rows pmp-topics" aria-labelledby="profile-alerts-title">
-          {ready ? ready.alerts.map(topic => {
-            const save = saves[topic.id], on = overrides[topic.id] ?? topic.on;
-            return <li key={topic.id}>
-              {/* While saving it says so and ignores presses, but stays enabled, so keyboard focus stays on it. */}
-              <button type="button" role="switch" aria-checked={on} className="nv-row pmp-switch-row" disabled={!onToggle}
-                aria-disabled={save?.pending || undefined} aria-busy={save?.pending || undefined} onClick={() => { if (!save?.pending) onToggle?.(topic, !on); }}>
-                <span className="nv-row__text"><span className="nv-row__title">{topic.label}</span>
-                  {/* The detail, "Saving…" and a failed save share one reserved space, so the row never changes height. */}
-                  <span className="nv-row__meta pmp-meta-stack">
-                    <span data-shown={!save?.pending && !save?.error}>{topic.detail}</span>
-                    <span data-shown={!!save?.pending}>Saving…</span>
-                    <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><WarningCircleIcon size={16} weight="fill" aria-hidden="true" />{saveMessage(save?.error ?? null)}</span>
-                  </span></span>
-                <span className="pmp-switch" data-on={on} aria-hidden="true" />
-              </button>
-            </li>;
-          }) : read.kind !== 'loading'
-            // Any read that isn't loading keeps the rows' space and says what happened there, so Sign out stays put.
-            ? <li className="pmp-topics-note" style={{ ['--pmp-rows' as string]: topicCount }}>
-                <Tile tone={read.kind === 'paused' ? 'neutral' : 'urgent'}>{read.kind === 'paused' ? <PauseCircleIcon size={20} aria-hidden="true" /> : <WarningCircleIcon size={20} weight="fill" aria-hidden="true" />}</Tile>
-                <p>{read.kind === 'paused'
-                  ? read.head === 'You’re offline' ? 'You’re offline. Your alert choices show again when you’re back online.' : 'Updates paused. Your alert choices show again when you come back to this window.'
-                  : read.kind === 'denied' ? 'Your session ended. Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.'}</p>
-                {read.kind === 'denied' ? <Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link> : null}
-                {read.kind === 'failed' ? <button type="button" className="nv-btn" data-kind="secondary" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}>{retrying ? 'Trying again…' : 'Try again'}</button> : null}
+          {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
+            : read.kind !== 'loading'
+            // Any read that isn't loading says what happened where the alert rows are, in their space, so Sign out stays put.
+            ? <li className={sized ? 'pmp-hold pmp-topics-hold' : undefined}>
+                {sized ? <ul className="nv-rows pmp-hold__value" aria-hidden="true">{sized.alerts.map(topic => <TopicRow key={topic.id} topic={topic} on={topic.on} />)}</ul> : null}
+                <div className="pmp-topics-note pmp-hold__note" style={sized ? undefined : { ['--pmp-rows' as string]: topicCount }}>
+                  <Tile tone={read.kind === 'paused' ? 'neutral' : 'urgent'}>{read.kind === 'paused' ? <PauseCircleIcon size={20} aria-hidden="true" /> : <WarningCircleIcon size={20} weight="fill" aria-hidden="true" />}</Tile>
+                  <p>{note}</p>
+                  {read.kind === 'denied' ? <Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link> : null}
+                  {read.kind === 'failed' ? <button type="button" className="nv-btn" data-kind="secondary" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
+                </div>
               </li>
-            // Placeholder rows use the ready row's two line boxes, so the list keeps its height when the choices arrive.
+            // Placeholder rows use the ready row's line boxes (two detail lines on narrow phones), so the list keeps its height.
             : Array.from({ length: topicCount }, (_, index) => <li key={index} aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder"><span className="nv-row__text"><span className="nv-row__title"><span className="pmp-bar" /></span><span className="nv-row__meta"><span className="pmp-bar pmp-bar--short" /></span></span><span className="pmp-switch" data-on="false" /></div></li>)}
         </ul>
         <p className="sr-only" role="status">{announcement}</p>
-        {ready && !ready.alerts.length ? <p className="pmp-empty">No alert choices for your role yet.</p> : null}
+        {shown && !shown.alerts.length ? <p className="pmp-empty">No alert choices for your role yet.</p> : null}
       </Card>
       <section className="nv-card pmp-signout" aria-label="Session">
         <PortalSignout><ul className="nv-rows"><li><SignOutButton /></li></ul></PortalSignout>
@@ -196,6 +219,7 @@ export function ManagerProfileLive({ identity }: { identity: ManagerProfileIdent
   const [state, setState] = useState<PrivatePanelState<ManagerProfileSnapshot>>({ snapshot: null, paused: false, refreshing: true });
   const [saves, setSaves] = useState<Record<string, AlertSave>>({});
   const [overrides, setOverrides] = useState<Record<string, { on: boolean; basis: string }>>({});
+  const [held, setHeld] = useState<Ready | null>(null);
   const [retryFrom, setRetryFrom] = useState<{ snapshot: ManagerProfileSnapshot | null } | null>(null);
   const [announced, setAnnounced] = useState({ text: '', count: 0 });
   const inFlight = useRef(new Set<string>());
@@ -203,25 +227,39 @@ export function ManagerProfileLive({ identity }: { identity: ManagerProfileIdent
 
   useEffect(() => {
     // Same privacy rhythm as the employee Profile: details clear when the window is left, and re-read on return.
-    const controller = createPrivateSnapshotController<ManagerProfileSnapshot>(setState, async signal => {
+    const changed = (next: PrivatePanelState<ManagerProfileSnapshot>) => {
+      setState(next);
+      if (next.snapshot?.state === 'ready') setHeld(next.snapshot);
+      else if (next.snapshot?.state === 'unavailable' && next.snapshot.reason === 'access_denied') setHeld(null); // an ended session keeps nothing
+    };
+    const controller = createPrivateSnapshotController<ManagerProfileSnapshot>(changed, async signal => {
       const response = await fetch(MANAGER_PROFILE_ENDPOINT, { cache: 'no-store', credentials: 'same-origin', redirect: 'error', signal, headers: { Accept: 'application/json' } });
       if (response.status === 401 || response.status === 403) return { state: 'unavailable', reason: 'access_denied' };
       if (!response.ok) throw Error('Profile unavailable');
       return response.json();
     }, parseManagerProfile, reason => ({ state: 'unavailable', reason }), () => 'read_failed');
     control.current = controller;
-    let mounted = true;
-    const pause = () => controller.pause();
-    const sync = () => { controller.pause(); if (document.visibilityState !== 'hidden' && navigator.onLine) controller.start(); };
-    document.addEventListener('visibilitychange', sync);
-    for (const event of ['blur', 'pagehide', 'offline']) window.addEventListener(event, pause);
-    for (const event of ['focus', 'pageshow', 'online']) window.addEventListener(event, sync);
-    void Promise.resolve().then(() => { if (mounted) sync(); });
+    let mounted = true, away = true;
+    // Leaving (blur, hidden, offline, page hidden) clears the read; coming back starts one. A focus or pageshow while
+    // the page never left does nothing, so a finished read isn't thrown away and read twice (ST-01).
+    const leave = () => { away = true; controller.pause(); };
+    const back = () => {
+      if (document.visibilityState === 'hidden' || !navigator.onLine) { leave(); return; }
+      if (!away) return;
+      away = false; controller.start();
+    };
+    const shown = (event: PageTransitionEvent) => { if (event.persisted) { away = true; back(); } };
+    document.addEventListener('visibilitychange', back);
+    for (const event of ['blur', 'pagehide', 'offline']) window.addEventListener(event, leave);
+    for (const event of ['focus', 'online']) window.addEventListener(event, back);
+    window.addEventListener('pageshow', shown);
+    void Promise.resolve().then(() => { if (mounted) back(); });
     return () => {
       mounted = false; controller.stop(); control.current = null;
-      document.removeEventListener('visibilitychange', sync);
-      for (const event of ['blur', 'pagehide', 'offline']) window.removeEventListener(event, pause);
-      for (const event of ['focus', 'pageshow', 'online']) window.removeEventListener(event, sync);
+      document.removeEventListener('visibilitychange', back);
+      for (const event of ['blur', 'pagehide', 'offline']) window.removeEventListener(event, leave);
+      for (const event of ['focus', 'online']) window.removeEventListener(event, back);
+      window.removeEventListener('pageshow', shown);
     };
   }, []);
 
@@ -261,5 +299,5 @@ export function ManagerProfileLive({ identity }: { identity: ManagerProfileIdent
   }
 
   return <ManagerProfileView identity={identity} state={state} onRetry={retry} retrying={retrying} retried={retried} saves={saves} overrides={shownOverrides} onToggle={toggle}
-    announcement={announced.text ? announced.text + (announced.count % 2 ? '' : '\u00a0') : ''} />;
+    held={held} announcement={announced.text ? announced.text + (announced.count % 2 ? '' : '\u00a0') : ''} />;
 }

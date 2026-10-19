@@ -95,9 +95,9 @@ describe('Owner and Manager Profile', () => {
     expect(failed.match(/Couldn’t load</g)).toHaveLength(3);
     expect(failed).toContain('Your alert choices couldn’t load.');
     // The visible words are the accessible name (WCAG 2.5.3); the sentence describes them. Never disabled while busy.
-    expect(failed.match(/aria-describedby="profile-read-said">Try again</g)).toHaveLength(2);
+    expect(failed.match(/aria-describedby="profile-read-said"><span class="pmp-label-stack"><span data-shown="true">Try again</g)).toHaveLength(2);
     expect(failed).not.toMatch(/<button[^>]*disabled[^>]*>Try again/);
-    expect(render(manager, { state: 'unavailable', reason: 'read_failed' }, { retrying: true })).toContain('aria-busy="true" aria-describedby="profile-read-said">Trying again…');
+    expect(render(manager, { state: 'unavailable', reason: 'read_failed' }, { retrying: true })).toContain('aria-busy="true" aria-describedby="profile-read-said"><span class="pmp-label-stack"><span data-shown="false">Try again</span><span data-shown="true">Trying again…');
     expect(render(manager, { state: 'unavailable', reason: 'read_failed' }, { retried: 'failed' })).toContain('Still couldn’t load');
     expect(render(manager, parseManagerProfile(fixture('manager')), { retried: 'loaded' })).toContain('Your details loaded.');
     const denied = render(manager, { state: 'unavailable', reason: 'access_denied' });
@@ -112,6 +112,19 @@ describe('Owner and Manager Profile', () => {
     expect(html).toMatch(/Your alert choices show again when/);
     expect(html).toContain('style="--pmp-rows:4"');
     expect(html).not.toContain('pmp-topic-placeholder');
+  });
+
+  it('holds the last read’s size while paused or failed, and shows it while re-reading', () => {
+    const last = parseManagerProfile(fixture('owner')) as Extract<ManagerProfileSnapshot, { state: 'ready' }>;
+    const paused = render(owner, null, { state: { snapshot: null, paused: true, refreshing: false }, held: last });
+    expect(paused).toMatch(/pmp-hold__value" aria-hidden="true">.*owner/);
+    expect(paused.match(/role="switch"/g)).toHaveLength(5);
+    expect(paused).not.toContain('style="--pmp-rows');
+    const rereading = render(owner, null, { held: last });
+    expect(rereading).not.toContain('pmp-hold__value');
+    expect(rereading).toMatch(/aria-checked="true" class="nv-row pmp-switch-row" aria-disabled="true"/);
+    const denied = render(owner, { state: 'unavailable', reason: 'access_denied' }, { held: last });
+    expect(denied).not.toContain('northside-qa');
   });
 
   it('marks a pending save as Saving… and disabled, and a failed save in the row’s own space', () => {
