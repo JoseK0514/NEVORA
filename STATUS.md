@@ -1,6 +1,6 @@
 In progress, 2026-10-19 19:10 UTC: coordinator `8c4264c` and backend `c6a5954` are integrated locally at candidate `98b037b`. Claude’s Coverage wording and supplied root-layout resolution applied; latest coordinator premium CSS retained exactly. TypeScript passes; lint passes with zero warnings. Original isolated cleanup reproduces 3 failures; backend isolated cleanup passes 12/12 with one worker (positive zombie evidence plus live-process rejection). Full candidate tests/checks/build and exact Wave A `7679133` exit inspection are running. New Wave A SHA is not merged pending a complete zero exit. Inbox flag skipped; reviewed checklist retained; no device access or deployment. Older results below are historical checkpoints.
 
-In progress: Phase 3 round 4 on `f691decb5496377a35ca7777d3025674f45bb94e` is starting first; Wave A round 2 exit on `c05e0c7` has one verified P1 (ST-WA-7). Wave B round 3 exit on `9f32ca6` and Wave C round 4 exit on `5f7c166` previews are preparing; Profile round 4 on `829dfe6` continues. Desktop round 3 on `2250275` is queued. Wave C round 3 was checkpointed incomplete when round 4 arrived; its two P1s await independent re-check on round 4. No round has a completed zero verdict. This inspection session performs no merges or deployments; polling continues every ten minutes.
+In progress: Phase 3 round 4 on `f691dec` has TC-P3-32 (P1); Wave A round 2 exit on `c05e0c7` has ST-WA-7 (P1). Profile round 4 on `829dfe6` has two P2 remainders (ST-03 at 360px; ST-08 in WebKit 390/150). Wave C round 4 exit on `5f7c166` independently fixes its two reported P1s, but its full sweep is incomplete. Wave B round 3 exit on `9f32ca6` continues; Desktop round 3 on `2250275` is queued. Five matrices are running. No round has a completed zero verdict. This inspection session performs no merges or deployments.
 
 Rolling release task, 2026-10-19 19:10 UTC: preserved published `0e01046`; local coordinator refresh `25dca8d` (input `8c4264c`) now passes install, TypeScript and lint (0 errors/warnings). Full Vitest is running with one worker and no browser preview workload. Backend `1c8254a` retry was aborted on the unchanged Coverage-test conflict; no wording chosen. Wave A’s newer `7679133` awaits its own zero exit and was not merged. [Current candidate work](release/merge-2-coordinator/README.md).
 
@@ -90,3 +90,11 @@ All page submissions must be answered, held or aborted in the browser. Only fict
 
 2026-10-19 19:10 UTC · coordinator 8c4264c merged locally at 25dca8d · install/type/lint pass · full tests and combined checks pending · blocked
 2026-10-19 19:10 UTC · backend 1c8254a into candidate 25dca8d aborted · Coverage test sides retained under release/merge-2-coordinator/conflicts/ · no choice, clean candidate retained
+
+2026-10-19 19:16:45 UTC · Phase 3 round 4 on f691decb5496377a35ca7777d3025674f45bb94e · P0 0, P1 1, P2 0 · not zero
+
+2026-10-19 19:16:45 UTC · Profile round 4 on 829dfe6cf45beb71b77db573c0263c60a5f69856 · P0 0, P1 0, P2 2 · not zero
+
+2026-10-19 19:16:45 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 0, P2 0 · not zero
+
+Wave C round 4 has 0 newly verified defects so far, with incomplete coverage. “not zero” above means no completed five-area exit certificate. Confirmed legacy ST-02 and WR-21 are fixed on this commit.
