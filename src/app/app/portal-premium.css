@@ -2034,3 +2034,26 @@ html[data-text-step="200"] body .app-shell.nevora-portal :is(#manager-more-navig
   html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame .premium-employee-profile .employee-profile-details > div:not(#nv-kit) { grid-template-columns: minmax(0, 1fr); gap: 2px; }
   html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame [data-nv-page] .employee-time-footer:not(#nv-kit) { flex-direction: column; align-items: stretch; }
 }
+/* Phase 3 round 4, widths and roles */
+/* P3-WR-16: the week-at-a-glance day column grows with text (2.5rem), so "Mon 19 Today" never overlaps the shift. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .employee-schedule-day:not(#nv-kit) { grid-template-columns: minmax(2.5rem, max-content) minmax(0, 1fr); }
+}
+/* P3-WR-17: at 150 and 200% text the entry total moves under the entry, so "In progress" and "3h 3m" stay inside the card. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal[data-employee-corporate="true"] .page-frame .employee-time-entry > summary:not(#nv-kit) { grid-template-columns: minmax(0, 1fr) var(--corporate-space-6, 24px); }
+  html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal[data-employee-corporate="true"] .page-frame .employee-time-entry > summary > .employee-time-entry-total:not(#nv-kit) { grid-column: 1; grid-row: 2; justify-self: start; text-align: left; white-space: nowrap; }
+  html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal[data-employee-corporate="true"] .page-frame .employee-time-entry > summary > .employee-time-disclosure:not(#nv-kit) { grid-column: 2; grid-row: 1; }
+}
+/* P3-WR-07: at 150 and 200% text every Availability day row stacks, at every phone width (the 15.5rem container
+ * threshold can't see text size). */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .av-day-row:not(#nv-kit) { flex-wrap: wrap; }
+  html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .av-day-row > .av-time-range:not(#nv-kit) { flex: 1 0 100%; }
+}
+/* P3-WR-11: Notifications rows never cut their action or path; they wrap at large text. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame [class*="notification-inbox-module"][class*="__open"]:not(#nv-kit) { white-space: normal; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame [class*="notification-inbox-module"][class*="__footer"]:not(#nv-kit) { flex-wrap: wrap; }
+/* P3-WR-12: Home's "Review needed" is the kit's review pill, like everywhere else. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-home [class*="employee-home-reviewed-module"][class*="__required"]:not(#nv-kit) { display: inline-flex !important; align-items: center; min-height: 28px; padding: 0 var(--nv-s-3); border-radius: var(--nv-r-pill); background: var(--nv-review-fill); color: var(--nv-review-ink) !important; font: var(--nv-t-label); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] .employee-time-badge:not(#nv-kit) { min-height: 28px; border-radius: var(--nv-r-pill); }
