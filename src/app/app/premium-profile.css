@@ -1,3 +1,80 @@
 /* Phase 3.5 Profile session: the Owner and Manager Profile page.
  * Only that session edits this file. Shared rules (kit, shell, portal-premium.css) are changed by the coordinating
  * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css. */
+
+/* Layout: one column on phones; from 1024px, details on the left and settings on the right. 16px between cards. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-grid { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-col { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
+
+/* Your details: label and value side by side; the value drops under its label when the line is too narrow (large text). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-2); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--nv-s-1) var(--nv-s-4); min-height: 52px; padding: 15px 0; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div + div { border-top: 1px solid var(--nv-hairline); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt { flex: 0 0 6.5rem; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd { flex: 1 1 11rem; min-width: 0; margin: 0; font: var(--nv-t-row); color: var(--nv-ink); overflow-wrap: break-word; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .pmp-muted { font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope { display: block; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations { margin: 0; padding: 0; list-style: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li { margin: 0; padding: 0; font: var(--nv-t-row); color: var(--nv-ink); list-style: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li + li { margin-top: var(--nv-s-1); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope + .pmp-locations { margin-top: var(--nv-s-1); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope + .pmp-locations > li { font: var(--nv-t-callout); color: var(--nv-muted); }
+
+/* Status line above the details while they load, pause or fail. Errors carry an icon and words, never colour alone. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-status { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--nv-s-2); margin: 0 var(--nv-s-5); padding-bottom: var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-urgent-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-status > svg { flex: none; color: var(--nv-urgent-mark); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-status > span { flex: 1 1 12rem; min-width: 0; padding-block: 12px; }
+
+/* Text actions: teal, 44px tall, no box. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-text-button { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: var(--nv-r-inner); background: transparent; box-shadow: none; color: var(--nv-accent); font: var(--nv-t-label); text-decoration: none; cursor: pointer; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-text-button:hover { color: var(--nv-accent-hover); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-text-button:disabled { color: var(--nv-muted); cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-foot-copy { margin: 0; padding-block: 12px; font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .nv-card__foot { padding-top: 0; padding-bottom: 0; }
+
+/* Button rows (device alerts, alert switches, Sign out) look exactly like kit rows. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row) { width: 100%; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--nv-ink); font: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row):focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+@media (hover: hover) { html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row):hover:not(:disabled) { background: #F7F9F8; } }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row):active:not(:disabled) { background: var(--nv-inset); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row):disabled { cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-button-row:disabled .nv-row__title { color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-note { margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-signout > form { display: block; margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-signout .nv-rows { padding: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-signout .pmp-button-row { min-height: 64px; }
+
+/* Alert choices: one switch per topic. The word (On, Off, Saving…) carries the state; the switch repeats it. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-subhead { margin: var(--nv-s-2) 0 0; padding: var(--nv-s-4) var(--nv-s-5) var(--nv-s-1); border-top: 1px solid var(--nv-hairline); font: var(--nv-t-label); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics { padding-bottom: var(--nv-s-2); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch-row { min-height: 64px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch-row .nv-row__title { display: block; -webkit-line-clamp: unset; overflow: visible; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack { display: grid; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > span { grid-area: 1 / 1; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > span[data-shown="false"] { visibility: hidden; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-nowrap { white-space: nowrap; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch { position: relative; flex: none; width: 44px; height: 26px; border-radius: 13px; background: var(--nv-icon); transition: background-color var(--nv-m-quick) var(--nv-ease-out); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16, 40, 38, .2); transition: transform var(--nv-m-quick) var(--nv-ease-out); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch[data-on="true"] { background: var(--nv-accent); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch[data-on="true"]::after { transform: translateX(18px); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch-row:disabled .pmp-switch { opacity: .55; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topic-placeholder .pmp-switch { background: var(--nv-track); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar { display: block; width: 55%; height: 14px; margin: 4px 0; border-radius: 7px; background: var(--nv-inset); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-bar--short { width: 80%; height: 12px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-save-error { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--nv-s-2); margin: -4px 0 0; padding: 0 var(--nv-s-5) var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-urgent-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-save-error > svg { flex: none; color: var(--nv-urgent-mark); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-save-error > span { padding-block: 12px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-empty { margin: 0; padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-switch, .pmp-switch::after) { transition: none; }
+}
+
+/* Loading: the placeholder band for Owner and Manager matches the real flat band (measured Oct 19: 104px on
+ * phones 320–430 portrait, 108px on a landscape phone). The employee values stay in portal-premium.css. */
+html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: 104px; }
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: 108px; }
+}

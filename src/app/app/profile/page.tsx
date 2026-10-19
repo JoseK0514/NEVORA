@@ -13,8 +13,9 @@ import {ProfileCalendarDisclosure} from '@/components/profile-calendar-disclosur
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import './profile.css';
 import {PageBand} from '@/components/kit/kit';
+import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
 export default async function ProfilePage(){
- const proof=await requireSessionMutationProof();if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
+ const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
  const authority=employeeViewAuthority(proof,'profile');
  const notificationsEnabled=readNotificationConfig(process.env).featureEnabled;
  // Phase 3: the kit band, then Work details, App settings and Sign out in the shared content column.
