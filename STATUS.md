@@ -3,7 +3,7 @@
 Jose explicitly approved item4 in this chat. Review each candidate finding commit below, then have its owner port or replace it. Application changes are only on `codex/release-candidate`; source `claude/*` branches were not edited.
 
 - **Merged and preserved:** first-published `8e18a95`, with coordinator `227150b`, backend `da2a4e5`, verified-zero Profile `ea58610`, and separate authorized Profile initial-read `4ff37e5`. The parallel local bootstrap `cbaadbc` is preserved as a checkpoint and was not pushed over published history.
-- **Candidate under validation:** `35c2c0a45de2ce4876c9174efd9abda740d16f0f`, **27 finding commits**. Affected tests **58/58 pass** and preflight TypeScript passes. Final exact-candidate browser proofs, full one-worker suite, lint and production build/marker check are pending. No final green or all-six acceptance is claimed. [Commit manifest](release/paused-ui-fixes-35c2c0a/fix-commits.json).
+- **Candidate under validation:** `980e823eba6e243d456483b33cd0571131389cb6`, **30 finding commits**. Affected tests **58/58 pass** and preflight TypeScript passes. Exact-candidate browser proofs, final full one-worker suite, lint and production build/marker check are pending. No final green or all-six acceptance is claimed. [Commit manifest](release/paused-ui-fixes-980e823/fix-commits.json).
 - **Zero:** Profile's five committed Mac reports at `ea58610` justified its merge. Independent cloud IS-PROFILE-17 is separately repaired; ST-PROFILE-03 is addressed by initial-read `4ff37e5`. No other complete new source zero certificate exists.
 - **Open by owner:** Phase3 `227150b`, WaveA `a05f26a`, WaveB app `9bd265e`/handoff `564d193`, WaveC `5f7c166`, Desktop `8012d97` remain incomplete/nonzero. Their bounded final proofs and exact gaps are preserved. Do not merge them just because candidate patches exist.
 - **Code absent from candidate:** WaveB IS-B31 (`wave-b-forms.tsx` Enter pending focus) and Desktop ST-P4-13 (passive-effect Inbox opening; measured CLS~0.064) remain owner work. WC overrides are staged for unmerged UI and have source browser-injection proof, not a candidate runtime acceptance. WC dialog centering now passes28/28 cases, bounds delta0px, glyph centering≤0.5px.
@@ -42,6 +42,9 @@ One row is one finding and one application commit. All are unpublished until fin
 | `e05d661` | **ST-RC-ACK-01** — reserve update review action labels while pending | [Evidence](release/paused-ui-fixes-90fbb4d/candidate-findings.md) |
 | `e2d21fb` | **ST-RC-CORRECTION-01** — hold correction actions steady during the first send | [Evidence](release/paused-ui-fixes-90fbb4d/candidate-findings.md) |
 | `35c2c0a` | **TC-RC-ASSISTED-01** — use the kit field edge on legacy assisted recovery | [Evidence](release/paused-ui-fixes-90fbb4d/candidate-findings.md) |
+| `536dfe6` | **IS-WA-2** — reveal failed action notices after React mounts each outcome | [Evidence](p35-wave-a/round-2/interaction-states.md) |
+| `0443030` | **IS-WB-34** — reveal publication recovery and focus its actual next step | [Evidence](p35-wave-b/round-4/interaction-states.md) |
+| `980e823` | **ST-WB-15** — preserve publication action labels while publishing | [Evidence](p35-wave-b/round-4/stability.md) |
 
 The centered `PendingLabel` helper introduced with ST-P3-24 is reused by the later reserved-label fixes. IS-PROFILE-17, IS-80 and IS-B12 depend on the reveal helper in IS-P3-02. The filename part of TC-P4-23 is covered once by TC-B-32. Combined aliases RC-PC-TC-01/02 refer to RC-CB-TC-01/TCD-16 and TC-P4-22; IS-P3-01 refers to the IS-74 Availability focus repair. ST-WA-9/10/11 are press/resize variants of the same reserved-label family and require the candidate's own proof.
 

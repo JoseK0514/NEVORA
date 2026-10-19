@@ -1,0 +1,8 @@
+{
+  "checkpoint": "35c2c0a45de2ce4876c9174efd9abda740d16f0f",
+  "scope": "Superseded after current closed-context row at coordinator request. Partial Chromium state sample only; no unchanged checker or other cases inferred.",
+  "total": 10,
+  "completed": 10,
+  "passed": 10,
+  "checkerStarted": false
+}
