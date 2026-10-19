@@ -151,7 +151,12 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
   await q("UPDATE employees SET first_name=$1,last_name=$2 WHERE id=$3",['Avery With A Very Long Fictional Display Name','Long Employee Name For Reflow Verification',actor]);await page.reload();await ready('profile');await bounds();
   await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.zoom='2';});await bounds();await screenshot('zoom-long-content');await page.evaluate(()=>{document.documentElement.style.zoom='';});await page.emulateMedia({reducedMotion:'no-preference'});
-  if(width<768){const clearance=await page.locator('.employee-shell .page-frame').evaluate(e=>parseFloat(getComputedStyle(e).paddingBottom));assert(clearance>=100);}
+  if(width<768){
+   // The kit reserves tab-bar space on the page, rather than the old outer frame.
+   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+   const clearance=await page.locator('.premium-employee-profile').evaluate(e=>{const nav=document.querySelector('.mobile-nav').getBoundingClientRect(),signout=e.querySelector('.profile-signout button').getBoundingClientRect();return {padding:parseFloat(getComputedStyle(e).paddingBottom),navigationHeight:nav.height,signoutBottom:signout.bottom,navigationTop:nav.top};});
+   assert(clearance.navigationHeight>0);assert(clearance.padding>=clearance.navigationHeight,'Page reserves the actual fixed navigation height');assert(clearance.signoutBottom<=clearance.navigationTop,'Final Sign out control clears fixed navigation at the document end');
+  }
   checks.push('long_content_safe_area_keyboard: real long identity, 200% CSS zoom/reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
   await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));

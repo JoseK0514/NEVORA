@@ -9,7 +9,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
  const panel=page.locator('[data-calendar-setting]');
  const retry=()=>panel.getByRole('button',{name:'Try again to load the calendar link',exact:true});
  const management=()=>panel.locator('details.employee-calendar-management');
- const openManagement=async()=>{if(await management().getAttribute('open')===null)await management().locator('summary').click();};
+ const openManagement=async()=>{if(await management().getAttribute('open')===null)await management().locator('summary').click();await management().locator('p').waitFor({state:'visible'});};
  const state=async(text)=>{await panel.getByText(text,{exact:true}).waitFor();};
  const noUrl=async()=>assert.equal(await panel.locator('textarea').count(),0);
  let firstUrl,secondUrl,firstBody;
@@ -63,7 +63,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   await page.route('**/api/employee/calendar-subscriptions',route=>route.request().method()==='GET'?route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'fictional_failure'})}):route.continue());await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await panel.getByText('Calendar settings unavailable.',{exact:false}).waitFor();await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');await retry().click();await state('Link active');
  });
  await step('Revocation status, client caveats, responsive keyboard controls and token-free capture',async()=>{
-  await openManagement();assert(await management().getByText('Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.',{exact:true}).isVisible());
+  await openManagement();await management().getByText('Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.',{exact:true}).waitFor();
   await panel.getByRole('button',{name:'Revoke link',exact:true}).focus();await page.keyboard.press('Enter');await state('Link revoked');await noUrl();assert.equal(await management().count(),0);
   for(const [provider,guide] of [['Apple Calendar','Apple subscription guide'],['Google Calendar','Google subscription guide'],['Outlook','Outlook subscription guide']]){const instructions=panel.locator('.employee-calendar-providers details').filter({hasText:provider});assert.equal(await instructions.getAttribute('open'),null);await instructions.locator('summary').click();assert(await instructions.getByRole('link',{name:guide,exact:true}).isVisible());await instructions.locator('summary').click();}
   assert(await panel.getByText('Calendar apps refresh on their own schedule.',{exact:false}).isVisible());assert(await panel.getByText('Creating or copying a link does not confirm a calendar connection.',{exact:false}).isVisible());assert.equal(await panel.getByText('Calendar connected',{exact:true}).count(),0);
