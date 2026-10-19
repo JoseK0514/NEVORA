@@ -88,13 +88,13 @@ async function publish(reason) {
     }
     lines.push(...sections,'','## Remaining gates','','Large-data premium-phase-1 is a separate preview and remains pending unless its own evidence is present. Load timings are browser measurements in local development mode, not hosted capacity certification. Build, full Vitest, TypeScript and lint on the merged release candidate remain pending Jose’s merge notice. No release approval is implied.','');
     await writeFile(join(repo,'docs/product/specs/codex-joint/CLOUD-CHECKS.md'),lines.join('\n'));
-    git('add','docs/product/specs/codex-joint/CLOUD-CHECKS.md','docs/product/specs/codex-joint/cloud-checks');
+    git('add','docs/product/specs/codex-joint/CLOUD-CHECKS.md',...(metas.size?['docs/product/specs/codex-joint/cloud-checks']:[]));
     const changed=git('diff','--cached','--name-only');if(!changed)return;
     git('commit','-m','test: publish cloud screen-check evidence — '+reason);
     try{git('push','origin','HEAD:refs/heads/codex/premium-backend');console.log('PUBLISHED '+reason);}
     catch(error){await writeFile(join(stateRoot,'publication-error.txt'),'Push failed; local commits retained. No force push or merge attempted.\n'+error.message);console.error('PUBLICATION_BLOCKED '+error.message);}
   });
-  return publications;
+  return publications.catch(error=>{console.error('PUBLICATION_ERROR '+error.message);});
 }
 function serverCandidate(r){return r.status>=500||r.errors?.some(e=>/load:.*(?:Timeout|timed out)|status of 50[0-9]|HTTP.*50[0-9]/i.test(e));}
 async function batch(meta,job,width,browser,pass,text='100,125,150,200',routes=job.routes,kind='matrix') {
@@ -118,6 +118,7 @@ async function work(branch,index) {
   const prior=await exists(join(stateRoot,keyName+'.json'))?JSON.parse(await readFile(join(stateRoot,keyName+'.json'),'utf8')):null;
   const meta=prior??{key:keyName,branch:branchName,source,out,large,commit:git('rev-parse','origin/'+branchName),toolsCommit:git('-C',tools,'rev-parse','HEAD'),startedAt:new Date().toISOString(),status:'Starting preview',batches:[]};
   metas.set(keyName,meta);await save(meta);
+  if(index===0)await publish('branch workers starting');
   if(meta.status==='Complete')return;
   let runtime;
   try{
@@ -157,7 +158,6 @@ console.log('CLOUD_RUN_STARTED '+new Date().toISOString());
 // Refresh all remote tips in one git operation, then freeze them per preview.
 git('fetch','origin');
 const workers=branches.map(work);
-await publish('branch workers starting');
 await Promise.allSettled(workers);
 await publish('all branch workers finished');
 console.log('CLOUD_RUN_FINISHED '+new Date().toISOString());
