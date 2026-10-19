@@ -1,17 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowClockwiseIcon, ArrowLeftIcon, WarningCircleIcon } from "@phosphor-icons/react";
-import "@/components/coverage-assistant.css";
+import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
+import { Card, PageBand } from "@/components/kit/kit";
+import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
+/** A failed Coverage read keeps the page’s band and says what to do next. retry() reads the server again, then redraws. */
 export default function CoverageError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
-  return <div className="coverage-assistant">
-    <Link className="coverage-back" href="/app/schedule"><ArrowLeftIcon size={18} aria-hidden="true" />Back to Schedule</Link>
-    <section className="coverage-results coverage-empty coverage-state-stale" role="alert">
-      <span className="coverage-state-icon"><WarningCircleIcon size={34} weight="duotone" aria-hidden="true" /></span>
-      <h1>Coverage review unavailable</h1>
-      <p>We could not load the current coverage details. Try again to review this shift.</p>
-      <button className="button primary" type="button" onClick={retry}><ArrowClockwiseIcon size={19} aria-hidden="true" />Try again</button>
-    </section>
+  return <div className="nv-page wa-page wa-coverage" data-nv-page="">
+    <PageBand back={{ href: "/app/schedule", label: "Schedule" }} eyebrow="Coverage" title="Cover this shift" summary="This shift’s coverage couldn’t load." />
+    <div className="nv-content wa-narrow">
+      <div role="alert">
+        <Card title="Couldn’t load coverage">
+          <div className="wa-card-body">
+            <p className="wa-text">Nothing was changed. Try again, or go back to the schedule.</p>
+            <button type="button" className="nv-btn" data-kind="primary" data-block="true" onClick={() => { retry(); focusAfterRetry(".wa-coverage [data-nv-band] h1", ".wa-coverage .nv-btn[data-kind=\"primary\"]"); }}>
+              <ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true" />Try again
+            </button>
+            <Link className="nv-btn" data-kind="secondary" data-block="true" href="/app/schedule">Back to schedule</Link>
+          </div>
+        </Card>
+      </div>
+    </div>
   </div>;
 }

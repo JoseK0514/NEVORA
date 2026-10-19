@@ -26,10 +26,11 @@ it("shows and submits only the server-reviewed assignment, ignoring forged query
   expect(html).not.toContain("FORGED");
   expect(html).toContain("Taylor Rivera");
   expect(html).toContain("Customer Support");
-  expect(html).toContain("Remaining requirements stay visible in the gap.");
+  expect(html).toContain("Anything else this shift still needs stays open on the schedule.");
 });
 it("explains the midnight boundary without changing canonical 24:00", async () => {
-  const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
+  // Times and dates are kept whole with no-break spaces; compare the words.
+  const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) })).replace(/\u00a0/g, " ");
   expect(html).toContain("8:00 PM – 12:00 AM");
   expect(html).toContain("Ends Tue, Oct 8");
   expect(html).toContain('name="endTime" value="24:00"');
@@ -39,14 +40,14 @@ it("retains a non-Lead staffing repair with no inferred position or Lead flag", 
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review", lead: "1", positionId: "FORGED" }) }));
   expect(html).toContain('name="positionId" value=""');
   expect(html).not.toContain('name="isDesignatedLead"');
-  expect(html).toContain("Not required for this repair");
-  expect(html).toContain("Fill this staffing requirement");
+  expect(html).toContain("Not needed");
+  expect(html).toContain("This fills the staffing requirement.");
 });
 it("a stale selection removes the save action and keeps a trusted refresh path", async () => {
   state.read.mockRejectedValue(new CoverageRepairConflictError());
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "stale-review" }) }));
   expect(html).toContain("Coverage changed");
-  expect(html).toContain("Refresh coverage review");
+  expect(html).toContain("Open current review");
   expect(html).toContain("refresh=1");
   expect(html).not.toContain("Save replacement");
   expect(html).not.toContain('name="coverageRepairReview"');

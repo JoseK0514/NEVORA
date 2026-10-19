@@ -1,3 +1,182 @@
 /* Phase 3.5 Wave A session: shift forms, Coverage, Copy week, the manager Time-off list, Shift requests and Availability, Team member detail, New employee, Clocker PIN, the employee Swap and Unable-to-work forms.
  * Only that session edits this file. Shared rules (kit, shell, portal-premium.css) are changed by the coordinating
- * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css. */
+ * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css.
+ *
+ * Every Wave A page is `.nv-page.wa-page[data-nv-page]` under a kit PageBand. The pages no longer load their old
+ * page stylesheets (shift-workspace.css, edit-shift.css, coverage-assistant.css, employee-profile.css, new-employee.css,
+ * swap.css, callout-view.module.css, clocker-pin.module.css on these routes); the prefix below only has to outrank the
+ * phone-wide rules in mobile-workforce.css (0,4,3) and portal-design-system.css. Field height and border come from the
+ * shared WR-49/WR-55 rules in portal-premium.css; nothing here sets them. */
+
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  /* Layout */
+  & .wa-narrow, & .wa-wide { width: 100%; }
+  & .wa-split, & .wa-split__main, & .wa-split__side { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+
+  /* Form shell: ConfigurationForm and ShiftChangeForm render form > fieldset > content, then their own messages. */
+  & form.wa-form, & .wa-form { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+  & .wa-form > fieldset, & .wa-form fieldset.configuration-fields, & .wa-form fieldset.shift-change-fields {
+    display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; margin: 0; padding: 0; border: 0;
+  }
+  /* The busy line would push the page down; the button says "Saving…" instead (PendingButton), so the line is read, not shown. */
+  & .wa-form > p[role="status"]:not(.form-success):not(.wa-notice) { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+  /* Fields: label above, field, help 8px under. */
+  & .wa-fields { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); }
+  & :is(.wa-field, .wa-select.nevora-field) { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
+  & :is(.wa-field__label, .wa-select .nevora-field-label) { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--nv-s-2); font: var(--nv-t-label); color: var(--nv-ink-2); }
+  & .wa-field__optional { font: var(--nv-t-callout); color: var(--nv-muted); }
+  & :is(.wa-field__help, .wa-select .nevora-field-hint, .wa-hint) { display: block; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
+  & .wa-field > :is(input, select, textarea), & .wa-select .nevora-select-shell { width: 100%; min-width: 0; }
+  & .wa-field > input { padding-inline: var(--nv-s-4); }
+  & .wa-select .nevora-select-shell { display: block; position: relative; }
+  & .wa-field textarea { min-height: 112px; padding: var(--nv-s-3) var(--nv-s-4); resize: vertical; }
+  & .wa-field input::placeholder, & .wa-field textarea::placeholder { color: var(--nv-muted); opacity: 1; }
+  & .wa-pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nv-s-4); }
+  @media (min-width: 400px) { & .wa-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--nv-s-3); } }
+  & .wa-field__count { font-variant-numeric: tabular-nums; }
+
+  /* Checkbox rows: a 44px target, title and help. */
+  & .wa-check { display: flex; align-items: flex-start; gap: var(--nv-s-3); min-height: 44px; margin: 0; padding: var(--nv-s-1) 0; font: var(--nv-t-row); color: var(--nv-ink); cursor: pointer; }
+  & .wa-check > input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--nv-accent); cursor: pointer; }
+  & .wa-check__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  & .wa-check__title { font: var(--nv-t-row); color: var(--nv-ink); }
+  & .wa-check__help { font: var(--nv-t-callout); color: var(--nv-muted); }
+
+  /* Facts: a label and its value; the value wraps under the label when there's no room. */
+  & .wa-facts { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-2); }
+  & .wa-fact { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: var(--nv-s-4); row-gap: 2px; padding: var(--nv-s-3) 0; }
+  & .wa-fact + .wa-fact { border-top: 1px solid var(--nv-hairline); }
+  & .wa-fact > dt { flex: 0 0 auto; margin: 0; font: var(--nv-t-label); color: var(--nv-muted); }
+  & .wa-fact > dd { flex: 1 1 10rem; margin: 0; font: var(--nv-t-row); color: var(--nv-ink); text-align: right; overflow-wrap: anywhere; }
+  & .wa-fact__more { display: block; font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-muted { color: var(--nv-muted); }
+  & .wa-card-note { margin: 0; padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-card-body { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: 0 var(--nv-s-5) var(--nv-s-5); }
+  & .wa-text { margin: 0; font: var(--nv-t-body); color: var(--nv-ink); text-wrap: pretty; }
+
+  /* Notices: icon plus words, never colour alone. */
+  & .wa-notice, & .wa-form > :is(.form-error, .form-success) {
+    display: flex; align-items: flex-start; gap: var(--nv-s-3); margin: 0; padding: var(--nv-s-4) var(--nv-s-5);
+    border: 0; border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e1); color: var(--nv-ink);
+  }
+  & .wa-notice__icon { flex: none; margin-top: 2px; }
+  & .wa-notice[data-tone="info"] .wa-notice__icon { color: var(--nv-accent); }
+  & .wa-notice[data-tone="review"] { background: var(--nv-review-fill); box-shadow: none; }
+  & .wa-notice[data-tone="review"] .wa-notice__icon { color: var(--nv-review-mark); }
+  & .wa-notice[data-tone="urgent"], & .wa-form > .form-error { background: var(--nv-urgent-fill); box-shadow: none; color: var(--nv-urgent-ink); }
+  & .wa-notice[data-tone="urgent"] .wa-notice__icon { color: var(--nv-urgent-ink); }
+  & .wa-notice[data-tone="done"], & .wa-form > .form-success { background: var(--nv-done-fill); box-shadow: none; color: var(--nv-done-ink); }
+  & .wa-notice[data-tone="done"] .wa-notice__icon { color: var(--nv-done-ink); }
+  & .wa-notice__text { min-width: 0; }
+  & .wa-notice__title { margin: 0; font: var(--nv-t-row); font-weight: 600; color: inherit; }
+  & .wa-notice__body { margin: 0; font: var(--nv-t-callout); color: inherit; text-wrap: pretty; }
+  & .wa-notice__title + .wa-notice__body { margin-top: 2px; }
+  & .wa-notice[data-tone="info"] .wa-notice__body { color: var(--nv-muted); }
+  /* ConfigurationForm's own result lines get the same look; the glyph is Phosphor's, drawn as a mask. */
+  & .wa-form > :is(.form-error, .form-success) { font: var(--nv-t-callout); font-weight: 500; }
+  & .wa-form > :is(.form-error, .form-success)::before {
+    content: ""; flex: none; width: 20px; height: 20px; margin-top: 0; background: currentColor;
+    -webkit-mask: var(--wa-glyph) center / contain no-repeat; mask: var(--wa-glyph) center / contain no-repeat;
+  }
+  & .wa-form > .form-error { --wa-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z'/%3E%3C/svg%3E"); }
+  & .wa-form > .form-success { --wa-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E"); }
+
+  /* Actions: the main action first and full width on phones; on wider screens side by side at the end. */
+  & .wa-actions { display: flex; flex-direction: column; gap: var(--nv-s-3); }
+  & .wa-actions__note { margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-actions__buttons { display: flex; flex-direction: column; gap: var(--nv-s-3); }
+  & .nv-btn[data-kind="danger"] { background: var(--nv-urgent-ink); color: #FFFFFF; }
+  & .nv-btn[data-kind="danger"]:hover:not(:disabled) { background: #8A2D19; }
+  & .nv-btn:disabled { background: var(--nv-inset); color: var(--nv-muted); box-shadow: inset 0 0 0 1px var(--nv-hairline); }
+  & .nv-btn > svg { flex: none; }
+}
+
+/* Wider screens: a reading width for one-task forms, a side summary for long ones. */
+@media (min-width: 600px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+    & .wa-actions__buttons { flex-direction: row-reverse; justify-content: flex-start; flex-wrap: wrap; }
+    & .wa-actions__buttons > .nv-btn { width: auto; min-width: 10rem; }
+  }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+    & .wa-narrow { max-width: 720px; margin-inline: auto; }
+  }
+}
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+    /* The summary and the main action sit together in the side column; the form runs down the main one. */
+    & .wa-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem); grid-template-areas: "main side" "main actions" "main ."; grid-template-rows: auto auto 1fr; align-items: start; }
+    & .wa-split__main { grid-area: main; }
+    & .wa-split__side { grid-area: side; }
+    & .wa-split__actions { grid-area: actions; }
+    & .wa-split__actions .wa-actions__buttons { flex-direction: column; }
+    & .wa-split__actions .wa-actions__buttons > .nv-btn { width: 100%; }
+  }
+}
+
+/* Read-only facts inside a form, and disclosures for rare or destructive actions. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  & .wa-fields-group { display: flex; flex-direction: column; gap: var(--nv-s-4); }
+  & .wa-fields-group > .wa-hint:empty { display: none; }
+  & .wa-readonly { display: flex; flex-direction: column; gap: var(--nv-s-2); padding-top: var(--nv-s-4); border-top: 1px solid var(--nv-hairline); }
+  & .wa-readonly__value { font: var(--nv-t-row); color: var(--nv-ink); }
+  & .wa-disclosure { margin: 0; }
+  & .wa-disclosure__summary {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--nv-s-3); min-height: 52px; padding: 0 var(--nv-s-5) var(--nv-s-3);
+    list-style: none; font: var(--nv-t-label); color: var(--nv-urgent-ink); cursor: pointer;
+  }
+  & .wa-disclosure__summary::-webkit-details-marker { display: none; }
+  & .wa-disclosure__summary::after {
+    content: ""; flex: none; width: 16px; height: 16px; background: var(--nv-icon); transition: transform var(--nv-m-quick) var(--nv-ease-out);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  & .wa-disclosure[open] > .wa-disclosure__summary::after { transform: rotate(180deg); }
+  & .wa-disclosure[data-tone="neutral"] > .wa-disclosure__summary { color: var(--nv-accent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-disclosure__summary::after { transition: none; }
+}
+
+/* Coverage: the shift on one side, who can work it on the other (from 1024px). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  & .wa-columns, & .wa-columns__side, & .wa-columns__main { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+  & .wa-target { border-radius: var(--nv-r-card); }
+  & .wa-target:focus { outline: none; }
+  & .wa-target:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+  & .wa-card-note--top { padding-top: 0; padding-bottom: var(--nv-s-2); }
+  & .wa-card-note--rule { border-top: 1px solid var(--nv-hairline); padding-top: var(--nv-s-4); }
+  & .wa-strong { font-weight: 600; }
+  & .wa-text.wa-muted { color: var(--nv-muted); }
+  & .wa-disclosure--intro + .wa-card-body { padding-top: var(--nv-s-4); }
+  & .wa-ink { color: var(--nv-ink); }
+  & .wa-disclosure--intro { border-bottom: 1px solid var(--nv-hairline); }
+  & .wa-disclosure--intro > .wa-disclosure__summary { padding-bottom: 0; min-height: 44px; }
+  & .wa-disclosure--intro[open] > .wa-card-note { padding-top: 0; }
+  & .wa-candidates { list-style: none; margin: 0; padding: 0; }
+  & .wa-candidate { padding: var(--nv-s-4) var(--nv-s-5) var(--nv-s-2); }
+  & .wa-candidate + .wa-candidate { border-top: 1px solid var(--nv-hairline); }
+  & .wa-candidate__main { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
+  & .wa-candidate__rank { flex: none; width: 20px; padding-top: 10px; font: var(--nv-t-label); font-weight: 600; color: var(--nv-muted); text-align: center; font-variant-numeric: tabular-nums; }
+  & .wa-candidate__text { flex: 1; min-width: 0; display: flex; flex-direction: column; padding-top: 1px; }
+  & .wa-candidate__actions { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; column-gap: var(--nv-s-4); margin-top: var(--nv-s-2); padding-left: calc(20px + var(--nv-s-3) + 40px + var(--nv-s-3)); }
+  & .wa-candidate__actions > .wa-disclosure { order: 2; flex: 1 1 100%; }
+  & .wa-candidate__actions > .wa-disclosure > .wa-disclosure__summary { justify-content: flex-start; gap: var(--nv-s-1); min-height: 44px; padding: 0; }
+  & .wa-candidate__actions > .wa-disclosure > :is(.wa-facts, .wa-card-note) { padding-inline: 0; }
+  & .wa-candidate__go { order: 1; gap: 2px; }
+  & .wa-candidate__actions > .wa-disclosure:not([open]) { flex: 0 1 auto; order: 0; }
+  & .wa-code { font-family: var(--design-font-mono, ui-monospace, monospace); font-size: .9375rem; overflow-wrap: anywhere; color: var(--nv-ink-2); }
+  & .wa-retry > div { display: flex; flex-direction: column; gap: var(--nv-s-2); }
+  & .wa-retry .wa-retry__button { width: 100%; background: var(--nv-canvas); color: var(--nv-ink); box-shadow: inset 0 0 0 1px var(--nv-border); }
+  & .wa-retry .wa-retry__button:disabled { background: var(--nv-inset); color: var(--nv-muted); }
+  & .wa-retry p { margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-retry a { color: var(--nv-accent); font: var(--nv-t-label); overflow-wrap: anywhere; }
+}
+@media (max-width: 359px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-candidate__actions { padding-left: 0; }
+}
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-columns { display: grid; grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr); align-items: start; }
+}

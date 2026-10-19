@@ -15,6 +15,16 @@ import {
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
 import { businessDateStart, shiftPeriod } from "@/lib/scheduling/periods";
 
+/** The server words a need as "2 employees missing" or "Cashier: 1 missing". Say what's needed instead, keeping the
+ * server's label when it has another shape (structured counts are a Codex read: docs/product/specs/p35-wave-a/CODEX.md). */
+function needLabel(label: string) {
+  const staff = /^(\d+) employees missing$/.exec(label);
+  if (staff) return `${staff[1]} more ${staff[1] === "1" ? "person" : "people"} needed`;
+  const position = /^(.+): (\d+) missing$/.exec(label);
+  if (position) return `${position[1]}: ${position[2]} more needed`;
+  return label;
+}
+
 export default async function CoverageSuggestionsPage({
   searchParams,
 }: {
@@ -56,7 +66,7 @@ export default async function CoverageSuggestionsPage({
       saved={params.saved === '1'}
       refreshHref={coverageRepairUrl(locator, true)}
       requirements={review?.targets.map(target => ({
-        label: target.label,
+        label: needLabel(target.label),
         selected: target.target === review.locator.target && (target.target !== 'POSITION' || target.positionId === review.locator.positionId),
         href: coverageRepairUrl({
           ...review.locator,

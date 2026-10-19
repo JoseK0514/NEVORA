@@ -16,7 +16,7 @@ it('second-location entry visibly selects its destination and cancel keeps the l
 });
 it.each([undefined,'foreign-location'])('all-locations or invalid entry requires an explicit active location: %s',async locationId=>{
  const html=renderToStaticMarkup(await NewShiftPage({searchParams:Promise.resolve({week:'2026-10-05',locationId})}));
- expect(html).toContain('<option value="" disabled="" selected="">Select location</option>');
+ expect(html).toContain('<option value="" disabled="" selected="">Choose a location</option>');
  expect(html).not.toContain('type="hidden" name="locationId"');
 });
 it('opened for a day and person, Back returns to that day and person (W2)',async()=>{

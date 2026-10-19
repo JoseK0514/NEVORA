@@ -52,9 +52,9 @@ beforeEach(() => {
 
 it('actual manager position/Lead action opens the matching location/interval and excludes unqualified employees', async () => {
   const html = renderToStaticMarkup(await CoveragePage({ searchParams: Promise.resolve(params(action().href)) }));
-  expect(html).toContain('Fictional South'); expect(html).toContain('barista'); expect(html).toContain('Designated lead required');
-  expect(html).toContain('Fictional Qualified'); expect(html).not.toContain('Fictional Unqualified'); expect(html).toContain('1 eligible'); expect(html).toContain('No target set');
-  expect(html).toContain('location=loc-1'); expect(html).toContain('Prior weeks short are context only');
+  expect(html).toContain('Fictional South'); expect(html).toContain('barista'); expect(html).toContain('<dt>Shift lead</dt><dd>Needed</dd>');
+  expect(html).toContain('Fictional Qualified'); expect(html).not.toContain('Fictional Unqualified'); expect(html).toContain('1\u00a0person'); expect(html).toContain('No target set');
+  expect(html).toContain('location=loc-1'); expect(html).toContain('Earlier weeks under target are shown for context only');
   const link = html.match(/href="([^"]*\/app\/schedule\/new\?review=[^"]+)"/)![1]; const p = params(link.replaceAll('&amp;', '&'));
   const selected = assertCoverageRepairReview(m.source, p.review, managementProof('M'));
   expect(selected.locator).toMatchObject({ locationId: 'loc-1', startTime: '08:00', endTime: '12:00', positionId: 'barista' });
@@ -68,7 +68,7 @@ it('actual manager position/Lead action opens the matching location/interval and
 it('several missing positions expose all targets and require an explicit choice before candidates', async () => {
   m.source!.coverage_window_position_requirements.push({ coverage_window_id: 'coverage', position_id: 'cashier', quantity: 1 });
   const html = renderToStaticMarkup(await CoveragePage({ searchParams: Promise.resolve(params(action({ positionCoverage: [...gap.positionCoverage, { positionId: 'cashier', positionName: 'cashier', missing: 1 }] }).href)) }));
-  expect(html).toContain('barista: 1 missing'); expect(html).toContain('cashier: 1 missing'); expect(html).not.toContain('Review replacement');
+  expect(html).toContain('barista: 1 more needed'); expect(html).toContain('cashier: 1 more needed'); expect(html).not.toContain('Review replacement');
 });
 
 it('stale first review, stale second visit and stale selected form never refresh themselves', async () => {
@@ -77,7 +77,7 @@ it('stale first review, stale second visit and stale selected form never refresh
   m.source!.location_staffing_settings[0].minimum_staff_per_shift = 3;
   for (let i = 0; i < 2; i++) {
     const html = renderToStaticMarkup(await CoveragePage({ searchParams: Promise.resolve(params(action().href)) }));
-    expect(html).toContain('Coverage changed'); expect(html).toContain('Refresh coverage review'); expect(html).not.toContain('Review replacement');
+    expect(html).toContain('Coverage changed'); expect(html).toContain('Refresh</a>'); expect(html).not.toContain('Review replacement');
   }
   const form = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review }) }));
   expect(form).toContain('Coverage changed'); expect(form).not.toContain('Save replacement');
@@ -87,7 +87,7 @@ it('known successful position/Lead return truthfully shows the remaining staffin
   m.source!.schedules = [{ id: 'schedule', location_id: 'loc-1', week_start: week, status: 'DRAFT' }];
   m.source!.shifts = [{ id: 'saved', schedule_id: 'schedule', employee_id: 'E', date: week, start_time: '08:00', end_time: '12:00', position_id: 'barista', is_designated_lead: true }];
   const html = renderToStaticMarkup(await CoveragePage({ searchParams: Promise.resolve({ ...params(action().href), refresh: '1', saved: '1' }) }));
-  expect(html).toContain('Replacement saved'); expect(html).toContain('1 employees missing'); expect(html).toContain('Choose the requirement');
+  expect(html).toContain('Replacement saved'); expect(html).toContain('1 more person needed'); expect(html).toContain('Choose what to fill');
   expect(html).not.toContain('No shift was saved'); expect(html).not.toContain('Coverage changed'); expect(html).not.toContain('Review replacement');
 });
 
