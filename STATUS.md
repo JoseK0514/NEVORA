@@ -1,4 +1,4 @@
-In progress: Wave A round 2 (exit) on `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, then Wave C round 3 on `b109ec3fea10418fb9f5c9da2af0a1e561dc2678`. No cloud verdict yet. Next queue fetch due about 18:28 UTC.
+In progress: Wave A round 2 (exit) on `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, then Wave C round 3 on `b109ec3fea10418fb9f5c9da2af0a1e561dc2678`. Wave C has one verified P1 so far (WR-21); both rounds remain incomplete. Next queue fetch due about 18:28 UTC.
 
 # NEVORA cloud inspection status
 
@@ -30,3 +30,4 @@ All page submissions must be answered, held or aborted in the browser. Only fict
 2026-10-19 18:01:09 UTC · all six branches fetched · no `ROUND.md` handoffs available
 2026-10-19T18:08:18.138164+00:00 · all six branches fetched · Wave A round 2 and Wave C round 3 available; others await handoffs
 2026-10-19 18:18:49 UTC · queue fetched · Wave A round 2 explicitly retargeted to c05e0c7; prior preview stopped and preliminary checks superseded · other handoffs unchanged
+2026-10-19 18:22 UTC · Wave C round 3 on b109ec3fea10418fb9f5c9da2af0a1e561dc2678 · P0 0, P1 1, P2 0 · not zero
