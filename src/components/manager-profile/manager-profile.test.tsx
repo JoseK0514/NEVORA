@@ -49,6 +49,7 @@ describe('Owner and Manager Profile', () => {
     for (const text of ['Fictional Owner', 'Owner', 'Northside QA Workforce', 'Puerto Rico time', 'Checking…']) expect(html).toContain(text);
     expect(html.match(/Not shown yet/g)).toHaveLength(3);
     expect(html.match(/pmp-topic-placeholder/g)).toHaveLength(ALERT_TOPIC_COUNT.owner);
+    expect(html).toContain('<span class="pmp-ghost">Payroll ready to review</span>');
     expect(html).toContain('<p class="sr-only" role="alert" id="profile-read-said"></p>');
   });
 
@@ -58,6 +59,9 @@ describe('Owner and Manager Profile', () => {
     expect(html).not.toContain('Show names');
     expect(html).not.toContain('Old San Juan Kiosk');
     expect(html).toContain('787-555-0100');
+    // An address breaks only after the @ or before a dot (TC-02).
+    expect(html).toContain('<span class="pmp-part">owner@</span></span><span><wbr/><span class="pmp-part">northside-qa</span>');
+    expect(html).toContain('All notifications');
     expect(html.match(/role="switch"/g)).toHaveLength(5);
     expect(html).toContain('aria-checked="false"');
     expect(html).toContain('href="/app/employees/qa-owner"');
@@ -110,7 +114,7 @@ describe('Owner and Manager Profile', () => {
     const html = render(manager, null, { state: { snapshot: null, paused: true, refreshing: false } });
     expect(html).toMatch(/Updates paused|You’re offline/);
     expect(html).toMatch(/Your alert choices show again when/);
-    expect(html).toContain('style="--pmp-rows:4"');
+    expect(html).toMatch(/pmp-hold__value" aria-hidden="true">.*Clock-ins to review/);
     expect(html).not.toContain('pmp-topic-placeholder');
   });
 

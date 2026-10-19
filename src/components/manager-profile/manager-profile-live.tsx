@@ -13,7 +13,7 @@ import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { Card, KitLink, Row, Rows, Tile } from '@/components/kit/kit';
 import { PortalSignout } from '@/components/portal-signout';
 import { createPrivateSnapshotController, type PrivatePanelState } from '@/lib/private-snapshot-client';
-import { MANAGER_ALERTS_ENDPOINT, MANAGER_PROFILE_ENDPOINT, parseManagerProfile, type ManagerAlertTopic, type ManagerProfileSnapshot } from './contract';
+import { ALERT_TOPIC_SIZING, MANAGER_ALERTS_ENDPOINT, MANAGER_PROFILE_ENDPOINT, parseManagerProfile, type ManagerAlertTopic, type ManagerProfileSnapshot } from './contract';
 
 /** What the page already knows from today's session and workspace reads. */
 export type ManagerProfileIdentity = {
@@ -70,19 +70,21 @@ function Placeholder({ text }: { text?: string }) {
 }
 
 /** Contact values break only between their parts: an address after the @ and before dots, a phone number at its
- * spaces. A part too long for any line (over 24 characters) may still wrap inside, so nothing spills out. */
-function Parts({ parts }: { parts: { text: string; joinBefore?: string }[] }) {
-  return <>{parts.map((part, index) => <span key={index}>{index ? part.joinBefore === ' ' ? ' ' : <wbr /> : null}<span className={part.text.length > 24 ? undefined : 'pmp-nowrap'}>{part.joinBefore && part.joinBefore !== ' ' ? part.joinBefore : null}{part.text}</span></span>)}</>;
+ * spaces. Each part is a box that moves whole to the next line; only a part wider than the whole line wraps inside
+ * its own box, so nothing is ever clipped and the characters stay as typed for copying. */
+function Parts({ parts }: { parts: string[] }) {
+  return <>{parts.map((part, index) => <span key={index}>{index ? part.startsWith(' ') ? ' ' : <wbr /> : null}<span className="pmp-part">{part.trimStart()}</span></span>)}</>;
 }
 function Email({ address }: { address: string }) {
-  const at = address.indexOf('@');
-  if (at < 1) return <Parts parts={[{ text: address }]} />;
-  const local = address.slice(0, at).split('.').map((text, index) => ({ text, joinBefore: index ? '.' : undefined }));
-  const domain = address.slice(at + 1).split('.').map((text, index) => ({ text, joinBefore: index ? '.' : '@' }));
+  const at = address.lastIndexOf('@');
+  if (at < 1) return <Parts parts={[address]} />;
+  const local = address.slice(0, at).split('.').map((part, index) => index ? `.${part}` : part);
+  local[local.length - 1] += '@';
+  const domain = address.slice(at + 1).split('.').map((part, index) => index ? `.${part}` : part);
   return <Parts parts={[...local, ...domain]} />;
 }
 function Phone({ number }: { number: string }) {
-  return <Parts parts={number.split(/\s+/).map((text, index) => ({ text, joinBefore: index ? ' ' : undefined }))} />;
+  return <Parts parts={number.split(/\s+/).map((part, index) => index ? ` ${part}` : part)} />;
 }
 
 const SHOWN_LOCATIONS = 5;
@@ -117,8 +119,13 @@ function saveMessage(error: AlertSave['error']) {
 }
 
 /** One alert switch. Without onToggle (re-reading, or a size-holding copy) it reads as busy and ignores presses. */
-function TopicRow({ topic, save, on, onToggle }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void }) {
+function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void; skeleton?: boolean }) {
   const busy = !!save?.pending || !onToggle;
+  // Loading rows: the expected words drawn as grey text-shaped bars, so each row is exactly a ready row's size.
+  if (skeleton) return <li aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder">
+    <span className="nv-row__text"><span className="nv-row__title"><span className="pmp-ghost">{topic.label}</span></span><span className="nv-row__meta"><span className="pmp-ghost">{topic.detail}</span></span></span>
+    <span className="pmp-switch" data-on="false" />
+  </div></li>;
   return <li>
     {/* While busy it says so and ignores presses, but stays enabled, so keyboard focus stays on it. */}
     <button type="button" role="switch" aria-checked={on} className="nv-row pmp-switch-row"
@@ -128,7 +135,7 @@ function TopicRow({ topic, save, on, onToggle }: { topic: ManagerAlertTopic; sav
         <span className="nv-row__meta pmp-meta-stack">
           <span data-shown={!save?.pending && !save?.error}>{topic.detail}</span>
           <span data-shown={!!save?.pending}>Saving…</span>
-          <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><WarningCircleIcon size={16} weight="fill" aria-hidden="true" />{saveMessage(save?.error ?? 'offline')}</span>
+          <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><WarningCircleIcon weight="fill" aria-hidden="true" /><span>{saveMessage(save?.error ?? 'offline')}</span></span>
         </span></span>
       <span className="pmp-switch" data-on={on} aria-hidden="true" />
     </button>
@@ -148,12 +155,13 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
     ? read.head === 'You’re offline' ? 'You’re offline. Your alert choices show again when you’re back online.' : 'Updates paused. Your alert choices show again when you come back to this window.'
     : read.kind === 'denied' ? 'Your session ended. Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.';
   const said = read.kind === 'failed' && retried === 'failed' ? 'Still couldn’t load your contact details, locations and alert choices.' : 'said' in read ? read.said : '';
-  const topicCount = identity.owner ? ALERT_TOPIC_COUNT.owner : ALERT_TOPIC_COUNT.manager;
+  // What sizes the alert list while there is no ready read: the last read, or else the role's expected topics.
+  const sizing = held?.alerts ?? (identity.owner ? ALERT_TOPIC_SIZING.owner : ALERT_TOPIC_SIZING.manager);
   return <div className="pmp-grid">
     <div className="pmp-col">
       <Card id="profile-details" title="Your details" meta={<>
         {/* Never empty: the head lines up on this text's baseline in every state. */}
-        <span role="status">{read.head ?? '\u00a0'}<span className="sr-only">{read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</span></span>
+        <span role="status">{read.head ?? (read.kind === 'failed' || read.kind === 'denied' ? '' : '\u00a0')}<span className="sr-only">{read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</span></span>
         {/* Never disabled while busy, so focus stays on it; a second press only restarts the same read. */}
         {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
         {read.kind === 'denied' ? <Link className="pmp-text-button pmp-head-action" href="/login">Sign in</Link> : null}
@@ -179,7 +187,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
       </Card> : null}
       <Card id="profile-notifications" title="Notifications">
         <Rows>
-          <Row href="/app/notifications" leading={<Tile><BellIcon size={20} aria-hidden="true" /></Tile>} title="Notifications" meta="Requests, schedule changes and team updates" />
+          <Row href="/app/notifications" leading={<Tile><BellIcon size={20} aria-hidden="true" /></Tile>} title="All notifications" meta="Requests, schedule changes and team updates" />
           {identity.deviceAlerts
             ? <li><button type="button" className="nv-row pmp-button-row" data-leading="true" popoverTarget="portal-device-settings">
                 <Tile><DeviceMobileIcon size={20} aria-hidden="true" /></Tile>
@@ -191,19 +199,17 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         <h3 className="pmp-subhead" id="profile-alerts-title">You’re told about</h3>
         <ul className="nv-rows pmp-topics" aria-labelledby="profile-alerts-title">
           {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
-            : read.kind !== 'loading'
-            // Any read that isn't loading says what happened where the alert rows are, in their space, so Sign out stays put.
-            ? <li className={sized ? 'pmp-hold pmp-topics-hold' : undefined}>
-                {sized ? <ul className="nv-rows pmp-hold__value" aria-hidden="true">{sized.alerts.map(topic => <TopicRow key={topic.id} topic={topic} on={topic.on} />)}</ul> : null}
-                <div className="pmp-topics-note pmp-hold__note" style={sized ? undefined : { ['--pmp-rows' as string]: topicCount }}>
+            : read.kind === 'loading' ? sizing.map(topic => <TopicRow key={topic.id} topic={topic} on={false} skeleton />)
+            // Any other state says what happened where the alert rows are, over their hidden copy, so nothing below moves.
+            : <li className="pmp-hold pmp-topics-hold">
+                <ul className="nv-rows pmp-hold__value" aria-hidden="true">{sizing.map(topic => <TopicRow key={topic.id} topic={topic} on={topic.on} />)}</ul>
+                <div className="pmp-topics-note pmp-hold__note">
                   <Tile tone={read.kind === 'paused' ? 'neutral' : 'urgent'}>{read.kind === 'paused' ? <PauseCircleIcon size={20} aria-hidden="true" /> : <WarningCircleIcon size={20} weight="fill" aria-hidden="true" />}</Tile>
                   <p>{note}</p>
                   {read.kind === 'denied' ? <Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link> : null}
                   {read.kind === 'failed' ? <button type="button" className="nv-btn" data-kind="secondary" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={onRetry}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
                 </div>
-              </li>
-            // Placeholder rows use the ready row's line boxes (two detail lines on narrow phones), so the list keeps its height.
-            : Array.from({ length: topicCount }, (_, index) => <li key={index} aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder"><span className="nv-row__text"><span className="nv-row__title"><span className="pmp-bar" /></span><span className="nv-row__meta"><span className="pmp-bar pmp-bar--short" /></span></span><span className="pmp-switch" data-on="false" /></div></li>)}
+              </li>}
         </ul>
         <p className="sr-only" role="status">{announcement}</p>
         {shown && !shown.alerts.length ? <p className="pmp-empty">No alert choices for your role yet.</p> : null}
