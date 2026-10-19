@@ -37,7 +37,7 @@
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error, .premium-updates, .premium-employee-home, .premium-employee-schedule, .premium-employee-time, .premium-employee-profile, .premium-employee-availability, .premium-request-hub, .premium-employee-timeoff, .premium-employee-exchange, .premium-notifications, .premium-employee-pay:is(.employee-shell *)) > .nv-pageband .nv-masthead__summary { max-width: 46em; }
 
   /* Inbox: the filters sit on the title row (WR-35). */
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox > .nv-pageband > .nv-masthead__extra { grid-column: 2; margin-top: var(--nv-s-1); min-width: 0; justify-self: end; max-width: 100%; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox > .nv-pageband > .nv-masthead__extra { grid-column: 2; margin-block: -2px; min-width: 0; justify-self: end; max-width: 100%; }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox > .nv-pageband .nv-filters { margin: 0; padding: 0; overflow-x: auto; }
 }
 
@@ -56,7 +56,11 @@
 
 /* Wide desktop (1024 and up): Home's views put their view chips on the title row too. */
 @media (min-width: 1024px) {
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view > .nv-pageband > .nv-masthead__extra { grid-column: 2; margin-top: var(--nv-s-1); min-width: 0; justify-self: end; max-width: 100%; }
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view > .nv-pageband > .nv-masthead__extra { grid-column: 2; margin-block: -2px; min-width: 0; justify-self: end; max-width: 100%; }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* ST-P4-12, WR4-17: the view chips scroll sideways at every desktop width (at large text below 1024 they'd otherwise be cut). */
+  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view > .nv-pageband > .nv-masthead__extra { min-width: 0; max-width: 100%; }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view > .nv-pageband .nv-masthead__extra > * { margin: 0; padding: 0; overflow-x: auto; flex-wrap: nowrap; }
 }
 
@@ -212,22 +216,23 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band="flat"] > .route-skeleton-band + * { margin-top: var(--nv-s-4); }
   /* Each page's measured desktop band (1024 to 1440). */
   .route-skeleton[data-route="home"] { --route-band-desktop: 168px; }
-  .route-skeleton[data-route="inbox"] { --route-band-desktop: 196px; }
+  .route-skeleton[data-route="inbox"] { --route-band-desktop: 192px; }
   .route-skeleton[data-route="schedule"] { --route-band-desktop: 168px; }
   .route-skeleton[data-route="team"] { --route-band-desktop: 168px; }
   .route-skeleton[data-route="timecards"] { --route-band-desktop: 136px; }
-  .route-skeleton[data-route="payroll"] { --route-band-desktop: 116px; }
-  .route-skeleton[data-route="exports"] { --route-band-desktop: 116px; }
+  .route-skeleton[data-route="payroll"] { --route-band-desktop: 136px; }
+  .route-skeleton[data-route="exports"] { --route-band-desktop: 136px; }
 }
 @media (min-width: 761px) and (max-width: 1023px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band] { --nv-overlap: 32px; }
   /* 761 to 1023. */
   .route-skeleton[data-route="home"] { --route-band-desktop: 160px; }
-  .route-skeleton[data-route="inbox"] { --route-band-desktop: 188px; }
+  .route-skeleton[data-route="inbox"] { --route-band-desktop: 184px; }
   .route-skeleton[data-route="schedule"] { --route-band-desktop: 160px; }
   .route-skeleton[data-route="team"] { --route-band-desktop: 160px; }
-  .route-skeleton[data-route="payroll"] { --route-band-desktop: 140px; }
-  .route-skeleton[data-route="exports"] { --route-band-desktop: 140px; }
+  .route-skeleton[data-route="timecards"] { --route-band-desktop: 128px; }
+  .route-skeleton[data-route="payroll"] { --route-band-desktop: 152px; }
+  .route-skeleton[data-route="exports"] { --route-band-desktop: 152px; }
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* Schedule's desktop band is flat (WR-09), so its placeholder content starts 16px below the band too. */
@@ -357,7 +362,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 /* Employee and Lead desktop (started Oct 19, in parallel with Phase 3; desktop only, so phones are untouched).
  * The band rules above cover their pages too. Employee Home's "N items need your review" link sits on the title row. */
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
-  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :is(.premium-employee-home, .premium-employee-schedule, .premium-employee-timeoff, .premium-employee-exchange, .premium-employee-availability) > .nv-pageband > .nv-masthead__extra { grid-column: 2; justify-self: end; margin-top: var(--nv-s-1); min-width: 0; max-width: 100%; }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :is(.premium-employee-home, .premium-employee-schedule, .premium-employee-timeoff, .premium-employee-exchange, .premium-employee-availability) > .nv-pageband > .nv-masthead__extra { grid-column: 2; justify-self: end; margin-block: -2px; min-width: 0; max-width: 100%; }
   /* Their view chips scroll sideways if the title row is short of room, never wrapping the title. */
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :is(.premium-employee-schedule, .premium-employee-timeoff, .premium-employee-exchange, .premium-employee-availability) > .nv-pageband > .nv-masthead__extra > * { margin: 0; padding: 0; flex-wrap: nowrap; overflow-x: auto; }
 }
@@ -465,24 +470,24 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   .employee-shell .route-skeleton[data-route="home"] { --route-band-desktop: 172px; }
   .employee-shell .route-skeleton[data-route="schedule"] { --route-band-desktop: 120px; }
   .employee-shell .route-skeleton[data-route="hub"] { --route-band-desktop: 136px; }
-  .employee-shell .route-skeleton[data-route="review"] { --route-band-desktop: 140px; }
-  .employee-shell .route-skeleton[data-route="exchange"] { --route-band-desktop: 140px; }
-  .employee-shell .route-skeleton[data-route="availability"] { --route-band-desktop: 140px; }
+  .employee-shell .route-skeleton[data-route="review"] { --route-band-desktop: 136px; }
+  .employee-shell .route-skeleton[data-route="exchange"] { --route-band-desktop: 136px; }
+  .employee-shell .route-skeleton[data-route="availability"] { --route-band-desktop: 136px; }
   .employee-shell .route-skeleton[data-route="mytime"] { --route-band-desktop: 136px; }
   .employee-shell .route-skeleton[data-route="timecards"] { --route-band-desktop: 136px; }
-  .employee-shell .route-skeleton[data-route="mypay"] { --route-band-desktop: 144px; }
+  .employee-shell .route-skeleton[data-route="mypay"] { --route-band-desktop: 136px; }
   .employee-shell .route-skeleton:is([data-route="profile"], [data-route="updates"], [data-route="notifications"]) { --route-band-desktop: 116px; }
 }
 @media (min-width: 761px) and (max-width: 1023px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   .employee-shell .route-skeleton[data-route="home"] { --route-band-desktop: 164px; }
   .employee-shell .route-skeleton[data-route="schedule"] { --route-band-desktop: 172px; }
-  .employee-shell .route-skeleton[data-route="hub"] { --route-band-desktop: 116px; }
-  .employee-shell .route-skeleton[data-route="review"] { --route-band-desktop: 120px; }
-  .employee-shell .route-skeleton[data-route="exchange"] { --route-band-desktop: 140px; }
-  .employee-shell .route-skeleton[data-route="availability"] { --route-band-desktop: 144px; }
-  .employee-shell .route-skeleton[data-route="mytime"] { --route-band-desktop: 136px; }
-  .employee-shell .route-skeleton[data-route="timecards"] { --route-band-desktop: 136px; }
-  .employee-shell .route-skeleton[data-route="mypay"] { --route-band-desktop: 148px; }
+  .employee-shell .route-skeleton[data-route="hub"] { --route-band-desktop: 128px; }
+  .employee-shell .route-skeleton[data-route="review"] { --route-band-desktop: 128px; }
+  .employee-shell .route-skeleton[data-route="exchange"] { --route-band-desktop: 150px; }
+  .employee-shell .route-skeleton[data-route="availability"] { --route-band-desktop: 152px; }
+  .employee-shell .route-skeleton[data-route="mytime"] { --route-band-desktop: 128px; }
+  .employee-shell .route-skeleton[data-route="timecards"] { --route-band-desktop: 128px; }
+  .employee-shell .route-skeleton[data-route="mypay"] { --route-band-desktop: 152px; }
   .employee-shell .route-skeleton:is([data-route="profile"], [data-route="updates"]) { --route-band-desktop: 116px; }
   .employee-shell .route-skeleton[data-route="notifications"] { --route-band-desktop: 140px; }
 }
@@ -515,4 +520,19 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* IS-P4-21: while the list's height is held, its status card (offline, failed, signed out) stays in view below the header. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-list-column > .nv-card:has(.inbox-status) { position: sticky; top: calc(65px + var(--nv-s-4)); z-index: 1; }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-status-message:focus { outline: none; }
+}
+@media (min-width: 1100px) and (max-width: 1279px) {
+  /* WR4-14: beside the side column the week's rows are narrow, so the position takes its own line (no "·" starting a line). */
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-shift-copy > .my-shift-position { flex-basis: 100%; }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-shift-copy > .my-shift-position::before { content: none; }
+}
+@media (min-width: 761px) and (max-width: 1023px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* WR4-06 below 1024: sibling tabs share one title line here too; the tab-row bands end 16px under their last row (not 24) to stay under 200px. */
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband.nv-pageband--flat { padding-bottom: var(--nv-s-4); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband:not(:has(.nv-pageband__eyebrow-row:not([style*="none"]), .nv-pageband__bar)) { padding-top: calc(var(--nv-s-4) + 48px + 20px); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) .premium-employee-exchange > .nv-pageband { padding-top: calc(var(--nv-s-4) + 48px + 20px); }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* Controls on the title row overhang it by 2px each side, so the row is the title's 40px and every title sits on the same line. */
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] > .nv-pageband .nv-masthead__title { align-self: start; }
 }

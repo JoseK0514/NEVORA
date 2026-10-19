@@ -138,3 +138,61 @@ Not covered this round:
 - My time and Profile while paused or offline for Employees (those components are the coordinator's, and phone P3-ST-14 tracks My time)
 
 Open: 0 P0, 2 P1, 3 P2
+
+## Round 4
+
+October 19, 2026, on `a6f009d` (same preview and states). I worked read only; failed reads were simulated in my own browser. I used Chromium, with WebKit spot checks.
+
+Coverage:
+- **Manager and Owner:** 761, 768, 1024, 1100 and 1440, at 100, 125, 150 and 200% text.
+- **Employee and Lead:** 768, 1024 and 1440.
+- **Phones:** 320 and 390.
+
+The server was fast at the start and slow again later (a page load timed out after 120s once). Two 30-second re-reads during the slow spell came back "unavailable" from the server. I didn't file those, but the layout held through them.
+
+Data: `SI/r4/`. Screenshots: `SI/shots/r4-*`.
+
+### Status of open findings
+
+| ID | Status | Measurement now |
+|---|---|---|
+| ST-P4-03 Inbox loses scroll position | **Fixed** | Scrolled to 800, every transition kept 800: paused and back, offline and online, and a failed read. That held in Chromium at 1024 (Owner; list held at 4000) and 1440 (Manager; list held at 3580), and in WebKit at 1440. The document height was the same in every state (4361 / 3941). The re-read and the server failures kept the two columns, the 200px pane placeholder and the Request pages row in place. |
+| ST-P4-05 Home loading rows | **Fixed** | Today, Now, Setup and Week keep identical rectangles from the first painted frame to ready. That's 768 (Owner and Manager; Now 680, Setup at 1123), 1024 (Manager; Now 640, Week at 1083) and 1440 (Owner; Now 640, Setup at 1083). Paused and offline: 0 frames changed at any of the three widths. |
+| ST-P4-09 Employee and Lead placeholders without a band | **Fixed** | Placeholder band against final band, sidebar navigation (all match, all at y=93):<br>• **`AUDIT-E` at 1440:** My schedule 120/120, Requests 184/184, My time 184/184, My pay 192/192, Updates 116/116, Notifications 116/116, Home 172/172.<br>• **`AUDIT-E` at 1024:** the same.<br>• **`AUDIT-E` at 768:** My schedule 172/172, Requests 164/164, My time 184/184, My pay 196/196, Updates 116/116, Notifications 140/140.<br>• **`AUDIT-LEAD` at 1024:** the same, Home 172/172.<br>The 48px tab row is in the band from the first frame, and the placeholder is the page's width (1120 at 1440). |
+| ST-P4-10 Section tabs slide | **Fixed** | Tab positions and widths are identical in placeholder and page: Manager Timecards at 1440 (72/79/88/103 wide at x 312/408/511/622) and 1024; Employee My pay at 1440; Employee Requests at 768. `padding-inline` is 0 in both states. |
+| ST-P4-11 My schedule side column doesn't stick | **Fixed** | The side column is now its content's height (262) and holds at y=81 from scrollY 400 to the end of the page. The review card stays the element at its top centre at every scroll position. Measured `AUDIT-E` and `AUDIT-LEAD` at 1440, Lead at 1100, and Lead at 1440 in WebKit. At maximum scroll it still ends above the week's bottom (1100: 343 against 357). |
+| ST-P4-06 | Kept by decision | – |
+| ST-P4-08 | Coordinator (Inter fallback metrics cherry-picked) | Not counted. |
+
+### New finding
+
+| ID | Screen, role, width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| ST-P4-12 | Home's views (Attendance, Team overview, Schedule activity), both roles, 761–1023 at 125% text and above (measured Owner 768, Manager 761) | `.premium-home-view .nv-masthead__extra` (view chips) | At 761–1023 the chips get their own row, but that row neither scrolls nor wraps, so at larger text it runs past the band and the band cuts it off. **768, Owner:** the chips end at x=744 at 125% against the band's edge at 736. At 200% they end at x=937, so "Schedule activity" (691–937) is cut to "Sc" and can't be clicked. **761, Manager:** 768 at 125% and 972 at 200%, against the band at 729. At 100% they fit (700 against 736). Because the chip row isn't a scroll container, a mouse user has no way to reach the last view. | `SI/shots/r4-ST-P4-12-chips-768-200.png`, `…-768-125.png` | `src/app/app/premium-desktop.css:59-60` gives the views' chips `min-width: 0; max-width: 100%` and `overflow-x: auto; flex-wrap: nowrap` only from 1024px up. At 761–1023 (`:54`) the chips only get `margin-top`. In the band grid (`:19`, `minmax(min-content, max-content)`) the chips' row is then as wide as the chips themselves, wider than the band. | Apply `:59-60`'s sizing at every desktop width. In the 761–1023 block, add `.premium-home-view > .nv-pageband > .nv-masthead__extra { min-width: 0; max-width: 100%; }` and `… .nv-masthead__extra > * { overflow-x: auto; flex-wrap: nowrap; }`, as Employee My schedule already does (its chips stay inside the band at 768 up to 200%). | P1 |
+
+### Checked and correct
+
+- **Large text (761, 768, 1024, 1440; 100–200%; Owner and Employee):**
+  - Bands grow with the text and nothing overlaps: the title never overlaps the controls, and the eyebrow-row control never overlaps the eyebrow.
+  - Inbox filters move to their own row at 125% and above at 761 and 768, and at 200% at 1024. They stay on the title row at 1440, and they scroll sideways where they must.
+  - Employee Home, Time off and Shift requests move their controls to their own row at 761 and 768 at 125% and above, and at 200% at 1024.
+  - Nothing scrolls the page sideways.
+  - Owner Home's greeting wraps between words (3 lines at 200% at 768); that's expected.
+  - The only spill outside a band is ST-P4-12.
+- **Band heights at 100% text (cap 200):**
+  - **761:** Home 156, Inbox 188, views 192, Schedule and Team 156, Timecards 180, Time exports 184.
+  - **768:** Home 160, Inbox 188, views 196, Schedule and Team 160, Timecards 184, Time exports 188.
+  - **Employee at 761:** Home 164, My schedule 168, Shift requests 184, Time off 168, My pay 192.
+- **Phones unchanged:**
+  - **Manager 390:** Home 220, Inbox 308, Schedule 244, Team 220, Timecards 148, Attendance 308.
+  - **Manager 320:** Home 256, Inbox 332, Schedule 244, Team 244, Timecards 148, Attendance 308.
+  - **Employee 390:** Home 272, My schedule 168, Time off 168 (under tabs), My time 172, Profile 104, Updates 128.
+  - **Employee 320:** the same, except Profile is 128.
+  - All match round 2.
+
+Not covered this round:
+- placeholder bands at 761 and 1180
+- Lead pages at 768
+- Team filters at 1024 (same CSS as 1440, which passed in round 2)
+
+Open: 0 P0, 1 P1, 0 P2
