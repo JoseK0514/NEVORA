@@ -10,6 +10,7 @@ import { ActionForm } from "@/components/wave-a/action-form";
 import { TimeOffReviewDecision } from "@/components/time-off-review-decision";
 import { ManagerIssueFocus } from './manager-issue-focus';
 import { inboxFilter } from "@/lib/action-center/inbox";
+import { getWorkspace } from "@/lib/data/workspaces";
 
 const tabs = [
   { id: "pending", label: "Pending", status: "PENDING" },
@@ -105,6 +106,15 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   if (selected.status === "PENDING" && requestId && !error) return <DecidedReview origin={origin} />;
 
   const count = requests.length;
+  // Codex C1: who decided and when, when the read includes it (optional until tonight's merge).
+  const zone = selected.status === "PENDING" ? "UTC" : await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
+  const decidedLine = (request: object) => {
+    const { reviewerName, reviewedAt } = request as { reviewerName?: string; reviewedAt?: string };
+    if (!reviewerName && !reviewedAt) return null;
+    let on = "";
+    try { on = reviewedAt ? new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(reviewedAt)).replace(" ", "\u00a0") : ""; } catch { on = ""; }
+    return <span className="wa-row-note">{`${selected.id === "approved" ? "Approved" : "Declined"}${reviewerName ? ` by ${reviewerName}` : ""}${on ? ` · ${on}` : ""}`}</span>;
+  };
   const plural = (n: number) => `${n}\u00a0${n === 1 ? "request" : "requests"}`;
   // Phase 3.5 Wave A: the full Time-off list on the kit. Pending requests are cards with the decision on them;
   // approved and declined are one record card each. The single-request review above is unchanged.
@@ -140,7 +150,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
             {count ? <Rows label={`${selected.label} time off`}>
               {requests.map(request => (
                 <Row key={request.id} title={request.employeeName}
-                  meta={<><MetaParts text={`${rangeLabel(request)} · ${lengthLabel(request)}`} />{request.reason ? <span className="wa-row-note">Note: {request.reason}</span> : null}</>} />
+                  meta={<><MetaParts text={`${rangeLabel(request)} · ${lengthLabel(request)}`} />{request.reason ? <span className="wa-row-note">Note: {request.reason}</span> : null}{decidedLine(request)}</>} />
               ))}
             </Rows> : <div className="wa-card-body"><p className="wa-text wa-muted">{`No ${selected.label.toLowerCase()} time off yet. Decisions you make show up here.`}</p></div>}
           </Card>

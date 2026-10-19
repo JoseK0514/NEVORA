@@ -39,6 +39,7 @@ vi.mock("@/lib/data/week-settings", () => ({ getUpcomingAvailabilityWeek: async 
 vi.mock("@/lib/data/exchanges", () => ({ listManagerPendingExchanges: vi.fn(async () => []), listManagementCoverage: vi.fn(async () => []), listTeamExchangeActivity: vi.fn(async () => []) }));
 vi.mock("@/lib/data/callouts", () => ({ listPendingCallouts: vi.fn(async () => []), listTeamCalloutHistory: vi.fn(async () => []) }));
 vi.mock("@/app/app/requests/actions", () => ({ reviewTimeOffAction: vi.fn() }));
+vi.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ timeZone: "America/Puerto_Rico" }) }));
 vi.mock("@/app/app/exchange/actions", () => ({ reviewExchangeAction: vi.fn(),shiftChangeAction:vi.fn(),reconcileShiftChangeAction:async()=>null }));
 vi.mock("@/app/app/exchange/callout/actions", () => ({ reviewCalloutAction: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter:()=>({refresh:()=>{}}), redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
@@ -114,4 +115,14 @@ it('H12 actionable manager exception explains its reason outside the action grid
  expect(html).toContain('>Approve<');expect(html).toContain('Projected scheduled overtime needs manager review.');
  expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="wa-decision"'));
  expect(html).not.toMatch(/operationalProfile|weeklyMinutes|classification/);
+});
+
+it("names who decided a request and when, once the read includes it (Codex C1), and stays quiet without it", async () => {
+  const base = { id: "r1", employeeId: "e1", employeeName: "Fictional Person", startDate: "2026-10-29", endDate: "2026-10-30", status: "APPROVED", createdAt: "2026-10-01T15:00:00.000Z" };
+  vi.mocked(listTeamTimeOffRequests).mockResolvedValueOnce([{ ...base, reviewerName: "Fictional Manager", reviewedAt: "2026-10-02T15:00:00.000Z" }] as never);
+  const decided = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" })).replace(/\u00a0/g, " ");
+  expect(decided).toContain("Approved by Fictional Manager · Oct 2");
+  vi.mocked(listTeamTimeOffRequests).mockResolvedValueOnce([base] as never);
+  const older = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" }));
+  expect(older).not.toContain("Approved by");
 });

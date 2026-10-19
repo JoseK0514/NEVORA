@@ -4,6 +4,8 @@ Phase 3.5 Wave A rebuilt these pages on the kit without touching server code. Ea
 
 ## Contracts (reads the UI would use)
 
+**Status, October 19:** Codex built C1–C3 on `codex/premium-backend` (additive, optional fields). Wave A reads them when present and keeps today's behaviour without them, so the branch works before and after tonight's merge: C1 adds "Approved by Name · Oct 2" under each decided request; C2 words needs from `count`/`positionName` (the sentence rewrite stays as the fallback); C3 lists each skipped shift by person, day, time and location (grouped reasons stay as the fallback for older receipts).
+
 | # | Page | What the UI needs | Today | Contract |
 |---|---|---|---|---|
 | C1 | Time-off list, Approved and Declined | Who decided each request and when | `listTeamTimeOffRequests()` returns no reviewer or decision time (the employee read already does, since d462f54) | Add `reviewerName?: string` and `reviewedAt?: string` (ISO) to each row, the same shape as `listEmployeeTimeOffRequests`. The UI will add "Approved by Name · Oct 2" under each row. |

@@ -15,11 +15,17 @@ import {
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
 import { businessDateStart, shiftPeriod } from "@/lib/scheduling/periods";
 
-/** The server words a need as "2 employees missing" or "Cashier: 1 missing". Say what's needed instead, keeping the
- * server's label when it has another shape (structured counts are a Codex read: docs/product/specs/p35-wave-a/CODEX.md). */
-function needLabel(label: string) {
+/** What a coverage gap still needs, in words. Codex C2 adds a numeric `count` (and `positionName` on POSITION targets);
+ * until that read reaches this branch, the server's sentence ("2 employees missing", "Cashier: 1 missing") is reworded,
+ * and any other label is shown as it is. */
+type NeedTarget = { target: string; label: string; count?: number; positionName?: string };
+function needLabel({ target, label, count, positionName }: NeedTarget) {
+  const people = (n: number) => `${n} more ${n === 1 ? "person" : "people"} needed`;
+  if (target === "LEAD") return "Shift lead needed";
+  if (typeof count === "number" && target === "STAFFING") return people(count);
+  if (typeof count === "number" && target === "POSITION" && positionName) return `${positionName}: ${count} more needed`;
   const staff = /^(\d+) employees missing$/.exec(label);
-  if (staff) return `${staff[1]} more ${staff[1] === "1" ? "person" : "people"} needed`;
+  if (staff) return people(Number(staff[1]));
   const position = /^(.+): (\d+) missing$/.exec(label);
   if (position) return `${position[1]}: ${position[2]} more needed`;
   return label;
@@ -66,7 +72,7 @@ export default async function CoverageSuggestionsPage({
       saved={params.saved === '1'}
       refreshHref={coverageRepairUrl(locator, true)}
       requirements={review?.targets.map(target => ({
-        label: needLabel(target.label),
+        label: needLabel(target as NeedTarget),
         selected: target.target === review.locator.target && (target.target !== 'POSITION' || target.positionId === review.locator.positionId),
         href: coverageRepairUrl({
           ...review.locator,
