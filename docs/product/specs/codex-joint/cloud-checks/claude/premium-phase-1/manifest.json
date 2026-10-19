@@ -8,7 +8,30 @@
   "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
   "startedAt": "2026-10-19T17:52:56.800Z",
   "status": "Running matrix",
-  "batches": [],
+  "batches": [
+    {
+      "name": "00001-matrix-AUDIT-E-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T18-02-32-071Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00001-matrix-AUDIT-E-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=audit-next-0-1",
+        "--accounts",
+        "AUDIT-E",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "code": 1,
+      "passed": 15,
+      "failed": 1
+    }
+  ],
   "planned": 12580,
   "runtimePid": 26200,
   "url": "http://127.0.0.1:35193"
