@@ -62,4 +62,24 @@ export function registerScopedCases(h){
     }
     check(row,timeReads.some(read=>read.status===200)&&contextReads.some(read=>read.status===200),'UI readback used actual successful source reads');
   },{accounts:['AUDIT-E','AUDIT-LEAD'],sizes:[[390,844,100],[320,844,200]]});
+  register('scoped-p3-withdrawal-fixture-readback',['Phase3 genuine pending withdrawal prerequisite'],async({page,row})=>{
+    const preview=process.env.PREVIEW_OUT;
+    const run=(await readdir(preview)).filter(name=>name.startsWith('evidence-')).sort().at(-1);
+    const manifest=JSON.parse(await readFile(join(preview,run,'phase3-entry-initial-fixture.json'),'utf8'));
+    if(manifest.checkpoint!==process.env.VERIFY_SHA||!manifest.initializedBeforeListen)throw Error('SETUP GAP: exact initial-only fixture receipt is missing');
+    const actor=manifest.actors.find(actor=>actor.account===row.account),id=actor?.pendingWithdrawal?.requestId;
+    if(!id||!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id))throw Error('SETUP GAP: own pending UUIDv4 prerequisite is missing');
+    row.initialFixture={source:manifest.checkpoint,account:actor.account,pendingRequestId:id};
+    await go(page,row,'/app/requests?tab=my');
+    const form=page.locator('form[aria-label^="Withdraw request for "]').filter({has:page.locator('input[name="requestId"][value="'+id+'"]')});
+    check(row,await form.count()===1,'Actual own pending UUIDv4 request renders its real withdrawal form');
+    if(await form.count()!==1){await evidence(page,row,'genuine-own-withdrawal-form-missing');return;}
+    const disclosure=page.locator('details.nto-withdrawal').filter({has:form});
+    await disclosure.locator(':scope > summary').click();
+    check(row,await form.locator('input[name="requestId"]').inputValue()===id,'Actual form preserves the genuine own pending request identity');
+    check(row,await form.locator('input[name="operationId"]').inputValue()==='TIME_OFF_WITHDRAW:'+id,'Actual form preserves the canonical immutable withdrawal identity');
+    check(row,await form.getByRole('checkbox').isVisible(),'Pending own request exposes real confirmation');
+    check(row,await form.getByRole('button',{name:'Withdraw request',exact:true}).isVisible(),'Pending own request exposes its real action button');
+    await evidence(page,row,'genuine-own-withdrawal-ready');
+  },{accounts:['AUDIT-E','AUDIT-LEAD'],sizes:[[390,844,100],[320,844,200]]});
 }

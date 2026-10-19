@@ -8,7 +8,7 @@
     "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
     "src/test/integration/payroll-fixture.ts": "7f830da23d54caea79f7a8bfa3be8cfa0b44850da8479d124bc487654824278f"
   },
-  "launch": "Use /workspace/nevora-inspection-runtime/launch-preview.sh only after root release. It removes the original preview script browser Publish bootstrap and uses the approved fictional owned-fixture executor instead. Record its generated runtime adapter manifest.",
+  "launch": "Only after root releases this exact full-review worker: use /workspace/nevora-inspection-runtime/launch-before-listen.sh, READY_REVIEW_RELEASED_SHA matching checkpoint, PREVIEW_OWNER=phase3-full, owned disk PREVIEW_OUT, and phase3OwnEntryExtension environment below. All source fixtures/canonical callback complete before first listener. Do not use the historical post-listen launch-preview.sh for this full exit.",
   "accounts": [
     "AUDIT-E",
     "AUDIT-LONG",
@@ -108,7 +108,7 @@
   "phase3OwnEntryExtension": {
     "module": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-lead-fixture.mts",
     "export": "seedPhase3LeadFixture",
-    "moduleSha256": "dfed9bd759ad54d8c91f7495a1553dc8286156b64463470f0f870c5cf4b65065",
+    "moduleSha256": "1efd142e98f0b3f426c99007ca643ccd36562f81ff4ebc5158f3ada84b4583cf",
     "receipt": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-lead-fixture-preparation.json",
     "initialOnly": true,
     "initializedBeforeListen": false,
@@ -120,11 +120,30 @@
     "slot": "After exact-source seed-extra/templates; before communication publication/listen; exclusive with supplemental Payroll fixture",
     "canonicalReadback": "Both own time and correction context must confirm real entry+break targets before listen",
     "domReadbackModule": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-entry-fixture-readback.mjs",
-    "domReadbackModuleSha256": "0efb0914e5609c1ac481e89a8836cd52a897124e14c4c21aeeb6f5b57fa01d9b",
-    "domReadbackPending": true
+    "domReadbackModuleSha256": "c184f4a2c9da2a2c53eb9936fe6870a7f394285e561126d28bcc895e18525797",
+    "domReadbackPending": true,
+    "withdrawalPrerequisites": {
+      "initialOnly": true,
+      "accounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD"
+      ],
+      "method": "Exact-source createTimeOffRequest + getTimeOffRequest + parseWithdrawalCommand; real own pending UUIDv4 per actor, reusing a suitable existing one if present",
+      "legacyFixtureReason": "audit-timeoff non-UUID fails current parseWithdrawalCommand, Lead original fixture has only approved request",
+      "noBrowserMutation": true
+    }
   },
   "canonicalRuntimeResolvers": {
     "file": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/read-contract-resolvers.json",
     "preserveCaseIDs": true
+  },
+  "nativeActionProtocolPrerequisite": {
+    "replyModule": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/native-action-replies.mjs",
+    "replyModuleSha256": "619e9664f9f278ce48d4d6f576b9c6408cbaf7586e601e0a86928fdd1fc03cae",
+    "proofModule": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/native-action-proofs.mjs",
+    "proofModuleSha256": "9117539f21868bef4e67ca63ad595f91286beacde5315fa9493af3ea902c5f90",
+    "plannedProofRows": 24,
+    "executed": false,
+    "completionRule": "Only an actually intercepted same-origin native POST fulfilled locally, then real rendered decided UI plus expected focus. Neither arbitrary JSON nor this static wire description is a pass. Missed interception/unsupported body is a setup gap. Actual decided UI with wrong focus is a measured product failure, not a fixture gap."
   }
 }

@@ -1,0 +1,42 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "module": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/native-action-replies.mjs",
+  "moduleSha256": "619e9664f9f278ce48d4d6f576b9c6408cbaf7586e601e0a86928fdd1fc03cae",
+  "protocolBasis": [
+    {
+      "file": "node_modules/next/dist/client/components/router-reducer/reducers/server-action-reducer.js",
+      "line": 159,
+      "rule": "createFromFetch consumes text/x-component; response.a is actionResult, response.f is Flight data"
+    },
+    {
+      "file": "node_modules/next/dist/client/flight-data-helpers.js",
+      "line": 162,
+      "rule": "normalizeFlightData returns string unchanged; empty string means no router patch"
+    },
+    {
+      "file": "node_modules/next/dist/server/app-render/app-render.js",
+      "line": 404,
+      "rule": "Server action root envelope a:actionResult promise, f:flightData"
+    },
+    {
+      "file": "node_modules/next/dist/server/app-render/action-handler.js",
+      "line": 904,
+      "rule": "Fetch action redirect uses303 and x-action-redirect"
+    }
+  ],
+  "dependencyHashes": {
+    "node_modules/next/dist/client/components/router-reducer/reducers/server-action-reducer.js": "6187a2db90d83a2b95a842e46efc7c89a2ba38ed559ee26a4955d8cb3fd89673",
+    "node_modules/next/dist/client/flight-data-helpers.js": "fcde5e71eef42417e30e303873b1e6ebd7653fc32c6bc05a6f1bca8aa9484e60",
+    "node_modules/next/dist/server/app-render/app-render.js": "03ad1f5daa243d67c3a1ce7d11a25db6ff7620431a993ed7d081ca61ac84d0d8",
+    "node_modules/next/dist/server/app-render/action-handler.js": "d759c976167885f0d28a07d9404bf537e11b37ed14b136509165bde040b36130",
+    "package-lock.json": "eb022d968acfd69c7c44d5df1ecca537e987e01ef0a945b52645fad6ed1f670c"
+  },
+  "intendedReply": "0:{\"a\":\"$@1\",\"f\":\"\"} newline 1:<plain contract result> newline; literal leading-dollar strings escaped",
+  "creditRule": "Only an actually intercepted same-origin native POST fulfilled locally, then real rendered decided UI plus expected focus. Neither arbitrary JSON nor this static wire description is a pass. Missed interception/unsupported body is a setup gap. Actual decided UI with wrong focus is a measured product failure, not a fixture gap.",
+  "transportScope": "Result replies for structured withdrawal/shift changes; source-prescribed local redirect replies for void Availability/Timeoff actions. No server calls or app writes.",
+  "status": "Prepared statically; not imported, decoded, tested or run in a browser",
+  "proofModule": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/native-action-proofs.mjs",
+  "proofModuleSha256": "9117539f21868bef4e67ca63ad595f91286beacde5315fa9493af3ea902c5f90",
+  "plannedProofRows": 24,
+  "proofScope": "16 structured withdrawal withdrawn/conflict +8 weekly Availability redirect configurations; each actual intercepted native POST, actual response headers, actual decided UI, expected focus and exact own fixture binding; no server writes"
+}

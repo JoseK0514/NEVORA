@@ -1,0 +1,18 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "module": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/initial-own-withdrawals.mts",
+  "export": "seedInitialOwnWithdrawals",
+  "moduleSha256": "73439ac48913955ecf5ecd5865bd35772552774820e946730fceb2878b8a558c",
+  "sourceHashes": {
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/lib/data/requests.ts": "ceea9c1bf919eb071acab558cb59c4c85a0c33ac719e56ff7b8d4580ae155ca1",
+    "src/lib/time-off-withdrawal.ts": "41d4fe907058a831043db9a16851b54b9c01de9008a2912bdb53cc6b984b2734",
+    "src/lib/date-utils.ts": "4e4545d0a4a70df78fde730fb3bd99823c47ec5758e12d2e471142f8454a1e41"
+  },
+  "initialOnly": true,
+  "pathAgnostic": true,
+  "slot": "After base/AUDIT/payroll/source seed-extra, before communication publication and first listener; may precede Phase3 entry extension, which will reuse these genuine pending requests",
+  "noRuntimeExecuted": true,
+  "noWithdrawalExecuted": true,
+  "fixtureDomain": "Only own pending UUIDv4 requests for E/Lead; legacy rows untouched; no time-entry, permissions or rules changes"
+}

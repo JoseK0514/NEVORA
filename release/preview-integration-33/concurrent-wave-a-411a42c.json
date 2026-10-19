@@ -1,0 +1,30 @@
+{
+  "observedRemote": "codex/verify-preview-33",
+  "observedHead": "411a42cedaf77cbff3aab9bba6ad3afd652c9b94",
+  "pinnedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "pinnedPublishedRef": "codex/checkpoint-preview33-cd764f6",
+  "relation": "remote is descendant through WaveA merge; no force/reset performed",
+  "newOwnerCommit": "ba313d1d20376c05d7ace16f99b7356a30c44e97",
+  "changedFiles": [
+    "docs/product/specs/p35-wave-a/ROUND.md",
+    "src/components/manager-time-off.tsx",
+    "src/components/manager-workflows.test.tsx",
+    "src/components/reviewed-callout-form.tsx",
+    "src/components/wave-a/parts.tsx"
+  ],
+  "validation": "cd764f6 evidence does not certify411a42c; active previews remain pinned",
+  "candidateFollowupCrosswalk": [
+    {
+      "finding": "IS-WA-12",
+      "historicalCandidateCommit": "8159391",
+      "ownerIntegratedCommit": "ba313d1",
+      "disposition": "owner port on411; no fresh411 browser credit; avoid duplicate application"
+    },
+    {
+      "finding": "IS-P4-11",
+      "historicalCandidateCommit": "c841b33",
+      "ownerIntegratedCommit": "ba313d1",
+      "disposition": "owner port on411; no fresh411 browser credit; avoid duplicate application"
+    }
+  ]
+}

@@ -29,6 +29,15 @@ if classification_file.exists():
    assert row['stage']=='action-state' and row['surface']=='Notification mark read' and row['account'] in ['AUDIT-E','AUDIT-LEAD']
    row.update({'status':'not-applicable','evidence':[str(classification_file)],'note':'Exact combined-source Notifications page grants Mark read only to Manager/Owner; source-based exclusion, no runtime pass.','classificationBasis':'source-contract','sha':p['sourcePreparedAgainst']})
  assert len([row for row in rows if row['status']=='not-applicable'])==16
+supplement_file=out/'management-action-supplement.json'
+if supplement_file.exists():
+ supplement=json.loads(supplement_file.read_text())
+ assert supplement['sha']==p['sourcePreparedAgainst'] and supplement['count']==len(supplement['cases'])==16
+ assert len(rows)==1546
+ for row in supplement['cases']:
+  assert row['stage']=='action-state-management-supplement' and row['account'] in ['AUDIT-M','QAOWNER'] and row['surface']=='Notification mark read'
+  rows.append(row)
+ assert len({row['id'] for row in rows})==1562
 rules='Required Chromium320/390/landscape judgment and WebKit spots/reproductions remain. Full4480 core/5280 combined baseline retained. Explicit source-contract exclusions grant no runtime pass. Every other applicable case remains pending; errors or unmeasured required states cannot close as passed. Parent exact-source evidence may be linked only where dimensions and state match.'
 (out/'manual-queue.json').write_text(json.dumps({'sha':p['sourcePreparedAgainst'],'status':'pending-resource-release','rules':rules,'cases':rows},indent=1))
 from collections import Counter

@@ -1,7 +1,7 @@
 {
   "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "status": "code/build gates pass; combined preview released; owner exits waiting for initial owned-readiness",
+  "status": "combined initial readiness passed; fresh152+72 running; Desktop full exit released; other owners being staggered",
   "completedCurrentCells": 0,
   "zeroExits": [],
   "reviews": [
@@ -43,5 +43,6 @@
     }
   ],
   "criteria": "Full unchanged checker with axe, all five areas, all prior IDs, required state/large-data/manual judgments. Genuine product failures retained; setup gaps separate. No prior pass counts inherited.",
-  "publication": "Candidate33 and four ready branches pushed; combined branch includes only33 findings and two named integration corrections, no later34\u201345 fixes."
+  "publication": "Candidate33 and four ready branches pushed; combined branch includes only33 findings and two named integration corrections, no later34\u201345 fixes.",
+  "pinnedPublishedRef": "codex/checkpoint-preview33-cd764f6"
 }

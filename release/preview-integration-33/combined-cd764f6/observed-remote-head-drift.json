@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-19T22:54:48.350141+00:00",
+  "releasedAndExecutedCheckpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "observedRemoteTrackingRef": "411a42cedaf77cbff3aab9bba6ad3afd652c9b94",
+  "reportedRemotePrefix": "411a42ce",
+  "reportedChange": "Independent WaveA merge with SelectField Optional/Back-to-Inbox changes;5 source-file differences, not covered by cd gates",
+  "preservedRemoteCheckpoint": "codex/checkpoint-preview33-cd764f6",
+  "noRetargetOrPassInheritance": true,
+  "remoteMutationsByThisWorker": false
+}

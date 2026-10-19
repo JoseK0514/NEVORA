@@ -14,7 +14,7 @@
     "separateLarge": 320,
     "total": 5280
   },
-  "manualRowsExpected": 1546,
+  "manualRowsExpected": 1562,
   "priorIDs": 135,
   "previewStarted": false,
   "browserStarted": false,
@@ -28,18 +28,18 @@
     "scripts/serial-geometry.mjs": "e441d3c6e0c7c755e3ee91f055debb96b800c1167c5d0fc55429913ba0b5a9ac",
     "scripts/manual-ledger.mjs": "683db1516189159da19b8fab5bce452787dff8a7ba38cc3287c07b0cdb956bd1",
     "scripts/geometry-measure.mjs": "8ebbc88dba2a9e5a67ee8a8a0e5ccab85f7dad7ba871382f0afc78a61663d040",
-    "scripts/build-plan.py": "6ef9835709ebff0c039b420fab68e1c05b34318cd9fc6a7c5454ecf4a140b026",
+    "scripts/build-plan.py": "5cd7835314b1b02e791e4f7d11781df4db6306883561356e47b607b809021ce7",
     "scripts/serial-baseline.mjs": "c805f2e032eec75ba336bcfa30075c0cb8143435ab5b555c899af1979e80448a",
-    "scripts/build-manual.py": "a98b1b42df7175cbe4c21996609f5662c0b205457566668e2e05015a8f4d5905",
+    "scripts/build-manual.py": "17e404362ef703d8634c3ba625725b6704114dfe4f3a4ddf768caa10e24bf7ef",
     "scripts/scoped-phase3.mjs": "99677328d545f8d84571a29c32f57dca80c15d919aa5c73efd64afa5ca5f4c85"
   },
   "scriptSyntaxOrAppTestsRunOn864": false,
-  "manualLedgerRows": 1546,
+  "manualLedgerRows": 1562,
   "allRouteTemplates": 44,
   "all135StaticCrosswalk": "historical-all-135-crosswalk-cd764f6.json",
   "addedMyPayReadStateConfigurations": 46,
   "all1500EarlierManualIDsPreserved": true,
-  "internallyConsistentStaticFreezeAt": "2026-10-19T22:48:11.144491+00:00",
+  "internallyConsistentStaticFreezeAt": "2026-10-19T22:50:34.866444+00:00",
   "largeDataCells": 320,
   "integrationBase": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
   "previousSourceSnapshot": "freeze-history/8640247-preparation/",
@@ -53,7 +53,8 @@
     "large-data": 320,
     "prior-id": 135,
     "placeholder-route-access": 44,
-    "candidate-finding": 1
+    "candidate-finding": 1,
+    "action-state-management-supplement": 16
   },
   "rebind": {
     "fromSource": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
@@ -70,7 +71,7 @@
     "resourceRelease": "not yet granted"
   },
   "manualStatusCounts": {
-    "pending": 1530,
+    "pending": 1546,
     "not-applicable": 16
   },
   "sourceContractClassifications": {
@@ -81,8 +82,24 @@
   },
   "initialEntryFixtureExtension": {
     "receipt": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-lead-fixture-preparation.json",
-    "moduleSha256": "dfed9bd759ad54d8c91f7495a1553dc8286156b64463470f0f870c5cf4b65065",
-    "preparedOnly": true
+    "moduleSha256": "1efd142e98f0b3f426c99007ca643ccd36562f81ff4ebc5158f3ada84b4583cf",
+    "preparedOnly": true,
+    "withdrawalPrerequisites": {
+      "initialOnly": true,
+      "accounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD"
+      ],
+      "method": "Exact-source createTimeOffRequest + getTimeOffRequest + parseWithdrawalCommand; real own pending UUIDv4 per actor, reusing a suitable existing one if present",
+      "legacyFixtureReason": "audit-timeoff non-UUID fails current parseWithdrawalCommand, Lead original fixture has only approved request",
+      "noBrowserMutation": true
+    }
   },
-  "runtimeResolvers": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/read-contract-resolvers.json"
+  "runtimeResolvers": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/read-contract-resolvers.json",
+  "originalPreparedManualIDs": 1546,
+  "managementActionSupplement": {
+    "file": "management-action-supplement.json",
+    "count": 16,
+    "runtimePasses": 0
+  }
 }

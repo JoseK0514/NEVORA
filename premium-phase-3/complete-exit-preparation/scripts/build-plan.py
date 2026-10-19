@@ -95,5 +95,7 @@ plan['staticCandidateAudit']={'sha':sha,'all135Crosswalk':'historical-all-135-cr
 plan['sourceEligibilityClassifications']={'file':'source-contract-classifications.json','notApplicableManualIDs':16,'manualIDsPreserved':1546,'runtimePasses':0}
 plan['actionStateSweeps']['sourceContractNotApplicableConfigurations']=16
 plan['actionStateSweeps']['applicableConfigurations']=224
+plan['managementActionSupplement']={'file':'management-action-supplement.json','configurations':16,'purpose':'Actual M/O Mark-read controls; original16 E/Lead cases retain source-contract N/A'}
+plan['manualQueueCounts']={'total':1562,'originalIDs':1546,'pending':1546,'sourceNotApplicable':16}
 (out/'full-exit-joblist.json').write_text(json.dumps(plan,indent=2))
 print(json.dumps({'baseline':4480,'passiveGeometry':776,'duplicateGeometryVisits':0,'shell':320,'largeData':320,'readStateSequences':plan['readStateSweeps']['sequences'],'readStateObservations':plan['readStateSweeps']['maximumStateObservations'],'actionConfigurations':plan['actionStateSweeps']['surfaceConfigurations'],'fontSwap':plan['fontSwap']['cells'],'priorIDs':len(ledger),'allAppRouteTemplates':len(route_pages),'previewStarted':False,'browserStarted':False}))

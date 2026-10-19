@@ -1,0 +1,21 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "files": {
+    "README.md": "9ceac1ed1405894c0d278dd67637148fbfaf5ddf6d829e2afe244d1645ae6a8a",
+    "compose-auth-static-note.md": "d54fe6d09ea9878e8b1b1e6bba66f22c661c5c68fb675598d64cf6e4b08e3576",
+    "initial-own-withdrawals-preparation.json": "38abce6b77a379a45ff4dca69334081e1f73d042789eb1a8b8a71af8eb5420dc",
+    "initial-own-withdrawals.mts": "73439ac48913955ecf5ecd5865bd35772552774820e946730fceb2878b8a558c",
+    "native-action-proofs.mjs": "9117539f21868bef4e67ca63ad595f91286beacde5315fa9493af3ea902c5f90",
+    "native-action-replies-preparation.json": "e42dd1d45374d33a0441814fa53864ad05dc13a54936020858f03b510a28ab18",
+    "native-action-replies.mjs": "619e9664f9f278ce48d4d6f576b9c6408cbaf7586e601e0a86928fdd1fc03cae",
+    "phase3-entry-fixture-readback.mjs": "c184f4a2c9da2a2c53eb9936fe6870a7f394285e561126d28bcc895e18525797",
+    "phase3-lead-fixture-preparation.json": "f71596a118c4ef14e66f3569cde9738959693867ea2eaa38442b6ca16933694a",
+    "phase3-lead-fixture.mts": "1efd142e98f0b3f426c99007ca643ccd36562f81ff4ebc5158f3ada84b4583cf",
+    "read-contract-resolvers.json": "8d652c15c0e9bab27186ec8f580342b5155940ed4d6d828c652862209eeeed4a",
+    "route-access-catalog.json": "ebf4a65593ba40a92d00ddbbbad0f4138e8042acbf3ba66ef5557a875ec95cf4",
+    "scoped-module-static-correction.json": "0ec85a15af05a47faaa794ac4759b1098938f560022bade6590ad14eec45d860"
+  },
+  "kind": "Static source/fixture/protocol preparation; no app/helper imports, runtime, browser, database or tests executed",
+  "createdAt": "2026-10-19T22:54:21.622070+00:00"
+}

@@ -1,7 +1,7 @@
 // STATIC PREPARATION ONLY. Invoke once inside the released owned beforeListen callback.
 // Private source fixture helper copied byte-exact; no integration/Vitest module is imported.
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {registerHooks} from 'node:module';
 import {readFile,writeFile,realpath} from 'node:fs/promises';
@@ -10,7 +10,7 @@ import {pathToFileURL} from 'node:url';
 const SOURCE_SHA='cd764f614be8ca5b5215be19d46e07cf968638d7';
 const SOURCE_TREE='64bc4c24afac005ce5270b3d65112a797b59b511';
 const SOURCE_PATH='/workspace/inspect-phase3-final';
-const SOURCE_HASHES={"src/test/integration/clocker-time-corrections.integration.ts":"a388aca855218e37156834b91dd0f703d5d5ac2d93f8bb07b57eacc1d2bfd870","src/test/integration/payroll-preview-fixture.ts":"41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65","src/test/integration/payroll-fixture.ts":"7f830da23d54caea79f7a8bfa3be8cfa0b44850da8479d124bc487654824278f","src/test/integration/shift-change-api.ts":"57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7","src/lib/data/employee-time.server.ts":"1c289e6aaa01331eabd276c864b7a45e2ec6ad3d52dcc1a8b87b8f27ef9f4e6b","src/lib/data/time-corrections.server.ts":"a20e6c7ac4d162b7f9f265df709045feee18f641508eecc4cfd75c23f389a73e","src/lib/employee-time.ts":"0f8f7e75cc131b5d19369b818a74de349dab5513117d0ac4b8edf3e0d332d327","src/lib/time-corrections/read-model.ts":"05d6807ad0592164791fe83bbf08db3e5d2fcee8518380167034e4fc52838835"};
+const SOURCE_HASHES={"src/test/integration/clocker-time-corrections.integration.ts":"a388aca855218e37156834b91dd0f703d5d5ac2d93f8bb07b57eacc1d2bfd870","src/test/integration/payroll-preview-fixture.ts":"41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65","src/test/integration/payroll-fixture.ts":"7f830da23d54caea79f7a8bfa3be8cfa0b44850da8479d124bc487654824278f","src/test/integration/shift-change-api.ts":"57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7","src/lib/data/employee-time.server.ts":"1c289e6aaa01331eabd276c864b7a45e2ec6ad3d52dcc1a8b87b8f27ef9f4e6b","src/lib/data/time-corrections.server.ts":"a20e6c7ac4d162b7f9f265df709045feee18f641508eecc4cfd75c23f389a73e","src/lib/employee-time.ts":"0f8f7e75cc131b5d19369b818a74de349dab5513117d0ac4b8edf3e0d332d327","src/lib/time-corrections/read-model.ts":"05d6807ad0592164791fe83bbf08db3e5d2fcee8518380167034e4fc52838835","src/lib/data/requests.ts":"ceea9c1bf919eb071acab558cb59c4c85a0c33ac719e56ff7b8d4580ae155ca1","src/lib/time-off-withdrawal.ts":"41d4fe907058a831043db9a16851b54b9c01de9008a2912bdb53cc6b984b2734","src/lib/date-utils.ts":"4e4545d0a4a70df78fde730fb3bd99823c47ec5758e12d2e471142f8454a1e41"};
 const HELPER_SHA256='458115a0d90011ddc2ca4e01287b576a6b673737dc214cec5d363bed9b621643';
 const sha256=(value:any)=>createHash('sha256').update(value).digest('hex');
 let f:any;
@@ -89,6 +89,9 @@ export async function seedPhase3LeadFixture(owned:any,report:any,evidence:string
   const {fixtureProof}=await import(pathToFileURL(join(source,'src/test/integration/shift-change-api.ts')).href);
   const {readEmployeeTime}=await import(pathToFileURL(join(source,'src/lib/data/employee-time.server.ts')).href);
   const {readEmployeeTimeCorrections}=await import(pathToFileURL(join(source,'src/lib/data/time-corrections.server.ts')).href);
+  const {createTimeOffRequest,getTimeOffRequest}=await import(pathToFileURL(join(source,'src/lib/data/requests.ts')).href);
+  const {parseWithdrawalCommand,withdrawalIdentity}=await import(pathToFileURL(join(source,'src/lib/time-off-withdrawal.ts')).href);
+  const {addDays}=await import(pathToFileURL(join(source,'src/lib/date-utils.ts')).href);
   const actors=[];
   for(const account of ['AUDIT-E','AUDIT-LEAD']){
    const [employee]=await q("SELECT id,role,primary_location_id FROM employees WHERE id=$1",[account]);
@@ -119,13 +122,25 @@ export async function seedPhase3LeadFixture(owned:any,report:any,evidence:string
    const targets=corrections.targets.filter((row:any)=>row.timeEntryId===target.id);
    assert.ok(targets.some((row:any)=>row.kind==='ENTRY_BOUNDARY'&&row.breakEntryId===null&&row.context.state==='confirmed'),'Entry boundary correction target is not confirmed');
    assert.ok(targets.some((row:any)=>row.kind==='BREAK_BOUNDARY'&&row.breakEntryId===target.breakId&&row.context.state==='confirmed'),'Break boundary correction target is not confirmed');
-   actors.push({account,role:employee.role,created,entryId:target.id,breakId:target.breakId,timeReadState:time.state,correctionReadState:corrections.state,targetKinds:[...new Set(targets.map((row:any)=>row.kind))],closedEntry:true,closedBreak:true});
+   // audit-timeoff is intentionally a legacy text ID; the current withdrawal contract needs a real UUIDv4 request.
+   const pending=await q("SELECT id FROM time_off_requests WHERE employee_id=$1 AND status='PENDING' AND id~'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$' ORDER BY created_at DESC,id LIMIT 1",[account]);
+   const pendingRequestId=pending[0]?.id??randomUUID();let pendingCreated=false;
+   if(!pending.length){
+    const date=addDays(report.fixtureDate,account==='AUDIT-E'?60:62);
+    await createTimeOffRequest({requestId:pendingRequestId,employeeId:account,proof,startDate:date,endDate:date,reason:'Fictional Phase3 withdrawal inspection prerequisite'},database.executor);
+    pendingCreated=true;
+   }
+   const pendingRead=await getTimeOffRequest(pendingRequestId,database.executor);
+   assert.ok(pendingRead?.employeeId===account&&pendingRead.status==='PENDING','Canonical own pending withdrawal request readback failed');
+   const command=parseWithdrawalCommand({requestId:pendingRequestId,operationId:withdrawalIdentity(pendingRequestId)});
+   assert.equal(command.requestId,pendingRequestId,'Pending fixture must satisfy the actual withdrawal command contract');
+   actors.push({account,role:employee.role,created,entryId:target.id,breakId:target.breakId,timeReadState:time.state,correctionReadState:corrections.state,targetKinds:[...new Set(targets.map((row:any)=>row.kind))],closedEntry:true,closedBreak:true,pendingWithdrawal:{requestId:pendingRequestId,created:pendingCreated,readStatus:pendingRead.status,ownActorVerified:true,commandValid:true}});
   }
   const [after]=await q("SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()");
   assert.deepEqual(after,identity,'Owned DB identity changed');
   const manifest={checkpoint:SOURCE_SHA,source:SOURCE_PATH,tree:SOURCE_TREE,initializedBeforeListen:true,kind:'canonical exact-source fixture helper extension',identity:{name:identity.name,oid:identity.oid,marker:identity.marker},helperSource:'src/test/integration/clocker-time-corrections.integration.ts',helperSha256:HELPER_SHA256,sourceHashes:SOURCE_HASHES,actors,browserReadback:'REQUIRED after listen: own My time record, correction entry selector and actual break selector; this canonical UI read-model proof is not DOM evidence',secretsIncluded:false};
   const file=join(evidence,'phase3-entry-initial-fixture.json');await writeFile(file,JSON.stringify(manifest,null,2));
-  report.phase3EntryFixture={manifest:file,initializedBeforeListen:true,actors:actors.map(({account,entryId,breakId,targetKinds})=>({account,entryId,breakId,targetKinds}))};
+  report.phase3EntryFixture={manifest:file,initializedBeforeListen:true,actors:actors.map(({account,entryId,breakId,targetKinds,pendingWithdrawal})=>({account,entryId,breakId,targetKinds,pendingWithdrawal}))};
   report.checks.push({name:'Phase3 initial own Employee/Lead entry+break appear in canonical UI time/correction reads before listen',passed:true});
   return report.phase3EntryFixture;
  }finally{f=undefined;hook.deregister();}

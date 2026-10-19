@@ -5,10 +5,10 @@
   "sourceFixture": "src/test/integration/clocker-time-corrections.integration.ts",
   "sourceFixtureSha256": "a388aca855218e37156834b91dd0f703d5d5ac2d93f8bb07b57eacc1d2bfd870",
   "extractedHelperSha256": "458115a0d90011ddc2ca4e01287b576a6b673737dc214cec5d363bed9b621643",
-  "moduleSha256": "dfed9bd759ad54d8c91f7495a1553dc8286156b64463470f0f870c5cf4b65065",
+  "moduleSha256": "1efd142e98f0b3f426c99007ca643ccd36562f81ff4ebc5158f3ada84b4583cf",
   "helperByteExact": true,
   "existingPayrollLead": "payroll-qa-b owns Sep29 closed finalized entry; no closed break. Does not supply AUDIT-LEAD correction surfaces.",
-  "scope": "One own recent closed entry+break for AUDIT-E and AUDIT-LEAD if absent; no changes to open rows, ledger, rules, eligibility, payroll, publication or production. Initial-only fixture before first listen.",
+  "scope": "One own recent closed entry+break for AUDIT-E and AUDIT-LEAD if absent; no changes to open rows, ledger, rules, eligibility, payroll, publication or production. Initial-only fixture before first listen. Two own pending UUIDv4 time-off requests if absent, through the exact source service before publication/listen; no withdrawal executed.",
   "slot": "After source base/AUDIT/payroll and exact source seed-extra; before communications publication and beforeListen return. Require INSPECTION_PHASE3_ENTRY_FIXTURE=yes and exact READY_REVIEW_RELEASED_SHA.",
   "guards": [
     "exact clean source/tree and import hashes",
@@ -24,7 +24,17 @@
   "executionStatus": "STATIC ONLY: no app/helper import, database, browser, seed or tests executed",
   "domReadbackRequired": true,
   "domReadbackModule": "/workspace/nevora-inspections/premium-phase-3/source-access-catalog-cd764f6/phase3-entry-fixture-readback.mjs",
-  "domReadbackModuleSha256": "0efb0914e5609c1ac481e89a8836cd52a897124e14c4c21aeeb6f5b57fa01d9b",
-  "domReadbackPlannedRows": 8,
-  "domReadbackStates": "Actual own My time200 and newly requested correction context200, own recorded entry+break, actual entry/break selector options; no submits"
+  "domReadbackModuleSha256": "c184f4a2c9da2a2c53eb9936fe6870a7f394285e561126d28bcc895e18525797",
+  "domReadbackPlannedRows": 16,
+  "domReadbackStates": "Actual own My time200 and newly requested correction context200, own recorded entry+break, actual entry/break selector options; no submits; genuine own pending UUIDv4 request form and immutable operation identity",
+  "withdrawalPrerequisites": {
+    "initialOnly": true,
+    "accounts": [
+      "AUDIT-E",
+      "AUDIT-LEAD"
+    ],
+    "method": "Exact-source createTimeOffRequest + getTimeOffRequest + parseWithdrawalCommand; real own pending UUIDv4 per actor, reusing a suitable existing one if present",
+    "legacyFixtureReason": "audit-timeoff non-UUID fails current parseWithdrawalCommand, Lead original fixture has only approved request",
+    "noBrowserMutation": true
+  }
 }

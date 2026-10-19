@@ -1,0 +1,85 @@
+{
+  "checkpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "source": "/workspace/verify-preview-33",
+  "preview": "/workspace/paused-previews/combined-cd764f6",
+  "checkedAt": "2026-10-19T22:53:11.294Z",
+  "sourceClean": true,
+  "sourceManifestCheckpointVerified": true,
+  "ownedDatabaseIdentityVerified": true,
+  "initializedBeforeListen": true,
+  "fixtureMode": "normal",
+  "fixtureCounts": {
+    "people": 13,
+    "largepeople": 0,
+    "largecurrentshifts": 0,
+    "yearentries": 0,
+    "openentries": 2,
+    "publishedschedules": 2
+  },
+  "longManagerEmailCharacters": 69,
+  "actorCount": 12,
+  "positiveFixtureReadCount": 12,
+  "canonicalOwnWithdrawals": [
+    {
+      "account": "AUDIT-E",
+      "requestId": "dabd1f4d-2d52-4f17-8c3d-7b6f3a49b319",
+      "created": true,
+      "status": "PENDING",
+      "ownActorVerified": true,
+      "canonicalCommandValid": true
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "requestId": "45b58260-bf6d-403d-a299-f38889d58316",
+      "created": true,
+      "status": "PENDING",
+      "ownActorVerified": true,
+      "canonicalCommandValid": true
+    }
+  ],
+  "withdrawalFixtureReceipt": "/workspace/paused-previews/combined-cd764f6/evidence-2026-10-19T22-52-27-537Z/initial-own-withdrawal-fixture.json",
+  "loggedIn": [
+    {
+      "account": "QAOWNER",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "AUDIT-M",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "payroll-qa-b",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "AUDIT-E",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "payroll-qa-a",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "AUDIT-LONG",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "AUDIT-ON",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "sessionCookiePresent": true
+    },
+    {
+      "account": "AUDIT-SWAP",
+      "sessionCookiePresent": true
+    }
+  ],
+  "fixtureReceipt": "/workspace/paused-previews/combined-cd764f6/evidence-2026-10-19T22-52-27-537Z/inspection-initial-fixture.json",
+  "fixtureReceiptSha256": "119f06244f626ec43f3d7a5cd5b5fe27b48e5993167ac99bc4ff18f988d02c10"
+}
