@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
@@ -11,6 +11,7 @@ import { saveAvailabilityAction, saveWeeklyAvailabilityAction } from "@/app/app/
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import { EmployeeSubmitButton } from "./employee-submit-button";
+import { revealFeedback } from "@/lib/reveal-feedback";
 
 const DAYS = [
   { dayOfWeek: 1, label: "Monday" },
@@ -85,15 +86,18 @@ export function AvailabilityEditor({ initialAvailability, weekStart, locked = fa
   employeeView?: boolean;
 }) {
   // IS (round 3): a failed save (network, 401, 403) keeps the page and the hours entered, and says nothing was saved.
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState(0);
+  const failures = useRef(0);
+  const feedback = useRef<HTMLParagraphElement>(null);
+  useEffect(() => { if (failed && feedback.current) revealFeedback(feedback.current); }, [failed]);
   async function save(data: FormData) {
-    setFailed(false);
+    setFailed(0);
     try { await (weekStart ? saveWeeklyAvailabilityAction : saveAvailabilityAction)(data); }
-    catch (error) { unstable_rethrow(error); setFailed(true); }
+    catch (error) { unstable_rethrow(error); setFailed(++failures.current); }
   }
   return <form action={save} onReset={event => event.preventDefault()} className={`av-editor${employeeView ? " av-employee-editor" : ""}`} aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
     <AvailabilityFields initialAvailability={initialAvailability} weekStart={weekStart} locked={locked} />
     {/* IS-75: the alert sits next to Save, where the person is looking. */}
-    {failed ? <p className="form-error" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
+    {failed ? <p ref={feedback} tabIndex={-1} className="form-error" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
   </form>;
 }

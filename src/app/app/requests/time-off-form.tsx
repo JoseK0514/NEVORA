@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime } from "@/lib/date-utils";
+import { revealFeedback } from "@/lib/reveal-feedback";
 
 function dateLabel(date: string) {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
@@ -37,11 +38,14 @@ export function TimeOffForm({ requestId, draftOwner = "" }: { requestId: string;
   const timesInvalid = !!startTime && !!endTime && startTime >= endTime;
   // TC-P3-31 / IS (round 3): a failed send (network, 401, 403) keeps the page and every entered field, and says the
   // request wasn't sent. Redirects and other Next signals still pass through.
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState(0);
+  const failures = useRef(0);
+  const feedback = useRef<HTMLParagraphElement>(null);
+  useEffect(() => { if (failed && feedback.current) revealFeedback(feedback.current); }, [failed]);
   async function send(data: FormData) {
-    setFailed(false);
+    setFailed(0);
     try { await requestTimeOffAction(data); }
-    catch (error) { unstable_rethrow(error); setFailed(true); }
+    catch (error) { unstable_rethrow(error); setFailed(++failures.current); }
   }
   const days = datesValid ? Math.round((Date.parse(effectiveEnd) - Date.parse(startDate)) / 86400000) + 1 : 0;
 
@@ -88,7 +92,7 @@ export function TimeOffForm({ requestId, draftOwner = "" }: { requestId: string;
           <div className="nto-next-step"><ClockIcon size={18} aria-hidden="true" /><p><strong>Manager review comes next</strong><span>Track the decision in My requests. Time away is confirmed when your request is approved.</span></p></div>
         </aside>
       </div>
-      {failed ? <p className="form-error" role="alert">Your request wasn’t sent. Check your connection and send it again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
+      {failed ? <p ref={feedback} tabIndex={-1} className="form-error" role="alert">Your request wasn’t sent. Check your connection and send it again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
       <footer className="nto-form-footer">
         <Link className="nto-button nto-secondary" href="/app/requests?tab=my" onClick={() => { unsent = null; }}>Cancel</Link>
         <EmployeeSubmitButton className="nto-button nto-primary" pendingText="Submitting request…" disabled={partialDay && timesInvalid}>Submit request <ArrowRightIcon size={18} aria-hidden="true" /></EmployeeSubmitButton>
