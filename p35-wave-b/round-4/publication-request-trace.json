@@ -1,0 +1,242 @@
+[
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "text": 200,
+    "contextFixture": "Fictional ready context answered only in browser; source unmodified",
+    "pendingCalls": [
+      {
+        "path": "/api/manager/communications/preview",
+        "kind": null
+      },
+      {
+        "path": "/api/manager/communications",
+        "kind": "PUBLISH"
+      }
+    ],
+    "calls": [
+      {
+        "path": "/api/manager/communications/preview",
+        "kind": null
+      },
+      {
+        "path": "/api/manager/communications",
+        "kind": "PUBLISH"
+      }
+    ],
+    "failed": {
+      "focus": {
+        "tag": "H2",
+        "text": "Audience preview",
+        "box": {
+          "x": 36,
+          "y": 83.515625,
+          "width": 248,
+          "height": 88,
+          "top": 83.515625,
+          "right": 284,
+          "bottom": 171.515625,
+          "left": 36
+        }
+      },
+      "notices": [
+        {
+          "text": "Publication needs a status check\n\nWe couldn’t confirm the result. Check status before trying again.\n\nCheck status",
+          "box": {
+            "x": 16,
+            "y": 883.515625,
+            "width": 288,
+            "height": 468,
+            "top": 883.515625,
+            "right": 304,
+            "bottom": 1351.515625,
+            "left": 16
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "contextFixture": "Fictional ready context answered only in browser; source unmodified",
+    "pendingCalls": [
+      {
+        "path": "/api/employee/communications/preview",
+        "kind": null
+      },
+      {
+        "path": "/api/employee/communications",
+        "kind": "PUBLISH"
+      }
+    ],
+    "calls": [
+      {
+        "path": "/api/employee/communications/preview",
+        "kind": null
+      },
+      {
+        "path": "/api/employee/communications",
+        "kind": "PUBLISH"
+      }
+    ],
+    "failed": {
+      "focus": {
+        "tag": "H2",
+        "text": "Audience preview",
+        "box": {
+          "x": 36,
+          "y": 83.515625,
+          "width": 248,
+          "height": 88,
+          "top": 83.515625,
+          "right": 284,
+          "bottom": 171.515625,
+          "left": 36
+        }
+      },
+      "notices": [
+        {
+          "text": "Publication needs a status check\n\nWe couldn’t confirm the result. Check status before trying again.\n\nCheck status",
+          "box": {
+            "x": 16,
+            "y": 883.515625,
+            "width": 288,
+            "height": 468,
+            "top": 883.515625,
+            "right": 304,
+            "bottom": 1351.515625,
+            "left": 16
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 320,
+    "text": 200,
+    "contextFixture": "Fictional ready context answered only in browser; source unmodified",
+    "pendingCalls": [
+      {
+        "path": "/api/manager/communications/preview",
+        "kind": null
+      },
+      {
+        "path": "/api/manager/communications",
+        "kind": "PUBLISH"
+      }
+    ],
+    "calls": [
+      {
+        "path": "/api/manager/communications/preview",
+        "kind": null
+      },
+      {
+        "path": "/api/manager/communications",
+        "kind": "PUBLISH"
+      }
+    ],
+    "failed": {
+      "focus": {
+        "tag": "H2",
+        "text": "Audience preview",
+        "box": {
+          "x": 36,
+          "y": 215.515625,
+          "width": 248,
+          "height": 88,
+          "top": 215.515625,
+          "right": 284,
+          "bottom": 303.515625,
+          "left": 36
+        }
+      },
+      "notices": [
+        {
+          "text": "Publication needs a status check\n\nWe couldn’t confirm the result. Check status before trying again.\n\nCheck status",
+          "box": {
+            "x": 16,
+            "y": 1095.515625,
+            "width": 288,
+            "height": 468,
+            "top": 1095.515625,
+            "right": 304,
+            "bottom": 1563.515625,
+            "left": 16
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "contextFixture": "Fictional ready context answered only in browser; source unmodified",
+    "pendingCalls": [
+      {
+        "path": "/__nextjs_original-stack-frames",
+        "kind": null
+      },
+      {
+        "path": "/api/employee/communications/preview",
+        "kind": null
+      },
+      {
+        "path": "/api/employee/communications",
+        "kind": "PUBLISH"
+      }
+    ],
+    "calls": [
+      {
+        "path": "/__nextjs_original-stack-frames",
+        "kind": null
+      },
+      {
+        "path": "/api/employee/communications/preview",
+        "kind": null
+      },
+      {
+        "path": "/api/employee/communications",
+        "kind": "PUBLISH"
+      }
+    ],
+    "failed": {
+      "focus": {
+        "tag": "H2",
+        "text": "Audience preview",
+        "box": {
+          "x": 36,
+          "y": 215.515625,
+          "width": 248,
+          "height": 88,
+          "top": 215.515625,
+          "right": 284,
+          "bottom": 303.515625,
+          "left": 36
+        }
+      },
+      "notices": [
+        {
+          "text": "Publication needs a status check\n\nWe couldn’t confirm the result. Check status before trying again.\n\nCheck status",
+          "box": {
+            "x": 16,
+            "y": 1095.515625,
+            "width": 288,
+            "height": 468,
+            "top": 1095.515625,
+            "right": 304,
+            "bottom": 1563.515625,
+            "left": 16
+          }
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,306 @@
+[
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": 100,
+    "requests": 3,
+    "ready": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 1,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+      "active": "BODY"
+    },
+    "paused": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "offline": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "denied": {
+      "status": "Sign in again to view your timecards.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nSign in again to view your timecards.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "nativeBlur": false
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "text": 100,
+    "requests": 3,
+    "ready": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 1,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+      "active": "BODY"
+    },
+    "paused": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "offline": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "denied": {
+      "status": "Sign in again to view your timecards.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nSign in again to view your timecards.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "nativeBlur": false
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": 100,
+    "requests": 3,
+    "ready": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 1,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+      "active": "BODY"
+    },
+    "paused": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "offline": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "denied": {
+      "status": "Sign in again to view your timecards.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nSign in again to view your timecards.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "nativeBlur": false
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "text": 100,
+    "requests": 3,
+    "ready": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 1,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+      "active": "BODY"
+    },
+    "paused": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "offline": {
+      "status": "1 timecard in this period.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "denied": {
+      "status": "Sign in again to view your timecards.",
+      "statusBox": {
+        "x": 16,
+        "y": 481,
+        "width": 358,
+        "height": 24,
+        "top": 481,
+        "right": 374,
+        "bottom": 505,
+        "left": 16
+      },
+      "cards": 0,
+      "signInLinks": [],
+      "text": "Choose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nSign in again to view your timecards.\n\nRequest a correction",
+      "active": "BODY"
+    },
+    "nativeBlur": false
+  }
+]

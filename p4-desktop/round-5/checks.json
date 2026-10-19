@@ -4,24 +4,9 @@
  "round": 5,
  "complete": false,
  "plannedRows": 10416,
- "completedRows": 166,
- "active": {
-  "name": "0048-v3-matrix-chromium-QAOWNER-360-200",
-  "axe": false,
-  "engine": "chromium",
-  "account": "QAOWNER",
-  "size": "360",
-  "text": 200,
-  "routes": [
-   "/app/employees?status=inactive",
-   "/app/timecards",
-   "/app/payroll-export",
-   "/app/requests"
-  ],
-  "retry": false,
-  "pid": 232026
- },
- "updatedAt": "2026-10-19T21:23:54.052692+00:00",
+ "completedRows": 180,
+ "active": null,
+ "updatedAt": "2026-10-19T21:30:27.235131+00:00",
  "scope": {
   "QAOWNER": [
    "/app",
@@ -560,12 +545,58 @@
    "exitCode": 1,
    "sha256": "e41b5eba0b2879ec8dd1443b2c17faa476bc9f92e69b8dc6c8d09699c2cc3f3b",
    "retry": false
+  },
+  {
+   "name": "0048-v3-matrix-chromium-QAOWNER-360-200",
+   "axe": false,
+   "rows": 4,
+   "passed": 4,
+   "exitCode": 0,
+   "sha256": "ad18bbd5d7945789c3baccae55cfe0432430244446e506cf1865c08dafc23b81",
+   "retry": false
+  },
+  {
+   "name": "0049-v3-matrix-chromium-QAOWNER-360-200",
+   "axe": false,
+   "rows": 4,
+   "passed": 1,
+   "exitCode": 1,
+   "sha256": "aead89304abde3be298db9c573f26c4c84a26eb0debce9661b58f95ce1fe4472",
+   "retry": false
+  },
+  {
+   "name": "0050-v3-matrix-chromium-QAOWNER-360-200",
+   "axe": false,
+   "rows": 2,
+   "passed": 1,
+   "exitCode": 1,
+   "sha256": "0fc3a7ce4917633de97eb13a2dca9c80eedf3ba3d651083017c3bbc9ad879a70",
+   "retry": false
+  },
+  {
+   "name": "0051-v3-retry-matrix-chromium-QAOWNER-360-200",
+   "axe": false,
+   "rows": 1,
+   "passed": 1,
+   "exitCode": 0,
+   "sha256": "a1916d7e56851d220b49e9e7b21cb71e41511211c9f60ab5bb26123178da7f62",
+   "retry": true
+  },
+  {
+   "name": "0052-v3-matrix-chromium-QAOWNER-390-100",
+   "axe": false,
+   "rows": 4,
+   "passed": 2,
+   "exitCode": 1,
+   "sha256": "9e0138290df4fddf7790046b3529e9bb9ccd7ae2e36233717f071a9ee377717c",
+   "retry": false
   }
  ],
  "retriedLoads": [
   "[false,\"chromium\",\"QAOWNER\",\"320\",150,\"/app/employees?status=inactive\"]",
   "[false,\"chromium\",\"QAOWNER\",\"320\",150,\"/app/exchange\"]",
-  "[false,\"chromium\",\"QAOWNER\",\"320\",200,\"/app?view=activity\"]"
+  "[false,\"chromium\",\"QAOWNER\",\"320\",200,\"/app?view=activity\"]",
+  "[false,\"chromium\",\"QAOWNER\",\"360\",200,\"/app/schedule\"]"
  ],
  "infrastructureAttempts": [
   {
@@ -3448,16 +3479,14 @@
    "size": "360",
    "text": 200,
    "route": "/app/schedule",
-   "status": 0,
+   "status": 200,
    "overflow": [],
    "smallText": [],
    "targets": [],
    "cls": 0,
-   "errors": [
-    "load: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35557/app/schedule\", waiting until \"load\"\u001b[22m\n"
-   ],
+   "errors": [],
    "axe": [],
-   "ok": false,
+   "ok": true,
    "checkedWithAxe": false
   },
   {
@@ -3494,6 +3523,246 @@
    "errors": [],
    "axe": [],
    "ok": false,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/employees?status=inactive",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0.3457,
+   "errors": [],
+   "axe": [],
+   "ok": true,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/timecards",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0.466,
+   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "axe": [],
+   "ok": true,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/payroll-export",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0,
+   "errors": [],
+   "axe": [],
+   "ok": true,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/requests",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0.4166,
+   "errors": [],
+   "axe": [],
+   "ok": true,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/exchange",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0.7299,
+   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "axe": [],
+   "ok": false,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/availability",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0.9603,
+   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "axe": [],
+   "ok": false,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/updates",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0.3775,
+   "errors": [],
+   "axe": [],
+   "ok": true,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/reports",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0.6326,
+   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "axe": [],
+   "ok": false,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/settings",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0,
+   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "axe": [],
+   "ok": true,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "360",
+   "text": 200,
+   "route": "/app/payroll",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0.2764,
+   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "axe": [],
+   "ok": false,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "390",
+   "text": 100,
+   "route": "/app",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0,
+   "errors": [],
+   "axe": [],
+   "ok": true,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "390",
+   "text": 100,
+   "route": "/app?view=attendance",
+   "status": 0,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0,
+   "errors": [
+    "load: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35557/app?view=attendance\", waiting until \"load\"\u001b[22m\n"
+   ],
+   "axe": [],
+   "ok": false,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "390",
+   "text": 100,
+   "route": "/app?view=team",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0,
+   "errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "axe": [],
+   "ok": false,
+   "checkedWithAxe": false
+  },
+  {
+   "engine": "chromium",
+   "account": "QAOWNER",
+   "size": "390",
+   "text": 100,
+   "route": "/app?view=activity",
+   "status": 200,
+   "overflow": [],
+   "smallText": [],
+   "targets": [],
+   "cls": 0,
+   "errors": [],
+   "axe": [],
+   "ok": true,
    "checkedWithAxe": false
   }
  ]
