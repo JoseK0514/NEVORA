@@ -78,7 +78,7 @@ export function openPeriod(
       start = iso(new Date(Date.UTC(year, month, 16)));
       end = last;
     }
-    if (end < schedule.anchorDate) return null;
+    if (start < schedule.anchorDate) return null;
   }
   return { period: { startDate: start, endDate: end }, payday: add(end, schedule.paydayOffsetDays) };
 }
