@@ -332,7 +332,8 @@
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > p { flex: 1 1 12rem; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > .nv-btn { flex: 1 1 12rem; }
 @media (max-width: 760px), (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { bottom: calc(68px + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); padding: var(--nv-s-2); }
+  /* ST-B09: the tab bar grows with text size (68px at 100%, 75px at 200%), so the bar's offset does too. */
+  .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar { bottom: calc(61px + .4375rem + var(--nv-s-2) + env(safe-area-inset-bottom, 0px)); padding: var(--nv-s-2); }
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-savebar > p { display: none; }
 }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-period-form { padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); }
@@ -426,12 +427,6 @@
 }
 
 /* ---------- Round 1 fixes (alignment) ---------- */
-/* Root loading frame for Wave B routes (root-loading.tsx): the band at its 390 height. */
-.route-skeleton[data-route="wb-templates"] { --route-band: 244px; }
-.route-skeleton[data-route="wb-rules"] { --route-band: 196px; }
-.route-skeleton[data-route="wb-insights"] { --route-band: 200px; }
-.route-skeleton[data-route="wb-compose"] { --route-band: 312px; }
-.route-skeleton[data-route="wb-payroll-settings"] { --route-band: 128px; }
 /* AL-B02: Period summary switches to the kit's one-column rows before a whole duration stops fitting. */
 @container (max-width: 27rem) {
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stats { grid-template-columns: 1fr; }
@@ -509,3 +504,21 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wb-payroll-feedbac
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wb-payroll-feedback > .pw-feedback:has(> *) { left: auto; right: var(--nv-s-6); bottom: var(--nv-s-6); width: min(420px, calc(100vw - 48px)); }
 }
+
+/* ---------- Round 1 fixes (bars and stability) ---------- */
+/* ST-B02: on Scheduling rules, focus and in-page jumps stop clear of the sticky save bar as well as the tab bar
+ * (WCAG 2.4.11). Phone: tab bar (61px + .4375rem) + 8px gap + bar (3.25rem button + 16px padding) + 16px. Desktop: bar (3.25rem + 24px) + its 16px offset + 16px. */
+@media (max-width: 760px) {
+  html:has(.wb-rules .wb-savebar) { scroll-padding-bottom: calc(101px + 3.6875rem + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html:has(.wb-rules .wb-savebar) { scroll-padding-bottom: calc(56px + 3.25rem); }
+}
+
+/* ST-B03 to ST-B05, ST-B08: each Wave B placeholder band at its measured height for the phone width and text size
+ * (100% exact; larger text interpolated from the 200% measurement). Used by the routes' loading.tsx and root-loading.tsx. */
+@media (max-width: 339px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 12.75rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(64px + 12.75rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-176px + 24.75rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(-12px + 20.25rem); } .route-skeleton[data-route="wb-update"] { --route-band: calc(-24px + 23.25rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-172px + 20.25rem); } }
+@media (min-width: 340px) and (max-width: 374px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 11.25rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(64px + 12.75rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-80px + 18.75rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(36px + 17.25rem); } .route-skeleton[data-route="wb-update"] { --route-band: calc(18px + 19.125rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-172px + 20.25rem); } }
+@media (min-width: 375px) and (max-width: 409px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 11.25rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(64px + 11.25rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-128px + 20.25rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(84px + 14.25rem); } .route-skeleton[data-route="wb-update"] { --route-band: calc(16px + 17rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-172px + 18.75rem); } }
+@media (min-width: 410px) and (max-width: 760px) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(20px + 11.25rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(112px + 9.75rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(-80px + 18.75rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(156px + 9.75rem); } .route-skeleton[data-route="wb-update"] { --route-band: calc(36px + 15.75rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(-148px + 17.25rem); } }
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) { .route-skeleton[data-route="wb-insights"] { --route-band: calc(76px + 4rem); } .route-skeleton[data-route="wb-templates"] { --route-band: calc(120px + 4rem); } .route-skeleton[data-route="wb-rules"] { --route-band: calc(88px + 4rem); } .route-skeleton[data-route="wb-compose"] { --route-band: calc(164px + 4rem); } .route-skeleton[data-route="wb-update"] { --route-band: calc(164px + 4rem); } .route-skeleton[data-route="wb-payroll-settings"] { --route-band: calc(44px + 4rem); } }

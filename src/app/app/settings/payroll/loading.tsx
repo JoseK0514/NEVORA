@@ -1,6 +1,6 @@
 import { RouteSkeleton } from "@/components/route-skeleton";
 
-// Phase 3.5 Wave B: the Payroll settings band at its final height at 390, under the Pay section tabs.
+// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route "wb-payroll-settings").
 export default function Loading() {
-  return <RouteSkeleton label="payroll settings" shape="cards" band={128} overlap={false} />;
+  return <RouteSkeleton route="wb-payroll-settings" label="payroll settings" shape="cards" band={128} overlap={false} />;
 }

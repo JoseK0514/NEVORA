@@ -1,6 +1,6 @@
 import { RouteSkeleton } from "@/components/route-skeleton";
 
-// Phase 3.5 Wave B: the band at its final height at 390 (Update detail, two-line title), so it does not jump when the page arrives.
+// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route "wb-update").
 export default function Loading() {
-  return <RouteSkeleton label="update" shape="list" band={288} />;
+  return <RouteSkeleton route="wb-update" label="update" shape="list" band={288} />;
 }

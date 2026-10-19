@@ -1,6 +1,6 @@
 import { RouteSkeleton } from "@/components/route-skeleton";
 
-// Phase 3.5 Wave B: the band at its final height at 390 (Templates), so it does not jump when the page arrives.
+// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route "wb-templates").
 export default function Loading() {
-  return <RouteSkeleton label="templates" shape="list" band={244} />;
+  return <RouteSkeleton route="wb-templates" label="templates" shape="list" band={244} />;
 }
