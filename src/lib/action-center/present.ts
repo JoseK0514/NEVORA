@@ -9,6 +9,7 @@ const NBSP = ' ', NBHY = '‑';
 const WAITING = / is waiting for review\.?$/;
 
 /** "8:00 AM–4:00 PM" → "8:00 AM – 4:00 PM", with the times kept whole. */
+const isoDay = (iso: string) => new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', month: 'short', day: 'numeric'}).format(new Date(`${iso}T00:00:00Z`)).replace(' ', NBSP);
 export function spacedRanges(text: string) {
   return text
     .replace(/\b12:00 ?AM\b/g, 'midnight')
@@ -56,6 +57,10 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
     case 'AVAILABILITY_MISSING':
       title = 'Availability not sent';
       detail = person ? `${person} hasn’t sent availability yet.` : 'Not sent yet.';
+      break;
+    case 'TIMECARD': case 'TIME_CORRECTION': case 'ATTENDANCE':
+      // TCD-04: periods read as dates ("Oct 19 – Oct 25"), never raw ISO ("2026-10-19–2026-10-25").
+      detail = detail.replace(/(\d{4})-(\d{2})-(\d{2})\s*[–-]\s*(\d{4})-(\d{2})-(\d{2})/g, (_m, y1, m1, d1, y2, m2, d2) => `${isoDay(`${y1}-${m1}-${d1}`)}${NBSP}– ${isoDay(`${y2}-${m2}-${d2}`)}`).replace(/\.$/, '');
       break;
     case 'COVERAGE_GAP':
       title = title.replace(/^Position coverage missing at /, 'Position not covered at ').replace(/^Lead coverage missing at /, 'No lead scheduled at ');

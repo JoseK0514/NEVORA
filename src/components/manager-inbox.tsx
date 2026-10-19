@@ -43,7 +43,7 @@ const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2)
 type InboxEntry = {
   key: string; href: string; label: string; leading: ReactNode; title: ReactNode; meta?: ReactNode; action: string; status?: ReactNode; urgent?: boolean;
   /** Detail pane only: labelled facts and one plain sentence on what to do. */
-  facts?: [string, ReactNode][]; note?: string; secondary?: { href: string; label: string };
+  facts?: [string, ReactNode][]; note?: string; secondary?: { href: string; label: string }; paneMeta?: boolean;
 };
 
 /** Desktop list and detail (Phase 4): the row a wide screen has selected, and how to select one. */
@@ -78,9 +78,22 @@ function withFilter(href: string, filter: InboxFilter) {
 }
 
 const requestNote = "The dates, the length and any note are on the request. Approve or decline it there.";
+/** TCD-02: what the pane's button leads to, item by item. */
+const typeNote: Partial<Record<ActionItem["type"], string>> = {
+  COVERAGE_GAP: "No one is scheduled for this yet. Open the coverage gap to fill it.",
+  TARGET_MISSING: "Set a weekly hour target in Scheduling rules.",
+  HOURS_REVIEW: "Their scheduled hours are outside their weekly target. Check the schedule.",
+  AVAILABILITY_MISSING: "Only they can send it. Open Availability to see who hasn’t.",
+  ACKNOWLEDGEMENT_MISSING: "Only they can confirm it. Open the schedule to see who hasn’t.",
+  DEADLINE_MISSING: "Set when this week’s schedule is due in Scheduling rules.",
+  COVERAGE_RULES_MISSING: "Set how many people each shift needs in Scheduling rules.",
+  TIMECARD: "Open the timecard to check it before it’s approved.",
+  TIME_CORRECTION: "Open it to see the change they asked for.",
+  ATTENDANCE: "Open Attendance to see what was recorded.",
+};
 const categoryNote: Record<ActionItem["category"], string> = {
-  scheduling: "Open it to see the schedule and fix it there.",
-  timekeeping: "Open it to see the recorded time and review it there.",
+  scheduling: "Open it to fix it on the schedule.",
+  timekeeping: "Open it to see the recorded time.",
   requests: requestNote,
 };
 
@@ -111,7 +124,7 @@ function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZon
     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
     status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
     note: calm ? "This time has passed. Review it for the record; it doesn’t need action now."
-      : facts ? "Approve or decline it on the full request." : categoryNote[item.category],
+      : facts ? "Approve or decline it on the full request." : item.category === "requests" ? requestNote : typeNote[item.type] ?? categoryNote[item.category],
     facts: facts ? requestFacts(facts) : undefined };
 }
 
@@ -130,8 +143,10 @@ function shiftEntry(shift: TodayShift, timeZone: string): InboxEntry {
     leading: <Avatar initials={initials(shift.employeeName)} />, title: shift.employeeName,
     meta: <><span className="nv-nowrap">{when}</span> · <span className="nv-nowrap">{shift.locationName}</span></>, action,
     status: <Status tone="urgent">{condition}</Status>,
-    facts: [["Shift", <span key="t" className="nv-nowrap">{clock(shift.startAt, timeZone)}&nbsp;– {clock(shift.endAt, timeZone)}</span>], ["Location", shift.locationName], ["Clock-in", running ? "None yet" : "None recorded"]],
-    note: running ? "The shift has started and there’s no clock-in yet. Check in with them, or look at the Clocker." : "The shift has ended with no clock-in. Check the timecard before you approve it.",
+    // TCD-08: the pane says each thing once: the pill is the condition, the facts are when and where, the note is what to do.
+    paneMeta: false,
+    facts: [["Shift", <span key="t" className="nv-nowrap">{clock(shift.startAt, timeZone)}&nbsp;– {clock(shift.endAt, timeZone)}</span>], ["Location", shift.locationName]],
+    note: running ? "Check in with them, or look at the Clocker." : "Check the timecard before you approve it.",
     secondary: running ? { href: `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`, label: "Open timecard" } : undefined };
 }
 
@@ -345,7 +360,7 @@ function InboxDetail({ entry }: { entry: InboxEntry }) {
       {entry.leading}
       <div className="inbox-detail__heading">
         <h2 className="inbox-detail__title" id="inbox-detail-title" tabIndex={-1}>{entry.title}</h2>
-        {entry.meta ? <p className="inbox-detail__meta">{entry.meta}</p> : null}
+        {entry.meta && entry.paneMeta !== false ? <p className="inbox-detail__meta">{entry.meta}</p> : null}
       </div>
     </div>
     {entry.status ? <div className="inbox-detail__status">{entry.status}</div> : null}
@@ -365,7 +380,8 @@ function DetailPlaceholder({ still = false }: { still?: boolean }) {
   </section>;
 }
 
-/** D-4: Requests folds into Inbox on desktop, so its three pages are one step away here. Desktop only. */
+/** D-4: Requests folds into Inbox on desktop, so its three pages are one step away here. Desktop only. TCD-07: not "All requests",
+ * which the Time off page uses for the Inbox's Requests filter. */
 function AllRequests() {
   const { modules } = usePresentation();
   const pages = [
@@ -374,8 +390,8 @@ function AllRequests() {
     { href: "/app/availability", title: "Availability", meta: "When people can work", icon: <UserCheckIcon size={20} weight="bold" /> },
   ].filter(page => pathEnabled(page.href, modules));
   if (!pages.length) return null;
-  return <Card id="inbox-all-requests" title="All requests">
-    <Rows label="All requests">
+  return <Card id="inbox-all-requests" title="Request pages">
+    <Rows label="Request pages">
       {pages.map(page => <Row key={page.href} href={page.href} title={page.title} meta={page.meta} leading={<Tile>{page.icon}</Tile>} />)}
     </Rows>
   </Card>;
