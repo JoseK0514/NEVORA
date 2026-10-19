@@ -29,7 +29,7 @@ it('deliberately selects only visible finalized cards and exposes the exclusion 
  click('Clear employee selection');expect(html()).toContain('0 selected');
 });
 it('selects at most 100 visible finalized cards and explicitly reports overflow',async()=>{
- await mount(Array.from({length:101},(_,i)=>card(`E${i}`)));click('Select visible finalized timecards');expect(html()).toContain('100 selected');expect(html()).toContain('1 finalized beyond the 100-card selection limit');
+ await mount(Array.from({length:101},(_,i)=>card(`E${i}`)));click('Select visible finalized timecards');expect(html()).toContain('100 selected');expect(html()).toContain('Select up to 100 people at a time.');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE E100').disabled).toBe(true);
 });
 it('refresh and expiry remove the convenience selection with protected private data',async()=>{

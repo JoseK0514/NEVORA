@@ -98,10 +98,11 @@ export default async function RequestsPage({
                 </div>
                 <span className="nv-row__meta">{request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)}\u00a0– ${formatTime(request.endTime)}` : "Full day"}</span>
                 {request.reason ? <span className="nv-row__meta premium-timeoff-note">Note: {request.reason}</span> : null}
-                {/* Request timeline: when it was sent, and where it stands. Who decided and when needs a read-model field (flagged). */}
+                {/* Request timeline: when it was sent, then who decided it and when (Jose, 2026-10-19). */}
                 <ol className="premium-timeline" aria-label="Request timeline">
                   <li data-done="true">Sent {sentOn(request.createdAt)}</li>
-                  <li data-done={request.status !== "PENDING" ? "true" : undefined}>{request.status === "PENDING" ? "Waiting for your manager" : request.status === "APPROVED" ? "Approved" : request.status === "DENIED" ? "Declined" : "Withdrawn"}</li>
+                  <li data-done={request.status !== "PENDING" ? "true" : undefined}>{request.status === "PENDING" ? "Waiting for your manager"
+                    : `${request.status === "APPROVED" ? "Approved" : request.status === "DENIED" ? "Declined" : "Withdrawn"}${request.reviewerName && request.status !== "CANCELLED" ? ` by ${request.reviewerName}` : ""}${request.reviewedAt ? ` · ${sentOn(request.reviewedAt)}` : ""}`}</li>
                 </ol>
                 {request.employeeId === session.id && request.status === "PENDING" ? <details className="nto-withdrawal"><summary>Withdraw this request <NavIcon name="chevronRight" size={16} /></summary><TimeOffWithdrawal requestId={request.id} dateLabel={request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`} /></details> : null}
               </li>

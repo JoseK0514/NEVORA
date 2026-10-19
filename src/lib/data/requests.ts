@@ -20,6 +20,10 @@ export type TimeOffListItem = {
   reason?: string;
   status: RequestStatus;
   createdAt: string;
+  /** When the request was decided or withdrawn (the employee's own requests only). */
+  reviewedAt?: string;
+  /** The manager who decided it; absent for a withdrawal (the employee reviewed it themself). */
+  reviewerName?: string;
 };
 
 function dateValue(value: unknown) {
@@ -47,6 +51,8 @@ function mapRequest(row: unknown): TimeOffListItem {
       item.created_at instanceof Date
         ? item.created_at.toISOString()
         : String(item.created_at),
+    ...(item.reviewed_at ? { reviewedAt: item.reviewed_at instanceof Date ? item.reviewed_at.toISOString() : String(item.reviewed_at) } : {}),
+    ...(item.reviewer_name ? { reviewerName: String(item.reviewer_name) } : {}),
   };
 }
 
@@ -71,9 +77,15 @@ export async function listEmployeeTimeOffRequests(employeeId: string) {
        r.end_time,
        r.reason,
        r.status,
-       r.created_at
+       r.created_at,
+       r.reviewed_at,
+       -- Jose, 2026-10-19: the employee's timeline names who decided their own request. A withdrawal is
+       -- reviewed by the employee themself, so it carries no reviewer name.
+       CASE WHEN r.reviewed_by IS NOT NULL AND r.reviewed_by <> r.employee_id
+         THEN rv.first_name || ' ' || rv.last_name END AS reviewer_name
      FROM time_off_requests r
      JOIN employees e ON e.id = r.employee_id
+     LEFT JOIN employees rv ON rv.id = r.reviewed_by
      WHERE r.employee_id = $1
      ORDER BY r.created_at DESC`,
     [employeeId],

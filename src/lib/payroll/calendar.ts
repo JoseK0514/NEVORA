@@ -48,3 +48,37 @@ export function duePeriod(
     payday: add(end, schedule.paydayOffsetDays),
   };
 }
+
+/** The pay period that contains `today`, and its payday (end plus the payday offset).
+ * Null before the schedule's anchor. Used to tell employees when the hours they're working now are paid. */
+export function openPeriod(
+  schedule: PayrollPreferences["schedule"],
+  today: string,
+) {
+  let start: string, end: string;
+  if (schedule.frequency === "WEEKLY" || schedule.frequency === "BIWEEKLY") {
+    const length = schedule.frequency === "WEEKLY" ? 7 : 14;
+    const elapsed = Math.floor(
+      (day(today).getTime() - day(schedule.anchorDate).getTime()) / 86400000,
+    );
+    if (elapsed < 0) return null;
+    start = add(schedule.anchorDate, Math.floor(elapsed / length) * length);
+    end = add(start, length - 1);
+  } else {
+    const now = day(today);
+    const year = now.getUTCFullYear(), month = now.getUTCMonth();
+    const last = iso(new Date(Date.UTC(year, month + 1, 0)));
+    if (schedule.frequency === "MONTHLY") {
+      start = iso(new Date(Date.UTC(year, month, 1)));
+      end = last;
+    } else if (now.getUTCDate() <= 15) {
+      start = iso(new Date(Date.UTC(year, month, 1)));
+      end = iso(new Date(Date.UTC(year, month, 15)));
+    } else {
+      start = iso(new Date(Date.UTC(year, month, 16)));
+      end = last;
+    }
+    if (end < schedule.anchorDate) return null;
+  }
+  return { period: { startDate: start, endDate: end }, payday: add(end, schedule.paydayOffsetDays) };
+}
