@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-19T18:19:45.243Z. large-data load times. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-19T18:22:50.788Z. interim smoke and progress. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,13 +22,13 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 46 | 2 | 48 / 12580 |
-| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 36 | 20 | 56 / 12716 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 93 | 7 | 100 / 12580 |
+| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 73 | 31 | 104 / 12716 |
 | claude/p35-wave-a-1283c8 | `157e25f7dab7a21542f54722746b237dc7b52afc` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / pending inventory |
-| claude/premium-phase-1 (large data) | `672232896b66a520d39939c1ae3e0227c8b1dc90` | Running matrix | 0 | 0 | 0 / 952 |
+| claude/premium-phase-1 (large data) | `672232896b66a520d39939c1ae3e0227c8b1dc90` | Running matrix | 0 | 28 | 28 / 952 |
 
 ## Initial Phase 1 smoke checks
 
@@ -59,12 +59,17 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 46 passed; 2 failed. Completed checker batches: 3. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 93 passed; 7 failed. Completed checker batches: 7. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
 | /app/exchange/callout?shiftId=audit-next-0-1 | AUDIT-E | 390 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-E 390 100% /app/exchange/callout?shiftId=audit-next-0-1 small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · No designat» 12px; strong. «This shift is still assigned t» 13px |
 | /app/exchange/swap?sourceShiftId=audit-next-0-1 | AUDIT-E | 390 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-E 390 100% /app/exchange/swap?sourceShiftId=audit-next-0-1 small=span. «Your shift» 13px; span. «Monday, Oct 26, 2026 · Main Of» 12px; summary. «How a swap works» 14px |
+| /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f | AUDIT-E | 390 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-E 390 100% /app/updates/40fc320b-bb81-4972-a433-93efb5052c3f small=span.communication-status.attention «Acknowledgement required» 12px; strong. «Management» 14px |
+| /app/updates/compose | AUDIT-E | 390 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-E 390 100% /app/updates/compose small=span.compose-status «Unpublished» 12px; span. «Plain text · Line breaks suppo» 11px; strong. «Today's team» 13px; span. «2026-10-19» 11px |
+| /app/updates/compose | AUDIT-E | 390 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-E 390 125% /app/updates/compose small=span. «Plain text · Line breaks suppo» 13.75px; span. «2026-10-19» 13.75px |
+| /app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0 | AUDIT-LEAD | 390 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-LEAD 390 100% /app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0 small=span. «Main Office» 14px; span. «Times in Puerto Rico time» 12px; span. «Customer Support · Designated » 12px; strong. «This shift is still assigned t» 13px |
+| /app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-0 | AUDIT-LEAD | 390 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium AUDIT-LEAD 390 100% /app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-0 small=span. «Your shift» 13px; span. «Monday, Oct 26, 2026 · Main Of» 12px; summary. «How a swap works» 14px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -74,7 +79,7 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 46 passed; 2
 
 ## claude/p35-profile-6cdee8
 
-Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 36 passed; 20 failed. Completed checker batches: 5. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
+Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 73 passed; 31 failed. Completed checker batches: 8. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -99,6 +104,17 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 36 passed; 2
 | /app/employees/AUDIT-LONG/clocker-pin | QAOWNER | 390 | 200 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium QAOWNER 390 200% /app/employees/AUDIT-LONG/clocker-pin small=span. «Employee ID: AUDIT-LONG» 13px; span.clocker-pin-module__hQ40jq__badge.clocker-pin-module__hQ40jq__con «Active employee» 12px; span. «4 digits» 12px; span. «Enter it again» 12px |
 | /app/exchange | QAOWNER | 390 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium QAOWNER 390 100% /app/exchange small=span.exchange-count «0 requests» 11px; span. «Requests needing a management » 13px |
 | /app/exchange | QAOWNER | 390 | 125 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium QAOWNER 390 125% /app/exchange small=span.exchange-count «0 requests» 13.75px |
+| /app/payroll-export | QAOWNER | 390 | 100 | chromium | layout shift | UI — claude/premium-phase-1 | FAIL chromium QAOWNER 390 100% /app/payroll-export cls=0.0213 |
+| /app/reports | QAOWNER | 390 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 390 100% /app/reports small=span. «Puerto Rico time» 11px; span. «Jump to» 12px; th. «Employee» 11px; th. «Published plan» 11px |
+| /app/requests | QAOWNER | 390 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium QAOWNER 390 100% /app/requests small=span.status-pill.warning «Pending» 11px; strong. «Oct 29, 2026 – Oct 30, 2026» 14px; span. «Full day» 12px |
+| /app/reports | QAOWNER | 390 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 390 125% /app/reports small=span. «Puerto Rico time» 13.75px; th. «Employee» 13.75px; th. «Published plan» 13.75px; th. «Recorded time» 13.75px |
+| /app/requests | QAOWNER | 390 | 125 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium QAOWNER 390 125% /app/requests small=span.status-pill.warning «Pending» 13.75px |
+| /app/schedule/edit?shiftId=audit-next-0-1 | QAOWNER | 390 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium QAOWNER 390 100% /app/schedule/edit?shiftId=audit-next-0-1 small=span. «Location» 12px; strong. «Northside Main Office» 14px; span.nevora-field-label «Employee» 12px; span.nevora-field-label «Position Optional» 12px |
+| /app/schedule/new | QAOWNER | 390 | 100 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium QAOWNER 390 100% /app/schedule/new small=span.shift-workspace-context «Oct 19 – Oct 25» 10px; span.nevora-field-label «Location» 13px; span.nevora-field-label «Employee» 13px; span.nevora-field-label «Position Optional» 13px |
+| /app/schedule/settings | QAOWNER | 390 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 390 100% /app/schedule/settings small=strong. «Main Office» 14px; span. «Staffing per shift» 12px; span. «Designated lead required» 13px; strong. «West Office» 14px |
+| /app/schedule/templates | QAOWNER | 390 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 390 100% /app/schedule/templates small=span. «Selected week» 12px; span.st-field-hint «Use 3–50 characters.» 12px; strong. «What gets saved» 12px |
+| /app/schedule/new | QAOWNER | 390 | 125 | chromium | small text | UI — claude/p35-wave-a-1283c8 | FAIL chromium QAOWNER 390 125% /app/schedule/new small=span.shift-workspace-context «Oct 19 – Oct 25» 12.5px; span. «Your selection will appear her» 12.5px |
+| /app/schedule/settings | QAOWNER | 390 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium QAOWNER 390 125% /app/schedule/settings small=span. «Optional» 13.75px; span. «Uses location staffing require» 13.75px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -164,7 +180,7 @@ Source: `578748d705b941d14f37c0b01bfcfb1332343e31`. Queued; exact source/runtime
 
 ## claude/premium-phase-1 (large data)
 
-Source: `672232896b66a520d39939c1ae3e0227c8b1dc90`. Running matrix. 0 passed; 0 failed. Completed checker batches: 0. Raw evidence: [cloud-checks/claude/premium-phase-1/large/](cloud-checks/claude/premium-phase-1/large/).
+Source: `672232896b66a520d39939c1ae3e0227c8b1dc90`. Running matrix. 0 passed; 28 failed. Completed checker batches: 2. Raw evidence: [cloud-checks/claude/premium-phase-1/large/](cloud-checks/claude/premium-phase-1/large/).
 
 Browser load times in milliseconds; cold development compilation may be included. Each row also records TTFB and DOMContentLoaded in load-times.json.
 
@@ -230,13 +246,42 @@ Browser load times in milliseconds; cold development compilation may be included
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
-| — | — | — | — | — | — | No failed cells recorded yet | — |
+| /app | AUDIT-M | 390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 100% /app errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/employees | AUDIT-M | 390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 100% /app/employees errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/payroll-export | AUDIT-M | 390 | 100 | chromium | layout shift | UI — claude/premium-phase-1 | FAIL chromium AUDIT-M 390 100% /app/payroll-export cls=0.0213 errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/payroll-export | AUDIT-M | 390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 100% /app/payroll-export cls=0.0213 errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app | AUDIT-M | 390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 125% /app errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/employees | AUDIT-M | 390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 125% /app/employees errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/payroll-export | AUDIT-M | 390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 125% /app/payroll-export errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app | AUDIT-M | 390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 150% /app errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/employees | AUDIT-M | 390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 150% /app/employees errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/payroll-export | AUDIT-M | 390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 150% /app/payroll-export errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app | AUDIT-M | 390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 200% /app errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/employees | AUDIT-M | 390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 200% /app/employees errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/payroll-export | AUDIT-M | 390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 200% /app/payroll-export errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/reports | AUDIT-M | 390 | 100 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-M 390 100% /app/reports small=span. «Puerto Rico time» 11px; span. «Jump to» 12px; th. «Employee» 11px; th. «Published plan» 11px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/reports | AUDIT-M | 390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 100% /app/reports small=span. «Puerto Rico time» 11px; span. «Jump to» 12px; th. «Employee» 11px; th. «Published plan» 11px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/schedule | AUDIT-M | 390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 100% /app/schedule errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/timecards | AUDIT-M | 390 | 100 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 100% /app/timecards errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/reports | AUDIT-M | 390 | 125 | chromium | small text | UI — claude/p35-wave-b-808dfd | FAIL chromium AUDIT-M 390 125% /app/reports small=span. «Puerto Rico time» 13.75px; th. «Employee» 13.75px; th. «Published plan» 13.75px; th. «Recorded time» 13.75px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/reports | AUDIT-M | 390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 125% /app/reports small=span. «Puerto Rico time» 13.75px; th. «Employee» 13.75px; th. «Published plan» 13.75px; th. «Recorded time» 13.75px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/schedule | AUDIT-M | 390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 125% /app/schedule errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/timecards | AUDIT-M | 390 | 125 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 125% /app/timecards errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/reports | AUDIT-M | 390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 150% /app/reports errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/schedule | AUDIT-M | 390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 150% /app/schedule errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/timecards | AUDIT-M | 390 | 150 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 150% /app/timecards errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/reports | AUDIT-M | 390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 200% /app/reports errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/schedule | AUDIT-M | 390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 200% /app/schedule errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/timecards | AUDIT-M | 390 | 200 | chromium | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL chromium AUDIT-M 390 200% /app/timecards errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 
 ### Timeout and server observations (separate from UI findings)
 
 | Route | Account | Width | Text | Browser | Initial detail | Retry outcome |
 |---|---|---|---:|---|---|---|
-| — | — | — | — | — | None recorded | — |
+| /app/inbox | AUDIT-M | 390 | 100 | chromium | FAIL chromium AUDIT-M 390 100% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found); console: Failed to load resource: the server responded with a status of 503 (Service Unavailable) | FAIL chromium AUDIT-M 390 100% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found); console: Failed to load resource: the server responded with a status of 503 (Service Unavailable) |
+| /app/inbox | AUDIT-M | 390 | 125 | chromium | FAIL chromium AUDIT-M 390 125% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found); console: Failed to load resource: the server responded with a status of 503 (Service Unavailable) | FAIL chromium AUDIT-M 390 125% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found); console: Failed to load resource: the server responded with a status of 503 (Service Unavailable) |
+| /app/inbox | AUDIT-M | 390 | 150 | chromium | FAIL chromium AUDIT-M 390 150% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found); console: Failed to load resource: the server responded with a status of 503 (Service Unavailable) | FAIL chromium AUDIT-M 390 150% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found); console: Failed to load resource: the server responded with a status of 503 (Service Unavailable) |
+| /app/inbox | AUDIT-M | 390 | 200 | chromium | FAIL chromium AUDIT-M 390 200% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found); console: Failed to load resource: the server responded with a status of 503 (Service Unavailable) | FAIL chromium AUDIT-M 390 200% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found); console: Failed to load resource: the server responded with a status of 503 (Service Unavailable) |
 
 ## Remaining gates
 

@@ -1,0 +1,236 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Puerto Rico time» 11px",
+   "span. «Jump to» 12px",
+   "th. «Employee» 11px",
+   "th. «Published plan» 11px",
+   "th. «Recorded time» 11px",
+   "th. «Difference» 11px",
+   "th. «Casey Rivera» 14px",
+   "span. «Unavailable» 13px",
+   "span. «3h 5m» 13px",
+   "th. «Alexandra Rivera» 14px",
+   "span. «34h» 13px",
+   "th. «Taylor Rivera» 14px",
+   "span. «0h» 13px",
+   "th. «María José Rivera Santiago Wit» 14px",
+   "th. «Morgan Rivera» 14px",
+   "th. «Jordan Rivera» 14px",
+   "span. «2h 5m» 13px",
+   "th. «Riley Rivera» 14px",
+   "th. «Juan Carlos Rodríguez de la To» 14px",
+   "th. «Ana Ortiz» 14px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Puerto Rico time» 13.75px",
+   "th. «Employee» 13.75px",
+   "th. «Published plan» 13.75px",
+   "th. «Recorded time» 13.75px",
+   "th. «Difference» 13.75px",
+   "th. «Name» 13.75px",
+   "th. «Breaks recorded» 13.75px",
+   "span.reports-module__Iv4GWq__badge «draft» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0.2016,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2383,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2682,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.351,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.3229,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.4641,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.8095,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.7953,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.9467,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]
