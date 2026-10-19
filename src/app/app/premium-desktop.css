@@ -275,25 +275,23 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal .sidebar .sidebar-platform-footer small { font: 400 .875rem/1.25rem var(--design-font-body); letter-spacing: 0; text-transform: none; color: var(--nv-muted); }
 }
 
-/* WR-25 and WR4-06: on desktop the section tabs (Timecards, Payroll runs, Time exports, Payroll settings) sit inside the
- * top of the band, as on phones, so every band starts at the same height and the title doesn't drop 65px. */
+/* WR-25 and WR4-06: on desktop the section tabs (Timecards, Payroll runs, Time exports, Payroll settings; the employee
+ * Requests and Pay tabs) sit inside the top of the band, as on phones, so every band starts at the same height. */
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame:has(> .section-tabs + :is([data-nv-page], .route-skeleton[data-band])) { position: relative; }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs:has(+ :is([data-nv-page], .route-skeleton[data-band])) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs):has([data-nv-band], .route-skeleton[data-band]) { position: relative; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has([data-nv-band], .route-skeleton[data-band]) > .section-tabs {
     position: absolute; z-index: 1; top: 28px; left: 32px; width: min(1120px, calc(100% - 64px)); box-sizing: border-box;
     margin: 0; padding: var(--nv-s-1) 36px 0; border: 0; background: transparent; max-width: none;
   }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs:has(+ :is([data-nv-page], .route-skeleton[data-band])) .section-tab { color: var(--nv-masthead-ink); font: var(--nv-t-label); }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs:has(+ :is([data-nv-page], .route-skeleton[data-band])) .section-tab:hover { color: #FFFFFF; }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs:has(+ :is([data-nv-page], .route-skeleton[data-band])) .section-tab[aria-current="page"] { color: #FFFFFF; font-weight: 600; }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs:has(+ :is([data-nv-page], .route-skeleton[data-band])) .section-tab[aria-current="page"]::after { background: #FFFFFF; }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs:has(+ :is([data-nv-page], .route-skeleton[data-band])) .section-tab:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has([data-nv-band], .route-skeleton[data-band]) > .section-tabs .section-tab { color: var(--nv-masthead-ink); font: var(--nv-t-label); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has([data-nv-band], .route-skeleton[data-band]) > .section-tabs .section-tab:hover { color: #FFFFFF; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has([data-nv-band], .route-skeleton[data-band]) > .section-tabs .section-tab[aria-current="page"] { color: #FFFFFF; font-weight: 600; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has([data-nv-band], .route-skeleton[data-band]) > .section-tabs .section-tab[aria-current="page"]::after { background: #FFFFFF; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has([data-nv-band], .route-skeleton[data-band]) > .section-tabs .section-tab:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
   /* The band makes room for the tab row (48px) above its eyebrow. */
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs + [data-nv-page] > .nv-pageband { padding-top: calc(var(--nv-s-4) + 48px); }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs + .route-skeleton[data-band] > .route-skeleton-band { height: calc(var(--route-band-desktop, 168px) + 48px); padding-top: calc(var(--nv-s-5) + 48px); }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs + [data-nv-page] > .nv-pageband .nv-masthead__mark { display: none; }
-}
-@media (min-width: 761px) and (max-width: 1023px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband { padding-top: calc(var(--nv-s-4) + 48px); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband .nv-masthead__mark { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) > .route-skeleton[data-band] > .route-skeleton-band { height: calc(var(--route-band-desktop, 168px) + 48px); padding-top: calc(var(--nv-s-5) + 48px); }
 }
 
 /* WR4-10: All requests sits at the top of the Inbox list on desktop, as one compact row of three links,
@@ -374,9 +372,10 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-schedule-body:has(.my-schedule-side > :is(.my-schedule-feedback, .my-schedule-review), .my-schedule-changes > *) > .my-schedule-side { grid-column: 2; grid-row: 1; order: 0; position: sticky; top: calc(65px + var(--nv-s-4)); }
 }
 @media (min-width: 761px) and (max-width: 1023px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
-  /* Employee view chips get a row of their own when the title row is too narrow; Shift requests' eyebrow gives way to keep it under 200px. */
-  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :is(.premium-employee-schedule, .premium-employee-timeoff, .premium-employee-exchange, .premium-employee-availability) > .nv-pageband > .nv-masthead__extra { grid-column: 1 / -1; justify-self: start; margin-top: var(--nv-s-3); }
-  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-exchange > .nv-pageband .nv-pageband__eyebrow-row { display: none; }
+  /* My schedule's and Shift requests' chips get a row of their own when the title row is too narrow; under the tab row, Shift requests'
+   * eyebrow and one-line description give way to keep the band under 200px (the chips and title name the page). */
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :is(.premium-employee-schedule, .premium-employee-exchange) > .nv-pageband > .nv-masthead__extra { grid-column: 1 / -1; justify-self: start; margin-top: var(--nv-s-3); }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-exchange > .nv-pageband :is(.nv-pageband__eyebrow-row, .nv-masthead__summary) { display: none; }
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* Profile: the two panels fill the page width; side by side from 1024px, stacked below. */
