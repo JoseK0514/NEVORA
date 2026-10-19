@@ -10,7 +10,7 @@ export type CommunicationLifetime={state:'ready';observedAt:string;validForMs:nu
 export const communicationHeaders=(authority:string)=>({'Accept':'application/json','X-Nevora-Communication':'1','X-Nevora-Communication-Authority':authority});
 export async function communicationRequest(mode:CommunicationMode,authority:string,path='',body?:unknown,signal?:AbortSignal){
  const response=await fetch(`/api/${mode}/communications${path}`,{method:body===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal,headers:{...communicationHeaders(authority),...(body===undefined?{}:{'Content-Type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)})});
- if(response.status===401||response.status===403)return {state:'unauthorized',reason:'access_denied'};
+ if(response.status===401||response.status===403)return {state:'unauthorized',reason:'access_denied',httpStatus:response.status};
  return response.json();
 }
 export function parseCommunicationLifetime(value:unknown,authority:string):CommunicationLifetime{

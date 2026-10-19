@@ -23,7 +23,7 @@ gsap.registerPlugin(useGSAP);
 export function CommunicationDetailView({read,paused,pending,notice,onAction,onRefresh}:{read:CommunicationRead|null;paused:boolean;pending:boolean;notice:CommunicationNotice;onAction:(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP')=>void;onRefresh:()=>void}){
  const [reviewed,setReviewed]=useState(false);
  const surface=useRef<HTMLElement>(null);
- const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&read?.state==='ready'?read:null;
+ const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&notice!=='signed-out'&&read?.state==='ready'?read:null;
  useGSAP(()=>{
   if(!ready?.ownAcknowledgedAt&&!ready?.ownReadAt)return;
   const media=gsap.matchMedia();
@@ -35,12 +35,13 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const stamp=(at:string)=>new Intl.DateTimeFormat('en-US',{timeZone:ready?.timeZone??'UTC',dateStyle:'medium',timeStyle:'short'}).format(new Date(at));
  if(!ready){
   const loading=pending&&!read;
-  const title=paused?'Updates paused':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'Sign in again':loading?'Loading update…':'Update unavailable';
-  const description=paused?'Return to this page to check the current update.':notice==='blocked'?'Your current permission does not allow this update. Refresh to check access.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available. You can return to All updates.':read?.state==='unauthorized'?'Sign in to check your current access.':loading?'Getting the latest content and your review status.':'We could not load the current update. Retry to check again.';
+  const signedOut=notice==='signed-out';
+  const title=signedOut?'Your session ended':paused?'Updates paused':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'Sign in again':loading?'Loading update…':'Update unavailable';
+  const description=signedOut?'Sign in again to check your current access.':paused?'Return to this page to check the current update.':notice==='blocked'?'Your current permission does not allow this update. Refresh to check access.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available. You can return to All updates.':read?.state==='unauthorized'?'Sign in to check your current access.':loading?'Getting the latest content and your review status.':'We could not load the current update. Retry to check again.';
   return <section ref={surface} className="communication-detail communication-state employee-view-surface" aria-busy={loading}>
    <span className="communication-state-icon" aria-hidden="true">{loading?<ClockIcon size={28}/>:<FileTextIcon size={28}/>}</span>
    <div role="status"><h1>{title}</h1><p>{description}</p></div>
-   {read?.state==='unauthorized'?<Link href="/login" className="button secondary">Sign in</Link>:read?.state==='withdrawn'?null:<button type="button" className="button secondary" onClick={onRefresh} disabled={paused||pending}><ArrowClockwiseIcon size={18} aria-hidden="true"/>{notice==='conflict'?'Review latest':'Retry'}</button>}
+   {signedOut||read?.state==='unauthorized'?<Link href="/login" className="button secondary">Sign in</Link>:read?.state==='withdrawn'?null:<button type="button" className="button secondary" onClick={onRefresh} disabled={paused||pending}><ArrowClockwiseIcon size={18} aria-hidden="true"/>{notice==='conflict'?'Review latest':'Retry'}</button>}
   </section>;
  }
  const required=ready.acknowledgement==='REQUIRED';
@@ -68,6 +69,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   <section className={'communication-receipt employee-view-surface'+(acknowledged||markedRead?' is-complete':'')} aria-label="Your review status" aria-busy={pending}>
    <span className="communication-result-icon" aria-hidden="true">{acknowledged||markedRead?<CheckCircleIcon size={26} weight="regular"/>:required?<FileTextIcon size={26}/>:<CircleIcon size={26}/>}</span>
    <div className="communication-receipt-copy">
+    <p role="status" aria-live="polite" className="sr-only">{pending?'Confirming your review…':''}</p>
     {acknowledged?<div role="status"><h2>Acknowledged</h2><p>You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<><h2>{required?'Acknowledgement required':'Informational update'}</h2><p>{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></>:required?<><h2>Confirm you received this update</h2><p id="communication-acknowledgement-help">Acknowledgement confirms receipt of this version. It does not indicate agreement or attendance.</p><label className="communication-review-check"><input type="checkbox" checked={reviewed} disabled={pending||notice==='unknown'} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label><button type="button" className="button primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&onAction('ACKNOWLEDGE')}><CheckCircleIcon size={19} aria-hidden="true"/>{pending?'Confirming…':'Acknowledge update'}</button></>:markedRead?<div role="status"><h2>Marked read</h2><p>Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<><h2>No acknowledgement needed</h2><p>You can mark this update as read to keep your updates organized.</p><button type="button" className="button secondary" disabled={notice==='unknown'} aria-disabled={pending} onClick={()=>!pending&&onAction('MARK_READ')}><CheckCircleIcon size={19} aria-hidden="true"/>{pending?'Saving…':'Mark read'}</button></>}
    </div>
   </section>
