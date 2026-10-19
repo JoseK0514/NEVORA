@@ -1,0 +1,18 @@
+{
+  "actualMerge": "2a67a4d3eef4d8b275f67b1239238535ee1d5060",
+  "actualTree": "5f7314638d6e9a01d618e89a686af31e0a42d4b7",
+  "head": "c8752f2bab60f1a85da5d408dfc8537cebc50007",
+  "entries": 2846,
+  "differentFromC875": [],
+  "missingFromC875": [],
+  "candidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "differentFromCandidate": [
+    "src/app/app/schedule/new/page.tsx",
+    "src/components/coverage-assistant.test.tsx",
+    "src/components/coverage-assistant.tsx",
+    "src/components/create-shift-form.tsx",
+    "src/components/kit/kit.css",
+    "src/components/payroll/payroll-settings.tsx",
+    "src/components/wave-a/shift-block.tsx"
+  ]
+}

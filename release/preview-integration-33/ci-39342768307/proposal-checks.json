@@ -1,0 +1,52 @@
+[
+  {
+    "file": "CI-RC-HOME-COPY-02.patch",
+    "target": "scripts/phase-e-home-browser-scenarios.mjs",
+    "sourceSha256": "392f70e00577d55f43990dbcd06dce1c11c81eb5cdb269d85612e3c0474e41b8",
+    "patchSha256": "4cae89575e2871b4bcdaf343a78aff5bb6f158ae5b070900d88e40b97bb64959",
+    "nodeSyntaxExit": 0,
+    "gitApplyCheckExit": 0,
+    "status": "unapplied review proposal; no browser passing credit",
+    "canonicalCopyMapping": [
+      {
+        "old": "getByText('Clocked In'",
+        "new": "getByText('Clocked in'",
+        "occurrences": 4
+      },
+      {
+        "old": "getByText('Off Clock'",
+        "new": "getByText('Off clock'",
+        "occurrences": 1
+      },
+      {
+        "old": "name:'My Time'",
+        "new": "name:'My time'",
+        "occurrences": 3
+      },
+      {
+        "old": "recorded().getByRole('link',{name:'Sign In'",
+        "new": "recorded().getByRole('link',{name:'Sign in'",
+        "occurrences": 1
+      },
+      {
+        "old": "getByText('Required review'",
+        "new": "getByText('Review needed'",
+        "occurrences": 3
+      },
+      {
+        "old": "getByText('Some Home sections could not be fully checked. Counts show known items.'",
+        "new": "getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.'",
+        "occurrences": 1
+      }
+    ]
+  },
+  {
+    "file": "CI-RC-ATTENDANCE-LABELS-02.patch",
+    "target": "scripts/phase-d-attendance-ui-qa.mjs",
+    "sourceSha256": "1ffccfaa2cbfff375a65c8e61f949b0f2600d6e33112527b4e619085b1efcb2d",
+    "patchSha256": "8ec6929ded0fbecc9b0608ad304352713b1fd805dec3318cbea271879ea976dc",
+    "nodeSyntaxExit": 0,
+    "gitApplyCheckExit": 0,
+    "status": "unapplied review proposal; no browser passing credit"
+  }
+]

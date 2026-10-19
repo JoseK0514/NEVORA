@@ -1,0 +1,92 @@
+{
+  "workflow": "https://github.com/JoseK0514/NEVORA/actions/runs/39342768307",
+  "head": "c8752f2bab60f1a85da5d408dfc8537cebc50007",
+  "actualMerge": "2a67a4d3eef4d8b275f67b1239238535ee1d5060",
+  "actualTree": "5f7314638d6e9a01d618e89a686af31e0a42d4b7",
+  "status": "partial job results; workflow not complete at publication",
+  "jobs": {
+    "phase-e-ui": {
+      "id": 118368049765,
+      "status": "failed",
+      "location": "phase-e-home-browser-scenarios.mjs:38:50",
+      "stage": "loading",
+      "reason": "wait for exact Clocked In; screenshot/source render Clocked in"
+    },
+    "phase-d-attendance-ui": {
+      "id": 118368049724,
+      "status": "failed",
+      "checksPassed": 9,
+      "location": "phase-d-attendance-ui-qa.mjs:346:12",
+      "actual": 1,
+      "expected": 0,
+      "reason": "old Main Office exact-label count across whole page; separate configured policies also render location labels"
+    },
+    "phase-e-postgres": {
+      "id": 118368049869,
+      "status": "passed"
+    },
+    "validate": {
+      "id": 118368049990,
+      "status": "in_progress"
+    },
+    "release-postgres": {
+      "id": 118368049854,
+      "status": "in_progress"
+    },
+    "clocker-postgres": {
+      "id": 118368049845,
+      "status": "in_progress"
+    }
+  },
+  "logs": [
+    {
+      "path": "/workspace/paused-evidence/ci-c8752f2b/phase-e-ui.log",
+      "sha256": "26c2e8aa42405b90414a8adefe7216dfdbdbf4ef1e03cb14e45d30bbc7cc0fc6",
+      "bytes": 154126
+    },
+    {
+      "path": "/workspace/paused-evidence/ci-c8752f2b/phase-d-attendance-ui.log",
+      "sha256": "a8a2f4d4ee292d88e27202757c98c7dc5c344f01c5a81db4c9fc7948c474eac3",
+      "bytes": 156263
+    }
+  ],
+  "downloadedArtifacts": [
+    {
+      "artifactId": 12230021823,
+      "sha256": "907e66e16e64c1de9027dc064b3804183f9087a86f0e57c7e29a355988860352",
+      "bytes": 494095
+    },
+    {
+      "artifactId": 12229791845,
+      "sha256": "e1991db8a22078e26e4f011f6ba96ae1eb854e11fab366a79f4c1f63c040eeee",
+      "bytes": 68996
+    }
+  ],
+  "publishedFiles": [
+    {
+      "path": "browser-failure-report.json",
+      "sha256": "857b9e6999fd154a24d79035408944ae302a8691641ccfae731f71b0156a47b9",
+      "bytes": 561
+    },
+    {
+      "path": "browser-report.json",
+      "sha256": "b09bd74c511c4f573a4a8c5dec9add3fdc54de8723d0823234be2a2e346197dc",
+      "bytes": 1253
+    },
+    {
+      "path": "source-manifest.json",
+      "sha256": "e8abfb04a63412fd3678cc9ed9153f6fe0086821c6571f7536397ad9d36d5cea",
+      "bytes": 375143
+    },
+    {
+      "path": "home-task11-chromium-320-failure.png",
+      "sha256": "7806d0a930484b7d2bf6cfc6a5b4eaa32282d1ace0a577d9e23def7d1e4c178f",
+      "bytes": 236901
+    },
+    {
+      "path": "attendance-report.json",
+      "sha256": "65eef322f7548480df4d239627655f76de2d27f4b987f816647e409baebb755e",
+      "bytes": 1504
+    }
+  ]
+}

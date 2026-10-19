@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-10-19T23:39:42.087Z",
+  "checkpoint": "2a67a4d3eef4d8b275f67b1239238535ee1d5060",
+  "tree": "5f7314638d6e9a01d618e89a686af31e0a42d4b7",
+  "sourceClean": true,
+  "expectedSha": "2a67a4d3eef4d8b275f67b1239238535ee1d5060",
+  "checks": [
+    "chromium: real Owner protected attendance read",
+    "chromium: real Manager protected attendance read",
+    "chromium: Employee cannot enter Manager attendance surface",
+    "chromium: populated factual attendance exception state",
+    "chromium: limited source state is explicitly disclosed",
+    "chromium: lifecycle reauthorization clears protected snapshot before the response",
+    "chromium: visibility revalidation clears protected snapshot before refresh",
+    "chromium: pagehide/pageshow requires a fresh protected snapshot",
+    "chromium: historical inactive location keeps its recorded label"
+  ],
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 0\n\n    at file:///home/runner/work/NEVORA/NEVORA/scripts/phase-d-attendance-ui-qa.mjs:346:12"
+  ],
+  "screenshots": [],
+  "limitations": [
+    "Owned local Next application and fictional PostgreSQL are not hosted Vercel/Neon acceptance.",
+    "Populated exception states use browser transport fixtures; D1.2 PostgreSQL and route suites separately verify the protected reader.",
+    "Local Chromium/WebKit automation does not replace physical-device or screen-reader acceptance."
+  ],
+  "finishedAt": "2026-10-19T23:40:11.569Z"
+}
