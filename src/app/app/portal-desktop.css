@@ -215,3 +215,24 @@ html body .app-shell.nevora-portal .page-frame :is(.nevora-empty, .mws-empty, .u
 @media (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal .page-frame :is(.manager-portal-home #manager-action-list > *, .inbox-group summary) { transition: none; }
 }
+
+/* Round 2: the Employee and Lead desktop text floor (TCD-16). Legacy page styles set 12–13px; desktop's floor is 14px
+ * in rem, so it follows text size. Phones keep their own 15px rules (Phase 3). */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame [data-nv-page] :is(
+    .profile-setting-copy small, .profile-setting-note, .profile-supporting-copy, .employee-corporate-desktop-copy, .employee-corporate-desktop-copy *,
+    [class*="timecards-module"][class*="__status"], [class*="timecards-module"][class*="__identity"] small, [class*="timecards-module"][class*="__definition"],
+    [class*="timecards-module"][class*="__issues"] p, [class*="timecards-module"][class*="__toolbar"] label, [class*="timecards-module"][class*="__totals"] dt,
+    .employee-time-section-heading p, .employee-time-metrics dt, .employee-time-empty, .employee-time-note,
+    .av-editor-heading p, .av-editor-footer p, .av-no-hours, .av-input-hint,
+    .updates-refresh span, .updates-footnote, .nto-next-step p, .nto-next-step strong, .nto-next-step span, .nto-summary-facts p,
+    .my-week-title p, .my-shift-options-body p, .my-shift-options-body .my-schedule-link, .employee-agenda-date small, .employee-designated-lead,
+    .profile-settings-list li, .employee-account-panel li, .updates-row-action, .updates-row-action *,
+    [class*="employee-home-reviewed-module"][class*="__currentNote"], [class*="employee-home-reviewed-module"][class*="__zone"],
+    .employee-time-footer .employee-time-refresh, .employee-time-footer .employee-time-link, .employee-time-footer small, .employee-time-footer small *,
+    .employee-time-entry-range, .employee-time-entry-range *, .employee-time-entry-location, .employee-time-entry-total small, .employee-time-punches p,
+    .employee-time-punches dt, .employee-time-punches dd, .employee-time-punches dd *, [class*="timecards-module"] ul > li,
+    [class*="timecards-module"] dl:not([class*="__overview"]):not([class*="__totals"]) > div > :is(dt, dd)) {
+    font-size: .875rem; line-height: 1.25rem;
+  }
+}
