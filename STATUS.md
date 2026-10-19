@@ -1,4 +1,33 @@
 ## Claude, start here — 2026-10-19 20:35 UTC
+# Claude, start here
+
+Current handoff: Jose approved item 4 in chat on October 19. Codex may make named P1/P2 UI fixes **on `codex/release-candidate` only**, one finding per commit. Review each before its owner ports or replaces it. This extends the historical three-edit boundary below.
+
+- **Integrated locally:** coordinator `227150b`, backend `da2a4e5` (approved Profile alerts), verified-zero Profile `ea58610`. Candidate `cbaadbc` adds the separately authorized Profile server initial read. Typecheck and lint pass; full tests and merged browser checks are in progress. No full green or publication claim yet.
+- **Verified zero:** Profile exit round 4 at `ea58610`; its five committed reports were verified in `release/readiness/profile-ea58610/`. Other exact exit rounds remain open/incomplete until their results arrive.
+- **Active inspection owners:** Phase 3 `227150b`, Wave A `a05f26a` (supersedes `7f75dc4`, ST-WA-11 clamp), Wave B `9bd265e` (handoff `564d193`), Wave C `5f7c166`, Desktop `8012d97`. Separate read-only worktrees and owned fictional previews; no source-branch changes.
+- **Open by owner:** Phase 3 interaction IS-74, IS-77–80, IS-82 and prior cloud IDs are being rechecked. Wave A ST-WA-9/10 are being rechecked. Wave B, Wave C and Desktop full exit sweeps are pending.
+- **Device access:** proposal below remains pending Jose’s phone-access yes/no. No deploy, tunnel, or external preview exposure.
+
+## Candidate-only UI fixes for Claude to review
+
+No new item-4 finding fix committed yet. Separate standing-authorized post-merge change: `cbaadbc` — Profile server initial read (`src/components/manager-profile/manager-profile.tsx`); parse ready snapshots, use null on unavailable/invalid/throw; affected checks pending.
+
+## Current merge custody
+
+`0e01046` → coordinator merge `c16a822` → backend merge `419a99c` → Profile merge `06ac418` → Profile initial read `cbaadbc`.
+
+Backend conflicts follow existing source-owner directions: Coverage takes Wave A’s prescribed test (blob `18e3861`); root layout keeps the latest coordinator text-scale/data-text-step script and adds the prescribed async/error hook. Profile's only conflict takes the exact latest coordinator `portal-premium.css`. No unprescribed screen choice.
+
+Parallel publication custody: this paused-handoff task uses the latest coordinator `227150b` and explicit item-4 approval in this chat. Remote candidate was still `0e01046` at20:35UTC. Any first-published candidate will be fetched and preserved before publishing; no force-push of a parallel release candidate. Parallel checkpoints `c34043b`, `23fcdc3` and their evidence below remain historical/unpublished until their remote custody is established. This task's explicit item-4 approval supersedes the older “no additional UI-fix permission” note below.
+
+Preserved source findings: Wave A ST-WA-11 is fixed by new source `a05f26a` and awaits exit recheck; Wave C TC-WC-28 / WR-WC-25 remain open for measured recheck and minimal candidate applicability review. Neither source is zero yet.
+
+Everything below is retained history from the parallel inspection/publishing tasks. Earlier “current” headings describe their own checkpoints.
+
+---
+
+## Claude, start here — 2026-10-19 20:28 UTC
 
 - Publishing target is now **8e18a95**, with application gates on0bdaa4d: latest fetched coordinator227150b, backendda2a4e5, verified-zero Profileea58610/appcaef395 and separate initial-read4ff37e5. Latest premium CSS equals coordinator blobc72c855 exactly.8e18a95 only explicitly retains the original backend Coverage locator assertion; focused Coverage6/6, TypeScript and focused lint pass; application/build/config bytes match0bdaa4d. npmci/type/lint/build and2298-artifact/5-marker absence pass. Full one-worker suite and180-cell merged checker are running;40 fresh settled page captures and8 More cases pass. Earlier23fcdc3 full run7351 pass/1 backfill timeout; affected file68/68 passes alone without changing limits. The parallel publisher’sc34043b record is preserved; remote RC was still0e01046 at20:31. No force push; preserve any first-published remote candidate at publication.
 - Latest Wave A **a05f26a is not zero / not merged**. All16 pending rechecks pass, including ST-WA-11’s844→320 width clamp (Delete248px;Swap288px, both engines/100/200). New **TC-WA-15P1**:46 enabled fields acrossAdd/Edit shift,New employee,PIN andUnable to work use#D5DAD9 on white,1.413:1 against the required3:1. Coordinator/shared-kit owner; Wave A coordinates its screens. This cross-references Wave C’s relatedTC-WC-28 shared-style symptom. [Five explicit-scope reports](p35-wave-a/round-2-a05f26a/README.md). No full zero sweep is claimed. Earlier7f75dc4’s ST-WA-11 report is preserved; its fix now passes. Strict source/mirror guard and owned PostgreSQL shutdown pass on a05f26a.
