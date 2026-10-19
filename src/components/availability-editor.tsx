@@ -73,7 +73,7 @@ function AvailabilityFields({ initialAvailability, weekStart, locked }: {
       <p role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? "This week is closed for changes." : dirty ? "You have unsaved changes." : weekStart ? "Submit these hours for this week." : "Your saved usual week."}</p>
       <div className="av-form-actions">
         <button className="av-button secondary" type="button" disabled={disabled || !dirty} onClick={() => setAvailability(initialAvailability)}><ArrowCounterClockwiseIcon size={18} aria-hidden="true" />Reset changes</button>
-        <EmployeeSubmitButton className="av-button primary" pendingText="Saving…" disabled={disabled || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{weekStart ? "Submit weekly availability" : "Save usual week"}{!locked ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</EmployeeSubmitButton>
+        <EmployeeSubmitButton className="av-button primary" pendingText="Saving…" disabled={locked || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{weekStart ? "Submit weekly availability" : "Save usual week"}{!locked ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</EmployeeSubmitButton>
       </div>
     </footer>
   </>;
@@ -90,10 +90,14 @@ export function AvailabilityEditor({ initialAvailability, weekStart, locked = fa
   const failures = useRef(0);
   const feedback = useRef<HTMLParagraphElement>(null);
   useEffect(() => { if (failed && feedback.current) revealFeedback(feedback.current); }, [failed]);
+  const saving = useRef(false);
   async function save(data: FormData) {
+    if (saving.current) return;
+    saving.current = true;
     setFailed(0);
     try { await (weekStart ? saveWeeklyAvailabilityAction : saveAvailabilityAction)(data); }
     catch (error) { unstable_rethrow(error); setFailed(++failures.current); }
+    finally { saving.current = false; }
   }
   return <form action={save} onReset={event => event.preventDefault()} className={`av-editor${employeeView ? " av-employee-editor" : ""}`} aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
     <AvailabilityFields initialAvailability={initialAvailability} weekStart={weekStart} locked={locked} />
