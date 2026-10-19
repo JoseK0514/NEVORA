@@ -1,4 +1,5 @@
 import {listPositions} from "@/lib/data/positions";
+import { keepDuration } from "@/components/wave-a/keep-duration";
 import { CreateShiftForm } from "@/components/create-shift-form";
 import { ConfigurationForm } from "@/components/configuration-form";
 import { Card, PageBand } from "@/components/kit/kit";
@@ -68,7 +69,7 @@ export default async function NewShiftPage({
     const need = locator.target === "POSITION" ? "the position requirement" : locator.target === "LEAD" ? "the lead requirement" : "the staffing requirement";
     return <div className="nv-page wa-page wa-shift" data-nv-page="">
       <PageBand back={{ href: refreshHref, label: "Coverage" }} eyebrow={keepWhole(formatWeekRange(locator.weekStart))} title="Review replacement"
-        summary={`${selected.employeeName} for ${keepWhole(`${day.weekday}, ${day.day}`)}.`} />
+        summary={`${selected.employeeName} for ${keepWhole(`${day.weekday},\u00a0${day.day}`)}.`} />
       <ConfigurationForm action={createShiftAction} className="nv-content wa-narrow wa-form">
       <input type="hidden" name="coverageRepairReview" value={params.review} />
       {Object.entries({ weekStart: locator.weekStart, employeeId: selected.employeeId, locationId: locator.locationId,
@@ -77,8 +78,8 @@ export default async function NewShiftPage({
       <Card title="Replacement" id="replacement-shift">
         <Facts label="Replacement shift">
           <Fact label="Person">{selected.employeeName}</Fact>
-          <Fact label="Day">{keepWhole(`${day.weekday}, ${day.day}, ${locator.date.slice(0, 4)}`)}</Fact>
-          <Fact label="Time">{keepWhole(`${formatTime(locator.startTime)} – ${formatTime(locator.endTime)}`)} <span className="wa-muted">· {durationText(durationMinutes(locator.startTime, locator.endTime))}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday}, ${nextDay.day}`)}</span> : null}</Fact>
+          <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}, ${locator.date.slice(0, 4)}`)}</Fact>
+          <Fact label="Time">{keepWhole(`${formatTime(locator.startTime)} – ${formatTime(locator.endTime)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(locator.startTime, locator.endTime))}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
           <Fact label="Location">{selected.locationName}</Fact>
           <Fact label="Position">{selected.positionName ?? "None needed"}</Fact>
           <Fact label="Shift lead">{selected.isDesignatedLead ? "Yes, needed" : "Not needed"}</Fact>

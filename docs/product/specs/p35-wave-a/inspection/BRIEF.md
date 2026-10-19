@@ -26,7 +26,7 @@ Fourteen pages rebuilt on the kit (`.nv-page.wa-page`, styles in `src/app/app/pr
 | availability | `/app/availability`, `?week=2026-10-26`, `?week=2026-99-99` (invalid) | Owner, Manager |
 | member | `/app/employees/AUDIT-E` (Details and Scheduling tabs), also `/app/employees/QAOWNER` as Manager (Owner-only notice) | Owner, Manager |
 | new-employee | `/app/employees/new`, also `?error=save` | Owner, Manager (Owner sees the Owner role) |
-| clocker-pin | `/app/employees/AUDIT-E/clocker-pin` (the preview has no PIN key, so it shows "PIN setup is unavailable"), `/app/employees/QAOWNER/clocker-pin` as Manager | Owner, Manager |
+| clocker-pin | `/app/employees/AUDIT-E/clocker-pin` (the Create a PIN form), `/app/employees/QAOWNER/clocker-pin` as Manager | Owner, Manager |
 | swap | `/app/exchange/swap?sourceShiftId=audit-shift-0-1` (Employee `AUDIT-E`), `?sourceShiftId=x-audit-next-AUDIT-LEAD-2` (Lead `AUDIT-LEAD`) | Employee, Lead |
 | unable-to-work | `/app/exchange/callout?shiftId=audit-shift-1-1` (AUDIT-E), `?shiftId=x-audit-next-AUDIT-LEAD-3` (AUDIT-LEAD), also `&error=details` | Employee, Lead |
 
@@ -59,7 +59,7 @@ Also check that Employee and Lead get no access to the manager pages (they redir
 | The compact brand link in landscape is 38px tall | shell |
 | Section tabs above the band fade in on load | shell |
 | The tab bar shows Inbox as current on Time off and Shift requests | shell |
-| Everything in `docs/product/specs/p35-wave-a/CODEX.md` (server reads, the swap choose state, the PIN form, a real copy receipt, legal wording) | Codex or Jose |
+| Everything in `docs/product/specs/p35-wave-a/CODEX.md` (server reads, the swap choose state, a real copy receipt, legal wording) | Codex or Jose |
 | Field height 48px | decided by the coordinator |
 
 ## Report

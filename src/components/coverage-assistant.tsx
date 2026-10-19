@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { keepDuration } from "./wave-a/keep-duration";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { addDays, durationMinutes, formatDayLabel, formatTime } from "@/lib/date-utils";
@@ -80,11 +81,11 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
   const minutes = durationMinutes(props.startTime, props.endTime);
   const overnight = props.endTime < props.startTime || props.endTime.slice(0, 5) === "24:00";
   const nextDay = overnight ? formatDayLabel(addDays(props.date, 1)) : null;
-  const when = keepWhole(`${day.weekday}, ${day.day} · ${formatTime(props.startTime)} – ${formatTime(props.endTime)}`);
+  const when = keepWhole(`${day.weekday},\u00a0${day.day} · ${formatTime(props.startTime)} – ${formatTime(props.endTime)}`);
   const count = props.candidates.length;
   return <div className="nv-page wa-page wa-coverage" data-nv-page="">
     <PageBand back={{ href: props.backHref, label: "Schedule" }} eyebrow={props.repair ? "Coverage gap" : "Coverage"} title="Cover this shift"
-      summary={props.status === "READY" ? `${when}. Choose someone, then review before saving.` : `${when}.`} />
+      summary={props.status === "READY" && count ? `${when}. Choose someone, then review before saving.` : `${when}.`} />
     <div className="nv-content">
       <ManagerIssueFocus prefix="coverage-" />
       {props.saved ? <Notice tone="done" title="Replacement saved">What’s below is the schedule as it is now.</Notice> : null}
@@ -93,8 +94,8 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
           <div className="wa-target" id="coverage-issue" tabIndex={-1}>
             <Card title="Shift to cover" id="coverage-shift">
               <Facts label="Shift to cover">
-                <Fact label="Day">{keepWhole(`${day.weekday}, ${day.day}`)}</Fact>
-                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)} <span className="wa-muted">· {durationText(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday}, ${nextDay.day}`)}</span> : null}</Fact>
+                <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</Fact>
+                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
                 <Fact label="Location">{props.locationName}</Fact>
                 {props.positionName ? <Fact label="Position">{props.positionName}</Fact> : null}
                 {props.designatedLead ? <Fact label="Shift lead">Needed</Fact> : null}
@@ -107,8 +108,8 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
               <ul className="nv-rows">
                 {props.requirements.map(requirement => <li key={requirement.href}>
                   <Link className="nv-row" href={requirement.href} aria-current={requirement.selected ? "true" : undefined}>
-                    <span className="nv-row__text"><span className="nv-row__title">{requirement.label}</span></span>
-                    {requirement.selected ? <span className="nv-row__trail"><Status tone="done">Selected</Status></span> : null}
+                    <span className="nv-row__text"><span className="nv-row__title">{requirement.label}</span>
+                      {requirement.selected ? <span className="nv-row__status"><Status tone="done">Selected</Status></span> : null}</span>
                   </Link>
                 </li>)}
               </ul>

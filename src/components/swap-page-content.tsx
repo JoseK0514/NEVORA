@@ -18,7 +18,7 @@ export function SwapPageContent({ source, sourceFields, targets, coverage = null
 }) {
   return <div className="nv-page wa-page wa-swap" data-nv-page="">
     <PageBand back={{ href: '/app/exchange?tab=requests', label: 'Shift requests' }} eyebrow="Swap a shift" title={targets.length ? 'Choose a shift' : 'No shifts to swap'}
-      summary={targets.length ? 'Pick a shift to trade for yours, check both, then send.' : 'No one has a shift you can trade for right now.'} />
+      summary={targets.length ? 'Pick a shift to trade for yours, check both, then send.' : 'This shift can’t be swapped right now.'} />
     <div className="nv-content wa-narrow">
       {targets.length ? <ReviewedSwapForm source={source} sourceFields={sourceFields} targets={targets} /> : <>
         <SwapSourcePanel source={source} />

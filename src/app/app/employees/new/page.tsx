@@ -12,7 +12,7 @@ import { listPositions } from "@/lib/data/positions";
 import { createEmployeeFormAction } from "@/app/app/employees/actions";
 
 const errors: Record<string, string> = {
-  permission: "Only an owner can create another owner.",
+  permission: "Only an Owner can add another Owner.",
   save: "Employee could not be saved. Check that the ID and email are unique and the selected locations and positions are active.",
   id: "Enter a unique employee ID with no more than 128 characters.",
   name: "Enter a first and last name with no more than 160 characters each.",

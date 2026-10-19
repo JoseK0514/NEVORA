@@ -51,7 +51,7 @@ export function EmployeeSchedulingFields({
         disabled={employee?.primaryLocationId === location.id}
       />
       <span className="wa-check__text">
-        <span className="wa-check__title">{location.name}</span>
+        <span className="wa-check__title">{location.shortName}</span>
         {!location.active || employee?.primaryLocationId === location.id ? <span className="wa-check__help">{[!location.active ? "Inactive" : null, employee?.primaryLocationId === location.id ? "Primary location, always included" : null].filter(Boolean).join(" · ")}</span> : null}
       </span>
     </label>

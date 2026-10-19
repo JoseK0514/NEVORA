@@ -21,14 +21,13 @@ The UI side (before, pending, failure with the request blocked, double tap, slow
 - Shift requests: Approve and Decline (swap, coverage, Unable to work), Close coverage request
 - Team member: Save details, Save scheduling profile, Save operational review (Owner)
 - New employee: Add employee
-- Clocker PIN: Save PIN and Reset PIN (needs the PIN key, which the local preview does not have: the page shows "PIN setup is unavailable")
+- Clocker PIN: Save PIN and Reset PIN
 - Swap: Send swap request, Offer for coverage
 - Unable to work: Send report
 
 ## Data the local preview can't produce
 
 - **Swap, "Choose a shift" state.** No fictional employee has a shift another person may swap into (the swap rules refuse every target, or the deadline for changes has passed), so every swap page shows "No shifts to swap". The choose, compare and send states are covered by unit renders only until a fixture with a swappable pair exists.
-- **Clocker PIN form.** The preview has no PIN key, so only the "PIN setup is unavailable" state renders in the browser.
 - **A real Copy-week receipt.** Needs a copy to run; the "outcome not confirmed" and "not found" states render locally.
 
 ## Words that need Jose (left as they were)

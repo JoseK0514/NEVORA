@@ -178,7 +178,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   & .wa-candidate__actions > .wa-disclosure > :is(.wa-facts, .wa-card-note) { padding-inline: 0; }
   & .wa-candidate__go { order: 1; gap: 2px; }
   & .wa-candidate__actions > .wa-disclosure:not([open]) { flex: 0 1 auto; order: 0; }
-  & .wa-code { font-family: var(--design-font-mono, ui-monospace, monospace); font-size: .9375rem; overflow-wrap: anywhere; color: var(--nv-ink-2); }
+  & .wa-code { font: inherit; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; color: var(--nv-ink-2); }
   & .wa-retry > div { display: flex; flex-direction: column; gap: var(--nv-s-2); }
   & .wa-retry .wa-retry__button { width: 100%; background: var(--nv-canvas); color: var(--nv-ink); box-shadow: inset 0 0 0 1px var(--nv-border); }
   & .wa-retry .wa-retry__button:disabled { background: var(--nv-inset); color: var(--nv-muted); }
@@ -315,7 +315,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   & .policy-save-form > button.button { min-height: 52px; border: 0; border-radius: var(--nv-r-control); background: var(--nv-canvas); color: var(--nv-ink); box-shadow: inset 0 0 0 1px var(--nv-border); font: var(--nv-t-headline); }
   /* Steps (what happens next). */
   & .wa-steps { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-3) calc(var(--nv-s-5) + 1.25rem); font: var(--nv-t-body); color: var(--nv-ink); }
-  & .wa-steps > li { padding: var(--nv-s-1) 0; }
+  & .wa-steps > li { padding: var(--nv-s-1) 0; font: var(--nv-t-body); color: var(--nv-ink); }
   & .wa-steps > li::marker { color: var(--nv-muted); font-variant-numeric: tabular-nums; }
   & .wa-field__help--split { display: flex; justify-content: space-between; gap: var(--nv-s-3); }
   /* Swap: choices and the side-by-side review. */
@@ -359,3 +359,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page :i
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability .nv-stat + .nv-stat { border-left: 0; border-top: 1px solid var(--nv-hairline); }
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability .nv-stat__value { margin-top: 0; font: var(--nv-t-title-2); }
 }
+
+/* TC-WA-1, TC-WA-2: names and labels in Wave A rows are never cut off; they wrap. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .nv-row__title { display: block; -webkit-line-clamp: unset; overflow: visible; overflow-wrap: break-word; }

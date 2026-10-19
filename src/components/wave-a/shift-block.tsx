@@ -1,4 +1,5 @@
 import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
+import { keepDuration } from "./keep-duration";
 import { durationText } from "@/lib/duration-text";
 import { keepWhole } from "@/lib/keep-whole";
 import { timeZoneLabel } from "@/lib/time-zone-label";
@@ -27,12 +28,12 @@ export function ShiftBlock({ shift, label, showPerson = false }: { shift: ShiftB
   return <div className="wa-shift">
     {label ? <p className="wa-shift__label">{label}</p> : null}
     <p className="wa-shift__when">
-      <span className="nv-keep">{keepWhole(`${day.weekday}, ${day.day}`)}</span>{" "}
+      <span className="nv-keep">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</span>{" "}
       <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span>{" "}
-      <span className="wa-shift__length">· {durationText(durationMinutes(shift.startTime, shift.endTime))}</span>
+      <span className="wa-shift__length nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(shift.startTime, shift.endTime))}</span>
     </p>
     <p className="wa-shift__where"><MetaParts text={where.join(" · ")} /></p>
-    {ends ? <p className="wa-shift__where">{keepWhole(`Ends ${ends.weekday}, ${ends.day}`)}</p> : null}
+    {ends ? <p className="wa-shift__where">{keepWhole(`Ends ${ends.weekday},\u00a0${ends.day}`)}</p> : null}
     {shift.timeZone ? <p className="wa-shift__where">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
   </div>;
 }

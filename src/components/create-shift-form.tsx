@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { keepDuration } from "./wave-a/keep-duration";
 import Link from "next/link";
 import { ConfigurationForm, type ConfigurationResult } from "./configuration-form";
 import { SelectField } from "./select-field";
@@ -63,15 +64,15 @@ export function CreateShiftForm({ action, employees, locations, positions, weekS
               <Field label="Starts"><input type="time" name="startTime" value={start} onChange={event => setStart(event.target.value)} required /></Field>
               <Field label="Ends"><input type="time" name="endTime" value={end} onChange={event => setEnd(event.target.value)} required /></Field>
             </FieldPair>
-            <p className="wa-hint" aria-live="polite">{overnight && nextDay ? keepWhole(`Ends the next day, ${nextDay.weekday}, ${nextDay.day}.`) : "Times are in the workspace’s time zone."}</p>
+            <p className="wa-hint" aria-live="polite">{overnight && nextDay ? keepWhole(`Ends the next day, ${nextDay.weekday},\u00a0${nextDay.day}.`) : "Times are in the workspace’s time zone."}</p>
           </div>
         </Card>
       </div>
       <aside className="wa-split__side" aria-label="Shift summary">
         <Card title="Summary" id="shift-summary">
           <Facts label="Shift summary">
-            <Fact label="Day">{selectedDay ? keepWhole(`${selectedDay.weekday}, ${selectedDay.day}`) : <span className="wa-muted">Choose a date</span>}</Fact>
-            <Fact label="Time">{start && end ? <>{keepWhole(`${formatTime(start)} – ${formatTime(end)}`)} <span className="wa-muted">· {durationText(durationMinutes(start, end))}</span></> : <span className="wa-muted">Choose times</span>}</Fact>
+            <Fact label="Day">{selectedDay ? keepWhole(`${selectedDay.weekday},\u00a0${selectedDay.day}`) : <span className="wa-muted">Choose a date</span>}</Fact>
+            <Fact label="Time">{start && end ? <>{keepWhole(`${formatTime(start)} – ${formatTime(end)}`)} <span className="wa-muted nv-keep">{"·\u00a0"}{keepDuration(durationMinutes(start, end))}</span></> : <span className="wa-muted">Choose times</span>}</Fact>
             <Fact label="Person">{employee ? `${employee.firstName} ${employee.lastName}` : <span className="wa-muted">Choose someone</span>}</Fact>
             <Fact label="Location">{selectedLocation?.shortName ?? <span className="wa-muted">Choose a location</span>}</Fact>
             <Fact label="Position">{position?.name ?? <span className="wa-muted">None</span>}</Fact>

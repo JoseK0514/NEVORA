@@ -20,11 +20,11 @@ export function swapPositionLabel(shift: ExchangeShift) {
 
 /** One side of a swap: the label ("You give"), the day, the time, then who, where and what. Times never split. */
 export function SwapShiftSummary({ shift, label, employee = false }: { shift: ExchangeShift; label: string; employee?: boolean }) {
-  const details = [employee ? shift.employeeName : null, shift.locationName, swapPositionLabel(shift), shift.isDesignatedLead ? 'Designated lead' : 'No designated Lead'].filter(Boolean) as string[];
+  const details = [employee ? shift.employeeName : null, shift.locationName, swapPositionLabel(shift), shift.isDesignatedLead ? 'Shift lead' : null].filter(Boolean) as string[];
   return <section className="wa-shift" aria-label={label}>
     <p className="wa-shift__label">{label}</p>
     <p className="wa-shift__when"><time dateTime={shift.date}>{keepWhole(swapDateLabel(shift.date))}</time></p>
-    <p className="wa-shift__when wa-shift__time">{keepWhole(swapTimeLabel(shift))}</p>
+    <p className="wa-shift__when wa-shift__time">{keepWhole(swapTimeLabel(shift)).replace(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun), /g, '$1,\u00a0')}</p>
     <p className="wa-shift__where"><MetaParts text={details.join(' · ')} /></p>
     {shift.timeZone ? <p className="wa-shift__where">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
   </section>;

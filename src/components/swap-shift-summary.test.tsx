@@ -12,7 +12,8 @@ it('makes the overnight end date explicit across a year boundary', () => {
   expect(html).toContain('2035');
   expect(html).toContain('dateTime="2035-12-31"');
   expect(html).toContain('Position support');
-  expect(html).toContain('No designated Lead');
+  // A shift that isn't led says nothing about leading (TC-WA-7: one word, "Shift lead", only when it applies).
+  expect(html).not.toContain('lead');
   expect(html).toContain('Times in Puerto Rico time');
   expect(html).toContain('Fictional Employee');
 });

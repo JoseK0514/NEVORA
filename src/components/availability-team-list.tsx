@@ -17,7 +17,7 @@ const FILTERS = [
   { value: "all", label: "Everyone" },
   { value: "missing", label: "Not submitted" },
   { value: "submitted", label: "Submitted" },
-  { value: "unavailable", label: "Unavailable" },
+  { value: "unavailable", label: "Unavailable all week" },
 ] as const;
 type Filter = typeof FILTERS[number]["value"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

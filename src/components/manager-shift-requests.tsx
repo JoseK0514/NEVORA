@@ -16,7 +16,8 @@ import { ShiftBlock } from "./wave-a/shift-block";
 import {ManagerIssueFocus} from './manager-issue-focus';
 
 const tabs = [{ id: "pending", label: "Pending" }, { id: "coverage", label: "Open coverage" }, { id: "activity", label: "Team activity" }] as const;
-const reasons: Record<string, string> = { ILLNESS: "Illness", FAMILY_EMERGENCY: "Family emergency", TRANSPORTATION: "Transportation", SCHOOL: "School", PERSONAL_EMERGENCY: "Personal emergency", OTHER: "Other" };
+// TC-WA-13: the same words the employee chose from (reviewed-callout-form.tsx).
+const reasons: Record<string, string> = { ILLNESS: "Illness / sick", FAMILY_EMERGENCY: "Family emergency", TRANSPORTATION: "Transportation issue", SCHOOL: "School conflict", PERSONAL_EMERGENCY: "Personal emergency", OTHER: "Other" };
 const errors: Record<string, string> = {
   EXCHANGE_CHANGED: "The schedule changed before you decided. Check the request again.",
   SHIFT_OVERLAP: "It would give someone two shifts at the same time.",
@@ -106,7 +107,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
 
       {livePending.length || callouts.length || liveCoverage.length ? <div className="wa-grid">
       {livePending.map(exchange => <div className="wa-target" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
-        <Card title={`${exchange.kind === "SWAP" ? "Swap" : "Coverage"} · ${exchange.requestedByName}`} meta={<Status tone="review">Needs review</Status>}>
+        <Card title={`${exchange.kind === "SWAP" ? "Swap" : "Coverage"} · ${exchange.requestedByName}`} meta={<Status tone="review">Waiting</Status>}>
           <p className="wa-card-lead">{exchangeLead(exchange)}</p>
           <ExchangeShifts exchange={exchange} />
           {decisionNotice(exchange.id)}
@@ -123,7 +124,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
       </div>)}
 
       {callouts.map(callout => <div className="wa-target" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
-        <Card title={`Unable to work · ${callout.employeeName}`} meta={<Status tone="review">Needs review</Status>}>
+        <Card title={`Unable to work · ${callout.employeeName}`} meta={<Status tone="review">Waiting</Status>}>
           <p className="wa-card-lead">Can’t work this shift</p>
           <CalloutFacts callout={callout} />
           {callout.status === "APPROVED" && !callout.releaseApplies ? <p className="wa-card-note">This approval was for an earlier version of the shift. Check who is assigned now.</p> : null}

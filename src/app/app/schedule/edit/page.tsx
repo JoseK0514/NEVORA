@@ -62,7 +62,7 @@ export default async function EditShiftPage({
   return (
     <div className="nv-page wa-page wa-shift" data-nv-page="">
       <PageBand back={{ href: returnUrl, label: "Schedule" }} eyebrow="Edit shift" title={shift.employeeName}
-        summary={<MetaParts text={keepWhole(`${day.weekday}, ${day.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${location?.name ?? shift.locationId}`)} />} />
+        summary={<MetaParts text={keepWhole(`${day.weekday},\u00a0${day.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${location?.shortName ?? shift.locationId}`)} />} />
       <div className="nv-content wa-narrow">
         {params.error ? (
           <Notice tone="urgent" title="The shift wasn’t saved">
@@ -81,7 +81,7 @@ export default async function EditShiftPage({
               </label>
               <div className="wa-readonly">
                 <span className="wa-field__label">Location</span>
-                <span className="wa-readonly__value">{location?.name ?? shift.locationId}</span>
+                <span className="wa-readonly__value">{location?.shortName ?? shift.locationId}</span>
                 <span className="wa-field__help">A shift keeps its location. To move it, delete it and add a new one.</span>
               </div>
             </div>
@@ -115,7 +115,7 @@ export default async function EditShiftPage({
             <summary className="wa-disclosure__summary">Delete shift</summary>
             <ActionForm action={deleteShiftAction} className="wa-card-body" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
               <input type="hidden" name="shiftId" value={shift.id} />
-              <p className="wa-text">{keepWhole(`${shift.employeeName} won’t be scheduled on ${day.weekday}, ${day.day}. This can’t be undone.`)}</p>
+              <p className="wa-text">{keepWhole(`${shift.employeeName} won’t be scheduled on ${day.weekday},\u00a0${day.day}. This can’t be undone.`)}</p>
               <DeleteShiftButton />
             </ActionForm>
           </details>
