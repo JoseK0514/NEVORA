@@ -676,8 +676,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .manager-schedule-p
 /* AL-42: even toast insets. */
 html body .app-shell.nevora-portal:not(.nv-shell-none) .nevora-toast { padding: 8px 10px 8px 16px; }
 /* AL-43: Payroll's toolbar line starts on the edge like everything else. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-toolbar { align-items: stretch; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-toolbar > p { justify-content: flex-start; align-self: flex-start; }
+/* AL-P3-27: these are for the stacked phone toolbar only; in a row (landscape and up) the status line centres on the buttons. */
+@media (max-width: 600px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-toolbar { align-items: stretch; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-toolbar > p { justify-content: flex-start; align-self: flex-start; }
+}
 /* AL-44: a 44px link in a card head keeps its target without stretching the head. */
 .nv-card__head .nv-card__meta .nv-link { min-height: 0; padding-block: 12px; margin-block: -12px; }
 
@@ -1285,11 +1288,11 @@ html body .app-shell.employee-shell.nevora-portal .page-frame.page-frame [data-n
 /* P3-WR-05: Availability's day count is a kit neutral status. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .av-day-count:not(#nv-kit) { display: inline-flex; align-items: center; min-height: 28px; padding: 0 var(--nv-s-3); border-radius: var(--nv-r-pill); background: var(--nv-neutral-fill); color: var(--nv-neutral-ink); font: var(--nv-t-label); white-space: nowrap; }
 /* P3-WR-05: a Refresh inside a card head is the same quiet control everywhere (Notifications, My time): accent label, 44px, radius 12, no border. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(button[class*="notification-inbox-module"][class*="__refresh"], a[class*="notification-inbox-module"][class*="__refresh"], .employee-corporate-button--quiet):not(#nv-kit) { min-height: 44px; padding: 0 var(--nv-s-3); gap: 6px; border: 0; border-radius: var(--nv-r-control); background: transparent; color: var(--nv-accent); box-shadow: none; font: var(--nv-t-label); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(button[class*="notification-inbox-module"][class*="__refresh"], a[class*="notification-inbox-module"][class*="__refresh"], .employee-corporate-button--quiet, .employee-time-refresh:not(.employee-corporate-button--primary), .updates-refresh):not(#nv-kit) { min-height: 44px; padding: 0 var(--nv-s-3); gap: 6px; border: 0; border-radius: var(--nv-r-control); background: transparent; color: var(--nv-accent); box-shadow: none; font: var(--nv-t-label); }
 @media (hover: hover) {
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(button[class*="notification-inbox-module"][class*="__refresh"], a[class*="notification-inbox-module"][class*="__refresh"], .employee-corporate-button--quiet):not(:disabled):not(#nv-kit):hover { background: var(--nv-accent-wash); color: var(--nv-accent-strong); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(button[class*="notification-inbox-module"][class*="__refresh"], a[class*="notification-inbox-module"][class*="__refresh"], .employee-corporate-button--quiet, .employee-time-refresh:not(.employee-corporate-button--primary), .updates-refresh):not(:disabled):not(#nv-kit):hover { background: var(--nv-accent-wash); color: var(--nv-accent-strong); }
 }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(button[class*="notification-inbox-module"][class*="__refresh"], .employee-corporate-button--quiet):disabled:not(#nv-kit) { background: transparent; color: var(--nv-muted); box-shadow: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(button[class*="notification-inbox-module"][class*="__refresh"], .employee-corporate-button--quiet, .employee-time-refresh:not(.employee-corporate-button--primary), .updates-refresh):disabled:not(#nv-kit) { background: transparent; color: var(--nv-muted); box-shadow: none; }
 /* TC-P3-09: an "Updated" stamp never splits its date or time across lines. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(.employee-time-footer, .employee-corporate-freshness, .employee-corporate-record-details, [data-home-updated]) time { white-space: nowrap; }
 /* P3-ST-12: Home's clock card keeps one middle height while it loads, when it's read and when the read fails. */
@@ -1325,7 +1328,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv
 html body .app-shell.employee-shell.nevora-portal .page-frame.page-frame :is(.premium-employee-time, .premium-employee-timecards).employee-view:not(#nv-kit),
 html body .app-shell.employee-shell.nevora-portal .page-frame.page-frame :is(.premium-employee-time, .premium-employee-timecards) .employee-my-time-view:not(#nv-kit) { gap: 0; }
 html body .app-shell.employee-shell.nevora-portal .page-frame.page-frame .employee-corporate-timecards:not(#nv-kit) { gap: var(--nv-s-4); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .nv-content > .premium-card-lead { margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame :is(.nv-content, .premium-employee-content) > .premium-card-lead { margin: 0; }
 /* AL-P3-04: My schedule's blocks sit in the 16 rhythm; an empty side column takes no gap. */
 html body .app-shell.employee-shell.nevora-portal .page-frame.page-frame .premium-employee-schedule :is(.my-review-jump, .my-schedule-feedback, .my-schedule-changes .schedule-publication-change):not(#nv-kit) { margin: 0; }
 html body .app-shell.employee-shell.nevora-portal .page-frame.page-frame .premium-employee-schedule .my-schedule-side:not(:has(> *:not(:empty))) { display: none; }
@@ -1459,3 +1462,38 @@ html body .app-shell.nevora-portal .page-frame .premium-home-view .nv-row__title
   html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="exchange"][data-band] { --route-band: 172px; }
   html body .app-shell.nevora-portal.nevora-portal:not(.nv-shell-none):not(.employee-shell) .route-skeleton[data-route="availability"][data-band] { --route-band: 184px; }
 }
+/* Phase 3 round 3, alignment */
+/* AL-P3-18: the Time off form's groups ("How much time", "Choose your dates", "Note") keep the card's 20px rhythm. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-form-fields { display: flex; flex-direction: column; gap: var(--nv-s-5); }
+/* AL-P3-19: the status tag always sits at the row's top right, whether or not the dates wrap. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-timeoff-row__head { flex-wrap: nowrap; align-items: flex-start; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-timeoff-row__head > .nv-row__title { flex: 1 1 auto; min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-timeoff-row__head > :not(.nv-row__title) { flex: none; }
+/* AL-P3-20: Profile's cards are one width (profile.css's grid "align-items: start" shrank them in the flex column),
+ * with the kit's 20px inset at every phone width, landscape included. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-profile .profile-layout { align-items: stretch; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-employee-profile .employee-profile-panel { padding: var(--nv-s-5); }
+}
+/* AL-P3-21: the specific-week card's sections run edge to edge with their own 20px inset (no second 20px around them). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-availability .av-week-panel:not(#nv-kit) { padding: 0; overflow: hidden; }
+/* AL-P3-23: Shift requests cards start their text 20px down, and their three lines start at one edge. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .employee-shift-entry:not(#nv-kit) { padding: var(--nv-s-5); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .exchange-assignment-date > svg:not(#nv-kit) { width: 16px; height: 16px; }
+/* AL-P3-24: My time cards keep the 20px inset below 375px too, like every other employee card. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-time .employee-time-panel > section:not(#nv-kit) { padding: var(--nv-s-5); }
+/* AL-P3-25: the entry row ends at the card's text edge: the legacy "+" no longer takes a track, and the total
+ * shares the date's first line. */
+html body .app-shell.nevora-portal[data-employee-corporate="true"] .page-frame .employee-time-entry > summary::after { content: none; display: none; }
+html body .app-shell.nevora-portal[data-employee-corporate="true"] .page-frame .employee-time-entry-total:not(#nv-kit) { align-self: start; }
+/* AL-P3-26: heads with a meta line or tag align on the title's baseline, as kit heads do. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] :is(.my-agenda-heading, [data-pass="true"] > header):not(#nv-kit) { align-items: baseline; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] :is(.my-agenda-heading, [data-pass="true"] > header) > :is(span, small, p) > svg { align-self: center; }
+/* AL-P3-28: the Updates empty and failed states are part of the card, not a box inside it. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] .updates-inbox .updates-empty:not(#nv-kit) { border: 0; border-radius: 0; background: transparent; padding: var(--nv-s-5); box-shadow: none; }
+/* AL-P3-13: icon-led titles inside cards use one recipe: a 20px icon with a 12px gap (text at 68), or a 40px tile with 12 (88). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] :is(.employee-time-current-heading, .employee-time-section-heading) h2:not(#nv-kit) { gap: 12px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] [class*="timecards-module"][class*="__issues"]:not(#nv-kit) { gap: 12px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-week-title:not(#nv-kit) { gap: 12px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-week-title > svg:not(#nv-kit) { width: 20px; height: 20px; flex: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-schedule-review:not(#nv-kit) { gap: 12px; padding: var(--nv-s-5); }
