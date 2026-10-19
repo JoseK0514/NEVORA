@@ -1361,3 +1361,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv
   html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger span { font: var(--nv-t-label); }
   html body .app-shell.nevora-portal.nevora-portal .mobile-header a.brand { display: inline-flex; align-items: center; min-height: 44px; }
 }
+/* Clocked in or on break: the location is the card's lead line, the times are callout. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-current-copy > strong { display: block; font: var(--nv-t-row); color: var(--nv-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-current-copy > p { font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal .employee-time-panel[data-time-loading] .employee-time-current :is(.employee-time-note, .employee-time-footer, .employee-time-badge) { visibility: hidden; }
+html body .app-shell.nevora-portal [data-nv-page]:has(.employee-profile-panel[data-loading]) :is(.employee-account-footer, .profile-settings, .profile-signout, .profile-signout-row) { visibility: hidden; }
+/* The clock's own loading, failed and paused message, on the kit roles. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-message > strong { display: block; font: var(--nv-t-label); color: var(--nv-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-message > p { font: var(--nv-t-callout); color: var(--nv-muted); }

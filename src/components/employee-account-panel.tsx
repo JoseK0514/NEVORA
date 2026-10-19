@@ -13,7 +13,9 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const unavailable=state.snapshot?.state==='unavailable';
  const name='Profile';
- return <section className="employee-view-surface employee-account-panel employee-profile-panel" aria-label={name} data-private-view={kind}>
+ // While the details load, what follows keeps its space but stays hidden: a long name wraps further than the placeholder rows.
+ const loading=!ready&&!denied&&!unavailable&&!state.paused;
+ return <section className="employee-view-surface employee-account-panel employee-profile-panel" aria-label={name} data-private-view={kind} data-loading={loading?'true':undefined}>
   <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="employee" size={24}/></span><div><h2>Work details</h2></div></header>
   {/* P3-ST-04: until the details arrive, the same five rows show "–", so the card is the same height from the first frame. */}
   {!ready?<><p className="profile-supporting-copy employee-profile-status" role="status">{state.paused?'Updates paused. Return to this window while online to check current information.':denied?'Sign in again. Your current employee session is required.':unavailable?'We couldn’t confirm your current information. Try again.':'Checking your current details…'}</p>
