@@ -1,0 +1,147 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 100,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.communication-status.attention «Acknowledgement required» 12px",
+   "strong. «Management» 14px",
+   "span.communication-recipient-status «No acknowledgement recorded» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 100,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.compose-status «Unpublished» 12px",
+   "span. «Plain text · Line breaks suppo» 11px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 125,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0315,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 125,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Plain text · Line breaks suppo» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0.0425,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 150,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0603,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 150,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0722,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 200,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1958,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 200,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2437,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

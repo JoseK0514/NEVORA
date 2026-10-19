@@ -1,0 +1,70 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LEAD",
+  "size": "844x390",
+  "text": 100,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.compose-status «Unpublished» 12px",
+   "span. «Plain text · Line breaks suppo» 11px",
+   "strong. «Today's team» 13px",
+   "span. «2026-10-19» 11px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LEAD",
+  "size": "844x390",
+  "text": 125,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Plain text · Line breaks suppo» 13.75px",
+   "span. «2026-10-19» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0.0425,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LEAD",
+  "size": "844x390",
+  "text": 150,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0722,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LEAD",
+  "size": "844x390",
+  "text": 200,
+  "route": "/app/updates/compose",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2419,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ }
+]

@@ -1,0 +1,292 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "a.selected «Pending» 14px",
+   "a. «Open coverage» 14px",
+   "a. «Team activity» 14px",
+   "span.exchange-count «0 requests» 12px",
+   "span. «Requests needing a management » 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 100,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 100,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0005,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 125,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "a.selected «Pending» 14px",
+   "a. «Open coverage» 14px",
+   "a. «Team activity» 14px"
+  ],
+  "targets": [],
+  "cls": 0.0267,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 125,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.023,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 125,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0326,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 125,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0903,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 150,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "a.selected «Pending» 14px",
+   "a. «Open coverage» 14px",
+   "a. «Team activity» 14px"
+  ],
+  "targets": [],
+  "cls": 0.051,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 150,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0505,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 150,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0688,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 150,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1859,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 200,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "a.selected «Pending» 14px",
+   "a. «Open coverage» 14px",
+   "a. «Team activity» 14px"
+  ],
+  "targets": [],
+  "cls": 0.1644,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 200,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1256,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 200,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.268,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "844x390",
+  "text": 200,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.415,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]
