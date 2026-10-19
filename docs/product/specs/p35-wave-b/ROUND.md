@@ -1,10 +1,21 @@
 # Wave B inspection round
 
-- **Round:** 4
-- **Exit round:** yes. One full sweep by all five areas, plus a re-check of every open ID.
-- **Commit:** `9bd265e` on `claude/p35-wave-b-808dfd` (preview synced to it)
-- **Where it runs:** pushed for Codex, and five local inspectors on the same commit. Whichever reports first is used; both are kept.
+- **Round:** 5 (on the release candidate)
+- **Exit round:** yes. One full sweep by all five areas on the combined build, plus a re-check of every open ID.
+- **Commit:** `6861082` on `claude/p35-wave-b-808dfd` = candidate `origin/codex/verify-preview-33` at `cd764f6` (fast-forward; it already held every Wave B commit) + Codex's IS-B31 fix `eb83869` from `codex/ready-wave-b`, cherry-picked unchanged.
+- **Where it runs:** Codex (combined build). Local preview and inspectors are paused by machine load (load average 62).
 - **status:** open
+
+## Codex round 4 (on `9bd265e`) open IDs, and where they stand on this commit
+
+| ID | Fix | Checked locally on this commit (Chromium 390, preview synced to `6861082`) |
+|---|---|---|
+| IS-B31 | `eb83869` (Codex): the Enter field stays focused and read-only while the save is held; other controls disabled one by one | **Fixed.** Held: focus stays on `staffing-loc-1` (read-only); a second Enter sends no second request (1 POST). After failure: same field focused and editable, error shown in the save bar |
+| IS-B12 | `21e603b` (Codex, in the candidate) | **Fixed.** Update detail, Employee and Owner: read fails with 503, Try again, focus lands on the update (`article`). Payroll settings, Owner: held save keeps focus on "Saving…" (1 POST); after failure focus goes to the failure notice, not the page |
+| TC-B-32 | `payroll-workflow.css:184` (in the candidate) | **Fixed.** Document filenames, the "Corrections and payment instructions" summary and job labels compute to 15px/500 at 390 and 14px at 1440 (measured on injected nodes with the page's classes; the fixture has no approved run with documents) |
+| TC-B-16 | `2e40573` (Codex, in the candidate): an ended session is told apart from changed access | Not re-checked locally (the preview was killed mid-check) |
+
+Everything else from round 4 was "pending measurement", not open. It is listed in `round-4-9bd265e/` on `codex/inspections`.
 
 ## Routes and roles
 
