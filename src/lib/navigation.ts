@@ -46,8 +46,11 @@ const employeeNavigation: NavigationItem[] = [
  * place that holds it is present. Phones, the More menus and the finder keep every
  * entry; this only shortens the desktop list. */
 const SIDEBAR_HOLDERS: Record<string, string> = {
-  "/app/availability": "/app/requests",
-  "/app/exchange": "/app/requests",
+  // Phase 4 (D-4): Requests folds into Inbox on desktop, as the Inbox tab already holds it on phones.
+  // /app/requests, /app/exchange and /app/availability keep working and light Inbox.
+  "/app/requests": "/app/inbox",
+  "/app/availability": "/app/inbox",
+  "/app/exchange": "/app/inbox",
   "/app/payroll-export": "/app/timecards",
   "/app/schedule/templates": "/app/schedule",
   "/app/schedule/settings": "/app/settings",
@@ -56,7 +59,7 @@ const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
   "/app/availability": "/app/requests/hub",
 };
 /** Entries reached from the desktop account menu instead; their pages light no sidebar entry. */
-const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay"]);
+const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay", "/app/profile"]);
 const EMPLOYEE_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
 
 function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" || role === "LEAD" ? EMPLOYEE_SIDEBAR_HOLDERS : SIDEBAR_HOLDERS; }
@@ -65,8 +68,8 @@ export function sidebarNavigation(role: UserRole, items: NavigationItem[]): Navi
   const present = new Set(items.map(item => item.href)), holders = sidebarHolders(role), management = role !== "EMPLOYEE" && role !== "LEAD";
   return items
     .filter(item => !(holders[item.href] && present.has(holders[item.href])) && !(management ? ACCOUNT_MENU_ENTRIES : EMPLOYEE_ACCOUNT_MENU_ENTRIES).has(item.href))
-    // Time off now stands for all three request pages, which share its tab row.
-    .map(item => management && item.href === "/app/requests" && (present.has("/app/exchange") || present.has("/app/availability")) ? { ...item, label: "Requests", icon: "requests" as const } : item);
+    // D-4: the people page is "Team" in the sidebar, as on the phone tab.
+    .map(item => management && item.href === "/app/employees" ? { ...item, label: "Team" } : item);
 }
 
 /** The sidebar entry to highlight: a page whose own entry left the sidebar lights its holder. */
@@ -82,8 +85,9 @@ export function sidebarActiveHref(role: UserRole, path: string | null | undefine
 export function managementNavigationGroups(items: NavigationItem[]) {
   const definitions = [
     {label:'Plan', hrefs:['/app','/app/inbox','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates']},
-    {label:'Team', hrefs:['/app/employees','/app/requests','/app/updates']},
-    {label:'Time & Pay', hrefs:['/app/timecards','/app/payroll','/app/payroll-export','/app/reports','/app/my-pay']},
+    // "People", not "Team", so the Team entry isn't filed under a heading of the same name.
+    {label:'People', hrefs:['/app/employees','/app/requests','/app/updates']},
+    {label:'Time and pay', hrefs:['/app/timecards','/app/payroll','/app/payroll-export','/app/reports','/app/my-pay']},
     {label:'Workspace', hrefs:['/app/settings','/app/schedule/settings']},
   ];
   return definitions.map(group=>({...group,items:group.hrefs.flatMap(href=>items.filter(item=>item.href===href))})).filter(group=>group.items.length);
@@ -132,6 +136,8 @@ function baseNavigation(role: UserRole, payroll?: PayrollCapabilities): Navigati
   ] : [];
   const management = [...managementNavigation];
   if (finance.length) management.splice(management.findIndex(item => item.href === '/app/payroll-export') + 1, 0, ...finance);
+  // Phase 3.5: Owners and Managers have a Profile page too, reached from the account menu and More › My account.
+  management.push({ href: "/app/profile", label: "Profile", icon: "employee" });
   if (role === "OWNER") {
     return [
       ...management,
@@ -201,8 +207,9 @@ export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCa
       { label: "Requests", items: [{ href: "/app/requests/hub", label: "Overview" }, ...requests] },
       // Timecards stays in the employee's Pay / Hours family (Codex mobile review M7).
       ...(payroll?.enabled && modules.payStatements
-        ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "Statements" }, { href: "/app/my-time", label: "Hours" }, { href: "/app/timecards", label: "Timecards" }] }]
-        : [{ label: "Hours", items: [{ href: "/app/my-time", label: "Hours" }, { href: "/app/timecards", label: "Timecards" }] }]),
+        // TCD-19: the tabs use the names the sidebar and page titles use.
+        ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "My pay" }, { href: "/app/my-time", label: "My time" }, { href: "/app/timecards", label: "Timecards" }] }]
+        : [{ label: "Hours", items: [{ href: "/app/my-time", label: "My time" }, { href: "/app/timecards", label: "Timecards" }] }]),
     ]
     : [
       { label: "Requests", items: requests },

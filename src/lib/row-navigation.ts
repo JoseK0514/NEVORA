@@ -13,10 +13,13 @@ export function rowNavigationTarget(event: Pick<KeyboardEvent, 'key' | 'altKey' 
   if (!target || target.matches(TEXT_ENTRY)) return null;
   const list = target.closest<HTMLElement>('[data-row-nav]');
   if (!list) return null;
-  const rows = [...list.querySelectorAll<HTMLElement>(list.dataset.rowNav || ':scope > *')].filter(visible);
+  // A row inside a closed <details> isn't reachable; the group's own <summary> is (IS-P4-06).
+  const inClosedGroup = (row: HTMLElement) => { const group = row.closest('details:not([open])'); return !!group && !(row.matches('summary') && row.parentElement === group); };
+  const rows = [...list.querySelectorAll<HTMLElement>(list.dataset.rowNav || ':scope > *')].filter(row => visible(row) && !inClosedGroup(row));
   const row = rows.find(candidate => candidate.contains(target));
   if (!row) return null;
-  const controls = (container: HTMLElement) => [...container.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(visible);
+  // A row that is itself focusable (a group's <summary>) is its own control (IS-P4-06).
+  const controls = (container: HTMLElement) => [...(container.matches(FOCUSABLE) ? [container] : []), ...container.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(visible);
   const next = rows[rows.indexOf(row) + (event.key === 'ArrowDown' ? 1 : -1)];
   if (!next) return null;
   const options = controls(next);

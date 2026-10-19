@@ -105,7 +105,7 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
  const breaks=chosen.reduce((sum,c)=>sum+BigInt(c.card.breakNanoseconds),BigInt(0)).toString();
  const locked=busy||retry!==null||!currentActor;
  return <div className={styles.root}>
-  <section className={`${styles.card} ${styles.periodCard}`} aria-labelledby="payroll-period-title">
+  <section className={styles.card} aria-labelledby="payroll-period-title">
    <div className={styles.sectionHeading}><span className={styles.sectionIcon}><CalendarDotsIcon size={21} aria-hidden="true" /></span><div><h2 id="payroll-period-title">Pay period</h2><p>Choose up to 31 days of finalized time.</p></div></div>
    <form className={styles.toolbar} onSubmit={e=>{e.preventDefault();try{const nextPeriod=parsePeriod(draftPeriod.startDate,draftPeriod.endDate);if(nextPeriod.startDate===period.startDate&&nextPeriod.endDate===period.endDate){if(mutating.current){setNotice('Finish the current operation before refreshing export data.');return;}reload.current();}else{if(mutating.current||retry!==null||saveRetry.current!==null){setNotice('Finish or retry the current export or mapping save before changing the period.');return;}clearProtected.current('Loading finalized time');setPeriod(nextPeriod);}setNotice('');}catch{setNotice('Choose a period of 1 to 31 days.');}}}>
     <label><span>Period start</span><input type="date" required value={draftPeriod.startDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,startDate:e.target.value})} /></label>
@@ -116,7 +116,7 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
    {periodChanged&&<p className={styles.periodHint}>Dates changed. View finalized time to review this period before generating an export.</p>}
   </section>
   {notice&&<div className={styles.notice} role="status"><InfoIcon size={20} aria-hidden="true" /><p>{notice}</p></div>}
-  {state!=='ready'||!currentActor?<section className={`${styles.card} ${styles.stateCard}`} role="status"><span className={styles.stateIcon}><ClockIcon size={30} weight="duotone" aria-hidden="true" /></span><h2>{state==='ready'?'Checking export access':state}</h2><p>{state==='Loading finalized time'?'Loading the current timecards and saved mapping profiles.':'Refresh export data when access and your connection are available.'}</p></section>:<>
+  {state!=='ready'||!currentActor?<section className={`${styles.card} ${styles.stateCard}`} role="status" data-export-loading={state==='Loading finalized time'||undefined}><span className={styles.stateIcon}><ClockIcon size={30} weight="duotone" aria-hidden="true" /></span><h2>{state==='ready'?'Checking export access':state}</h2><p>{state==='Loading finalized time'?'Loading the current timecards and saved mapping profiles.':'Refresh export data when access and your connection are available.'}</p></section>:<>
    <div className={styles.workspace}>
     <section className={`${styles.card} ${styles.employeeCard}`} aria-labelledby="payroll-employees-title">
      <div className={styles.sectionHeading}><span className={styles.sectionIcon}><UsersThreeIcon size={22} aria-hidden="true" /></span><div><h2 id="payroll-employees-title">Choose finalized employees</h2><p>{dateLabel(period.startDate).replace(/ /g, "\u00a0")}{"\u00a0– "}{dateLabel(period.endDate).replace(/ /g, "\u00a0")}</p></div><span className={styles.count}>{finalized.length} ready</span></div>
