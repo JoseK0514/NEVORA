@@ -133,7 +133,15 @@ async function work(branch,index) {
   if(meta.status==='Complete')return;
   let runtime;
   try{
+    git('fetch','origin',branchName);
+    const requestedCommit=git('rev-parse','origin/'+branchName);
+    if(!await exists(join(out,'route-inventory.json')))meta.commit=requestedCommit;
+    else meta.latestPushedCommit=requestedCommit;
     if(!await exists(source)){git('worktree','add','--detach',source,meta.commit);execFileSync('cp',['-al',join(tools,'node_modules'),join(source,'node_modules')]);}
+    else if(!await exists(join(out,'route-inventory.json'))&&git('-C',source,'rev-parse','HEAD')!==meta.commit){
+      if(git('-C',source,'status','--porcelain','--untracked-files=no'))throw Error('Source checkout is not clean');
+      git('-C',source,'checkout','--detach',meta.commit);
+    }
     if(!await exists(join(out,'route-inventory.json'))){
       {
         const log=join(stateRoot,keyName+'-runtime.log');let readyResolve,readyReject;
@@ -147,6 +155,9 @@ async function work(branch,index) {
       const inventory=await run(join(repo,'scripts/ui-checks/cloud-inventory.mjs'),[],{tsx:true,log:join(stateRoot,keyName+'-inventory.log'),env:{PREVIEW_OUT:out,PREVIEW_SOURCE:source}});if(inventory.code)throw Error('Route inventory/fixture setup failed');
     }
     if(!meta.url){const ev=(await readdir(out)).filter(n=>n.startsWith('evidence-')).sort().at(-1);meta.url=JSON.parse(await readFile(join(out,ev,'runtime.json'),'utf8')).url;}
+    const ev=(await readdir(out)).filter(n=>n.startsWith('evidence-')).sort().at(-1);
+    const runtimeIdentity=JSON.parse(await readFile(join(out,ev,'runtime.json'),'utf8'));
+    if(runtimeIdentity.checkpoint!==meta.commit||git('-C',source,'rev-parse','HEAD')!==meta.commit)throw Error('Source SHA differs from runtime checkpoint; no matrix evidence may be attributed to this SHA');
     const inventory=JSON.parse(await readFile(join(out,'route-inventory.json'),'utf8'));
     if(large){const wanted=['/app','/app/inbox','/app/schedule','/app/employees','/app/timecards','/app/payroll-export','/app/reports'];inventory.jobs=inventory.jobs.filter(j=>['AUDIT-M','QAOWNER'].includes(j.account)).map(j=>({...j,routes:j.routes.filter(r=>wanted.includes(r))}));}
     meta.planned=inventory.jobs.reduce((n,j)=>n+j.routes.length,0)*68;meta.status='Running matrix';await save(meta);
@@ -154,7 +165,8 @@ async function work(branch,index) {
     const done=new Set(meta.batches.filter(b=>b.kind!=='retry').map(b=>JSON.stringify(b.args)));
     const jobs=[...inventory.jobs].sort((a,b)=>{const priority=branch.includes('profile')||branch.includes('wave')||branch.includes('desktop')?['QAOWNER','AUDIT-M']:['AUDIT-E','AUDIT-LEAD'];return (priority.indexOf(a.account)<0?9:priority.indexOf(a.account))-(priority.indexOf(b.account)<0?9:priority.indexOf(b.account));});
     let lastPublish=Date.now();
-    for(const pass of ['matrix','axe'])for(const browser of ['chromium','webkit'])for(const width of (pass==='axe'?['390','1440']:widths))for(const job of jobs){
+    const chunks=jobs.flatMap(job=>Array.from({length:Math.ceil(job.routes.length/4)},(_,i)=>({...job,routes:job.routes.slice(i*4,i*4+4)})));
+    for(const pass of ['matrix','axe'])for(const browser of ['chromium','webkit'])for(const width of (pass==='axe'?['390','1440']:widths))for(const job of chunks){
       const text=pass==='axe'?'100':'100,125,150,200';const args=['--routes',job.routes.join(','),'--accounts',job.account,'--widths',width,'--text',text,'--browsers',browser,...(pass==='axe'?['--axe']:[])];
       if(done.has(JSON.stringify(args)))continue;
       await batch(meta,job,width,browser,pass,text);
@@ -176,7 +188,7 @@ git('fetch','origin');
 // and limit whole previews, not just individual browser processes.
 const queue=['premium-phase-1','p35-profile-6cdee8','premium-phase-1-large','p35-wave-a-1283c8','p35-wave-b-808dfd','p35-wave-c-93e13c','p4-desktop-240fe0'];
 async function consume(){while(queue.length){const branch=queue.shift();await work(branch,branches.indexOf(branch));}}
-await Promise.allSettled(Array.from({length:6},consume));
+await Promise.allSettled(Array.from({length:3},consume));
 await publish('all branch workers finished');
 console.log('CLOUD_RUN_FINISHED '+new Date().toISOString());
 }
