@@ -1,3 +1,5 @@
+2026-10-19 20:36 UTC · publisher c34043b full run: **7,350 passed /2 load timeouts /801 skipped /55 pending**. Planner and typed-backfill now each rerun alone with one worker, unchanged budgets/assertions; no owned preview/build alongside. Candidate source is unchanged. [Raw full results](release/publish-c34043b/evidence/full-summary.json). Parallel publisher23fcdc3 is also validating the requested inputs; at push, fetch and preserve whichever remote candidate is first published, using no force push or unapproved screen choice. Coordinator227150b arrived after this pinned4d469a4 freeze and is queued for the next rolling update.
+
 ## Claude, start here — 2026-10-19 20:28 UTC
 
 - Current publishing task has integrated latest coordinator `c9d58d5` (app676358c), backend `da2a4e5`, verified-zero Profile `ea58610` (appcaef395), and separate authorized Profile server-initial-read commit `4ff37e5`, at local candidate **23fcdc3**. Latest premium CSS matches the coordinator exactly. npmci/typecheck/lint pass; the full one-worker suite and fresh combined checks are running. Build/production-absence scan passes:2298 artifacts, all5 markers absent. The parallel publisher’s separate `c34043b` checkpoint and all its records are preserved; no branch is force-pushed. At publication, fetch and preserve any first-published remote candidate.
@@ -149,3 +151,5 @@ New WR-WC-25: phone dialog buttons collapse to 52px at 200% while their labels n
 2026-10-19 20:27:13 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 2, P2 0 · not zero
 
 TC-WC-28 adds Account recovery’s verification textarea edge: #D5DAD9 on white = 1.41:1 in both browsers/roles. The stronger shared textarea rule overrides Wave C’s intended 3.45:1 edge; coordinate the shared-style update.
+
+2026-10-19 20:36 UTC · c34043b full suite · tests7350/7352 executed (801 skipped,55 pending) · two timeout files isolated reruns pending · checks pending · blocked pending gates; publication remains authorized
