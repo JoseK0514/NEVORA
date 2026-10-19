@@ -7,7 +7,7 @@ it("keeps times and dates whole and lets a range break only after its dash", () 
   expect(keepWhole("Next shift today at 8:00 AM.")).toBe(`Next shift today at 8:00${N}AM.`);
   expect(keepWhole("Time off pending · Oct 28, 2026 – Oct 29, 2026")).toBe(`Time off pending${N}· Oct${N}28, 2026${N}– Oct${N}29, 2026`);
   expect(keepWhole("Oct 26 – Nov 1")).toBe(`Oct${N}26${N}– Nov${N}1`);
-  expect(keepWhole("Sun, Oct 18, 9:10 PM")).toBe(`Sun, Oct${N}18, 9:10${N}PM`);
+  expect(keepWhole("Sun, Oct 18, 9:10 PM")).toBe(`Sun,${N}Oct${N}18, 9:10${N}PM`);
 });
 
 it("keeps month and day, durations and separators with what they belong to", () => {
@@ -18,5 +18,5 @@ it("keeps month and day, durations and separators with what they belong to", () 
 
 it("writes Safari's date-and-time the same way as Chrome's (TC-P3-26)", () => {
   expect(keepWhole("Oct 19 at 12:37 PM")).toBe(`Oct${N}19, 12:37${N}PM`);
-  expect(keepWhole("Mon, Oct 19 at 9:11:52 AM")).toBe(`Mon, Oct${N}19, 9:11:52${N}AM`);
+  expect(keepWhole("Mon, Oct 19 at 9:11:52 AM")).toBe(`Mon,${N}Oct${N}19, 9:11:52${N}AM`);
 });

@@ -68,7 +68,7 @@ export default async function RequestsPage({
         ]} />} />
       <div className="premium-employee-content" data-timeoff-intro>
       {params.error ? (
-        <p className="form-error" role="alert">The request could not be saved. Check that the end date is on or after the start date. Partial-day requests need one date and an end time after the start time.</p>
+        <p className="form-error" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p>
       ) : null}
       {params.submitted ? (
         <p className="form-success" role="status">Your request was submitted for manager review. Track the decision below.</p>

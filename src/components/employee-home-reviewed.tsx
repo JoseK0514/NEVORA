@@ -348,7 +348,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
       </HoldHeight>
       <HoldHeight holding={!snapshot} memory="employee-home-secondary" className={styles.sideColumn}>{snapshot ? <>
         {partial ? <p className={styles.notice} role="status">Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.</p> : null}
-        {allSet ? <div className={styles.allSet}><Illustration name="all-caught-up" size={72}/><p role="status">You&apos;re all set.</p></div> : null}
+        {allSet ? <div className={styles.allSet}><Illustration name="all-caught-up" size={72}/><p role="status">You’re all set.</p></div> : null}
         <AttentionGroup kind="actions" items={actions} partial={partial} zone={snapshot.timeZone}/>
         <QuickActions/>
         <AttentionGroup kind="updates" items={updates} partial={partial} zone={snapshot.timeZone}/>
@@ -362,7 +362,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
             <ArrowsClockwiseIcon size={18} aria-hidden="true"/>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
           </button>
           : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
-            {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Retry home'}
+            {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Try again'}
           </button>}
       </footer>
     </KitStack>

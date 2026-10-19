@@ -16,5 +16,5 @@ it('complete authorized zero-item Home displays exact all-set copy and communica
  const {renderToStaticMarkup}=await import('react-dom/server'),{createElement}=await import('react'),{EmployeeHomeView}=await import('./employee-home-actions');
  const current=snapshot();current.sources.communications={state:'complete',observedAt:current.observedAt,version:'empty-current',reason:null};
  const html=renderToStaticMarkup(createElement(EmployeeHomeView,{state:{snapshot:{state:'ready',observedAt:current.observedAt,validForMs:45000,home:{state:'ready',allSet:true,snapshot:current}},refreshing:false,paused:false},timeAuthority:'b'.repeat(64),authority:'a'.repeat(64),onRetry:()=>{}}));
- expect(html.replaceAll('&#x27;',"'")).toContain("You're all set.");expect(html).not.toContain('Communications are not included yet');
+ expect(html).toContain("You’re all set.");expect(html).not.toContain('Communications are not included yet');
 });

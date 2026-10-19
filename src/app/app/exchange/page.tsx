@@ -199,7 +199,7 @@ export default async function ExchangePage({
             { href: "/app/exchange?tab=requests", label: "Your requests", current: activeView === "requests" },
           ]} />} />
         <div className="premium-employee-content">
-        {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The exchange could not be processed."}</p> : null}
+        {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "We couldn’t send that request. Try again."}</p> : null}
         {operation ? <p className="employee-notice" role="status">{shiftChangeFeedback(operation)}</p> : null}
 
         <div className="employee-view-surface employee-exchange-feed">

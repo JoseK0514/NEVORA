@@ -27,7 +27,7 @@ export function RequestHub({ modules = ALL_MODULES_ON }: { modules?: EnabledModu
         {modules.timeOff || modules.marketplace ? <Card title="Track your requests" id="request-hub-track">
           <Rows label="Track your requests">
             {modules.timeOff ? <Row href="/app/requests?tab=my" title="My time-off requests" meta="Waiting, approved and past requests" leading={<Tile><ClockCounterClockwiseIcon size={20} /></Tile>} /> : null}
-            {modules.marketplace ? <Row href="/app/exchange?tab=requests" title="My shift requests" meta="Swaps, coverage and callouts" leading={<Tile><ArrowsLeftRightIcon size={20} /></Tile>} /> : null}
+            {modules.marketplace ? <Row href="/app/exchange?tab=requests" title="My shift requests" meta="Swaps, coverage and Unable to work" leading={<Tile><ArrowsLeftRightIcon size={20} /></Tile>} /> : null}
           </Rows>
         </Card> : null}
 
@@ -35,7 +35,7 @@ export function RequestHub({ modules = ALL_MODULES_ON }: { modules?: EnabledModu
           <summary><span>Which request should I use?</span><CaretDownIcon size={18} aria-hidden="true" /></summary>
           <div className="request-hub-help-content">
             <p><strong>Time off</strong> is for a date or time range you need away from work.</p>
-            <p><strong>Shift requests</strong> are for changes to a specific scheduled shift, including swaps, coverage and callouts.</p>
+            <p><strong>Shift requests</strong> are for changes to a specific scheduled shift, including swaps, coverage and Unable to work.</p>
             <p>To swap a shift or say you’re unable to work, start from your scheduled shift.</p>
             <Link href="/app/schedule"><span>Open my schedule</span><NavIcon name="arrowRight" size={16} /></Link>
           </div>

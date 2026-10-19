@@ -163,7 +163,7 @@ export default async function AvailabilityPage({
       {/* Phase 3: for the usual week the band already says what this page edits; the context card is for a specific week. */}
       {selectedWeek ? <section className="av-week-panel" aria-label="Weekly availability context">
         <div className="av-week-context"><span className="av-icon-tile"><CalendarBlankIcon size={24} aria-hidden="true" /></span><div><p>{selectedWeek ? "Weekly submission" : "Normal availability"}</p><strong>{selectedWeek ? formatWeekRange(selectedWeek) : "Your usual week"}</strong><span>{selectedWeek ? "These hours apply to this schedule week." : "Your regular hours. Submit separately for a specific week."}</span></div></div>
-        {selectedWeek ? <div className={`av-deadline${locked ? " locked" : ""}`}><ClockIcon size={20} aria-hidden="true" /><div><strong>{locked ? "Submissions closed" : "Availability deadline"}</strong><p>{settings?.availabilityDeadline ? formatBusinessDateTime(settings.availabilityDeadline, workspace.timeZone) : "No deadline set"}</p><span>{locked ? "This week's submitted hours are locked." : settings?.availabilityDeadline ? "You can update your submission until the cutoff." : "No deadline has been set for this week."}</span></div></div> : null}
+        {selectedWeek ? <div className={`av-deadline${locked ? " locked" : ""}`}><ClockIcon size={20} aria-hidden="true" /><div><strong>{locked ? "Submissions closed" : "Availability deadline"}</strong><p>{settings?.availabilityDeadline ? formatBusinessDateTime(settings.availabilityDeadline, workspace.timeZone) : "No deadline set"}</p><span>{locked ? "This week’s submitted hours are locked." : settings?.availabilityDeadline ? "You can update your submission until the deadline." : "No deadline has been set for this week."}</span></div></div> : null}
         {selectedWeek && submissionStatus && submissionCopy ? <div className={`av-submission-detail${submissionStatus.submitted ? " submitted" : ""}`}><strong>{submissionCopy.label}</strong><p>{submissionCopy.detail}</p>{submissionStatus.updatedAt ? <small>Last updated {formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone)}</small> : null}</div> : null}
       </section> : null}
 
@@ -173,7 +173,7 @@ export default async function AvailabilityPage({
         <section className="av-upcoming-banner">
           <div>
             <p>{upcomingWeek?.availabilityDeadline ? "Upcoming schedule" : "A specific week"}</p>
-            <strong>{formatWeekRange(upcomingWeek?.weekStart ?? addDays(currentWeek, 7))}</strong>
+            <strong>{keepWhole(formatWeekRange(upcomingWeek?.weekStart ?? addDays(currentWeek, 7)))}</strong>
             <span>
               {upcomingWeek?.availabilityDeadline
                 ? <>Availability closes {formatBusinessDateTime(upcomingWeek.availabilityDeadline, workspace.timeZone)}.</>
