@@ -2376,6 +2376,29 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00104-matrix-QAOWNER-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T19-50-55-451Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00104-matrix-QAOWNER-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app/settings/payroll,/app/settings/positions,/app/settings/workspace,/app/timecards",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "78c1e1df409654cf5a7742b91948244f20540f3dd6cd9f13439b1bcaf76af4d4",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12580,
