@@ -7,7 +7,7 @@ import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle"
 import type { ConfigurationResult } from "@/components/configuration-form";
 import { Notice } from "./wave-c-kit";
 
-/* Wave C form pattern (PARALLEL.md): labels above 52px fields, help 8px under the field,
+/* Wave C form pattern (PARALLEL.md): labels above fields (48px, the shared WR-55 rule), help 8px under the field,
  * errors in urgent ink with an icon and words, one primary action. The browser still checks
  * required, pattern and length; we only replace its bubble with the field's own sentence. */
 
