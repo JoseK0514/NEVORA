@@ -67,7 +67,7 @@ try{
  delete process.env.DATABASE_URL;
  process.env.FUEL_TEST_DATABASE_URL=`postgresql://nevora_audit@127.0.0.1:${port}/nevora_exchange_test_audit_${marker.slice(0,12)}`;
  process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN='yes';process.env.NEVORA_PAYROLL_ENABLED='true';
- app=await createOwnedNextApp(evidence,{payrollEnabled:true,pinDevTypeReferences:false,clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
+ app=await createOwnedNextApp(evidence,{payrollEnabled:true,pinDevTypeReferences:true,clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
  report.sourceManifest=join(app.root,'source-manifest.json');await writeFile(join(evidence,'runtime.json'),JSON.stringify({url:app.url,root:app.root,checkpoint:report.checkpoint},null,2));console.log('READY '+app.url);
  await seedOwnedApp(app.database.executor);
  const password=await hashPassword(TEST_PASSWORD);
