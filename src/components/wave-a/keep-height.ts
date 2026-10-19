@@ -11,8 +11,9 @@ export function useKeepHeight<T extends HTMLButtonElement>(pending: boolean) {
     const button = ref.current;
     const form = button?.form;
     if (!button || !form) return;
-    // Layout sizes (offsetWidth/Height), so a press in progress (scale .98) isn't counted (ST-WA-9); width too (ST-WA-10).
-    const hold = () => { button.style.minHeight = `${button.offsetHeight}px`; button.style.minWidth = `${button.offsetWidth}px`; };
+    // Layout sizes (offsetWidth/Height), so a press in progress (scale .98) isn't counted (ST-WA-9); width too (ST-WA-10),
+    // capped at the space available, so a rotation mid-send can't push the button out of its card (ST-WA-11).
+    const hold = () => { button.style.minHeight = `${button.offsetHeight}px`; button.style.minWidth = `min(${button.offsetWidth}px, 100%)`; };
     form.addEventListener("submit", hold, true);
     return () => form.removeEventListener("submit", hold, true);
   }, []);

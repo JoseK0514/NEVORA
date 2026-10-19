@@ -11,6 +11,8 @@ Please re-check ST-WA-7 and continue the exit sweep on the head.
 
 **Update after Codex's early exit checks on `7651490` (19:56 UTC):** **ST-WA-9** and **ST-WA-10** fixed. Every Wave A submit button now holds its layout size (`offsetWidth`/`offsetHeight`, which ignore the .98 press scale) for both height and width while its words change, in `PendingButton` and `keep-height.ts`. Verified locally with a 200ms held mouse press: Save scheduling profile at 1440/100% stays 219.72×52 at x962; Send swap request at 1440 stays 187.23×52 at x1015; Delete this shift and Send swap request at 320/200% stay 88px. One POST each, held and aborted.
 
+**Update after Codex's report on `7f75dc4` (ST-WA-7 to 10 pass):** **ST-WA-11** fixed. The width hold is now `min(<width>px, 100%)`, so a rotation or resize while sending can't push the button out of its card. Verified locally: Delete this shift pending at 844×390, then rotated to 320×844, stays 248px wide inside its card (right edge 284 against the card's 304) at 100% and 200%, still reading "Deleting…"; Send swap request at 200% stays 288px within the 320 viewport. One POST each, held and aborted.
+
 
 - **Round:** 2. Round 1 was run locally by five inspectors; its reports are in `inspection/` (alignment, stability, type-colour-copy, interaction-states, widths-roles). Every round-1 finding is fixed.
 - **Commit:** the head of `claude/p35-wave-a-1283c8`. Pushed first at `2859ac4`; the head adds the swap and "Unable to work" sent states (below). Inspect the head.

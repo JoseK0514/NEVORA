@@ -34,7 +34,8 @@ export function PendingButton({ children, pending, kind = "primary", block = fal
       sent.current = submitter === button.current || (!submitter && form.querySelectorAll("[type=submit]").length === 1);
       // ST-WA-7, 9, 10: "Sending…" can be a line shorter (large text) or narrower (desktop) than the label; keep the
       // button's size while it shows. offsetWidth/Height are layout sizes, so the press scale (.98) isn't counted.
-      if (sent.current && button.current) { button.current.style.minHeight = `${button.current.offsetHeight}px`; button.current.style.minWidth = `${button.current.offsetWidth}px`; }
+      // ST-WA-11: the width hold never exceeds the space it has, so a rotation or resize mid-send can't push it out of its card.
+      if (sent.current && button.current) { button.current.style.minHeight = `${button.current.offsetHeight}px`; button.current.style.minWidth = `min(${button.current.offsetWidth}px, 100%)`; }
     };
     const sync = () => {
       const formBusy = form.getAttribute("aria-busy") === "true";
