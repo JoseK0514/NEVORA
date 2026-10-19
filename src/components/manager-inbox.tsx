@@ -156,11 +156,19 @@ function ShiftRow({ shift, timeZone }: { shift: TodayShift; timeZone: string }) 
   return <KitRow entry={shiftEntry(shift, timeZone)} />;
 }
 
+/** ST-P4-13: a newly mounted selected group starts open, before the disclosure transition can run.
+ * The initial value stays constant: native toggles and other groups keep their user-owned open state on re-reads. */
+function GroupDisclosure({ items, children }: { items: ActionItem[]; children: ReactNode }) {
+  const selection = useContext(Selection);
+  const [initiallyOpen] = useState(() => items.some(item => item.id === selection?.selected));
+  return <details open={initiallyOpen}>{children}</details>;
+}
+
 function Group({ items, calm, filter, timeZone }: { items: ActionItem[]; calm: boolean; filter: InboxFilter; timeZone: string }) {
   return <ul className="nv-rows inbox-list">{groupInboxItems(items).map(entry => entry.kind === "item"
     ? <ItemRow key={entry.item.id} item={entry.item} calm={calm} filter={filter} timeZone={timeZone} />
     : <li key={entry.key} className="premium-group">
-      <details>
+      <GroupDisclosure items={entry.items}>
         <summary className="nv-row" data-leading="true">
           <Tile tone={entry.items[0].priority === "URGENT" && !calm ? "urgent" : "neutral"}><CalendarBlankIcon size={20} weight="bold" /></Tile>
           <span className="nv-row__text"><span className="nv-row__title">{groupHeading(entry.items[0].type, entry.items.length, entry.title)}</span>
@@ -168,7 +176,7 @@ function Group({ items, calm, filter, timeZone }: { items: ActionItem[]; calm: b
           <span className="nv-row__trail"><CaretDownIcon className="inbox-group-caret" size={18} aria-hidden="true" /></span>
         </summary>
         <ul className="nv-rows inbox-list">{entry.items.map(item => <ItemRow key={item.id} item={item} calm={calm} filter={filter} timeZone={timeZone} />)}</ul>
-      </details>
+      </GroupDisclosure>
     </li>)}</ul>;
 }
 
@@ -266,9 +274,9 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
     observer.observe(column);
     return () => observer.disconnect();
   }, [showing]);
-  // IS-P4-04: a selected row inside a closed group (a deep link, Back, or the Plan ahead fallback) opens its group, so it shows.
+  // IS-P4-04, ST-P4-13: open the selected group before paint, including the first ready frame.
   const shownKey = wide && current ? current.key : null;
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!shownKey) return;
     document.querySelector<HTMLElement>(`[data-inbox-key="${CSS.escape(shownKey)}"]`)?.closest("details:not([open])")?.setAttribute("open", "");
   }, [shownKey]);
