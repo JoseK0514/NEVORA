@@ -11,3 +11,5 @@ Findings: no new exact-target measurement yet. Checked-correct: none yet.
 Gaps: root runtime release; positive before-listen initial fixture contracts; full unchanged-checker matrix with --axe; required manual/browser states, roles and motion coverage.
 
 Does this area have zero open P0/P1/P2? **Not established; inspection incomplete.**
+
+Supplementary mapping `WB-SUP-AUTH-01` queues Compose context and edit initial/retry401/403, visible recovery, held/denied focus and fresh authorized recovery for Owner/Employee modes. It adds48 ordinary/reduced cases without changing any frozen checker or prior-ID row. Static observation only; no new finding/severity or closure until actual browser measurement. See [mapping](preparation/SUPPLEMENTARY-AUTH-MAPPING.md).

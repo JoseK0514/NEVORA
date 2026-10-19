@@ -33,6 +33,7 @@ const safeCommand=body=>{
 };
 function check(row,condition,message,detail){row.assertions.push({message,passed:!!condition,...(detail===undefined?{}:{detail})});}
 function boxDifference(a,b){return !a||!b?null:Object.fromEntries(['x','y','width','height'].map(k=>[k,Math.round((b[k]-a[k])*1000)/1000]));}
+function contrastRatio(a,b){const lum=c=>{const rgb=c.match(/[\d.]+/g)?.slice(0,3).map(Number);if(!rgb)return null;return rgb.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);};const x=lum(a),y=lum(b);return x===null||y===null?null:(Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
 async function buttonData(button){return button.evaluate(e=>{
  const box=e.getBoundingClientRect(),walker=document.createTreeWalker(e,NodeFilter.SHOW_TEXT),rects=[],words=[];
  for(let n=walker.nextNode();n;n=walker.nextNode()){const p=n.parentElement;if(!n.textContent.trim()||!p||p.closest('.nv-sr,.sr-only'))continue;const s=getComputedStyle(p);if(s.visibility==='hidden'||s.display==='none')continue;const range=document.createRange();range.selectNodeContents(n);for(const r of range.getClientRects())if(r.width&&r.height)rects.push(r.toJSON());words.push(n.textContent.trim());}
@@ -62,9 +63,10 @@ async function hydrated(locator,prop){await until(()=>locator.evaluate((e,prop)=
 async function fillDate(locator,value){await hydrated(locator,'onChange');await locator.fill(value);await locator.press('Tab');await locator.evaluate((e,value)=>{const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;setter.call(e,'');e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));setter.call(e,value);e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));},value);await wait(100);}
 
 
-const helpers={register,go,hold,post,pending,check,evidence,assertRevealed,until,wait,buttonData,boxDifference,action,hydrated,fillDate,hash,baseUrl:url,fixtureWeek:audit.fixtureWeek,fixtureNextWeek:audit.nextWeekSeeded};
+const helpers={register,go,hold,post,pending,check,evidence,assertRevealed,until,wait,buttonData,boxDifference,action,hydrated,fillDate,hash,baseUrl:url,fixtureWeek:audit.fixtureWeek,fixtureNextWeek:audit.nextWeekSeeded,fixtureUpdateId:initialFixture.initialUpdateId};
 const {registerScopedCases}=await import('./scoped-wave-b.mjs');registerScopedCases(helpers);
 const {registerScopedCases:expiry}=await import('./insights-expiry-cases.mjs');expiry(helpers);
+const {registerScopedCases:composeAuth}=await import('./compose-auth-read-cases.mjs');composeAuth(helpers);
 if(process.env.WB_SUPPLEMENTAL_PAYROLL==='yes'){const {registerScopedCases:positive}=await import('./positive-payroll-cases.mjs');positive(helpers);}
 const motions=(process.env.VERIFY_MOTIONS??'no-preference,reduce').split(',');
 const engines=(process.env.VERIFY_ENGINES??'chromium,webkit').split(','),only=process.env.VERIFY_ONLY?.split(',');

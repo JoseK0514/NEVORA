@@ -1,0 +1,209 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "scope": "Runtime resolvers only; frozen1546 IDs and5280 baseline criteria unchanged",
+  "families": [
+    {
+      "family": "Home",
+      "route": "/app",
+      "method": "GET",
+      "endpoint": "/api/employee/home",
+      "accounts": "All7 ROUND Employee/Lead fixtures",
+      "source": [
+        "src/components/employee-home-actions.tsx",
+        "src/lib/employee-home/types.ts"
+      ],
+      "contract": "Lifetime-bound own snapshot; ready/partial supported. Preserve per-account authority. Empty own schedule must be derived from genuine own returned state or a labelled current-authority browser-only contract projection.",
+      "expiry": "validForMs supports bounded short lifetime; clear private content after expiry; no local expiry pass without observed rendered state",
+      "sourceHashes": {
+        "src/components/employee-home-actions.tsx": "745f6ca3fe9e4923598510e8dacf49d1d44fc3ddb657231d4efe3d138949078c",
+        "src/lib/employee-home/types.ts": "cd853b226ab23b5598c9997d9d5f5ca28d3ed47057aacecb5dffdc8999c0d945"
+      },
+      "status": "static-contract-resolved-dynamic-observation-pending"
+    },
+    {
+      "family": "My time",
+      "route": "/app/my-time",
+      "method": "GET",
+      "endpoint": "/api/employee/my-time",
+      "accounts": "All7 ROUND Employee/Lead fixtures",
+      "source": [
+        "src/lib/employee-time-client.ts",
+        "src/lib/employee-time.ts",
+        "src/components/employee-time-panel.tsx"
+      ],
+      "contract": "Exact interval/date/duration parser recomputes current,today,recent. Do not casually alter observedAt or entry arrays; empty response must keep current null,today zero,recent total0 and matching business date. Corrections separately read /api/employee/time-corrections.",
+      "expiry": "validForMs supported; snapshot parser recomputes duration/date consistency",
+      "sourceHashes": {
+        "src/lib/employee-time-client.ts": "13bbf56df3fd967c4a68a309cc34abd90cd920c6e5320e6ab76a7e6d1486e37a",
+        "src/lib/employee-time.ts": "0f8f7e75cc131b5d19369b818a74de349dab5513117d0ac4b8edf3e0d332d327",
+        "src/components/employee-time-panel.tsx": "caae005cf115af15370738d19829ae693127a61860d177a7dde7006d500f48a5"
+      },
+      "status": "static-contract-resolved-dynamic-observation-pending"
+    },
+    {
+      "family": "Timecards",
+      "route": "/app/timecards",
+      "method": "POST",
+      "endpoint": "/api/timecards",
+      "readOnlyBodyKeys": [
+        "startDate",
+        "endDate"
+      ],
+      "accounts": "All7 ROUND Employee/Lead fixtures; M/O prior/source cases separately",
+      "source": [
+        "src/components/timecards.tsx",
+        "src/lib/timecards/client.ts"
+      ],
+      "contract": "Only exact two-key period read is allowed to server. All /api/manager/timecards and additional-key POSTs remain held/answered/blocked. Empty actual cards supported;503/401/403 preserve distinct current source recovery.",
+      "expiry": "validForMs bounded lifetime; timeout clears actual protected cards/source",
+      "sourceHashes": {
+        "src/components/timecards.tsx": "57a2fd10eb112739a5a5de81aa55babd604e6f7b9a32823a9a995b27642d1ecd",
+        "src/lib/timecards/client.ts": "f0a95cfce0ada069ae33566a8265def31827be6fdf961870edd52ff21569b0c5"
+      },
+      "status": "static-contract-resolved-dynamic-observation-pending"
+    },
+    {
+      "family": "Profile work details",
+      "route": "/app/profile",
+      "method": "GET",
+      "endpoint": "/api/employee/profile",
+      "accounts": "All7 ROUND Employee/Lead fixtures; management uses separate ManagerProfile branch",
+      "source": [
+        "src/components/employee-account-panel.tsx",
+        "src/lib/employee-view.ts"
+      ],
+      "contract": "Profile ready requires own name/workspace, Employee orLead role and nonempty current work locations. No empty-profile model; failure placeholders are not ready empty data.",
+      "expiry": "validForMs supported; source supplies explicit expiryFailure read_failed",
+      "sourceHashes": {
+        "src/components/employee-account-panel.tsx": "6fa6d60bdfbb776aff4bac637203916bbd6bbf77e5556d15bb708e279844933b",
+        "src/lib/employee-view.ts": "a2d3b296f03a988e5364fc7b145be1f90aaab5c7289a3be8f426346530c04fa9"
+      },
+      "status": "static-contract-resolved-dynamic-observation-pending"
+    },
+    {
+      "family": "Calendar disclosure",
+      "route": "/app/profile#employee-calendar-title",
+      "method": "GET",
+      "endpoint": "/api/employee/calendar-subscriptions",
+      "accounts": "All7 ROUND Employee/Lead fixtures",
+      "source": [
+        "src/components/calendar-subscription-panel.tsx",
+        "src/components/profile-calendar-disclosure.tsx",
+        "src/lib/calendar/types.ts"
+      ],
+      "contract": "GET may be active/revoked/none with current generation+authority. Active read intentionally contains no URL. ISSUE/ROTATE/REVOKE responses must be browser-local and preserve exact current authority/operation identity. Secret URLs/tokens must be redacted or hashed in evidence.",
+      "expiry": "No modeled ready snapshot expiry state; existing45s refresh is separate lifecycle. Do not invent an expired state",
+      "sourceHashes": {
+        "src/components/calendar-subscription-panel.tsx": "50fb2dddf519df96edbafe2606a3d36df2f82083918c211d6641aba574394b7e",
+        "src/components/profile-calendar-disclosure.tsx": "6d86f38ffbedefbc9f0f0be7a03f036e6e139e7d9e1b04a70955cfaa4323fce7",
+        "src/lib/calendar/types.ts": "a96da251ee1b26100e3b7ceccd936f43b442a78b4840cc5362181f1dc9cfe5d8"
+      },
+      "status": "static-contract-resolved-dynamic-observation-pending"
+    },
+    {
+      "family": "Updates",
+      "route": "/app/updates",
+      "method": "GET",
+      "endpointByMode": {
+        "employee": "/api/employee/communications",
+        "manager": "/api/manager/communications"
+      },
+      "accounts": "All7 ROUND Employee/Lead fixtures; management auth/source cases separately",
+      "source": [
+        "src/lib/communications/client.ts",
+        "src/lib/communications/types.ts",
+        "src/components/employee-updates.tsx"
+      ],
+      "contract": "List supports complete/partial, emptyitems, observedAt,validForMs,currentauthority. Every mocked401/403 requires actual matched browser response before evaluating words/recovery. Compose and Detail are separate contracts; list proof cannot close them.",
+      "expiry": "validForMs supported; current parser preserves401 session_ended vs403 access_denied",
+      "sourceHashes": {
+        "src/lib/communications/client.ts": "b912546b8cb3cd68685695d5e0408e2202b2d85483249f3221e3040caf8159c8",
+        "src/lib/communications/types.ts": "67f161e9358b5281ef006193059912ed601bdf1d487f8140bb4dd79bd89c8800",
+        "src/components/employee-updates.tsx": "37e1a914e84acfac57b3bf5257d6b8a7c0ee214ec69cc70d2e2d71f7109cedff"
+      },
+      "status": "static-contract-resolved-dynamic-observation-pending"
+    },
+    {
+      "family": "My pay",
+      "route": "/app/my-pay",
+      "method": "GET",
+      "endpoint": "/api/payroll/statements",
+      "accounts": "All7 ROUND Employee/Lead fixtures, not only payroll-a/b",
+      "source": [
+        "src/components/payroll/my-pay.tsx",
+        "src/components/payroll/api.ts",
+        "src/components/payroll/use-payroll.ts",
+        "src/lib/payroll/contracts.ts"
+      ],
+      "contract": "PAYROLL_API_V1 statements array. Ready nonempty uses genuine owned published documents; payroll-qa-b provides2 published statements. Other current accounts may validly be ready empty. Do not treat invented cross-person statements as genuine ready-state fixture proof.",
+      "expiry": "No partial or validForMs/expired response model. Offline/paused/503/401/403/retry are actual hook states; no invented expiry/partial state",
+      "sourceHashes": {
+        "src/components/payroll/my-pay.tsx": "69348ea316ec9d7de356cd7e0e312c90589caecc92ab1430a5aa86b31b076697",
+        "src/components/payroll/api.ts": "98dc8dbce24d1635c348b462388968862ebe91659c625789df22fe821f811065",
+        "src/components/payroll/use-payroll.ts": "2e99275c8bb863988fe0d66d59a178d670feb76113d90e65c07aadfb41f97905",
+        "src/lib/payroll/contracts.ts": "921cff7236ee014bafee137fe84a6ddcd47de91dcdec55c97ff687fb95c13c02"
+      },
+      "status": "static-contract-resolved-dynamic-observation-pending"
+    },
+    {
+      "family": "Notifications",
+      "route": "/app/notifications",
+      "method": "GET",
+      "endpoint": "/api/notifications",
+      "accounts": "All7 ROUND Employee/Lead fixtures plus AUDIT-M/QAOWNER",
+      "source": [
+        "src/app/app/notifications/page.tsx",
+        "src/components/employee-account-panel.tsx",
+        "src/components/notification-inbox.tsx",
+        "src/lib/employee-view.ts"
+      ],
+      "contract": "ALL four roles use /api/notifications on combined source (explicit page endpoint). Ready supports complete/partial coverage and actual safe notification-open paths. /api/employee/notifications is not this page current read.",
+      "expiry": "validForMs supported; snapshot controller clears on expiry/pause/authority replacement",
+      "sourceHashes": {
+        "src/app/app/notifications/page.tsx": "dc7b5ba1285b448ceadd1edad2a9eead0295cdee81c4da2a137c6431780204ef",
+        "src/components/employee-account-panel.tsx": "6fa6d60bdfbb776aff4bac637203916bbd6bbf77e5556d15bb708e279844933b",
+        "src/components/notification-inbox.tsx": "91e67414ae8b07f95024fcb2b2aec0853db1c77cb21474931bc35f5dd0a920a8",
+        "src/lib/employee-view.ts": "a2d3b296f03a988e5364fc7b145be1f90aaab5c7289a3be8f426346530c04fa9"
+      },
+      "status": "static-contract-resolved-dynamic-observation-pending"
+    }
+  ],
+  "actionResolvers": [
+    {
+      "surface": "Unable to work",
+      "templateRouteInFrozenQueue": "/app/exchange/callout?sourceShiftId=<fixtureShiftId>",
+      "canonicalResolvedRoute": "/app/exchange/callout?shiftId=<genuine-own-future-published-shift-id>",
+      "source": "src/app/app/exchange/callout/page.tsx:15,24,29",
+      "ids": "Preserve existing manual IDs; record actual resolved URL as execution evidence"
+    },
+    {
+      "surface": "Notification mark read",
+      "frozenQueueAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD"
+      ],
+      "combinedSourceAvailability": "Page sets markReadAllowed={manager}; Employee/Lead have no Mark read UI. Do not manufacture missing controls or treat their absence as fixture failure.",
+      "source": [
+        "src/app/app/notifications/page.tsx:10,13",
+        "src/components/employee-account-panel.tsx:52",
+        "src/components/notification-inbox.tsx:83"
+      ],
+      "classification": "Pending source-based not-applicable judgment for existing16 configurations after exact-source verification; Manager/Owner true action covered separately. Preserve all1546IDs."
+    },
+    {
+      "surface": "Entry/break-boundary correction",
+      "frozenQueueAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD"
+      ],
+      "fixturePrerequisite": "Verify each account has genuine own closed entry and break before button-ready credit. Seed-extra supplies ON/BREAK open records for other accounts and does not by itself give Lead a closed entry or break. An absent own entry is a fixture gap until an exact-source fictional fixture supplies it.",
+      "source": [
+        "scripts/ui-checks/seed-extra.mts:105\u2013113",
+        "src/components/employee-time-panel.tsx",
+        "src/lib/time-corrections/client.ts"
+      ],
+      "classification": "Do not assume button availability or transplant another actor entry/authority"
+    }
+  ],
+  "runtime": "No preview/browser/seed/application test/CI/app edit/commit/push performed; source hold remains active"
+}

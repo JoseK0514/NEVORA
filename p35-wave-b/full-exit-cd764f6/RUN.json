@@ -32,9 +32,11 @@
     "scopedSharedBothEngines": 96,
     "positivePayrollBothEngines": 18,
     "insightsExpiryBothEngines": 24,
-    "ordinaryAndReducedTotal": 276,
-    "executed": 0
+    "ordinaryAndReducedTotal": 324,
+    "executed": 0,
+    "composeAuthReadBothEngines": 24
   },
   "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "supersededAncestor": "8640247be632ee6382c68b3b1ae3bbed532a5d65"
+  "supersededAncestor": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "supplementaryAuthMapping": "preparation/supplementary-auth-mapping.json"
 }

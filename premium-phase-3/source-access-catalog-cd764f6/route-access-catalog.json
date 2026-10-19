@@ -1,0 +1,1123 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "createdAt": "2026-10-19T22:41:50.318662+00:00",
+  "routeTemplates": 44,
+  "nearestBoundaryOwn": 43,
+  "inheritedBoundaries": [
+    "/app/schedule/coverage"
+  ],
+  "rules": [
+    "This is a static permissions/fixture resolver, not execution evidence or a reduction of the 5280 baseline/1546 manual jobs/135-ID scope.",
+    "Role kinds are permission eligibility, not a mandate to multiply all44routes by all9accounts. Distinct rendered role branches and the ROUND dimensions still require measured coverage; redirects cannot stand in for the intended placeholder.",
+    "Every all-route placeholder job remains pending until actual direct-load and client-navigation frames and their ready reference are measured. A valid page template does not prove its intended route was loaded.",
+    "Coverage is Manager/Owner-only by actual page guard. The source cloud-inventory managerOnly set omits it and must not be treated as authority.",
+    "The source cloud-inventory executor imports service/fixture implementations from the tools checkout. Do not run it for exact-source evidence; any adopted fictional fixture definition must bind imports to the released source and record hashes.",
+    "Callout canonical query is shiftId, while Swap uses sourceShiftId. Preserve existing manual case IDs; attach canonical resolved URL in evidence when executing inherited placeholder routes.",
+    "Combined33 Coverage has no route-specific loading.tsx and inherits Schedule. Retained ST-WA-1 is an observation obligation; no dynamic reproduction is claimed here.",
+    "RootLoading uses destination prefix choices; direct-load and client-navigation ancestor frames must be observed rather than inferred from the nearest child loading.tsx.",
+    "No preview, browser, seed, application test, CI, app edit, commit or push was performed for this catalog."
+  ],
+  "routes": [
+    {
+      "routeTemplate": "/app/account-recovery",
+      "sourcePage": "src/app/app/account-recovery/page.tsx",
+      "pageSha256": "f39ef4ba0db60117a1b91a098d15f893214788f6569d4e2bfd6f5d32804c5d30",
+      "guardCitationLines": [
+        6
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/account-recovery",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/account-recovery/loading.tsx",
+      "loadingSha256": "f297bf4fc743914780f6752b5a38fd42b9fcda8de46b83d637932e2cfaafbf89",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RecoveryLoading } from \"../settings/wave-c-recovery-loading\";\n\nexport default function Loading() {\n  return <RecoveryLoading title=\"Account recovery\" summary=\"Help a verified employee get back into their account.\" label=\"account recovery\" cards={[3]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/availability",
+      "sourcePage": "src/app/app/availability/page.tsx",
+      "pageSha256": "41fda3cc837897587748984d0b2fbddc3779be7b053d52b42cf77e80a8117971",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/availability",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/availability/loading.tsx",
+      "loadingSha256": "63b0c7f52bb8c8f1aab4c8c4b6181542d9f9a71cbe6c7bfa5bf1657a88533f02",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Phase 3 (P3-ST-03): the band at its final height, so it never pops in. */\nexport default function Loading() {\n  return <RouteSkeleton route=\"availability\" label=\"availability\" shape=\"cards\" band={192} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/clocker-recovery",
+      "sourcePage": "src/app/app/clocker-recovery/page.tsx",
+      "pageSha256": "e01bab6ba729a59be4334b4c212457514d137b735f2a380328ab3d25c2b09dc9",
+      "guardCitationLines": [
+        6
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/clocker-recovery",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/clocker-recovery/loading.tsx",
+      "loadingSha256": "eb93b2bb543108e26d001da27bf1bad3d332701402594f961c52ada2a7ec8a03",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RecoveryLoading } from \"../settings/wave-c-recovery-loading\";\n\nexport default function Loading() {\n  return <RecoveryLoading title=\"Clocker recovery\" summary=\"Check a saved Clocker action and help the employee finish recovery.\" label=\"Clocker recovery\" cards={[2, 2]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/employees",
+      "sourcePage": "src/app/app/employees/page.tsx",
+      "pageSha256": "08aaa0d74bc6bee17c5a53ba56f003332b1eeec329e3c82ed05ab0a7e76deb5f",
+      "guardCitationLines": [
+        11
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/employees",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/employees/loading.tsx",
+      "loadingSha256": "034c5970dab3769fe238d33bb7eb7e40a2ca36b45658a7d39bbaf420d60a416e",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"team\" label=\"team\" shape=\"list\" band={220} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/employees/[employeeId]",
+      "sourcePage": "src/app/app/employees/[employeeId]/page.tsx",
+      "pageSha256": "a796d19e4d295f6946ae119ec61254590fe4c65b711bf7081f740e7931c72ccc",
+      "guardCitationLines": [
+        34
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/employees/AUDIT-LONG",
+      "fixturePrerequisites": [
+        "Verify AUDIT-LONG exists and is in this owned workspace; Clocker PIN authority remains server-reviewed"
+      ],
+      "nearestLoadingBoundary": "src/app/app/employees/[employeeId]/loading.tsx",
+      "loadingSha256": "ae2ae9ce5f8035e97cf066f24ac36729d0c3100eeadf5fe766eafd25d7b49f0f",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route=\"wa-member\"). */\nexport default function Loading() {\n  return <RouteSkeleton route=\"wa-member\" label=\"this team member\" shape=\"cards\" band={216} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/employees/[employeeId]/clocker-pin",
+      "sourcePage": "src/app/app/employees/[employeeId]/clocker-pin/page.tsx",
+      "pageSha256": "42bfe16922f61fd54537f45bb31f287c226d0323dc5d7143ba422ae463094a68",
+      "guardCitationLines": [
+        15
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/employees/AUDIT-LONG/clocker-pin",
+      "fixturePrerequisites": [
+        "Verify AUDIT-LONG exists and is in this owned workspace; Clocker PIN authority remains server-reviewed"
+      ],
+      "nearestLoadingBoundary": "src/app/app/employees/[employeeId]/clocker-pin/loading.tsx",
+      "loadingSha256": "7ff6d2a1c93bf1d4c4e5bdd23805414f9bf4179c9a847410c5da4f86bfca6488",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route=\"wa-pin\"). */\nexport default function Loading() {\n  return <RouteSkeleton route=\"wa-pin\" label=\"the Clocker PIN\" shape=\"cards\" band={288} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/employees/new",
+      "sourcePage": "src/app/app/employees/new/page.tsx",
+      "pageSha256": "eb68921364e913ad79b2b8c52f7e16f806d2324158beff13dc4c6dc3ed03e10a",
+      "guardCitationLines": [
+        27
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/employees/new",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/employees/new/loading.tsx",
+      "loadingSha256": "e9950778d0b7dfa53aacdc427eb13f11af5d45b0b74a2cf6022380e411dca42c",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route=\"wa-new\"). */\nexport default function Loading() {\n  return <RouteSkeleton route=\"wa-new\" label=\"the new employee form\" shape=\"cards\" band={244} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/exchange",
+      "sourcePage": "src/app/app/exchange/page.tsx",
+      "pageSha256": "019d666ed613f2db6795e30c3f17656328d1c19396270c29e37efa1284bf5d31",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/exchange",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/exchange/loading.tsx",
+      "loadingSha256": "2ed72c7cd26ee541360a3defe616d7a4ae4e910964999011064b2e86ca1729f4",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"exchange\" label=\"shift requests\" shape=\"list\" band={236} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/exchange/callout",
+      "sourcePage": "src/app/app/exchange/callout/page.tsx",
+      "pageSha256": "3501d6e88bb31bf0175f94465ecfd624f5909df1f14e22e2e0272156bb741c42",
+      "guardCitationLines": [
+        21,
+        26,
+        32,
+        41
+      ],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD"
+      ],
+      "guard": "Employee/Lead self-service page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD"
+      ],
+      "canonicalFixtureRoute": "/app/exchange/callout?shiftId=<real-own-future-published-shift-id>",
+      "fixturePrerequisites": [
+        "Resolve genuine own future published shift from the current fixture; confirm current reviewed terms; do not invent shift, episode or fingerprint",
+        "AUDIT-E canonical audit-next-0-1; other fixtures must have their own genuine row before action-ready credit"
+      ],
+      "nearestLoadingBoundary": "src/app/app/exchange/callout/loading.tsx",
+      "loadingSha256": "86da385e8ec2010c9fa5a798876862e0e8ab1110bc57ec95f725e3363cd86c58",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route=\"wa-callout\"). */\nexport default function Loading() {\n  return <RouteSkeleton route=\"wa-callout\" label=\"the report form\" shape=\"cards\" band={244} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/exchange/swap",
+      "sourcePage": "src/app/app/exchange/swap/page.tsx",
+      "pageSha256": "26d4c8bdea819a5014021be743d4993c49a68ce0247984f478468c20444601e4",
+      "guardCitationLines": [
+        27,
+        32,
+        42,
+        47
+      ],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD"
+      ],
+      "guard": "Employee/Lead self-service page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD"
+      ],
+      "canonicalFixtureRoute": "/app/exchange/swap?sourceShiftId=<real-own-future-published-shift-id>",
+      "fixturePrerequisites": [
+        "Resolve genuine own future published shift from the current fixture; confirm current reviewed terms; do not invent shift, episode or fingerprint",
+        "AUDIT-E canonical audit-next-0-1; other fixtures must have their own genuine row before action-ready credit"
+      ],
+      "nearestLoadingBoundary": "src/app/app/exchange/swap/loading.tsx",
+      "loadingSha256": "84cb58f1c1b1d664cd5d986ee308fc0ab102648f4d54c78e4b5a6aa361cfbb94",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route=\"wa-swap\"). */\nexport default function Loading() {\n  return <RouteSkeleton route=\"wa-swap\" label=\"the swap\" shape=\"cards\" band={288} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/inbox",
+      "sourcePage": "src/app/app/inbox/page.tsx",
+      "pageSha256": "03b939ddea794fe2d6aa58c7973500c28eb679fc6b16375c51b156c1c08371bc",
+      "guardCitationLines": [
+        14
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/inbox",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/inbox/loading.tsx",
+      "loadingSha256": "b48f76ec422d13d6e81b0dd4f39c3d68cd9abf2c4d9e386968fa2967c47e633c",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"inbox\" label=\"inbox\" shape=\"list\" band={308} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/my-pay",
+      "sourcePage": "src/app/app/my-pay/page.tsx",
+      "pageSha256": "2b234b85b4ce7978eb1d00b7e08348a3b81e09c7057bc3b3a768db811f1cf370",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/my-pay",
+      "fixturePrerequisites": [
+        "Payroll feature enabled; preserve authentic read capabilities and no business writes"
+      ],
+      "nearestLoadingBoundary": "src/app/app/my-pay/loading.tsx",
+      "loadingSha256": "c7c4eb1cc39b014e08641574a8b253e11bfbd45a95f81eb0ebc6094455465ee2",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"mypay\" label=\"your pay\" shape=\"cards\" band={128} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/my-time",
+      "sourcePage": "src/app/app/my-time/page.tsx",
+      "pageSha256": "becfe6ef2419999fe334428bdbb2fd12050e0bf9d5b6af92dc0c12e8c21b0cae",
+      "guardCitationLines": [
+        14
+      ],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD"
+      ],
+      "guard": "Employee/Lead self-service page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD"
+      ],
+      "canonicalFixtureRoute": "/app/my-time",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/my-time/loading.tsx",
+      "loadingSha256": "cf51eb230a31f1048718e32ab9bc759718218e27d7b55cb94dcd2aae718cd42c",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"mytime\" label=\"your time\" shape=\"cards\" band={172} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/notifications",
+      "sourcePage": "src/app/app/notifications/page.tsx",
+      "pageSha256": "dc7b5ba1285b448ceadd1edad2a9eead0295cdee81c4da2a137c6431780204ef",
+      "guardCitationLines": [
+        9
+      ],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/notifications",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/notifications/loading.tsx",
+      "loadingSha256": "25401cb580a420b63353e0d5373ebe3d3c8762c62f8400951091b30006537ced",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"notifications\" label=\"notifications\" shape=\"list\" band={128} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app",
+      "sourcePage": "src/app/app/page.tsx",
+      "pageSha256": "0f5d6599c10155b555325bd96d07fc0609330525ac9f6765f35c3965e2ee9955",
+      "guardCitationLines": [
+        57
+      ],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/loading.tsx",
+      "loadingSha256": "dcea5987cf090c1f6684d9f52dd10011ead5ec46207a29905f0e0aae84cf9ddf",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RootLoading } from \"./root-loading\";\n\n/** Home's placeholder matches every other tab's: the band at its final height, then cards (ST-05).\n * During a tab change it takes the destination's shape instead (ST-22). */\nexport default function Loading() {\n  return <RootLoading />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/payroll",
+      "sourcePage": "src/app/app/payroll/page.tsx",
+      "pageSha256": "195595c6d8a8a9fe5efb938c4c10dfde076d09c2a78c3dcd6dc331458c144db6",
+      "guardCitationLines": [
+        14
+      ],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "payrollFeatureEnabled and canReview, independently of role; only QAOWNER has the required default inspection-fixture grant",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/payroll",
+      "fixturePrerequisites": [
+        "Payroll feature enabled; preserve authentic read capabilities and no business writes"
+      ],
+      "nearestLoadingBoundary": "src/app/app/payroll/loading.tsx",
+      "loadingSha256": "eac23133ed5966a3a5121a847063cece298757ffe6d4eed9c224eb4f53e4a2db",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"payroll\" label=\"payroll\" shape=\"cards\" band={152} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/payroll-export",
+      "sourcePage": "src/app/app/payroll-export/page.tsx",
+      "pageSha256": "ef76f8ddfdc11ac06557e75a40dea8266275a47bf19fb6f6aa0a308d2a785a51",
+      "guardCitationLines": [
+        12
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/payroll-export",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/payroll-export/loading.tsx",
+      "loadingSha256": "af7145d70736d911dcef8173cc222e9c583added6a457124b86c6140c6ba545f",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"exports\" label=\"time exports\" shape=\"cards\" band={152} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/profile",
+      "sourcePage": "src/app/app/profile/page.tsx",
+      "pageSha256": "ba5dba30b1f5dc4ebdf600128329897608f4c6755af86fca8504d00281f0067d",
+      "guardCitationLines": [
+        18
+      ],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/profile",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/profile/loading.tsx",
+      "loadingSha256": "c64bb683eace2c4026f5c28ba74d657ea7540f82a0833e82b20171dfab3c7e2e",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Phase 3 (P3-ST-03): the band at its final height, so it never pops in. */\nexport default function Loading() {\n  return <RouteSkeleton route=\"profile\" label=\"profile\" shape=\"cards\" band={128} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/reports",
+      "sourcePage": "src/app/app/reports/page.tsx",
+      "pageSha256": "ec3380b31185feedd558c22ff7e4a9b4c48c235066ad12da0bea81bf8ae18448",
+      "guardCitationLines": [
+        12
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/reports",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/reports/loading.tsx",
+      "loadingSha256": "200bde831560bada4cf9d18b53c7d3250f288c3cfa60e5f687dcc13579f5f6da",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route \"wb-insights\").\nexport default function Loading() {\n  return <RouteSkeleton route=\"wb-insights\" label=\"insights\" shape=\"cards\" band={200} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/requests",
+      "sourcePage": "src/app/app/requests/page.tsx",
+      "pageSha256": "53fcdc0bcbe3edd8c9361c360f888d0932d329bbacb242870576b8b29dd2c658",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/requests",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/requests/loading.tsx",
+      "loadingSha256": "909d326d0e1bd3873cbd0c927a9806b8d27706238be4c018704c863193bb362d",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"review\" label=\"time off\" shape=\"list\" band={264} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/requests/hub",
+      "sourcePage": "src/app/app/requests/hub/page.tsx",
+      "pageSha256": "17731b00ed04ca66c1f1a45b61fc2be7458e96f93a788a0a6c75d64e4ac69303",
+      "guardCitationLines": [
+        9
+      ],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD"
+      ],
+      "guard": "Employee/Lead self-service page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD"
+      ],
+      "canonicalFixtureRoute": "/app/requests/hub",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/requests/hub/loading.tsx",
+      "loadingSha256": "b5e97e9ea2b11c43f7139b29114513fc4185d76fd8c8bceac45908f7fdf9edb2",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"hub\" label=\"requests\" shape=\"list\" band={104} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/schedule",
+      "sourcePage": "src/app/app/schedule/page.tsx",
+      "pageSha256": "ed28c48b353c4b9dcb75736329f1eedbcd5e7a831fe8e64030238d60e88bae0f",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/schedule",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/schedule/loading.tsx",
+      "loadingSha256": "d896385ec7509d020d4c195be09ce241a4a2845baa99837f4c3f764270236e56",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"schedule\" label=\"schedule\" shape=\"grid\" band={244} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/copy-receipt",
+      "sourcePage": "src/app/app/schedule/copy-receipt/page.tsx",
+      "pageSha256": "6896d876b98053dda9e81682e8b6376299bef17dd00805e917239c44aa339375",
+      "guardCitationLines": [
+        50
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/schedule/copy-receipt?operation=<owned-actor-receipt-operation-id>",
+      "fixturePrerequisites": [
+        "Resolve genuine immutable fictional fixture receipt created by exact-source fixture service; random UUID only proves Copy not found, not receipt-ready layout"
+      ],
+      "nearestLoadingBoundary": "src/app/app/schedule/copy-receipt/loading.tsx",
+      "loadingSha256": "3829319f36ca8eb3a82dd76eb66650603ba7c81e47ff4794ffee623cd8337cab",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route=\"wa-copy\"). */\nexport default function Loading() {\n  return <RouteSkeleton route=\"wa-copy\" label=\"the copy result\" shape=\"cards\" band={212} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/coverage",
+      "sourcePage": "src/app/app/schedule/coverage/page.tsx",
+      "pageSha256": "571d0df81269890c6d22b25487dd99ade772cdeb80b0714ddb968b29c618ab0a",
+      "guardCitationLines": [
+        50,
+        56,
+        101,
+        110
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/schedule/coverage?week=<fixture-next-week>&date=<real-uncovered-date>&locationId=loc-1&start=<real-gap-start>&end=<real-gap-end>",
+      "fixturePrerequisites": [
+        "Resolve genuine source-defined coverage gap or repair link from Manager Schedule; no arbitrary candidate/eligibility manipulation"
+      ],
+      "nearestLoadingBoundary": "src/app/app/schedule/loading.tsx",
+      "loadingSha256": "d896385ec7509d020d4c195be09ce241a4a2845baa99837f4c3f764270236e56",
+      "boundaryOwnToRoute": false,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"schedule\" label=\"schedule\" shape=\"grid\" band={244} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/edit",
+      "sourcePage": "src/app/app/schedule/edit/page.tsx",
+      "pageSha256": "b92e4c1167dfaf4fc260142aea89ab794f2380ceb57cc0ed411ec14010655832",
+      "guardCitationLines": [
+        38,
+        42,
+        53
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/schedule/edit?shiftId=audit-next-0-1",
+      "fixturePrerequisites": [
+        "Verify audit-next-0-1 exists in this exact owned preview"
+      ],
+      "nearestLoadingBoundary": "src/app/app/schedule/edit/loading.tsx",
+      "loadingSha256": "3c4e7d33568fa97117998db7028db91b81ccfd42b0cfe6718d628e4b6303fbb5",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route=\"wa-edit\"). */\nexport default function Loading() {\n  return <RouteSkeleton route=\"wa-edit\" label=\"the shift\" shape=\"cards\" band={288} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/new",
+      "sourcePage": "src/app/app/schedule/new/page.tsx",
+      "pageSha256": "9ee7c799da176b577a0938603bed6896d4bbfe869afcf9b029a04686294cb5fd",
+      "guardCitationLines": [
+        42
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/schedule/new",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/schedule/new/loading.tsx",
+      "loadingSha256": "320c18e44642728b948b59eb5c19534a6bcb2e333a67615e56f273be93ee12d3",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n/** Wave A: this page's own placeholder. Its band height per width is set in premium-wave-a.css (data-route=\"wa-add\"). */\nexport default function Loading() {\n  return <RouteSkeleton route=\"wa-add\" label=\"the new shift\" shape=\"cards\" band={288} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/settings",
+      "sourcePage": "src/app/app/schedule/settings/page.tsx",
+      "pageSha256": "2d7a63152ce0bb4b563610db390cf717a744b0e15fdaa770042d9b859a5573ce",
+      "guardCitationLines": [
+        42
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/schedule/settings",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/schedule/settings/loading.tsx",
+      "loadingSha256": "1f181ab30cb734cc32fb57ea7d77cbbaf663c29e58805c5fa15a4c553b886d35",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route \"wb-rules\").\nexport default function Loading() {\n  return <RouteSkeleton route=\"wb-rules\" label=\"scheduling rules\" shape=\"list\" band={196} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/schedule/templates",
+      "sourcePage": "src/app/app/schedule/templates/page.tsx",
+      "pageSha256": "52fc7145d471f0a97f0ae6819b707547b16076011a3620f03963caa03f1e9a84",
+      "guardCitationLines": [
+        44
+      ],
+      "admissibleRoleKinds": [
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Manager/Owner page guard",
+      "recommendedFixtureAccounts": [
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/schedule/templates",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/schedule/templates/loading.tsx",
+      "loadingSha256": "bc5b0da25e9c3d8379788a4c548c895eb5904c6459319525a98479f03e37e4e0",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route \"wb-templates\").\nexport default function Loading() {\n  return <RouteSkeleton route=\"wb-templates\" label=\"templates\" shape=\"list\" band={244} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings",
+      "sourcePage": "src/app/app/settings/page.tsx",
+      "pageSha256": "ceab3f05b646d5fcb8b7e7e668c92e3434d99fb57f61c18de8f55a1807780b89",
+      "guardCitationLines": [
+        75
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/loading.tsx",
+      "loadingSha256": "e76f110711ebf1b7b27d3b7f309c4ea44aa431c8b16ddaa727d2d7d01c891eff",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsRouteLoading } from \"./wave-c-route-loading\";\n\nexport default function Loading() {\n  return <SettingsRouteLoading />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/branding",
+      "sourcePage": "src/app/app/settings/branding/page.tsx",
+      "pageSha256": "c6d6f38701f4053957f167e3eac89ebd8cf360d8d2e0df43cfb468ab83d4696e",
+      "guardCitationLines": [
+        12
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/branding",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/branding/loading.tsx",
+      "loadingSha256": "90d0410c1a25b7cda99cb7c31a5a68ad50885d9cf54484a9535d7b1684787268",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading title=\"Branding\" summary=\"Your color and logo across NEVORA. Layout, text sizes and status colors stay the same.\" label=\"branding\" cards={[3, 2, 4]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/breaks",
+      "sourcePage": "src/app/app/settings/breaks/page.tsx",
+      "pageSha256": "3c18b36e898a6c69e2ced8cd5c9db2195fb38db427a007f84b5847d6104da417",
+      "guardCitationLines": [
+        15
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/breaks",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/breaks/loading.tsx",
+      "loadingSha256": "89b5b9de4e30649634b22caa066574a4ab2846713053c3e57770ccad1e834a07",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading eyebrow add=\"Add break type\" title=\"Break types\" summary=\"The breaks your team can start at the Clocker.\" label=\"break types\" cards={[2, 3]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/clocker",
+      "sourcePage": "src/app/app/settings/clocker/page.tsx",
+      "pageSha256": "577d770adb150843656c63049f8c9b96d52cc4df97a786a623e2996c6680d8a6",
+      "guardCitationLines": [
+        14
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/clocker",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/clocker/loading.tsx",
+      "loadingSha256": "7b1fdf253768eeacb391f9f210cfa58fcd9491922069f99df8b07470a7752702",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading eyebrow add=\"Add device\" title=\"Clocker devices\" summary=\"A shared tablet at each location, with access you control.\" label=\"Clocker devices\" cards={[1, 2, 3]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/company-policies",
+      "sourcePage": "src/app/app/settings/company-policies/page.tsx",
+      "pageSha256": "fba57b351c751d1d905dbc1e36c16fd81b5c2ec6f3412ce62d53e693832f2d1a",
+      "guardCitationLines": [
+        9
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/company-policies",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/company-policies/loading.tsx",
+      "loadingSha256": "48e06c047727d14d5c14132e0128d74198c943d3fb1865aa58ec293ca20a89e2",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading title=\"Company policies\" summary=\"Set attendance review rules for your company and locations.\" label=\"company policies\" cards={[2, 1, 1, 1]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/features",
+      "sourcePage": "src/app/app/settings/features/page.tsx",
+      "pageSha256": "562991650a726eee596c05b31d9fd2b8ec72ae674aa8f51e35705ba20777bcfd",
+      "guardCitationLines": [
+        13
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/features",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/features/loading.tsx",
+      "loadingSha256": "7a460a898401dbc6b65215b78f4d280650f67111d883613cd57056210fc6981e",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading title=\"Features & words\" summary=\"Turn off what your company doesn\u2019t use, and name your team the way you do.\" label=\"features and words\" cards={[4, 5]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/locations",
+      "sourcePage": "src/app/app/settings/locations/page.tsx",
+      "pageSha256": "5ca3c397922667205a2929e70552d9e4723becebb0ddc919b953a7184d66e7d2",
+      "guardCitationLines": [
+        34
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/locations",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/locations/loading.tsx",
+      "loadingSha256": "dd348b2d69056974d99f51bc379b6185b0c5576295f8c0e52f8bd431cd4eaa30",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading eyebrow add=\"Add location\" title={<span className=\"wc-skeleton__title\" />} summary=\"Where your team works, each place\u2019s scheduling setup and its Clocker link.\" label=\"locations\" cards={[2, 3, 3]} aside={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/locations/[locationId]",
+      "sourcePage": "src/app/app/settings/locations/[locationId]/page.tsx",
+      "pageSha256": "1b4fceb1f6138fff8a2be7187ae2380e9bd36b815d33db7e3b55d8d7e9c8ecd0",
+      "guardCitationLines": [
+        15
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/locations/loc-1",
+      "fixturePrerequisites": [
+        "Verify loc-1 exists and belongs to this owned workspace"
+      ],
+      "nearestLoadingBoundary": "src/app/app/settings/locations/[locationId]/loading.tsx",
+      "loadingSha256": "44637a55b137e139b671178007efd93e319556c181577c688aeaa911ba7494e5",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading back={{ href: \"/app/settings/locations\", label: \"Locations\" }} eyebrow title={<span className=\"wc-skeleton__title\" />} summary=\"Names and status your team sees, and this location\u2019s Clocker link.\" label=\"the location\" cards={[2, 1]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/locations/new",
+      "sourcePage": "src/app/app/settings/locations/new/page.tsx",
+      "pageSha256": "c5c1204859059ee6f2b21099343b2ce1caceea55023c157528f75799c9fa2d28",
+      "guardCitationLines": [
+        9
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/locations/new",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/locations/new/loading.tsx",
+      "loadingSha256": "627eb2cbef462e571066dd33a91d27ece3dceeb18b178c6300bf0eb9098b83aa",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading back={{ href: \"/app/settings/locations\", label: \"Locations\" }} title=\"Add location\" summary=\"Give your team a new place to work.\" label=\"the new location form\" cards={[2, 1]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/payroll",
+      "sourcePage": "src/app/app/settings/payroll/page.tsx",
+      "pageSha256": "1d164ed2844cbe25b104dbedef6df262d10bcf53949951839414453517c80362",
+      "guardCitationLines": [
+        14
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/payroll",
+      "fixturePrerequisites": [
+        "Payroll feature enabled; preserve authentic read capabilities and no business writes"
+      ],
+      "nearestLoadingBoundary": "src/app/app/settings/payroll/loading.tsx",
+      "loadingSha256": "28d9e0feb2fa797c6fd9f3f21b43ff07d179d07cf58075498442b4346ff2976c",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route \"wb-payroll-settings\").\nexport default function Loading() {\n  return <RouteSkeleton route=\"wb-payroll-settings\" label=\"payroll settings\" shape=\"cards\" band={128} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/positions",
+      "sourcePage": "src/app/app/settings/positions/page.tsx",
+      "pageSha256": "e3c81b8c40e166b1043794182826d2b3cdf4ef92b1bc6dcabeb23937e4991d57",
+      "guardCitationLines": [
+        8
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/positions",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/positions/loading.tsx",
+      "loadingSha256": "7aeb2b1c8455fd1f912a93ab733ecdb5395c95e84ea010b8799bcbbf0d18ae32",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading eyebrow title=\"Positions\" summary=\"The job qualifications your team brings to each shift.\" label=\"positions\" cards={[1, 4]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/settings/workspace",
+      "sourcePage": "src/app/app/settings/workspace/page.tsx",
+      "pageSha256": "93b1e9fd6c7e6df705fa8e0a6b339306dc42dd02365938a9f5bfc2753a1fa657",
+      "guardCitationLines": [
+        18
+      ],
+      "admissibleRoleKinds": [
+        "OWNER"
+      ],
+      "guard": "Owner-only Settings, payroll adds canConfigure capability",
+      "recommendedFixtureAccounts": [
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/settings/workspace",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/settings/workspace/loading.tsx",
+      "loadingSha256": "a4f29b82456a53761e7cc8c49518dc417e18d8695a3669af81ea8da12befd0e7",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { SettingsLoading } from \"../wave-c-loading\";\n\nexport default function Loading() {\n  return <SettingsLoading title=\"Company profile\" summary=\"Your business name and the timezone your team works in.\" label=\"company profile\" cards={[1, 2]} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/timecards",
+      "sourcePage": "src/app/app/timecards/page.tsx",
+      "pageSha256": "e4e6d97de41f9646c0127bf9819b35ca40b9a441c64cb51057e00f747f0b1f5b",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/timecards",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/timecards/loading.tsx",
+      "loadingSha256": "70b18ecbe95239b1ec08dfeb432bbbe13f616d06988b0c21834bbce2f4655a03",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"timecards\" label=\"timecards\" shape=\"list\" band={172} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/updates",
+      "sourcePage": "src/app/app/updates/page.tsx",
+      "pageSha256": "ad095b0c83f67a20bfccd29c0d30e04879957c915ee9cb4fdbbf6604f79a7d71",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/updates",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/updates/loading.tsx",
+      "loadingSha256": "41d2ddd54d15ad5d8d95f539f188bdc88f951ac98d38103884463ac487545c2a",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\nexport default function Loading() {\n  return <RouteSkeleton route=\"updates\" label=\"updates\" shape=\"list\" band={128} overlap={false} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/updates/[id]",
+      "sourcePage": "src/app/app/updates/[id]/page.tsx",
+      "pageSha256": "597e9ec3f50e4840dd571d5ba45188c9a06fd45c62ee71db9be2797f971bc076",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/updates/<real-published-update-id>",
+      "fixturePrerequisites": [
+        "Resolve current owned fictional published update from real list/API, not a prior preview UUID"
+      ],
+      "nearestLoadingBoundary": "src/app/app/updates/[id]/loading.tsx",
+      "loadingSha256": "1de1338ff93e8580a3efc798e01a1be42f28d66c93f4aa47865744beb1646b3e",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route \"wb-update\").\nexport default function Loading() {\n  return <RouteSkeleton route=\"wb-update\" label=\"update\" shape=\"list\" band={288} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    },
+    {
+      "routeTemplate": "/app/updates/compose",
+      "sourcePage": "src/app/app/updates/compose/page.tsx",
+      "pageSha256": "30f12f2e265946646f1db41d168ec2bbe98514415a12a0f6e8951f94549a5974",
+      "guardCitationLines": [],
+      "admissibleRoleKinds": [
+        "EMPLOYEE",
+        "LEAD",
+        "MANAGER",
+        "OWNER"
+      ],
+      "guard": "Authenticated session, module gates and any underlying read authority still apply",
+      "recommendedFixtureAccounts": [
+        "AUDIT-E",
+        "AUDIT-LEAD",
+        "AUDIT-M",
+        "QAOWNER"
+      ],
+      "canonicalFixtureRoute": "/app/updates/compose",
+      "fixturePrerequisites": [],
+      "nearestLoadingBoundary": "src/app/app/updates/compose/loading.tsx",
+      "loadingSha256": "7c3b43fc9a79b2e6342def58c7cde21bdd44f409aca8f5fe29ea3b95a20adb79",
+      "boundaryOwnToRoute": true,
+      "loadingSource": "import { RouteSkeleton } from \"@/components/route-skeleton\";\n\n// Phase 3.5 Wave B: the band height per phone width and text size is set in premium-wave-b.css (route \"wb-compose\").\nexport default function Loading() {\n  return <RouteSkeleton route=\"wb-compose\" label=\"the update form\" shape=\"list\" band={312} />;\n}",
+      "status": "static-access-resolved-dynamic-observation-pending"
+    }
+  ]
+}

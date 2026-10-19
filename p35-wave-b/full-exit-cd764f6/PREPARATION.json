@@ -19,18 +19,18 @@
   },
   "runtimeExecuted": false,
   "syntaxOrTestsExecutedOnNewPlan": false,
-  "sourceRefCreationOnly": "authorized own codex/exit-wave-b-cd764f6 at immutable864",
+  "sourceRefCreationOnly": "authorized own codex/exit-wave-b-cd764f6 at immutable cd764f614be8ca5b5215be19d46e07cf968638d7",
   "noAppSourceEdits": true,
   "historicalPreparationReceipt": "/workspace/nevora-inspections/p35-wave-b/full-exit-cd764f6/preparation/historical-preparation/preparation-receipt.json",
   "fileHashes": {
     "joblist.json": "c0716a65c85878b211aac8b7dfee3c771221cb5e3dc093e16231d1c4d7e89148",
     "completed-source-manual-index.json": "2d81f368d19293a8add8a62838c341a83e7060e9a1df8ce5dcbb630e0229b2f6",
-    "JOBLIST.md": "ba8434c07be905376b0b50682fd89e41f89e0d41bdd4885d9a8ff46ccba81199",
+    "JOBLIST.md": "de4096ab0f3ec5a10f26fcfc6e40fe812a6d44310b2acf0c42ca4393053350a4",
     "manual/insights-expiry-cases.mjs": "08c2dadceedc521dbe3338d57bde5210c1937d09610b2785989a0790ff2522c3",
     "manual/scoped-wave-b.mjs": "2210dfa07c096af94f3c9092ce2f437c16a713a46768f5ccdf13a88273975392",
     "manual/retained-source-cases.pre-split.mjs": "45884323f814fa3cf50dcf607354074722373a2edfb76efcf2f5bdb29c843705",
     "manual/positive-payroll-cases.mjs": "6a0c098f6b554fce82e66394a3032b4e56ef3121eec48b0beaa18f96ecbada22",
-    "manual/verify-wave-b.mjs": "c6fbdc9e8b6f25bdadab3753e5fb17956803804336a6ed2d093b3fe5036fe162",
+    "manual/verify-wave-b.mjs": "148a02611263cdc665502abcbc7907f7b1cfb736e091bacf27b741509c19aff0",
     "manual/scoped-wave-b.pre-864.mjs": "810e65d4fbee431f9ac2a1fccb9ebb09d03c738fcc7d582384884438c5aa8215",
     "bindings/fixture-bindings.json": "9ddcb68b01188e74a775952a42e319278e777a45697742433ee715b9b9502209",
     "bindings/preview-runtime.before-listen.patch": "9a2ebd1461b01a372b806c027e16aa8f60b26213e8ec832bba0613644cac95c2",
@@ -48,7 +48,10 @@
     "scripts/serial-matrix.mjs": "bc7516218244af18827327fb75f8340ae2f0143ea4522fead47786952ff8b6a6",
     "scripts/geometry-measure.mjs": "35f752c299f63da032739c8c017e906d72429858cd609a1cdb734a07080961f1",
     "scripts/static-selfcheck.mjs": "065b2b04abca44f0dbea6a6fb57d32615ffe7a732d119a69043fcffec657b4c6",
-    "scripts/state-contracts.mjs": "3db192343bf36fe8ff7fb6580489989b493097064a2ca3d23ce88c63631b61b4"
+    "scripts/state-contracts.mjs": "3db192343bf36fe8ff7fb6580489989b493097064a2ca3d23ce88c63631b61b4",
+    "manual/compose-auth-read-cases.mjs": "d0fbef9231d31f37bac59a793cae3d38d2415a6469109363e25969c614630de0",
+    "SUPPLEMENTARY-AUTH-MAPPING.md": "ba6b89e50ffab6752410314ab02f48e42b6497978ac85ad2e260fcf05ddbe143",
+    "supplementary-auth-mapping.json": "07ac884a8699b200f48b22fbaac4260da83151204ac81c15a0267dc22ccbe2aa"
   },
   "fixtureImports": {
     "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
@@ -84,11 +87,12 @@
     "scopedSharedBothEngines": 96,
     "positivePayrollBothEngines": 18,
     "insightsExpiryBothEngines": 24,
-    "ordinaryAndReducedTotal": 276,
-    "executed": 0
+    "ordinaryAndReducedTotal": 324,
+    "executed": 0,
+    "composeAuthReadBothEngines": 24
   },
   "runtimeTemplateHash": "8edfa7b1d7862c5ca4ff0981a1d1e78c4e6526fffb589c88f64d85e69f04bada",
-  "preparationStaticFreeze": "Complete new864 plan snapshot; all runtime/test/transpile checks pending explicit root release",
+  "preparationStaticFreeze": "Current cd764f6 plan plus root-requested supplementary Compose auth reads; all runtime/test/transpile checks pending explicit root release",
   "tree": "64bc4c24afac005ce5270b3d65112a797b59b511",
   "reboundFrom": {
     "sha": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
@@ -99,5 +103,13 @@
     ],
     "criteriaChanged": false,
     "completedCellsTransferred": 0
-  }
+  },
+  "supplementaryAuthMapping": "preparation/supplementary-auth-mapping.json",
+  "staticPreparationCorrections": [
+    {
+      "issue": "Trimmed private verifier omitted pending contrastRatio helper",
+      "resolution": "Restored byte-identical pure helper from shared final-verification/verify.mjs; no application/checker changes",
+      "executed": false
+    }
+  ]
 }

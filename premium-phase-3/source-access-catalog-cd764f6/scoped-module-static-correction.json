@@ -1,0 +1,12 @@
+{
+  "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "sourceCitation": "src/app/app/notifications/page.tsx:13",
+  "reason": "All roles now pass /api/notifications. Existing manual IDs preserved via canonical read resolver; frozen preparation copy retained as original provenance.",
+  "module": "/workspace/nevora-inspection-runtime/final-verification/scoped-phase3.mjs",
+  "previousFrozenModuleSha256": "99677328d545f8d84571a29c32f57dca80c15d919aa5c73efd64afa5ca5f4c85",
+  "currentExternalModuleSha256": "32d97cf5d8db0210d777cc753b4acd3d4e993556739ec10089fd79b0f81e627e",
+  "allWR14StatesRequireActualInterceptionAndResponse": true,
+  "noObservedResponse": "SETUP GAP with request/interception/response arrays retained, never native-success product failure",
+  "runtimeRun": false,
+  "createdAt": "2026-10-19T22:43:04.230665+00:00"
+}
