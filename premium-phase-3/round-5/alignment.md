@@ -1,4 +1,4 @@
-**Incomplete — 0 P0, 0 P1, 0 P2 newly verified; no zero certificate.** Exit round 5 on `676358cd1d30c9c8027d4563bf709c434a9cfbe5`. The exact new preview and full matrix are running; manual alignment re-checks remain outstanding.
+**Incomplete — 0 P0, 0 P1, 0 P2 newly verified; no zero certificate.** Exit round 5 on `227150bb2658cb5a30db3c644b6b8f76031d3c79`. The exact new preview and full matrix are running; manual alignment re-checks remain outstanding.
 
 ## Status of earlier findings
 

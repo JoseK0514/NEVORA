@@ -1,0 +1,608 @@
+[
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "kind": "availability",
+    "width": 390,
+    "text": 100,
+    "route": "/app/availability?week=2026-10-26",
+    "count": 1,
+    "before": {
+      "scroll": 993,
+      "documentHeight": 1837,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 602,
+          "width": 318,
+          "height": 52,
+          "top": 602,
+          "right": 354,
+          "bottom": 654,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "INPUT",
+        "selector": "",
+        "text": ""
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 993,
+      "documentHeight": 1837,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 602,
+          "width": 318,
+          "height": 52,
+          "top": 602,
+          "right": 354,
+          "bottom": 654,
+          "left": 36
+        },
+        "text": "Saving…",
+        "disabled": true,
+        "effectiveDisabled": true,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 993,
+      "documentHeight": 1943,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 602,
+          "width": 318,
+          "height": 52,
+          "top": 602,
+          "right": 354,
+          "bottom": 654,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [
+        {
+          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 736,
+            "width": 318,
+            "height": 89.5,
+            "top": 736,
+            "right": 354,
+            "bottom": 825.5,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 776,
+        "width": 390,
+        "height": 68,
+        "top": 776,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "kind": "availability",
+    "width": 320,
+    "text": 200,
+    "route": "/app/availability?week=2026-10-26",
+    "count": 1,
+    "before": {
+      "scroll": 3233,
+      "documentHeight": 4077,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 469.515625,
+          "width": 248,
+          "height": 132,
+          "top": 469.515625,
+          "right": 284,
+          "bottom": 601.515625,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "INPUT",
+        "selector": "",
+        "text": ""
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    },
+    "pending": {
+      "scroll": 3105,
+      "documentHeight": 3949,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 549.515625,
+          "width": 248,
+          "height": 52,
+          "top": 549.515625,
+          "right": 284,
+          "bottom": 601.515625,
+          "left": 36
+        },
+        "text": "Saving…",
+        "disabled": true,
+        "effectiveDisabled": true,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": true
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    },
+    "failure": {
+      "scroll": 3105,
+      "documentHeight": 4528,
+      "button": {
+        "box": {
+          "x": 36,
+          "y": 597.515625,
+          "width": 248,
+          "height": 132,
+          "top": 597.515625,
+          "right": 284,
+          "bottom": 729.515625,
+          "left": 36
+        },
+        "text": "Submit weekly availability",
+        "disabled": false,
+        "effectiveDisabled": false,
+        "ariaDisabled": null,
+        "opacity": "1"
+      },
+      "active": {
+        "tag": "MAIN",
+        "selector": "page-frame",
+        "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
+      },
+      "alerts": [
+        {
+          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 847.515625,
+            "width": 248,
+            "height": 435,
+            "top": 847.515625,
+            "right": 284,
+            "bottom": 1282.515625,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "fields": [
+        {
+          "name": "available-1",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "start-1",
+          "value": "06:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "end-1",
+          "value": "18:00",
+          "type": "time",
+          "checked": false
+        },
+        {
+          "name": "available-2",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-3",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-4",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-5",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-6",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        },
+        {
+          "name": "available-0",
+          "value": "on",
+          "type": "checkbox",
+          "checked": false
+        }
+      ]
+    }
+  }
+]

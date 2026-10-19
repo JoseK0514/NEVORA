@@ -28,9 +28,9 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "TEXTAREA",
+        "tag": "INPUT",
         "selector": "",
-        "text": "Fictional appointment"
+        "text": ""
       },
       "alerts": [],
       "nav": {
@@ -220,9 +220,9 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "TEXTAREA",
+        "tag": "INPUT",
         "selector": "",
-        "text": "Fictional appointment"
+        "text": ""
       },
       "alerts": [],
       "nav": {
@@ -328,7 +328,7 @@
         "text": "Submit request Submitting request…",
         "disabled": false,
         "effectiveDisabled": false,
-        "ariaDisabled": "true",
+        "ariaDisabled": null,
         "opacity": "1"
       },
       "active": {
@@ -698,17 +698,17 @@
       ]
     },
     "failure": {
-      "scroll": 1532,
+      "scroll": 1426,
       "documentHeight": 2376,
       "button": {
         "box": {
           "x": 36,
-          "y": 601.5,
+          "y": 602,
           "width": 318,
           "height": 52,
-          "top": 601.5,
+          "top": 602,
           "right": 354,
-          "bottom": 653.5,
+          "bottom": 654,
           "left": 36
         },
         "text": "Saving…",
@@ -727,12 +727,12 @@
           "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
           "box": {
             "x": 36,
-            "y": -794,
+            "y": 736,
             "width": 318,
             "height": 89.5,
-            "top": -794,
+            "top": 736,
             "right": 354,
-            "bottom": -704.5,
+            "bottom": 825.5,
             "left": 36
           },
           "focused": false
@@ -1181,7 +1181,7 @@
       ]
     },
     "failure": {
-      "scroll": 4208,
+      "scroll": 3826,
       "documentHeight": 5132,
       "button": {
         "box": {
@@ -1210,12 +1210,12 @@
           "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
           "box": {
             "x": 36,
-            "y": -2651.484375,
+            "y": 799.515625,
             "width": 248,
             "height": 366,
-            "top": -2651.484375,
+            "top": 799.515625,
             "right": 284,
-            "bottom": -2285.484375,
+            "bottom": 1165.515625,
             "left": 36
           },
           "focused": false
@@ -1378,9 +1378,9 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "TEXTAREA",
+        "tag": "INPUT",
         "selector": "",
-        "text": "Fictional appointment"
+        "text": ""
       },
       "alerts": [],
       "nav": {
@@ -1570,9 +1570,9 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "TEXTAREA",
+        "tag": "INPUT",
         "selector": "",
-        "text": "Fictional appointment"
+        "text": ""
       },
       "alerts": [],
       "nav": {
@@ -1928,17 +1928,17 @@
       ]
     },
     "failure": {
-      "scroll": 1099,
+      "scroll": 993,
       "documentHeight": 1943,
       "button": {
         "box": {
           "x": 36,
-          "y": 601.5,
+          "y": 602,
           "width": 318,
           "height": 52,
-          "top": 601.5,
+          "top": 602,
           "right": 354,
-          "bottom": 653.5,
+          "bottom": 654,
           "left": 36
         },
         "text": "Submit weekly availability",
@@ -1957,12 +1957,12 @@
           "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
           "box": {
             "x": 36,
-            "y": -389,
+            "y": 736,
             "width": 318,
             "height": 89.5,
-            "top": -389,
+            "top": 736,
             "right": 354,
-            "bottom": -299.5,
+            "bottom": 825.5,
             "left": 36
           },
           "focused": false
@@ -2231,7 +2231,7 @@
       ]
     },
     "failure": {
-      "scroll": 3375,
+      "scroll": 2993,
       "documentHeight": 4299,
       "button": {
         "box": {
@@ -2260,12 +2260,12 @@
           "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
           "box": {
             "x": 36,
-            "y": -1906.484375,
+            "y": 799.515625,
             "width": 248,
             "height": 366,
-            "top": -1906.484375,
+            "top": 799.515625,
             "right": 284,
-            "bottom": -1540.484375,
+            "bottom": 1165.515625,
             "left": 36
           },
           "focused": false
@@ -2368,9 +2368,9 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "TEXTAREA",
+        "tag": "INPUT",
         "selector": "",
-        "text": "Fictional appointment"
+        "text": ""
       },
       "alerts": [],
       "nav": {
@@ -2560,9 +2560,9 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "TEXTAREA",
+        "tag": "INPUT",
         "selector": "",
-        "text": "Fictional appointment"
+        "text": ""
       },
       "alerts": [],
       "nav": {
@@ -3038,22 +3038,22 @@
       ]
     },
     "failure": {
-      "scroll": 1532,
+      "scroll": 1426,
       "documentHeight": 2376,
       "button": {
         "box": {
           "x": 36,
-          "y": 601.5,
+          "y": 602,
           "width": 318,
           "height": 52,
-          "top": 601.5,
+          "top": 602,
           "right": 354,
-          "bottom": 653.5,
+          "bottom": 654,
           "left": 36
         },
-        "text": "Submit weekly availability",
-        "disabled": false,
-        "effectiveDisabled": false,
+        "text": "Saving…",
+        "disabled": true,
+        "effectiveDisabled": true,
         "ariaDisabled": null,
         "opacity": "1"
       },
@@ -3067,12 +3067,12 @@
           "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
           "box": {
             "x": 36,
-            "y": -794,
+            "y": 736,
             "width": 318,
             "height": 89.5,
-            "top": -794,
+            "top": 736,
             "right": 354,
-            "bottom": -704.5,
+            "bottom": 825.5,
             "left": 36
           },
           "focused": false
@@ -3093,7 +3093,7 @@
           "name": "available-1",
           "value": "on",
           "type": "checkbox",
-          "checked": true
+          "checked": false
         },
         {
           "name": "available-2",
@@ -3372,14 +3372,14 @@
       "documentHeight": 4822,
       "button": {
         "box": {
-          "x": 36.70557403564453,
-          "y": 549.66357421875,
-          "width": 246.5888671875,
-          "height": 51.7041015625,
-          "top": 549.66357421875,
-          "right": 283.29444122314453,
-          "bottom": 601.36767578125,
-          "left": 36.70557403564453
+          "x": 36,
+          "y": 549.515625,
+          "width": 248,
+          "height": 52,
+          "top": 549.515625,
+          "right": 284,
+          "bottom": 601.515625,
+          "left": 36
         },
         "text": "Saving…",
         "disabled": true,
@@ -3521,7 +3521,7 @@
       ]
     },
     "failure": {
-      "scroll": 4429,
+      "scroll": 3978,
       "documentHeight": 5401,
       "button": {
         "box": {
@@ -3550,12 +3550,12 @@
           "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
           "box": {
             "x": 36,
-            "y": -2720.484375,
+            "y": 847.515625,
             "width": 248,
             "height": 435,
-            "top": -2720.484375,
+            "top": 847.515625,
             "right": 284,
-            "bottom": -2285.484375,
+            "bottom": 1282.515625,
             "left": 36
           },
           "focused": false
@@ -3696,7 +3696,7 @@
     "width": 390,
     "text": 100,
     "route": "/app/requests?tab=new",
-    "count": 0,
+    "count": 1,
     "before": {
       "scroll": 591,
       "documentHeight": 1435,
@@ -3718,9 +3718,9 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "TEXTAREA",
+        "tag": "INPUT",
         "selector": "",
-        "text": "Fictional appointment"
+        "text": ""
       },
       "alerts": [],
       "nav": {
@@ -3736,7 +3736,7 @@
       "fields": [
         {
           "name": "startDate",
-          "value": "",
+          "value": "2026-10-27",
           "type": "date",
           "checked": false
         },
@@ -3754,29 +3754,29 @@
       ]
     },
     "pending": {
-      "scroll": 498,
-      "documentHeight": 1473,
+      "scroll": 591,
+      "documentHeight": 1435,
       "button": {
         "box": {
           "x": 88.703125,
-          "y": 750.5,
+          "y": 619.5,
           "width": 212.578125,
           "height": 52,
-          "top": 750.5,
+          "top": 619.5,
           "right": 301.28125,
-          "bottom": 802.5,
+          "bottom": 671.5,
           "left": 88.703125
         },
         "text": "Submit request Submitting request…",
         "disabled": false,
         "effectiveDisabled": false,
-        "ariaDisabled": null,
+        "ariaDisabled": "true",
         "opacity": "1"
       },
       "active": {
-        "tag": "MAIN",
-        "selector": "page-frame",
-        "text": "OverviewTime offShift requestsAvailabilityTime offPlan your time away.New requestMy requests (1)Requ"
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submit request Submitting request…"
       },
       "alerts": [],
       "nav": {
@@ -3792,7 +3792,7 @@
       "fields": [
         {
           "name": "startDate",
-          "value": "",
+          "value": "2026-10-27",
           "type": "date",
           "checked": false
         },
@@ -3810,17 +3810,17 @@
       ]
     },
     "failure": {
-      "scroll": 498,
-      "documentHeight": 1473,
+      "scroll": 591,
+      "documentHeight": 1528,
       "button": {
         "box": {
           "x": 88.703125,
-          "y": 750.5,
+          "y": 713,
           "width": 212.578125,
           "height": 52,
-          "top": 750.5,
+          "top": 713,
           "right": 301.28125,
-          "bottom": 802.5,
+          "bottom": 765,
           "left": 88.703125
         },
         "text": "Submit request Submitting request…",
@@ -3830,11 +3830,26 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "MAIN",
-        "selector": "page-frame",
-        "text": "OverviewTime offShift requestsAvailabilityTime offPlan your time away.New requestMy requests (1)Requ"
+        "tag": "BUTTON",
+        "selector": "nto-button nto-primary",
+        "text": "Submit request Submitting request…"
       },
-      "alerts": [],
+      "alerts": [
+        {
+          "text": "Your request wasn’t sent. Check your connection and send it again. If this keeps happening, sign in again.",
+          "box": {
+            "x": 36,
+            "y": 578.5,
+            "width": 318,
+            "height": 93.5,
+            "top": 578.5,
+            "right": 354,
+            "bottom": 672,
+            "left": 36
+          },
+          "focused": false
+        }
+      ],
       "nav": {
         "x": 0,
         "y": 776,
@@ -3848,7 +3863,7 @@
       "fields": [
         {
           "name": "startDate",
-          "value": "",
+          "value": "2026-10-27",
           "type": "date",
           "checked": false
         },
@@ -3895,9 +3910,9 @@
         "opacity": "1"
       },
       "active": {
-        "tag": "TEXTAREA",
+        "tag": "INPUT",
         "selector": "",
-        "text": "Fictional appointment"
+        "text": ""
       },
       "alerts": [],
       "nav": {
@@ -4003,7 +4018,7 @@
         "text": "Submit request Submitting request…",
         "disabled": false,
         "effectiveDisabled": false,
-        "ariaDisabled": "true",
+        "ariaDisabled": null,
         "opacity": "1"
       },
       "active": {
@@ -4254,16 +4269,16 @@
     },
     "failure": {
       "scroll": 993,
-      "documentHeight": 1943,
+      "documentHeight": 1837,
       "button": {
         "box": {
           "x": 36,
-          "y": 707.5,
+          "y": 602,
           "width": 318,
           "height": 52,
-          "top": 707.5,
+          "top": 602,
           "right": 354,
-          "bottom": 759.5,
+          "bottom": 654,
           "left": 36
         },
         "text": "Saving…",
@@ -4277,22 +4292,7 @@
         "selector": "page-frame",
         "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
       },
-      "alerts": [
-        {
-          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
-          "box": {
-            "x": 36,
-            "y": -283,
-            "width": 318,
-            "height": 89.5,
-            "top": -283,
-            "right": 354,
-            "bottom": -193.5,
-            "left": 36
-          },
-          "focused": false
-        }
-      ],
+      "alerts": [],
       "nav": {
         "x": 0,
         "y": 776,
@@ -4556,22 +4556,22 @@
       ]
     },
     "failure": {
-      "scroll": 3556,
-      "documentHeight": 4528,
+      "scroll": 3105,
+      "documentHeight": 3949,
       "button": {
         "box": {
           "x": 36,
-          "y": 597.515625,
+          "y": 549.515625,
           "width": 248,
-          "height": 132,
-          "top": 597.515625,
+          "height": 52,
+          "top": 549.515625,
           "right": 284,
-          "bottom": 729.515625,
+          "bottom": 601.515625,
           "left": 36
         },
-        "text": "Submit weekly availability",
-        "disabled": false,
-        "effectiveDisabled": false,
+        "text": "Saving…",
+        "disabled": true,
+        "effectiveDisabled": true,
         "ariaDisabled": null,
         "opacity": "1"
       },
@@ -4580,22 +4580,7 @@
         "selector": "page-frame",
         "text": "OverviewTime offShift requestsAvailabilityAvailabilityChanges here apply only to Oct 26 – Nov 1.Usua"
       },
-      "alerts": [
-        {
-          "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
-          "box": {
-            "x": 36,
-            "y": -1975.484375,
-            "width": 248,
-            "height": 435,
-            "top": -1975.484375,
-            "right": 284,
-            "bottom": -1540.484375,
-            "left": 36
-          },
-          "focused": false
-        }
-      ],
+      "alerts": [],
       "nav": {
         "x": 0,
         "y": 761,
@@ -4611,7 +4596,7 @@
           "name": "available-1",
           "value": "on",
           "type": "checkbox",
-          "checked": false
+          "checked": true
         },
         {
           "name": "start-1",

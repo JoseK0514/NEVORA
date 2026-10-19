@@ -1,0 +1,1776 @@
+[
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "opened": {
+      "open": true,
+      "box": {
+        "x": 1090,
+        "y": 62,
+        "width": 318,
+        "height": 235,
+        "top": 62,
+        "right": 1408,
+        "bottom": 297,
+        "left": 1090
+      },
+      "active": "Your profile",
+      "headingFont": "14px",
+      "headingLine": "20px",
+      "inside": true,
+      "links": [
+        {
+          "text": "Your profile",
+          "box": {
+            "x": 1099,
+            "y": 105,
+            "width": 300,
+            "height": 54,
+            "top": 105,
+            "right": 1399,
+            "bottom": 159,
+            "left": 1099
+          }
+        },
+        {
+          "text": "My pay",
+          "box": {
+            "x": 1099,
+            "y": 161,
+            "width": 300,
+            "height": 54,
+            "top": 161,
+            "right": 1399,
+            "bottom": 215,
+            "left": 1099
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 1099,
+            "y": 234,
+            "width": 300,
+            "height": 54,
+            "top": 234,
+            "right": 1399,
+            "bottom": 288,
+            "left": 1099
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "open": true,
+        "tag": "A",
+        "text": "My pay"
+      },
+      {
+        "open": true,
+        "tag": "BUTTON",
+        "text": "Sign out"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Scheduled today6"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Clocked in now2"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "No clock‑in4 shifts with no clock-in4"
+      }
+    ],
+    "escaped": {
+      "focused": true,
+      "open": false
+    },
+    "collapsed": {
+      "width": 80,
+      "expanded": "false",
+      "links": [
+        {
+          "name": "Home",
+          "title": "Home",
+          "text": "Home",
+          "target": {
+            "x": 12,
+            "y": 164,
+            "width": 55,
+            "height": 36,
+            "top": 164,
+            "right": 67,
+            "bottom": 200,
+            "left": 12
+          }
+        },
+        {
+          "name": "Inbox",
+          "title": "Inbox",
+          "text": "Inbox",
+          "target": {
+            "x": 12,
+            "y": 202,
+            "width": 55,
+            "height": 36,
+            "top": 202,
+            "right": 67,
+            "bottom": 238,
+            "left": 12
+          }
+        },
+        {
+          "name": "Schedule",
+          "title": "Schedule",
+          "text": "Schedule",
+          "target": {
+            "x": 12,
+            "y": 240,
+            "width": 55,
+            "height": 36,
+            "top": 240,
+            "right": 67,
+            "bottom": 276,
+            "left": 12
+          }
+        },
+        {
+          "name": "Team",
+          "title": "Team",
+          "text": "Team",
+          "target": {
+            "x": 12,
+            "y": 286,
+            "width": 55,
+            "height": 36,
+            "top": 286,
+            "right": 67,
+            "bottom": 322,
+            "left": 12
+          }
+        },
+        {
+          "name": "Updates",
+          "title": "Updates",
+          "text": "Updates",
+          "target": {
+            "x": 12,
+            "y": 324,
+            "width": 55,
+            "height": 36,
+            "top": 324,
+            "right": 67,
+            "bottom": 360,
+            "left": 12
+          }
+        },
+        {
+          "name": "Timecards",
+          "title": "Timecards",
+          "text": "Timecards",
+          "target": {
+            "x": 12,
+            "y": 370,
+            "width": 55,
+            "height": 36,
+            "top": 370,
+            "right": 67,
+            "bottom": 406,
+            "left": 12
+          }
+        },
+        {
+          "name": "Payroll",
+          "title": "Payroll",
+          "text": "Payroll",
+          "target": {
+            "x": 12,
+            "y": 408,
+            "width": 55,
+            "height": 36,
+            "top": 408,
+            "right": 67,
+            "bottom": 444,
+            "left": 12
+          }
+        },
+        {
+          "name": "Insights",
+          "title": "Insights",
+          "text": "Insights",
+          "target": {
+            "x": 12,
+            "y": 446,
+            "width": 55,
+            "height": 36,
+            "top": 446,
+            "right": 67,
+            "bottom": 482,
+            "left": 12
+          }
+        },
+        {
+          "name": "Settings",
+          "title": "Settings",
+          "text": "Settings",
+          "target": {
+            "x": 12,
+            "y": 848,
+            "width": 55,
+            "height": 36,
+            "top": 848,
+            "right": 67,
+            "bottom": 884,
+            "left": 12
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "opened": {
+      "open": true,
+      "box": {
+        "x": 1090,
+        "y": 62,
+        "width": 318,
+        "height": 235,
+        "top": 62,
+        "right": 1408,
+        "bottom": 297,
+        "left": 1090
+      },
+      "active": "Your profile",
+      "headingFont": "14px",
+      "headingLine": "20px",
+      "inside": true,
+      "links": [
+        {
+          "text": "Your profile",
+          "box": {
+            "x": 1099,
+            "y": 105,
+            "width": 300,
+            "height": 54,
+            "top": 105,
+            "right": 1399,
+            "bottom": 159,
+            "left": 1099
+          }
+        },
+        {
+          "text": "My pay",
+          "box": {
+            "x": 1099,
+            "y": 161,
+            "width": 300,
+            "height": 54,
+            "top": 161,
+            "right": 1399,
+            "bottom": 215,
+            "left": 1099
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 1099,
+            "y": 234,
+            "width": 300,
+            "height": 54,
+            "top": 234,
+            "right": 1399,
+            "bottom": 288,
+            "left": 1099
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "open": true,
+        "tag": "A",
+        "text": "My pay"
+      },
+      {
+        "open": true,
+        "tag": "BUTTON",
+        "text": "Sign out"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Scheduled today6"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Clocked in now2"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "No clock‑in4 shifts with no clock-in4"
+      }
+    ],
+    "escaped": {
+      "focused": true,
+      "open": false
+    },
+    "collapsed": {
+      "width": 80,
+      "expanded": "false",
+      "links": [
+        {
+          "name": "Home",
+          "title": "Home",
+          "text": "Home",
+          "target": {
+            "x": 12,
+            "y": 164,
+            "width": 55,
+            "height": 36,
+            "top": 164,
+            "right": 67,
+            "bottom": 200,
+            "left": 12
+          }
+        },
+        {
+          "name": "Inbox",
+          "title": "Inbox",
+          "text": "Inbox",
+          "target": {
+            "x": 12,
+            "y": 202,
+            "width": 55,
+            "height": 36,
+            "top": 202,
+            "right": 67,
+            "bottom": 238,
+            "left": 12
+          }
+        },
+        {
+          "name": "Schedule",
+          "title": "Schedule",
+          "text": "Schedule",
+          "target": {
+            "x": 12,
+            "y": 240,
+            "width": 55,
+            "height": 36,
+            "top": 240,
+            "right": 67,
+            "bottom": 276,
+            "left": 12
+          }
+        },
+        {
+          "name": "Team",
+          "title": "Team",
+          "text": "Team",
+          "target": {
+            "x": 12,
+            "y": 286,
+            "width": 55,
+            "height": 36,
+            "top": 286,
+            "right": 67,
+            "bottom": 322,
+            "left": 12
+          }
+        },
+        {
+          "name": "Updates",
+          "title": "Updates",
+          "text": "Updates",
+          "target": {
+            "x": 12,
+            "y": 324,
+            "width": 55,
+            "height": 36,
+            "top": 324,
+            "right": 67,
+            "bottom": 360,
+            "left": 12
+          }
+        },
+        {
+          "name": "Timecards",
+          "title": "Timecards",
+          "text": "Timecards",
+          "target": {
+            "x": 12,
+            "y": 370,
+            "width": 55,
+            "height": 36,
+            "top": 370,
+            "right": 67,
+            "bottom": 406,
+            "left": 12
+          }
+        },
+        {
+          "name": "Insights",
+          "title": "Insights",
+          "text": "Insights",
+          "target": {
+            "x": 12,
+            "y": 408,
+            "width": 55,
+            "height": 36,
+            "top": 408,
+            "right": 67,
+            "bottom": 444,
+            "left": 12
+          }
+        },
+        {
+          "name": "Scheduling rules",
+          "title": "Scheduling rules",
+          "text": "Scheduling rules",
+          "target": {
+            "x": 12,
+            "y": 848,
+            "width": 55,
+            "height": 36,
+            "top": 848,
+            "right": 67,
+            "bottom": 884,
+            "left": 12
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "opened": {
+      "open": true,
+      "box": {
+        "x": 1090,
+        "y": 62,
+        "width": 318,
+        "height": 179,
+        "top": 62,
+        "right": 1408,
+        "bottom": 241,
+        "left": 1090
+      },
+      "active": "Your profile",
+      "headingFont": "14px",
+      "headingLine": "20px",
+      "inside": true,
+      "links": [
+        {
+          "text": "Your profile",
+          "box": {
+            "x": 1099,
+            "y": 105,
+            "width": 300,
+            "height": 54,
+            "top": 105,
+            "right": 1399,
+            "bottom": 159,
+            "left": 1099
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 1099,
+            "y": 178,
+            "width": 300,
+            "height": 54,
+            "top": 178,
+            "right": 1399,
+            "bottom": 232,
+            "left": 1099
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "open": true,
+        "tag": "BUTTON",
+        "text": "Sign out"
+      },
+      {
+        "open": false,
+        "tag": "NEXTJS-PORTAL",
+        "text": ""
+      },
+      {
+        "open": false,
+        "tag": "BODY",
+        "text": "Skip to contentWorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSi"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Skip to content"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Workforce"
+      }
+    ],
+    "escaped": {
+      "focused": true,
+      "open": false
+    },
+    "collapsed": {
+      "width": 80,
+      "expanded": "false",
+      "links": [
+        {
+          "name": "Home",
+          "title": "Home",
+          "text": "Home",
+          "target": {
+            "x": 12,
+            "y": 156,
+            "width": 55,
+            "height": 36,
+            "top": 156,
+            "right": 67,
+            "bottom": 192,
+            "left": 12
+          }
+        },
+        {
+          "name": "My schedule",
+          "title": "My schedule",
+          "text": "My schedule",
+          "target": {
+            "x": 12,
+            "y": 194,
+            "width": 55,
+            "height": 36,
+            "top": 194,
+            "right": 67,
+            "bottom": 230,
+            "left": 12
+          }
+        },
+        {
+          "name": "My time",
+          "title": "My time",
+          "text": "My time",
+          "target": {
+            "x": 12,
+            "y": 232,
+            "width": 55,
+            "height": 36,
+            "top": 232,
+            "right": 67,
+            "bottom": 268,
+            "left": 12
+          }
+        },
+        {
+          "name": "Requests",
+          "title": "Requests",
+          "text": "Requests",
+          "target": {
+            "x": 12,
+            "y": 270,
+            "width": 55,
+            "height": 36,
+            "top": 270,
+            "right": 67,
+            "bottom": 306,
+            "left": 12
+          }
+        },
+        {
+          "name": "Updates",
+          "title": "Updates",
+          "text": "Updates",
+          "target": {
+            "x": 12,
+            "y": 308,
+            "width": 55,
+            "height": 36,
+            "top": 308,
+            "right": 67,
+            "bottom": 344,
+            "left": 12
+          }
+        },
+        {
+          "name": "Notifications",
+          "title": "Notifications",
+          "text": "Notifications",
+          "target": {
+            "x": 12,
+            "y": 346,
+            "width": 55,
+            "height": 36,
+            "top": 346,
+            "right": 67,
+            "bottom": 382,
+            "left": 12
+          }
+        },
+        {
+          "name": "My pay",
+          "title": "My pay",
+          "text": "My pay",
+          "target": {
+            "x": 12,
+            "y": 384,
+            "width": 55,
+            "height": 36,
+            "top": 384,
+            "right": 67,
+            "bottom": 420,
+            "left": 12
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "opened": {
+      "open": true,
+      "box": {
+        "x": 1090,
+        "y": 62,
+        "width": 318,
+        "height": 179,
+        "top": 62,
+        "right": 1408,
+        "bottom": 241,
+        "left": 1090
+      },
+      "active": "Your profile",
+      "headingFont": "14px",
+      "headingLine": "20px",
+      "inside": true,
+      "links": [
+        {
+          "text": "Your profile",
+          "box": {
+            "x": 1099,
+            "y": 105,
+            "width": 300,
+            "height": 54,
+            "top": 105,
+            "right": 1399,
+            "bottom": 159,
+            "left": 1099
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 1099,
+            "y": 178,
+            "width": 300,
+            "height": 54,
+            "top": 178,
+            "right": 1399,
+            "bottom": 232,
+            "left": 1099
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "open": true,
+        "tag": "BUTTON",
+        "text": "Sign out"
+      },
+      {
+        "open": false,
+        "tag": "NEXTJS-PORTAL",
+        "text": ""
+      },
+      {
+        "open": false,
+        "tag": "BODY",
+        "text": "Skip to contentWorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payTRTaylor RiveraSign "
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Skip to content"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Workforce"
+      }
+    ],
+    "escaped": {
+      "focused": true,
+      "open": false
+    },
+    "collapsed": {
+      "width": 80,
+      "expanded": "false",
+      "links": [
+        {
+          "name": "Home",
+          "title": "Home",
+          "text": "Home",
+          "target": {
+            "x": 12,
+            "y": 156,
+            "width": 55,
+            "height": 36,
+            "top": 156,
+            "right": 67,
+            "bottom": 192,
+            "left": 12
+          }
+        },
+        {
+          "name": "My schedule",
+          "title": "My schedule",
+          "text": "My schedule",
+          "target": {
+            "x": 12,
+            "y": 194,
+            "width": 55,
+            "height": 36,
+            "top": 194,
+            "right": 67,
+            "bottom": 230,
+            "left": 12
+          }
+        },
+        {
+          "name": "My time",
+          "title": "My time",
+          "text": "My time",
+          "target": {
+            "x": 12,
+            "y": 232,
+            "width": 55,
+            "height": 36,
+            "top": 232,
+            "right": 67,
+            "bottom": 268,
+            "left": 12
+          }
+        },
+        {
+          "name": "Requests",
+          "title": "Requests",
+          "text": "Requests",
+          "target": {
+            "x": 12,
+            "y": 270,
+            "width": 55,
+            "height": 36,
+            "top": 270,
+            "right": 67,
+            "bottom": 306,
+            "left": 12
+          }
+        },
+        {
+          "name": "Updates",
+          "title": "Updates",
+          "text": "Updates",
+          "target": {
+            "x": 12,
+            "y": 308,
+            "width": 55,
+            "height": 36,
+            "top": 308,
+            "right": 67,
+            "bottom": 344,
+            "left": 12
+          }
+        },
+        {
+          "name": "Notifications",
+          "title": "Notifications",
+          "text": "Notifications",
+          "target": {
+            "x": 12,
+            "y": 346,
+            "width": 55,
+            "height": 36,
+            "top": 346,
+            "right": 67,
+            "bottom": 382,
+            "left": 12
+          }
+        },
+        {
+          "name": "My pay",
+          "title": "My pay",
+          "text": "My pay",
+          "target": {
+            "x": 12,
+            "y": 384,
+            "width": 55,
+            "height": 36,
+            "top": 384,
+            "right": 67,
+            "bottom": 420,
+            "left": 12
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "opened": {
+      "open": true,
+      "box": {
+        "x": 1102.719970703125,
+        "y": 58,
+        "width": 305.280029296875,
+        "height": 225.60000610351562,
+        "top": 58,
+        "right": 1408,
+        "bottom": 283.6000061035156,
+        "left": 1102.719970703125
+      },
+      "active": "Your profile",
+      "headingFont": "14px",
+      "headingLine": "20px",
+      "inside": true,
+      "links": [
+        {
+          "text": "Your profile",
+          "box": {
+            "x": 1111.3599853515625,
+            "y": 99.27999877929688,
+            "width": 288,
+            "height": 51.839996337890625,
+            "top": 99.27999877929688,
+            "right": 1399.3599853515625,
+            "bottom": 151.1199951171875,
+            "left": 1111.3599853515625
+          }
+        },
+        {
+          "text": "My pay",
+          "box": {
+            "x": 1111.3599853515625,
+            "y": 153.0399932861328,
+            "width": 288,
+            "height": 51.84001159667969,
+            "top": 153.0399932861328,
+            "right": 1399.3599853515625,
+            "bottom": 204.8800048828125,
+            "left": 1111.3599853515625
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 1111.3599853515625,
+            "y": 223.1199951171875,
+            "width": 288,
+            "height": 51.839996337890625,
+            "top": 223.1199951171875,
+            "right": 1399.3599853515625,
+            "bottom": 274.9599914550781,
+            "left": 1111.3599853515625
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "open": true,
+        "tag": "A",
+        "text": "My pay"
+      },
+      {
+        "open": true,
+        "tag": "BUTTON",
+        "text": "Sign out"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Set weekly hour targets"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Open schedule"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Plan aheadChecking…"
+      }
+    ],
+    "escaped": {
+      "focused": true,
+      "open": false
+    },
+    "collapsed": {
+      "width": 80,
+      "expanded": "false",
+      "links": [
+        {
+          "name": "Home",
+          "title": "Home",
+          "text": "Home",
+          "target": {
+            "x": 12,
+            "y": 164,
+            "width": 55,
+            "height": 36,
+            "top": 164,
+            "right": 67,
+            "bottom": 200,
+            "left": 12
+          }
+        },
+        {
+          "name": "Inbox",
+          "title": "Inbox",
+          "text": "Inbox",
+          "target": {
+            "x": 12,
+            "y": 202,
+            "width": 55,
+            "height": 36,
+            "top": 202,
+            "right": 67,
+            "bottom": 238,
+            "left": 12
+          }
+        },
+        {
+          "name": "Schedule",
+          "title": "Schedule",
+          "text": "Schedule",
+          "target": {
+            "x": 12,
+            "y": 240,
+            "width": 55,
+            "height": 36,
+            "top": 240,
+            "right": 67,
+            "bottom": 276,
+            "left": 12
+          }
+        },
+        {
+          "name": "Team",
+          "title": "Team",
+          "text": "Team",
+          "target": {
+            "x": 12,
+            "y": 286,
+            "width": 55,
+            "height": 36,
+            "top": 286,
+            "right": 67,
+            "bottom": 322,
+            "left": 12
+          }
+        },
+        {
+          "name": "Updates",
+          "title": "Updates",
+          "text": "Updates",
+          "target": {
+            "x": 12,
+            "y": 324,
+            "width": 55,
+            "height": 36,
+            "top": 324,
+            "right": 67,
+            "bottom": 360,
+            "left": 12
+          }
+        },
+        {
+          "name": "Timecards",
+          "title": "Timecards",
+          "text": "Timecards",
+          "target": {
+            "x": 12,
+            "y": 370,
+            "width": 55,
+            "height": 36,
+            "top": 370,
+            "right": 67,
+            "bottom": 406,
+            "left": 12
+          }
+        },
+        {
+          "name": "Payroll",
+          "title": "Payroll",
+          "text": "Payroll",
+          "target": {
+            "x": 12,
+            "y": 408,
+            "width": 55,
+            "height": 36,
+            "top": 408,
+            "right": 67,
+            "bottom": 444,
+            "left": 12
+          }
+        },
+        {
+          "name": "Insights",
+          "title": "Insights",
+          "text": "Insights",
+          "target": {
+            "x": 12,
+            "y": 446,
+            "width": 55,
+            "height": 36,
+            "top": 446,
+            "right": 67,
+            "bottom": 482,
+            "left": 12
+          }
+        },
+        {
+          "name": "Settings",
+          "title": "Settings",
+          "text": "Settings",
+          "target": {
+            "x": 12,
+            "y": 848,
+            "width": 55,
+            "height": 36,
+            "top": 848,
+            "right": 67,
+            "bottom": 884,
+            "left": 12
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "opened": {
+      "open": true,
+      "box": {
+        "x": 1102.719970703125,
+        "y": 58,
+        "width": 305.280029296875,
+        "height": 225.60000610351562,
+        "top": 58,
+        "right": 1408,
+        "bottom": 283.6000061035156,
+        "left": 1102.719970703125
+      },
+      "active": "Your profile",
+      "headingFont": "14px",
+      "headingLine": "20px",
+      "inside": true,
+      "links": [
+        {
+          "text": "Your profile",
+          "box": {
+            "x": 1111.3599853515625,
+            "y": 99.27999877929688,
+            "width": 288,
+            "height": 51.839996337890625,
+            "top": 99.27999877929688,
+            "right": 1399.3599853515625,
+            "bottom": 151.1199951171875,
+            "left": 1111.3599853515625
+          }
+        },
+        {
+          "text": "My pay",
+          "box": {
+            "x": 1111.3599853515625,
+            "y": 153.0399932861328,
+            "width": 288,
+            "height": 51.84001159667969,
+            "top": 153.0399932861328,
+            "right": 1399.3599853515625,
+            "bottom": 204.8800048828125,
+            "left": 1111.3599853515625
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 1111.3599853515625,
+            "y": 223.1199951171875,
+            "width": 288,
+            "height": 51.839996337890625,
+            "top": 223.1199951171875,
+            "right": 1399.3599853515625,
+            "bottom": 274.9599914550781,
+            "left": 1111.3599853515625
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "open": true,
+        "tag": "A",
+        "text": "My pay"
+      },
+      {
+        "open": true,
+        "tag": "BUTTON",
+        "text": "Sign out"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Scheduled today6"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Clocked in now2"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "No clock‑in4 shifts with no clock-in4"
+      }
+    ],
+    "escaped": {
+      "focused": true,
+      "open": false
+    },
+    "collapsed": {
+      "width": 80,
+      "expanded": "false",
+      "links": [
+        {
+          "name": "Home",
+          "title": "Home",
+          "text": "Home",
+          "target": {
+            "x": 12,
+            "y": 164,
+            "width": 55,
+            "height": 36,
+            "top": 164,
+            "right": 67,
+            "bottom": 200,
+            "left": 12
+          }
+        },
+        {
+          "name": "Inbox",
+          "title": "Inbox",
+          "text": "Inbox",
+          "target": {
+            "x": 12,
+            "y": 202,
+            "width": 55,
+            "height": 36,
+            "top": 202,
+            "right": 67,
+            "bottom": 238,
+            "left": 12
+          }
+        },
+        {
+          "name": "Schedule",
+          "title": "Schedule",
+          "text": "Schedule",
+          "target": {
+            "x": 12,
+            "y": 240,
+            "width": 55,
+            "height": 36,
+            "top": 240,
+            "right": 67,
+            "bottom": 276,
+            "left": 12
+          }
+        },
+        {
+          "name": "Team",
+          "title": "Team",
+          "text": "Team",
+          "target": {
+            "x": 12,
+            "y": 286,
+            "width": 55,
+            "height": 36,
+            "top": 286,
+            "right": 67,
+            "bottom": 322,
+            "left": 12
+          }
+        },
+        {
+          "name": "Updates",
+          "title": "Updates",
+          "text": "Updates",
+          "target": {
+            "x": 12,
+            "y": 324,
+            "width": 55,
+            "height": 36,
+            "top": 324,
+            "right": 67,
+            "bottom": 360,
+            "left": 12
+          }
+        },
+        {
+          "name": "Timecards",
+          "title": "Timecards",
+          "text": "Timecards",
+          "target": {
+            "x": 12,
+            "y": 370,
+            "width": 55,
+            "height": 36,
+            "top": 370,
+            "right": 67,
+            "bottom": 406,
+            "left": 12
+          }
+        },
+        {
+          "name": "Insights",
+          "title": "Insights",
+          "text": "Insights",
+          "target": {
+            "x": 12,
+            "y": 408,
+            "width": 55,
+            "height": 36,
+            "top": 408,
+            "right": 67,
+            "bottom": 444,
+            "left": 12
+          }
+        },
+        {
+          "name": "Scheduling rules",
+          "title": "Scheduling rules",
+          "text": "Scheduling rules",
+          "target": {
+            "x": 12,
+            "y": 848,
+            "width": 55,
+            "height": 36,
+            "top": 848,
+            "right": 67,
+            "bottom": 884,
+            "left": 12
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "opened": {
+      "open": true,
+      "box": {
+        "x": 1095.28515625,
+        "y": 60.33799743652344,
+        "width": 312.71484375,
+        "height": 176.02500915527344,
+        "top": 60.33799743652344,
+        "right": 1408,
+        "bottom": 236.36300659179688,
+        "left": 1095.28515625
+      },
+      "active": "Your profile",
+      "headingFont": "14px",
+      "headingLine": "20px",
+      "inside": true,
+      "links": [
+        {
+          "text": "Your profile",
+          "box": {
+            "x": 1104.1356201171875,
+            "y": 102.62333679199219,
+            "width": 295.013916015625,
+            "height": 53.102508544921875,
+            "top": 102.62333679199219,
+            "right": 1399.1495361328125,
+            "bottom": 155.72584533691406,
+            "left": 1104.1356201171875
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 1104.1356201171875,
+            "y": 174.41006469726562,
+            "width": 295.013916015625,
+            "height": 53.10252380371094,
+            "top": 174.41006469726562,
+            "right": 1399.1495361328125,
+            "bottom": 227.51258850097656,
+            "left": 1104.1356201171875
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "open": true,
+        "tag": "BUTTON",
+        "text": "Sign out"
+      },
+      {
+        "open": false,
+        "tag": "NEXTJS-PORTAL",
+        "text": ""
+      },
+      {
+        "open": false,
+        "tag": "BODY",
+        "text": "Skip to contentWorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSi"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Skip to content"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Workforce"
+      }
+    ],
+    "escaped": {
+      "focused": true,
+      "open": false
+    },
+    "collapsed": {
+      "width": 80,
+      "expanded": "false",
+      "links": [
+        {
+          "name": "Home",
+          "title": "Home",
+          "text": "Home",
+          "target": {
+            "x": 12,
+            "y": 156,
+            "width": 55,
+            "height": 36,
+            "top": 156,
+            "right": 67,
+            "bottom": 192,
+            "left": 12
+          }
+        },
+        {
+          "name": "My schedule",
+          "title": "My schedule",
+          "text": "My schedule",
+          "target": {
+            "x": 12,
+            "y": 194,
+            "width": 55,
+            "height": 36,
+            "top": 194,
+            "right": 67,
+            "bottom": 230,
+            "left": 12
+          }
+        },
+        {
+          "name": "My time",
+          "title": "My time",
+          "text": "My time",
+          "target": {
+            "x": 12,
+            "y": 232,
+            "width": 55,
+            "height": 36,
+            "top": 232,
+            "right": 67,
+            "bottom": 268,
+            "left": 12
+          }
+        },
+        {
+          "name": "Requests",
+          "title": "Requests",
+          "text": "Requests",
+          "target": {
+            "x": 12,
+            "y": 270,
+            "width": 55,
+            "height": 36,
+            "top": 270,
+            "right": 67,
+            "bottom": 306,
+            "left": 12
+          }
+        },
+        {
+          "name": "Updates",
+          "title": "Updates",
+          "text": "Updates",
+          "target": {
+            "x": 12,
+            "y": 308,
+            "width": 55,
+            "height": 36,
+            "top": 308,
+            "right": 67,
+            "bottom": 344,
+            "left": 12
+          }
+        },
+        {
+          "name": "Notifications",
+          "title": "Notifications",
+          "text": "Notifications",
+          "target": {
+            "x": 12,
+            "y": 346,
+            "width": 55,
+            "height": 36,
+            "top": 346,
+            "right": 67,
+            "bottom": 382,
+            "left": 12
+          }
+        },
+        {
+          "name": "My pay",
+          "title": "My pay",
+          "text": "My pay",
+          "target": {
+            "x": 12,
+            "y": 384,
+            "width": 55,
+            "height": 36,
+            "top": 384,
+            "right": 67,
+            "bottom": 420,
+            "left": 12
+          }
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "opened": {
+      "open": true,
+      "box": {
+        "x": 1102.719970703125,
+        "y": 58,
+        "width": 305.280029296875,
+        "height": 171.83999633789062,
+        "top": 58,
+        "right": 1408,
+        "bottom": 229.83999633789062,
+        "left": 1102.719970703125
+      },
+      "active": "Your profile",
+      "headingFont": "14px",
+      "headingLine": "20px",
+      "inside": true,
+      "links": [
+        {
+          "text": "Your profile",
+          "box": {
+            "x": 1111.3599853515625,
+            "y": 99.27999877929688,
+            "width": 288,
+            "height": 51.839996337890625,
+            "top": 99.27999877929688,
+            "right": 1399.3599853515625,
+            "bottom": 151.1199951171875,
+            "left": 1111.3599853515625
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 1111.3599853515625,
+            "y": 169.36000061035156,
+            "width": 288,
+            "height": 51.839996337890625,
+            "top": 169.36000061035156,
+            "right": 1399.3599853515625,
+            "bottom": 221.1999969482422,
+            "left": 1111.3599853515625
+          }
+        },
+        {
+          "text": "Close",
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "open": true,
+        "tag": "BUTTON",
+        "text": "Sign out"
+      },
+      {
+        "open": false,
+        "tag": "NEXTJS-PORTAL",
+        "text": ""
+      },
+      {
+        "open": false,
+        "tag": "BODY",
+        "text": "Skip to contentWorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payTRTaylor RiveraSign "
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Skip to content"
+      },
+      {
+        "open": false,
+        "tag": "A",
+        "text": "Workforce"
+      }
+    ],
+    "escaped": {
+      "focused": true,
+      "open": false
+    },
+    "collapsed": {
+      "width": 80,
+      "expanded": "false",
+      "links": [
+        {
+          "name": "Home",
+          "title": "Home",
+          "text": "Home",
+          "target": {
+            "x": 12,
+            "y": 156,
+            "width": 55,
+            "height": 36,
+            "top": 156,
+            "right": 67,
+            "bottom": 192,
+            "left": 12
+          }
+        },
+        {
+          "name": "My schedule",
+          "title": "My schedule",
+          "text": "My schedule",
+          "target": {
+            "x": 12,
+            "y": 194,
+            "width": 55,
+            "height": 36,
+            "top": 194,
+            "right": 67,
+            "bottom": 230,
+            "left": 12
+          }
+        },
+        {
+          "name": "My time",
+          "title": "My time",
+          "text": "My time",
+          "target": {
+            "x": 12,
+            "y": 232,
+            "width": 55,
+            "height": 36,
+            "top": 232,
+            "right": 67,
+            "bottom": 268,
+            "left": 12
+          }
+        },
+        {
+          "name": "Requests",
+          "title": "Requests",
+          "text": "Requests",
+          "target": {
+            "x": 12,
+            "y": 270,
+            "width": 55,
+            "height": 36,
+            "top": 270,
+            "right": 67,
+            "bottom": 306,
+            "left": 12
+          }
+        },
+        {
+          "name": "Updates",
+          "title": "Updates",
+          "text": "Updates",
+          "target": {
+            "x": 12,
+            "y": 308,
+            "width": 55,
+            "height": 36,
+            "top": 308,
+            "right": 67,
+            "bottom": 344,
+            "left": 12
+          }
+        },
+        {
+          "name": "Notifications",
+          "title": "Notifications",
+          "text": "Notifications",
+          "target": {
+            "x": 12,
+            "y": 346,
+            "width": 55,
+            "height": 36,
+            "top": 346,
+            "right": 67,
+            "bottom": 382,
+            "left": 12
+          }
+        },
+        {
+          "name": "My pay",
+          "title": "My pay",
+          "text": "My pay",
+          "target": {
+            "x": 12,
+            "y": 384,
+            "width": 55,
+            "height": 36,
+            "top": 384,
+            "right": 67,
+            "bottom": 420,
+            "left": 12
+          }
+        }
+      ]
+    }
+  }
+]

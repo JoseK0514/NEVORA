@@ -61,7 +61,7 @@
         "left": 36
       },
       "disabled": false,
-      "scroll": 4208,
+      "scroll": 3826,
       "height": 5132,
       "mondayChecked": true,
       "mondayText": "MondayOct 26UnavailableNo available hours",
@@ -70,12 +70,12 @@
       "alert": {
         "box": {
           "x": 36,
-          "y": -2651.484375,
+          "y": 799.515625,
           "width": 248,
           "height": 366,
-          "top": -2651.484375,
+          "top": 799.515625,
           "right": 284,
-          "bottom": -2285.484375,
+          "bottom": 1165.515625,
           "left": 36
         },
         "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
@@ -145,7 +145,7 @@
         "left": 36
       },
       "disabled": false,
-      "scroll": 4208,
+      "scroll": 3826,
       "height": 5132,
       "mondayChecked": false,
       "mondayText": "MondayOct 26UnavailableNo available hours",
@@ -154,12 +154,12 @@
       "alert": {
         "box": {
           "x": 36,
-          "y": -2651.484375,
+          "y": 799.515625,
           "width": 248,
           "height": 366,
-          "top": -2651.484375,
+          "top": 799.515625,
           "right": 284,
-          "bottom": -2285.484375,
+          "bottom": 1165.515625,
           "left": 36
         },
         "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
@@ -229,7 +229,7 @@
         "left": 36
       },
       "disabled": false,
-      "scroll": 4429,
+      "scroll": 3978,
       "height": 5401,
       "mondayChecked": true,
       "mondayText": "MondayOct 26UnavailableNo available hours",
@@ -238,12 +238,12 @@
       "alert": {
         "box": {
           "x": 36,
-          "y": -2720.484375,
+          "y": 847.515625,
           "width": 248,
           "height": 435,
-          "top": -2720.484375,
+          "top": 847.515625,
           "right": 284,
-          "bottom": -2285.484375,
+          "bottom": 1282.515625,
           "left": 36
         },
         "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",
@@ -313,7 +313,7 @@
         "left": 36
       },
       "disabled": false,
-      "scroll": 4429,
+      "scroll": 3978,
       "height": 5401,
       "mondayChecked": false,
       "mondayText": "MondayOct 26UnavailableNo available hours",
@@ -322,12 +322,12 @@
       "alert": {
         "box": {
           "x": 36,
-          "y": -2720.484375,
+          "y": 847.515625,
           "width": 248,
           "height": 435,
-          "top": -2720.484375,
+          "top": 847.515625,
           "right": 284,
-          "bottom": -2285.484375,
+          "bottom": 1282.515625,
           "left": 36
         },
         "text": "Your availability wasn’t saved. Check your connection and save again. If this keeps happening, sign in again.",

@@ -1,8 +1,8 @@
-**Not zero — 0 P0, 1 P1, 0 P2 newly verified.** Interim exit round 5 on `676358cd1d30c9c8027d4563bf709c434a9cfbe5`. The earlier stability findings and complete matrix remain in progress. This is not a completed round or exit certificate.
+**Not zero — 0 P0, 1 P1, 0 P2 newly verified.** Interim exit round 5 on `227150bb2658cb5a30db3c644b6b8f76031d3c79`. The earlier stability findings and complete matrix remain in progress. This is not a completed round or exit certificate.
 
 ## Status of earlier findings
 
-P3-ST-02, -04 and -14 through -23 are not closed: their complete re-checks remain outstanding. ST-P3-24 below is a new pending-state measurement.
+P3-ST-02, -04 and -14 through -23 are not closed: their complete re-checks remain outstanding. ST-P3-24 below remains a pending-state defect.
 
 ## Findings
 
