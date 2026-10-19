@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-19 21:44:50 UTC",
+  "judgment": "paused; full exits incomplete",
+  "queueFetch": "2026-10-19T21:40:14.773969+00:00",
+  "targets": [
+    {
+      "chat": "Phase 3",
+      "round": 5,
+      "commit": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+      "reports": "premium-phase-3/round-5",
+      "source": "/workspace/nevora-sources/phase3-r5-227",
+      "preview": "/workspace/scratch/nevora-phase3-r5-227",
+      "config": "/workspace/scratch/phase3-r5-227-matrix.json",
+      "p0": 0,
+      "p1": 9,
+      "p2": 1,
+      "completedRows": 184,
+      "plannedRows": 9920,
+      "complete": false
+    },
+    {
+      "chat": "Wave A",
+      "round": 2,
+      "commit": "a05f26a74b2979ce0efe1532f7f70d7064261bb9",
+      "reports": "p35-wave-a/round-2",
+      "source": "/workspace/nevora-sources/wave-a-r2-a05",
+      "preview": "/workspace/scratch/nevora-wave-a-r2-a05",
+      "config": "/workspace/scratch/wave-a-r2-a05-matrix.json",
+      "p0": 0,
+      "p1": 1,
+      "p2": 0,
+      "completedRows": 204,
+      "plannedRows": 4560,
+      "complete": false
+    },
+    {
+      "chat": "Wave B",
+      "round": 4,
+      "commit": "9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7",
+      "reports": "p35-wave-b/round-4",
+      "source": "/workspace/nevora-sources/wave-b-r4",
+      "preview": "/workspace/scratch/nevora-wave-b-r4",
+      "config": "/workspace/scratch/wave-b-r4-matrix.json",
+      "p0": 0,
+      "p1": 2,
+      "p2": 0,
+      "completedRows": 255,
+      "plannedRows": 3040,
+      "complete": false
+    },
+    {
+      "chat": "Wave C",
+      "round": 4,
+      "commit": "5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8",
+      "reports": "p35-wave-c/round-4",
+      "source": "/workspace/nevora-sources/wave-c-r4",
+      "preview": "/workspace/scratch/nevora-wave-c-r4",
+      "config": "/workspace/scratch/wave-c-r4-matrix.json",
+      "p0": 0,
+      "p1": 2,
+      "p2": 0,
+      "completedRows": 978,
+      "plannedRows": 2080,
+      "complete": false
+    },
+    {
+      "chat": "Profile",
+      "round": 4,
+      "commit": "ea58610bf3bdc85319895689c3d88e064f6a76d5",
+      "reports": "p35-profile/round-4",
+      "source": "/workspace/nevora-sources/profile-r4-ea5",
+      "preview": "/workspace/scratch/nevora-profile-r4-ea5",
+      "config": "/workspace/scratch/profile-r4-ea5-matrix.json",
+      "p0": 0,
+      "p1": 1,
+      "p2": 1,
+      "completedRows": 253,
+      "plannedRows": 320,
+      "complete": false
+    },
+    {
+      "chat": "Desktop",
+      "round": 5,
+      "commit": "8012d9790e72987140f939c7d70e1df9612ea009",
+      "reports": "p4-desktop/round-5",
+      "source": "/workspace/nevora-sources/desktop-r5",
+      "preview": "/workspace/scratch/nevora-desktop-r5",
+      "config": "/workspace/scratch/desktop-r5-matrix.json",
+      "p0": 0,
+      "p1": 0,
+      "p2": 1,
+      "completedRows": 180,
+      "plannedRows": 10416,
+      "complete": false
+    }
+  ],
+  "large": {
+    "preview": "/workspace/scratch/nevora-phase3-r5-227-large",
+    "config": "/workspace/scratch/phase3-r5-227-large-matrix.json",
+    "completedRows": 44,
+    "plannedRows": 640
+  }
+}

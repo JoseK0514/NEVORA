@@ -13,6 +13,8 @@ None newly verified in the completed alignment scope. The recovery-focus defect 
 - **32 card boxes** from eight role/browser/phone-text samples have **16px** page insets: widths **358px** at 390 and **288px** at 320. [Baseline measurements](baseline.json).
 - Manager 360's contact-row left edge is **36px**, giving the intended **20px** card inset; its height change remains ST-PROFILE-03.
 
+- Twelve additional **ready** fixture views cover Owner large (60 locations, long email/phone) and Manager empty at 390/100, 320/200, landscape and 1440/100 in Chromium, with WebKit 320/200 and 1440/100. All have **0px** sideways overflow and no text-clip flags. [Measurements](extra-fixtures.json), [Owner](crops/owner-large-webkit-320-t200-ready.png), [Manager](crops/manager-empty-webkit-320-t200-ready.png).
+
 ## Gaps
 
-Empty/large fixtures, row/divider baselines, desktop geometry and the remaining width/text matrix still need the full exit pass.
+Row/divider baselines and the remaining width/text geometry still need the full exit pass.

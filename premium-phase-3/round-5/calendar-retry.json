@@ -1,0 +1,268 @@
+[
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "kind": "calendar",
+    "width": 320,
+    "text": 200,
+    "posts": 1,
+    "fixture": "Calendar none status answered locally; no link created",
+    "before": {
+      "scroll": 2716,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Create link",
+        "box": {
+          "x": 52,
+          "y": 387.515625,
+          "width": 206,
+          "height": 52,
+          "top": 387.515625,
+          "right": 258,
+          "bottom": 439.515625,
+          "left": 52
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1216.484375,
+            "width": 230,
+            "height": 67,
+            "top": -1216.484375,
+            "right": 266,
+            "bottom": -1149.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Create link",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 52,
+            "y": 387.515625,
+            "width": 206,
+            "height": 52,
+            "top": 387.515625,
+            "right": 258,
+            "bottom": 439.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2098.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2098.515625,
+            "right": 304,
+            "bottom": 2164.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "pending": {
+      "scroll": 2716,
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payTRTaylor RiveraSign outNorthside QA",
+        "box": {
+          "x": 0,
+          "y": -2716,
+          "width": 320,
+          "height": 4984.515625,
+          "top": -2716,
+          "right": 320,
+          "bottom": 2268.515625,
+          "left": 0
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1216.484375,
+            "width": 230,
+            "height": 67,
+            "top": -1216.484375,
+            "right": 266,
+            "bottom": -1149.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Saving…",
+          "type": "button",
+          "disabled": true,
+          "box": {
+            "x": 52,
+            "y": 387.515625,
+            "width": 168,
+            "height": 52,
+            "top": 387.515625,
+            "right": 220,
+            "bottom": 439.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2098.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2098.515625,
+            "right": 304,
+            "bottom": 2164.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "failed": {
+      "scroll": 2716,
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payTRTaylor RiveraSign outNorthside QA",
+        "box": {
+          "x": 0,
+          "y": -2716,
+          "width": 320,
+          "height": 5269.515625,
+          "top": -2716,
+          "right": 320,
+          "bottom": 2553.515625,
+          "left": 0
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1216.484375,
+            "width": 230,
+            "height": 67,
+            "top": -1216.484375,
+            "right": 266,
+            "bottom": -1149.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Create link",
+          "type": "button",
+          "disabled": true,
+          "box": {
+            "x": 52,
+            "y": 387.515625,
+            "width": 206,
+            "height": 52,
+            "top": 387.515625,
+            "right": 258,
+            "bottom": 439.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Try again to load the calendar link",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": 2295.515625,
+            "width": 205,
+            "height": 52,
+            "top": 2295.515625,
+            "right": 241,
+            "bottom": 2347.515625,
+            "left": 36
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2383.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2383.515625,
+            "right": 304,
+            "bottom": 2449.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [
+        {
+          "text": "The result is unknown. Retry the same operation to check it.",
+          "box": {
+            "x": 36,
+            "y": 2062.515625,
+            "width": 248,
+            "height": 216,
+            "top": 2062.515625,
+            "right": 284,
+            "bottom": 2278.515625,
+            "left": 36
+          }
+        }
+      ],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  }
+]

@@ -1,0 +1,1264 @@
+[
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "kind": "calendar",
+    "width": 320,
+    "text": 200,
+    "posts": 1,
+    "fixture": "Calendar none status answered locally; no link created",
+    "before": {
+      "scroll": 2716,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Create link",
+        "box": {
+          "x": 52,
+          "y": 387.515625,
+          "width": 206,
+          "height": 52,
+          "top": 387.515625,
+          "right": 258,
+          "bottom": 439.515625,
+          "left": 52
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1216.484375,
+            "width": 230,
+            "height": 67,
+            "top": -1216.484375,
+            "right": 266,
+            "bottom": -1149.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Create link",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 52,
+            "y": 387.515625,
+            "width": 206,
+            "height": 52,
+            "top": 387.515625,
+            "right": 258,
+            "bottom": 439.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2098.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2098.515625,
+            "right": 304,
+            "bottom": 2164.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "pending": {
+      "scroll": 2716,
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside",
+        "box": {
+          "x": 0,
+          "y": -2716,
+          "width": 320,
+          "height": 4984.515625,
+          "top": -2716,
+          "right": 320,
+          "bottom": 2268.515625,
+          "left": 0
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1216.484375,
+            "width": 230,
+            "height": 67,
+            "top": -1216.484375,
+            "right": 266,
+            "bottom": -1149.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Saving…",
+          "type": "button",
+          "disabled": true,
+          "box": {
+            "x": 52,
+            "y": 387.515625,
+            "width": 168,
+            "height": 52,
+            "top": 387.515625,
+            "right": 220,
+            "bottom": 439.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2098.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2098.515625,
+            "right": 304,
+            "bottom": 2164.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "failed": {
+      "scroll": 2716,
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside",
+        "box": {
+          "x": 0,
+          "y": -2716,
+          "width": 320,
+          "height": 5269.515625,
+          "top": -2716,
+          "right": 320,
+          "bottom": 2553.515625,
+          "left": 0
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1216.484375,
+            "width": 230,
+            "height": 67,
+            "top": -1216.484375,
+            "right": 266,
+            "bottom": -1149.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Create link",
+          "type": "button",
+          "disabled": true,
+          "box": {
+            "x": 52,
+            "y": 387.515625,
+            "width": 206,
+            "height": 52,
+            "top": 387.515625,
+            "right": 258,
+            "bottom": 439.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Try again to load the calendar link",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": 2295.515625,
+            "width": 205,
+            "height": 52,
+            "top": 2295.515625,
+            "right": 241,
+            "bottom": 2347.515625,
+            "left": 36
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2383.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2383.515625,
+            "right": 304,
+            "bottom": 2449.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [
+        {
+          "text": "The result is unknown. Retry the same operation to check it.",
+          "box": {
+            "x": 36,
+            "y": 2062.515625,
+            "width": 248,
+            "height": 216,
+            "top": 2062.515625,
+            "right": 284,
+            "bottom": 2278.515625,
+            "left": 36
+          }
+        }
+      ],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "kind": "withdraw",
+    "width": 320,
+    "text": 200,
+    "posts": 1,
+    "fixture": "Actual seeded fictional waiting request",
+    "before": {
+      "scroll": 656,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Withdraw requestWithdrawing…",
+        "box": {
+          "x": 48,
+          "y": 575.515625,
+          "width": 224,
+          "height": 88,
+          "top": 575.515625,
+          "right": 272,
+          "bottom": 663.515625,
+          "left": 48
+        }
+      },
+      "controls": [
+        {
+          "text": " Yes, withdraw this request",
+          "type": "checkbox",
+          "checked": true,
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 512.515625,
+            "width": 22,
+            "height": 22,
+            "top": 512.515625,
+            "right": 70,
+            "bottom": 534.515625,
+            "left": 48
+          }
+        },
+        {
+          "text": "Withdraw requestWithdrawing…",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 575.515625,
+            "width": 224,
+            "height": 88,
+            "top": 575.515625,
+            "right": 272,
+            "bottom": 663.515625,
+            "left": 48
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "pending": {
+      "scroll": 656,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Withdraw requestWithdrawing…",
+        "box": {
+          "x": 48,
+          "y": 575.515625,
+          "width": 224,
+          "height": 88,
+          "top": 575.515625,
+          "right": 272,
+          "bottom": 663.515625,
+          "left": 48
+        }
+      },
+      "controls": [
+        {
+          "text": " Yes, withdraw this request",
+          "type": "checkbox",
+          "checked": true,
+          "disabled": true,
+          "box": {
+            "x": 48,
+            "y": 512.515625,
+            "width": 22,
+            "height": 22,
+            "top": 512.515625,
+            "right": 70,
+            "bottom": 534.515625,
+            "left": 48
+          }
+        },
+        {
+          "text": "Withdraw requestWithdrawing…",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 575.515625,
+            "width": 224,
+            "height": 88,
+            "top": 575.515625,
+            "right": 272,
+            "bottom": 663.515625,
+            "left": 48
+          }
+        }
+      ],
+      "notices": [
+        {
+          "text": "Withdrawing…",
+          "box": {
+            "x": 48,
+            "y": 675.515625,
+            "width": 224,
+            "height": 48,
+            "top": 675.515625,
+            "right": 272,
+            "bottom": 723.515625,
+            "left": 48
+          }
+        }
+      ],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "failed": {
+      "scroll": 656,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Try againWithdrawing…",
+        "box": {
+          "x": 48,
+          "y": 575.515625,
+          "width": 224,
+          "height": 52,
+          "top": 575.515625,
+          "right": 272,
+          "bottom": 627.515625,
+          "left": 48
+        }
+      },
+      "controls": [
+        {
+          "text": " Yes, withdraw this request",
+          "type": "checkbox",
+          "checked": false,
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 512.515625,
+            "width": 22,
+            "height": 22,
+            "top": 512.515625,
+            "right": 70,
+            "bottom": 534.515625,
+            "left": 48
+          }
+        },
+        {
+          "text": "Try againWithdrawing…",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 575.515625,
+            "width": 224,
+            "height": 52,
+            "top": 575.515625,
+            "right": 272,
+            "bottom": 627.515625,
+            "left": 48
+          }
+        }
+      ],
+      "notices": [
+        {
+          "text": "We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.",
+          "box": {
+            "x": 48,
+            "y": 639.515625,
+            "width": 224,
+            "height": 384,
+            "top": 639.515625,
+            "right": 272,
+            "bottom": 1023.515625,
+            "left": 48
+          }
+        }
+      ],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "kind": "calendar",
+    "gap": "TypeError: Cannot read properties of null (reading 'status')"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "kind": "withdraw",
+    "gap": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.nto-withdrawal').first()\u001b[22m\n"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "kind": "calendar",
+    "width": 320,
+    "text": 200,
+    "posts": 1,
+    "fixture": "Calendar none status answered locally; no link created",
+    "before": {
+      "scroll": 2912,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Create link",
+        "box": {
+          "x": 52,
+          "y": 379.515625,
+          "width": 216,
+          "height": 88,
+          "top": 379.515625,
+          "right": 268,
+          "bottom": 467.515625,
+          "left": 52
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1364.484375,
+            "width": 245.46875,
+            "height": 67,
+            "top": -1364.484375,
+            "right": 281.46875,
+            "bottom": -1297.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Create link",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 52,
+            "y": 379.515625,
+            "width": 216,
+            "height": 88,
+            "top": 379.515625,
+            "right": 268,
+            "bottom": 467.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2273.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2273.515625,
+            "right": 304,
+            "bottom": 2339.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "pending": {
+      "scroll": 2912,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Saving…",
+        "box": {
+          "x": 52,
+          "y": 377.515625,
+          "width": 184.515625,
+          "height": 52,
+          "top": 377.515625,
+          "right": 236.515625,
+          "bottom": 429.515625,
+          "left": 52
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1364.484375,
+            "width": 245.46875,
+            "height": 67,
+            "top": -1364.484375,
+            "right": 281.46875,
+            "bottom": -1297.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Saving…",
+          "type": "button",
+          "disabled": true,
+          "box": {
+            "x": 52,
+            "y": 377.515625,
+            "width": 184.515625,
+            "height": 52,
+            "top": 377.515625,
+            "right": 236.515625,
+            "bottom": 429.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2235.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2235.515625,
+            "right": 304,
+            "bottom": 2301.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "failed": {
+      "scroll": 2912,
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payARAlexandra RiveraSign outNorthside",
+        "box": {
+          "x": 0,
+          "y": -2912,
+          "width": 320,
+          "height": 5689.015625,
+          "top": -2912,
+          "right": 320,
+          "bottom": 2777.015625,
+          "left": 0
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1364.484375,
+            "width": 245.46875,
+            "height": 67,
+            "top": -1364.484375,
+            "right": 281.46875,
+            "bottom": -1297.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Create link",
+          "type": "button",
+          "disabled": true,
+          "box": {
+            "x": 52,
+            "y": 379.515625,
+            "width": 216,
+            "height": 88,
+            "top": 379.515625,
+            "right": 268,
+            "bottom": 467.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Try again to load the calendar link",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": 2519.015625,
+            "width": 219.140625,
+            "height": 52,
+            "top": 2519.015625,
+            "right": 255.140625,
+            "bottom": 2571.015625,
+            "left": 36
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2607.015625,
+            "width": 288,
+            "height": 66,
+            "top": 2607.015625,
+            "right": 304,
+            "bottom": 2673.015625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [
+        {
+          "text": "The result is unknown. Retry the same operation to check it.",
+          "box": {
+            "x": 36,
+            "y": 2237.515625,
+            "width": 248,
+            "height": 264,
+            "top": 2237.515625,
+            "right": 284,
+            "bottom": 2501.515625,
+            "left": 36
+          }
+        }
+      ],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "kind": "withdraw",
+    "width": 320,
+    "text": 200,
+    "posts": 1,
+    "fixture": "Actual seeded fictional waiting request",
+    "before": {
+      "scroll": 704,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Withdraw requestWithdrawing…",
+        "box": {
+          "x": 48,
+          "y": 615.515625,
+          "width": 224,
+          "height": 88,
+          "top": 615.515625,
+          "right": 272,
+          "bottom": 703.515625,
+          "left": 48
+        }
+      },
+      "controls": [
+        {
+          "text": " Yes, withdraw this request",
+          "type": "checkbox",
+          "checked": true,
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 532.515625,
+            "width": 22,
+            "height": 22,
+            "top": 532.515625,
+            "right": 70,
+            "bottom": 554.515625,
+            "left": 48
+          }
+        },
+        {
+          "text": "Withdraw requestWithdrawing…",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 615.515625,
+            "width": 224,
+            "height": 88,
+            "top": 615.515625,
+            "right": 272,
+            "bottom": 703.515625,
+            "left": 48
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "pending": {
+      "scroll": 704,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Withdraw requestWithdrawing…",
+        "box": {
+          "x": 48,
+          "y": 615.515625,
+          "width": 224,
+          "height": 88,
+          "top": 615.515625,
+          "right": 272,
+          "bottom": 703.515625,
+          "left": 48
+        }
+      },
+      "controls": [
+        {
+          "text": " Yes, withdraw this request",
+          "type": "checkbox",
+          "checked": true,
+          "disabled": true,
+          "box": {
+            "x": 48,
+            "y": 532.515625,
+            "width": 22,
+            "height": 22,
+            "top": 532.515625,
+            "right": 70,
+            "bottom": 554.515625,
+            "left": 48
+          }
+        },
+        {
+          "text": "Withdraw requestWithdrawing…",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 615.515625,
+            "width": 224,
+            "height": 88,
+            "top": 615.515625,
+            "right": 272,
+            "bottom": 703.515625,
+            "left": 48
+          }
+        }
+      ],
+      "notices": [
+        {
+          "text": "Withdrawing…",
+          "box": {
+            "x": 48,
+            "y": 715.515625,
+            "width": 224,
+            "height": 48,
+            "top": 715.515625,
+            "right": 272,
+            "bottom": 763.515625,
+            "left": 48
+          }
+        }
+      ],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "failed": {
+      "scroll": 704,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Try againWithdrawing…",
+        "box": {
+          "x": 48,
+          "y": 615.515625,
+          "width": 224,
+          "height": 52,
+          "top": 615.515625,
+          "right": 272,
+          "bottom": 667.515625,
+          "left": 48
+        }
+      },
+      "controls": [
+        {
+          "text": " Yes, withdraw this request",
+          "type": "checkbox",
+          "checked": false,
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 532.515625,
+            "width": 22,
+            "height": 22,
+            "top": 532.515625,
+            "right": 70,
+            "bottom": 554.515625,
+            "left": 48
+          }
+        },
+        {
+          "text": "Try againWithdrawing…",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 48,
+            "y": 615.515625,
+            "width": 224,
+            "height": 52,
+            "top": 615.515625,
+            "right": 272,
+            "bottom": 667.515625,
+            "left": 48
+          }
+        }
+      ],
+      "notices": [
+        {
+          "text": "We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.",
+          "box": {
+            "x": 48,
+            "y": 679.515625,
+            "width": 224,
+            "height": 384,
+            "top": 679.515625,
+            "right": 272,
+            "bottom": 1063.515625,
+            "left": 48
+          }
+        }
+      ],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "kind": "calendar",
+    "width": 320,
+    "text": 200,
+    "posts": 1,
+    "fixture": "Calendar none status answered locally; no link created",
+    "before": {
+      "scroll": 2912,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Create link",
+        "box": {
+          "x": 52,
+          "y": 379.515625,
+          "width": 216,
+          "height": 88,
+          "top": 379.515625,
+          "right": 268,
+          "bottom": 467.515625,
+          "left": 52
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1364.484375,
+            "width": 245.46875,
+            "height": 67,
+            "top": -1364.484375,
+            "right": 281.46875,
+            "bottom": -1297.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Create link",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 52,
+            "y": 379.515625,
+            "width": 216,
+            "height": 88,
+            "top": 379.515625,
+            "right": 268,
+            "bottom": 467.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2273.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2273.515625,
+            "right": 304,
+            "bottom": 2339.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "pending": {
+      "scroll": 2912,
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payTRTaylor RiveraSign outNorthside QA",
+        "box": {
+          "x": 0,
+          "y": -2912,
+          "width": 320,
+          "height": 5317.515625,
+          "top": -2912,
+          "right": 320,
+          "bottom": 2405.515625,
+          "left": 0
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1364.484375,
+            "width": 245.46875,
+            "height": 67,
+            "top": -1364.484375,
+            "right": 281.46875,
+            "bottom": -1297.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Saving…",
+          "type": "button",
+          "disabled": true,
+          "box": {
+            "x": 52,
+            "y": 377.515625,
+            "width": 184.515625,
+            "height": 52,
+            "top": 377.515625,
+            "right": 236.515625,
+            "bottom": 429.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2235.515625,
+            "width": 288,
+            "height": 66,
+            "top": 2235.515625,
+            "right": 304,
+            "bottom": 2301.515625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    "failed": {
+      "scroll": 2912,
+      "active": {
+        "tag": "BODY",
+        "text": "WorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsMy payTRTaylor RiveraSign outNorthside QA",
+        "box": {
+          "x": 0,
+          "y": -2912,
+          "width": 320,
+          "height": 5689.015625,
+          "top": -2912,
+          "right": 320,
+          "bottom": 2777.015625,
+          "left": 0
+        }
+      },
+      "controls": [
+        {
+          "text": "Refresh details",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": -1364.484375,
+            "width": 245.46875,
+            "height": 67,
+            "top": -1364.484375,
+            "right": 281.46875,
+            "bottom": -1297.484375,
+            "left": 36
+          }
+        },
+        {
+          "text": "Create link",
+          "type": "button",
+          "disabled": true,
+          "box": {
+            "x": 52,
+            "y": 379.515625,
+            "width": 216,
+            "height": 88,
+            "top": 379.515625,
+            "right": 268,
+            "bottom": 467.515625,
+            "left": 52
+          }
+        },
+        {
+          "text": "Try again to load the calendar link",
+          "type": "button",
+          "disabled": false,
+          "box": {
+            "x": 36,
+            "y": 2519.015625,
+            "width": 219.140625,
+            "height": 52,
+            "top": 2519.015625,
+            "right": 255.140625,
+            "bottom": 2571.015625,
+            "left": 36
+          }
+        },
+        {
+          "text": "Sign out",
+          "type": "submit",
+          "disabled": false,
+          "box": {
+            "x": 16,
+            "y": 2607.015625,
+            "width": 288,
+            "height": 66,
+            "top": 2607.015625,
+            "right": 304,
+            "bottom": 2673.015625,
+            "left": 16
+          }
+        }
+      ],
+      "notices": [
+        {
+          "text": "The result is unknown. Retry the same operation to check it.",
+          "box": {
+            "x": 36,
+            "y": 2237.515625,
+            "width": 248,
+            "height": 264,
+            "top": 2237.515625,
+            "right": 284,
+            "bottom": 2501.515625,
+            "left": 36
+          }
+        }
+      ],
+      "signIn": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "kind": "withdraw",
+    "gap": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.nto-withdrawal').first()\u001b[22m\n"
+  }
+]

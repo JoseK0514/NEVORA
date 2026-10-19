@@ -13,6 +13,8 @@ None newly verified in this area's completed scope. IS-PROFILE-17 counts the off
 - Eight ready/failed-save page probes: Owner/Manager × Chromium/WebKit × 390/100 and 320/200. Document width equals viewport width in **8/8**; no sideways page overflow. All **32** recorded card boxes keep **16px** page insets.
 - The 32-cell phone band-height check has **0px** mismatch in every cell.
 
+- The same **12 ready fixture views** add the large/empty content states with **0px** sideways overflow; they explicitly wait for real contact values/Not added before measurement. Owner shows **All 60 locations**; Manager shows **None assigned yet**. [Extra fixtures](extra-fixtures.json).
+
 ## Gaps
 
 Empty/large fixtures, Employee/Lead management-API regressions, landscape/desktop, other states and remaining matrix/axe coverage are incomplete. This report does not certify a zero exit.

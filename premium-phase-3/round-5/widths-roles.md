@@ -13,6 +13,10 @@ None newly verified in the completed scope. The current form-state defects are c
 - Both Employee and Lead display Time off and specific-week Availability at 390/100 and 320/200 in Chromium and WebKit; all tested writes are intercepted.
 - From/Until labels now scale **15→30px** between those text settings, repairing the earlier floor problem.
 
+- More keyboard coverage includes all **four roles**, both engines, 320/200 and landscape. Completed settled Manager/Owner cases fit **320×844** and **844×390**, with **48px** Close height and **16px** bottom clearance. The initial reduced-motion Manager landscape opening gap passes a [fresh retry](more-settled-retry.json). [Measurements](more-settled.json).
+
 ## Gaps
 
 The matrix, other role fixtures, shell, consistency, axe and all remaining routes/states are incomplete. A separate `--large` preview covers Manager/Owner Home, Inbox, Schedule and Team; its matrix is also incomplete. Unknown coverage is not zero.
+
+Large-data checker snapshot: [checks-large.json](checks-large.json), incomplete; standard snapshot is [checks.json](checks.json).
