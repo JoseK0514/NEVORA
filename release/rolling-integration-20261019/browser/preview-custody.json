@@ -1,0 +1,43 @@
+[
+  {
+    "preview": "wave-a-411a42ce",
+    "source": "411a42cedaf77cbff3aab9bba6ad3afd652c9b94",
+    "run": "evidence-2026-10-19T22-53-13-636Z",
+    "checkpoint": "411a42cedaf77cbff3aab9bba6ad3afd652c9b94",
+    "sourceAndMirrorVerified": true,
+    "postgresStopped": true,
+    "completedAt": "2026-10-19T22:59:11.051Z",
+    "errors": []
+  },
+  {
+    "preview": "wave-b-9d6530bc",
+    "source": "9d6530bcf3e7ec8cead4a863031bedb1f12276cc",
+    "run": "evidence-2026-10-19T22-59-21-216Z",
+    "checkpoint": "9d6530bcf3e7ec8cead4a863031bedb1f12276cc",
+    "sourceAndMirrorVerified": true,
+    "postgresStopped": true,
+    "completedAt": "2026-10-19T23:10:43.627Z",
+    "errors": []
+  },
+  {
+    "preview": "final-13446e25",
+    "source": "13446e25e509c32c53608d66050d8a2b56a8943e",
+    "run": "evidence-2026-10-19T23-09-54-108Z",
+    "checkpoint": "13446e25e509c32c53608d66050d8a2b56a8943e",
+    "sourceAndMirrorVerified": null,
+    "postgresStopped": true,
+    "errors": [
+      "Error: Owned Next process exited before readiness"
+    ]
+  },
+  {
+    "preview": "final-13446e25",
+    "source": "13446e25e509c32c53608d66050d8a2b56a8943e",
+    "run": "evidence-2026-10-19T23-11-22-782Z",
+    "checkpoint": "13446e25e509c32c53608d66050d8a2b56a8943e",
+    "sourceAndMirrorVerified": true,
+    "postgresStopped": true,
+    "completedAt": "2026-10-19T23:17:18.045Z",
+    "errors": []
+  }
+]

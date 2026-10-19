@@ -1,0 +1,35 @@
+{
+  "head": "13446e25e509c32c53608d66050d8a2b56a8943e",
+  "codeTestedAt": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "excludedOnlyPath": "docs/product/specs/p35-wave-b/ROUND.md",
+  "changed": [
+    "docs/product/specs/p35-wave-b/ROUND.md"
+  ],
+  "trackedEntriesCompared": 2845,
+  "exactOtherTrackedEntriesEqual": true,
+  "manifestSha256": "b0db19d7a79bed7da427a5fd98611c27903c8e52f45e6fcf3522aac84bf48615",
+  "ancestry": [
+    {
+      "branch": "claude/p35-wave-a-1283c8",
+      "sha": "ba313d1d20376c05d7ace16f99b7356a30c44e97",
+      "included": true
+    },
+    {
+      "branch": "claude/p35-wave-b-808dfd",
+      "sha": "469bc5a05d4ecc0c153a6304aca9df63e262216b",
+      "included": true
+    },
+    {
+      "branch": "claude/p35-wave-c-93e13c",
+      "sha": "1c73beac6fda10659e4d16135daea02f16dd5a94",
+      "included": true
+    },
+    {
+      "branch": "claude/p4-desktop-240fe0",
+      "sha": "156a5679e8f948933fb8a697b26398603f3be86f",
+      "included": true
+    }
+  ],
+  "boundary": "Code/test/build/configuration byte equivalence only; no claim of exact-head CI, hosted verification or full exit acceptance",
+  "checkedAt": "2026-10-19T23:14:06.837Z"
+}
