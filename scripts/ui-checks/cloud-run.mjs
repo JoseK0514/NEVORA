@@ -1,6 +1,7 @@
 // Long-running coordinator. One checks.mjs at a time per isolated preview.
 // Run from the tools checkout after sourcing the non-secret cloud environment.
 import {spawn,execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {createWriteStream} from 'node:fs';
 import {readFile,writeFile,readdir,mkdir,copyFile,access,rename} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
@@ -81,6 +82,7 @@ async function publish(reason) {
         if(batch.log&&await exists(batch.log))await copyFile(batch.log,join(dest,batch.name+'.log'));
       }
       if(await exists(join(m.out,'route-inventory.json')))await copyFile(join(m.out,'route-inventory.json'),join(dest,'route-inventory.json'));
+      if(m.sourceManifest&&await exists(m.sourceManifest))await copyFile(m.sourceManifest,join(dest,'source-manifest.json'));
       if(network.length)await writeFile(join(dest,'network-errors.json'),JSON.stringify(network,null,1));
       if(m.timings)await writeFile(join(dest,'load-times.json'),JSON.stringify(m.timings,null,2));
       await writeFile(join(dest,'manifest.json'),JSON.stringify(m,null,2));
@@ -102,7 +104,14 @@ async function publish(reason) {
     git('add','docs/product/specs/codex-joint/CLOUD-CHECKS.md',...(metas.size?['docs/product/specs/codex-joint/cloud-checks']:[]));
     const changed=git('diff','--cached','--name-only');if(!changed)return;
     git('commit','-m','test: publish cloud screen-check evidence — '+reason);
-    try{git('push','origin','HEAD:refs/heads/codex/premium-backend');console.log('PUBLISHED '+reason);}
+    try{
+      // Other authorized sessions also publish backend fixes. Replay only our
+      // unpublished commits on their latest tip; never create a merge or force.
+      git('fetch','origin','codex/premium-backend');
+      try{git('rebase','origin/codex/premium-backend');}
+      catch(error){try{git('rebase','--abort');}catch{}throw error;}
+      git('push','origin','HEAD:refs/heads/codex/premium-backend');console.log('PUBLISHED '+reason);
+    }
     catch(error){await writeFile(join(stateRoot,'publication-error.txt'),'Push failed; local commits retained. No force push or merge attempted.\n'+error.message);console.error('PUBLICATION_BLOCKED '+error.message);}
   });
   return publications.catch(error=>{console.error('PUBLICATION_ERROR '+error.message);});
@@ -119,7 +128,7 @@ async function batch(meta,job,width,browser,pass,text='100,125,150,200',routes=j
   const file=join(meta.out,'checks',files[0]),values=JSON.parse(await readFile(file,'utf8'));
   const expected=routes.length*text.split(',').length;
   if(values.length!==expected)throw Error(`Incomplete checker batch: ${values.length}/${expected}; see ${log}`);
-  meta.batches.push({name,pass,kind,file,log,args,code:result.code,passed:values.filter(r=>r.ok).length,failed:values.filter(r=>!r.ok).length});
+  meta.batches.push({name,pass,kind,file,log,args,rawSha256:createHash('sha256').update(await readFile(file)).digest('hex'),code:result.code,passed:values.filter(r=>r.ok).length,failed:values.filter(r=>!r.ok).length});
   await save(meta);console.log(`BATCH ${meta.key} ${name}: ${values.filter(r=>r.ok).length}/${values.length}`);
   if(kind!=='retry')for(const r of values.filter(serverCandidate))await batch(meta,{account:r.account,routes:[r.route]},r.size,r.engine,pass,String(r.text),[r.route],'retry');
 }
@@ -158,6 +167,10 @@ async function work(branch,index) {
     const ev=(await readdir(out)).filter(n=>n.startsWith('evidence-')).sort().at(-1);
     const runtimeIdentity=JSON.parse(await readFile(join(out,ev,'runtime.json'),'utf8'));
     if(runtimeIdentity.checkpoint!==meta.commit||git('-C',source,'rev-parse','HEAD')!==meta.commit)throw Error('Source SHA differs from runtime checkpoint; no matrix evidence may be attributed to this SHA');
+    meta.runtimeCheckpoint=runtimeIdentity.checkpoint;
+    meta.sourceTree=git('-C',source,'rev-parse','HEAD^{tree}');
+    const owned=(await readdir(join(out,ev))).find(n=>n.startsWith('owned-next-'));
+    meta.sourceManifest=join(out,ev,owned,'source-manifest.json');
     const inventory=JSON.parse(await readFile(join(out,'route-inventory.json'),'utf8'));
     if(large){const wanted=['/app','/app/inbox','/app/schedule','/app/employees','/app/timecards','/app/payroll-export','/app/reports'];inventory.jobs=inventory.jobs.filter(j=>['AUDIT-M','QAOWNER'].includes(j.account)).map(j=>({...j,routes:j.routes.filter(r=>wanted.includes(r))}));}
     meta.planned=inventory.jobs.reduce((n,j)=>n+j.routes.length,0)*68;meta.status='Running matrix';await save(meta);
