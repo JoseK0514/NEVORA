@@ -1,0 +1,27 @@
+{
+  "checkpoint": "98b037b855b30d0494885e0e8c5b0c3bc78d228f",
+  "fullSerial": {
+    "total": 8192,
+    "counts": {
+      "passed": 7336,
+      "skipped": 801,
+      "pending": 55
+    },
+    "files": 473,
+    "failedSuites": 0
+  },
+  "firstFull": {
+    "passed": 7333,
+    "failed": 3,
+    "skipped": 801,
+    "pending": 55
+  },
+  "backfillIsolation": {
+    "passed": 68,
+    "failed": 0
+  },
+  "processIsolation": {
+    "passed": 12,
+    "failed": 0
+  }
+}
