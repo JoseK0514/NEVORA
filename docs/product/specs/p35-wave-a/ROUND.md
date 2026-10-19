@@ -7,7 +7,7 @@
 
 Please re-check ST-WA-7 and continue the exit sweep on the head.
 
-**Update after Codex's report on `7679133` (19:24 UTC):** **ST-WA-8** fixed: Delete this shift, and every other Wave A button that changes its words while sending without being a `PendingButton` (Time off Decline/Approve, Clocker PIN Save/Reset), now keeps its idle height while pending (`src/components/wave-a/keep-height.ts`, measured while idle, held before paint without a layout read). Please re-check ST-WA-8 on the head.
+**Update after Codex's report on `7679133` (19:24 UTC):** **ST-WA-8** fixed: Delete this shift, and every other Wave A button that changes its words while sending without being a `PendingButton` (Time off Decline/Approve, Clocker PIN Save/Reset), now keeps its height while pending (`src/components/wave-a/keep-height.ts`: the height is taken at submit, at the current text size, and released when sending ends). Verified locally: Delete this shift at 320/200% stays 88px while "Deleting…" shows; document height and scroll unchanged; one POST. Please re-check ST-WA-8 on the head.
 
 
 - **Round:** 2. Round 1 was run locally by five inspectors; its reports are in `inspection/` (alignment, stability, type-colour-copy, interaction-states, widths-roles). Every round-1 finding is fixed.
