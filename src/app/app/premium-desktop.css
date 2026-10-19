@@ -406,7 +406,12 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
     .av-editor-heading p, .av-editor-footer p, .av-no-hours, .av-input-hint,
     .updates-refresh span, .updates-footnote, .nto-next-step p, .nto-next-step strong, .nto-next-step span, .nto-summary-facts p,
     .my-week-title p, .my-shift-options-body p, .my-shift-options-body .my-schedule-link, .employee-agenda-date small, .employee-designated-lead,
-    .profile-settings-list li, .employee-account-panel li) {
+    .profile-settings-list li, .employee-account-panel li,
+    [class*="employee-home-reviewed-module"][class*="__currentNote"], [class*="employee-home-reviewed-module"][class*="__zone"],
+    .employee-time-footer .employee-time-refresh, .employee-time-footer .employee-time-link, .employee-time-footer small, .employee-time-footer small *,
+    .employee-time-entry-range, .employee-time-entry-range *, .employee-time-entry-location, .employee-time-entry-total small, .employee-time-punches p,
+    .employee-time-punches dt, .employee-time-punches dd, .employee-time-punches dd *, [class*="timecards-module"] ul > li,
+    [class*="timecards-module"] dl:not([class*="__overview"]):not([class*="__totals"]) > div > :is(dt, dd)) {
     font-size: .875rem; line-height: 1.25rem;
   }
   /* TCD-17: a long account name gives way to the trail below 1100px; the trail's last item ends in an ellipsis. */
