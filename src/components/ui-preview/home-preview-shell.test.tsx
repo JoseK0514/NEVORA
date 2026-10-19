@@ -14,7 +14,7 @@ it('the preview sidebar is sidebarNavigation() for Owner, Manager and Employee, 
     expect(items).toEqual(sidebarNavigation(role, navigationForRole(role, previewPayroll(role))));
     expect(active).toBe('/app');
   }
-  expect(previewSidebar('OWNER').items.map(item => item.label)).toEqual(['Home', 'Inbox', 'Schedule', 'Requests', 'Updates', 'Employees', 'Timecards', 'Insights', 'Payroll', 'Settings']);
+  expect(previewSidebar('OWNER').items.map(item => item.label)).toEqual(['Home', 'Inbox', 'Schedule', 'Updates', 'Team', 'Timecards', 'Insights', 'Payroll', 'Settings']);
   const employee = previewSidebar('EMPLOYEE').items.map(item => item.label);
   expect(employee).not.toContain('Availability');
   expect(employee).not.toContain('Profile');
@@ -23,8 +23,9 @@ it('the preview sidebar is sidebarNavigation() for Owner, Manager and Employee, 
 it('the Owner preview renders the D3 sidebar, the search button and the setup card with fictional gaps', () => {
   const html = renderToStaticMarkup(<HomePreview/>);
   const sidebar = html.slice(html.indexOf('aria-label="Primary navigation"'), html.indexOf('</nav>', html.indexOf('aria-label="Primary navigation"')));
-  for (const label of ['Home', 'Inbox', 'Schedule', 'Employees', 'Requests', 'Updates', 'Timecards', 'Payroll', 'Insights', 'Settings']) expect(sidebar).toContain(`>${label}<`);
-  for (const gone of ['Availability', 'Shift requests', 'Templates', 'Payroll export', 'Scheduling rules']) expect(sidebar).not.toContain(`>${gone}<`);
+  for (const label of ['Home', 'Inbox', 'Schedule', 'Team', 'Updates', 'Timecards', 'Payroll', 'Insights', 'Settings']) expect(sidebar).toContain(`>${label}<`);
+  // D-4: Requests folds into Inbox on desktop.
+  for (const gone of ['Requests', 'Employees', 'Availability', 'Shift requests', 'Templates', 'Payroll export', 'Scheduling rules']) expect(sidebar).not.toContain(`>${gone}<`);
   expect(html).toContain('aria-label="Search"');
   expect(html).toContain('Finish setting up');
   expect(html).toContain('3 employees have no weekly hour target.');
