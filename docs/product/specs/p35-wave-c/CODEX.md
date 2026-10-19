@@ -24,6 +24,10 @@ The UI side (before, pending, blocked failure, double tap, slow network) is test
 
 Forced in the browser on the UI side (401 and 403 on the fetch-based pages). For the server-action pages (Company profile, Locations, Positions, Break types, Clocker devices) a signed-out session makes the action throw or redirect; the UI then shows its "not confirmed" message and keeps the entries. Joint test: what each action does on an expired session, so the message can be specific ("Sign in again") instead of generic.
 
+## 2b. No access (round 1, IS and WR-06)
+
+A Manager, Lead or Employee opening an Owner-only Settings page, or a Lead or Employee opening a recovery page, is redirected to Home by `requireRoles` (`src/lib/auth/permissions.ts`) with no message, after the page's band has already shown during loading. Proposal: redirect with a reason (for example `/app?denied=settings`) that Home turns into a toast such as "Only an Owner can open Settings.", or render a kit "No access" page from the server. Wave C will build the screen once the contract is agreed.
+
 ## 3. Server-written wording shown on these pages
 
 Wording that comes from server code. Not changed; listed so Codex and Jose can decide.

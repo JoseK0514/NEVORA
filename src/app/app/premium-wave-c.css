@@ -477,8 +477,18 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-colour-row > .wc-hex { min-width: 0; }
 
 /* The portal's parent placeholder (root-loading.tsx) for Wave C routes: band heights measured at 320–430. */
-.route-skeleton[data-route="settings"], .route-skeleton[data-route="account-recovery"], .route-skeleton[data-route="clocker-recovery"] { --route-band: 232px; }
-@media (max-width: 359px) { .route-skeleton[data-route="clocker-recovery"] { --route-band: 256px; } }
+.route-skeleton:is([data-route="settings"], [data-route="settings-profile"], [data-route="settings-policies"], [data-route="account-recovery"], [data-route="clocker-recovery"]) { --route-band: 232px; }
+.route-skeleton[data-route="settings-location-new"] { --route-band: 208px; }
+.route-skeleton:is([data-route="settings-branding"], [data-route="settings-features"]) { --route-band: 256px; }
+.route-skeleton:is([data-route="settings-locations"], [data-route="settings-breaks"], [data-route="settings-positions"], [data-route="settings-devices"]) { --route-band: 276px; }
+@media (max-width: 359px) {
+  .route-skeleton:is([data-route="clocker-recovery"], [data-route="settings-location-new"]) { --route-band: 256px; }
+  .route-skeleton[data-route="settings-location-new"] { --route-band: 232px; }
+  .route-skeleton[data-route="settings-branding"] { --route-band: 280px; }
+  .route-skeleton:is([data-route="settings-locations"], [data-route="settings-devices"]) { --route-band: 300px; }
+}
+@media (min-width: 360px) and (max-width: 389px) { .route-skeleton[data-route="settings-locations"] { --route-band: 300px; } }
+@media (min-width: 430px) { .route-skeleton[data-route="settings-devices"] { --route-band: 232px; } }
 
 /* AL-09: at large text the band's Add control drops under Back on one line, its icon beside the words. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(.nv-pageband__bar, .nv-pageband__eyebrow-row) { flex-wrap: wrap; }
