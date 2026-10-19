@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircleIcon, InfoIcon, UploadSimpleIcon, TrashIcon, ArrowCounterClockwiseIcon, DeviceMobileIcon, DesktopIcon, DeviceTabletIcon, CalendarBlankIcon, HouseIcon, TrayIcon, UsersThreeIcon, DotsThreeIcon } from "@phosphor-icons/react/ssr";
 import { AuthBrand } from "./auth-brand";
@@ -44,6 +44,9 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
   const [busy, setBusy] = useState<"save" | "logo" | null>(null);
   const [notice, setNotice] = useState<{ tone: "info" | "error" | "success"; text: string } | null>(null);
   const retry = useRef<Command | null>(null);
+  const sending = useRef(false);
+  const feedback = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (notice?.tone === "error" || notice?.tone === "success") feedback.current?.focus(); }, [notice]);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const valid = normalizeSeed(draft);
@@ -55,7 +58,8 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
   const stamp = (iso: string) => new Intl.DateTimeFormat("en-US", { timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso)).replace(/ (AM|PM)$/, " $1");
 
   async function save() {
-    if (!valid || busy) return;
+    if (sending.current || !valid || busy) return;
+    sending.current = true;
     const command: Command = retry.current ?? { operationId: crypto.randomUUID(), expectedRevision: revision, section: "brand", seed: effectiveSeed === DEFAULT_SEED ? null : effectiveSeed, logoAssetId: logo };
     retry.current = command;
     setBusy("save"); setNotice(null);
@@ -71,7 +75,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
       router.refresh();
     } catch {
       setNotice({ tone: "error", text: "We couldn’t confirm the save. Save again to retry safely, or reload to check." });
-    } finally { setBusy(null); }
+    } finally { sending.current = false; setBusy(null); }
   }
 
   async function upload(file: File | undefined) {
@@ -199,7 +203,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
     </section>
 
     <div className="wc-brand__save">
-      {notice ? <div role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
+      {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
         title={notice.tone === "error" ? "Not saved" : notice.tone === "success" ? "Brand saved" : undefined}>{notice.text}</Notice></div> : null}
       <p className="nv-sr" role="status">{busy === "save" ? "Saving…" : ""}</p>
       <FormActions>

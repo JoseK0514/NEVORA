@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
@@ -23,6 +23,9 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<{ tone: "info" | "error" | "success"; text: string } | null>(null);
   const pending = useRef<Command[] | null>(null);
+  const sending = useRef(false);
+  const feedback = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (notice?.tone === "error") feedback.current?.focus(); }, [notice]);
 
   const wordsChanged = words !== preset;
   const sameOff = (a: ModuleId[], b: ModuleId[]) => a.length === b.length && a.every(id => b.includes(id));
@@ -30,7 +33,8 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
   const toggle = (id: ModuleId) => { pending.current = null; setNotice(null); setOff(list => list.includes(id) ? list.filter(x => x !== id) : MODULE_IDS.filter(x => x === id || list.includes(x))); };
 
   async function save() {
-    if (busy || (!wordsChanged && !modulesChanged)) return;
+    if (sending.current || busy || (!wordsChanged && !modulesChanged)) return;
+    sending.current = true;
     // Retries resend the same operations, so a lost response never applies twice.
     if (!pending.current) {
       const commands: Command[] = [];
@@ -56,7 +60,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       router.refresh();
     } catch {
       setNotice({ tone: "error", text: "We couldn’t confirm the save. Save again to retry safely, or reload to check." });
-    } finally { setBusy(false); }
+    } finally { sending.current = false; setBusy(false); }
   }
 
   const changed = wordsChanged || modulesChanged;
@@ -98,7 +102,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       </ul>
     </section>
 
-    {notice ? <div role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? "Not saved" : undefined}>{notice.text}</Notice></div> : null}
+    {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? "Not saved" : undefined}>{notice.text}</Notice></div> : null}
     <p className="nv-sr" role="status">{busy ? "Saving…" : ""}</p>
     <FormActions sticky>
       <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={busy || !changed}><ButtonLabel pending={busy} idle="Save changes" busy="Saving…" /></button>
