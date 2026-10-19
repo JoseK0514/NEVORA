@@ -50,7 +50,7 @@ export default async function DashboardPage({
 
   if (!manager) {
     const proof=await requireSessionMutationProof();
-    return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName}/>;
+    return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone}/>;
   }
 
   const retired = retiredViewDestination(params);

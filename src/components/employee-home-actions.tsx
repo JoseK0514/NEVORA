@@ -69,16 +69,16 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
  * lifetime, authority, or recorded-time behavior; the original clock panel
  * remains keyed by its independent authority and owns its existing controller.
  */
-export function EmployeeHomeReviewedRenderer({state,timeAuthority,onRetry,authority,displayName}:{state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void;authority?:string;displayName?:string}){
+export function EmployeeHomeReviewedRenderer({state,timeAuthority,onRetry,authority,displayName,timeZone}:{state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void;authority?:string;displayName?:string;timeZone?:string}){
  const replaced=state.snapshot?.state==='ready'&&authority!==undefined&&state.snapshot.home.snapshot.authority!==authority;
  const home=!replaced&&!state.paused&&state.snapshot?.state==='ready'?state.snapshot.home:null,snapshot=home?.snapshot;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const loading=!state.paused&&(!state.snapshot||replaced);
  const status=state.paused?'paused':snapshot?home!.state:denied?'unauthorized':loading?'loading':'unavailable';
- return <EmployeeHomeReviewedView home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} ownTimeSlot={snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:null}/>;
+ return <EmployeeHomeReviewedView home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} timeZone={timeZone} ownTimeSlot={snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:null}/>;
 }
 // TC-P3-08: the signed-in first name reaches Home's band ("Hi, Alexandra."); the view shows it only once Home is read.
-export function EmployeeHomeActions({authority,timeAuthority,displayName}:{authority:string;timeAuthority:string;displayName?:string}){
+export function EmployeeHomeActions({authority,timeAuthority,displayName,timeZone}:{authority:string;timeAuthority:string;displayName?:string;timeZone?:string}){
  const [state,setState]=useState<PrivatePanelState<HomeLifetime>>({snapshot:null,refreshing:true,paused:false});
  const control=useRef<ReturnType<typeof createEmployeeHomeController>|null>(null),pathname=usePathname();
  useEffect(()=>{
@@ -96,5 +96,5 @@ export function EmployeeHomeActions({authority,timeAuthority,displayName}:{autho
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,pathname]);
- return <EmployeeHomeReviewedRenderer authority={authority} state={state} timeAuthority={timeAuthority} displayName={displayName} onRetry={()=>control.current?.refresh()}/>;
+ return <EmployeeHomeReviewedRenderer authority={authority} state={state} timeAuthority={timeAuthority} displayName={displayName} timeZone={timeZone} onRetry={()=>control.current?.refresh()}/>;
 }
