@@ -179,3 +179,6 @@
   .pw-step-label { font-size: 0.8125rem; }
 }
 @media (prefers-contrast: more) { .pw-payday { background: #FFFFFF; border-color: #1C1C1C; } }
+
+/* TC-B32: kit labels for document names, correction disclosure and job labels. */
+html body .app-shell.nevora-portal .page-frame .payroll-workflow :is(.pw-document strong, .pw-secondary-actions > summary, .pw-job strong) { font: var(--nv-t-label); }
