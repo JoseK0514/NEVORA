@@ -296,7 +296,7 @@ try {
       delayMs: 350,
     };
     await page.evaluate(() => window.dispatchEvent(new StorageEvent('storage', { key: 'nevora-session-check' })));
-    await page.getByText('Loading attendance review', { exact: true }).waitFor();
+    await page.getByText('Loading attendance', { exact: true }).waitFor();
     assert.equal(
       await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(),
       0,
@@ -310,17 +310,17 @@ try {
 
     fixture = { payload: fixtureReady(), status: 200, delayMs: 200 };
     await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-    await page.getByText('Loading attendance review', { exact: true }).waitFor();
+    await page.getByText('Loading attendance', { exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': visibility revalidation clears protected snapshot before refresh');
 
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
-    await page.getByText('Attendance updates paused', { exact: true }).waitFor();
+    await page.getByText('Attendance paused', { exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     fixture = { payload: fixtureReady(), status: 200, delayMs: 200 };
     await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
-    await page.getByText('Loading attendance review', { exact: true }).waitFor();
+    await page.getByText('Loading attendance', { exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': pagehide/pageshow requires a fresh protected snapshot');
@@ -343,12 +343,12 @@ try {
     };
     await page.getByRole('button', { name: 'Refresh attendance review' }).click();
     await page.getByText('Renamed Main Office', { exact: true }).waitFor();
-    assert.equal(await page.getByText('Main Office', { exact: true }).count(), 0);
+    assert.equal(await page.locator('.attendance-review-list').getByText('Main Office', { exact: true }).count(), 0, 'review rows must use the refreshed server labels');
     checked(engine + ': refreshed server labels replace stale page-load labels');
 
     fixture = { payload: fixtureReady(), status: 200 };
     await page.getByRole('button', { name: 'Refresh attendance review' }).click();
-    await page.getByText('Main Office', { exact: true }).waitFor();
+    await page.locator('.attendance-review-list').getByText('Main Office', { exact: true }).waitFor();
 
     for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: width <= 430 ? 844 : 1000 });
@@ -373,14 +373,14 @@ try {
 
     fixture = { status: 503, payload: { state: 'unavailable', reason: 'read_failed' } };
     await refresh.click();
-    await page.getByText('Attendance review unavailable', { exact: true }).waitFor();
+    await page.getByText('Attendance unavailable', { exact: true }).waitFor();
     assert.equal(await page.getByText('Nothing to review', { exact: true }).count(), 0);
     checked(engine + ': unavailable clears healthy empty state');
 
     fixture = { status: 200, payload: { ...fixtureReady(), validForMs: 120 } };
     await refresh.click();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
-    await page.getByText('Attendance review unavailable', { exact: true }).waitFor({ timeout: 3000 });
+    await page.getByText('Attendance unavailable', { exact: true }).waitFor({ timeout: 3000 });
     assert.equal(await page.getByText('Sign in again', { exact: true }).count(), 0);
     checked(engine + ': expired source freshness is not mislabeled as sign-in failure');
 
@@ -394,7 +394,7 @@ try {
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     await owner.setOffline(true);
-    await page.getByText('Attendance updates paused', { exact: true }).waitFor();
+    await page.getByText('You’re offline', { exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await owner.setOffline(false);
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
