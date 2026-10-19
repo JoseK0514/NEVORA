@@ -6,13 +6,22 @@ import { payrollFeatureEnabled } from '@/lib/payroll/service';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import { timeZoneLabel } from '@/lib/time-zone-label';
 import { currentBrand } from '@/lib/workspace-presentation/current.server';
+import { readManagementProfile } from '@/lib/data/management-profile.server';
+import { parseManagerProfile } from './contract';
 import { ManagerProfileLive } from './manager-profile-live';
 
 /** Phase 3.5: the Owner and Manager Profile, laid out like the employee Profile (band, details, settings, Sign out).
  * Name, role, company, time zone, My pay and device alerts come from today's reads. Contact, locations and
  * alert choices come from the management profile read in CODEX.md, which the client asks for. */
 export async function ManagerProfilePage({ proof }: { proof: SessionMutationProof }) {
-  const [workspace, brand] = await Promise.all([getWorkspace(), currentBrand()]);
+  const [workspace, brand, initial] = await Promise.all([
+    getWorkspace(),
+    currentBrand(),
+    readManagementProfile(proof).then(value => {
+      const profile = parseManagerProfile(value);
+      return profile.state === 'ready' ? profile : null;
+    }).catch(() => null),
+  ]);
   // My pay is offered exactly when the payroll feature is on and the company keeps pay statements: the rule its own
   // page and the shell's navigation apply (readPayrollCapabilities' "enabled" is that flag). Asking navigationForRole
   // with only that flag avoids a second workspace-locking payroll read on every load (WR-1); the layout already ran one.
@@ -22,7 +31,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
   return <div className="nv-page premium-manager-profile" data-nv-page="">
     <PageBand title="Profile" summary={offersPay ? "Details, pay and alerts." : "Your details and alerts."} overlap={false} />
     <KitStack className="pmp-content">
-      <ManagerProfileLive key={proof.employee.id} identity={{
+      <ManagerProfileLive key={proof.employee.id} initial={initial} identity={{
         employeeId: proof.employee.id,
         name: `${proof.employee.firstName} ${proof.employee.lastName}`.trim(),
         owner,
