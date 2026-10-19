@@ -15,7 +15,9 @@
   }
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error, .premium-updates, .premium-employee-home, .premium-employee-schedule, .premium-employee-time, .premium-employee-profile, .premium-employee-availability, .premium-request-hub, .premium-employee-timeoff, .premium-employee-exchange, .premium-notifications) > .nv-pageband {
     /* WR4-01: the title keeps its own width; controls beside it take what's left and scroll sideways if they must. */
-    display: grid; grid-template-columns: max-content minmax(0, 1fr); grid-auto-flow: row dense; align-items: center; column-gap: var(--nv-s-6);
+    /* WR4-11: …and it wraps only between words (min-content), never inside one. */
+    display: grid; grid-template-columns: minmax(min-content, max-content) minmax(0, 1fr); grid-auto-flow: row dense; align-items: center; column-gap: var(--nv-s-6);
+    container: nv-band / inline-size;
     padding: var(--nv-s-4) 36px calc(var(--nv-overlap) + var(--nv-s-4));
   }
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :where(.premium-home, .premium-home-view, .premium-inbox, .manager-schedule-page, .premium-team, .premium-legacy-page.employee-view:not(.premium-employee-pay), .premium-error, .premium-updates, .premium-employee-home, .premium-employee-schedule, .premium-employee-time, .premium-employee-profile, .premium-employee-availability, .premium-request-hub, .premium-employee-timeoff, .premium-employee-exchange, .premium-notifications) > .nv-pageband--flat {
@@ -441,4 +443,13 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 @media (min-width: 1024px) {
   /* AL4-25: sibling pages under one tab row keep one band height and title line: a band with no eyebrow keeps the eyebrow line's 20px. */
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband:not(:has(.nv-pageband__eyebrow-row, .nv-pageband__bar)) { padding-top: calc(var(--nv-s-4) + 48px + 20px); }
+}
+
+/* WR4-11: at large text (the band narrower than 30rem of its own text) the controls beside the title move to a row of
+ * their own, and the back bar wraps, so nothing is squeezed or cut. At 100% text this never applies at 761px and up. */
+@container nv-band (max-width: 30rem) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .nv-pageband.nv-pageband.nv-pageband > .nv-masthead__extra.nv-masthead__extra { grid-column: 1 / -1; justify-self: start; margin-top: var(--nv-s-3); }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] > .nv-pageband .nv-pageband__bar { flex-wrap: wrap; }
 }

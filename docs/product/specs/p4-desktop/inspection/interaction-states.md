@@ -111,3 +111,102 @@ It is not defect-free:
 - I didn't exercise the collapsed sidebar toggle, the Notifications bell page, or WebKit at 1024.
 
 Open: 1 P0, 4 P1, 10 P2
+
+## Round 2
+
+Re-checked on October 19, 2026, 14:10–15:05 AST, on the latest build (`0abdc74`), with the same preview and the same saved states. Chromium at 1440×900, 1024×768 and 768×900, plus phones at 390 and 320 (`isMobile`, `hasTouch`). WebKit spot checks at 1440 (Inbox) and 1024 (Employee).
+
+Manager and Owner Inbox reads were served from one real cached response with a fresh `observedAt`, as in round 1. Failure, slow, 401 and offline states were made in my own browser only. Employee Home and My time used real responses cached the same way. Read only: nothing was saved, submitted or signed out.
+
+Evidence is in `SP/r2/`: scripts, `out-*.txt` logs, and crops under `SP/r2/shots/`.
+
+### Status of round 1 findings
+
+| ID | Status | New measurement |
+|---|---|---|
+| IS-P4-01 | **Fixed** | **Manager, 1440:** with focus on `Review time off` at scrollY 2615 and the read slowed to 3 s, one 30 s poll ran. There was no state change (`data-inbox-state` stayed `ready`, with no mutations), scrollY stayed 2615 the whole time, and focus stayed on the row.<br>**Owner, 1024×768:** the same result at scrollY 3035. Log: `out-inbox-r2-M-1440.txt` G, `out-inbox-r2-O-1024.txt` G. |
+| IS-P4-02 | **Fixed** | The side column is sticky at top **81**. After scrolling and selecting with Enter, the heading is at top **103** and visible: `elementFromPoint` hits the heading, at 1440, at 1024×768, and in WebKit. All requests left the side column, so the pane ends at 367 (1440) and 431 (1024×768), inside the window. Crop: `r2/shots/AUDIT-M-1440-pane-sticky.png` |
+| IS-P4-03 | **Fixed** | **Owner, 1440:** three Tabs past the last item close the menu, and focus lands on a visible `Refresh` with its white ring. Shift+Tab returns to the trigger with the menu closed. Employee (1440) and Lead (1024) behave the same; their menu is Your profile and Sign out. |
+| IS-P4-04 | **Fixed** | `?item=HOURS%3AAUDIT-E` opens its group, so the row shows as selected. Escape returns focus to it (318,438). Choosing **Plan ahead** keeps the selection visible. The same happens in WebKit. |
+| IS-P4-05 | Waiting on the Profile merge (not counted) | As ROUND-2.md says. |
+| IS-P4-06 | **Partly fixed** | Up/Down between plain rows works. Shift+Tab from the pane heading returns to the selected row: (292,337) at 1440, (260,323) at 1024, and in WebKit.<br>**Group headings are never reached:**<br>• Down from `Review time off`, the row just before the first group, doesn't move. The page scrolls 40 px per press instead (row top 211 → 171 → 132).<br>• Up from the first row inside an open group stays put (796 → 836).<br>• Down from a closed group heading stays put.<br>• Up from the row after a closed group (`Set deadline`) stays put.<br>Cause: `src/lib/row-navigation.ts:19-23` collects focusable elements *inside* each row, and a `summary` row has none, so the target is `null`.<br>Fix: `const controls = (c) => c.matches(FOCUSABLE) ? [c] : [...c.querySelectorAll(FOCUSABLE)].filter(visible)`. Also skip rows inside `details:not([open])`, because `getClientRects()` still reports them. **P2** |
+| IS-P4-07 | **Fixed** | Enter on `Refresh` keeps focus on it (`disabled` false, white ring) through a 3 s read. A failed refresh also keeps focus on `Refresh`. See IS-P4-17 for the missing busy state. |
+| IS-P4-08 | **Partly fixed** | Holders now carry `aria-current="true"`: Inbox on `/app/requests`, Timecards on `/app/payroll-export`.<br>Pages below an entry still say `"page"`: **Settings** on `/app/settings/payroll` (Payroll settings) and **Home** on `/app?view=team` and `?view=attendance`. A screen reader hears "Settings, current page" while the trail says "Payroll settings".<br>Cause: `app-shell.tsx:208` compares with `activeHref`, which is the prefix match.<br>Fix: `aria-current={active ? (item.href === activeHref && !deeper && !homeView ? "page" : "true") : undefined}`. **P2** |
+| IS-P4-09 | **Fixed** | The trails read "Plan › [Home → /app] › *Team overview*" and "… › *Attendance*". Payroll settings reads "Workspace › [Settings] › *Payroll settings*". |
+| IS-P4-10 | **Fixed** | The selected waiting avatar is `rgb(255,255,255)` with an inset 1px `rgb(232,236,235)` ring, on the row's `rgb(231,243,242)`. |
+| IS-P4-11 | Waiting on Wave A (not counted) | Not re-checked. |
+| IS-P4-12 | **Fixed** | `scroll-padding-top: 81px` on every desktop page checked. A focused row after Shift+Tab is visible below the header. |
+| IS-P4-13 | **Fixed** | The trigger is named "Fictional Owner, account menu", "Alexandra Rivera, account menu" and so on, matching the visible name. |
+| IS-P4-14 | **Fixed** | The first Tab on every desktop page is "Skip to content": 134×44 at (12,12), white, teal text, 2px teal ring, z 100, not covered. Enter moves focus to `main#main-content`, and the next Tab is the page's first control (Inbox: `Refresh`). It's `display: none` on phones (390, 320, all roles), and the first phone Tab is still the brand link. Crop: `r2/shots/QAOWNER-1440-skip-link.png` |
+| IS-P4-15 | **Fixed** | "Alexandra Rivera, Employee, Main Office, 787-555-0101" matches the visible cells. |
+
+### New findings (round 2)
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| IS-P4-16 | Inbox · both · 1440, 1024 | "Request pages" card (`#inbox-all-requests`) | It's drawn **first** in the list column: top 249, while the first Inbox row is at 377 (1440) or 429 (1024). In the DOM and the Tab order it comes **last**: stop 61 of 66, while the first Inbox row is stop 5. After the filters, Tab skips the card on screen. A keyboard user reaches it only after every row and group, and focus then jumps back up to the top of the page. This fails WCAG 2.4.3 (focus order). | `r2/shots/AUDIT-M-1440-inbox-top.png`; `out-inbox-r2-*.txt` A | `src/components/manager-inbox.tsx` renders `<AllRequests />` after the list. `premium-desktop.css:300` moves it up with `order: -1`. | Render `<AllRequests />` as the first child of `.inbox-list-column` (keep the `ready \|\| hasShown` guard) and drop `order: -1`. The picture doesn't change. | P2 |
+| IS-P4-17 | Inbox · both · 1440 | Band `Refresh` during a refresh someone asked for | With the read taking 3 s, nothing shows that it's working. The eyebrow stays "Updated 2:15 PM", the button stays "Refresh" with no `aria-busy` or `aria-disabled`, and no status is announced. Only the time changes afterwards ("2:16 PM"). A second press starts another read. This is a side effect of the IS-P4-01 fix: `connection` now stays `ready` during a re-read. | `out-inbox-r2b-M-1440.txt` | `manager-action-center.tsx` (the early `return` on a ready re-read) and `manager-inbox.tsx` (Refresh relies on `connection`) | Expose `refreshing` from `useActionCenter`, but only for a refresh someone started, not the silent poll. While it's true, the button reads "Refreshing…" with `aria-disabled="true"` (focus kept, as Attendance does, Phase 2 IS-62), and the eyebrow says "Checking…". | P2 |
+| IS-P4-18 | Every Manager and Owner page · all widths, phones included | Inbox count (`use-inbox-count.ts`) | `/api/manager/inbox-count` doesn't exist in this build. Each page load reads it, and it's read again every 60 s. Every read returns **404**: 7 in one short Owner session, each one a console error ("Failed to load resource … 404"). The sweep's console-error check will flag every Manager and Owner page.<br>The UI is correct when I answer the read in my own browser:<br>• 26: the sidebar badge shows "26" (28×20, 12px, white on teal) and the link is named "Inbox, 26 need you";<br>• 140: "99+";<br>• 0 and unavailable: no badge, and the name is "Inbox";<br>• the phone tab works the same.<br>Judgment: the route arrives with Codex's merge. | `out-shell-r2-O-1440.txt`, `out-count.txt` | `src/components/use-inbox-count.ts:19` and `:29`, `app-shell.tsx:68` | Until the merge, don't call the hook (a build flag, or `enabled` false when the route isn't present). Or land the hook together with Codex's route. | P2 |
+| IS-P4-19 | Employee and Lead Home (clock status) and My time · all widths (desktop checked at 1024 and 1440) | `Refresh recorded time`; Home's `Refresh home` / `Retry home` | **Lead, 1024:** Enter on `Refresh recorded time` sets `disabled` while the read runs ("Refreshing…"), so focus drops to `<body>` and stays there after the read. The next Tab restarts at the skip link. The name stays "Refresh recorded time" while the text says "Refreshing…". Home's refresh button has the same `disabled={state.paused \|\| state.refreshing}` (from the code). Manager Inbox and Attendance already keep focus. | `out-mytimepoll.txt` | `src/components/employee-time-panel.tsx:62` and `employee-home-actions.tsx:61` (coordinator's) | Use `aria-disabled="true"` and ignore clicks while refreshing, instead of `disabled`, and name it "Refreshing recorded time" while busy (the Attendance IS-62 pattern). Send to the coordinator. | P2 |
+
+### Fix areas looked at again: correct
+
+- **The Inbox keeps the list during re-reads:**
+  - The poll and Refresh keep every row and the pane.
+  - A failed refresh keeps both columns: list column held at 4856 (1440) or 5518 (1024) by `min-height`, and the pane placeholder at 482×200 or 315×200.
+  - Offline, then online, comes back to `ready`.
+  - 401 shows "Sign in again to see your Inbox." with Sign in.
+  - When the read fails while the page is scrolled to 2600, the page scrolls to 0 and focus goes to `<body>`. The failure message (top 325) is then in view. Dropping failed items is decided, so I'm noting this, not filing it.
+- **Account menu:** Escape returns focus to the trigger (all roles). The items are Your profile, My pay (Owner and Manager) and Sign out.
+- **Keyboard in the list and pane:**
+  - Escape from the pane, including into a group that was closed, returns to the row.
+  - In the pane, Up and Down don't move between rows; they belong to the page.
+  - Pressing Enter on a group heading opens it, and Down then reaches its first row.
+- **Trails:** Home's views, Payroll settings, Time off and Time exports all end with the page's own name. The middle crumb is a link.
+- **Phones (390 Manager, 320 Owner, 390 Employee, 320 Lead):**
+  - The Inbox has no `aria-current` with `?item=`, the side column and Request pages card are hidden, and there's no `min-height`.
+  - A tapped row navigates to its href.
+  - The skip link is hidden, and the first Tab is the brand link (white ring).
+  - No sideways scroll.
+
+### Employee and Lead desktop: first interaction pass
+
+Pages: Home (`AUDIT-E`, `AUDIT-LEAD`, `AUDIT-ON`, `AUDIT-BREAK`, `AUDIT-LONG`); My schedule (plain, `?view=open`, `?intent=swap`); Requests overview, Time off, Shift requests and Availability; My time, Timecards and My pay; Profile, Updates and Notifications. Checked at 1440 (`AUDIT-E`), 1024 and 768 (`AUDIT-LEAD`), with WebKit at 1024. The only new finding is IS-P4-19. Correct:
+
+- **Focus order:**
+  - Skip link, then 9 sidebar links, then the header: trail link when you're deeper, Notifications, the account menu. There's no Search for these roles, which is correct.
+  - Then the section tabs inside the band, then the band's view chips or links, then the cards.
+  - Every stop has a ring:
+    - 2px white at +2 on the band, for the section tabs, `My shifts` / `Open shifts`, `New request` / `My requests (5)`, `Usual week` / `Specific week`, `Available shifts` / `Your requests`, and "3 items need your review";
+    - 2px teal elsewhere;
+    - Notifications' search field shows its ring on its label (`:focus-within`, 2px teal).
+  - No stop is under the header or off screen, and none is zero-sized.
+- **Section tabs inside the band:** at 768, 1024 and 1440 they sit at y 97, 44 px tall, with white rings, in WebKit too. At 768, My schedule's and Shift requests' chips take their own row (y 197 / 213), in Tab order after the tabs.
+- **My schedule side column (1440):**
+  - The order follows the columns: week strip (7 days), then the shift options down the left column, then `Confirm schedule` (300×52) and "What changed" on the right, then the link rows.
+  - `?intent=swap` adds `Done choosing` and, per day, Request a swap and Unable to work. The 52 stops are all visible.
+- **Profile (1024 and up):** left panel (`Refresh details`), then the right panel (Notifications, Calendar), then `Sign out` across the full width.
+- **Home states (`AUDIT-E`, 1440):**
+  - Ready.
+  - Loading: "Checking your shifts…" / "Loading Home…". The hidden `My time` link (`visibility: hidden`) isn't a Tab stop.
+  - 500: "Couldn't load Home." with `Try again` and `Try again to load Home`.
+  - 401: "Sign in again to view Home." with Sign in.
+  - Offline: "You're offline." / "Updates paused".
+  - Back online, it returns to ready.
+  - A 30 s poll keeps focus on `Update availability`, and the document height stays 1347.
+- **Other Home accounts (1024):** `AUDIT-ON`, `AUDIT-BREAK` and `AUDIT-LONG` each have 12–13 main stops in column order.
+- **My time states (`AUDIT-LEAD`, 1024):**
+  - Loading: "Loading recorded time".
+  - 500: "Couldn't load your time records" with Try again.
+  - 401: "Your session ended" with Sign in.
+  - Offline: "Updates paused".
+  - A 30 s poll keeps focus on `Request a correction` at scrollY 569, and the height stays 1337.
+- **Profile from the account menu:** Your profile → `/app/profile` (h1 "Profile"), and the menu closes.
+
+### Gaps (round 2)
+
+- Paused (window blur) still can't be produced in Playwright; the code path is shared with offline.
+- Employee Home caches loaded only for `AUDIT-E`. The other Home accounts were judged on live reads.
+- No 200% text pass this round. Large data is not in this preview.
+
+Open: 0 P0, 0 P1, 6 P2
