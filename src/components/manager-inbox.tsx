@@ -245,9 +245,17 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   if (refreshFrom !== null && !userRefreshing) setRefreshFrom(null);
   if (showing && !hasShown) setHasShown(true);
   // IS-P4-21: when the list goes away under the reader's focus, focus lands on the status message, not on the page body.
+  // IS-P4-22: when the list comes back and focus was lost with the message, it lands on the selected row or the first section heading.
   useEffect(() => {
-    if (ready || !hasShown) return;
-    if (document.activeElement === document.body || document.activeElement === null) document.querySelector<HTMLElement>(".premium-inbox .inbox-status-message")?.focus({ preventScroll: true });
+    if (!hasShown) return;
+    if (document.activeElement !== document.body && document.activeElement !== null) return;
+    if (!ready) { document.querySelector<HTMLElement>(".premium-inbox .inbox-status-message")?.focus({ preventScroll: true }); return; }
+    const row = document.querySelector<HTMLElement>(".premium-inbox [data-inbox-key][aria-current]");
+    const heading = document.querySelector<HTMLElement>(".premium-inbox .nv-content .nv-card:not(#inbox-all-requests) .nv-card__title");
+    const target = row && row.getClientRects().length ? row : heading;
+    if (!target) return;
+    if (!target.matches("a, button, summary, [tabindex]")) target.tabIndex = -1;
+    target.focus({ preventScroll: true });
   }, [ready, hasShown]);
   useLayoutEffect(() => {
     const column = listColumn.current;
@@ -302,7 +310,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         <p role="status" tabIndex={-1} className="inbox-status-message">{statusText[connection]}</p>
         {connection === "loading" || connection === "reconnecting" ? <div className="premium-skeleton" aria-hidden="true">{[0, 1, 2].map(i => <span key={i} className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span>)}</div> : null}
         {connection === "access_lost" ? <Link className="nv-link" href="/login">Sign in</Link>
-          : connection === "unavailable" || connection === "ready" ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .nv-content .nv-card:not(:has(.inbox-status)) :is(.nv-card__title, h2, h3)", ".inbox-status .nv-btn"); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button> : null}
+          : connection === "unavailable" || connection === "ready" ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .nv-content .nv-card:not(:has(.inbox-status)):not(#inbox-all-requests) :is(.nv-card__title, h2, h3)", ".inbox-status .nv-btn"); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button> : null}
       </div></Card> : total === 0 ? <Card><div className="inbox-clear nv-card__body">
         <EmptyState illustration="all-caught-up" status title="All caught up">
           Nothing needs you right now.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}

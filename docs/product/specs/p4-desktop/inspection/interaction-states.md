@@ -260,3 +260,78 @@ Evidence is in `SP/r4/`: scripts, `out-*.txt` logs, and crops under `SP/r4/shots
 - No 200% text pass this round.
 
 Open: 0 P0, 1 P1, 2 P2
+
+## Round 5 (exit round)
+
+Checked on October 19, 2026, 15:50–17:05 AST, on `8012d97`, with the same preview and saved states. Read only.
+
+- **Chromium:**
+  - Manager and Owner at 1440, 1024 and 768;
+  - Employee at 1440, Lead at 1024;
+  - phones at 390 and 320 for all four roles.
+- **WebKit:** spot checks at 1440 (Inbox arrows and groups).
+
+Inbox and Home reads were served in my own browser from cached real responses with a fresh `observedAt`, and so were the slow, 500, 401 and offline states. Evidence is in `SP/r5/`: scripts, `out-*.txt` and `sw-*.txt` logs, and crops under `SP/r5/shots/`.
+
+### Status of open findings
+
+| ID | Status | New measurement |
+|---|---|---|
+| IS-P4-06 | **Fixed** | Down from `Review time off` steps through the whole list: "12 people with no weekly hour target" (closed) → Set deadline → both timecards → "7 people haven't sent availability" → "5 people haven't confirmed the schedule", and stops at the end of the list. Up retraces the same steps exactly. In an open group, Down goes through its 7 rows and then on to the next heading. No stop lands on a hidden row. Chromium and WebKit agree. |
+| IS-P4-20 | **Fixed** | On `/app/employees/AUDIT-E`, Team is `aria-current="true"`. |
+| IS-P4-21 | **Fixed** | Scrolled to y 2000, at 1440 (Manager) and 1024×768 (Owner): a failed poll, a 401 on the poll, and going offline each keep scrollY at 2000. The status card sticks at top **81** with its message in view. Try again or Sign in is at top 133. Focus moves to the message (`p.inbox-status-message`), and the next Tab reaches Try again (2px teal ring). Crop: `r5/shots/M-1440-failed-scrolled.png` |
+| IS-P4-05, IS-P4-11, IS-P4-19 | Waiting on other owners (not counted) | Unchanged. |
+
+### New findings (round 5)
+
+| ID | Screen · role · width | Element | What is wrong, measured | Screenshot | Likely cause | Fix | Sev |
+|---|---|---|---|---|---|---|---|
+| IS-P4-22 | Inbox · Manager · **1440 and 390** (all widths: a phone regression) | Keyboard focus after the Inbox recovers | **`Try again` loses focus.** With the read failing, then succeeding, Enter on `Try again` leaves `document.activeElement` = `<body>`. That happens both when the very first load fails and when a read fails after the list has shown, at 1440 and at 390.<br>Phase 2 had fixed this (IS-58: focus lands on "Act now, 25"), and round 1 here measured it working. The Request pages card is now first in the list column (IS-P4-16), and it's in the DOM on phones too, where it's hidden. So the retry's target selector finds that card's **hidden** heading first (`#inbox-all-requests > .nv-card__head { display: none }`, and the whole card is `display: none` on phones). `focus()` on it fails, and `focusAfterRetry` stops there.<br>**Automatic recovery** (offline, then back online) also ends on `<body>`, because the status message that IS-P4-21 focused is unmounted. The next Tab then starts from the top of the list. | `out-retry` (console), `r5/out-recover.txt` | `src/components/manager-inbox.tsx:303`: `focusAfterRetry(".premium-inbox .nv-content .nv-card:not(:has(.inbox-status)) :is(.nv-card__title, h2, h3)", …)`; `src/components/kit/focus-after-retry.ts:15-16` | • Exclude the card: `".premium-inbox .inbox-list-column > .nv-card:not(#inbox-all-requests):not(:has(.inbox-status)) :is(.nv-card__title, h2, h3)"`.<br>• Have `focusAfterRetry` skip targets that aren't rendered (`found.getClientRects().length === 0`) and keep polling.<br>• For automatic recovery: when `ready` returns and `document.activeElement` is `<body>` because the status message had focus, focus the selected row (desktop) or the first section heading, using `preventScroll` so scrollY stays put. | P2 |
+
+### Full sweep: checked and correct
+
+- **Focus order and visibility.** Every Tab stop was recorded on each page below, up to 120 per page. No stop is missing a ring, sits under the header, is zero-sized or is off screen.
+  - Owner at 1440: Home and its three views, Schedule, Team (plus `?q=zzz` and `?status=inactive`), Timecards, Payroll, Time exports, Time off, Updates, Insights and Settings.
+  - Manager at 1024: Home, Inbox, Schedule, Team, Timecards, Time exports and Attendance.
+  - Owner at 768: Home, Inbox, Schedule, Team and Payroll.
+  - Employee at 1440: Home, My schedule (and `?view=open`), Requests overview, Time off, Shift requests, Availability, My time, Timecards, My pay, Profile, Updates and Notifications.
+  - Lead at 1024: Home, My schedule (and `?intent=swap`), My time, My pay and Profile.
+  - Three stops the script flagged are correct:
+    - The search fields on Schedule and Notifications show their 2px teal ring on the wrapper (`:focus-within`).
+    - The Manager Time off section tabs sit on the white page, not the band, so a teal ring is right there.
+- **Shell (Manager, 1024):**
+  - The skip link is Tab 1 (134×44, 2px teal ring), and Enter moves focus to `main`.
+  - The account menu, "Morgan Rivera, account menu", opens with Enter. Its items are Your profile, My pay and Sign out. It closes when focus leaves, and Shift+Tab returns to the trigger.
+  - Trails and `aria-current` are right on Time off, Time exports, Team overview and Attendance.
+  - `scroll-padding-top` is 81px.
+  - Team row names include the phone number.
+- **Inbox list and pane (Owner, 1440):**
+  - Request pages comes first in the Tab order.
+  - The sticky pane's heading is at top 101 and visible.
+  - Shift+Tab from the pane goes back to the selected row.
+  - A deep link into a closed group opens it, Escape returns to the row, and the Plan ahead fallback stays visible.
+  - The selected waiting avatar is a white disc.
+  - The 30 s poll keeps scrollY at 2611 and focus where it was.
+  - Refresh shows "Refreshing…" with `aria-disabled` and a status message, and focus stays on it. A failed refresh keeps both columns.
+- **Home states (Manager, 1440):**
+  - Ready: "26 things need you today."
+  - Loading: "Checking what needs you…"
+  - 500: "Couldn't load everything." with two `Try again` buttons. Enter on the first focuses the Next up card.
+  - 401 and offline: the matching band messages.
+  - Back online, it returns to ready. The document height stays 1345 in every state.
+- **Employee and Lead pages:** focus and states as in rounds 2 and 4, with no regressions in the sweep.
+- **Phones (390 Manager, 320 Owner, 390 Employee, 320 Lead):**
+  - The Inbox has no `aria-current`, a hidden side column and Request pages, and no held height.
+  - A tapped row navigates.
+  - The skip link is hidden, and the first Tab is the brand link with a white ring.
+  - No sideways scroll.
+  - The exception is IS-P4-22 (`Try again` focus).
+
+### Gaps (round 5)
+
+- `/api/manager/inbox-count` is 404 on this branch, as expected. One console 404 per full page load.
+- The dev server returned statement-timeout 500s on some first loads during the sweep. I retried once and didn't file them.
+- Window blur (paused) still can't be produced in Playwright. It shares the offline code path, which passed.
+- No 200% text pass this round.
+
+Open: 0 P0, 0 P1, 1 P2
