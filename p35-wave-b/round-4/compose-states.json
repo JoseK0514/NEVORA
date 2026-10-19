@@ -1,0 +1,612 @@
+[
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "text": 200,
+    "count": 1,
+    "previews": 1,
+    "before": {
+      "scroll": 2892,
+      "button": {
+        "x": 36,
+        "y": 391.515625,
+        "width": 248,
+        "height": 88,
+        "top": 391.515625,
+        "right": 284,
+        "bottom": 479.515625,
+        "left": 36
+      },
+      "label": "Publish update",
+      "disabled": false,
+      "ariaDisabled": null,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Publish update",
+        "box": {
+          "x": 36,
+          "y": 391.515625,
+          "width": 248,
+          "height": 88,
+          "top": 391.515625,
+          "right": 284,
+          "bottom": 479.515625,
+          "left": 36
+        }
+      },
+      "notices": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    },
+    "pending": {
+      "scroll": 2856,
+      "button": {
+        "x": 36,
+        "y": 427.515625,
+        "width": 248,
+        "height": 52,
+        "top": 427.515625,
+        "right": 284,
+        "bottom": 479.515625,
+        "left": 36
+      },
+      "label": "Publishing…",
+      "disabled": false,
+      "ariaDisabled": "true",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Publishing…",
+        "box": {
+          "x": 36,
+          "y": 427.515625,
+          "width": 248,
+          "height": 52,
+          "top": 427.515625,
+          "right": 284,
+          "bottom": 479.515625,
+          "left": 36
+        }
+      },
+      "notices": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    },
+    "failed": {
+      "scroll": 2780,
+      "button": {
+        "x": 36,
+        "y": 503.515625,
+        "width": 248,
+        "height": 88,
+        "top": 503.515625,
+        "right": 284,
+        "bottom": 591.515625,
+        "left": 36
+      },
+      "label": "Publish update",
+      "disabled": true,
+      "ariaDisabled": null,
+      "active": {
+        "tag": "H2",
+        "text": "Audience preview",
+        "box": {
+          "x": 36,
+          "y": 83.515625,
+          "width": 248,
+          "height": 88,
+          "top": 83.515625,
+          "right": 284,
+          "bottom": 171.515625,
+          "left": 36
+        }
+      },
+      "notices": [
+        {
+          "text": "Publication needs a status checkWe couldn’t confirm the result. Check status before trying again.Check status",
+          "box": {
+            "x": 16,
+            "y": 883.515625,
+            "width": 288,
+            "height": 468,
+            "top": 883.515625,
+            "right": 304,
+            "bottom": 1351.515625,
+            "left": 16
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "text": 100,
+    "count": 1,
+    "previews": 1,
+    "before": {
+      "scroll": 654,
+      "button": {
+        "x": 458,
+        "y": 778,
+        "width": 192,
+        "height": 52,
+        "top": 778,
+        "right": 650,
+        "bottom": 830,
+        "left": 458
+      },
+      "label": "Publish update",
+      "disabled": false,
+      "ariaDisabled": null,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Publish update",
+        "box": {
+          "x": 458,
+          "y": 778,
+          "width": 192,
+          "height": 52,
+          "top": 778,
+          "right": 650,
+          "bottom": 830,
+          "left": 458
+        }
+      },
+      "notices": [],
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    },
+    "pending": {
+      "scroll": 654,
+      "button": {
+        "x": 458,
+        "y": 778,
+        "width": 192,
+        "height": 52,
+        "top": 778,
+        "right": 650,
+        "bottom": 830,
+        "left": 458
+      },
+      "label": "Publishing…",
+      "disabled": false,
+      "ariaDisabled": "true",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Publishing…",
+        "box": {
+          "x": 458,
+          "y": 778,
+          "width": 192,
+          "height": 52,
+          "top": 778,
+          "right": 650,
+          "bottom": 830,
+          "left": 458
+        }
+      },
+      "notices": [],
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    },
+    "failed": {
+      "scroll": 654,
+      "button": {
+        "x": 458,
+        "y": 778,
+        "width": 192,
+        "height": 52,
+        "top": 778,
+        "right": 650,
+        "bottom": 830,
+        "left": 458
+      },
+      "label": "Publish update",
+      "disabled": true,
+      "ariaDisabled": null,
+      "active": {
+        "tag": "H2",
+        "text": "Audience preview",
+        "box": {
+          "x": 458,
+          "y": 650,
+          "width": 131.890625,
+          "height": 22,
+          "top": 650,
+          "right": 589.890625,
+          "bottom": 672,
+          "left": 458
+        }
+      },
+      "notices": [
+        {
+          "text": "Publication needs a status checkWe couldn’t confirm the result. Check status before trying again.Check status",
+          "box": {
+            "x": 438,
+            "y": 902,
+            "width": 808,
+            "height": 142,
+            "top": 902,
+            "right": 1246,
+            "bottom": 1044,
+            "left": 438
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "count": 2,
+    "previews": 1,
+    "contextFixture": "fictional ready employee context; no server changes",
+    "before": {
+      "scroll": 2934,
+      "button": {
+        "x": 36,
+        "y": 391.515625,
+        "width": 248,
+        "height": 88,
+        "top": 391.515625,
+        "right": 284,
+        "bottom": 479.515625,
+        "left": 36
+      },
+      "label": "Publish update",
+      "disabled": false,
+      "ariaDisabled": null,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Publish update",
+        "box": {
+          "x": 36,
+          "y": 391.515625,
+          "width": 248,
+          "height": 88,
+          "top": 391.515625,
+          "right": 284,
+          "bottom": 479.515625,
+          "left": 36
+        }
+      },
+      "notices": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    },
+    "pending": {
+      "scroll": 2898,
+      "button": {
+        "x": 36,
+        "y": 427.515625,
+        "width": 248,
+        "height": 52,
+        "top": 427.515625,
+        "right": 284,
+        "bottom": 479.515625,
+        "left": 36
+      },
+      "label": "Publishing…",
+      "disabled": false,
+      "ariaDisabled": "true",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Publishing…",
+        "box": {
+          "x": 36,
+          "y": 427.515625,
+          "width": 248,
+          "height": 52,
+          "top": 427.515625,
+          "right": 284,
+          "bottom": 479.515625,
+          "left": 36
+        }
+      },
+      "notices": [],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    },
+    "failed": {
+      "scroll": 2822,
+      "button": {
+        "x": 36,
+        "y": 503.515625,
+        "width": 248,
+        "height": 88,
+        "top": 503.515625,
+        "right": 284,
+        "bottom": 591.515625,
+        "left": 36
+      },
+      "label": "Publish update",
+      "disabled": true,
+      "ariaDisabled": null,
+      "active": {
+        "tag": "H2",
+        "text": "Audience preview",
+        "box": {
+          "x": 36,
+          "y": 83.515625,
+          "width": 248,
+          "height": 88,
+          "top": 83.515625,
+          "right": 284,
+          "bottom": 171.515625,
+          "left": 36
+        }
+      },
+      "notices": [
+        {
+          "text": "Publication needs a status checkWe couldn’t confirm the result. Check status before trying again.Check status",
+          "box": {
+            "x": 16,
+            "y": 883.515625,
+            "width": 288,
+            "height": 468,
+            "top": 883.515625,
+            "right": 304,
+            "bottom": 1351.515625,
+            "left": 16
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 1440,
+    "text": 100,
+    "count": 1,
+    "previews": 1,
+    "contextFixture": "fictional ready employee context; no server changes",
+    "before": {
+      "scroll": 554,
+      "button": {
+        "x": 458,
+        "y": 778,
+        "width": 192,
+        "height": 52,
+        "top": 778,
+        "right": 650,
+        "bottom": 830,
+        "left": 458
+      },
+      "label": "Publish update",
+      "disabled": false,
+      "ariaDisabled": null,
+      "active": {
+        "tag": "BUTTON",
+        "text": "Publish update",
+        "box": {
+          "x": 458,
+          "y": 778,
+          "width": 192,
+          "height": 52,
+          "top": 778,
+          "right": 650,
+          "bottom": 830,
+          "left": 458
+        }
+      },
+      "notices": [],
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    },
+    "pending": {
+      "scroll": 554,
+      "button": {
+        "x": 458,
+        "y": 778,
+        "width": 192,
+        "height": 52,
+        "top": 778,
+        "right": 650,
+        "bottom": 830,
+        "left": 458
+      },
+      "label": "Publishing…",
+      "disabled": false,
+      "ariaDisabled": "true",
+      "active": {
+        "tag": "BUTTON",
+        "text": "Publishing…",
+        "box": {
+          "x": 458,
+          "y": 778,
+          "width": 192,
+          "height": 52,
+          "top": 778,
+          "right": 650,
+          "bottom": 830,
+          "left": 458
+        }
+      },
+      "notices": [],
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    },
+    "failed": {
+      "scroll": 554,
+      "button": {
+        "x": 458,
+        "y": 778,
+        "width": 192,
+        "height": 52,
+        "top": 778,
+        "right": 650,
+        "bottom": 830,
+        "left": 458
+      },
+      "label": "Publish update",
+      "disabled": true,
+      "ariaDisabled": null,
+      "active": {
+        "tag": "H2",
+        "text": "Audience preview",
+        "box": {
+          "x": 458,
+          "y": 650,
+          "width": 131.890625,
+          "height": 22,
+          "top": 650,
+          "right": 589.890625,
+          "bottom": 672,
+          "left": 458
+        }
+      },
+      "notices": [
+        {
+          "text": "Publication needs a status checkWe couldn’t confirm the result. Check status before trying again.Check status",
+          "box": {
+            "x": 438,
+            "y": 902,
+            "width": 808,
+            "height": 142,
+            "top": 902,
+            "right": 1246,
+            "bottom": 1044,
+            "left": 438
+          },
+          "focused": false
+        }
+      ],
+      "nav": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "title": "Fictional shift note",
+      "body": "Fictional inspection message. Nothing is sent."
+    }
+  }
+]
