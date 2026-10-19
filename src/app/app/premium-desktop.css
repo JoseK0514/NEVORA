@@ -195,7 +195,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
  * page's final desktop height, so it doesn't pop in after the page loads. Manager and Owner shell only. */
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .route-skeleton[data-band] {
-    max-width: 1120px; margin-inline: auto; width: 100%; box-sizing: border-box; padding: 0; background: transparent; --nv-overlap: 40px;
+    max-width: 1120px; margin-inline: 0; width: 100%; box-sizing: border-box; padding: 0; background: transparent; --nv-overlap: 40px;
   }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .route-skeleton[data-band] > .route-skeleton-band {
     display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; box-sizing: border-box; height: var(--route-band-desktop, 168px);
@@ -280,7 +280,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame:has(> .section-tabs + :is([data-nv-page], .route-skeleton[data-band])) { position: relative; }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs:has(+ :is([data-nv-page], .route-skeleton[data-band])) {
-    position: absolute; z-index: 1; top: 28px; left: max(32px, calc(50% - 560px)); width: min(1120px, calc(100% - 64px)); box-sizing: border-box;
+    position: absolute; z-index: 1; top: 28px; left: 32px; width: min(1120px, calc(100% - 64px)); box-sizing: border-box;
     margin: 0; padding: var(--nv-s-1) 36px 0; border: 0; background: transparent; max-width: none;
   }
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .section-tabs:has(+ :is([data-nv-page], .route-skeleton[data-band])) .section-tab { color: var(--nv-masthead-ink); font: var(--nv-t-label); }
@@ -340,9 +340,6 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* TCD-10: the trail and sidebar entries follow text size. */
   html body .app-shell.nevora-portal.nevora-portal .portal-location { font-size: .875rem; }
   html body .app-shell.nevora-portal.nevora-portal .sidebar .nav-link { font-size: .875rem; }
-  /* AL4-16: avatars grow with their initials at large text (my pages; the kit sizes them in px). */
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > :is(.premium-team, .premium-inbox, .premium-home) .nv-avatar { width: 2.5rem; height: 2.5rem; border-radius: 1.25rem; }
-  html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-inbox .inbox-detail__head > :is(.nv-avatar, .nv-tile) { width: 3rem; height: 3rem; border-radius: 1.5rem; }
   /* AL4-17: a card holding one row is balanced top and bottom. */
   html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home .nv-card > .nv-rows:only-child { padding-block: var(--nv-s-1); }
 }
