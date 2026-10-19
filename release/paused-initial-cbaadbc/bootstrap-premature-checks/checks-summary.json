@@ -1,0 +1,68 @@
+{
+  "checkpoint": "cbaadbc8688eb4deb172ae22b1ee2607f5c5ca64",
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "scope": "Initial bounded combined candidate sample; no complete exit round claimed",
+  "out": "/workspace/paused-previews/candidate-initial",
+  "startedAt": "2026-10-19T20:35:01.533Z",
+  "batches": [
+    {
+      "name": "profile-320",
+      "routes": "/app/profile",
+      "accounts": "AUDIT-M,QAOWNER",
+      "widths": "320",
+      "text": "100,125,150,200",
+      "axe": true,
+      "startedAt": "2026-10-19T20:35:01.536Z",
+      "exitCode": 1,
+      "files": [],
+      "records": [],
+      "passed": 0,
+      "failed": 0,
+      "completedAt": "2026-10-19T20:35:05.050Z"
+    },
+    {
+      "name": "all-role-shell-home-profile",
+      "routes": "/app,/app/profile",
+      "accounts": "AUDIT-E,AUDIT-LEAD,AUDIT-LONG,AUDIT-ON,AUDIT-BREAK,AUDIT-M,QAOWNER,payroll-qa-a,payroll-qa-b",
+      "widths": "390,1440",
+      "text": "100",
+      "startedAt": "2026-10-19T20:35:05.054Z",
+      "exitCode": 1,
+      "files": [],
+      "records": [],
+      "passed": 0,
+      "failed": 0,
+      "completedAt": "2026-10-19T20:35:08.740Z"
+    },
+    {
+      "name": "inbox-representative",
+      "routes": "/app/inbox",
+      "accounts": "AUDIT-M,QAOWNER",
+      "widths": "320,390,844x390,1440",
+      "text": "100,125,150,200",
+      "startedAt": "2026-10-19T20:35:08.741Z",
+      "exitCode": 1,
+      "files": [],
+      "records": [],
+      "passed": 0,
+      "failed": 0,
+      "completedAt": "2026-10-19T20:35:12.823Z"
+    },
+    {
+      "name": "merged-route-consistency",
+      "routes": "/app/employees,/app/schedule/templates,/app/reports,/app/settings",
+      "accounts": "QAOWNER",
+      "widths": "390,1440",
+      "text": "100,200",
+      "axe": true,
+      "startedAt": "2026-10-19T20:35:12.851Z",
+      "exitCode": 1,
+      "files": [],
+      "records": [],
+      "passed": 0,
+      "failed": 0,
+      "completedAt": "2026-10-19T20:35:14.933Z"
+    }
+  ],
+  "completedAt": "2026-10-19T20:35:14.943Z"
+}

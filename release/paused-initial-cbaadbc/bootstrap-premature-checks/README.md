@@ -1,0 +1,1 @@
+Invalid bootstrap attempt only: login had a cold-compilation timeout and browser states were absent. Checker startup failed before producing any measured cells. Retained for traceability; excluded from all matrix counts.

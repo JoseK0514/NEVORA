@@ -1,0 +1,14 @@
+import {chromium,webkit} from '/workspace/nevora-browser-runtime/node_modules/playwright/index.mjs';
+import {readFile,readdir,mkdir,writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+const root='/workspace/paused-previews/wave-c',out=import.meta.dirname;
+const runs=(await readdir(root)).filter(n=>n.startsWith('evidence-')).sort();
+const {url,checkpoint}=JSON.parse(await readFile(join(root,runs.at(-1),'access.json'),'utf8'));
+const records=[];await mkdir(join(out,'variants'),{recursive:true});
+for(const [engine,launcher]of [['chromium',chromium],['webkit',webkit]]){const b=await launcher.launch();
+for(const account of ['QAOWNER','AUDIT-M'])for(const width of [320,390,844,1440]){if(engine==='webkit'&&width!==390)continue;
+const c=await b.newContext({storageState:join(root,'state',account+'.json'),viewport:{width,height:width===844?390:width<600?844:900},isMobile:width<600||width===844,hasTouch:width<600||width===844,reducedMotion:'reduce',serviceWorkers:'block'});
+await c.route('**/*',r=>r.request().method()==='GET'?r.continue():r.abort());const p=await c.newPage();p.setDefaultTimeout(8000);
+const routes=account==='QAOWNER'?['settings/locations?q=zzz','settings/locations?status=setup','settings/locations?status=inactive','settings/locations/unknown','account-recovery?employee=EMP-2026-NORTHSIDE-RIVERFRONT-DISTRIBUTION-0004812','account-recovery?from=settings','clocker-recovery?from=settings']:['account-recovery?employee=AUDIT-E','account-recovery?from=settings','clocker-recovery?from=settings'];
+for(const route of routes){try{await p.goto(url+'/app/'+route,{waitUntil:'networkidle',timeout:60000});await p.waitForTimeout(2500);await p.waitForFunction(()=>!document.querySelector('.wc-page [data-guard]'));await p.evaluate(()=>document.fonts.ready);await p.evaluate(()=>document.documentElement.style.fontSize='200%');await p.waitForTimeout(100);const key=[engine,account,width,route.replaceAll(/\W/g,'_')].join('-');const data=await p.evaluate(()=>{const box=e=>{if(!e)return null;const r=e.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom};};const back=document.querySelector('.nv-masthead__back');return{finalPath:location.pathname,text:document.querySelector('.wc-page')?.innerText,back:{text:back?.textContent?.trim(),href:back?.getAttribute('href'),box:box(back)},scrollWidth:document.documentElement.scrollWidth,width:innerWidth,buttons:[...document.querySelectorAll('.wc-page .nv-btn')].map(e=>({text:e.innerText,box:box(e)}))};});await p.screenshot({path:join(out,'variants',key+'.png'),fullPage:false,style:'nextjs-portal{display:none!important}'});records.push({key,engine,account,width,route,...data});}catch(error){records.push({engine,account,width,route,error:error.message});}await writeFile(join(out,'variants.json'),JSON.stringify({checkpoint,records},null,2));}
+await c.close();}await b.close();}console.log('VARIANTS DONE',records.length);

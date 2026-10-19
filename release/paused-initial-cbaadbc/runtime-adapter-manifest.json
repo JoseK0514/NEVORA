@@ -1,0 +1,9 @@
+{
+  "source": "/workspace/inspect-candidate-initial",
+  "checkpoint": "cbaadbc8688eb4deb172ae22b1ee2607f5c5ca64",
+  "runtimeMode": "Next dev Turbopack; physical copied dependencies; source branch migrations; fictional executor-only bootstrap; pool12 scratch transport",
+  "helperHashes": {
+    "preview-runtime.mjs": "3b9667eebd57c8778bd349d065bc2506a0bb4bcfca69aa35f8bb54269da8fe0f",
+    "owned-preview-app-dev.mts": "4057b152a2a9d67b4234891fcb139271241d42165ec05beed10be12a7bd1a91a"
+  }
+}

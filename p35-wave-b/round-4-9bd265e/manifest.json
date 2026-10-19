@@ -1,0 +1,21 @@
+{
+  "checkpoint": "9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7",
+  "tree": "92710d9db66f629daf18d0f982fa2abe806e9ed6",
+  "previewOutput": "/workspace/paused-previews/wave-b",
+  "bootstrapMethod": "fixture-only executor; no browser publication",
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "sourceManifest": "source-manifest.json",
+  "fixtureDate": "2026-10-19",
+  "normalData": true,
+  "observed": 48,
+  "passed": 45,
+  "failed": 3,
+  "matrixStatus": "Paused after smoke at coordinator request for uncontended candidate gates",
+  "limitations": [
+    "Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.",
+    "Viewport emulation is not physical iPhone/iPad testing.",
+    "Automated axe and keyboard checks do not certify a screen-reader audit.",
+    "Route visual inspection is not complete business workflow regression or production verification."
+  ],
+  "sourceClean": true
+}

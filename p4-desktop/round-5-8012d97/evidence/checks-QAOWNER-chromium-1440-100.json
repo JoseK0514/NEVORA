@@ -1,0 +1,408 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app?view=attendance",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app?view=team",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app?view=activity",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0002,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/inbox?filter=now",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/inbox?filter=requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0023,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/inbox?filter=planning",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1465,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0007,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/employees?q=zzz",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/employees?status=inactive",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0005,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "a.nto-back-link «All requests» 13px",
+   "span.nto-count «1 request» 12px",
+   "span.status-pill.warning «Pending» 11px",
+   "span. «Full day» 12px",
+   "p.nto-request-note «Fictional family appointment» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0014,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "p.eyebrow «Team scheduling» 12px",
+   "p. «Check each assignment and the » 13px",
+   "span.exchange-count «0 requests» 12px",
+   "span. «Requests needing a management » 13px"
+  ],
+  "targets": [],
+  "cls": 0.0012,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "p. «Schedule week» 12px",
+   "strong. «Availability deadline» 13px",
+   "p. «No deadline set» 13px",
+   "span. «Set a cutoff in the schedule t» 12px",
+   "dt. «Submitted» 12px",
+   "dt. «Missing» 12px",
+   "dt. «Unavailable all week» 12px",
+   "p. «Review who can work and who st» 13px",
+   "span. «All8» 12px",
+   "span.av-filter-count «8» 11px",
+   "span. «Missing8» 12px",
+   "span. «Submitted0» 12px",
+   "span.av-filter-count «0» 11px",
+   "span. «Unavailable0» 12px",
+   "p.av-location «Main Office» 12px",
+   "span.status-pill.neutral «Not submitted» 11px"
+  ],
+  "targets": [],
+  "cls": 0.0012,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/updates",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "p.updates-footnote «Open an update to review the m» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "p. «Choose 1 to 31 days» 12px",
+   "label. «First day» 12px",
+   "label. «Last day» 12px",
+   "button.reports-module__Iv4GWq__primary «View period» 13px",
+   "button.reports-module__Iv4GWq__secondary «Refresh» 13px",
+   "span. «Applied period» 12px",
+   "p.reports-module__Iv4GWq__applied «Applied periodOct 13 – Oct 19,» 12px",
+   "button.reports-module__Iv4GWq__secondary «Download CSV» 13px",
+   "button.reports-module__Iv4GWq__secondary «Print / Save PDF» 13px",
+   "p.reports-module__Iv4GWq__exportHint «PDF: choose Save as PDF in you» 12px",
+   "p.reports-module__Iv4GWq__period «Oct 13 – Oct 19, 2026 Puerto R» 12px",
+   "span. «Puerto Rico time» 11px",
+   "dt. «Recorded time» 12px",
+   "dt. «Breaks recorded» 12px",
+   "dt. «Timecards» 12px",
+   "p.reports-module__Iv4GWq__note «Recorded time includes breaks.» 12px",
+   "span. «Jump to» 12px",
+   "a. «Hours» 13px",
+   "a. «Attendance» 13px",
+   "a. «Changes» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0003,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/payroll",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0004,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/settings",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Available to Owners. Review an» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0023,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

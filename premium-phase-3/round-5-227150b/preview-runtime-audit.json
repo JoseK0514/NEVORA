@@ -1,0 +1,33 @@
+{
+  "checkpoint": "227150bb2658cb5a30db3c644b6b8f76031d3c79",
+  "tree": "b932405014d8db54439027d855cdcc7b19e35d28",
+  "startedAt": "2026-10-19T20:33:02.729Z",
+  "screens": [],
+  "errors": [],
+  "checks": [
+    {
+      "name": "Fictional update inserted through owned fixture executor",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.",
+    "Viewport emulation is not physical iPhone/iPad testing.",
+    "Automated axe and keyboard checks do not certify a screen-reader audit.",
+    "Route visual inspection is not complete business workflow regression or production verification."
+  ],
+  "sourceManifest": "/workspace/paused-previews/phase3/evidence-2026-10-19T20-33-01-904Z/owned-next-Vegj62/source-manifest.json",
+  "fixtureDate": "2026-10-19",
+  "fixtureWeek": "2026-10-19",
+  "nextWeekSeeded": "2026-10-26",
+  "payrollFixtureSeeded": true,
+  "bootstrapMethod": "fixture-only executor; no browser publication",
+  "demoAccounts": {
+    "owner": "QAOWNER",
+    "manager": "AUDIT-M",
+    "lead": "AUDIT-LEAD",
+    "employee": "AUDIT-E",
+    "payrollOwner": "payroll-qa-owner",
+    "payrollEmployee": "payroll-qa-a"
+  }
+}

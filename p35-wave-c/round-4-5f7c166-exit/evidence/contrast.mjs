@@ -1,0 +1,10 @@
+import {chromium,webkit} from '/workspace/nevora-browser-runtime/node_modules/playwright/index.mjs';
+import {readFile,readdir,writeFile,mkdir} from 'node:fs/promises';
+import {join} from 'node:path';
+const root='/workspace/paused-previews/wave-c',out=import.meta.dirname;
+const runs=(await readdir(root)).filter(n=>n.startsWith('evidence-')).sort();
+const {url,checkpoint}=JSON.parse(await readFile(join(root,runs.at(-1),'access.json'),'utf8'));
+const records=[];await mkdir(join(out,'contrast'),{recursive:true});
+for(const [engine,launcher]of [['chromium',chromium],['webkit',webkit]]){const b=await launcher.launch();for(const account of ['QAOWNER','AUDIT-M']){const c=await b.newContext({storageState:join(root,'state',account+'.json'),viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});await c.route('**/*',r=>r.request().method()==='GET'?r.continue():r.abort());const p=await c.newPage();p.setDefaultTimeout(8000);await p.goto(url+'/app/account-recovery',{waitUntil:'networkidle',timeout:60000});await p.waitForTimeout(2500);await p.waitForFunction(()=>!document.querySelector('.wc-page [data-guard]'));await p.evaluate(()=>document.fonts.ready);const field=p.locator('#assisted-attestation');await field.scrollIntoViewIfNeeded();
+for(const state of ['idle','hover','focus']){if(state==='hover')await field.hover();if(state==='focus')await field.focus();const data=await p.locator('#assisted-employee,#assisted-attestation').evaluateAll(es=>es.map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return{id:e.id,border:s.borderColor,borderWidth:s.borderWidth,background:s.backgroundColor,color:s.color,font:s.fontSize,outline:s.outline,rect:{x:r.x,y:r.y,width:r.width,height:r.height}};}));records.push({engine,account,state,data});await field.screenshot({path:join(out,'contrast',[engine,account,state].join('-')+'.png')});}await c.close();}await b.close();}
+await writeFile(join(out,'contrast.json'),JSON.stringify({checkpoint,records},null,2));console.log('CONTRAST DONE',records.length);
