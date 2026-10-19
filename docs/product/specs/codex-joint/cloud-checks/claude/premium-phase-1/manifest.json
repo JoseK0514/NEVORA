@@ -2330,6 +2330,52 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00102-matrix-QAOWNER-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T19-48-54-785Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00102-matrix-QAOWNER-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app/settings/branding,/app/settings/breaks,/app/settings/clocker,/app/settings/company-policies",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "6568a9e923f2488ffa5d363099e5109b34c7f19ad3153b68a0e4b09688f632cf",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00103-matrix-QAOWNER-chromium-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T19-49-56-081Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00103-matrix-QAOWNER-chromium-1440.log",
+      "args": [
+        "--routes",
+        "/app/settings/features,/app/settings/locations,/app/settings/locations/loc-1,/app/settings/locations/new",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "a85570151fc26458df708d5da8cbbfb727c3265a4940aa1976c2882be40697f8",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12580,
