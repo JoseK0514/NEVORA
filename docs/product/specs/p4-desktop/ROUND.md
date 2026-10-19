@@ -1,8 +1,8 @@
 # Desktop (Phase 4): inspection round for Codex
 
-- **Round:** 4 (round 3 at `2250275` wasn't picked up; this commit replaces it, with all round-2 fixes)
+- **Round:** 5 (rounds 1, 2 and 4 ran locally; their reports are in `inspection/`, round 4 appended to each)
 - **Status:** not zero yet (rounds 1–2 ran locally; their reports are in `inspection/`)
-- **Exit round:** no. Round 4 re-checks everything open; the exit round is the first that reports zero in all five areas.
+- **Exit round:** yes, if it reports zero. Every round-4 finding is fixed in this commit; this round is a full sweep by all five areas plus the re-checks.
 - **Branch and commit:** `claude/p4-desktop-240fe0`, the commit this file was pushed with (after `97d4611`).
 - **Chat prefix for IDs:** `P4` (for example `AL-P4-01`).
 
@@ -24,6 +24,15 @@ The desktop layout (761–1440) of the Manager and Owner pages, and the desktop 
 ## Re-check by ID
 
 Every finding in the five round-1 and round-2 reports under `docs/product/specs/p4-desktop/inspection/` (`alignment.md` AL4-, `stability.md` ST-P4-, `type-colour-copy.md` TCD-, `interaction-states.md` IS-P4-, `widths-roles.md` WR4-), except those listed as waiting on another owner or kept by decision in `inspection/ROUND-2.md` and the round-2 sections. All five round-2 reports are fixed in this commit (stability's ST-P4-03, 05, 09, 10 and 11 included).
+
+## What the fixes since round 4 touched
+
+- Sibling pages under one tab row (Time and pay; Employee Requests and Pay) share one title line (y 88) and, from 1024, one band height (184); at 761–1023 each stays at 200px or less. Controls on the title row overhang it by 2px each side.
+- Home's view chips scroll sideways at every desktop width (ST-P4-12, WR4-17).
+- Inbox: when the list goes (offline, failed, signed out) its status card stays in view below the header and takes focus (IS-P4-21); arrows skip rows inside closed groups (IS-P4-06); Request pages is a list until the card fits three across without splitting words (AL4-29, WR4-18).
+- Sidebar: deeper pages (Team member detail, Update detail) mark their section entry `aria-current="true"` (IS-P4-20).
+- Time exports' employee card inset (AL4-28); My time's two cards rounded with the kit shadow (AL4-22); Employee timecard inset 20 (AL4-23); Employee My pay on the band rules (AL4-25); chip fade off from 1100 (AL4-21); My schedule week rows at 1100–1279 put the position on its own line (WR4-14); Time exports names in the row role (TCD-14); Updates' Review update on the floor (TCD-16).
+- Placeholder band heights updated to the new band heights.
 
 ## What the fixes since round 2 touched
 
