@@ -16,7 +16,7 @@ const port = await new Promise((resolve, reject) => {
 const owned = mkdtempSync(join(tmpdir(), 'nevora-premium-release-'));
 const data = join(owned, 'data'), marker = randomBytes(16).toString('hex');
 writeFileSync(join(owned, 'owner'), marker, { mode: 0o600 });
-const env = { ...process.env, CI: '1', NEXT_TELEMETRY_DISABLED: '1', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false', FUEL_TEST_DATABASE_URL: `postgresql://nevora_release@127.0.0.1:${port}/nevora_exchange_test_premium_${marker.slice(0, 12)}`, FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes' };
+const env = { ...process.env, CI: '1', NEXT_TELEMETRY_DISABLED: '1', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false', FUEL_TEST_DATABASE_URL: `postgresql://nevora_release@127.0.0.1:${port}/nevora_exchange_test_premium_${marker.slice(0, 12)}`, FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes', NEVORA_PREMIUM_CLUSTER: owned, NEVORA_PREMIUM_CLUSTER_MARKER: marker };
 delete env.DATABASE_URL;
 const pg = (name, args) => {
   const result = spawnSync(join(bin, name), args, { env, encoding: 'utf8', timeout: 45000 });

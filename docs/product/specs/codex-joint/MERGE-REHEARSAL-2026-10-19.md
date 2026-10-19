@@ -61,3 +61,8 @@ The existing warning is `src/components/employee-weekly-confirmation.tsx:18`, re
 Raw per-command logs/JSON and Vitest/ESLint JSON: `/workspace/nevora-release-evidence/2026-10-19/rehearsal/` and `rehearsal-corrected/`. Merge conflict/commit records: `merge-records.json`; source custody script/progress logs are adjacent. No captures, credentials or database dumps are committed.
 
 **Release remains blocked by the two UI test failures and the mandatory final exact-SHA/hosted/independent gates.** Production flags/project metadata are separately unverified because Vercel tools are not exposed here. Manager Schedule/count load risks remain in [the load report](LOAD-2026-10-19.md). The scratch branches remain local for inspection; final integration is Jose/Claude’s decision, and tonight’s final push must be revalidated rather than inheriting these snapshot results.
+
+
+## Later shared-branch updates
+
+While publishing, a separate cloud screen-check worker pushed additional scripts/evidence to the same backend branch. These were fetched and preserved in merges `8e28933` and `0b69413`; no force-push or worker-source overwrite was used. They are **later than both frozen rehearsal candidates** above, so the matrix must not be represented as a full run of the new shared head. Their new Node-specific `cloud-network-guard.test.cjs` reproduced a default Vitest failed-suite discovery error (“No test suite found”). `ec55331` renames it to the repository’s `.check.cjs` convention without changing assertions. `node --test scripts/ui-checks/cloud-network-guard.check.cjs` passes **2/2**; keep that separate Node check in the cloud worker workflow. Tonight’s final candidate must include all later worker/backend commits and get fresh required checks.
