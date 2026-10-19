@@ -43,7 +43,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
 
   /* Checkbox rows: a 44px target, title and help. */
   & .wa-check { display: flex; align-items: flex-start; gap: var(--nv-s-3); min-height: 44px; margin: 0; padding: var(--nv-s-1) 0; font: var(--nv-t-row); color: var(--nv-ink); cursor: pointer; }
-  & .wa-check > input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--nv-accent); cursor: pointer; }
+  & .wa-check > input { flex: none; width: 22px; height: 22px; margin: calc((1.375rem - 22px) / 2) 0 0; accent-color: var(--nv-accent); cursor: pointer; }
   & .wa-check__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   & .wa-check__title { font: var(--nv-t-row); color: var(--nv-ink); }
   & .wa-check__help { font: var(--nv-t-callout); color: var(--nv-muted); }
@@ -65,7 +65,9 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
     display: flex; align-items: flex-start; gap: var(--nv-s-3); margin: 0; padding: var(--nv-s-4) var(--nv-s-5);
     border: 0; border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e1); color: var(--nv-ink);
   }
-  & .wa-notice__icon { flex: none; margin-top: 2px; }
+  /* AL-WA-6, AL-WA-7: the icon centres on the first line: the title's (row role) or, without a title, the body's (callout). */
+  & .wa-notice__icon { flex: none; margin-top: calc((1.375rem - 20px) / 2); }
+  & .wa-notice:not(:has(.wa-notice__title)) .wa-notice__icon { margin-top: calc((1.25rem - 20px) / 2); }
   & .wa-notice[data-tone="info"] .wa-notice__icon { color: var(--nv-accent); }
   & .wa-notice[data-tone="review"] { background: var(--nv-review-fill); box-shadow: none; }
   & .wa-notice[data-tone="review"] .wa-notice__icon { color: var(--nv-review-mark); }
@@ -81,7 +83,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   /* ConfigurationForm's own result lines get the same look; the glyph is Phosphor's, drawn as a mask. */
   & .wa-form > :is(.form-error, .form-success) { font: var(--nv-t-callout); font-weight: 500; }
   & .wa-form > :is(.form-error, .form-success)::before {
-    content: ""; flex: none; width: 20px; height: 20px; margin-top: 0; background: currentColor;
+    content: ""; flex: none; width: 20px; height: 20px; margin-top: calc((1.25rem - 20px) / 2); background: currentColor;
     -webkit-mask: var(--wa-glyph) center / contain no-repeat; mask: var(--wa-glyph) center / contain no-repeat;
   }
   & .wa-form > .form-error { --wa-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z'/%3E%3C/svg%3E"); }
@@ -106,13 +108,17 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
-    & .wa-narrow { max-width: 720px; margin-inline: auto; }
+    /* AL-WA-8: 720px of card, plus the content's 16px padding on each side. */
+    & .wa-narrow { max-width: 752px; margin-inline: auto; }
   }
 }
-@media (min-width: 1024px) {
+/* AL-WA-1, AL-WA-2: two columns only when the content is at least 64rem wide, so larger text keeps one column
+ * instead of squeezing the form. The side column is 22rem; the main column is never under 40rem. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page > .nv-content { container-type: inline-size; }
+@container (min-width: 64rem) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
     /* The summary and the main action sit together in the side column; the form runs down the main one. */
-    & .wa-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem); grid-template-areas: "main side" "main actions" "main ."; grid-template-rows: auto auto 1fr; align-items: start; }
+    & .wa-split { display: grid; grid-template-columns: minmax(0, 1fr) 22rem; grid-template-areas: "main side" "main actions" "main ."; grid-template-rows: auto auto 1fr; align-items: start; }
     & .wa-split__main { grid-area: main; }
     & .wa-split__side { grid-area: side; }
     & .wa-split__actions { grid-area: actions; }
@@ -182,8 +188,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
 @media (max-width: 359px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-candidate__actions { padding-left: 0; }
 }
-@media (min-width: 1024px) {
-  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-columns { display: grid; grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr); align-items: start; }
+@container (min-width: 64rem) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-columns { display: grid; grid-template-columns: 22rem minmax(0, 1fr); align-items: start; }
 }
 
 /* Requests: decision cards (Time off, Shift requests), shift blocks, records and Team availability. */
@@ -258,8 +264,13 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
 
 /* Lists of decision cards: one column on phones, two side by side once each can be 30rem wide. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr)); gap: var(--nv-s-4); align-items: start;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr)); gap: var(--nv-s-4); align-items: stretch;
 }
+/* AL-WA-9: cards in a row share a height, and their decision rows line up at the bottom. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid > :is(.wa-target, .nv-card) { display: flex; flex-direction: column; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid > .wa-target > .nv-card { flex: 1; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid .nv-card { display: flex; flex-direction: column; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid .nv-card > :last-child { margin-top: auto; }
 
 /* People forms: Team member detail, New employee, Clocker PIN. Swap and Unable to work. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
@@ -277,9 +288,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   & .wa-check:has(> input:disabled) { cursor: default; }
   /* Details | Scheduling: a two-part switch on the canvas. */
   & .wa-tabs { display: flex; flex-direction: column; gap: var(--nv-s-4); }
-  & .wa-segments { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: var(--nv-r-control); background: var(--nv-track); }
+  /* AL-WA-4: equal halves that never spill; they stack when the words don't fit side by side. */
+  & .wa-segments { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: 4px; padding: 4px; border-radius: var(--nv-r-control); background: var(--nv-track); }
   & .wa-segment {
-    display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 var(--nv-s-3); border: 0; border-radius: var(--nv-r-inner);
+    display: inline-flex; align-items: center; justify-content: center; min-width: 0; min-height: 44px; padding: 0 var(--nv-s-3); border: 0; border-radius: var(--nv-r-inner); text-align: center; overflow-wrap: anywhere;
     background: transparent; color: var(--nv-ink-2); font: var(--nv-t-label); text-decoration: none; cursor: pointer;
     transition: background-color var(--nv-m-quick) var(--nv-ease-out), color var(--nv-m-quick) var(--nv-ease-out);
   }
@@ -317,7 +329,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
   }
   & .wa-option:hover { background: #F7F9F8; }
   & .wa-option[data-selected="true"] { background: var(--nv-accent-wash); box-shadow: inset 0 0 0 2px var(--nv-accent); }
-  & .wa-option > input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--nv-accent); cursor: pointer; }
+  & .wa-option > input { flex: none; width: 22px; height: 22px; margin: calc((1.375rem - 22px) / 2) 0 0; accent-color: var(--nv-accent); cursor: pointer; }
   & .wa-option > input:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
   & .wa-option__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   & .wa-option__title { font: var(--nv-t-row); color: var(--nv-ink); }
@@ -339,3 +351,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .f
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page :is(input, select, textarea)[aria-invalid="true"] { border-color: var(--nv-urgent-ink); }
+
+/* AL-WA-3: the week's three counts stack when the card is narrower than 30rem (phones, and larger text). */
+@container (max-width: 30rem) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability .nv-stats { grid-template-columns: 1fr; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability :is(.nv-stat, .nv-stat:first-child) { flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--nv-s-3); padding: var(--nv-s-3) var(--nv-s-5); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability .nv-stat + .nv-stat { border-left: 0; border-top: 1px solid var(--nv-hairline); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability .nv-stat__value { margin-top: 0; font: var(--nv-t-title-2); }
+}
