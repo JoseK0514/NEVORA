@@ -301,3 +301,8 @@ TC-WC-28 adds Account recovery’s verification textarea edge: #D5DAD9 on white 
 2026-10-19 21:05 UTC · merged Profile at ea58610, backend at da2a4e5, coordinator through227150b · candidate8e18a95 verified/push up-to-date · tests7352/7352 executed (801 skipped,55 pending; final Coverage6/6, fresh Coverage/Profile22/22) · checks fail92/180 · combined P0 0 / P1 8 / P2 0 partial · blocked
 
 2026-10-19 21:05 UTC · candidate-only Profile initial-read4ff37e5 and lint cleanup9df0f47 · canonical gate evidence above; local alternativec34043b retained, not republished · phone proposal pending, no exposure
+2026-10-19 20:55:56 UTC · queue update · coordinator exit round 5 retargeted from 676358c to **227150b** (ROUND.md itself changed; Availability outcome and focus-ring fix); normal and --large previews restarted on the new exact commit. Wave A exit round 2 retargeted from 7f75dc4 to **a05f26a** (pending-width rotation fix). Old negative and positive evidence remains scoped to its original SHA; neither new target has a cloud zero verdict.
+
+2026-10-19 21:08:43 UTC · Wave A round 2 on a05f26a74b2979ce0efe1532f7f70d7064261bb9 · P0 0, P1 1, P2 0 · not zero
+
+2026-10-19 21:08:43 UTC · Wave B round 4 on 9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7 · P0 0, P1 2, P2 0 · not zero

@@ -1,27 +1,23 @@
-**Not zero — 0 P0, 1 P1, 0 P2 verified so far.** This is an interim report for exit round 2 on `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`. The matrix and full five-area sweep remain incomplete; this is not an exit verdict.
+**Incomplete — 0 P0, 0 P1, 0 P2 newly verified in this area; no zero certificate.** Exit round 2 on `a05f26a74b2979ce0efe1532f7f70d7064261bb9`. The reported pending-size defects pass the completed re-checks; full stability/matrix coverage is incomplete. Prior exact-source reports are retained in [history](history/c05e0c7/stability.md).
 
 ## Status of earlier findings
 
-| ID | Status | Evidence |
+| ID | Status | Measurement |
 |---|---|---|
-| ST-WA-1 | Not yet re-checked | Route placeholder sweep remains outstanding. |
-| ST-WA-3 | Not yet re-checked | Held availability filtering remains outstanding. |
-| ST-WA-2, ST-WA-4, ST-WA-5, ST-WA-6 | Shared; not counted against Wave A | Coordinator fixes are deliberately absent from this nominated commit and must be checked on the coordinator/combined build. |
+| ST-WA-7, -8 | Fixed in the re-checked controls | Swap and Delete retain **88px** at 320/200 in both browsers; no pending-height collapse. |
+| ST-WA-9, -10 | Fixed in the re-checked controls | Twelve held-press cases: Swap/Delete/Scheduling profile × 320/200 and 1440/100 × both engines. Heights change **0px**; widths change **0px**, except WebKit desktop rounding of **−0.22/−0.16px**. |
+| ST-WA-11 | Passes completed rotation samples | While pending, 844×390→320×844 keeps document width **320px**; Swap **288px**, Delete and Scheduling profile **248px**, including the completed 200% cases. See [rotation evidence](rotation.json); other samples remain in progress. |
+| ST-WA-1 through -6 | Not closed | Full exit re-checks remain outstanding. |
 
 ## Findings
 
-| ID | Screen, role and width | Element | Measured defect | Crop | Likely cause | Specific fix | Severity |
-|---|---|---|---|---|---|---|---|
-| ST-WA-7 | Swap, AUDIT-E, 320×844 at 200%; Chromium and WebKit | `form.shift-change-form .nv-btn[type=submit]` | The two-line **Send swap request** button is 288×88, y603.516–691.516. While the request is held, **Sending…** becomes 288×52, y639.516–691.516. Document height and scroll position both fall **36px**: Chromium 4001→3965 / 3157→3121; WebKit 4249→4213 / 3405→3369. The button’s top jumps under the finger. | [Chromium before](crops/ST-WA-7-chromium-320-t200-before-crop.png), [pending](crops/ST-WA-7-chromium-320-t200-pending-crop.png); [WebKit before](crops/ST-WA-7-webkit-320-t200-before-crop.png), [pending](crops/ST-WA-7-webkit-320-t200-pending-crop.png) | `src/components/wave-a/pending-button.tsx:61–62` removes the idle label and icon from layout when busy; the shorter label loses a line. | Keep both idle and pending contents in one grid cell (`grid-area:1/1`), with the inactive contents `visibility:hidden`, so the larger label still sizes the button. Keep **88px** throughout this 320/200 case and **52px** at 100%; preserve the button’s position and scroll. | P1 |
+None newly verified in this area's completed scope. The failed-action focus race is counted as IS-WA-2.
 
 ## Checked and correct
 
-- At 390/200, Swap remains 358×52 before and pending in both browsers; no height/scroll delta.
-- Double tap produces exactly **one held POST** for Swap, Unable to work, Add shift, Time off Approve and Decline, at 320/100 and 320/200. Each was answered by aborting inside the browser; no submission reached the server.
-- Blocked Swap focuses its on-screen outcome alert and retains the chosen shift. At 320/200 the alert is 288×432 at y219.516–651.516, wholly above the tab bar.
-- The earlier preview transport’s connection-exhaustion cells pass on one retry with the coordinator’s bounded local PostgreSQL transport. App source remains exactly `c05e0c7`; these were environment failures, not UI defects.
+- **12/12** pending-size cases send exactly **1 intercepted POST** after a held press and repeat press. [Raw measurements](pending-size.json).
+- [Swap before](crops/chromium-swap-320-t200-before.png), [pending](crops/chromium-swap-320-t200-pending.png), [WebKit pending](crops/webkit-swap-320-t200-pending.png).
 
 ## Gaps
 
-- `checks.json` is a partial checkpoint, explicitly `complete:false`. Remaining matrix cells, axe and the other stability states are still running/queued.
-- Delete shift, sent states, large data and placeholder/filter stability still need their remaining checks. Native keyboard checks remain on the Mac.
+The remaining routes, other submit controls, placeholders/reads, refresh/paused states, motion and complete matrix are incomplete. A passed size re-check is not an exit certificate.

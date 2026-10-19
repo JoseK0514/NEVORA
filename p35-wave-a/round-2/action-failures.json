@@ -1,0 +1,2918 @@
+[
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "kind": "delete",
+    "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+    "count": 1,
+    "before": {
+      "scroll": 2638,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Delete this shift",
+        "box": {
+          "x": 36,
+          "y": 647.515625,
+          "width": 248,
+          "height": 88,
+          "top": 647.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 2638,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -2638,
+          "width": 320,
+          "height": 3481.515625,
+          "top": -2638,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 2638,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -2638,
+          "width": 320,
+          "height": 3823.515625,
+          "top": -2638,
+          "right": 320,
+          "bottom": 1185.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 751.515625,
+        "width": 248,
+        "height": 326,
+        "top": 751.515625,
+        "right": 284,
+        "bottom": 1077.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "targetContainsFocus": false,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 2638,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -2638,
+          "width": 320,
+          "height": 3823.515625,
+          "top": -2638,
+          "right": 320,
+          "bottom": 1185.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 751.515625,
+        "width": 248,
+        "height": 326,
+        "top": 751.515625,
+        "right": 284,
+        "bottom": 1077.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "targetContainsFocus": false,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 2980,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "kind": "approve",
+    "route": "/app/requests?tab=pending",
+    "count": 1,
+    "before": {
+      "scroll": 564,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Approve",
+        "box": {
+          "x": 36,
+          "y": 555.515625,
+          "width": 248,
+          "height": 52,
+          "top": 555.515625,
+          "right": 284,
+          "bottom": 607.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1407.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1865.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 1301.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 743.515625,
+        "width": 248,
+        "height": 450,
+        "top": 743.515625,
+        "right": 284,
+        "bottom": 1193.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "targetContainsFocus": false,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1865.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 1301.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 743.515625,
+        "width": 248,
+        "height": 450,
+        "top": 743.515625,
+        "right": 284,
+        "bottom": 1193.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "targetContainsFocus": false,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "kind": "decline",
+    "route": "/app/requests?tab=pending",
+    "count": 1,
+    "before": {
+      "scroll": 564,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Decline",
+        "box": {
+          "x": 36,
+          "y": 491.515625,
+          "width": 248,
+          "height": 52,
+          "top": 491.515625,
+          "right": 284,
+          "bottom": 543.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1407.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "kind": "delete",
+    "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+    "count": 1,
+    "before": {
+      "scroll": 2638,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Delete this shift",
+        "box": {
+          "x": 36,
+          "y": 647.515625,
+          "width": 248,
+          "height": 88,
+          "top": 647.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 2638,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules        MR",
+        "box": {
+          "x": 0,
+          "y": -2638,
+          "width": 320,
+          "height": 3481.515625,
+          "top": -2638,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 2980,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 2980,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 2980,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "kind": "approve",
+    "route": "/app/requests?tab=pending",
+    "count": 1,
+    "before": {
+      "scroll": 564,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Approve",
+        "box": {
+          "x": 36,
+          "y": 555.515625,
+          "width": 248,
+          "height": 52,
+          "top": 555.515625,
+          "right": 284,
+          "bottom": 607.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules        MR",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1407.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "kind": "decline",
+    "route": "/app/requests?tab=pending",
+    "count": 1,
+    "before": {
+      "scroll": 564,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Decline",
+        "box": {
+          "x": 36,
+          "y": 491.515625,
+          "width": 248,
+          "height": 52,
+          "top": 491.515625,
+          "right": 284,
+          "bottom": 543.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules        MR",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1407.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules        MR",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1865.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 1301.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 743.515625,
+        "width": 248,
+        "height": 450,
+        "top": 743.515625,
+        "right": 284,
+        "bottom": 1193.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "targetContainsFocus": false,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules        MR",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1865.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 1301.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 743.515625,
+        "width": 248,
+        "height": 450,
+        "top": 743.515625,
+        "right": 284,
+        "bottom": 1193.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "targetContainsFocus": false,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "kind": "delete",
+    "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+    "count": 1,
+    "before": {
+      "scroll": 2718,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Delete this shift",
+        "box": {
+          "x": 36,
+          "y": 647.515625,
+          "width": 248,
+          "height": 88,
+          "top": 647.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 2718,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -2718,
+          "width": 320,
+          "height": 3561.515625,
+          "top": -2718,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 3060,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 3060,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 3060,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "kind": "approve",
+    "route": "/app/requests?tab=pending",
+    "count": 1,
+    "before": {
+      "scroll": 564,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Approve",
+        "box": {
+          "x": 36,
+          "y": 555.515625,
+          "width": 248,
+          "height": 52,
+          "top": 555.515625,
+          "right": 284,
+          "bottom": 607.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1407.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "kind": "decline",
+    "route": "/app/requests?tab=pending",
+    "count": 1,
+    "before": {
+      "scroll": 564,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Decline",
+        "box": {
+          "x": 36,
+          "y": 491.515625,
+          "width": 248,
+          "height": 52,
+          "top": 491.515625,
+          "right": 284,
+          "bottom": 543.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsPayrollInsightsWorkspaceSettings        FOF",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1407.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "kind": "delete",
+    "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+    "count": 1,
+    "before": {
+      "scroll": 2718,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Delete this shift",
+        "box": {
+          "x": 36,
+          "y": 647.515625,
+          "width": 248,
+          "height": 88,
+          "top": 647.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 2718,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules        MR",
+        "box": {
+          "x": 0,
+          "y": -2718,
+          "width": 320,
+          "height": 3561.515625,
+          "top": -2718,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 647.515625,
+        "width": 248,
+        "height": 88,
+        "top": 647.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 3060,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 3060,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 3060,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "The shift wasn’t deletedCheck your connection and try again.",
+        "box": {
+          "x": 36,
+          "y": 409.515625,
+          "width": 248,
+          "height": 326,
+          "top": 409.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 305.515625,
+        "width": 248,
+        "height": 88,
+        "top": 305.515625,
+        "right": 284,
+        "bottom": 393.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 409.515625,
+        "width": 248,
+        "height": 326,
+        "top": 409.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "The shift wasn’t deletedCheck your connection and try again.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "kind": "approve",
+    "route": "/app/requests?tab=pending",
+    "count": 1,
+    "before": {
+      "scroll": 564,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Approve",
+        "box": {
+          "x": 36,
+          "y": 555.515625,
+          "width": 248,
+          "height": 52,
+          "top": 555.515625,
+          "right": 284,
+          "bottom": 607.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules        MR",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1407.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 555.515625,
+        "width": 248,
+        "height": 52,
+        "top": 555.515625,
+        "right": 284,
+        "bottom": 607.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 97.515625,
+        "width": 248,
+        "height": 52,
+        "top": 97.515625,
+        "right": 284,
+        "bottom": 149.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "kind": "decline",
+    "route": "/app/requests?tab=pending",
+    "count": 1,
+    "before": {
+      "scroll": 564,
+      "active": {
+        "tag": "BUTTON",
+        "cls": "nv-btn",
+        "text": "Decline",
+        "box": {
+          "x": 36,
+          "y": 491.515625,
+          "width": 248,
+          "height": 52,
+          "top": 491.515625,
+          "right": 284,
+          "bottom": 543.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "pending": {
+      "scroll": 564,
+      "active": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "WorkforcePlanHomeInboxScheduleTeamEmployeesRequestsUpdatesTime & PayTimecardsInsightsWorkspaceScheduling rules        MR",
+        "box": {
+          "x": 0,
+          "y": -564,
+          "width": 320,
+          "height": 1407.515625,
+          "top": -564,
+          "right": 320,
+          "bottom": 843.515625,
+          "left": 0
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 491.515625,
+        "width": 248,
+        "height": 52,
+        "top": 491.515625,
+        "right": 284,
+        "bottom": 543.515625,
+        "left": 36
+      },
+      "targetFocused": false,
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "early": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "settled": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    },
+    "browserReveal": {
+      "scroll": 1022,
+      "active": {
+        "tag": "DIV",
+        "cls": "wa-target",
+        "text": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+        "box": {
+          "x": 36,
+          "y": 285.515625,
+          "width": 248,
+          "height": 450,
+          "top": 285.515625,
+          "right": 284,
+          "bottom": 735.515625,
+          "left": 36
+        }
+      },
+      "button": {
+        "x": 36,
+        "y": 33.515625,
+        "width": 248,
+        "height": 52,
+        "top": 33.515625,
+        "right": 284,
+        "bottom": 85.515625,
+        "left": 36
+      },
+      "target": {
+        "x": 36,
+        "y": 285.515625,
+        "width": 248,
+        "height": 450,
+        "top": 285.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "targetFocused": true,
+      "targetContainsFocus": true,
+      "notice": "Your decision wasn’t savedCheck your connection and try again. Nothing changed.",
+      "nav": {
+        "x": 0,
+        "y": 761,
+        "width": 320,
+        "height": 83,
+        "top": 761,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "formBusy": "false"
+    }
+  }
+]

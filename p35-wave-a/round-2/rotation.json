@@ -1,0 +1,1634 @@
+[
+  {
+    "engine": "chromium",
+    "name": "swap",
+    "account": "AUDIT-E",
+    "route": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+    "button": "Send swap request",
+    "width": 844,
+    "text": 100,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 631,
+        "y": 250,
+        "width": 197,
+        "height": 52,
+        "top": 250,
+        "right": 828,
+        "bottom": 302,
+        "left": 631
+      },
+      "layout": {
+        "width": 197,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 896,
+      "height": 1286,
+      "text": "Send swap request",
+      "focused": false,
+      "activeTag": "INPUT",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 16,
+        "y": 250,
+        "width": 812,
+        "height": 52,
+        "top": 250,
+        "right": 828,
+        "bottom": 302,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 16,
+        "y": 640,
+        "width": 288,
+        "height": 52,
+        "top": 640,
+        "right": 304,
+        "bottom": 692,
+        "left": 16
+      },
+      "layout": {
+        "width": 288,
+        "height": 52,
+        "minWidth": "min(197px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 874,
+      "height": 1718,
+      "text": "Sending…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "true",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 640,
+        "width": 288,
+        "height": 116,
+        "top": 640,
+        "right": 304,
+        "bottom": 756,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 16,
+        "y": 424,
+        "width": 288,
+        "height": 52,
+        "top": 424,
+        "right": 304,
+        "bottom": 476,
+        "left": 16
+      },
+      "layout": {
+        "width": 288,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1090,
+      "height": 1934,
+      "text": "Send swap request",
+      "focused": false,
+      "activeTag": "P",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 424,
+        "width": 288,
+        "height": 116,
+        "top": 424,
+        "right": 304,
+        "bottom": 540,
+        "left": 16
+      },
+      "outcomes": [
+        {
+          "text": "Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.",
+          "box": {
+            "x": 16,
+            "y": 556,
+            "width": 288,
+            "height": 132,
+            "top": 556,
+            "right": 304,
+            "bottom": 688,
+            "left": 16
+          },
+          "focused": true
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "name": "delete",
+    "account": "QAOWNER",
+    "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+    "button": "Delete this shift",
+    "width": 844,
+    "text": 100,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 36,
+        "y": 230,
+        "width": 772,
+        "height": 52,
+        "top": 230,
+        "right": 808,
+        "bottom": 282,
+        "left": 36
+      },
+      "layout": {
+        "width": 772,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1287,
+      "height": 1677,
+      "text": "Delete this shift",
+      "focused": false,
+      "activeTag": "SUMMARY",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 16,
+        "y": 190,
+        "width": 812,
+        "height": 112,
+        "top": 190,
+        "right": 828,
+        "bottom": 302,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 36,
+        "y": 684,
+        "width": 248,
+        "height": 52,
+        "top": 684,
+        "right": 284,
+        "bottom": 736,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "min(772px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 1205,
+      "height": 2049,
+      "text": "Deleting…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 596,
+        "width": 288,
+        "height": 160,
+        "top": 596,
+        "right": 304,
+        "bottom": 756,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 36,
+        "y": 550,
+        "width": 248,
+        "height": 52,
+        "top": 550,
+        "right": 284,
+        "bottom": 602,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1339,
+      "height": 2183,
+      "text": "Delete this shift",
+      "focused": false,
+      "activeTag": "DIV",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 462,
+        "width": 288,
+        "height": 294,
+        "top": 462,
+        "right": 304,
+        "bottom": 756,
+        "left": 16
+      },
+      "outcomes": [
+        {
+          "text": "The shift wasn’t deletedCheck your connection and try again.",
+          "box": {
+            "x": 36,
+            "y": 618,
+            "width": 248,
+            "height": 118,
+            "top": 618,
+            "right": 284,
+            "bottom": 736,
+            "left": 36
+          },
+          "focused": false
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "name": "profile",
+    "account": "QAOWNER",
+    "route": "/app/employees/AUDIT-E",
+    "button": "Save scheduling profile",
+    "width": 844,
+    "text": 100,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 577,
+        "y": 135,
+        "width": 231,
+        "height": 52,
+        "top": 135,
+        "right": 808,
+        "bottom": 187,
+        "left": 577
+      },
+      "layout": {
+        "width": 231,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 676,
+      "height": 1089,
+      "text": "Save scheduling profile",
+      "focused": false,
+      "activeTag": "BUTTON",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 36,
+        "y": 135,
+        "width": 772,
+        "height": 52,
+        "top": 135,
+        "right": 808,
+        "bottom": 187,
+        "left": 36
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 36,
+        "y": 566,
+        "width": 248,
+        "height": 52,
+        "top": 566,
+        "right": 284,
+        "bottom": 618,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "min(231px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 401,
+      "height": 1245,
+      "text": "Saving…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "true",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 36,
+        "y": 566,
+        "width": 248,
+        "height": 52,
+        "top": 566,
+        "right": 284,
+        "bottom": 618,
+        "left": 36
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 36,
+        "y": 438,
+        "width": 248,
+        "height": 52,
+        "top": 438,
+        "right": 284,
+        "bottom": 490,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 529,
+      "height": 1373,
+      "text": "Save scheduling profile",
+      "focused": false,
+      "activeTag": "P",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 36,
+        "y": 438,
+        "width": 248,
+        "height": 52,
+        "top": 438,
+        "right": 284,
+        "bottom": 490,
+        "left": 36
+      },
+      "outcomes": [
+        {
+          "text": "Changes could not be saved. Your entries are preserved; try again.",
+          "box": {
+            "x": 36,
+            "y": 526,
+            "width": 248,
+            "height": 92,
+            "top": 526,
+            "right": 284,
+            "bottom": 618,
+            "left": 36
+          },
+          "focused": true
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "name": "swap",
+    "account": "AUDIT-E",
+    "route": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+    "button": "Send swap request",
+    "width": 844,
+    "text": 200,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 631,
+        "y": 250,
+        "width": 197,
+        "height": 52,
+        "top": 250,
+        "right": 828,
+        "bottom": 302,
+        "left": 631
+      },
+      "layout": {
+        "width": 197,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 896,
+      "height": 1286,
+      "text": "Send swap request",
+      "focused": false,
+      "activeTag": "INPUT",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 16,
+        "y": 250,
+        "width": 812,
+        "height": 52,
+        "top": 250,
+        "right": 828,
+        "bottom": 302,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 16,
+        "y": 640,
+        "width": 288,
+        "height": 52,
+        "top": 640,
+        "right": 304,
+        "bottom": 692,
+        "left": 16
+      },
+      "layout": {
+        "width": 288,
+        "height": 52,
+        "minWidth": "min(197px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 874,
+      "height": 1718,
+      "text": "Sending…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "true",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 640,
+        "width": 288,
+        "height": 116,
+        "top": 640,
+        "right": 304,
+        "bottom": 756,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 16,
+        "y": 424,
+        "width": 288,
+        "height": 52,
+        "top": 424,
+        "right": 304,
+        "bottom": 476,
+        "left": 16
+      },
+      "layout": {
+        "width": 288,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1090,
+      "height": 1934,
+      "text": "Send swap request",
+      "focused": false,
+      "activeTag": "P",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 424,
+        "width": 288,
+        "height": 116,
+        "top": 424,
+        "right": 304,
+        "bottom": 540,
+        "left": 16
+      },
+      "outcomes": [
+        {
+          "text": "Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.",
+          "box": {
+            "x": 16,
+            "y": 556,
+            "width": 288,
+            "height": 132,
+            "top": 556,
+            "right": 304,
+            "bottom": 688,
+            "left": 16
+          },
+          "focused": true
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "name": "delete",
+    "account": "QAOWNER",
+    "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+    "button": "Delete this shift",
+    "width": 844,
+    "text": 200,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 36,
+        "y": 229.515625,
+        "width": 772,
+        "height": 52,
+        "top": 229.515625,
+        "right": 808,
+        "bottom": 281.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 772,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1952,
+      "height": 2342,
+      "text": "Delete this shift",
+      "focused": false,
+      "activeTag": "SUMMARY",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 16,
+        "y": 117.515625,
+        "width": 812,
+        "height": 184,
+        "top": 117.515625,
+        "right": 828,
+        "bottom": 301.515625,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 36,
+        "y": 683.515625,
+        "width": 248,
+        "height": 52,
+        "top": 683.515625,
+        "right": 284,
+        "bottom": 735.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "min(772px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 2602,
+      "height": 3446,
+      "text": "Deleting…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 379.515625,
+        "width": 288,
+        "height": 376,
+        "top": 379.515625,
+        "right": 304,
+        "bottom": 755.515625,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 36,
+        "y": 341.515625,
+        "width": 248,
+        "height": 88,
+        "top": 341.515625,
+        "right": 284,
+        "bottom": 429.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 88,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 2944,
+      "height": 3824,
+      "text": "Delete this shift",
+      "focused": false,
+      "activeTag": "DIV",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 37.515625,
+        "width": 288,
+        "height": 754,
+        "top": 37.515625,
+        "right": 304,
+        "bottom": 791.515625,
+        "left": 16
+      },
+      "outcomes": [
+        {
+          "text": "The shift wasn’t deletedCheck your connection and try again.",
+          "box": {
+            "x": 36,
+            "y": 445.515625,
+            "width": 248,
+            "height": 326,
+            "top": 445.515625,
+            "right": 284,
+            "bottom": 771.515625,
+            "left": 36
+          },
+          "focused": false
+        }
+      ]
+    }
+  },
+  {
+    "engine": "chromium",
+    "name": "profile",
+    "account": "QAOWNER",
+    "route": "/app/employees/AUDIT-E",
+    "button": "Save scheduling profile",
+    "width": 844,
+    "text": 200,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 411,
+        "y": 134.515625,
+        "width": 397,
+        "height": 52,
+        "top": 134.515625,
+        "right": 808,
+        "bottom": 186.515625,
+        "left": 411
+      },
+      "layout": {
+        "width": 397,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1025,
+      "height": 1460,
+      "text": "Save scheduling profile",
+      "focused": false,
+      "activeTag": "BUTTON",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 36,
+        "y": 134.515625,
+        "width": 772,
+        "height": 52,
+        "top": 134.515625,
+        "right": 808,
+        "bottom": 186.515625,
+        "left": 36
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 36,
+        "y": 379.515625,
+        "width": 248,
+        "height": 52,
+        "top": 379.515625,
+        "right": 284,
+        "bottom": 431.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "min(397px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 1596,
+      "height": 2440,
+      "text": "Saving…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "true",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 36,
+        "y": 379.515625,
+        "width": 248,
+        "height": 52,
+        "top": 379.515625,
+        "right": 284,
+        "bottom": 431.515625,
+        "left": 36
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 36,
+        "y": 119.515625,
+        "width": 248,
+        "height": 132,
+        "top": 119.515625,
+        "right": 284,
+        "bottom": 251.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 132,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1856,
+      "height": 2828,
+      "text": "Save scheduling profile",
+      "focused": false,
+      "activeTag": "P",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 36,
+        "y": 119.515625,
+        "width": 248,
+        "height": 132,
+        "top": 119.515625,
+        "right": 284,
+        "bottom": 251.515625,
+        "left": 36
+      },
+      "outcomes": [
+        {
+          "text": "Changes could not be saved. Your entries are preserved; try again.",
+          "box": {
+            "x": 36,
+            "y": 287.515625,
+            "width": 248,
+            "height": 272,
+            "top": 287.515625,
+            "right": 284,
+            "bottom": 559.515625,
+            "left": 36
+          },
+          "focused": true
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "name": "swap",
+    "account": "AUDIT-E",
+    "route": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+    "button": "Send swap request",
+    "width": 844,
+    "text": 100,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 630.515625,
+        "y": 250,
+        "width": 197.484375,
+        "height": 52,
+        "top": 250,
+        "right": 828,
+        "bottom": 302,
+        "left": 630.515625
+      },
+      "layout": {
+        "width": 197,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 896,
+      "height": 1286,
+      "text": "Send swap request",
+      "focused": false,
+      "activeTag": "INPUT",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 16,
+        "y": 250,
+        "width": 812,
+        "height": 52,
+        "top": 250,
+        "right": 828,
+        "bottom": 302,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 16,
+        "y": 1072,
+        "width": 288,
+        "height": 52,
+        "top": 1072,
+        "right": 304,
+        "bottom": 1124,
+        "left": 16
+      },
+      "layout": {
+        "width": 288,
+        "height": 52,
+        "minWidth": "min(197px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 442,
+      "height": 1718,
+      "text": "Sending…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "true",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 1072,
+        "width": 288,
+        "height": 116,
+        "top": 1072,
+        "right": 304,
+        "bottom": 1188,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 16,
+        "y": 424,
+        "width": 288,
+        "height": 52,
+        "top": 424,
+        "right": 304,
+        "bottom": 476,
+        "left": 16
+      },
+      "layout": {
+        "width": 288,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1090,
+      "height": 1934,
+      "text": "Send swap request",
+      "focused": false,
+      "activeTag": "P",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 424,
+        "width": 288,
+        "height": 116,
+        "top": 424,
+        "right": 304,
+        "bottom": 540,
+        "left": 16
+      },
+      "outcomes": [
+        {
+          "text": "Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.",
+          "box": {
+            "x": 16,
+            "y": 556,
+            "width": 288,
+            "height": 132,
+            "top": 556,
+            "right": 304,
+            "bottom": 688,
+            "left": 16
+          },
+          "focused": true
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "name": "delete",
+    "account": "QAOWNER",
+    "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+    "button": "Delete this shift",
+    "width": 844,
+    "text": 100,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 36,
+        "y": 258,
+        "width": 772,
+        "height": 52,
+        "top": 258,
+        "right": 808,
+        "bottom": 310,
+        "left": 36
+      },
+      "layout": {
+        "width": 772,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1259,
+      "height": 1677,
+      "text": "Delete this shift",
+      "focused": false,
+      "activeTag": "SUMMARY",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 16,
+        "y": 218,
+        "width": 812,
+        "height": 112,
+        "top": 218,
+        "right": 828,
+        "bottom": 330,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 36,
+        "y": 1056,
+        "width": 248,
+        "height": 52,
+        "top": 1056,
+        "right": 284,
+        "bottom": 1108,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "min(772px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 833,
+      "height": 2049,
+      "text": "Deleting…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 968,
+        "width": 288,
+        "height": 160,
+        "top": 968,
+        "right": 304,
+        "bottom": 1128,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 36,
+        "y": 1056,
+        "width": 248,
+        "height": 52,
+        "top": 1056,
+        "right": 284,
+        "bottom": 1108,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 833,
+      "height": 2183,
+      "text": "Delete this shift",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 968,
+        "width": 288,
+        "height": 294,
+        "top": 968,
+        "right": 304,
+        "bottom": 1262,
+        "left": 16
+      },
+      "outcomes": [
+        {
+          "text": "The shift wasn’t deletedCheck your connection and try again.",
+          "box": {
+            "x": 36,
+            "y": 1124,
+            "width": 248,
+            "height": 118,
+            "top": 1124,
+            "right": 284,
+            "bottom": 1242,
+            "left": 36
+          },
+          "focused": false
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "name": "profile",
+    "account": "QAOWNER",
+    "route": "/app/employees/AUDIT-E",
+    "button": "Save scheduling profile",
+    "width": 844,
+    "text": 100,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 575.53125,
+        "y": 135,
+        "width": 232.46875,
+        "height": 52,
+        "top": 135,
+        "right": 808,
+        "bottom": 187,
+        "left": 575.53125
+      },
+      "layout": {
+        "width": 232,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 659,
+      "height": 1072,
+      "text": "Save scheduling profile",
+      "focused": false,
+      "activeTag": "BUTTON",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 36,
+        "y": 135,
+        "width": 772,
+        "height": 52,
+        "top": 135,
+        "right": 808,
+        "bottom": 187,
+        "left": 36
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 36,
+        "y": 722,
+        "width": 248,
+        "height": 52,
+        "top": 722,
+        "right": 284,
+        "bottom": 774,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "min(232px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 228,
+      "height": 1228,
+      "text": "Saving…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "true",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 36,
+        "y": 722,
+        "width": 248,
+        "height": 52,
+        "top": 722,
+        "right": 284,
+        "bottom": 774,
+        "left": 36
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 36,
+        "y": 438,
+        "width": 248,
+        "height": 52,
+        "top": 438,
+        "right": 284,
+        "bottom": 490,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 512,
+      "height": 1356,
+      "text": "Save scheduling profile",
+      "focused": false,
+      "activeTag": "P",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 36,
+        "y": 438,
+        "width": 248,
+        "height": 52,
+        "top": 438,
+        "right": 284,
+        "bottom": 490,
+        "left": 36
+      },
+      "outcomes": [
+        {
+          "text": "Changes could not be saved. Your entries are preserved; try again.",
+          "box": {
+            "x": 36,
+            "y": 526,
+            "width": 248,
+            "height": 92,
+            "top": 526,
+            "right": 284,
+            "bottom": 618,
+            "left": 36
+          },
+          "focused": true
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "name": "swap",
+    "account": "AUDIT-E",
+    "route": "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+    "button": "Send swap request",
+    "width": 844,
+    "text": 200,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 473.046875,
+        "y": 249.515625,
+        "width": 354.953125,
+        "height": 52,
+        "top": 249.515625,
+        "right": 828,
+        "bottom": 301.515625,
+        "left": 473.046875
+      },
+      "layout": {
+        "width": 355,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1747,
+      "height": 2137,
+      "text": "Send swap request",
+      "focused": false,
+      "activeTag": "INPUT",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 16,
+        "y": 249.515625,
+        "width": 812,
+        "height": 52,
+        "top": 249.515625,
+        "right": 828,
+        "bottom": 301.515625,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 16,
+        "y": 2715.515625,
+        "width": 288,
+        "height": 52,
+        "top": 2715.515625,
+        "right": 304,
+        "bottom": 2767.515625,
+        "left": 16
+      },
+      "layout": {
+        "width": 288,
+        "height": 52,
+        "minWidth": "min(355px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 1293,
+      "height": 4213,
+      "text": "Sending…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "true",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 2715.515625,
+        "width": 288,
+        "height": 116,
+        "top": 2715.515625,
+        "right": 304,
+        "bottom": 2831.515625,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 16,
+        "y": 2715.515625,
+        "width": 288,
+        "height": 88,
+        "top": 2715.515625,
+        "right": 304,
+        "bottom": 2803.515625,
+        "left": 16
+      },
+      "layout": {
+        "width": 288,
+        "height": 88,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1293,
+      "height": 4841,
+      "text": "Send swap request",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 2715.515625,
+        "width": 288,
+        "height": 152,
+        "top": 2715.515625,
+        "right": 304,
+        "bottom": 2867.515625,
+        "left": 16
+      },
+      "outcomes": [
+        {
+          "text": "Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.",
+          "box": {
+            "x": 16,
+            "y": 2883.515625,
+            "width": 288,
+            "height": 472,
+            "top": 2883.515625,
+            "right": 304,
+            "bottom": 3355.515625,
+            "left": 16
+          },
+          "focused": false
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "name": "delete",
+    "account": "QAOWNER",
+    "route": "/app/schedule/edit?shiftId=audit-shift-0-1",
+    "button": "Delete this shift",
+    "width": 844,
+    "text": 200,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 36,
+        "y": 229.515625,
+        "width": 772,
+        "height": 52,
+        "top": 229.515625,
+        "right": 808,
+        "bottom": 281.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 772,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1952,
+      "height": 2342,
+      "text": "Delete this shift",
+      "focused": false,
+      "activeTag": "SUMMARY",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 16,
+        "y": 117.515625,
+        "width": 812,
+        "height": 184,
+        "top": 117.515625,
+        "right": 828,
+        "bottom": 301.515625,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 36,
+        "y": 1867.515625,
+        "width": 248,
+        "height": 52,
+        "top": 1867.515625,
+        "right": 284,
+        "bottom": 1919.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "min(772px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 1498,
+      "height": 3526,
+      "text": "Deleting…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 1563.515625,
+        "width": 288,
+        "height": 376,
+        "top": 1563.515625,
+        "right": 304,
+        "bottom": 1939.515625,
+        "left": 16
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 36,
+        "y": 1867.515625,
+        "width": 248,
+        "height": 88,
+        "top": 1867.515625,
+        "right": 284,
+        "bottom": 1955.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 88,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1498,
+      "height": 3904,
+      "text": "Delete this shift",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 16,
+        "y": 1563.515625,
+        "width": 288,
+        "height": 754,
+        "top": 1563.515625,
+        "right": 304,
+        "bottom": 2317.515625,
+        "left": 16
+      },
+      "outcomes": [
+        {
+          "text": "The shift wasn’t deletedCheck your connection and try again.",
+          "box": {
+            "x": 36,
+            "y": 1971.515625,
+            "width": 248,
+            "height": 326,
+            "top": 1971.515625,
+            "right": 284,
+            "bottom": 2297.515625,
+            "left": 36
+          },
+          "focused": false
+        }
+      ]
+    }
+  },
+  {
+    "engine": "webkit",
+    "name": "profile",
+    "account": "QAOWNER",
+    "route": "/app/employees/AUDIT-E",
+    "button": "Save scheduling profile",
+    "width": 844,
+    "text": 200,
+    "count": 1,
+    "before": {
+      "button": {
+        "x": 383.0625,
+        "y": 134.515625,
+        "width": 424.9375,
+        "height": 52,
+        "top": 134.515625,
+        "right": 808,
+        "bottom": 186.515625,
+        "left": 383.0625
+      },
+      "layout": {
+        "width": 425,
+        "height": 52,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 1008,
+      "height": 1443,
+      "text": "Save scheduling profile",
+      "focused": false,
+      "activeTag": "BUTTON",
+      "busy": "false",
+      "viewport": 844,
+      "documentWidth": 844,
+      "parent": {
+        "x": 36,
+        "y": 134.515625,
+        "width": 772,
+        "height": 52,
+        "top": 134.515625,
+        "right": 808,
+        "bottom": 186.515625,
+        "left": 36
+      },
+      "outcomes": []
+    },
+    "pending": {
+      "button": {
+        "x": 36,
+        "y": 1447.515625,
+        "width": 248,
+        "height": 52,
+        "top": 1447.515625,
+        "right": 284,
+        "bottom": 1499.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 52,
+        "minWidth": "min(425px, 100%)",
+        "minHeight": "52px"
+      },
+      "scroll": 599,
+      "height": 2511,
+      "text": "Saving…",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "true",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 36,
+        "y": 1447.515625,
+        "width": 248,
+        "height": 52,
+        "top": 1447.515625,
+        "right": 284,
+        "bottom": 1499.515625,
+        "left": 36
+      },
+      "outcomes": []
+    },
+    "failed": {
+      "button": {
+        "x": 36,
+        "y": 1447.515625,
+        "width": 248,
+        "height": 132,
+        "top": 1447.515625,
+        "right": 284,
+        "bottom": 1579.515625,
+        "left": 36
+      },
+      "layout": {
+        "width": 248,
+        "height": 132,
+        "minWidth": "",
+        "minHeight": ""
+      },
+      "scroll": 599,
+      "height": 2939,
+      "text": "Save scheduling profile",
+      "focused": false,
+      "activeTag": "BODY",
+      "busy": "false",
+      "viewport": 320,
+      "documentWidth": 320,
+      "parent": {
+        "x": 36,
+        "y": 1447.515625,
+        "width": 248,
+        "height": 132,
+        "top": 1447.515625,
+        "right": 284,
+        "bottom": 1579.515625,
+        "left": 36
+      },
+      "outcomes": [
+        {
+          "text": "Changes could not be saved. Your entries are preserved; try again.",
+          "box": {
+            "x": 36,
+            "y": 1615.515625,
+            "width": 248,
+            "height": 312,
+            "top": 1615.515625,
+            "right": 284,
+            "bottom": 1927.515625,
+            "left": 36
+          },
+          "focused": false
+        }
+      ]
+    }
+  }
+]
