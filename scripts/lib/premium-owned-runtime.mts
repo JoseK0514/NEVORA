@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createECDH, createHash, randomBytes } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import { createWriteStream } from 'node:fs';
 import { copyFile, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
@@ -8,7 +8,7 @@ import { createDisposableExchangeDatabase } from '../../src/test/integration/loc
 import { createOwnedDbAdapter, assertExternalEvidencePath } from '../../src/test/integration/owned-next-app';
 import type { OwnedDatabaseIdentity } from '../../src/test/integration/owned-pg-transport';
 
-export async function ownedRuntime(evidence: string, production: boolean) {
+export async function ownedRuntime(evidence: string, production: boolean, options: { pushCapture?: boolean } = {}) {
   const source = process.cwd();
   await assertExternalEvidencePath(source, evidence);
   await mkdir(evidence, { recursive: true });
@@ -44,14 +44,16 @@ export async function ownedRuntime(evidence: string, production: boolean) {
       const server = createServer(); server.once('error', reject); server.listen(0, '127.0.0.1', () => { const address = server.address(); if (!address || typeof address === 'string') throw Error('No port'); server.close(() => resolve(address.port)); });
     });
     const url = `http://127.0.0.1:${port}`;
+    const push = !production && options.pushCapture ? (() => { const key = createECDH('prime256v1'); key.generateKeys(); return { publicKey: key.getPublicKey().toString('base64url'), privateKey: key.getPrivateKey().toString('base64url'), encryptionKey: randomBytes(32), workerSecret: randomBytes(32).toString('base64url') }; })() : undefined;
     const env: NodeJS.ProcessEnv = {
       PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: production ? 'production' : 'development', CI: '1', NEXT_TELEMETRY_DISABLED: '1',
       NEVORA_OWNED_APP_DATABASE: database.connectionString, NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
       NEVORA_PAYROLL_ENABLED: 'false', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       ...(!production ? { NEVORA_DEV_CAPTURE_DELIVERY: '1', NEVORA_DEV_CAPTURE_OUT: join(root, 'captures'), FUEL_PORTAL_ORIGIN: url } : {}),
+      ...(push ? { PUSH_FEATURE_ENABLED: 'true', PUSH_VAPID_PUBLIC_KEY: push.publicKey, PUSH_VAPID_PRIVATE_KEY: push.privateKey, PUSH_SUBSCRIPTION_ENCRYPTION_KEY: push.encryptionKey.toString('base64url'), PUSH_VAPID_SUBJECT: 'mailto:preview@example.invalid', NOTIFICATION_WORKER_SECRET: push.workerSecret, PUSH_TEST_ACCOUNT_IDS: 'AUDIT-E,AUDIT-M,AUDIT-SWAP,QAOWNER' } : {}),
     };
     await writeFile(join(root, 'source-manifest.json'), JSON.stringify({ checkpoint, hashes, substitutions: { 'src/lib/db.ts': createHash('sha256').update(adapter).digest('hex') }, production }, null, 2));
-    await writeFile(join(root, 'ownership.json'), JSON.stringify({ source, root, identity, url, production }, null, 2));
+    await writeFile(join(root, 'ownership.json'), JSON.stringify({ source, root, identity, url, production, evidence, cluster: process.env.NEVORA_PREMIUM_CLUSTER, clusterMarker: process.env.NEVORA_PREMIUM_CLUSTER_MARKER }, null, 2));
     if (production) await new Promise<void>((resolve, reject) => {
       const log = createWriteStream(join(root, 'build.log'));
       const build = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'build'], { cwd: app, env, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -70,7 +72,7 @@ export async function ownedRuntime(evidence: string, production: boolean) {
       await new Promise(r => setTimeout(r, 200));
     }
     if (!ready) throw Error('Owned server not ready');
-    return { root, app, database, url, close, checkpoint };
+    return { root, app, database, url, close, checkpoint, push };
   } catch (error) { await close(); throw error; }
 }
 
