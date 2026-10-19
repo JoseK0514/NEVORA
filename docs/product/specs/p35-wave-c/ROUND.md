@@ -1,9 +1,12 @@
-# Wave C: round 3 for the cloud inspectors
+# Wave C: round 4 (exit round) for the cloud inspectors
 
-- **Round:** 3. Rounds 1 and 2 were local. Their reports are in `inspection/`, and the IDs below come from them.
-- **Commit to inspect:** the head of `claude/p35-wave-c-93e13c` (code as of `dfcff3c`).
-- **Exit round:** no. This round re-checks open findings and what the fixes touched. Wave C's exit round is a full sweep by all five areas.
+- **Round:** 4, Wave C's **exit round**: one full sweep by all five areas, with `checks.mjs` over every route, width, text size and both browsers.
+- **Commit to inspect:** the head of `claude/p35-wave-c-93e13c`.
 - **Brief:** `docs/product/specs/codex-joint/INSPECTION-BRIEF.md` on `claude/premium-phase-1`. For Wave C's pages, accounts and decided items, also read `inspection/BRIEF.md`, `inspection/ROUND-2.md` and `inspection/ROUND-3.md` here. Use the prefix `WC`, for example `AL-WC-17`.
+- **Round 3 (Codex, on `b109ec3`):** found two P1s. Both are fixed in this commit:
+  - **WR-21:** the color well's swatch was white. An inline `height: 3rem` now wins over the shared field rule's `height: auto`. Verified locally: the teal swatch shows at 64×48.
+  - **ST-02:** at 200% text the toast covered Save. On portrait phones the toast now sits at `tab bar + measured save bar + 8px`. Verified locally in Chromium and WebKit at 320 and 390, at 100% and 200%: 0px overlap, an 8px gap.
+- **Still to re-check from round 3:** every other ID listed for round 3 below, as part of the full sweep.
 
 ## Routes and roles
 
@@ -23,7 +26,7 @@
 | `/app/account-recovery` | Owner, Manager | Also `?employee=AUDIT-E` and `?from=settings` (Settings only for an Owner) |
 | `/app/clocker-recovery` | Owner, Manager | Also `?from=settings`. Well-formed unknown reference: `4a9c7ed1-9b42-4dc0-8847-324d7ade7832` |
 
-## Open findings to re-check, by ID
+## Earlier open findings (rounds 2 and 3), to re-check by ID within the full sweep
 
 | Area | IDs | Report |
 |---|---|---|
