@@ -630,3 +630,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-focus-target:focus:not(:focus-visible) { outline: none; }
 /* ST-B14: Update detail's in-page loading band holds the placeholder's height, so content doesn't jump up and back. */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-update:has(> .nv-content > section[aria-busy="true"]) > .nv-pageband { box-sizing: border-box; min-height: var(--route-band); }
+/* checks.mjs r3: Payroll runs' "Next step" guidance on the kit callout role (13px at desktop before; Owner and Manager). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance, html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance > strong { font: var(--nv-t-callout); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow.premium-legacy-page .pw-workflow-guidance > strong { font-weight: 600; }
