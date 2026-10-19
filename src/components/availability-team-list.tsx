@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
-import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
-import { StatusPill } from "@/components/status-pill";
 import { formatTime } from "@/lib/date-utils";
+import { keepWhole } from "@/lib/keep-whole";
+import { Avatar, Card, Status } from "@/components/kit/kit";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
 
@@ -15,8 +14,8 @@ export type AvailabilityReviewEmployee = AvailabilitySubmissionListItem & {
 };
 
 const FILTERS = [
-  { value: "all", label: "All" },
-  { value: "missing", label: "Missing" },
+  { value: "all", label: "Everyone" },
+  { value: "missing", label: "Not submitted" },
   { value: "submitted", label: "Submitted" },
   { value: "unavailable", label: "Unavailable" },
 ] as const;
@@ -30,37 +29,45 @@ export function matchesAvailabilityFilter(employee: AvailabilityReviewEmployee, 
   return true;
 }
 
+const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("");
+
+/** Everyone's submission for the week, filtered in place. A deep link (?employeeId=) lands on that person. */
 export function AvailabilityTeamList({ employees, employeeId }: {
   employees: AvailabilityReviewEmployee[];
   employeeId?: string;
 }) {
   const [filter, setFilter] = useState<Filter>("all");
-  const target = useRef<HTMLElement>(null);
+  const target = useRef<HTMLLIElement>(null);
   const visible = employees.filter(employee => matchesAvailabilityFilter(employee, filter));
   useEffect(() => { target.current?.focus(); }, [employeeId]);
 
-  return <section className="av-team-panel" aria-labelledby="av-team-title">
-    <div className="av-team-heading"><div><h2 id="av-team-title">Team submissions</h2><p>Review who can work and who still needs to submit.</p></div><UsersIcon size={24} weight="regular" aria-hidden="true" /></div>
-    <fieldset className="av-filters"><legend className="sr-only">Filter team submissions</legend>{FILTERS.map(item => <label className={`av-filter${filter === item.value ? " selected" : ""}`} key={item.value}>
-      <input type="radio" name="availability-filter" value={item.value} checked={filter === item.value} onChange={() => setFilter(item.value)} />
-      <span>{item.label}<span className="av-filter-count">{employees.filter(employee => matchesAvailabilityFilter(employee, item.value)).length}</span></span>
-    </label>)}</fieldset>
-    <p className="sr-only" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "employee" : "employees"} shown</p>
-    <div className="av-review-column-headings" aria-hidden="true"><span>Employee / submission</span><span>Available hours</span></div>
-    <div className="av-team-list">
-      {visible.map(employee => <article ref={employee.employeeId === employeeId ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} className={`av-person-row${employee.employeeId === employeeId ? " selected" : ""}${employee.submitted ? "" : " missing"}`} key={employee.employeeId} aria-label={`${employee.employeeName} availability`}>
-        <div className="av-person">
-          <span className="av-avatar" aria-hidden="true">{employee.employeeName.trim().split(/\s+/).slice(0, 2).map(name => name[0]).join("")}</span>
-          <div className="av-person-copy"><h3>{employee.employeeName}</h3><p className="av-location"><MapPinIcon size={14} aria-hidden="true" />{employee.locationName}</p>
-            <StatusPill tone={!employee.submitted || employee.windowCount === 0 ? "neutral" : "success"}>{!employee.submitted ? "Not submitted" : employee.windowCount === 0 ? "Unavailable all week" : "Submitted"}</StatusPill>
-            {employee.updatedLabel ? <small>Updated {employee.updatedLabel}</small> : null}
-          </div>
-        </div>
-        <div className="av-person-hours">{employee.windows.length ? <ul className="av-hour-list" aria-label={`${employee.employeeName} available hours`}>{employee.windows.map(window => <li key={window.id}><strong>{DAYS[window.dayOfWeek]}</strong><span>{formatTime(window.startTime)} – {formatTime(window.endTime)}</span></li>)}</ul> : employee.submitted ? <div className="av-person-note"><strong>No available hours this week</strong><p>This employee submitted that they cannot work this week.</p></div>
-          // U2: a missing submission is one quiet line, not a repeated card; the pill already says "Not submitted".
-          : <p className="av-person-pending">Hours appear after they submit.</p>}</div>
-      </article>)}
-      {!visible.length ? <div className="av-empty"><UsersIcon size={30} aria-hidden="true" /><h3>{employees.length ? "No matching submissions" : "No active employees"}</h3><p>{employees.length ? "Choose another filter to view the team." : "Employee and Lead submissions will appear here."}</p>{employees.length ? <button className="av-button secondary" type="button" onClick={() => setFilter("all")}>Show all employees</button> : null}</div> : null}
+  return <Card title="Team" id="availability-team" meta={`${visible.length} ${visible.length === 1 ? "person" : "people"}`}>
+    <div className="wa-chips" role="group" aria-label="Show">
+      {FILTERS.map(item => {
+        const count = employees.filter(employee => matchesAvailabilityFilter(employee, item.value)).length;
+        return <button type="button" className="wa-chip" aria-pressed={filter === item.value} key={item.value} onClick={() => setFilter(item.value)}>
+          {item.label}<span className="wa-chip__count" aria-label={`, ${count}`}>{count}</span>
+        </button>;
+      })}
     </div>
-  </section>;
+    <p className="nv-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
+    {visible.length ? <ul className="wa-people">
+      {visible.map(employee => <li ref={employee.employeeId === employeeId ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} className="wa-person" data-selected={employee.employeeId === employeeId ? "true" : undefined} key={employee.employeeId} aria-label={`${employee.employeeName} availability`}>
+        <div className="wa-person__head">
+          <Avatar initials={initials(employee.employeeName)} />
+          <span className="wa-person__text">
+            <span className="nv-row__title">{employee.employeeName}</span>
+            <span className="nv-row__meta">{employee.locationName}{employee.updatedLabel ? <> · <span className="nv-keep">Updated {employee.updatedLabel}</span></> : null}</span>
+            <span className="nv-row__status"><Status tone={!employee.submitted ? "review" : employee.windowCount === 0 ? "neutral" : "done"}>{!employee.submitted ? "Not submitted" : employee.windowCount === 0 ? "Unavailable all week" : "Submitted"}</Status></span>
+          </span>
+        </div>
+        {employee.windows.length ? <ul className="wa-hours" aria-label={`${employee.employeeName} available hours`}>
+          {employee.windows.map(window => <li key={window.id}><span className="wa-hours__day">{DAYS[window.dayOfWeek]}</span><span>{keepWhole(`${formatTime(window.startTime)} – ${formatTime(window.endTime)}`)}</span></li>)}
+        </ul> : employee.submitted ? <p className="wa-person__note">Can’t work this week.</p> : <p className="wa-person__note">Hours show here once they submit.</p>}
+      </li>)}
+    </ul> : <div className="wa-card-body">
+      <p className="wa-text wa-muted">{employees.length ? "No one matches this filter." : "Employees and Leads show here once they’re added."}</p>
+      {employees.length ? <button className="nv-btn" data-kind="secondary" data-block="true" type="button" onClick={() => setFilter("all")}>Show everyone</button> : null}
+    </div>}
+  </Card>;
 }

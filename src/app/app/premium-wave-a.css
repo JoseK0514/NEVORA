@@ -180,3 +180,78 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
 @media (min-width: 1024px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-columns { display: grid; grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr); align-items: start; }
 }
+
+/* Requests: decision cards (Time off, Shift requests), shift blocks, records and Team availability. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  & .wa-card-lead { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-3); font: var(--nv-t-body); color: var(--nv-ink-2); }
+  & .wa-card-body--tight { padding-bottom: var(--nv-s-2); }
+  & .wa-target[data-selected="true"] > .nv-card { box-shadow: var(--nv-e1), 0 0 0 2px var(--nv-accent); }
+  & .wa-shifts { display: flex; flex-direction: column; gap: var(--nv-s-2); margin: 0 var(--nv-s-5) var(--nv-s-3); }
+  & .wa-shift { padding: var(--nv-s-3) var(--nv-s-4); border-radius: var(--nv-r-control); background: var(--nv-inset); }
+  & .wa-shift > p { margin: 0; }
+  & .wa-shift__label { font: var(--nv-t-label); color: var(--nv-muted); }
+  & .wa-shift__when { margin-top: 2px; font: var(--nv-t-row); color: var(--nv-ink); }
+  & .wa-shift__length { color: var(--nv-muted); font-weight: 400; }
+  & .wa-shift__where { font: var(--nv-t-callout); color: var(--nv-ink-2); }
+  & .wa-shifts__trade { display: flex; justify-content: center; color: var(--nv-icon); }
+  & .wa-shifts + .wa-facts { padding-top: 0; }
+  & .wa-decision { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr)); gap: var(--nv-s-3); }
+  & .wa-decision > .nv-btn { width: 100%; }
+  & .wa-decision-form { gap: var(--nv-s-2); }
+  & .wa-decision-form > .nv-link { align-self: flex-start; }
+  & .wa-row-note { display: block; margin-top: 2px; }
+  /* ShiftChangeForm's follow-up controls (retry, refresh, view status) as secondary buttons. */
+  & .wa-form > :is(a.swap-button, button.button) {
+    display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; padding: 0 var(--nv-s-5); border: 0; border-radius: var(--nv-r-control);
+    background: var(--nv-canvas); color: var(--nv-ink); box-shadow: inset 0 0 0 1px var(--nv-border); font: var(--nv-t-headline); text-decoration: none; cursor: pointer;
+  }
+  /* Records: Team activity. */
+  & .wa-entries { list-style: none; margin: 0; padding: 0 0 var(--nv-s-2); }
+  & .wa-entry { padding: var(--nv-s-3) 0 var(--nv-s-2); }
+  & .wa-entry + .wa-entry { border-top: 1px solid var(--nv-hairline); }
+  & .wa-entry__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nv-s-2) var(--nv-s-3); padding: 0 var(--nv-s-5) var(--nv-s-2); }
+  & .wa-entry__lead { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-entry .wa-shifts { margin-bottom: var(--nv-s-2); }
+  & .wa-history { padding: 0 var(--nv-s-5); }
+  & .wa-history :is(.shift-change-history, .shift-change-unavailable) { margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-history .shift-change-history > summary { display: flex; align-items: center; min-height: 44px; color: var(--nv-accent); font: var(--nv-t-label); cursor: pointer; }
+  & .wa-history .shift-change-history ol { margin: 0 0 var(--nv-s-2); padding-left: var(--nv-s-5); }
+  & .wa-history .shift-change-history li { display: flex; flex-direction: column; padding: var(--nv-s-1) 0; font: var(--nv-t-callout); }
+  & .wa-history .shift-change-history li strong { font-weight: 600; color: var(--nv-ink-2); }
+  /* Team availability. */
+  & .wa-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--nv-s-4); }
+  & .wa-foot > span { flex: 1 1 14rem; padding-block: var(--nv-s-1); }
+  & .wa-stat-of { font-size: .6em; font-weight: 500; color: var(--nv-muted); }
+  & .wa-chips { display: flex; gap: var(--nv-s-2); overflow-x: auto; scrollbar-width: none; padding: var(--nv-s-1) var(--nv-s-5) var(--nv-s-3); }
+  & .wa-chips::-webkit-scrollbar { display: none; }
+  & .wa-chip {
+    flex: none; display: inline-flex; align-items: center; gap: var(--nv-s-2); min-height: 44px; padding: 0 var(--nv-s-4); border: 0; border-radius: var(--nv-r-pill);
+    background: var(--nv-inset); color: var(--nv-ink-2); font: var(--nv-t-label); white-space: nowrap; cursor: pointer;
+    transition: background-color var(--nv-m-quick) var(--nv-ease-out), color var(--nv-m-quick) var(--nv-ease-out);
+  }
+  & .wa-chip:hover { background: var(--nv-track); }
+  & .wa-chip[aria-pressed="true"] { background: var(--nv-accent-wash); color: var(--nv-accent-strong); font-weight: 600; box-shadow: inset 0 0 0 1px var(--nv-accent); }
+  & .wa-chip__count { font: var(--nv-t-badge); font-variant-numeric: tabular-nums; color: inherit; }
+  & .wa-people { list-style: none; margin: 0; padding: 0 0 var(--nv-s-2); }
+  & .wa-person { padding: var(--nv-s-3) var(--nv-s-5); }
+  & .wa-person + .wa-person { border-top: 1px solid var(--nv-hairline); }
+  & .wa-person:focus { outline: none; }
+  & .wa-person:focus-visible, & .wa-person[data-selected="true"] { box-shadow: inset 3px 0 0 var(--nv-accent); background: #F7FAF9; }
+  & .wa-person__head { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
+  & .wa-person__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  & .wa-person__note { margin: var(--nv-s-2) 0 0 calc(40px + var(--nv-s-3)); font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-hours { list-style: none; display: grid; grid-template-columns: auto 1fr; gap: 2px var(--nv-s-3); margin: var(--nv-s-2) 0 0 calc(40px + var(--nv-s-3)); padding: 0; font: var(--nv-t-callout); color: var(--nv-ink-2); }
+  & .wa-hours > li { display: contents; }
+  & .wa-hours__day { font-weight: 600; color: var(--nv-ink); }
+}
+@media (max-width: 359px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page :is(.wa-hours, .wa-person__note) { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-chip { transition: none; }
+}
+
+/* Lists of decision cards: one column on phones, two side by side once each can be 30rem wide. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr)); gap: var(--nv-s-4); align-items: start;
+}

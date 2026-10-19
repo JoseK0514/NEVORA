@@ -61,13 +61,14 @@ it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and r
   await ManagerTimeOff({tab:"declined"}); expect(listTeamTimeOffRequests).toHaveBeenCalledWith("DENIED");
 });
 it("distinguishes missing, intentionally unavailable and submitted windows without treating seeded hours as a submission", async () => {
-  const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"}));
-  expect(html).toContain('<dt>Missing</dt><dd>1</dd>'); expect(html).toContain("Unavailable all week"); expect(html).toContain("Not submitted"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
-  expect(html).toContain('class="status-pill neutral">Not submitted');
-  expect(html).toContain('<dt>Submitted</dt><dd>2<span> / 3</span>');
-  expect(html).toContain('<dt>Unavailable all week</dt><dd>1</dd>');
-  expect(html).toContain('class="status-pill neutral">Unavailable all week');
-  expect(html).toContain('class="status-pill success">Submitted');
+  // Times are kept whole with no-break spaces; compare the words.
+  const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"})).replace(/\u00a0/g, " ");
+  expect(html).toMatch(/Not submitted<\/span><span class="nv-stat__value">1</); expect(html).toContain("Unavailable all week"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
+  expect(html).toMatch(/data-tone="review">.*?Not submitted<\/span>/);
+  expect(html).toContain('2 of 3 submitted');
+  expect(html).toMatch(/Unavailable all week<\/span><span class="nv-stat__value">1</);
+  expect(html).toMatch(/data-tone="neutral">.*?Unavailable all week<\/span>/);
+  expect(html).toMatch(/data-tone="done">.*?Submitted<\/span>/);
 });
 it("keeps management pending, coverage and outcome data separate", async () => {
   const pending = renderToStaticMarkup(await ManagerShiftRequests({ timeZone:"America/Puerto_Rico",tab:"requests"}));
@@ -86,9 +87,9 @@ it("a Lead-gap suggestion URL rejects otherwise eligible Employees using the sha
  vi.mocked(getShiftValidationContext).mockResolvedValue({ position: undefined, workspace: {id:"test-workspace",active:true,timeZone:"America/Puerto_Rico"}, location: {id:"loc",workspaceId:"test-workspace",active:true},  employee: { positionIds: [],  active: true, role: "EMPLOYEE", eligibleLocationIds: ["loc"], targetWeeklyHours: 24, maximumWeeklyHours: 40 }, existingShifts: [], availability: [{ dayOfWeek: 1, startTime: "06:00", endTime: "18:00" }], weeklyAvailability: [], availabilityExceptions: [], approvedTimeOff: [], existingWeeklyMinutes: 0 });
  const params = { week: "2026-10-05", date: "2026-10-05", locationId: "loc", start: "08:00", end: "16:00" };
  const general = renderToStaticMarkup(await CoverageSuggestionsPage({ searchParams: Promise.resolve(params) }));
- expect(general).toContain("1 eligible");
+ expect(general).toContain("1\u00a0person");
  const leadOnly = renderToStaticMarkup(await CoverageSuggestionsPage({ searchParams: Promise.resolve({ ...params, lead: "1" }) }));
- expect(leadOnly).toContain("0 eligible"); expect(leadOnly).toContain("No eligible employees found.");
+ expect(leadOnly).toContain("0\u00a0people"); expect(leadOnly).toContain("No one can work it");
 });
 
 vi.mock("@/lib/business-time",()=>import("../lib/business-time"));
@@ -111,6 +112,6 @@ it('H12 actionable manager exception explains its reason outside the action grid
  vi.mocked(readShiftChangeAvailability).mockResolvedValueOnce({allowed:true,notice:'Projected scheduled overtime needs manager review.'});
  const html=renderToStaticMarkup(await ManagerShiftRequests({timeZone:'America/Puerto_Rico'}));
  expect(html).toContain('>Approve<');expect(html).toContain('Projected scheduled overtime needs manager review.');
- expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="manager-workflow-review"'));
+ expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="wa-decision"'));
  expect(html).not.toMatch(/operationalProfile|weeklyMinutes|classification/);
 });
