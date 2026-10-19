@@ -152,7 +152,7 @@ See [the full report](SNAPSHOTS-2026-10-19.md) for exact commits, every failure 
 
 **Result:** data refusal reproduced on actual owned PostgreSQL 17.11; no server eligibility rule was weakened. New regression: `src/test/integration/premium-swap-seed.integration.ts`. Runner: `NEVORA_TEST_PG_BIN=<local pg bin> node scripts/premium-release-postgres.mjs`. It creates a new marked loopback database, installs current migrations and stops its own cluster afterward. The first two setup attempts failed (wrong runner database prefix, then a missing fixture phone); both were corrected before the passing run.
 
-The pushed tree does **not** contain `.claude/parallel/scripts/seed-extra.mts` or `CODEX-RELEASE-PROMPT.md`. Consequently this is a reproduction of Jose’s specified rows, not a claim to have inspected the missing Mac file. Original seeding code has been requested. Before calling the Mac cause conclusively identified, compare its actual `employee_scheduling_settings`, availability windows/overrides, position eligibility and location readiness with these tested inputs.
+The original seeder was absent when the initial reproduction ran. A later coordinator merge supplied its mirror as `scripts/ui-checks/seed-extra.mts` and the base `scripts/ui-checks/preview-runtime.mjs`. Source inspection now confirms the same missing rows: the base AUDIT accounts and extra `person()` helper insert credentials, location eligibility and qa-pos qualification, but neither inserts availability windows or employee scheduling settings/rule profiles. Thus both AUDIT-E and Riley lack those inputs in this seed, matching the tested `OUTSIDE_AVAILABILITY` plus ten `RULE_UNVERIFIABLE` refusals. Live Mac database contents were not selected or changed.
 
 Fixture: AUDIT-E has five next-week weekday shifts at loc-1, qa-pos, 08:00–16:00, assignment_origin MANAGER; Riley Rivera (AUDIT-SWAP) has only `x-swap-5`/`x-swap-6` on Saturday/Sunday. Week is published through `publishScheduleWithRevision()`. Both are active and have loc-1/qa-pos eligibility. Policy is AUTOMATIC_WHEN_VALID with both advances zero.
 
@@ -166,7 +166,7 @@ Exact observations:
 Coordinator’s exact seed additions (fictional databases only; do not use as customer defaults):
 
 ```ts
-import { fictionalProfile } from '../../../src/test/fixtures/shift-changes';
+import { fictionalProfile } from '../../src/test/fixtures/shift-changes.ts';
 // Resolve this import relative to the actual seeder location/source checkout.
 await q(`INSERT INTO availability_windows
   (id,employee_id,day_of_week,start_time,end_time)
@@ -187,7 +187,7 @@ await q(`INSERT INTO employee_scheduling_settings
 
 `fictionalProfile()` supplies all five NOT_APPLICABLE rules with explicit fictional reviewer/time metadata. Availability includes Monday for Riley and Saturday/Sunday for AUDIT-E: the days they **work** before a swap must not become the only days they are **available**. Existing weekly unavailable overrides or approved time off can still block these windows; the isolated fixture has none. Forty-hour limits suffice: AUDIT-E remains at 40 hours and Riley at 16 after a swap. No extra revision snapshot or 80-hour limit is needed.
 
-Tests: new actual-Postgres regression **1 passed**, TypeScript passed, targeted ESLint passed. The test covers candidate discovery, displayed/current terms, staged refusal reasons, both eligible targets, proposal, acceptance and saved assignments. Raw evidence: `/workspace/nevora-release-evidence/2026-10-19/swap.log`. Files: new regression, `vitest.premium-release-integration.config.mts`, owned `scripts/premium-release-postgres.mjs`, this report. No Mac files or UI files edited. Claude’s next gate: apply only missing fictional seed rows at its next safe round break, inspect the rendered target list and compare/send screens. Original Mac seed verification remains conditional on receiving that file.
+Tests: new actual-Postgres regression **1 passed**, TypeScript passed, targeted ESLint passed. The test covers candidate discovery, displayed/current terms, staged refusal reasons, both eligible targets, proposal, acceptance and saved assignments. Raw evidence: `/workspace/nevora-release-evidence/2026-10-19/swap.log`. Files: new regression, `vitest.premium-release-integration.config.mts`, owned `scripts/premium-release-postgres.mjs`, this report. No Mac files or UI files edited. Claude’s next gate: apply only missing fictional seed rows at its next safe round break, inspect the rendered target list and compare/send screens. The late source mirror confirms the omitted seed inputs; the focused actual-Postgres swap regression was rerun successfully on the later shared head. The coordinator still applies the rows to its own fictional preview at a safe round break.
 
 
 ## 10. Concurrent production-runtime reads
@@ -259,3 +259,8 @@ Implementation fix `c94d17c` adds 0033 to the real fresh-company installer. Actu
 **Live verification still blocked:** Jose requested Vercel plugin access, but this cloud session exposes no Vercel tools; there is also no CLI, credential binding, linked local project or existing CLI auth file. No credential values were read. The runbook therefore does **not** claim the actual Production keys are unset or that project/team/deployed-SHA identity was verified. Its exact read-only inventory check remains open until the Vercel plugin is exposed here. The corrected production build proves all dev markers erased across **2,277 artifacts**, even with both flags deliberately set; that is separate from checking live Vercel settings.
 
 Next gates: Claude fixes the two shared Desktop preview assertions and completes on-screen joint checks; Jose identifies the final pushed/merged SHA; cloud Codex reruns that exact candidate’s required matrix. Hosted Neon/Vercel identity/configuration, production load profiling, independent acceptance and Jose’s release approval remain separate.
+
+
+### Late source/handoff confirmation
+
+The coordinator’s later remote merge (`17d8089`, preserved in `5f26297`) added the original preview/seed tooling mirror and newer UI/application changes. A1’s missing-data reason is now confirmed from `scripts/ui-checks/preview-runtime.mjs` and `seed-extra.mts`, and the focused cloud swap regression passed again on `5f26297`. No seeder or running preview was edited. That merge also adds later UI/backend work and extends the load script’s Profile cases; the historical 880-request matrix and scratch SHA results remain tied to their recorded source variants. Neither scratch branch was pushed. These newer shared-head changes require tonight’s final exact-SHA validation and must not inherit the earlier full-matrix result.
