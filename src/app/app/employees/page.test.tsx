@@ -35,7 +35,8 @@ it("keeps inactive employees discoverable with an explicit status", async () => 
   const html = renderToStaticMarkup(await EmployeesPage());
   // Inactive people keep an explicit condition pill; active is the default and isn't repeated on every row.
   expect(html).toMatch(/class="nv-status" data-tone="neutral">[^]*?Inactive<\/span>/);
-  expect(html).toContain('aria-label="Inactive Person, LEAD, Main, inactive"');
+  // IS-P4-15: the label also says the phone number shown in the desktop table.
+  expect(html).toContain('aria-label="Inactive Person, LEAD, Main, 7875550102, inactive"');
   expect(html).toContain('href="/app/employees/inactive"');
 });
 

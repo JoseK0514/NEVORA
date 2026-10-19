@@ -114,7 +114,7 @@ it('feature off retains the ordinary profile and does not mount setup',()=>{
 it.each(["EMPLOYEE", "MANAGER"] as const)("offers a top-right account menu with sign out for %s", role => {
   const { html } = render(role);
   expect(html).toContain('class="portal-account-menu"');
-  expect(html).toContain('aria-label="Account menu"');
+  expect(html).toContain('aria-label="Sam Cruz, account menu"');
   expect(html).toContain('id="portal-account-menu"');
   expect(html).toContain('Signed in as ');
   expect(html).toContain('portal-account-signout');
@@ -129,7 +129,7 @@ it("preserves configured Fuel customer identity in the sidebar", () => {
 it('groups authorized owner destinations and provides an accessible sidebar control', () => {
  const {html}=render('OWNER','/app/schedule');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
- for(const label of ['Plan','Team','Time &amp; Pay','Workspace']) expect(sidebar).toContain(label);
+ for(const label of ['Plan','People','Time and pay','Workspace']) expect(sidebar).toContain(label);
  expect(html).toContain('aria-label="Collapse sidebar"');
  expect(html).toContain('aria-expanded="true"');
 });
@@ -142,8 +142,13 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
  const menu=mobile.split('id="manager-more-navigation"')[1] ?? '';
  const hrefs=[...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1]);
  // The same destinations as before, now grouped by job (MG3).
- expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[])].sort());
- expect(hrefs).toEqual(['/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...(role==='OWNER'?['/app/settings']:[])]);
+ expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),'/app/profile'].sort());
+ expect(hrefs).toEqual(['/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...(role==='OWNER'?['/app/settings']:[]),'/app/profile']);
+ // Phase 3.5: Owners and Managers reach their Profile from More › My account and the desktop account menu, never the sidebar.
+ expect(menu).toContain('aria-label="My account"');
+ const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
+ expect(sidebar).not.toContain('href="/app/profile"');
+ expect(html.split('id="portal-account-menu"')[1]).toContain('href="/app/profile" class="nevora-action-menu-item"');
  expect(menu).toContain('aria-label="Time and reporting"');
 });
 
@@ -159,7 +164,7 @@ it.each(['MANAGER','OWNER'] as const)('keeps %s Updates in the mobile menu with 
  expect(direct).toContain('class="mobile-nav-link manager-more-trigger active"');
  expect(menu).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
  expect(menu.match(/href="\/app\/updates"/g)).toHaveLength(1);
- expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
+ expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="true"/);
  expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
 });
 
@@ -210,6 +215,23 @@ it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination within t
 });
 it('D1: the desktop top bar shows workspace, section and page, and pins Workspace in the sidebar',()=>{
  const {html}=render('OWNER','/app/timecards');
- expect(html).toContain('<ol class="portal-location"><li class="portal-location-workspace" title="Northside Services">Northside Services</li><li>Time &amp; Pay</li><li><span aria-current="page">Timecards</span></li></ol>');
+ expect(html).toContain('<ol class="portal-location"><li class="portal-location-workspace" title="Northside Services">Northside Services</li><li>Time and pay</li><li><span aria-current="page">Timecards</span></li></ol>');
  expect(html).toContain('data-group="Workspace"');
+});
+it('D-4: Time off, Shift requests and Availability light Inbox, and the trail still names the page', () => {
+ for (const [pathname, label] of [['/app/requests', 'Time off'], ['/app/exchange', 'Shift requests'], ['/app/availability', 'Availability']] as const) {
+  const {html} = render('MANAGER', pathname);
+  const sidebar = html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
+  // IS-P4-08: Inbox is the current section there, not the current page.
+  expect(sidebar).toContain('href="/app/inbox" class="nav-link active" aria-current="true"');
+  expect(sidebar).not.toContain('href="/app/requests"');
+  expect(html).toContain(`<li>Plan</li><li><a href="/app/inbox">Inbox</a></li><li><span aria-current="page">${label}</span></li></ol>`);
+ }
+ const {html} = render('OWNER', '/app/payroll-export');
+ expect(html).toContain('<li>Time and pay</li><li><a href="/app/timecards">Timecards</a></li><li><span aria-current="page">Time exports</span></li></ol>');
+ expect(html).toContain('<span class="nav-label">Team</span>');
+});
+it('IS-P4-09 and IS-P4-14: Home\'s views end the trail with their own name, and a skip link comes first', () => {
+ const {html} = render('MANAGER', '/app');
+ expect(html.indexOf('class="portal-skip-link" href="#main-content"')).toBeLessThan(html.indexOf('<aside'));
 });
