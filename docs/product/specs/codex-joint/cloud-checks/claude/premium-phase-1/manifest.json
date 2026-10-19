@@ -7827,6 +7827,75 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00341-matrix-AUDIT-BREAK-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T23-22-28-985Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00341-matrix-AUDIT-BREAK-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app/profile,/app/requests,/app/requests/hub,/app/schedule",
+        "--accounts",
+        "AUDIT-BREAK",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "857b1b708bb93c45512c56c9bbbf053da7d72515b7dc3200a8f9e50841a06bb5",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00342-matrix-AUDIT-BREAK-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T23-23-31-918Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00342-matrix-AUDIT-BREAK-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app/schedule/coverage,/app/timecards,/app/updates,/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+        "--accounts",
+        "AUDIT-BREAK",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "707e2449475334be080b24d1bd61a8c13d1d746331a29e689a2cdc86a4316599",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00343-matrix-AUDIT-BREAK-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-19T23-23-47-511Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00343-matrix-AUDIT-BREAK-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app/updates/compose",
+        "--accounts",
+        "AUDIT-BREAK",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "e826222b659f67c4e295d43bb3c5799f4a6871eb5a22bcf9dde2c8f899752f88",
+      "code": 1,
+      "passed": 0,
+      "failed": 4
     }
   ],
   "planned": 12580,

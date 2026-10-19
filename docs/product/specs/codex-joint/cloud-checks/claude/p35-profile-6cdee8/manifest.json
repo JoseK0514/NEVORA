@@ -7988,6 +7988,75 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00348-matrix-AUDIT-M-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T23-22-50-637Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00348-matrix-AUDIT-M-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app/schedule/settings,/app/schedule/templates,/app/timecards,/app/updates",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "efd803f3d1fd16cae854925e46b91b3b61738d6b8bd173364e876c5cc17fce0e",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00349-matrix-AUDIT-M-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T23-23-20-668Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00349-matrix-AUDIT-M-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca,/app/updates/compose",
+        "--accounts",
+        "AUDIT-M",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "7ae37f10e6c1b2cb8adfe9c30652cc7ac61af6571eefc2a13e1e5d81d0300258",
+      "code": 1,
+      "passed": 0,
+      "failed": 8
+    },
+    {
+      "name": "00350-matrix-AUDIT-E-chromium-768",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-19T23-24-23-886Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00350-matrix-AUDIT-E-chromium-768.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=audit-next-0-1",
+        "--accounts",
+        "AUDIT-E",
+        "--widths",
+        "768",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "faa5216cb62aafb01c1346d07fd525ba91e79cb741168626dc02ba08a782b444",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12716,

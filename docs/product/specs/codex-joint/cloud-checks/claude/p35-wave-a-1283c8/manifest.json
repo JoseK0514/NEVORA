@@ -5528,6 +5528,29 @@
       "code": 0,
       "passed": 16,
       "failed": 0
+    },
+    {
+      "name": "00241-matrix-AUDIT-LONG-chromium-430",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T23-23-30-362Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00241-matrix-AUDIT-LONG-chromium-430.log",
+      "args": [
+        "--routes",
+        "/app/exchange/swap?sourceShiftId=audit-next-0-2,/app/my-pay,/app/my-time,/app/notifications",
+        "--accounts",
+        "AUDIT-LONG",
+        "--widths",
+        "430",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "4ea705124da85701f1503442cc6a92342f639c6588b6e09821dbd1274b3d7b4b",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
     }
   ],
   "planned": 12580,

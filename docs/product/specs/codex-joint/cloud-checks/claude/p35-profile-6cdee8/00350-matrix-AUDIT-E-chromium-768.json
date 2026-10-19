@@ -1,0 +1,334 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Choose the days and times you » 13px",
+   "p.av-no-hours «No available hours» 13px",
+   "p.av-input-hint «An end time of midnight includ» 12px",
+   "p. «Your saved usual week.» 12px"
+  ],
+  "targets": [],
+  "cls": 0.001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0006,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 100,
+  "route": "/app/exchange/callout?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 125,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0509,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 125,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Choose the days and times you » 13px",
+   "p.av-no-hours «No available hours» 13px",
+   "p.av-input-hint «An end time of midnight includ» 12px",
+   "p. «Your saved usual week.» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0315,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 125,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0168,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 125,
+  "route": "/app/exchange/callout?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 150,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.11,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 150,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Choose the days and times you » 13px",
+   "p.av-no-hours «No available hours» 13px",
+   "p.av-input-hint «An end time of midnight includ» 12px",
+   "p. «Your saved usual week.» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0535,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 150,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0261,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 150,
+  "route": "/app/exchange/callout?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 200,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.4086,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 200,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Choose the days and times you » 13px",
+   "p.av-no-hours «No available hours» 13px",
+   "p.av-input-hint «An end time of midnight includ» 12px",
+   "p. «Your saved usual week.» 12px"
+  ],
+  "targets": [],
+  "cls": 0.158,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 200,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0479,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "size": "768",
+  "text": 200,
+  "route": "/app/exchange/callout?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]
