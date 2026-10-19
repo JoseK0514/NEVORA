@@ -32,6 +32,19 @@ const shapes: [string | RegExp, Shape][] = [
   [/^\/app\/updates\/[^/]+$/, { route: "wb-update", label: "update", shape: "cards", band: 288 }],
   ["/app/updates", { route: "updates", label: "updates", shape: "list", band: 128, overlap: false }],
   ["/app/notifications", { route: "notifications", label: "notifications", shape: "list", band: 128, overlap: false }],
+  // Wave C (Phase 3.5): Settings and the recovery pages; heights in premium-wave-c.css. Each route also has its own loading.tsx.
+  ["/app/settings/workspace", { route: "settings-profile", label: "company profile", shape: "cards", band: 232 }],
+  ["/app/settings/locations/new", { route: "settings-location-new", label: "the new location form", shape: "cards", band: 208 }],
+  ["/app/settings/locations", { route: "settings-locations", label: "locations", shape: "cards", band: 276 }],
+  ["/app/settings/branding", { route: "settings-branding", label: "branding", shape: "cards", band: 256 }],
+  ["/app/settings/features", { route: "settings-features", label: "features and words", shape: "cards", band: 256 }],
+  ["/app/settings/company-policies", { route: "settings-policies", label: "company policies", shape: "cards", band: 232 }],
+  ["/app/settings/breaks", { route: "settings-breaks", label: "break types", shape: "cards", band: 276 }],
+  ["/app/settings/positions", { route: "settings-positions", label: "positions", shape: "cards", band: 276 }],
+  ["/app/settings/clocker", { route: "settings-devices", label: "Clocker devices", shape: "cards", band: 276 }],
+  ["/app/settings", { route: "settings", label: "settings", shape: "cards", band: 232 }],
+  ["/app/account-recovery", { route: "account-recovery", label: "account recovery", shape: "cards", band: 232 }],
+  ["/app/clocker-recovery", { route: "clocker-recovery", label: "Clocker recovery", shape: "cards", band: 232 }],
 ];
 const home: Shape = { route: "home", label: "your workspace", shape: "cards", band: 220 };
 

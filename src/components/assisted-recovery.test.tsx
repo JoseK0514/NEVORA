@@ -22,12 +22,12 @@ describe('Assisted recovery workflow presentation',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER"/>);
   expect(html).toContain('<fieldset disabled=""');
   expect(html).toContain('Enable JavaScript to issue a recovery code.');
-  expect(html).toContain('href="/app/employees"');expect(html).toContain('Back to Employees');
+  expect(html).toMatch(/href="\/app"[^>]*>[\s\S]*?Home<\/a>/);
  });
  it('opened from an employee page, prefills their ID and returns to that page (W2)',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER" employeeId="AUDIT-E"/>);
   expect(html).toMatch(/name="employeeId" value="AUDIT-E"/);
-  expect(html).toContain('href="/app/employees/AUDIT-E"');expect(html).toContain('Back to employee');
+  expect(html).toContain('href="/app/employees/AUDIT-E"');expect(html).toMatch(/href="\/app\/employees\/AUDIT-E"[^>]*>[\s\S]*?AUDIT-E<\/a>/);
   expect(html).not.toContain('view=team');
  });
  it('announces pending issuance while all mutation fields are disabled',()=>{
@@ -45,7 +45,7 @@ describe('Assisted recovery workflow presentation',()=>{
   expect(html).not.toContain('<form');expect(html).not.toContain('Password updated');
  });
  it('gives ended-access feedback an explicit sign-in path',()=>{
-  const html=renderToStaticMarkup(<AssistedRecovery {...props} message="Your access ended. Sign in again."/>);
+  const html=renderToStaticMarkup(<AssistedRecovery {...props} message="Your session ended. Sign in again to issue a code."/>);
   expect(html).toContain('role="alert"');expect(html).toContain('tabindex="-1"');
   expect(html).toContain('href="/login"');expect(html).not.toContain('Recovery code ready');
  });

@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
-import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { requireRoles } from "@/lib/auth/permissions";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -8,8 +5,7 @@ import { payrollFeatureEnabled } from "@/lib/payroll/service";
 import { readModuleBlockers, readPresentationHistory } from "@/lib/workspace-presentation/service";
 import { readSettings } from "@/lib/workspace-presentation/model";
 import { FeaturesEditor } from "@/components/features-editor";
-import "../branding/branding.css";
-import "./features.css";
+import { GuideCard, SettingsFrame } from "../wave-c-kit";
 
 export const dynamic = "force-dynamic";
 
@@ -20,18 +16,11 @@ export default async function FeaturesPage() {
   const latest = history[0];
   const settings = readSettings(latest?.settings);
   return (
-    <div className="branding-page features-page">
-      <Link className="branding-back" href="/app/settings">
-        <ArrowLeftIcon size={18} aria-hidden="true" />
-        Back to Settings
-      </Link>
-      <header className="branding-heading">
-        <div>
-          <h1>Features &amp; words</h1>
-          <p>Turn off what {workspace.name} doesn&rsquo;t use, and name your team the way you do. Nothing is deleted when a feature is off.</p>
-        </div>
-        <span className="branding-access"><ShieldCheckIcon size={18} aria-hidden="true" />Owner access</span>
-      </header>
+    <SettingsFrame title="Features & words" summary="Turn off what your company doesn’t use, and name your team the way you do."
+      aside={<GuideCard title="Nothing is deleted">
+        <p>A feature that’s off is hidden for everyone and paused on the server. Its records stay, and turning it back on brings them back.</p>
+        <p>A feature with requests still waiting stays on until they’re answered.</p>
+      </GuideCard>}>
       <FeaturesEditor
         key={latest?.revision ?? 0}
         revision={latest?.revision ?? 0}
@@ -40,6 +29,6 @@ export default async function FeaturesPage() {
         blockers={blockers}
         payrollEnabled={payrollFeatureEnabled()}
       />
-    </div>
+    </SettingsFrame>
   );
 }

@@ -19,8 +19,8 @@ import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { requireRoles } from "@/lib/auth/permissions";
 import { requireSessionMutationProof } from '@/lib/auth/session';
 import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/service';
-import { SettingsHubMotion } from "./settings-hub-motion";
-import "./settings-hub.css";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { SettingsFrame } from "./wave-c-kit";
 
 const groups = [
   {
@@ -30,8 +30,8 @@ const groups = [
     items: [
       { id: "profile", title: "Company profile", description: "Business name and timezone.", href: "/app/settings/workspace", icon: BuildingsIcon },
       { id: "locations", title: "Locations", description: "Location details, status, and Clocker links.", href: "/app/settings/locations", icon: MapPinIcon },
-      { id: "branding", title: "Branding", description: "Company colour and logo, kept readable.", href: "/app/settings/branding", icon: PaletteIcon },
-      { id: "features", title: "Features & words", description: "Turn features on or off, and choose your team's words.", href: "/app/settings/features", icon: ToggleRightIcon },
+      { id: "branding", title: "Branding", description: "Company color and logo, kept readable.", href: "/app/settings/branding", icon: PaletteIcon },
+      { id: "features", title: "Features & words", description: "Turn features on or off, and choose your team’s words.", href: "/app/settings/features", icon: ToggleRightIcon },
     ],
   },
   {
@@ -51,7 +51,7 @@ const groups = [
     description: "People, access roles, and company announcements.",
     items: [
       {id:"employees",title:"Employees & access",description:"Employee information, access roles, and scheduling eligibility.",href:"/app/employees",icon:UsersThreeIcon},
-      {id:"updates",title:"Company updates",description:"Announcements, audiences, and review requirements.",href:"/app/updates",icon:MegaphoneIcon},
+      {id:"updates",title:"Company updates",description:"Share news with your team and ask them to read it.",href:"/app/updates",icon:MegaphoneIcon},
     ],
   },
   {
@@ -65,8 +65,8 @@ const groups = [
     title: "Access & recovery",
     description: "Help your team get back to work.",
     items: [
-      { id: "account-recovery", title: "Account recovery", description: "Verify identity and help restore portal access.", href: "/app/account-recovery", icon: KeyIcon },
-      { id: "clocker-recovery", title: "Clocker recovery", description: "Review an employee's saved Clocker action reference.", href: "/app/clocker-recovery", icon: ClockCounterClockwiseIcon },
+      { id: "account-recovery", title: "Account recovery", description: "Verify identity and help restore portal access.", href: "/app/account-recovery?from=settings", icon: KeyIcon },
+      { id: "clocker-recovery", title: "Clocker recovery", description: "Review an employee’s saved Clocker action reference.", href: "/app/clocker-recovery?from=settings", icon: ClockCounterClockwiseIcon },
     ],
   },
 ];
@@ -74,38 +74,33 @@ const groups = [
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
   const payroll = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;
-  const presentation = await currentPresentation(), words = wordPreset(presentation.words).en;
+  const [presentation, workspace] = await Promise.all([currentPresentation(), getWorkspace()]);
+  const words = wordPreset(presentation.words).en;
   // Features the company turned off leave the hub; rows name people and places in the company's words (B2).
   const named = groups.map(group => ({ ...group, items: group.items.filter(item => pathEnabled(item.href, presentation.modules)).map(item =>
     item.id === "employees" ? { ...item, title: `${words.people} & access`, description: `${words.person} information, access roles, and scheduling eligibility.` }
     : item.id === "locations" ? { ...item, title: words.locations, description: `${words.location} details, status, and Clocker links.` } : item) }));
   const visibleGroups = [...named, ...(payroll?.canConfigure ? [{id:"payroll",title:"Payroll",description:"Financial settings and authorized payroll access.",items:[{id:"payroll",title:"Payroll settings",description:"Company preferences, employee exceptions, and financial access.",href:"/app/settings/payroll",icon:WalletIcon}]}] : [])];
   return (
-    <SettingsHubMotion>
-      <header className="settings-hub-heading">
-        <h1>Settings</h1>
-        <p>Set up your workspace and the way your team works.</p>
-      </header>
-      <div className="settings-hub-groups">
+    <SettingsFrame back={null} eyebrow={workspace.name} title="Settings" summary="Set up your workspace and the way your team works.">
+      <div className="wc-hub">
         {visibleGroups.map((group) => (
-          <section key={group.id} className="settings-hub-group" aria-labelledby={`settings-${group.id}`}>
-            <div className="settings-hub-group-heading">
-              <h2 id={`settings-${group.id}`}>{group.title}</h2>
-              <p>{group.description}</p>
+          <section key={group.id} className="nv-card" aria-labelledby={`settings-${group.id}`}>
+            <div className="nv-card__head">
+              <h2 className="nv-card__title" id={`settings-${group.id}`}>{group.title}</h2>
+              <p className="nv-card__meta">{group.description}</p>
             </div>
-            <ul className="settings-hub-list">
+            <ul className="nv-rows">
               {group.items.map(({ id, title, description, href, icon: Icon }) => (
                 <li key={href}>
-                  <Link className="settings-hub-row" href={href} prefetch={false}
+                  <Link className="nv-row" data-leading="true" href={href} prefetch={false}
                     aria-labelledby={`setting-${id}-title`} aria-describedby={`setting-${id}-description`}>
-                    <span className="settings-hub-icon" aria-hidden="true">
-                      <Icon size={22} weight="regular" focusable="false" />
+                    <span className="nv-tile" data-tone="accent" aria-hidden="true"><Icon size={22} weight="regular" focusable="false" /></span>
+                    <span className="nv-row__text">
+                      <span id={`setting-${id}-title`} className="nv-row__title">{title}</span>
+                      <span id={`setting-${id}-description`} className="nv-row__meta">{description}</span>
                     </span>
-                    <span className="settings-hub-row-copy">
-                      <span id={`setting-${id}-title`} className="settings-hub-row-title">{title}</span>
-                      <span id={`setting-${id}-description`} className="settings-hub-row-description">{description}</span>
-                    </span>
-                    <CaretRightIcon className="settings-hub-chevron" size={18} weight="regular" aria-hidden="true" focusable="false" />
+                    <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true" focusable="false" />
                   </Link>
                 </li>
               ))}
@@ -113,10 +108,10 @@ export default async function SettingsPage() {
           </section>
         ))}
       </div>
-      <p className="settings-hub-note">
+      <p className="wc-footnote">
         <ShieldCheckIcon size={18} weight="regular" aria-hidden="true" focusable="false" />
-        <span>Available to Owners. Review and save changes on each settings page.</span>
+        <span>Only Owners see Settings. Each page saves its own changes.</span>
       </p>
-    </SettingsHubMotion>
+    </SettingsFrame>
   );
 }
