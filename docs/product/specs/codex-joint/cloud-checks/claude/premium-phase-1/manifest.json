@@ -7,7 +7,7 @@
   "commit": "51f731d399e9b94306f5d98556151933efe2ac7a",
   "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
   "startedAt": "2026-10-19T17:52:56.800Z",
-  "status": "Running matrix",
+  "status": "Restarting isolated preview after lifecycle correction",
   "batches": [
     {
       "name": "00001-matrix-AUDIT-E-chromium-390",
@@ -33,10 +33,16 @@
     }
   ],
   "planned": 12580,
-  "runtimePid": 26200,
-  "url": "http://127.0.0.1:35193",
   "latestPushedCommit": "672232896b66a520d39939c1ae3e0227c8b1dc90",
   "runtimeCheckpoint": "51f731d399e9b94306f5d98556151933efe2ac7a",
   "sourceTree": "84f1af476350f7dcb3ca9e6739b11a6141a3f636",
-  "sourceManifest": "/workspace/nevora-previews/premium-phase-1/evidence-2026-10-19T18-00-32-017Z/owned-next-Aquf2f/source-manifest.json"
+  "sourceManifest": "/workspace/nevora-previews/premium-phase-1/evidence-2026-10-19T18-00-32-017Z/owned-next-Aquf2f/source-manifest.json",
+  "infrastructureRestarts": [
+    {
+      "reason": "Attached runtime was retired with its controller; fixed with independent process group and direct log descriptors. No new UI failure is inferred from the interrupted loads.",
+      "at": "2026-10-19T18:14:42.401674+00:00",
+      "previousCommit": "51f731d399e9b94306f5d98556151933efe2ac7a",
+      "retainedCompletedBatches": 1
+    }
+  ]
 }
