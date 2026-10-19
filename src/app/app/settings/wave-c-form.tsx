@@ -199,7 +199,7 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
     clear();
     try {
       const saved = await action(data);
-      const next = saved.error || saved.success ? saved : { error: "The save could not be confirmed. Your entries are kept; check the page before trying again." };
+      const next = saved.error || saved.success ? saved : { error: "It may not have saved. Your entries are kept; check the page before you try again." };
       setResult(next);
       onResult?.(next);
       if (saved.success && !saved.error && saved.updatedAt && draftUpdatedAt !== undefined) setDraftUpdatedAt(saved.updatedAt);

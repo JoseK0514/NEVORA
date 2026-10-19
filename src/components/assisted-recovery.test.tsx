@@ -45,7 +45,7 @@ describe('Assisted recovery workflow presentation',()=>{
   expect(html).not.toContain('<form');expect(html).not.toContain('Password updated');
  });
  it('gives ended-access feedback an explicit sign-in path',()=>{
-  const html=renderToStaticMarkup(<AssistedRecovery {...props} message="Your access ended. Sign in again."/>);
+  const html=renderToStaticMarkup(<AssistedRecovery {...props} message="Your session ended. Sign in again to issue a code."/>);
   expect(html).toContain('role="alert"');expect(html).toContain('tabindex="-1"');
   expect(html).toContain('href="/login"');expect(html).not.toContain('Recovery code ready');
  });

@@ -53,7 +53,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       for (const [index, command] of pending.current.entries()) {
         const response = await fetch("/api/workspace-presentation", { method: "POST", cache: "no-store", headers: { "content-type": "application/json", "x-nevora-presentation": "1" }, body: JSON.stringify(command) });
         const body = await response.json().catch(() => null) as { state?: string; message?: string } | null;
-        if (response.status === 401 || response.status === 403) { pending.current = null; setNotice({ tone: "error", text: "Your access ended. Sign in again to change features." }); return; }
+        if (response.status === 401 || response.status === 403) { pending.current = null; setNotice({ tone: "error", text: "Sign in again to change features." }); return; }
         if (response.status === 409 && body?.state === "busy") { pending.current = null; setNotice({ tone: "error", text: `${index ? "Words saved. " : ""}${body.message ?? "Requests are still waiting."}` }); if (index) router.refresh(); return; }
         if (response.status === 409) { pending.current = null; setNotice({ tone: "error", text: "Settings changed somewhere else. Reload to see the latest before editing." }); return; }
         if (!response.ok) throw Error();
@@ -65,7 +65,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       focusSavedOnMount = true;
       router.refresh();
     } catch {
-      setNotice({ tone: "error", text: "We couldn’t confirm the save. Save again to retry safely, or reload to check." });
+      setNotice({ tone: "error", text: "Your change may not have saved. Save again to retry safely, or reload to check." });
     } finally { sending.current = false; setBusy(false); }
   }
 
@@ -110,8 +110,8 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
 
     <p className="nv-sr" role="status">{busy ? "Saving…" : ""}</p>
     <FormActions sticky>
-      {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.includes("access ended") ? "Sign in again" : "Not saved") : undefined}
-        action={notice.text.includes("access ended") ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
+      {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : "Not saved") : undefined}
+        action={notice.text.startsWith("Sign in again") ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
       <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={busy || !changed}><ButtonLabel pending={busy} idle="Save changes" busy="Saving…" /></button>
       {changed ? <span className="wc-save-state">Unsaved changes</span> : <span className="wc-save-state wc-save-state--done" ref={savedLine} tabIndex={-1}><CheckCircleIcon size={18} weight="fill" aria-hidden="true" />Saved</span>}
     </FormActions>

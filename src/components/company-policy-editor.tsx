@@ -117,7 +117,7 @@ export function CompanyPolicyEditor({
         },
         body: JSON.stringify(command),
       });
-      if (response.status === 401 || response.status === 403) { setRetry(null); say("urgent", "Your access ended. Sign in again to edit policies.", "Sign in again"); return; }
+      if (response.status === 401 || response.status === 403) { setRetry(null); say("urgent", "Sign in again to edit policies.", "Your session ended"); return; }
       if (response.status === 400) {
         setRetry(null);
         say("urgent", "Check the thresholds and effective dates, then save again.", "Not saved");
@@ -133,7 +133,7 @@ export function CompanyPolicyEditor({
       say("done", "Your team’s attendance review uses them from their effective dates.", "Policies saved");
       router.refresh();
     } catch {
-      say("urgent", "We couldn’t confirm whether your changes were saved. Retry safely with the same request, or reload to check the current policies.", "Save not confirmed");
+      say("urgent", "Your changes may not have saved. Retry safely with the same request, or reload to check the current policies.", "Not saved yet");
     } finally {
       submitGate.current = false;
       setBusy(false);
@@ -246,7 +246,7 @@ export function CompanyPolicyEditor({
         </FieldErrors>
         <p className="nv-sr" role="status" aria-live="polite">{busy ? "Saving…" : ""}</p>
         <FormActions sticky>
-          {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "urgent" ? "alert" : "status"}><Notice tone={notice.tone} title={notice.title} action={notice.title === "Sign in again" ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
+          {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "urgent" ? "alert" : "status"}><Notice tone={notice.tone} title={notice.title} action={notice.title === "Your session ended" ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
           <button className="nv-btn" data-kind="primary" disabled={busy} type="submit"><ButtonLabel pending={busy} idle={retry && !busy ? "Retry the same save" : "Save policies"} busy="Saving…" /></button>
         </FormActions>
       </form>

@@ -126,7 +126,7 @@ export function EditLocationForm({ location, action, words = { location: "Locati
           </fieldset>
           {result.error || result.success ? (
             <div ref={feedback} tabIndex={-1} role={result.error ? "alert" : "status"} className="wc-feedback">
-              <Notice tone={result.error ? "urgent" : "done"} title={result.error ? (unconfirmed ? "Save not confirmed" : "Changes not saved") : `${words.location} updated`}
+              <Notice tone={result.error ? "urgent" : "done"} title={result.error ? (unconfirmed ? "Not saved yet" : "Changes not saved") : `${words.location} updated`}
                 action={unconfirmed ? <Link className="nv-link" href="/app/settings/locations">Check {Places}</Link> : undefined}>{result.error || successBody(result.success)}</Notice>
             </div>
           ) : null}

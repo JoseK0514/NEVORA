@@ -10,9 +10,9 @@ import { EmptyState, SettingsFrame } from "../wave-c-kit";
 export default function LocationsError({ reset }: { error?: Error & { digest?: string }; reset: () => void }) {
   return (
     <SettingsFrame title="Your workplaces" summary="Where your team works, each place’s scheduling setup and its Clocker link." className="wc-error-page">
-      <p className="nv-sr" role="alert">Your workplaces didn’t load. Try again to see the latest setup and Clocker links.</p>
+      <p className="nv-sr" role="alert">Couldn’t load your workplaces. Try again to see the latest setup and Clocker links.</p>
       <section className="nv-card" aria-labelledby="locations-error-title">
-        <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="locations-error-title" title="Your workplaces didn’t load"
+        <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="locations-error-title" title="Couldn’t load your workplaces."
           action={<>
             <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry(".wc-page:not(.wc-error-page) [data-nv-band] h1", ".wc-error-page .nv-btn[data-kind='primary']"); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
             <Link className="nv-btn" data-kind="secondary" href="/app/settings">Back to Settings</Link>

@@ -118,7 +118,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       if (result.setup) { returnFocus.current = null; dialog.current?.close(); setSelection(null); setError(null); }
       else close();
       setFilter('ALL'); setQuery('');
-    } catch { setError({ message: 'We couldn’t confirm the update. Refresh devices before trying again.', refresh: true }); }
+    } catch { setError({ message: 'It may not have saved. Refresh devices before you try again.', refresh: true }); }
     finally { busy.current = false; setPending(false); }
   }
   async function copyCode() {

@@ -104,8 +104,8 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
     </FieldErrors>
    </fieldset>
    <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
-   {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('access ended')?'Sign in again':message.includes('expired')?'Recovery code expired':'Code not issued'}
-    action={message.includes('access ended')?<Link className="nv-link" href="/login">Go to sign in</Link>:undefined}>{message}</Notice></div>:null}
+   {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not issued'}
+    action={message.includes('session ended')?<Link className="nv-link" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
    <FormActions><button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={<>Issue recovery code<ArrowRightIcon size={20} aria-hidden="true"/></>} busy="Issuing code…"/></button></FormActions>
   </form>}
  </SettingsFrame>;

@@ -106,7 +106,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
       busy.current = false;
       close();
     } catch {
-      setError({ message: 'The update could not be confirmed. Reload break types before trying again.', refresh: true });
+      setError({ message: 'It may not have saved. Reload break types before you try again.', refresh: true });
     } finally { busy.current = false; setPending(false); }
   }
 

@@ -177,9 +177,9 @@ export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: strin
           </> : <div className="wc-fact"><span className="wc-fact__icon" aria-hidden="true"><DeviceTabletIcon size={20}/></span><div><span className="wc-fact__value">Keep the original recovery record</span><span className="wc-fact__note">Ask the employee to enter their PIN and check the action on the same registered tablet. Not finding a receipt doesn’t cancel the request.</span></div></div>}
         </div>
         : unavailable ? <div ref={feedback} tabIndex={-1} className="wc-feedback nv-card__body" role="alert">
-          <Notice tone="urgent" title={denied ? 'Sign in to continue' : 'Receipt not checked'}
-            action={denied ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>
-            {denied ? 'Your recovery review access ended. Sign in again before checking this action.' : 'Keep the saved action and its original reference. Check again when your connection is back.'}</Notice>
+          <Notice tone="urgent" title={denied ? 'Your session ended' : 'Couldn’t check the receipt.'}
+            action={denied ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>
+            {denied ? 'Sign in again before checking this action.' : 'Keep the saved action and its original reference. Check again when your connection is back.'}</Notice>
         </div>
         : <EmptyState headingLevel={3} icon={<ReceiptIcon size={22} weight="bold"/>} title="Your receipt will appear here">Enter a saved reference to see whether the action was recorded.</EmptyState>}
     </section>

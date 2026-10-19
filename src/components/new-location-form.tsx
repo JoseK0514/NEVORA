@@ -52,12 +52,12 @@ export function NewLocationForm({
       const saved = await action(data);
       setUnconfirmed(!saved.error && !saved.success);
       setResult(saved.error || saved.success ? saved : {
-        error: `The save could not be confirmed. Check ${Places} before trying again.`,
+        error: `It may not have saved. Check ${Places} before you try again.`,
       });
     } catch {
       setUnconfirmed(true);
       setResult({
-        error: `The save could not be confirmed. Your entries are kept. Check ${Places} before trying again so you don’t add it twice.`,
+        error: `It may not have saved. Your entries are kept. Check ${Places} before you try again, so it isn’t added twice.`,
       });
     } finally {
       submitting.current = false;
@@ -105,7 +105,7 @@ export function NewLocationForm({
       <p className="nv-sr" role="status">{pending ? `Saving your ${place}.` : ""}</p>
       {result.error ? (
         <div ref={feedback} className="wc-feedback" role="alert" tabIndex={-1}>
-          <Notice tone="urgent" title={unconfirmed ? "Save not confirmed" : `${words.location} not added`}
+          <Notice tone="urgent" title={unconfirmed ? "Not saved yet" : `${words.location} not added`}
             action={<Link className="nv-link" href="/app/settings/locations">Check {Places}</Link>}>{result.error}</Notice>
         </div>
       ) : null}

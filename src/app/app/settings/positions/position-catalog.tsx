@@ -116,9 +116,9 @@ export function PositionCatalog({ positions, available, createAction, updateActi
       </>}>
       {!available ? (
         <section className="nv-card" aria-labelledby="positions-unavailable-title">
-          <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="positions-unavailable-title" title="Positions are unavailable"
-            action={<a className="nv-btn" data-kind="primary" href="/app/settings/positions">Reload positions</a>}>
-            The catalog didn’t load. Reload this page to try again. Nothing was changed.
+          <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="positions-unavailable-title" title="Couldn’t load positions."
+            action={<a className="nv-btn" data-kind="primary" href="/app/settings/positions">Try again</a>}>
+            Try again to see your positions. Nothing was changed.
           </EmptyState>
         </section>
       ) : (

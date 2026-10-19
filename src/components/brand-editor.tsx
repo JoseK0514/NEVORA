@@ -70,7 +70,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
     setBusy("save"); setNotice(null);
     try {
       const response = await fetch("/api/workspace-presentation", { method: "POST", cache: "no-store", headers: { "content-type": "application/json", "x-nevora-presentation": "1" }, body: JSON.stringify(command) });
-      if (response.status === 401 || response.status === 403) { retry.current = null; setNotice({ tone: "error", text: "Your access ended. Sign in again to change branding." }); return; }
+      if (response.status === 401 || response.status === 403) { retry.current = null; setNotice({ tone: "error", text: "Sign in again to change branding." }); return; }
       if (response.status === 400) { retry.current = null; setNotice({ tone: "error", text: "Choose a color like #1D4ED8, then save again." }); return; }
       if (response.status === 409) { retry.current = null; setNotice({ tone: "error", text: "Branding changed somewhere else. Reload to see the latest before editing." }); return; }
       if (!response.ok) throw Error();
@@ -79,7 +79,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
       toast("Brand saved");
       router.refresh();
     } catch {
-      setNotice({ tone: "error", text: "We couldn’t confirm the save. Save again to retry safely, or reload to check." });
+      setNotice({ tone: "error", text: "Your change may not have saved. Save again to retry safely, or reload to check." });
     } finally { sending.current = false; setBusy(null); }
   }
 
@@ -209,8 +209,8 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
 
     <div className="wc-brand__save">
       {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
-        title={notice.tone === "error" ? (notice.text.includes("access ended") ? "Sign in again" : "Not saved") : notice.tone === "success" ? "Brand saved" : undefined}
-        action={notice.text.includes("access ended") ? <Link className="nv-link" href="/login">Go to sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
+        title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : "Not saved") : notice.tone === "success" ? "Brand saved" : undefined}
+        action={notice.text.startsWith("Sign in again") ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
       <p className="nv-sr" role="status">{busy === "save" ? "Saving…" : ""}</p>
       <FormActions>
         <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={!valid || !dirty || busy !== null}>
