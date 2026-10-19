@@ -7,7 +7,7 @@ vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:async()=>({status:'
 import CalloutPage from './page';
 const clock=vi.hoisted(()=>({observedAt:'2026-10-04T09:00:00Z'}));
 it('genuine ongoing overnight absence remains reportable from the previous business date',async()=>{vi.useFakeTimers();vi.setSystemTime(new Date('2026-10-04T09:00:00Z'));try{const h=renderToStaticMarkup(await CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})}));expect(h).toContain('Unable to work');expect(h).toContain('Service coordinator');expect(h).toContain('Shift lead');expect(h).toContain('name="reasonCode"');}finally{vi.useRealTimers();}});
-vi.mock('@/components/employee-submit-button',()=>({EmployeeSubmitButton:({children,...p}:React.ComponentProps<'button'>)=>createElement('button',p,children)}));
+vi.mock('@/components/employee-submit-button',async(importOriginal)=>({...await importOriginal<typeof import('@/components/employee-submit-button')>(),EmployeeSubmitButton:({children,...p}:React.ComponentProps<'button'>)=>createElement('button',p,children)}));
 vi.mock('@/app/app/exchange/callout/actions',()=>({submitCalloutAction:async()=>{}}));
 
 vi.mock('@/components/shift-change-form',()=>import('../../../../components/shift-change-form'));
