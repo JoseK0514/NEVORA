@@ -1303,6 +1303,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv
 /* P3-ST-12: Home's clock card keeps one middle height while it loads, when it's read and when the read fails. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-clock-compact > :is(.employee-time-message, .employee-time-empty) { min-height: 48px; margin-block: 0; }
 html body .app-shell.nevora-portal .employee-time-footer-placeholder { visibility: hidden; }
+/* P3-ST-01: the compact clock card's loading line holds the ready line's height. */
+html body .app-shell.nevora-portal .employee-time-hold { display: grid; }
+html body .app-shell.nevora-portal .employee-time-hold > span { grid-area: 1 / 1; }
+html body .app-shell.nevora-portal .employee-time-hold__sizer { visibility: hidden; }
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   /* P3-ST-06: on phones My time's footer stacks (stamp lines, then controls), so "Checking…" and "Refresh" can't rewrap it. */
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-panel .employee-time-footer:not(#nv-kit) { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; gap: var(--nv-s-2); }
@@ -2025,11 +2029,12 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] :is(
   html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] .nto-type-picker > button:not(#nv-kit) { font: var(--nv-t-label); }
 }
 /* TC-P3-34: at 150 and 200% text, a word that can't fit a narrow column is hyphenated instead of cut mid-letter, and
- * label/value pairs stack. */
+ * label/value pairs stack. Only long words (10+ letters, 4 each side) hyphenate, so "tomorrow" and "requests" move
+ * to the next line whole. Browsers don't hyphenate capitalised words; long titles carry soft hyphens instead. */
 html[data-text-step="150"] body .app-shell.nevora-portal .page-frame [data-nv-page],
 html[data-text-step="200"] body .app-shell.nevora-portal .page-frame [data-nv-page],
 html[data-text-step="150"] body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation),
-html[data-text-step="200"] body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation) { hyphens: auto; -webkit-hyphens: auto; }
+html[data-text-step="200"] body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation) { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 10 4 4; -webkit-hyphenate-limit-before: 4; -webkit-hyphenate-limit-after: 4; }
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame .premium-employee-profile .employee-profile-details > div:not(#nv-kit) { grid-template-columns: minmax(0, 1fr); gap: 2px; }
   html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame [data-nv-page] .employee-time-footer:not(#nv-kit) { flex-direction: column; align-items: stretch; }
