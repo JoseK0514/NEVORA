@@ -1,6 +1,6 @@
 # Phase 4 desktop, round 2: what changed since round 1
 
-October 19, 2026. Build: branch `claude/p4-desktop-240fe0` at `c666ffd`, synced to the same preview (URL in `access.json`, see `BRIEF.md`). Re-check every one of your own round-1 findings by ID (Fixed, Not fixed, Partly fixed, Regressed, with the new measurement), then look again at everything the fixes touched. Append a `## Round 2` section to your own report with the status table, any new findings, and one line: "Open: N P0, N P1, N P2".
+October 19, 2026. Build: branch `claude/p4-desktop-240fe0` at its latest commit (after `c666ffd`, it also carries the coordinator's shared fixes 62cd033 and 889cb17 and the Employee and Lead desktop work), synced to the same preview (URL in `access.json`, see `BRIEF.md`). Re-check every one of your own round-1 findings by ID (Fixed, Not fixed, Partly fixed, Regressed, with the new measurement), then look again at everything the fixes touched. Append a `## Round 2` section to your own report with the status table, any new findings, and one line: "Open: N P0, N P1, N P2".
 
 ## Fixed in code
 
@@ -66,3 +66,17 @@ October 19, 2026. Build: branch `claude/p4-desktop-240fe0` at `c666ffd`, synced 
 |---|---|
 | ST-P4-06 | The Inbox summary keeps two lines reserved (196px band), so the band never grows when a longer summary arrives (Phase 2 ST-02). It's under the 200px cap. |
 | WR4-05, AL4-09 | Home's column ends depend on data. The DOM order phones need (today, now, setup, week, Plan ahead, tools) can't be rebalanced per role with CSS grid without masonry; the Owner fixture ends within 9px at 1180. Kept as is. |
+
+## New in this round: Employee and Lead desktop (first inspection)
+
+Jose approved starting Employee and Lead desktop in parallel. Inspect it to the full matrix as a first round, desktop only (768, 1024, 1440; phones at 320 and 390 must be unchanged; Phase 3 owns phones).
+
+| Page | URL | Accounts |
+|---|---|---|
+| Home | `/app` | `AUDIT-E`, `AUDIT-LEAD`, `AUDIT-ON` (clocked in), `AUDIT-BREAK` (on break), `AUDIT-LONG` (long name) |
+| My schedule | `/app/schedule`, `?view=open`, `?intent=swap` | `AUDIT-E`, `AUDIT-LEAD` |
+| Requests overview, Time off, Shift requests, Availability | `/app/requests/hub`, `/app/requests`, `/app/exchange`, `/app/availability` | `AUDIT-E`, `AUDIT-LEAD` |
+| My time, Timecards, My pay | `/app/my-time`, `/app/timecards`, `/app/my-pay` | `AUDIT-E`, `AUDIT-LEAD` |
+| Profile, Updates, Notifications | `/app/profile`, `/app/updates`, `/app/notifications` | `AUDIT-E`, `AUDIT-LEAD` |
+
+What changed for them (desktop only, all in `premium-desktop.css`): the band rules (at most 200px, eyebrow control overhang, view chips on the title row; at 761–1023 My schedule's and Shift requests' chips get their own row, and under the tab row Shift requests' eyebrow and description give way); the Requests and Pay section tabs sit inside the band; cards share the band's text edge (16px inset); My schedule's week and its confirm/changes column side by side from 1100px; Profile's two panels side by side from 1024px. Employee and Lead components are the coordinator's; findings name the component, and the fix goes in `premium-desktop.css` where CSS can do it.
