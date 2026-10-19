@@ -1,3 +1,27 @@
+# Claude, start here
+
+Current handoff: Jose approved item 4 in chat on October 19. Codex may make named P1/P2 UI fixes **on `codex/release-candidate` only**, one finding per commit. Review each before its owner ports or replaces it. This extends the historical three-edit boundary below.
+
+- **Integrated locally:** coordinator `227150b`, backend `da2a4e5` (approved Profile alerts), verified-zero Profile `ea58610`. Candidate `cbaadbc` adds the separately authorized Profile server initial read. Full gates and merged browser checks are in progress; no green or publication claim yet.
+- **Verified zero:** Profile exit round 4 at `ea58610`; its five committed reports were verified in `release/readiness/profile-ea58610/`. Other exact exit rounds remain open/incomplete until their results arrive.
+- **Active inspection owners:** Phase 3 `227150b`, Wave A `7f75dc4`, Wave B `9bd265e` (handoff `564d193`), Wave C `5f7c166`, Desktop `8012d97`. Separate read-only worktrees and owned fictional previews; no source-branch changes.
+- **Open by owner:** Phase 3 interaction IS-74, IS-77–80, IS-82 and prior cloud IDs are being rechecked. Wave A ST-WA-9/10 are being rechecked. Wave B, Wave C and Desktop full exit sweeps are pending.
+- **Device access:** proposal below remains pending Jose’s phone-access yes/no. No deploy, tunnel, or external preview exposure.
+
+## Candidate-only UI fixes for Claude to review
+
+No new item-4 finding fix committed yet. Separate standing-authorized post-merge change: `cbaadbc` — Profile server initial read (`src/components/manager-profile/manager-profile.tsx`); parse ready snapshots, use null on unavailable/invalid/throw; affected checks pending.
+
+## Current merge custody
+
+`0e01046` → coordinator merge `c16a822` → backend merge `419a99c` → Profile merge `06ac418` → Profile initial read `cbaadbc`.
+
+Backend conflicts follow existing source-owner directions: Coverage takes Wave A’s prescribed test (blob `18e3861`); root layout keeps the latest coordinator text-scale/data-text-step script and adds the prescribed async/error hook. Profile's only conflict takes the exact latest coordinator `portal-premium.css`. No unprescribed screen choice.
+
+Everything below is retained history. Older “current”, “running”, and “publishing now” entries describe their own sessions and do not replace this handoff.
+
+---
+
 2026-10-19 20:16 UTC · requested ordered merges complete locally: coordinator4d469a4 →9a35168, backendda2a4e5 →cf066dc, Profileea58610 →b444813; separate initial-read commit **c34043b**. Candidate frozen for full gates. npmci/typecheck/lint pass (0 warnings), full one-worker tests running, browser checks pending. [Exact candidate and evidence](release/publish-c34043b/README.md). New Wave A7f75dc4 remains excluded. This task will publish after recording the gates; earlier verification-only stop is superseded.
 
 **Publishing now — Jose’s explicit instruction, 2026-10-19 20:09 UTC.** This task owns the requested publication sequence from remote candidate `0e01046`: coordinator `4d469a4`, backend `da2a4e5`, verified-zero Profile `ea58610`, then a separate authorized `manager-profile.tsx` initial-read commit. Run locked install, typecheck, lint, full tests and merged browser checks before pushing `codex/release-candidate`. Previously observed planner/backfill timeouts must be rerun file-by-file with one worker. New Wave A `7f75dc4` is excluded unless its exact exit becomes zero. This supersedes this task’s earlier verification-only stop/handoff. Device access remains a proposal: no deploy or exposure.
