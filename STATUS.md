@@ -1,3 +1,53 @@
+# Claude, start here — paused-handoff candidate fixes
+
+Jose explicitly approved handoff item 4 in this chat. All application changes below are on `codex/release-candidate`; no `claude/*` branch was edited. Review each finding commit, then have its owner port or replace it.
+
+- **Merged and preserved:** first-published candidate `8e18a95`, including coordinator `227150b`, backend `da2a4e5`, Profile `ea58610`, and authorized Profile server initial read `4ff37e5`. The parallel local bootstrap `cbaadbc` is retained as a checkpoint, not pushed over the published history.
+- **Candidate under validation:** `64f15e6193c7d5ac4d564220d7eb399a9c08926d`, twenty separate finding commits on top of `8e18a95`. Focused affected tests **51/51 pass**. Final typecheck/lint/full suite and exact-candidate browser proofs are pending; no final green claim yet.
+- **Zero:** Profile's committed Mac exit at `ea58610` was accepted for its merge. New independent cloud Profile finding IS-PROFILE-17 is separately patched below. No other source exit has a new complete zero certificate.
+- **Open by owner:** Phase 3 round5 `227150b` has 7 P1/2 P2 with targeted proofs complete; Wave A `a05f26a` full matrix incomplete; Wave B `9bd265e` has four measured P2s and incomplete exit; Wave C `5f7c166` has WR-WC-25, TC-WC-28 and ST-13 continuation; Desktop `8012d97` has TC-P4-22/23 and ST-P4-13. Candidate applicability and evidence are listed below. Do not merge these source heads merely because candidate patches exist.
+- **Owner-only code absent from candidate:** Wave B IS-B31 (`wave-b-forms.tsx` pending Enter focus) and Desktop ST-P4-13 (passive-effect Inbox group opening; measured CLS ~0.064) remain source-owner work. WC override commits are staged for its unmerged UI and proved by browser-only source CSS injection, not by a combined-candidate WC runtime claim. Latest coordinator already repairs source TC-WA-15/TC-WC-28 field borders; no duplicate border commit.
+- **Device access:** the existing proposal/checklist remains ready. Await Jose's phone-access yes/no; no deploy, tunnel or external exposure has occurred.
+
+## Candidate-only UI fixes for Claude to review
+
+Each row is one finding and one application commit. Validation is in progress; final exact-SHA evidence will replace this checkpoint before handoff.
+
+| Commit | Finding and change | Inspection report |
+|---|---|---|
+| `6229ad4` | **IS-P3-03** — retain the controlled availability draft after a failed save | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
+| `2dfc390` | **IS-82** — preserve withdrawal confirmation for the same-operation retry | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
+| `5b9e47e` | **ST-P3-24** — reserve Availability submit labels while saving | [Evidence](premium-phase-3/round-5-227150b/stability.md) |
+| `f57dcb8` | **IS-P3-02** — reveal and focus failed form outcomes above the phone bar | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
+| `fcd72e5` | **IS-PROFILE-17** — reveal user-initiated sign-in recovery before restoring focus | [Evidence](release/paused-initial-cbaadbc/interaction-states.md) |
+| `810c7a3` | **IS-74** — retain the initiating action focus while guarded requests are pending | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
+| `a02aa19` | **IS-77** — replace stale timecard counts with a paused or offline state | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
+| `1c4a65e` | **IS-78** — provide sign-in recovery after denied employee actions | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
+| `c885e61` | **IS-79** — announce pending review and distinguish a signed-out acknowledgement | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
+| `8f73253` | **IS-80** — reveal calendar recovery beside the initiating action and reuse its command | [Evidence](premium-phase-3/round-5-227150b/interaction-states.md) |
+| `420d6d8` | **IS-B12** — restore update retry focus and retain the payroll save focus | [Evidence](p35-wave-b/round-4-9bd265e/interaction-states.md) |
+| `1ab72e5` | **TC-B-32** — use kit labels for payroll filenames and workflow labels | [Evidence](p35-wave-b/round-4-9bd265e/type-colour-copy.md) |
+| `f0b933f` | **TC-P4-23** — raise the statement payday line to the kit callout floor | [Evidence](p4-desktop/round-5-8012d97/type-colour-copy.md) |
+| `58c0f23` | **TC-P4-22** — use the desktop kit label role for availability times | [Evidence](p4-desktop/round-5-8012d97/type-colour-copy.md) |
+| `efba5a8` | **RC-CB-TC-01** — use readable kit roles for desktop sidebar labels and credit | [Evidence](release/paused-initial-cbaadbc/type-colour-copy.md) |
+| `d539ae1` | **TC-WA-16** — retain kit text contrast on pending actions | [Evidence](p35-wave-a/round-2-a05f26a/cloud-paused-type-colour-copy.md) |
+| `f124622` | **TC-B-16** — distinguish an ended session from changed update access | [Evidence](p35-wave-b/round-4-9bd265e/type-colour-copy.md) |
+| `186a0e3` | **TCD-16** — apply the reported Employee and Lead desktop text floor | [Evidence](p4-desktop/round-5-8012d97/evidence/source-type-colour-copy.md) |
+| `7c79368` | **WR-WC-25** — preserve dialog action label height on narrow phones | [Evidence](p35-wave-c/round-4-5f7c166-exit/widths-roles.md) |
+| `64f15e6` | **ST-13** — bound failed-save feedback inside the Wave C phone bar | [Evidence](p35-wave-c/round-4-5f7c166-exit/stability.md) |
+
+## Source exit coverage and limits
+
+The paused-handoff workers finished their bounded final proofs and are closing their owned previews for uncontended gates. Phase 3: 15/15 smoke cells and 17 targeted cases, 15 intercepted mutation POSTs. Wave A: smoke and clamp/swap rechecks preserved; full exit incomplete. Wave B: 45/48 smoke plus targeted typography, auth and focus proofs. Wave C: 26/26 smoke plus guarded docked-error and dialog proofs. Desktop: 35 initial cells plus font crops and controlled Inbox CLS attribution. These totals are different scopes, not a combined zero tally. Every report records its missing matrix cases.
+
+The earlier `cbaadbc` full suite had 9 load timeouts; every affected file subsequently passed alone with one worker and unchanged budgets (271 tests). The preserved publisher `8e18a95` reports 7,352 passed/0 failed. Neither result substitutes for the new UI candidate's final gates.
+
+---
+
+## Retained parallel task history
+
+Earlier “current”, permission and candidate statements below belong to their dated tasks. The explicit approval and candidate ledger above supersede their older scope notes for this paused-handoff task.
+
 ## Claude, start here — 2026-10-19 20:35 UTC
 Scope note for publisher `c34043b`: this conversation authorizes the three listed candidate-only UI changes. The parallel paused-handoff task below reports separate item-4 approval in its own chat; this publisher does not infer additional UI-edit permission from that report. Both tasks preserve the first-published remote candidate and their distinct evidence.
 
