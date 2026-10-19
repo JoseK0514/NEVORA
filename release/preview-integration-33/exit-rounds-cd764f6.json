@@ -1,16 +1,18 @@
 {
   "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "status": "waiting for root gate/resource release",
+  "status": "code/build gates pass; combined preview released; owner exits waiting for initial owned-readiness",
   "completedCurrentCells": 0,
   "zeroExits": [],
   "reviews": [
     {
       "owner": "Phase3",
       "automatedCells": 5280,
-      "manualJobs": 1546,
+      "manualJobs": 1562,
       "priorIDs": 135,
-      "path": "premium-phase-3/complete-exit-preparation/"
+      "path": "premium-phase-3/complete-exit-preparation/",
+      "pendingManualJobs": 1546,
+      "sourceContractNotApplicable": 16
     },
     {
       "owner": "WaveA",

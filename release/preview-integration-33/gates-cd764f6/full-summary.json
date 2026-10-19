@@ -1,0 +1,11 @@
+{
+  "candidate": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "counts": {
+    "passed": 7362,
+    "skipped": 801,
+    "pending": 55
+  },
+  "files": 474,
+  "success": true,
+  "failed": []
+}

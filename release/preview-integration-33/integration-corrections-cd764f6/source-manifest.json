@@ -30,5 +30,12 @@
     "failed": 0,
     "evidence": "/workspace/paused-evidence/final-cd764f6/focused-integration.json"
   },
-  "fullGates": "running; no fresh full pass claimed"
+  "fullGates": "pass on exact clean cd764f6; see ../gates-cd764f6",
+  "gateCounts": {
+    "passed": 7362,
+    "failed": 0,
+    "skipped": 801,
+    "pending": 55,
+    "files": 474
+  }
 }

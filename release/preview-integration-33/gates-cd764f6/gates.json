@@ -1,0 +1,66 @@
+{
+  "candidate": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "startedAt": "2026-10-19T22:39:08.022419+00:00",
+  "sourceClean": true,
+  "checksSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "premiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+  "coordinatorPremiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+  "lockBlob": "76af83a326821ae23720673ac2e5f5aeccb99787",
+  "runs": [
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "startedAt": "2026-10-19T22:39:08.030409+00:00",
+      "exitCode": 0,
+      "seconds": 5.058,
+      "completedAt": "2026-10-19T22:39:13.088841+00:00"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-10-19T22:39:13.089359+00:00",
+      "exitCode": 0,
+      "seconds": 40.691,
+      "completedAt": "2026-10-19T22:39:53.780766+00:00"
+    },
+    {
+      "name": "full-tests",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers",
+        "1",
+        "--reporter=json",
+        "--outputFile=/workspace/paused-evidence/final-cd764f6/vitest.json"
+      ],
+      "startedAt": "2026-10-19T22:39:53.781366+00:00",
+      "exitCode": 0,
+      "seconds": 674.212,
+      "completedAt": "2026-10-19T22:51:07.994168+00:00"
+    },
+    {
+      "name": "production-absence",
+      "command": [
+        "npm",
+        "run",
+        "test:dev:production"
+      ],
+      "startedAt": "2026-10-19T22:51:07.997631+00:00",
+      "exitCode": 0,
+      "seconds": 46.88,
+      "completedAt": "2026-10-19T22:51:54.877781+00:00"
+    }
+  ],
+  "completedAt": "2026-10-19T22:51:54.879980+00:00",
+  "endCandidate": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "endClean": true
+}
