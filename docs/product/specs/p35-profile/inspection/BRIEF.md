@@ -16,7 +16,7 @@ Contents: band "Profile"; card **Your details** (Name, Role, Company, Email, Pho
 
 ## How to reach it
 
-- Preview: `http://127.0.0.1:52269` (this session's own; don't stop or restart it). It is frozen while you inspect.
+- Preview: `http://127.0.0.1:50933` (this session's own; don't stop or restart it). It is frozen while you inspect.
 - Signed-in states: `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS--claude-worktrees-p35-profile-6cdee8/e8429433-65b2-4ff4-835a-8f879fb2454f/scratchpad/preview/state/<ACCOUNT>.json`. Never sign in yourself and never read or print the password.
 - Harness: `docs/product/specs/p35-profile/inspection/harness/profile.mjs` in the worktree (run it with node from anywhere). Copy it into your own folder `.../scratchpad/inspect/<area>/` if you want to extend it; set `FIX` to the fixtures folder there. Flags:
   - `--account QAOWNER|AUDIT-M --w 390 --h 844 [--landscape] [--browser chromium|firefox|webkit] [--zoom 1.25|1.5|2]` (zoom sets the root font size, which is how text size is tested here)
@@ -79,3 +79,11 @@ What changed, so you know what to re-check:
 | Contrast | Busy words and Sign out's pending label at full opacity (old 55% fade overridden on this page). |
 | Server load | My pay uses the payroll flag directly; the page no longer repeats the layout's payroll read. |
 | Placeholder band | 6.5rem on phones (portrait and landscape); desktop has none (shared rule). |
+
+## Exit round 4 (October 19)
+
+A **full sweep** of your whole area, the last one before Profile merges, plus your open IDs from round 3 (ROUND.md lists them).
+- `checks.mjs` sweeps every width, text size and both browsers. Judge at 320, 390, 844x390, 768, 1024 and 1440 in Chromium, with WebKit spot checks; both roles; every state the harness can produce.
+- Preview: `http://127.0.0.1:50933` (restarted with Codex's pooled database transport, so 500s should be gone).
+- Don't file: one console 404 for `/api/manager/inbox-count` per load (the route is on `codex/premium-backend`), the shared shell, or approved wording.
+- Report: add `## Exit round 4` to your file with every finding in full and a short checked-and-correct list. End with "Open P0–P2 in <area>: N".

@@ -81,11 +81,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
  * text lines follow the reader's text size (3.75rem): 104px at 100%, 119 at 125%, 134 at 150% (measured Oct 19, 390). The phone band
  * only shows up to 760px wide (shared rule in portal-premium.css); desktop placeholders are the shell's. */
 html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: calc(44px + 3.75rem); }
-/* ST-08: where the band's summary ("Your details, pay and alerts.", about 13.2rem of text) wraps to a second line, so
+/* ST-08: where the band's summary ("Details, pay and alerts." or "Your details and alerts.", 24 characters, 10.7–11.25rem of text in Chromium and WebKit) wraps to a second line, so
  * does the placeholder. The summary gets the width minus 72px up to 400px wide, minus 128px from 401px (portal-premium.css). */
 html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { container-type: inline-size; }
-@container (max-width: calc(13.2rem + 72px)) { html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] .route-skeleton-band { --route-band: calc(44px + 5.25rem); } }
-@container (min-width: 401px) and (max-width: calc(13.2rem + 128px)) { html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] .route-skeleton-band { --route-band: calc(44px + 5.25rem); } }
+@container (max-width: calc(11.2rem + 72px)) { html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] .route-skeleton-band { --route-band: calc(44px + 5.25rem); } }
+@container (min-width: 401px) and (max-width: calc(11.2rem + 128px)) { html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] .route-skeleton-band { --route-band: calc(44px + 5.25rem); } }
 
 /* Held sizes (ST-02): while paused, offline or failed, the last values keep their space, hidden, under the note. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold { display: grid; }

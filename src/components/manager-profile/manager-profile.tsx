@@ -20,7 +20,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
   const offersPay = navigationForRole(proof.employee.role, payroll, { modules: brand.modules }).some(item => item.href === '/app/my-pay');
   const owner = proof.employee.role === 'OWNER';
   return <div className="nv-page premium-manager-profile" data-nv-page="">
-    <PageBand title="Profile" summary={offersPay ? "Your details, pay and alerts." : "Your details and alerts."} overlap={false} />
+    <PageBand title="Profile" summary={offersPay ? "Details, pay and alerts." : "Your details and alerts."} overlap={false} />
     <KitStack className="pmp-content">
       <ManagerProfileLive key={proof.employee.id} identity={{
         employeeId: proof.employee.id,
