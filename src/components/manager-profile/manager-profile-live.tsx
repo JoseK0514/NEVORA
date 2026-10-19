@@ -148,9 +148,11 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: Mana
 export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null }: View) {
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
   const read = readState(state), row = 'row' in read ? read.row : undefined;
+  // Approved set: without payroll an Owner isn't told about payroll, even if the read lists the topic (switched off).
+  const visible = (snapshot: Ready | null): Ready | null => snapshot && identity.payrollAlerts === false ? { ...snapshot, alerts: snapshot.alerts.filter(topic => topic.id !== 'payroll-ready') } : snapshot;
   // Re-reading after a return keeps the last values on screen; paused, offline and failed keep only their size.
-  const shown = ready ?? (read.kind === 'loading' ? held : null);
-  const sized = !shown && read.kind !== 'denied' ? held : null;
+  const shown = visible(ready ?? (read.kind === 'loading' ? held : null));
+  const sized = !shown && read.kind !== 'denied' ? visible(held) : null;
   const cell = (value: (snapshot: Ready) => ReactNode) => shown ? value(shown)
     : sized ? <span className="pmp-hold"><span className="pmp-hold__value" aria-hidden="true">{value(sized)}</span><span className="pmp-hold__note"><Placeholder text={row} /></span></span>
     : <Placeholder text={row} />;
@@ -159,7 +161,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
     : read.kind === 'denied' ? 'Your session ended. Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.';
   const said = read.kind === 'failed' && retried === 'failed' ? 'Still couldn’t load your contact details, locations and alert choices.' : 'said' in read ? read.said : '';
   // What sizes the alert list while there is no ready read: the last read, or else the role's expected topics.
-  const sizing = held?.alerts ?? (identity.owner ? identity.payrollAlerts === false ? ALERT_TOPIC_SIZING.manager : ALERT_TOPIC_SIZING.owner : ALERT_TOPIC_SIZING.manager);
+  const sizing = visible(held)?.alerts ?? (identity.owner ? identity.payrollAlerts === false ? ALERT_TOPIC_SIZING.manager : ALERT_TOPIC_SIZING.owner : ALERT_TOPIC_SIZING.manager);
   return <div className="pmp-grid">
     <div className="pmp-col">
       <Card id="profile-details" title="Your details" meta={<>

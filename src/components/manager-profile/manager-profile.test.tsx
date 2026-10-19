@@ -54,6 +54,8 @@ describe('Owner and Manager Profile', () => {
     const noPayroll = render({ ...owner, payrollAlerts: false }, null);
     expect(noPayroll.match(/pmp-topic-placeholder/g)).toHaveLength(4);
     expect(noPayroll).not.toContain('Payroll ready to review');
+    // The read may still list the payroll topic (switched off); the page leaves it out without payroll.
+    expect(render({ ...owner, payrollAlerts: false }, parseManagerProfile(fixture('owner'))).match(/role="switch"/g)).toHaveLength(4);
     expect(html).toContain('<p class="sr-only" role="alert" id="profile-read-said"></p>');
   });
 

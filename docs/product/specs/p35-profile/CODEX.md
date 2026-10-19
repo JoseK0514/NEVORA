@@ -63,7 +63,9 @@ The signed-in Owner or Manager's own contact details, locations and alert choice
 | `clock-review` | Clock-ins to review | When a clock-in needs your review | ✓ | ✓ |
 | `payroll-ready` | Payroll ready to review | When a pay period is ready for you | ✓ (payroll on) | – |
 
-When payroll is off, leave `payroll-ready` out of the Owner's set. The UI's loading rows already follow the same rule.
+When payroll is off, leave `payroll-ready` out of the Owner's set. The UI follows the same rule either way: it sizes four loading rows and doesn't show `payroll-ready` without payroll, even if the read lists it switched off (as `codex/premium-backend` does today).
+
+**Check against `codex/premium-backend` (October 19):** the routes, statuses, headers and body shape match this contract and the UI. One difference remains: `managementAlertTopics` in `src/lib/management-profile.ts` still carries the earlier draft wording. The approved wording is the table above: `shift-changes` reads "Shift requests", and `clock-review` reads "When a clock-in needs your review". The ids are unchanged.
 
 ### Optional, recommended: the same read on the server
 
