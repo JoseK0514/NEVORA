@@ -26,6 +26,8 @@ export type ManagerProfileIdentity = {
   payHref: string | null;
   /** The workplace has device alerts turned on (the existing device settings sheet). */
   deviceAlerts: boolean;
+  /** Payroll is on, so an Owner's alert set includes "Payroll ready to review" (approved set, CODEX.md). */
+  payrollAlerts?: boolean;
 };
 
 export type AlertSave = { pending: boolean; error: null | 'offline' | 'signed_out' | 'failed' };
@@ -157,7 +159,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
     : read.kind === 'denied' ? 'Your session ended. Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.';
   const said = read.kind === 'failed' && retried === 'failed' ? 'Still couldn’t load your contact details, locations and alert choices.' : 'said' in read ? read.said : '';
   // What sizes the alert list while there is no ready read: the last read, or else the role's expected topics.
-  const sizing = held?.alerts ?? (identity.owner ? ALERT_TOPIC_SIZING.owner : ALERT_TOPIC_SIZING.manager);
+  const sizing = held?.alerts ?? (identity.owner ? identity.payrollAlerts === false ? ALERT_TOPIC_SIZING.manager : ALERT_TOPIC_SIZING.owner : ALERT_TOPIC_SIZING.manager);
   return <div className="pmp-grid">
     <div className="pmp-col">
       <Card id="profile-details" title="Your details" meta={<>

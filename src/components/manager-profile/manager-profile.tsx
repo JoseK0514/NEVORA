@@ -30,6 +30,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         timeZone: timeZoneLabel(workspace.timeZone),
         payHref: offersPay ? '/app/my-pay' : null,
         deviceAlerts: readNotificationConfig(process.env).featureEnabled,
+        payrollAlerts: payrollFeatureEnabled(),
       }} />
     </KitStack>
   </div>;

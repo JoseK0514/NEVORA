@@ -7,7 +7,7 @@ export const MANAGER_ALERTS_ENDPOINT = '/api/management/profile/alerts';
 
 export type ManagerAlertTopic = { id: string; label: string; detail: string; on: boolean };
 
-/** The role's topic set as CODEX.md proposes it. Used only to size the loading and failed rows (as hidden or skeleton
+/** The role's topic set as Jose approved it (CODEX.md, Oct 19): the Owner's last topic only when payroll is on. Used only to size the loading and failed rows (as hidden or skeleton
  * text), so they take the ready list's space at every width and text size; what is shown always comes from the read. */
 const TOPICS: ManagerAlertTopic[] = [
   { id: 'time-off', label: 'Time-off requests', detail: 'When someone asks for time off', on: false },

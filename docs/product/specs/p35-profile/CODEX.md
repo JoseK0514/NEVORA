@@ -53,7 +53,7 @@ The signed-in Owner or Manager's own contact details, locations and alert choice
 
 ### Topic set
 
-The UI reserves one row per topic while loading, so the count per role must stay fixed: **Owner 5, Manager 4** (`ALERT_TOPIC_COUNT` in `manager-profile-live.tsx`). The fixture wording is a proposal. Jose approves the final wording, and the payroll topic needs his approval in any case.
+**Approved by Jose on October 19, 2026** ("Approve wording and alerts"): build the read with exactly this set and wording. Owner: five topics when payroll is on (`NEVORA_PAYROLL_ENABLED`), four without `payroll-ready` when it's off. Manager: four. The UI sizes its loading rows from the same set (`ALERT_TOPIC_SIZING` in `contract.ts`), so a different set or wording would make the list move when it loads.
 
 | id | Label | Detail | Owner | Manager |
 |---|---|---|---|---|
@@ -63,7 +63,7 @@ The UI reserves one row per topic while loading, so the count per role must stay
 | `clock-review` | Clock-ins to review | When a clock-in needs your review | ✓ | ✓ |
 | `payroll-ready` | Payroll ready to review | When a pay period is ready for you | ✓ (payroll on) | – |
 
-If payroll is off for an Owner, either drop `payroll-ready` and tell the UI session to make the count depend on payroll, or keep it and return `on: false`. The UI already accepts any count; only the loading rows assume 5 and 4.
+When payroll is off, leave `payroll-ready` out of the Owner's set. The UI's loading rows already follow the same rule.
 
 ### Optional, recommended: the same read on the server
 

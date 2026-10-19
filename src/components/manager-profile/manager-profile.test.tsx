@@ -50,6 +50,10 @@ describe('Owner and Manager Profile', () => {
     expect(html.match(/Not shown yet/g)).toHaveLength(3);
     expect(html.match(/pmp-topic-placeholder/g)).toHaveLength(ALERT_TOPIC_COUNT.owner);
     expect(html).toContain('<span class="pmp-ghost">Payroll ready to review</span>');
+    // Approved set: without payroll an Owner has four topics, so the loading rows are four.
+    const noPayroll = render({ ...owner, payrollAlerts: false }, null);
+    expect(noPayroll.match(/pmp-topic-placeholder/g)).toHaveLength(4);
+    expect(noPayroll).not.toContain('Payroll ready to review');
     expect(html).toContain('<p class="sr-only" role="alert" id="profile-read-said"></p>');
   });
 
