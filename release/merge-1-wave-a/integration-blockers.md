@@ -1,6 +1,6 @@
 # Wave A rolling integration — blocked, verification in progress
 
-Inputs: coordinator `a69dff2b8370c6c52d1d781c91159fc796577726`, Wave A `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, backend `31ec6988446607651031c6412b2c9f4c8ccce402` (attempted, not merged). Wave A merge commit: `88a4e94`. Candidate-only lint cleanup: `9df0f47`.
+Inputs: coordinator `a69dff2b8370c6c52d1d781c91159fc796577726`, Wave A `c05e0c7cd703fbf19e05e60bb4d488e1d9b19bb0`, backend `31ec6988446607651031c6412b2c9f4c8ccce402` (attempted, not merged). Wave A merge commit: `88a4e94`. Candidate-only lint cleanup: `9df0f47`. Coordinator refreshed through `f691dec` at merge `d5aa031`; CSS remains exactly the latest coordinator blob.
 
 Jose explicitly requested the Wave A merge. It is recorded as an integration with open gates, not as a successful exit round. Wave A's `ROUND.md` requests exit round 2; it does not say `status: zero`. The other chat branches have not been admitted without zero exit evidence.
 
@@ -9,9 +9,11 @@ Jose explicitly requested the Wave A merge. It is recorded as an integration wit
 | ID | Owner | Evidence | Required action |
 | --- | --- | --- | --- |
 | RC-WA-IS-01 (P0) | Wave A + coordinator | `npm run typecheck` fails TS2724 at `src/components/availability-team-list.tsx:7`; call at line 44. Wave A expects `useHoldHeight`; the coordinator replaced that API with the `HoldHeight` component. Both versions typecheck separately only if confirmed by their own checks; no such result is assumed here. | Wave A adapts its availability-list hold to the current shared-kit API, coordinated with Phase 3, and pushes a new inspected commit. Preserve the coordinator's synchronous hold behavior. No unauthorized candidate UI repair. |
-| RC-BE-CONFLICT-01 | Backend + coordinator | `git merge --no-commit --no-ff origin/codex/premium-backend` conflicts in `src/app/layout.tsx`. Retried from `a69dff2`; merge aborted. Complete sides in `conflicts/`. | Coordinator resolves the async layout / development error-hook seam on its branch or gives the backend chat a resolution. |
+| RC-BE-CONFLICT-01 | Backend + Wave A + coordinator | Retrying backend after coordinator `f691dec` conflicts in `src/app/app/schedule/coverage/page.test.tsx`: candidate “1 more needed” / “1 more person needed” / “Choose what to fill”; backend “1 needed” / “1 employees needed” / “Choose the requirement”. Full sides in `conflicts/coverage-test-{candidate,backend}.txt`. Merge aborted. | Source owners reconcile the expectations on their branches. No side chosen. |
 
 ## Resolution custody
+
+Claude published the complete root-layout resolution in `docs/product/specs/codex-joint/RESOLVED-src-app-layout.tsx.txt`; it keeps both the async/error hook and text-scale script. This explicit resolution is usable when the rest of the backend merge becomes clean; currently the Coverage test conflict blocks that merge.
 
 - Swap summary and test come from Wave A; no conflict remained.
 - `src/app/app/portal-premium.css` exactly equals the latest fetched coordinator version (`a69dff2`), including when other branches carry older copies.
