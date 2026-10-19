@@ -34,5 +34,9 @@
   ],
   "planned": 12580,
   "runtimePid": 26116,
-  "url": "http://127.0.0.1:36919"
+  "url": "http://127.0.0.1:36919",
+  "latestPushedCommit": "be4a232a1e6a26b58314ff549f88e5a8a79e82c6",
+  "runtimeCheckpoint": "be4a232a1e6a26b58314ff549f88e5a8a79e82c6",
+  "sourceTree": "111a51accadb5050d806baae63e44d738cd5ee5e",
+  "sourceManifest": "/workspace/nevora-previews/p35-profile-6cdee8/evidence-2026-10-19T18-00-31-221Z/owned-next-tZceAJ/source-manifest.json"
 }

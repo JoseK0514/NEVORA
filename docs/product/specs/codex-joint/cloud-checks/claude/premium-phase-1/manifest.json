@@ -34,5 +34,9 @@
   ],
   "planned": 12580,
   "runtimePid": 26200,
-  "url": "http://127.0.0.1:35193"
+  "url": "http://127.0.0.1:35193",
+  "latestPushedCommit": "672232896b66a520d39939c1ae3e0227c8b1dc90",
+  "runtimeCheckpoint": "51f731d399e9b94306f5d98556151933efe2ac7a",
+  "sourceTree": "84f1af476350f7dcb3ca9e6739b11a6141a3f636",
+  "sourceManifest": "/workspace/nevora-previews/premium-phase-1/evidence-2026-10-19T18-00-32-017Z/owned-next-Aquf2f/source-manifest.json"
 }

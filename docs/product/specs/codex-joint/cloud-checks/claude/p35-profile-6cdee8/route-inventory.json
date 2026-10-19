@@ -239,7 +239,8 @@
         "/app/timecards",
         "/app/updates",
         "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
-        "/app/updates/compose"
+        "/app/updates/compose",
+        "/app/profile"
       ]
     },
     {
@@ -284,7 +285,8 @@
         "/app/timecards",
         "/app/updates",
         "/app/updates/234b3a2b-efa1-4f5a-895c-f7fe7c611881",
-        "/app/updates/compose"
+        "/app/updates/compose",
+        "/app/profile"
       ]
     },
     {
@@ -1263,11 +1265,6 @@
     },
     {
       "account": "AUDIT-M",
-      "pattern": "/app/profile",
-      "reason": "This snapshot redirects management Profile to Home"
-    },
-    {
-      "account": "AUDIT-M",
       "pattern": "/app/requests/hub",
       "reason": "Employee/Lead self service"
     },
@@ -1345,11 +1342,6 @@
       "account": "QAOWNER",
       "pattern": "/app/my-time",
       "reason": "Employee/Lead self service"
-    },
-    {
-      "account": "QAOWNER",
-      "pattern": "/app/profile",
-      "reason": "This snapshot redirects management Profile to Home"
     },
     {
       "account": "QAOWNER",
