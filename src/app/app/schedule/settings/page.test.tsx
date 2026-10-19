@@ -70,7 +70,7 @@ it("keeps every rule group and native fragment destination available from sectio
   // Sections keep the ids other pages link to (Owner setup, Team member detail).
   for (const id of ["coverage-staffing", "target-hours", "coverage-windows"]) expect(html).toContain(`id="${id}"`);
   expect(html).toContain('id="staffing-loc-1"');
-  expect(html).toContain('Save staffing &amp; hours');
+  expect(html).toContain('Save staffing and hours');
   expect(html).toContain('href="/app/schedule"');
 });
 
@@ -114,7 +114,7 @@ it("exposes route validation and success feedback with alert/status semantics", 
 
 it("retains Owner policy editing and Manager read-only policy access", async () => {
   const manager = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
-  expect(manager).toContain('Shift trade &amp; coverage policy');
+  expect(manager).toContain('How trades and coverage work');
   expect(manager).not.toContain('Save trade policy');
   vi.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"OWNER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
   const owner = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));

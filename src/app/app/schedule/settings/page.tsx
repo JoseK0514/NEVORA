@@ -87,7 +87,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
             <a href="#rules-staffing">Location staffing</a>
             <a href="#rules-hours">Weekly hours</a>
             <a href="#rules-coverage">Recurring coverage</a>
-            <a href="#rules-policy">Trade &amp; coverage</a>
+            <a href="#rules-policy">Trades and coverage</a>
           </nav>
           <p className="wb-note wb-rules-nav__note">Staffing and hours save together. Coverage periods and policies save separately.</p>
         </aside>
@@ -172,7 +172,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           </section>
 
           <section className="nv-card wb-auto" id="rules-policy" tabIndex={-1}>
-            <RuleHeading title="Trade & coverage policy" />
+            <RuleHeading title="Trades and coverage" />
             <p className="wb-note wb-card-lead">How shift trades and coverage requests are approved, and how far ahead they must be sent and completed.</p>
             {policyUnavailable ? <div className="wb-body"><p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>Couldn’t load this policy. Reload the page to try again.</span></p></div> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
           </section>

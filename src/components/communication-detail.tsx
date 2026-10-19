@@ -19,6 +19,9 @@ import {keepWhole} from '../lib/keep-whole';
 
 gsap.registerPlugin(useGSAP);
 
+/** TC-B-01: a soft hyphen lets the long word break cleanly at large text sizes instead of clipping. */
+const ACK_REQUIRED='Acknowledge\u00adment required';
+
 export function CommunicationDetailView({read,paused,pending,notice,onAction,onRefresh}:{read:CommunicationRead|null;paused:boolean;pending:boolean;notice:CommunicationNotice;onAction:(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP')=>void;onRefresh:()=>void}){
  const [reviewed,setReviewed]=useState(false);
  const [confirmWithdraw,setConfirmWithdraw]=useState(false);
@@ -45,8 +48,9 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const stamp=(at:string)=>keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:ready?.timeZone??'UTC',dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));
  if(!ready){
   const loading=pending&&!read;
-  const title=paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'You can’t open this update':loading?'Loading update…':'Couldn’t load this update';
-  const description=paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Your access may have changed. Sign in again to check.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
+  const offline=paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
+  const title=offline?'You’re offline':paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'You can’t open this update':loading?'Loading update…':'Couldn’t load this update';
+  const description=offline?'Connect to the internet, then try again.':paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Your access may have changed. Sign in again to check.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
   // The band says what happened; the card holds only what to do next (TC-B-16).
   return <>
    <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow="Update" title={title} summary={description}/>
@@ -73,7 +77,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow={category} title={ready.title} summary={<MetaParts text={`${ready.authorContext} · Published ${stamp(ready.publishedAt)}`}/>}/>
   <article ref={surface} className="nv-content" data-update-revision={ready.revisionId}>
    <section className="nv-card" aria-label="Update content">
-    <div className="nv-card__head"><h2 className="nv-card__title">Message</h2><span className="nv-card__meta"><Status tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged?'Acknowledged':markedRead?'Marked read':required?'Acknowledgement required':'For your information'}</Status></span></div>
+    <div className="nv-card__head"><h2 className="nv-card__title">Message</h2><span className="nv-card__meta"><Status tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged?'Acknowledged':markedRead?'Marked read':required?ACK_REQUIRED:'For your information'}</Status></span></div>
     <div className="wb-body">
      <div className="wb-update-body">{ready.body}</div>
      {ready.editedAt||ready.expiresAt?<div className="wb-update-facts">
@@ -87,7 +91,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
    <section className="nv-card" aria-label="Your review status" aria-busy={pending} ref={receiptRef} tabIndex={-1}>
     <div className="wb-body">
      <div className="wb-receipt"><span className="communication-result-icon"><Tile tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged||markedRead?<CheckCircleIcon size={22}/>:required?<FileTextIcon size={22}/>:<CircleIcon size={22}/>}</Tile></span>
-      {acknowledged?<div role="status"><h2 className="wb-strong">Acknowledged</h2><p className="wb-note">You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<div><h2 className="wb-strong">{required?'Acknowledgement required':'Informational update'}</h2><p className="wb-note">{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></div>:required?<div><h2 className="wb-strong">Confirm you received this update</h2><p className="wb-note" id="communication-acknowledgement-help">Acknowledgement confirms receipt of this version. It does not indicate agreement or attendance.</p></div>:markedRead?<div role="status"><h2 className="wb-strong">Marked read</h2><p className="wb-note">Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<div><h2 className="wb-strong">No acknowledgement needed</h2><p className="wb-note">You can mark this update as read to keep your updates organized.</p></div>}
+      {acknowledged?<div role="status"><h2 className="wb-strong">Acknowledged</h2><p className="wb-note">You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<div><h2 className="wb-strong">{required?ACK_REQUIRED:'Informational update'}</h2><p className="wb-note">{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></div>:required?<div><h2 className="wb-strong">Confirm you received this update</h2><p className="wb-note" id="communication-acknowledgement-help">Acknowledgement confirms receipt of this version. It does not indicate agreement or attendance.</p></div>:markedRead?<div role="status"><h2 className="wb-strong">Marked read</h2><p className="wb-note">Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<div><h2 className="wb-strong">No acknowledgement needed</h2><p className="wb-note">You can mark this update as read to keep your updates organized.</p></div>}
      </div>
      {!acknowledged&&!ready.management&&required?<>
       <label className="wb-check"><input type="checkbox" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label>

@@ -12,6 +12,20 @@ import type { PolicyWriteResult } from "@/lib/shift-changes/types";
  * one request per press, a pending label, an optional confirm step, and a failure shown in place
  * (a dropped connection no longer replaces the page with the error screen). */
 
+/** TC-B-14: the scheduling server actions' messages, said the way these pages say things. Unknown text passes through. */
+const plainMessages: Record<string, string> = {
+  "Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location.": "Minimum staff must be a whole number from 1 to 100, and each new location needs a designated lead choice.",
+  "Targets and maximums must be between 0 and 168 hours.": "Targets and maximums must be from 0 to 168 hours.",
+  "Enter a valid day, time range, and optional staffing override.": "Enter a day, a start and end time, and staff numbers if you need them.",
+  "Coverage window could not be saved. Check duplicate periods, active positions, and whole-number quantities from 1 to 100.": "Couldn’t add this period. It may already exist, or a quantity isn’t a whole number from 1 to 100.",
+  "Settings could not be saved. Your entries are preserved.": "Couldn’t save your changes. They’re still here; try again.",
+  "Coverage window could not be saved. Your entries are preserved.": "Couldn’t add this period. Your entries are still here; try again.",
+  "Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.": "Use whole numbers from 1 to 100, and clear quantities for inactive positions.",
+  "Review approval mode and whole-number deadlines. Blank is unknown; completion advance must not exceed submission advance.": "Check how requests are approved, and use whole minutes. Finishing time can’t be more minutes ahead than the time to ask.",
+  "Only an active Owner can save this policy.": "Only an owner can save this policy.",
+};
+const plain = (message: string) => plainMessages[message] ?? message;
+
 type Submit = { label: string; pendingLabel: string; ariaLabel?: string; className: string; kind?: "primary" | "secondary" | "danger"; icon?: ReactNode };
 
 /** A server-action form that keeps its page on failure. With `confirm`, the first press asks first. */
@@ -76,7 +90,7 @@ export function RulesSaveForm({ action, children, bar }: {
     busy.current = true; setPending(true); setResult(null);
     try {
       const saved = await action(data);
-      setResult(saved.error ? saved.error : "saved");
+      setResult(saved.error ? plain(saved.error) : "saved");
     } catch {
       setResult("Couldn’t save your changes. They’re still here; try again.");
     } finally {
@@ -90,8 +104,8 @@ export function RulesSaveForm({ action, children, bar }: {
         ? <p className="wb-saved" role="status"><CheckCircleIcon size={18} weight="fill" aria-hidden="true" /><span>Scheduling rules saved.</span></p>
         : result
           ? <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{result}</span></p>
-          : <p className="wb-note">Staffing &amp; weekly hours save together and apply right away.</p>}
-      <button ref={button} className="nv-btn" data-kind="primary" type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : "Save staffing & hours"}</button>
+          : <p className="wb-note">Staffing and weekly hours save together and apply right away.</p>}
+      <button ref={button} className="nv-btn" data-kind="primary" type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : "Save staffing and hours"}</button>
     </div> : null}
   </form>;
 }
@@ -112,7 +126,7 @@ export function InlineConfigForm({ action, children, submit, successText, classN
     if (busy.current) return;
     const data = new FormData(event.currentTarget);
     busy.current = true; setPending(true); setResult(null);
-    try { const saved = await action(data); setResult(saved.error ? saved.error : "saved"); }
+    try { const saved = await action(data); setResult(saved.error ? plain(saved.error) : "saved"); }
     catch { setResult("Couldn’t save your changes. They’re still here; try again."); }
     finally { busy.current = false; setPending(false); }
   }
@@ -169,7 +183,7 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
     try {
       const next = await action(data);
       if (next.status === "saved") { setRevision(next.revision); setMessage({ tone: "saved", text: "Policy saved." }); router.refresh(); }
-      else if (next.status === "invalid") setMessage({ tone: "error", text: next.fieldErrors.map(item => item.message).join(" ") });
+      else if (next.status === "invalid") setMessage({ tone: "error", text: next.fieldErrors.map(item => plain(item.message)).join(" ") });
       else setMessage({ tone: "conflict", text: "This policy changed. Reload and review the current values before saving again." });
     } catch {
       setMessage({ tone: "conflict", text: "Couldn’t save the policy. Reload it before saving again; your entries are kept." });

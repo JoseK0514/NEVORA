@@ -13,9 +13,9 @@ export function ShiftChangePolicyFields({
 }) {
   return (
     <details className="wb-disclosure wb-disclosure--ruled wb-policy">
-      <summary><span>Shift trade &amp; coverage policy</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
+      <summary><span>How trades and coverage work</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
       <p className="wb-note wb-card-lead">
-        {canEdit ? "Owners can edit these settings; managers can view them." : "Owners edit these settings; you can view them."} Until a rule is set, trades and cover requests
+        {canEdit ? "Owners can edit these settings; managers can view them." : "Owners edit these settings; you can view them."} Until a rule is set, trades and coverage requests
         wait for a manager. Trades and coverage save separately.
       </p>
       {(["swap", "coverage"] as const).map((scope) => {
@@ -29,7 +29,7 @@ export function ShiftChangePolicyFields({
               defaultValue={current?.mode ?? ""}
               options={[
                 { value: "", label: "Not set yet" },
-                { value: "AUTOMATIC_WHEN_VALID", label: "Automatically, when the request is valid" },
+                { value: "AUTOMATIC_WHEN_VALID", label: "Automatically when valid" },
                 { value: "MANAGER_REVIEW", label: "A manager reviews each one" },
               ]}
             />

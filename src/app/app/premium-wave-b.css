@@ -458,7 +458,7 @@
 /* TC-B-01: a condition pill wraps inside its card instead of losing its word; long single words break rather than clip. */
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-status { white-space: normal; max-width: 100%; min-width: 0; padding-block: 4px; border-radius: 14px; text-align: start; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__meta { min-width: 0; max-width: 100%; }
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-strong, .wb-record__title, .nv-card__title, .wb-glance__label, .wb-glance__detail) { overflow-wrap: break-word; hyphens: auto; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.wb-strong, .wb-record__title, .nv-card__title, .wb-glance__label, .wb-glance__detail, .wb-note, .wb-text, .wb-help) { overflow-wrap: break-word; hyphens: manual; }
 
 /* ---------- Round 1 fixes (interaction and states) ---------- */
 /* A destructive confirm: urgent fill, white text (6.2:1). */
@@ -581,7 +581,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow .
   .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat, .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-summary-card .nv-stat:first-child { flex-wrap: wrap; column-gap: var(--nv-s-3); }
 }
 /* WR-B-04: a single long word in a pill or button breaks rather than leaving its card. */
-.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.nv-status, .nv-btn) { overflow-wrap: break-word; hyphens: auto; min-width: 0; }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(.nv-status, .nv-btn) { overflow-wrap: break-word; hyphens: manual; min-width: 0; }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .nv-card__head > .nv-card__title { min-width: 0; }
 /* WR-B-11: payroll amounts stay whole (Payroll runs, Owner and Manager). */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :is(.pw-money, .pw-totals dd, .pw-lines dd) { white-space: nowrap; }
@@ -592,3 +592,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .payroll-workflow :
   html:has(body .app-shell.nevora-portal.nevora-portal .wb-rules .wb-savebar) { scroll-padding-bottom: calc(117px + 3.6875rem + 2.5rem + env(safe-area-inset-bottom, 0px)); }
 }
 .wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page details.wb-quantities .wb-quota > legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* TC-B-24: field edges at 3:1 also on textareas and search fields (the shared WR-49 rule sets the lighter border). */
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page :is(textarea, input).wb-control.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control.wb-control { border-color: var(--nv-field-border, var(--nv-border)); }
+.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page.wb-page .wb-auto.wb-auto.wb-auto.wb-auto :is(textarea, input[type="search"]):not(.wb-x):not(.wb-y):not(.wb-z) { border-color: var(--nv-field-border, var(--nv-border)); }
