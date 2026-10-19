@@ -296,6 +296,9 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
     for (const event of ['blur', 'pagehide', 'offline']) window.addEventListener(event, leave);
     for (const event of ['focus', 'online']) window.addEventListener(event, back);
     window.addEventListener('pageshow', shown);
+    // Kept row heights belong to the width they were measured at; a resize lets the rows size themselves again.
+    const resized = () => setRowHeights(null);
+    window.addEventListener('resize', resized);
     void Promise.resolve().then(() => { if (mounted) back(); });
     return () => {
       mounted = false; controller.stop(); control.current = null;
@@ -303,6 +306,7 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
       for (const event of ['blur', 'pagehide', 'offline']) window.removeEventListener(event, leave);
       for (const event of ['focus', 'online']) window.removeEventListener(event, back);
       window.removeEventListener('pageshow', shown);
+      window.removeEventListener('resize', resized);
     };
   }, []);
 
