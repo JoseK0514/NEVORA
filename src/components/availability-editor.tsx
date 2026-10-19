@@ -10,6 +10,7 @@ import { addDays, formatDayLabel } from "@/lib/date-utils";
 import { saveAvailabilityAction, saveWeeklyAvailabilityAction } from "@/app/app/availability/actions";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
+import { EmployeeSubmitButton } from "./employee-submit-button";
 
 const DAYS = [
   { dayOfWeek: 1, label: "Monday" },
@@ -71,7 +72,7 @@ function AvailabilityFields({ initialAvailability, weekStart, locked }: {
       <p role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? "This week is closed for changes." : dirty ? "You have unsaved changes." : weekStart ? "Submit these hours for this week." : "Your saved usual week."}</p>
       <div className="av-form-actions">
         <button className="av-button secondary" type="button" disabled={disabled || !dirty} onClick={() => setAvailability(initialAvailability)}><ArrowCounterClockwiseIcon size={18} aria-hidden="true" />Reset changes</button>
-        <button className="av-button primary" type="submit" disabled={disabled || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{pending ? "Saving…" : weekStart ? "Submit weekly availability" : "Save usual week"}{!locked && !pending ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</button>
+        <EmployeeSubmitButton className="av-button primary" pendingText="Saving…" disabled={disabled || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{weekStart ? "Submit weekly availability" : "Save usual week"}{!locked ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</EmployeeSubmitButton>
       </div>
     </footer>
   </>;
