@@ -1,0 +1,458 @@
+[
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "reduced": false,
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "elapsedMs": 2534,
+    "gap": null,
+    "state": {
+      "box": {
+        "x": 0,
+        "y": 96,
+        "width": 320,
+        "height": 748,
+        "top": 96,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "active": {
+        "text": "Search",
+        "box": {
+          "x": 16,
+          "y": 124,
+          "width": 288,
+          "height": 66,
+          "top": 124,
+          "right": 304,
+          "bottom": 190,
+          "left": 16
+        },
+        "inside": true
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "hidden",
+      "animations": [],
+      "close": {
+        "x": 16,
+        "y": 780,
+        "width": 288,
+        "height": 48,
+        "top": 780,
+        "right": 304,
+        "bottom": 828,
+        "left": 16
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "reduced": false,
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "elapsedMs": 2942,
+    "gap": null,
+    "state": {
+      "box": {
+        "x": 142,
+        "y": 96,
+        "width": 560,
+        "height": 294,
+        "top": 96,
+        "right": 702,
+        "bottom": 390,
+        "left": 142
+      },
+      "active": {
+        "text": "Search",
+        "box": {
+          "x": 158,
+          "y": 124,
+          "width": 528,
+          "height": 44,
+          "top": 124,
+          "right": 686,
+          "bottom": 168,
+          "left": 158
+        },
+        "inside": true
+      },
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "hidden",
+      "animations": [],
+      "close": {
+        "x": 158,
+        "y": 326,
+        "width": 528,
+        "height": 48,
+        "top": 326,
+        "right": 686,
+        "bottom": 374,
+        "left": 158
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "reduced": true,
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "elapsedMs": 2800,
+    "gap": null,
+    "state": {
+      "box": {
+        "x": 0,
+        "y": 96,
+        "width": 320,
+        "height": 748,
+        "top": 96,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "active": {
+        "text": "Search",
+        "box": {
+          "x": 16,
+          "y": 124,
+          "width": 288,
+          "height": 66,
+          "top": 124,
+          "right": 304,
+          "bottom": 190,
+          "left": 16
+        },
+        "inside": true
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "hidden",
+      "animations": [],
+      "close": {
+        "x": 16,
+        "y": 780,
+        "width": 288,
+        "height": 48,
+        "top": 780,
+        "right": 304,
+        "bottom": 828,
+        "left": 16
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "reduced": true,
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "elapsedMs": 22293,
+    "gap": "More did not reach its visible endpoint within 20s under current browser load",
+    "state": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "active": {
+        "text": "More",
+        "box": {
+          "x": 672.796875,
+          "y": 329,
+          "width": 167.1875,
+          "height": 55,
+          "top": 329,
+          "right": 839.984375,
+          "bottom": 384,
+          "left": 672.796875
+        },
+        "inside": false
+      },
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "clip visible",
+      "animations": [],
+      "close": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "reduced": false,
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "elapsedMs": 4448,
+    "gap": null,
+    "state": {
+      "box": {
+        "x": 0,
+        "y": 96,
+        "width": 320,
+        "height": 748,
+        "top": 96,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "active": {
+        "text": "Search",
+        "box": {
+          "x": 16,
+          "y": 124,
+          "width": 288,
+          "height": 66,
+          "top": 124,
+          "right": 304,
+          "bottom": 190,
+          "left": 16
+        },
+        "inside": true
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "hidden",
+      "animations": [],
+      "close": {
+        "x": 16,
+        "y": 780,
+        "width": 288,
+        "height": 48,
+        "top": 780,
+        "right": 304,
+        "bottom": 828,
+        "left": 16
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "reduced": false,
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "elapsedMs": 5845,
+    "gap": null,
+    "state": {
+      "box": {
+        "x": 142,
+        "y": 96,
+        "width": 560,
+        "height": 294,
+        "top": 96,
+        "right": 702,
+        "bottom": 390,
+        "left": 142
+      },
+      "active": {
+        "text": "Search",
+        "box": {
+          "x": 158,
+          "y": 124,
+          "width": 528,
+          "height": 44,
+          "top": 124,
+          "right": 686,
+          "bottom": 168,
+          "left": 158
+        },
+        "inside": true
+      },
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "hidden",
+      "animations": [],
+      "close": {
+        "x": 158,
+        "y": 326,
+        "width": 528,
+        "height": 48,
+        "top": 326,
+        "right": 686,
+        "bottom": 374,
+        "left": 158
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "reduced": true,
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "elapsedMs": 5921,
+    "gap": null,
+    "state": {
+      "box": {
+        "x": 0,
+        "y": 96,
+        "width": 320,
+        "height": 748,
+        "top": 96,
+        "right": 320,
+        "bottom": 844,
+        "left": 0
+      },
+      "active": {
+        "text": "Search",
+        "box": {
+          "x": 16,
+          "y": 124,
+          "width": 288,
+          "height": 66,
+          "top": 124,
+          "right": 304,
+          "bottom": 190,
+          "left": 16
+        },
+        "inside": true
+      },
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "hidden",
+      "animations": [],
+      "close": {
+        "x": 16,
+        "y": 780,
+        "width": 288,
+        "height": 48,
+        "top": 780,
+        "right": 304,
+        "bottom": 828,
+        "left": 16
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "reduced": true,
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "elapsedMs": 4276,
+    "gap": null,
+    "state": {
+      "box": {
+        "x": 142,
+        "y": 96,
+        "width": 560,
+        "height": 294,
+        "top": 96,
+        "right": 702,
+        "bottom": 390,
+        "left": 142
+      },
+      "active": {
+        "text": "Search",
+        "box": {
+          "x": 158,
+          "y": 124,
+          "width": 528,
+          "height": 44,
+          "top": 124,
+          "right": 686,
+          "bottom": 168,
+          "left": 158
+        },
+        "inside": true
+      },
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "hidden",
+      "animations": [],
+      "close": {
+        "x": 158,
+        "y": 326,
+        "width": 528,
+        "height": 48,
+        "top": 326,
+        "right": 686,
+        "bottom": 374,
+        "left": 158
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  }
+]

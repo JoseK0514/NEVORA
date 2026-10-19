@@ -10,7 +10,7 @@ None newly verified in the completed scope. IS-WA-2 counts the off-screen failed
 
 ## Checked and correct
 
-- Completed pending rotations **844×390→320×844** keep the document **320px** wide. Swap is **288px** wide; Delete and Scheduling profile are **248px**, inside their card content boxes. [Rotation evidence](rotation.json).
+- All **12/12** focused pending rotations **844×390→320×844** keep the document **320px** wide. Swap is **288px** wide; Delete and Scheduling profile are **248px**, inside their card content boxes. [Rotation evidence](rotation.json).
 - Owner/Manager failed-action replay covers both browsers at **320/200**, with **1 intercepted action per case**.
 
 ## Gaps

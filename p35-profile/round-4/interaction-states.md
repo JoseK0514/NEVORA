@@ -18,6 +18,8 @@
 - [Focused-session proof](session-focus.json) uses fresh contexts: each sends **1 mocked save**, answers its read with 401, measures the off-screen link before any scrolling, then performs a browser-only reveal. No server data changes or sign-outs.
 - At 390/100, denied-save recovery is visible: Owner link **596…648**, Manager **562…614** in Chromium.
 
+- [Twelve ready large/empty fixture captures](extra-fixtures.json) include reduced motion in Chromium landscape. The four desktop blur/return/poll cases retain the same focused details and **scrollY 0** for **31s**; no passive focus jump reproduces there. Native blur remains a Mac check.
+
 ## Gaps
 
 Other controls/topics, card-head retry, slow/success/timeout behavior, larger fixtures, desktop polling/focus, role regressions and the full matrix remain incomplete. Native blur/keyboard checks stay on the Mac. The old exact-source report is retained in [history](history/829dfe6/interaction-states.md).

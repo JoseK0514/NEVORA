@@ -2,7 +2,7 @@
 
 ## Status of earlier findings
 
-AL4-01 through -31 need the full exit re-check, except kept/other-owner items in the handoff.
+AL4-02 passes the sampled Schedule/Team alignment below; its remaining pages and AL4-01 through -31 still need the full exit re-check, except kept/other-owner items in the handoff.
 
 ## Findings
 
@@ -12,6 +12,8 @@ None newly verified in the completed alignment scope.
 
 - Collapsed sidebar: **80px**, both engines/all four roles at 1440/100 after settling.
 - Sampled page/header/card boxes are retained in [baseline.json](baseline.json). Loading captures are not treated as ready-page proofs.
+
+- Schedule and Team: band title and card title both at **x 280** over card edge **260** (768/200); both at **312** over **292** (1440/100). Manager Schedule at 1024/100 is **280** over **260**. Thus all five sampled title/card insets are **20px**.
 
 ## Gaps
 

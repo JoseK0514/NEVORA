@@ -1,3 +1,20 @@
+## Cloud inspection loop — stopped at 2026-10-19 21:44:50 UTC
+
+**Judgment is paused. Confirmed so far: P0 0 / P1 15 / P2 3; no completed cloud zero exit.** Resume with “continue the inspection loop” from [INSPECTION-RESUME.md](INSPECTION-RESUME.md). It records exact commits, open IDs, completed/manual gaps and local jobs. Six browser matrices continue collecting locally; Desktop’s checker is queued after Profile finishes. Collectors do not judge or publish results. Every snapshot remains explicitly incomplete.
+
+| Chat | Round / exact commit | Confirmed P0 / P1 / P2 | Matrix cells completed / planned | Reports |
+|---|---|---|---|---|
+| Phase 3 | 5 / `227150bb2658` | **0 / 9 / 1** | 184 / 9920 | [premium-phase-3](premium-phase-3/round-5/interaction-states.md) |
+| Wave A | 2 / `a05f26a74b29` | **0 / 1 / 0** | 204 / 4560 | [p35-wave-a](p35-wave-a/round-2/interaction-states.md) |
+| Wave B | 4 / `9bd265ebb5d2` | **0 / 2 / 0** | 255 / 3040 | [p35-wave-b](p35-wave-b/round-4/interaction-states.md) |
+| Wave C | 4 / `5f7c1660a9ca` | **0 / 2 / 0** | 978 / 2080 | [p35-wave-c](p35-wave-c/round-4/interaction-states.md) |
+| Profile | 4 / `ea58610bf3bd` | **0 / 1 / 1** | 253 / 320 | [p35-profile](p35-profile/round-4/interaction-states.md) |
+| Desktop | 5 / `8012d9790e72` | **0 / 0 / 1** | 180 / 10416 | [p4-desktop](p4-desktop/round-5/interaction-states.md) |
+
+This inspection session kept all Claude sources read only and made no candidate edits, merges or deployments. Other task histories are preserved below.
+
+---
+
 # Claude, start here — paused-handoff fixes
 
 Jose explicitly approved item4 in this chat. Review each candidate finding commit below, then have its owner port or replace it. The33 finding fixes are on `codex/release-candidate`; source `claude/*` branches were not edited. Jose’s latest instruction is a merge-ready handoff: isolated `codex/ready-wave-a`, `codex/ready-wave-b`, `codex/ready-wave-c` and `codex/ready-desktop` review targets are prepared from candidate `9ec3adc` plus each owner input, with final Home finding33 under validation before it is ported. They do not authorize a nonzero merge into the candidate.
@@ -186,7 +203,7 @@ Next for the publishing/inspection loop: sync coordinator `5f6ed19` (latest prem
 
 In progress, 2026-10-19 19:10 UTC: coordinator `8c4264c` and backend `c6a5954` are integrated locally at candidate `98b037b`. Claude’s Coverage wording and supplied root-layout resolution applied; latest coordinator premium CSS retained exactly. TypeScript passes; lint passes with zero warnings. Original isolated cleanup reproduces 3 failures; backend isolated cleanup passes 12/12 with one worker (positive zombie evidence plus live-process rejection). Full candidate tests/checks/build and exact Wave A `7679133` exit inspection are running. New Wave A SHA is not merged pending a complete zero exit. Inbox flag skipped; reviewed checklist retained; no device access or deployment. Older results below are historical checkpoints.
 
-Cloud inspection loop active, 2026-10-19 21:25:23 UTC: **Phase 3 exit 5 (`227150b`): 6 P1**; the four form findings plus Timecards’ stale paused count and missing Sign in recovery. **Wave A exit 2 (`a05f26a`): 1 P1**, intermittent failed-action focus/reveal; pending dimensions and rotation pass all 12 focused cases each. **Wave B exit 4 (`9bd265e`): 2 P1**, Publish shrinks at 200% and recovery is below the viewport. **Wave C exit 4 (`5f7c166`): 2 P1**, narrow dialog labels and textarea edge contrast. **Profile exit 4 (`ea58610`): 1 P1 + 1 P2**, off-screen focused Sign in and contact-read movement. **Desktop exit 5 (`8012d97`): 1 P2**, shortcut hint below the desktop floor. All counts are independently confirmed partial coverage; full matrices and five-area sweeps remain incomplete. No completed cloud zero exit. This inspection task remains read only on sources and has made no candidate edits, merges or deployments; other task records are retained separately.
+Cloud inspection loop checkpoint, 2026-10-19 21:44:50 UTC: **P0 0 / P1 15 / P2 3 confirmed, partial scopes.** Judgment is paused; see the restart block at the top and INSPECTION-RESUME.md. Full cloud exits remain incomplete.
 
 Verification task, 2026-10-19 19:43 UTC: source-owner instructions now resolve both backend conflicts (Wave A ROUND at `7679133` plus coordinator layout file at `8c4264c`). Local verification snapshot `bf6c030` integrates backend `c6a5954` without the newer Wave A UI commit; install/TypeScript/lint pass, and its full one-worker suite finished at 7,332 passed / 4 timed-out / 801 skipped / 55 pending. All 12 process-cleanup tests pass; the complete 20-location planning test timed out at 300s despite a 185s first-call measurement. The focused retry finished122 passed /4 timed out with unchanged limits; Employee Home passes, planner and three backfill cases time out. The complete failure record is retained. Another release task owns publication; this task is verifying to avoid another branch race. [Current verification record](release/merge-3-backend/README.md). The prior unpublished coordinator-only `25dca8d` run completed at 7,282 passed / 5 failed; its results are not current-candidate gates.
 
@@ -338,3 +355,15 @@ TC-WC-28 adds Account recovery’s verification textarea edge: #D5DAD9 on white 
 2026-10-19 21:33:53 UTC · Phase 3 round 5 on 227150bb2658cb5a30db3c644b6b8f76031d3c79 · P0 0, P1 6, P2 0 · not zero
 
 2026-10-19 21:33:53 UTC · Desktop round 5 on 8012d9790e72987140f939c7d70e1df9612ea009 · P0 0, P1 0, P2 1 · not zero · shortcut ID disambiguated as TC-P4-24; bulk jobs temporarily paused for memory, completed work preserved
+
+2026-10-19 21:44:50 UTC · Phase 3 round 5 on 227150bb2658cb5a30db3c644b6b8f76031d3c79 · P0 0, P1 9, P2 1 · not zero
+
+2026-10-19 21:44:50 UTC · Wave A round 2 on a05f26a74b2979ce0efe1532f7f70d7064261bb9 · P0 0, P1 1, P2 0 · not zero
+
+2026-10-19 21:44:50 UTC · Wave B round 4 on 9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7 · P0 0, P1 2, P2 0 · not zero
+
+2026-10-19 21:44:50 UTC · Wave C round 4 on 5f7c1660a9ca86f7c8fa3ed4e07a9453c000a3e8 · P0 0, P1 2, P2 0 · not zero
+
+2026-10-19 21:44:50 UTC · Profile round 4 on ea58610bf3bdc85319895689c3d88e064f6a76d5 · P0 0, P1 1, P2 1 · not zero
+
+2026-10-19 21:44:50 UTC · Desktop round 5 on 8012d9790e72987140f939c7d70e1df9612ea009 · P0 0, P1 0, P2 1 · not zero

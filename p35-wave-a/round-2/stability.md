@@ -6,7 +6,7 @@
 |---|---|---|
 | ST-WA-7, -8 | Fixed in the re-checked controls | Swap and Delete retain **88px** at 320/200 in both browsers; no pending-height collapse. |
 | ST-WA-9, -10 | Fixed in the re-checked controls | Twelve held-press cases: Swap/Delete/Scheduling profile × 320/200 and 1440/100 × both engines. Heights change **0px**; widths change **0px**, except WebKit desktop rounding of **−0.22/−0.16px**. |
-| ST-WA-11 | Passes completed rotation samples | While pending, 844×390→320×844 keeps document width **320px**; Swap **288px**, Delete and Scheduling profile **248px**, including the completed 200% cases. See [rotation evidence](rotation.json); other samples remain in progress. |
+| ST-WA-11 | Fixed in all 12 focused rotation cases | While pending, 844×390→320×844 keeps document width **320px**; Swap **288px**, Delete and Scheduling profile **248px**, at 100/200% in both browsers. **12/12** cases complete; see [rotation evidence](rotation.json). |
 | ST-WA-1 through -6 | Not closed | Full exit re-checks remain outstanding. |
 
 ## Findings

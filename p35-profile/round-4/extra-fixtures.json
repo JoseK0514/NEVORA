@@ -1,0 +1,868 @@
+[
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "fixture": "owner-large",
+    "documentWidth": 390,
+    "cards": [
+      {
+        "x": 16,
+        "y": 188,
+        "width": 358,
+        "height": 595,
+        "right": 374,
+        "bottom": 783
+      },
+      {
+        "x": 16,
+        "y": 799,
+        "width": 358,
+        "height": 126,
+        "right": 374,
+        "bottom": 925
+      },
+      {
+        "x": 16,
+        "y": 941,
+        "width": 358,
+        "height": 619,
+        "right": 374,
+        "bottom": 1560
+      },
+      {
+        "x": 16,
+        "y": 1576,
+        "width": 358,
+        "height": 64,
+        "right": 374,
+        "bottom": 1640
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "fixture": "owner-large",
+    "documentWidth": 320,
+    "cards": [
+      {
+        "x": 16,
+        "y": 304.515625,
+        "width": 288,
+        "height": 1493,
+        "right": 304,
+        "bottom": 1797.515625
+      },
+      {
+        "x": 16,
+        "y": 1813.515625,
+        "width": 288,
+        "height": 230,
+        "right": 304,
+        "bottom": 2043.515625
+      },
+      {
+        "x": 16,
+        "y": 2059.515625,
+        "width": 288,
+        "height": 2065,
+        "right": 304,
+        "bottom": 4124.515625
+      },
+      {
+        "x": 16,
+        "y": 4140.515625,
+        "width": 288,
+        "height": 68,
+        "right": 304,
+        "bottom": 4208.515625
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "fixture": "owner-large",
+    "documentWidth": 844,
+    "cards": [
+      {
+        "x": 16,
+        "y": 188,
+        "width": 812,
+        "height": 503,
+        "right": 828,
+        "bottom": 691
+      },
+      {
+        "x": 16,
+        "y": 707,
+        "width": 812,
+        "height": 126,
+        "right": 828,
+        "bottom": 833
+      },
+      {
+        "x": 16,
+        "y": 849,
+        "width": 812,
+        "height": 579,
+        "right": 828,
+        "bottom": 1428
+      },
+      {
+        "x": 16,
+        "y": 1444,
+        "width": 812,
+        "height": 64,
+        "right": 828,
+        "bottom": 1508
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "fixture": "owner-large",
+    "documentWidth": 1440,
+    "cards": [
+      {
+        "x": 298,
+        "y": 217,
+        "width": 536,
+        "height": 503,
+        "right": 834,
+        "bottom": 720
+      },
+      {
+        "x": 850,
+        "y": 217,
+        "width": 536,
+        "height": 126,
+        "right": 1386,
+        "bottom": 343
+      },
+      {
+        "x": 850,
+        "y": 359,
+        "width": 536,
+        "height": 579,
+        "right": 1386,
+        "bottom": 938
+      },
+      {
+        "x": 850,
+        "y": 954,
+        "width": 536,
+        "height": 64,
+        "right": 1386,
+        "bottom": 1018
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": [],
+    "poll": {
+      "before": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 400,
+          "top": 267,
+          "right": 834,
+          "bottom": 667,
+          "left": 298
+        },
+        "cls": 0.003966030193061986
+      },
+      "paused": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 400,
+          "top": 267,
+          "right": 834,
+          "bottom": 667,
+          "left": 298
+        },
+        "cls": 0.0040886832280414105
+      },
+      "returned": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 400,
+          "top": 267,
+          "right": 834,
+          "bottom": 667,
+          "left": 298
+        },
+        "cls": 0.004185080261649092
+      },
+      "polled": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 400,
+          "top": 267,
+          "right": 834,
+          "bottom": 667,
+          "left": 298
+        },
+        "cls": 0.004185080261649092
+      },
+      "nativeBlur": false
+    }
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 390,
+    "height": 844,
+    "text": 100,
+    "fixture": "manager-empty",
+    "documentWidth": 390,
+    "cards": [
+      {
+        "x": 16,
+        "y": 188,
+        "width": 358,
+        "height": 549,
+        "right": 374,
+        "bottom": 737
+      },
+      {
+        "x": 16,
+        "y": 753,
+        "width": 358,
+        "height": 126,
+        "right": 374,
+        "bottom": 879
+      },
+      {
+        "x": 16,
+        "y": 895,
+        "width": 358,
+        "height": 551,
+        "right": 374,
+        "bottom": 1446
+      },
+      {
+        "x": 16,
+        "y": 1462,
+        "width": 358,
+        "height": 64,
+        "right": 374,
+        "bottom": 1526
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "fixture": "manager-empty",
+    "documentWidth": 320,
+    "cards": [
+      {
+        "x": 16,
+        "y": 304.515625,
+        "width": 288,
+        "height": 1237,
+        "right": 304,
+        "bottom": 1541.515625
+      },
+      {
+        "x": 16,
+        "y": 1557.515625,
+        "width": 288,
+        "height": 230,
+        "right": 304,
+        "bottom": 1787.515625
+      },
+      {
+        "x": 16,
+        "y": 1803.515625,
+        "width": 288,
+        "height": 1787,
+        "right": 304,
+        "bottom": 3590.515625
+      },
+      {
+        "x": 16,
+        "y": 3606.515625,
+        "width": 288,
+        "height": 68,
+        "right": 304,
+        "bottom": 3674.515625
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "fixture": "manager-empty",
+    "documentWidth": 844,
+    "cards": [
+      {
+        "x": 16,
+        "y": 188,
+        "width": 812,
+        "height": 481,
+        "right": 828,
+        "bottom": 669
+      },
+      {
+        "x": 16,
+        "y": 685,
+        "width": 812,
+        "height": 126,
+        "right": 828,
+        "bottom": 811
+      },
+      {
+        "x": 16,
+        "y": 827,
+        "width": 812,
+        "height": 511,
+        "right": 828,
+        "bottom": 1338
+      },
+      {
+        "x": 16,
+        "y": 1354,
+        "width": 812,
+        "height": 64,
+        "right": 828,
+        "bottom": 1418
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "fixture": "manager-empty",
+    "documentWidth": 1440,
+    "cards": [
+      {
+        "x": 298,
+        "y": 217,
+        "width": 536,
+        "height": 481,
+        "right": 834,
+        "bottom": 698
+      },
+      {
+        "x": 850,
+        "y": 217,
+        "width": 536,
+        "height": 126,
+        "right": 1386,
+        "bottom": 343
+      },
+      {
+        "x": 850,
+        "y": 359,
+        "width": 536,
+        "height": 511,
+        "right": 1386,
+        "bottom": 870
+      },
+      {
+        "x": 850,
+        "y": 886,
+        "width": 536,
+        "height": 64,
+        "right": 1386,
+        "bottom": 950
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": [],
+    "poll": {
+      "before": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 378,
+          "top": 267,
+          "right": 834,
+          "bottom": 645,
+          "left": 298
+        },
+        "cls": 0.00022509668504586762
+      },
+      "paused": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 378,
+          "top": 267,
+          "right": 834,
+          "bottom": 645,
+          "left": 298
+        },
+        "cls": 0.0003477497200252915
+      },
+      "returned": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 378,
+          "top": 267,
+          "right": 834,
+          "bottom": 645,
+          "left": 298
+        },
+        "cls": 0.0004441467536329733
+      },
+      "polled": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 378,
+          "top": 267,
+          "right": 834,
+          "bottom": 645,
+          "left": 298
+        },
+        "cls": 0.0004441467536329733
+      },
+      "nativeBlur": false
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "fixture": "owner-large",
+    "documentWidth": 320,
+    "cards": [
+      {
+        "x": 16,
+        "y": 304.515625,
+        "width": 288,
+        "height": 1625,
+        "right": 304,
+        "bottom": 1929.515625
+      },
+      {
+        "x": 16,
+        "y": 1945.515625,
+        "width": 288,
+        "height": 230,
+        "right": 304,
+        "bottom": 2175.515625
+      },
+      {
+        "x": 16,
+        "y": 2191.515625,
+        "width": 288,
+        "height": 2185,
+        "right": 304,
+        "bottom": 4376.515625
+      },
+      {
+        "x": 16,
+        "y": 4392.515625,
+        "width": 288,
+        "height": 68,
+        "right": 304,
+        "bottom": 4460.515625
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": [
+      "A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:\n\n- A server/client branch `if (typeof window !== 'undefined')`.\n- Variabl"
+    ]
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "fixture": "owner-large",
+    "documentWidth": 1440,
+    "cards": [
+      {
+        "x": 298,
+        "y": 217,
+        "width": 536,
+        "height": 503,
+        "right": 834,
+        "bottom": 720
+      },
+      {
+        "x": 850,
+        "y": 217,
+        "width": 536,
+        "height": 126,
+        "right": 1386,
+        "bottom": 343
+      },
+      {
+        "x": 850,
+        "y": 359,
+        "width": 536,
+        "height": 579,
+        "right": 1386,
+        "bottom": 938
+      },
+      {
+        "x": 850,
+        "y": 954,
+        "width": 536,
+        "height": 64,
+        "right": 1386,
+        "bottom": 1018
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": [],
+    "poll": {
+      "before": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 400,
+          "top": 267,
+          "right": 834,
+          "bottom": 667,
+          "left": 298
+        },
+        "cls": 0
+      },
+      "paused": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 400,
+          "top": 267,
+          "right": 834,
+          "bottom": 667,
+          "left": 298
+        },
+        "cls": 0
+      },
+      "returned": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 400,
+          "top": 267,
+          "right": 834,
+          "bottom": 667,
+          "left": 298
+        },
+        "cls": 0
+      },
+      "polled": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 400,
+          "top": 267,
+          "right": 834,
+          "bottom": 667,
+          "left": 298
+        },
+        "cls": 0
+      },
+      "nativeBlur": false
+    }
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 320,
+    "height": 844,
+    "text": 200,
+    "fixture": "manager-empty",
+    "documentWidth": 320,
+    "cards": [
+      {
+        "x": 16,
+        "y": 304.515625,
+        "width": 288,
+        "height": 1321,
+        "right": 304,
+        "bottom": 1625.515625
+      },
+      {
+        "x": 16,
+        "y": 1641.515625,
+        "width": 288,
+        "height": 230,
+        "right": 304,
+        "bottom": 1871.515625
+      },
+      {
+        "x": 16,
+        "y": 1887.515625,
+        "width": 288,
+        "height": 1907,
+        "right": 304,
+        "bottom": 3794.515625
+      },
+      {
+        "x": 16,
+        "y": 3810.515625,
+        "width": 288,
+        "height": 68,
+        "right": 304,
+        "bottom": 3878.515625
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 1440,
+    "height": 900,
+    "text": 100,
+    "fixture": "manager-empty",
+    "documentWidth": 1440,
+    "cards": [
+      {
+        "x": 298,
+        "y": 217,
+        "width": 536,
+        "height": 481,
+        "right": 834,
+        "bottom": 698
+      },
+      {
+        "x": 850,
+        "y": 217,
+        "width": 536,
+        "height": 126,
+        "right": 1386,
+        "bottom": 343
+      },
+      {
+        "x": 850,
+        "y": 359,
+        "width": 536,
+        "height": 511,
+        "right": 1386,
+        "bottom": 870
+      },
+      {
+        "x": 850,
+        "y": 886,
+        "width": 536,
+        "height": 64,
+        "right": 1386,
+        "bottom": 950
+      }
+    ],
+    "small": [],
+    "splits": [],
+    "clips": [],
+    "errors": [],
+    "poll": {
+      "before": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 378,
+          "top": 267,
+          "right": 834,
+          "bottom": 645,
+          "left": 298
+        },
+        "cls": 0
+      },
+      "paused": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 378,
+          "top": 267,
+          "right": 834,
+          "bottom": 645,
+          "left": 298
+        },
+        "cls": 0
+      },
+      "returned": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 378,
+          "top": 267,
+          "right": 834,
+          "bottom": 645,
+          "left": 298
+        },
+        "cls": 0
+      },
+      "polled": {
+        "scroll": 0,
+        "active": {
+          "id": "profile-details-list",
+          "tag": "DL"
+        },
+        "details": {
+          "x": 298,
+          "y": 267,
+          "width": 536,
+          "height": 378,
+          "top": 267,
+          "right": 834,
+          "bottom": 645,
+          "left": 298
+        },
+        "cls": 0
+      },
+      "nativeBlur": false
+    }
+  }
+]

@@ -1,0 +1,326 @@
+[
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": 100,
+    "label": "Full day",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": 100,
+    "label": "Partial day",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 320,
+    "text": 200,
+    "label": "Full day",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 320,
+    "text": 200,
+    "label": "Partial day",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": 100,
+    "label": "Choose a period",
+    "fontSize": "19px",
+    "lineHeight": "25px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "text": 100,
+    "label": "Full day",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "text": 100,
+    "label": "Partial day",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "label": "Full day",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "label": "Partial day",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "text": 100,
+    "label": "Choose a period",
+    "fontSize": "19px",
+    "lineHeight": "25px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": 100,
+    "label": "Full day",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": 100,
+    "label": "Partial day",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 320,
+    "text": 200,
+    "label": "Full day",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 320,
+    "text": 200,
+    "label": "Partial day",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 390,
+    "text": 100,
+    "label": "Choose a period",
+    "fontSize": "19px",
+    "lineHeight": "25px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "text": 100,
+    "label": "Full day",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "text": 100,
+    "label": "Partial day",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "label": "Full day",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "label": "Partial day",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 390,
+    "text": 100,
+    "label": "Choose a period",
+    "fontSize": "19px",
+    "lineHeight": "25px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 320,
+    "text": 200,
+    "label": "Close",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-E",
+    "width": 844,
+    "text": 100,
+    "label": "Close",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "label": "Close",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-LEAD",
+    "width": 844,
+    "text": 100,
+    "label": "Close",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 320,
+    "text": 200,
+    "label": "Close",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "chromium",
+    "account": "AUDIT-M",
+    "width": 844,
+    "text": 100,
+    "label": "Close",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 320,
+    "text": 200,
+    "label": "Close",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "chromium",
+    "account": "QAOWNER",
+    "width": 844,
+    "text": 100,
+    "label": "Close",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 320,
+    "text": 200,
+    "label": "Close",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-E",
+    "width": 844,
+    "text": 100,
+    "label": "Close",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 320,
+    "text": 200,
+    "label": "Close",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-LEAD",
+    "width": 844,
+    "text": 100,
+    "label": "Close",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 320,
+    "text": 200,
+    "label": "Close",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "width": 844,
+    "text": 100,
+    "label": "Close",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 320,
+    "text": 200,
+    "label": "Close",
+    "fontSize": "30px",
+    "lineHeight": "40px"
+  },
+  {
+    "engine": "webkit",
+    "account": "QAOWNER",
+    "width": 844,
+    "text": 100,
+    "label": "Close",
+    "fontSize": "15px",
+    "lineHeight": "20px"
+  }
+]

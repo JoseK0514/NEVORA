@@ -12,6 +12,8 @@ None newly verified in the completed alignment scope.
 
 - Availability's form controls remain inside the **248px** card text column at 320/200; its pending-height defect is counted as ST-P3-24.
 
+- Settled More at 320/200: Close edges **16…304**, width **288**, sheet width **320**. In landscape, sheet edges **142…702**, width **560**, centred in **844**; Close edges **158…686**, a **16px** inset. [Settled data](more-settled.json), [landscape crop](crops/more-webkit-manager-landscape-settled.png).
+
 ## Gaps
 
 The full alignment sweep, expanded states, large-data bands and earlier IDs remain incomplete. [checks.json](checks.json) is partial.

@@ -1,0 +1,59 @@
+[
+  {
+    "engine": "webkit",
+    "account": "AUDIT-M",
+    "reduced": true,
+    "width": 844,
+    "height": 390,
+    "text": 100,
+    "elapsedMs": 4714,
+    "gap": null,
+    "state": {
+      "box": {
+        "x": 142,
+        "y": 96,
+        "width": 560,
+        "height": 294,
+        "top": 96,
+        "right": 702,
+        "bottom": 390,
+        "left": 142
+      },
+      "active": {
+        "text": "Search",
+        "box": {
+          "x": 158,
+          "y": 124,
+          "width": 528,
+          "height": 44,
+          "top": 124,
+          "right": 686,
+          "bottom": 168,
+          "left": 158
+        },
+        "inside": true
+      },
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "rootOverflow": "clip visible",
+      "bodyOverflow": "hidden",
+      "animations": [],
+      "close": {
+        "x": 158,
+        "y": 326,
+        "width": 528,
+        "height": 48,
+        "top": 326,
+        "right": 686,
+        "bottom": 374,
+        "left": 158
+      }
+    },
+    "escaped": {
+      "focused": true,
+      "scroll": 0
+    }
+  }
+]

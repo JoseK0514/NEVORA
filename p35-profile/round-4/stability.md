@@ -18,6 +18,8 @@
 - [Band measurements](bands.json): every sampled band-height delta is **0px**. Authentic server fallback markup is placed in its original parent for this browser-only geometry proof; it is not a navigation/CLS claim.
 - During the held failed alert saves, the focused first row retains its height and focus in eight role/browser/phone-text samples. [State evidence](states.json).
 
+- **IS-15 desktop re-check:** four Owner/Manager/browser cases at 1440/100 retain **scrollY 0** and focused details through simulated blur/return plus **31s** of background polling. Details heights remain **400px** for the large Owner fixture and **378px** for empty Manager, with **0px** change. [Measurements](extra-fixtures.json). This does not close initial-read ST-PROFILE-03.
+
 ## Gaps
 
-Remaining widths, other fixtures, large-data contact shifts, timeout/slow/success cases, background polling and matrix/axe are incomplete. The earlier placeholder shift before releasing the held read is separate from the measured 0.02974 read shift and still needs shared-placeholder triage. No zero exit certificate is issued.
+Remaining widths, assigned-location list variants, large-data initial contact shifts, timeout/slow/success cases and matrix/axe are incomplete. The earlier placeholder shift before releasing the held read is separate from the measured 0.02974 read shift and still needs shared-placeholder triage. No zero exit certificate is issued.
