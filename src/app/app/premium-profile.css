@@ -11,14 +11,28 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 
 /* Your details: label and value side by side; the value drops under its label when the line is too narrow (large text). */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details { margin: 0; padding: 0 0 var(--nv-s-2) var(--nv-s-5); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--nv-s-1) var(--nv-s-4); min-height: 52px; padding: 15px var(--nv-s-5) 15px 0; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div { display: flex; flex-wrap: nowrap; align-items: baseline; gap: var(--nv-s-1) var(--nv-s-4); min-height: 52px; padding: 15px var(--nv-s-5) 15px 0; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div + div { border-top: 1px solid var(--nv-hairline); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt { flex: 0 0 5rem; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd { flex: 1 1 8rem; min-width: 0; margin: 0; font: var(--nv-t-row); color: var(--nv-ink); overflow-wrap: break-word; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .pmp-muted { font: var(--nv-t-callout); color: var(--nv-muted); }
+/* Labels and values take the kit row classes (nv-row__meta, nv-row__title), so their type follows whichever layer styles
+ * rows on the page, kit or clean: the same sizes as the rows in the cards beside them. Only layout is set here. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt { flex: 0 0 5rem; margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd { flex: 1 1 0; min-width: 0; margin: 0; overflow-wrap: break-word; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .nv-row__title { display: block; overflow: visible; -webkit-line-clamp: unset; text-wrap: wrap; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .nv-row__meta { display: block; margin-top: 0; }
+/* Kit fallback where no row layer reaches dt/dd (older stylesheets set dd to 15px). The clean layer's row rules are more
+ * specific than these, so on the clean app the labels and values take its row type. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd.nv-row__title { font: var(--nv-t-row); color: var(--nv-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt.nv-row__meta { font: var(--nv-t-callout); color: var(--nv-muted); }
+/* Every row behaves the same: value beside its label when the card has room, otherwise every row stacks (in rem, so
+ * large text stacks too). */
+@container (max-width: calc(16rem + 40px)) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div { flex-direction: column; align-items: stretch; gap: var(--nv-s-1); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt { flex: none; }
+}
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .pmp-muted { color: var(--nv-muted); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope { display: block; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations { margin: 0; padding: 0; list-style: none; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li { margin: 0; padding: 0; font: var(--nv-t-row); color: var(--nv-ink); list-style: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li { margin: 0; padding: 0; font: inherit; color: inherit; list-style: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li + li { margin-top: var(--nv-s-1); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li { display: inline-block; max-width: 100%; vertical-align: top; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li + li { margin-top: 0; }
@@ -104,7 +118,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-part { display: inline-block; max-width: 100%; overflow-wrap: break-word; }
 /* TC-09, WR-5: the contact values (Email and Phone, as one block) take the full row under their labels when the value column is under 17rem (phones up to 430),
  * in every state, so an address keeps its parts whole and its row is the same height loading and ready. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > :is([data-row="email"], [data-row="phone"]) > dd { flex-basis: 17rem; }
 /* Loading alert rows (AL-2): the expected words as text-shaped grey bars, so the row is a ready row's size. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-ghost { border-radius: 6px; background: var(--nv-inset); color: transparent; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 /* Busy words stay readable (TC-01): the old portal stylesheet fades every disabled button to 55%. */
@@ -116,7 +129,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details { container-type: inline-size; }
 @container (max-width: 16rem) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__head { flex-direction: column; align-items: flex-start; row-gap: var(--nv-s-1); }
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__meta { height: auto; min-height: 1.25rem; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__meta { height: auto; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .pmp-head-action .pmp-label-stack > span { text-align: left; }
 }
 /* The details list takes focus after a successful retry; it shows the ring only for keyboard users, inside the card. */

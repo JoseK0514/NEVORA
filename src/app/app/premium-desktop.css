@@ -242,6 +242,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-route="schedule"][data-band] > .route-skeleton-band + .route-skeleton-header + * { margin-top: calc(var(--nv-s-4) - 20px); }
   /* Employee Time off sits 16px under its band on desktop (its phone placeholder overlaps the band). */
   html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="review"][data-band] > .route-skeleton-band + .route-skeleton-header + * { margin-top: calc(var(--nv-s-4) - 20px); }
+  /* Employee Profile's panels sit under their section headings (26px title + 12px gap, in rem), so the placeholder's first block starts at the panels. */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="profile"][data-band] > .route-skeleton-band + .route-skeleton-header + * { margin-top: calc(var(--nv-s-4) - 20px + 2.375rem); }
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* ST-P4-05: Home's loading rows are as tall as a real desktop "Also needs you" row (104px: one meta line), not
@@ -455,8 +457,14 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   }
 }
 @media (min-width: 1024px) {
-  /* AL4-24: Profile's two panels start on one line (the settings column's label sits in the space above the work card). */
-  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-layout > .employee-account-panel { margin-top: 2.375rem; }
+  /* AL4-24, final Employee pass: both panels start 16px under the band. "App settings" is the right card's own header
+   * (as "Work details" heads the left card), not a label above it, so neither card is pushed down. */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-layout > .employee-account-panel { margin-top: 0; }
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-settings { overflow: hidden; border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e1); }
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-settings > h2 { display: flex; align-items: center; box-sizing: content-box; min-height: 40px; margin: 0; padding: 28px var(--nv-s-5) var(--nv-s-3); font: var(--nv-t-title-3); color: var(--nv-ink); }
+  /* The title shares a line with "Work details", which is centred on its 40px tile 28px down. */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-settings > .profile-settings-list { border-radius: 0; background: transparent; box-shadow: none; }
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-settings > .profile-settings-list > :first-child { border-top: 1px solid var(--nv-hairline); }
 }
 @media (min-width: 1024px) {
   /* AL4-25: sibling pages under one tab row keep one band height and title line: a band with no eyebrow keeps the eyebrow line's 20px. */
@@ -616,4 +624,9 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .secti
   .employee-shell .route-skeleton[data-route="mytime"] { --route-band-grow-desktop: 172px; }
   .employee-shell .route-skeleton[data-route="timecards"] { --route-band-grow-desktop: 132px; }
   .employee-shell .route-skeleton:is([data-route="mypay"], [data-route="notifications"]) { --route-band-grow-desktop: 136px; }
+}
+/* Final QA: from 1024px "App settings" heads its own card (Profile abb9aa2f), so the Employee and Lead Profile
+ * placeholder no longer skips a heading: its first block lands on the cards (y225 at 1440/100%, y289 at 200%). */
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="profile"][data-band] > .route-skeleton-band + .route-skeleton-header + *:not(#nv-kit) { margin-top: calc(var(--nv-s-4) - 20px); }
 }
