@@ -139,6 +139,8 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    visibilityEvidence.afterDispatch=await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));return window.__navigationVisibility.observe('after-dispatch');});
    visibilityEvidence.legacyImmediateRowCount=await page.locator('[data-inbox-row]').count();
    assert.equal(visibilityEvidence.afterDispatch.requests,1);assert.equal(visibilityEvidence.afterDispatch.aborted,1,'Hidden invalidation aborts the protected request before dispatch returns');
+   // Dispatch synchronously invalidates the controller, but React commits later.
+   // Observe that commit before asserting zero rows; do not wait on a new response.
    await page.getByRole('heading',{name:'Updates paused',exact:true}).waitFor({timeout:15000});assert.equal(await page.locator('[data-inbox-row]').count(),0);
    visibilityEvidence.pausedCommit=await page.evaluate(()=>window.__navigationVisibility.observe('paused-observed'));
    assert.equal(visibilityEvidence.pausedCommit.requests,1,'Private rows clear with the old response held and no new read');assert.equal(visibilityEvidence.requests.filter(item=>item.event==='request').length,1);
@@ -155,7 +157,6 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});
    const currentResponse=await currentRead,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.deepEqual(currentView.items,[]);await ready('notifications');await page.getByRole('heading',{name:'No notifications here.',exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);
    visibilityEvidence.reentry={status:currentResponse.status(),currentItems:currentView.items.length,rows:0};assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);
-   assert.equal(visibilityEvidence.afterDispatch.rows,0,'Diagnostic: does hidden dispatch synchronously commit row removal?');
    await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications().click();await ready('notifications');assert.equal(await page.locator('[data-inbox-row]').count(),1);
   }finally{
    release();if(used)await done;await page.unroute('**/api/notifications',heldHandler);
@@ -163,7 +164,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    page.off('request',onStarted);page.off('requestfailed',onFailed);page.off('requestfinished',onFinished);
    await writeFile(join(evidenceDirectory,`navigation-visibility-${engine}-${width}-report.json`),JSON.stringify(visibilityEvidence,null,2));
   }
-  checks.push('Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization');
+  checks.push('Bound blur/hide/pagehide handlers and browser offline clear private rows; hidden abort is synchronous, paused commit clears with no new read, held old response cannot resurrect rows, and re-entry reads current authorized source exclusion');
   if(width===390){
    const session=await q("SELECT count(*)::integer AS count,bool_and(expires_at>clock_timestamp()+interval '1 day') AS long_lived FROM employee_sessions WHERE employee_id=$1",[actor]);assert.equal(session[0].count,1);assert.equal(session[0].long_lived,true);
    const nextInbox=()=>page.waitForResponse(response=>new URL(response.url()).pathname==='/api/notifications'&&response.request().method()==='GET');
