@@ -71,7 +71,7 @@ async function login(context, employeeId, password) {
   await page.goto(app.url + '/login');
   await page.getByLabel('Employee ID', { exact: true }).fill(employeeId);
   await page.getByLabel('Password', { exact: true }).fill(password);
-  await Promise.all([page.waitForURL(url => url.pathname === '/app'), page.getByRole('button', { name: 'Sign In', exact: true }).click()]);
+  await Promise.all([page.waitForURL(url => url.pathname === '/app'), page.getByRole('button', { name: 'Sign in', exact: true }).click()]);
   await page.close();
 }
 async function pageFor(context, path) {

@@ -27,7 +27,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
  const q=(text,values=[])=>app.database.executor.query({text,values});
  await step('Real fictional login and Schedule secondary calendar entry',async()=>{
   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.actors[0]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-  await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);await currentPageReady();
+  await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);await currentPageReady();
   await page.goto(app.url+'/app/schedule');await currentPageReady();await page.getByRole('link',{name:'Add shifts to your calendar',exact:true}).click();await state('No calendar link');await currentPageReady();
  });
  await step('Deliberate create produces one transient URL and own private GET/HEAD feed',async()=>{

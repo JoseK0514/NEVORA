@@ -16,7 +16,7 @@ for (const account of process.argv.slice(2)) {
   const c = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
   const p = await c.newPage(); p.setDefaultTimeout(30000);
   await p.goto(access.url + "/login"); await p.getByLabel("Employee ID", { exact: true }).fill(account); await p.getByLabel("Password", { exact: true }).fill(access.password);
-  try { await Promise.all([p.waitForURL(u => u.pathname === "/app", { timeout: 20000 }), p.getByRole("button", { name: "Sign In", exact: true }).click()]);
+  try { await Promise.all([p.waitForURL(u => u.pathname === "/app", { timeout: 20000 }), p.getByRole("button", { name: "Sign in", exact: true }).click()]);
     await c.storageState({ path: join(out, "state", `${account}.json`) }); console.log(account, "ok"); }
   catch { console.log(account, "failed at", p.url()); }
   await c.close();

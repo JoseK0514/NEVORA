@@ -20,7 +20,7 @@ function checked(name){report.checks.push(name);console.log(`[C1 browser] PASS $
 async function login(context,id='QAOWNER'){
  const page=await context.newPage();await page.goto(app.url+'/login');
  await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
- await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);
+ await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
  await page.close();
 }
 async function newContext(browser,viewport={width:1440,height:1000}){

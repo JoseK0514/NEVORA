@@ -9,5 +9,5 @@ export function RecoveryLoading({ title, summary, label, cards }: { title: strin
   const employee = params.get("employee")?.trim();
   const back = employee ? { href: `/app/employees/${encodeURIComponent(employee.slice(0, 200))}`, label: employee.length <= 16 ? employee : "Employee" }
     : params.get("from") === "settings" ? { href: "/app/settings", label: "Settings" } : { href: "/app", label: "Home" };
-  return <SettingsLoading back={back} title={title} summary={summary} label={label} cards={cards} />;
+  return <SettingsLoading back={back} settingsCrumb={false} title={title} summary={summary} label={label} cards={cards} />;
 }

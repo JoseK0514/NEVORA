@@ -24,7 +24,7 @@ async function context(browser,viewport={width:1024,height:768}){
 }
 async function goto(page,path){const r=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(r.status(),200,'Working route '+path);}
 async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
- await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign In',exact:true}).click()]);return p;}
+ await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);return p;}
 async function savePin(p,id,pin){await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New Clocker PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm Clocker PIN',{exact:true}).fill(pin);await p.getByRole('button',{name:/Save PIN|Reset PIN/,exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
 async function enroll(owner,p,name){
  await goto(owner,'/app/settings/clocker');await owner.getByRole('button',{name:'Add device',exact:true}).click();

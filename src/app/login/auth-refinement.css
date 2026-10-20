@@ -13,16 +13,20 @@ html body .employee-login-page.auth-refinement-page {
   --login-hero-ink: var(--g-masthead, #1C4A47);
   min-height: 100svh;
   padding: 40px 32px;
+  align-items: start;
   overflow-x: clip;
   background: var(--login-canvas);
   caret-color: var(--login-blue);
+  font-size: 0.875rem;
 }
 
 .employee-login-page.auth-refinement-page ::selection { background: var(--login-cyan); color: var(--design-text-primary); }
 
 html body .auth-refinement-page .employee-login-shell {
   width: min(1120px, 100%);
-  margin: auto;
+  /* Pinned to the top so the wordmark and card sit at the same place on every auth page. */
+  margin: 0 auto;
+  align-self: start;
   gap: 28px;
 }
 
@@ -50,15 +54,15 @@ html body .auth-refinement-page .employee-login-brand {
 }
 
 .employee-login-page.auth-refinement-page .login-brand-module {
-  font: 400 11px/1.4 var(--design-font-body);
-  letter-spacing: .12em;
+  font: 400 0.8125rem/1.4 var(--design-font-body);
+  letter-spacing: .1em;
   color: var(--design-text-secondary);
 }
 
 .employee-login-page.auth-refinement-page .login-workspace {
   max-width: 40ch;
   overflow-wrap: anywhere;
-  font: 400 12px/1.5 var(--design-font-body);
+  font: 400 0.8125rem/1.5 var(--design-font-body);
   color: var(--design-text-secondary);
   text-align: right;
 }
@@ -108,7 +112,7 @@ html body .auth-refinement-page .employee-login-brand {
 .employee-login-page.auth-refinement-page .login-visual h2 {
   max-width: 8.5ch;
   margin: 0;
-  font: 500 clamp(44px, 4.4vw, 58px)/1.08 var(--design-font-body);
+  font: 500 clamp(2.75rem, 4.4vw, 3.625rem)/1.08 var(--design-font-body);
   letter-spacing: -.045em;
   text-wrap: balance;
 }
@@ -131,22 +135,23 @@ html body .auth-refinement-page .employee-login-card {
 .employee-login-page.auth-refinement-page .employee-login-heading { margin-bottom: 32px; }
 .employee-login-page.auth-refinement-page .employee-login-heading h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: -.035em;
 }
 
 .employee-login-page.auth-refinement-page .employee-login-form { gap: 20px; }
-.employee-login-page.auth-refinement-page .employee-login-form label { gap: 9px; font-size: 14px; font-weight: 500; }
+.employee-login-page.auth-refinement-page .employee-login-form label { gap: 9px; font-size: 0.875rem; font-weight: 500; }
 .employee-login-page.auth-refinement-page .employee-login-form input {
   width: 100%;
   min-width: 0;
-  height: 54px;
+  height: auto;
+  min-height: 54px;
   padding: 12px 16px;
   border: 1px solid transparent;
   border-radius: var(--login-control-radius);
-  font: 400 16px/1.5 var(--design-font-body);
+  font: 400 1rem/1.5 var(--design-font-body);
   color: var(--design-text-primary);
   background: var(--login-field);
   transition: background .18s ease, border-color .18s ease;
@@ -157,6 +162,10 @@ html body .employee-login-page.auth-refinement-page .employee-login-form input:f
   background: var(--design-surface-elevated);
   box-shadow: 0 0 0 3px #0775721A;
 }
+/* The show/hide button covers the field's right 48px; keep typed text clear of it. */
+html body .employee-login-page.auth-refinement-page .employee-login-form :is(.reset-password-input, .activation-password-input) input { padding-right: 60px; }
+/* Errors are explained on submit; a field the person left invalid is marked on blur. */
+html body .employee-login-page.auth-refinement-page .employee-login-form input:user-invalid { border-color: #B42318; }
 
 html body .employee-login-page.auth-refinement-page .employee-login-card .employee-login-submit.button.primary {
   display: flex;
@@ -165,7 +174,7 @@ html body .employee-login-page.auth-refinement-page .employee-login-card .employ
   margin-top: 4px;
   padding: 14px 18px;
   border-radius: var(--login-control-radius);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   background: var(--login-blue);
   border-color: var(--login-blue);
@@ -208,7 +217,7 @@ html body .employee-login-page.auth-refinement-page .employee-login-card .employ
   padding: 4px 0;
   border-radius: 8px;
   color: var(--login-blue);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
   text-underline-offset: 4px;
@@ -224,22 +233,22 @@ html body .employee-login-page.auth-refinement-page .employee-login-card .employ
   color: var(--login-blue);
   transition: background .18s ease;
 }
-.employee-login-page.auth-refinement-page .login-access-link small { color: var(--design-text-secondary); font-size: 12px; font-weight: 400; }
+.employee-login-page.auth-refinement-page .login-access-link small { color: var(--design-text-secondary); font-size: 0.875rem; font-weight: 400; }
 .employee-login-page.auth-refinement-page .login-access-link:hover > span:last-child { text-decoration: underline; }
 html body .employee-login-page.auth-refinement-page .login-access-link:is(:hover, :active) { color: var(--login-blue-hover); }
 .employee-login-page.auth-refinement-page .login-access-link:hover .login-access-symbol { background: #E3F3FC; }
 .employee-login-page.auth-refinement-page :is(input, button, a):focus-visible { outline: 2px solid var(--login-blue); outline-offset: 4px; }
-.employee-login-page.auth-refinement-page :is(.form-error, .form-success) { margin: 0 0 20px; font-size: 14px; line-height: 1.5; }
+.employee-login-page.auth-refinement-page :is(.form-error, .form-success) { margin: 0 0 20px; font-size: 0.875rem; line-height: 1.5; }
 
 html body .auth-refinement-page .employee-login-footer { gap: 8px; }
-html body .auth-refinement-page .employee-login-footer small { font-size: 10px; font-weight: 500; letter-spacing: .1em; }
+html body .auth-refinement-page .employee-login-footer small { font-size: 0.8125rem; font-weight: 500; letter-spacing: .08em; }
 .employee-login-page.auth-refinement-page .brand-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; }
-html body .employee-login-page.auth-refinement-page .brand-legal span { font-size: 11px; line-height: 1.5; }
+html body .employee-login-page.auth-refinement-page .brand-legal span { font-size: 0.8125rem; line-height: 1.5; }
 
 @media (min-width: 800px) and (max-width: 1050px) {
   html body .auth-refinement-page .employee-login-card { padding: 40px 32px; }
   .employee-login-page.auth-refinement-page .login-visual-copy { padding: 44px 32px; }
-  .employee-login-page.auth-refinement-page .login-visual h2 { font-size: 44px; }
+  .employee-login-page.auth-refinement-page .login-visual h2 { font-size: 2.75rem; }
 }
 
 @media (min-width: 800px) and (max-height: 800px) {
@@ -256,17 +265,16 @@ html body .employee-login-page.auth-refinement-page .brand-legal span { font-siz
   html body .auth-refinement-page .employee-login-shell { width: min(480px, 100%); gap: 24px; }
   html body .auth-refinement-page .employee-login-brand { align-items: center; flex-wrap: wrap; gap: 16px; }
   .employee-login-page.auth-refinement-page .login-brand-lockup .brand-wordmark { width: 160px; }
-  .employee-login-page.auth-refinement-page .login-brand-module { font-size: 10px; }
-  .employee-login-page.auth-refinement-page .login-workspace { max-width: 46%; font-size: 11px; }
+  .employee-login-page.auth-refinement-page .login-workspace { max-width: 46%; }
   .employee-login-page.auth-refinement-page .employee-login-composition { grid-template-columns: minmax(0, 1fr); border-radius: 20px; }
   .employee-login-page.auth-refinement-page .login-visual { min-height: 144px; }
   .employee-login-page.auth-refinement-page .login-visual-art { object-position: 50% 42%; }
   .employee-login-page.auth-refinement-page .login-visual::after { background: linear-gradient(90deg, #1C4A47DB, #1C4A4780 60%, #1C4A4714); }
   .employee-login-page.auth-refinement-page .login-visual-copy { padding: 28px; }
-  .employee-login-page.auth-refinement-page .login-visual h2 { max-width: 10ch; font-size: 30px; line-height: 1.14; letter-spacing: -.035em; }
+  .employee-login-page.auth-refinement-page .login-visual h2 { max-width: 10ch; font-size: 1.875rem; line-height: 1.14; letter-spacing: -.035em; }
   html body .auth-refinement-page .employee-login-card { padding: 32px 28px 28px; }
   .employee-login-page.auth-refinement-page .employee-login-heading { margin-bottom: 28px; }
-  .employee-login-page.auth-refinement-page .employee-login-heading h1 { font-size: 28px; }
+  .employee-login-page.auth-refinement-page .employee-login-heading h1 { font-size: 1.75rem; }
   .employee-login-page.auth-refinement-page .employee-login-form { gap: 18px; }
   .employee-login-page.auth-refinement-page .employee-login-secondary { margin-top: 24px; padding-top: 16px; }
   .employee-login-page.auth-refinement-page .brand-legal { display: grid; gap: 4px; }
@@ -278,7 +286,7 @@ html body .employee-login-page.auth-refinement-page .brand-legal span { font-siz
   .employee-login-page.auth-refinement-page .login-workspace { max-width: 44%; }
   html body .auth-refinement-page .employee-login-card { padding-inline: 22px; }
   .employee-login-page.auth-refinement-page .login-visual-copy { padding-inline: 22px; }
-  .employee-login-page.auth-refinement-page .employee-login-heading h1 { font-size: 26px; }
+  .employee-login-page.auth-refinement-page .employee-login-heading h1 { font-size: 1.625rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -292,3 +300,6 @@ html body .employee-login-page.auth-refinement-page .brand-legal span { font-siz
 @media (forced-colors: active) {
   .employee-login-page.auth-refinement-page :is(.login-visual-art, .recovery-visual-art, .activation-visual-art) { filter: none; }
 }
+
+/* Readable floor: secondary lines are 14px on desktop and 15px on phones, and every size follows the reader's text size (rem). */
+@media (max-width: 799px) { .employee-login-page.auth-refinement-page .login-access-link small { font-size: 0.9375rem; } }

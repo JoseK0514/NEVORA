@@ -146,7 +146,7 @@ async function login(context, employeeId) {
   await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
   await Promise.all([
     page.waitForURL((url) => url.pathname === '/app'),
-    page.getByRole('button', { name: 'Sign In', exact: true }).click(),
+    page.getByRole('button', { name: 'Sign in', exact: true }).click(),
   ]);
   await page.waitForLoadState('networkidle');
   await page.close();

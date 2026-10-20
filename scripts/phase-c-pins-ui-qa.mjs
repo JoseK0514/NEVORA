@@ -20,7 +20,7 @@ async function context(browser,viewport={width:1440,height:1000}){
 }
 async function goto(page,path){const r=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(r.status(),200,'Working route '+path);}
 async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
- await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign In',exact:true}).click()]);await p.close();}
+ await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);await p.close();}
 async function geometry(page,name){const r=await page.evaluate(()=>{const controls=[...document.querySelectorAll('button,a.button,input:not([type=hidden]),select')].filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height;});return {overflow:document.documentElement.scrollWidth>innerWidth+2,small:controls.filter(e=>e.getBoundingClientRect().height<43.5).length};});assert.equal(r.overflow,false);assert.equal(r.small,0);checked(name);}
 async function save(page,pin){await page.getByLabel('New Clocker PIN',{exact:true}).fill(pin);await page.getByLabel('Confirm Clocker PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:/Save PIN|Reset PIN/,exact:true}).click();await page.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
 async function verify(page,pin){await page.getByLabel('Employee PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Continue',exact:true}).click();}
