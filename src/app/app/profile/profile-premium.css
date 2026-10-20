@@ -1,0 +1,133 @@
+/* Employee and Lead Profile in the sign-in redesign's style (E4, approved by Jose on October 20).
+ * The app's own band carries who you are: initials, name, role and company, with the NEVORA mark's triangle in sky blue.
+ * Section labels sit above white cards (small caps), and Face ID comes first. Look only: every control, read and data
+ * contract is the one the page already had. Scoped to .pfx (this page) and loaded by the page and its loading view. */
+
+/* ---------- The band ---------- */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband:not(#pfx) {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "avatar body"; align-items: center; column-gap: 1rem;
+  min-height: calc(3.5rem + 2 * var(--nv-s-5));
+}
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband > .nv-masthead__body:not(#pfx) { grid-area: body; min-width: 0; margin: 0; padding: 0; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband > .nv-masthead__extra:not(#pfx) { grid-area: avatar; margin: 0; padding: 0; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-avatar:not(#pfx) {
+  display: inline-flex; width: 3.5rem; height: 3.5rem; border-radius: 50%; align-items: center; justify-content: center;
+  background: #F4EFE7; color: #0D3634; font: 600 1.25rem/1 var(--nv-font, inherit); letter-spacing: .02em;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .14);
+}
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .nv-masthead__eyebrow:not(#pfx) {
+  margin: 0 0 .25rem; font-size: .8125rem; line-height: 1rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255, 255, 255, .66);
+}
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .nv-masthead__title:not(#pfx) {
+  font-size: 1.625rem; line-height: 1.9rem; font-weight: 500; letter-spacing: -.02em; overflow-wrap: break-word; hyphens: manual;
+}
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .nv-masthead__summary:not(#pfx) {
+  margin-top: .25rem; font-size: .9375rem; line-height: 1.25rem; color: rgba(255, 255, 255, .76);
+}
+/* The mark's triangle is the one bright accent, as on sign-in: the faint mark stays as it is, and a full-strength copy of
+ * its triangle sits exactly on top (the band's mark is drawn at low opacity, which would mute the blue too). */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband:not(#pfx) { position: relative; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-spark:not(#pfx) { position: absolute; pointer-events: none; fill: #35B6EC; }
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband:not(#pfx) { column-gap: 1.25rem; min-height: calc(4.5rem + 2 * var(--nv-s-6, 2rem)); }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-avatar:not(#pfx) { width: 4.5rem; height: 4.5rem; font-size: 1.5rem; }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .nv-masthead__title:not(#pfx) { font-size: 2.125rem; line-height: 2.5rem; letter-spacing: -.03em; }
+}
+
+/* ---------- Sections: small-caps labels above white cards ---------- */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx :is(.profile-settings > h2, .pk-section .nv-card__title, .employee-profile-panel .profile-section-heading h2):not(#pfx) {
+  margin: 0; font-size: .8125rem; line-height: 1.125rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--nv-ink-2, #5F625E);
+}
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-settings > h2:not(#pfx) { padding: 0 .25rem .625rem; }
+/* Face ID and Work details: the card's own heading becomes the label above it. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx :is(.pk-section, .employee-profile-panel):not(#pfx) { background: transparent; border: 0; box-shadow: none; padding: 0; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pk-section > .nv-card__head:not(#pfx),
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .employee-profile-panel > .profile-section-heading:not(#pfx) { min-height: 0; margin: 0; padding: 0 .25rem .625rem; border: 0; background: none; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .employee-profile-panel .profile-icon-tile:not(#pfx) { display: none; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx :is(.pk-section > .pk-body, .employee-profile-panel > .employee-profile-details, .profile-settings-list, .profile-signout):not(#pfx) {
+  background: #FFFFFF; border: 1px solid var(--pfx-rule, #E6E3DD); border-radius: 16px; box-shadow: none;
+}
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pk-section > .pk-body:not(#pfx) { padding: 1rem 1.125rem; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .employee-profile-panel > .employee-profile-details:not(#pfx) { margin: 0; padding: 0 1.125rem; }
+/* Refresh details and the "Something wrong here?" note sit under the card, as quiet text. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .employee-profile-panel > .employee-account-footer:not(#pfx) { margin: .5rem .25rem 0; padding: 0; border: 0; }
+
+/* ---------- Rows ---------- */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-setting-row svg:first-child:not(#pfx) { color: #0D3634; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-lang-row:not(#pfx) { cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-lang-row .profile-setting-copy:not(#pfx) { flex: 1 1 auto; min-width: 0; }
+/* The language control (from sign-in): a segmented pill, 44px tall to touch. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .ap-lang:not(#pfx) { display: inline-flex; flex: none; gap: 2px; padding: 3px; border-radius: 999px; background: #EFEEEA; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .ap-lang button:not(#pfx) {
+  position: relative; min-height: 0; margin: 0; padding: .375rem .75rem; border: 0; border-radius: 999px; background: transparent;
+  color: var(--nv-ink-2, #5F625E); font-size: .875rem; line-height: 1.125rem; font-weight: 500; cursor: pointer;
+}
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .ap-lang button:not(#pfx)::after { content: ""; position: absolute; inset: -8px -2px; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .ap-lang button[aria-pressed="true"]:not(#pfx) { background: #FFFFFF; color: var(--nv-ink, #161C1B); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .ap-lang button:focus-visible:not(#pfx) { outline: 2px solid #0D3634; outline-offset: 1px; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .ap-lang__short:not(#pfx) { display: none; }
+/* Narrow cards or large text: the switch drops under the label. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-settings-list:not(#pfx) { container-type: inline-size; }
+@container (max-width: 26rem) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-lang-row:not(#pfx) { flex-wrap: wrap; row-gap: .5rem; }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-lang-row .ap-lang:not(#pfx) { margin-left: 0; max-width: 100%; flex-wrap: wrap; border-radius: 1.25rem; }
+}
+
+/* Sign out: a calm full-width row in red. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-signout-row:not(#pfx) { justify-content: center; color: #B42318; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-signout-row svg:not(#pfx) { color: #B42318; }
+
+@media (forced-colors: active) {
+  html body .app-shell.nevora-portal .page-frame .pfx :is(.pk-section > .pk-body, .employee-profile-panel > .employee-profile-details, .profile-settings-list, .profile-signout) { border: 1px solid CanvasText; }
+}
+
+/* The desktop band layer flattens the band body into its grid (display: contents); on Profile the body stays one block
+ * beside the avatar. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband > .nv-masthead__body:not(#pfx):not(#pfx2) { display: block; grid-area: body; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband > .nv-masthead__extra:not(#pfx):not(#pfx2) { grid-area: avatar; margin-top: 0; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband .nv-pageband__eyebrow-row:not(#pfx) { min-height: 0; }
+/* Section surfaces: the label sits on the page, the card holds the rows. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-settings:not(#pfx):not(#pfx2) { background: transparent; box-shadow: none; border: 0; padding: 0; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx :is(.pk-section, .profile-settings, .profile-layout, .profile-signout):not(#pfx) { margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .premium-employee-content:not(#pfx) { display: flex; flex-direction: column; gap: 1.5rem; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-layout:not(#pfx):not(#pfx2) { display: block; }
+/* Two columns on desktop (Face ID and settings | work details and sign out); one column on phones. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-col:not(#pfx) { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .premium-employee-content:not(#pfx):not(#pfx2) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 1.5rem 1.75rem; }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .premium-employee-content > noscript:not(#pfx) { display: none; }
+}
+/* The divider between Language and the row below it (the list draws dividers only between its own link rows). */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-lang-row + .profile-setting-row:not(#pfx) { border-top: 1px solid var(--nv-hairline, #E6E3DD); }
+/* The settings label is a plain line, like the other section labels (the list's own heading style made it a 40px row). */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-settings > h2:not(#pfx):not(#pfx2) { display: block; min-height: 0; }
+/* The spark shares the mark's box (kit: 240px square, 96px past the right edge, 40px below), measured from the band. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband > .nv-masthead__extra:not(#pfx):not(#pfx2):not(#pfx3) { position: static; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-avatar:not(#pfx) { position: relative; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-spark:not(#pfx):not(#pfx2) { right: -96px; bottom: -40px; width: 240px; height: 240px; }
+
+/* Narrow pages (small phones, large text): the avatar sits above the name, so the name keeps the full width. */
+/* (A container can't query itself, so the page wrapper is the container.) */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx:not(#pfx) { container: pfx-page / inline-size; }
+@container pfx-page (max-width: 19rem) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband:not(#pfx):not(#pfx2) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "avatar" "body"; row-gap: .75rem; justify-items: start; }
+}
+
+/* ---------- One predictable band height (and its loading placeholder) ----------
+ * Text block: eyebrow 1rem + .25rem, name one line, summary .25rem + 1.25rem. Phones: 0 / 24px padding; from 768px:
+ * 16 / 24px. The band grows only when a long name or larger text wraps. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband .nv-pageband__eyebrow-row:not(#pfx):not(#pfx2) { min-height: 0; margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .nv-masthead__summary:not(#pfx):not(#pfx2) { max-width: none; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband:not(#pfx):not(#pfx2):not(#pfx3) { box-sizing: border-box; padding-top: 0; padding-bottom: 24px; min-height: calc(4.875rem + 24px); }
+@container pfx-page (max-width: 19rem) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband:not(#pfx):not(#pfx2):not(#pfx3) { min-height: calc(8.9rem + 24px); }
+}
+@media (min-width: 768px) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband:not(#pfx):not(#pfx2):not(#pfx3) { padding-top: 16px; min-height: calc(4.875rem + 40px); }
+}
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband:not(#pfx):not(#pfx2):not(#pfx3) { min-height: calc(5.5rem + 40px); }
+}
+/* Its loading placeholder is sized in portal-premium.css (the placeholder shows before this file loads). */
+/* Phones: the switch labels meet the 15px phone floor. */
+@media (max-width: 767px) { html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .ap-lang button:not(#pfx):not(#pfx2) { font-size: .9375rem; line-height: 1.25rem; } }
