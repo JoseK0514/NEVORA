@@ -206,3 +206,13 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights { position: relative; padding-top: 44px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-insights__nav { position: absolute; top: 0; left: 16px; right: 16px; margin: 0; }
 }
+
+/* QA r3: in the top bar (1180px and wider) the period picker and Export are the mockup's 30px buttons, with 44px hit areas. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .cm-insights__tools { display: flex; align-items: center; gap: 8px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .cm-insights__button { position: relative; min-height: 30px; height: 30px; padding: 0 11px; border: 1px solid #E2E2DF; border-radius: 7px; background: #fff; color: #222; font: 500 0.8125rem/1 var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .cm-insights__button::after { content: ""; position: absolute; inset: -8px 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .cm-insights__export-text { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
+/* QA r3: below 1000px the chart and Hours by person stack. */
+@media (min-width: 761px) and (max-width: 999px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-insights__main { grid-template-columns: minmax(0, 1fr); }
+}

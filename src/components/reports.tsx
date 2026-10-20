@@ -1,5 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {createPortal} from 'react-dom';
+import {useTopBarSlot} from './clean/top-bar-slot';
 import type React from 'react';
 import type {CSSProperties} from 'react';
 import Link from 'next/link';
@@ -285,10 +287,9 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
   if(!presets)return;
   setCustom(false);setNotice('');setDraft(presets[next]);if(!samePeriod(period,presets[next]))setPeriod(presets[next]);
  };
- return <>
-  {/* Phones: the navigation bar (back to More, Export). Desktop: the period picker and Export beside the title. */}
-  <div className="cm-insights__nav">
-   <button type="button" className="cm-insights__back" popoverTarget="manager-more-navigation"><CaretLeftIcon size={20} weight="bold" aria-hidden="true"/>More</button>
+ // At 1180px and wider the period picker and Export sit in the top bar (v3 mockup); narrower, in the page's own bar.
+ const slot=useTopBarSlot(true,'cm-tc-bar-tools cm-insights-bar');
+ const tools=<>
    <div className="cm-insights__tools">
     <button type="button" className="cm-insights__button cm-insights__picker" popoverTarget="report-period-menu"><span><span className="nv-sr">Report period: </span>{current.long} · {rangeText(period,false)}</span><CaretDownIcon size={12} weight="bold" aria-hidden="true"/></button>
     <div id="report-period-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Report period">
@@ -301,7 +302,14 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
      <p className="cm-insights__menu-note">For a PDF, choose Save as PDF in the print dialog.</p>
     </div>
    </div>
+</>;
+ return <>
+  {/* Phones: the navigation bar (back to More, Export). Desktop: the period picker and Export in the top bar or beside the title. */}
+  <div className="cm-insights__nav">
+   <button type="button" className="cm-insights__back" popoverTarget="manager-more-navigation"><CaretLeftIcon size={20} weight="bold" aria-hidden="true"/>More</button>
+   {slot?null:tools}
   </div>
+  {slot?createPortal(tools,slot):null}
   <div className="cm-insights__seg" role="group" aria-label="Report period" data-report-entrance="">
    {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__seg-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&!presets} onClick={()=>choose(item.mode)}>{item.short}</button>)}
   </div>

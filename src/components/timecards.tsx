@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { timeZoneLabel } from '@/lib/time-zone-label';
 import {NavIcon} from './nav-icon';
 import {HoldHeight} from './kit/hold-height';
+import {useTopBarSlot} from './clean/top-bar-slot';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
 import {useCallback,useEffect,useRef,useState,type FormEvent} from 'react';
 import {formatRecordedHours,parsePeriod,type Period,type Timecard} from '@/lib/timecards/project';
@@ -213,7 +214,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const eligible=cards.filter(item=>!batchExclusion(item,actorId,batchAction));
   // Clean Manager and Owner (v3) state. Hooks stay unconditional; the employee view below never reads them.
   const [tab,setTab]=useState<'all'|'review'|'approved'>('all'),[selecting,setSelecting]=useState(false),[openId,setOpenId]=useState<string|null>(null);
-  const [phone,setPhone]=useState(false),[bar,setBar]=useState<HTMLElement|null|undefined>(undefined);
+  const [phone,setPhone]=useState(false);
   const sheet=useRef<HTMLDialogElement|null>(null);
   const openItem=openId?cards.find(item=>item.card.employeeId===openId)??null:null,openKey=openItem?openItem.card.employeeId:null;
   useEffect(()=>{
@@ -221,20 +222,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const query=window.matchMedia(PHONE_QUERY),sync=()=>setPhone(query.matches);
     sync();query.addEventListener('change',sync);return ()=>query.removeEventListener('change',sync);
   },[manager]);
-  useEffect(()=>{
-    // Desktop: the period stepper and Export sit in the shell's top bar, before its own actions (v3 mockup).
-    if(!manager)return;
-    let live=true,slot:HTMLElement|null=null;
-    void Promise.resolve().then(()=>{
-      if(!live)return;
-      const header=typeof document.querySelector==='function'?document.querySelector<HTMLElement>('.app-shell[data-nv-clean] .mobile-header'):null;
-      if(!header){setBar(null);return;}
-      slot=document.createElement('div');slot.className='cm-tc-bar-tools';
-      header.insertBefore(slot,header.querySelector(':scope > .mobile-header-actions'));
-      setBar(slot);
-    });
-    return ()=>{live=false;slot?.remove();setBar(undefined);};
-  },[manager]);
+  // Desktop at 1180px and wider: the period stepper and Export sit in the shell's top bar (v3 mockup); narrower, in the page.
+  const bar=useTopBarSlot(manager,'cm-tc-bar-tools');
   useEffect(()=>{
     // The detail is a modal sheet. It stays open while its card refreshes and closes when the protected read is cleared.
     const dialog=sheet.current;if(!dialog||typeof dialog.showModal!=='function')return;
@@ -306,7 +295,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       <div className="nv-content premium-legacy-content cm-tc-content">
         {!phone&&bar?createPortal(tools,bar):null}
         {!phone&&bar===null?tools:null}
-        <HoldHeight holding={!ready} memory="timecards-manager">
+        <HoldHeight holding={!ready} memory="timecards-manager" className="cm-hold">
         {!data&&!busy?<TimecardsState className="cm-tc-state" title={stateTitle} message={message} failed={failed} signIn={signInRequired} onRetry={()=>void refresh(period)}/>:null}
         {ready&&cards.length?<div className="cm-tc-stats" role="group" aria-label="Period overview"><StatGrid stats={[
           {label:'Timecards',value:cards.length},
@@ -484,7 +473,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </details>
       </article>;
     })}</div>:null}
-    {manager?null:<HoldHeight holding={!data} memory="timecards-employee">
+    {manager?null:<HoldHeight holding={!data} memory="timecards-employee" className="cm-hold">
     {!data&&!busy?<TimecardsState className={styles.empty} title={stateTitle} message={message} failed={failed} signIn={signInRequired} onRetry={()=>void refresh(period)}/>:null}
     {cards.map(item=>{
       const presentation=corporate?employeeTimecardPresentation(item.card.issues):null;
