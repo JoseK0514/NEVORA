@@ -203,16 +203,13 @@ export function PayrollPeriodClose({
                     {member.active ? "Active account" : "Inactive account"}
                   </legend>
                   <p>
-                    <span className="desktop-payroll-review-copy">{member.cardState}</span>
-                    <span className="mobile-payroll-review-copy">{payrollReviewState(member.cardState)}</span> ·{" "}
+                    {payrollReviewState(member.cardState)} ·{" "}
                     {formatRecordedHours(member.recordedNanoseconds)} recorded ·{" "}
                     {member.hasPeriodEvidence
                       ? "Historical period evidence retained"
                       : "No recorded period evidence"}
-                    {member.issues.length ? <>
-                      <span className="desktop-payroll-review-copy">{` · Needs review: ${member.issues.join(", ")}`}</span>
-                      <span className="mobile-payroll-review-copy">{` · Needs review: ${payrollReviewIssues(member.issues)}`}</span>
-                    </> : null}
+                    {/* The plain labels phones already used; desktop showed the raw state and issue codes. */}
+                    {member.issues.length ? ` · Needs review: ${payrollReviewIssues(member.issues)}` : null}
                   </p>
                   {!member.active && (
                     <p>
