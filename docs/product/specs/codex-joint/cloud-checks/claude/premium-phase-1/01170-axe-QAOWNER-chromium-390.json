@@ -1,0 +1,70 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/payroll",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/settings/payroll\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/payroll\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/positions",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/settings/positions\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/positions\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/workspace",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/settings/workspace\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/workspace\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/timecards",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/timecards\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/timecards\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]

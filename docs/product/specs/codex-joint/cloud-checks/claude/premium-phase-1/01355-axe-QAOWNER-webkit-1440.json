@@ -1,0 +1,86 @@
+[
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/settings/features",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/features\", waiting until \"load\"\u001b[22m\n",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/settings/locations",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/locations\", waiting until \"load\"\u001b[22m\n",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/settings/locations/loc-1",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/locations/loc-1\", waiting until \"load\"\u001b[22m\n",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/settings/locations/new",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/locations/new\", waiting until \"load\"\u001b[22m\n",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]

@@ -1,0 +1,70 @@
+[
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-a",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/exchange/swap?sourceShiftId=cloud-payroll-qa-a",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/exchange/swap?sourceShiftId=cloud-payroll-qa-a\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/exchange/swap?sourceShif"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-a",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/my-pay",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/my-pay\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/my-pay\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-a",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/my-time",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/my-time\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/my-time\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-a",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/notifications",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/notifications\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/notifications\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]

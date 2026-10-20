@@ -1,0 +1,70 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-BREAK",
+  "size": "1440",
+  "text": 100,
+  "route": "/app",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-BREAK",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/availability\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/availability\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-BREAK",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/exchange\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/exchange\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-BREAK",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/exchange/callout?shiftId=x-audit-next-AUDIT-BREAK-0",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/exchange/callout?shiftId=x-audit-next-AUDIT-BREAK-0\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/exchange/callout?sh"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]

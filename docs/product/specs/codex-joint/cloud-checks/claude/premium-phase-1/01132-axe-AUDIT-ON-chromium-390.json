@@ -1,0 +1,70 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "390",
+  "text": 100,
+  "route": "/app/profile",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/profile\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/profile\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "390",
+  "text": 100,
+  "route": "/app/requests",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/requests\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/requests\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "390",
+  "text": 100,
+  "route": "/app/requests/hub",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/requests/hub\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/requests/hub\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/schedule\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/schedule\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]

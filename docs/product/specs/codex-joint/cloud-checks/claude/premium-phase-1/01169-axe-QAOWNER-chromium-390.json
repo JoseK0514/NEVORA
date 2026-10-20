@@ -1,0 +1,70 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/features",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/settings/features\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/features\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/locations",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/settings/locations\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/locations\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/locations/loc-1",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/settings/locations/loc-1\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/locations/loc-1\", waiting until \"load"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/locations/new",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/settings/locations/new\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/locations/new\", waiting until \"load\"\u001b[2"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]

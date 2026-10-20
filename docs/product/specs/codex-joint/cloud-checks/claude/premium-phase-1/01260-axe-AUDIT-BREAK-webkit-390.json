@@ -1,0 +1,86 @@
+[
+ {
+  "engine": "webkit",
+  "account": "AUDIT-BREAK",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app\", waiting until \"load\"\u001b[22m\n",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-BREAK",
+  "size": "390",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/availability\", waiting until \"load\"\u001b[22m\n",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-BREAK",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/exchange\", waiting until \"load\"\u001b[22m\n",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-BREAK",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/callout?shiftId=x-audit-next-AUDIT-BREAK-0",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/exchange/callout?shiftId=x-audit-next-AUDIT-BREAK-0\", waiting until \"load\"\u001b[22",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]

@@ -1,0 +1,70 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/schedule",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/schedule\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/schedule\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/schedule/copy-receipt?operation=24d80a9d-82e5-4a34-9054-a663a43785d8",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/schedule/copy-receipt?operation=24d80a9d-82e5-4a34-9054-a663a43785d8\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/sc"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/schedule/coverage",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/schedule/coverage\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/schedule/coverage\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/schedule/edit?shiftId=audit-next-0-1\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/schedule/edit?shiftId=audit-next-0"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]

@@ -1,0 +1,19 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-LONG",
+  "size": "390",
+  "text": 100,
+  "route": "/app/updates/compose",
+  "status": 0,
+  "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+  "errors": [
+   "load: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:35333/app/updates/compose\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/updates/compose\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [
+   "document-title (1)",
+   "html-has-lang (1)"
+  ],
+  "ok": false
+ }
+]
