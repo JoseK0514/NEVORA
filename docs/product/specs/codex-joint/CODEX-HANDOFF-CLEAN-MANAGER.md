@@ -16,6 +16,8 @@ Written October 20, 2026 by the Claude coordinator. This covers the Manager/Owne
 
 The merge order was verify-preview-33, then premium-phase-1, clean-manager, wave-c, profile and desktop. Every merge was clean, with no conflicts. Its `src/` is byte-identical to the integration tree every confirmation pass tested (e21a3da3).
 
+**Not included: `claude/nevora-compliance` (13bb9149).** Jose asked the Wave C chat directly for this branch, which is based on verify-preview-33. It adds public /privacy, /terms, /support and /account-deletion pages, a "Delete my account" option for every role, and migration 0034_account_deletion_requests. Its pages and links stay hidden until Jose fills in the `CONFIRM_` facts in `src/lib/legal/policies.ts`. Migration 0034 needs Jose's separate authorization before it reaches production. A trial merge into this branch conflicts in one file, `src/app/login/auth-refinement.css`, against Wave C's rem changes. Merge it only on Jose's go. Details are in `docs/compliance/README.md` on that branch.
+
 Checks on the integration branch (ed4bf218, Node from Jose's Mac): `tsc --noEmit` passes, `eslint src` passes with no errors, and `vitest run` passes 7,377 tests in 448 files (801 skipped, 27 files skipped), with no failures.
 
 ## 2. Server work the UI needs (Codex owns these)
