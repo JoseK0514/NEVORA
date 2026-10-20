@@ -35,7 +35,7 @@ async function enroll(owner,p,name){
 async function editBreak(owner,name,category,minutes){
  await goto(owner,'/app/settings/breaks');const row=owner.locator('[data-break-type="ui-rest"]');
  await row.getByRole('button',{name:/^Edit /}).click();const d=owner.getByRole('dialog');
- await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel('Reference minutes',{exact:true}).fill(String(minutes));
+ await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function archiveBreak(owner,operation){
