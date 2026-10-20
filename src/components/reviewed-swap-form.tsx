@@ -63,7 +63,7 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
               <input type="radio" name="targetShiftId" value={shift.id} required checked={selected === shift.id} onChange={() => setSelected(shift.id)}
                 aria-label={`${swapDateLabel(shift.date)} · ${swapTimeLabel(shift)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? 'Shift lead' : 'Not the shift lead'}${shift.timeZone ? ` · Times in ${shift.timeZone.replaceAll('_', ' ')}` : ''}`} />
               <span className="wa-option__text">
-                <span className="wa-option__title">{keepWhole(`${day.weekday},\u00a0${day.day}`)} · <span className="nv-keep">{keepWhole(swapTimeLabel(shift))}</span></span>
+                <span className="wa-option__title">{keepWhole(`${day.weekday},\u00a0${day.day}`)}{"\u00a0· "}<span className="nv-keep">{keepWhole(swapTimeLabel(shift))}</span></span>
                 <span className="wa-option__meta">{shift.employeeName}</span>
                 <span className="wa-option__meta"><MetaParts text={details.join(' · ')} /></span>
                 {shift.timeZone ? <span className="wa-option__meta">{timeZoneLabel(shift.timeZone)}</span> : null}

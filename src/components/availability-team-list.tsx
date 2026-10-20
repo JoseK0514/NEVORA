@@ -62,7 +62,7 @@ export function AvailabilityTeamList({ employees, employeeId }: {
           <Avatar initials={initials(employee.employeeName)} />
           <span className="wa-person__text">
             <span className="nv-row__title">{employee.employeeName}</span>
-            <span className="nv-row__meta">{employee.locationName}{employee.updatedLabel ? <> · <span className="nv-keep">Updated {employee.updatedLabel}</span></> : null}</span>
+            <span className="nv-row__meta">{employee.locationName}{employee.updatedLabel ? <>{"\u00a0· "}<span className="nv-keep">Updated {employee.updatedLabel}</span></> : null}</span>
             <span className="nv-row__status"><Status tone={!employee.submitted ? "review" : employee.windowCount === 0 ? "neutral" : "done"}>{!employee.submitted ? "Not submitted" : employee.windowCount === 0 ? "Unavailable all week" : "Submitted"}</Status></span>
           </span>
         </div>

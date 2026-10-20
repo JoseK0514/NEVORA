@@ -118,7 +118,7 @@ export default async function CopyReceiptPage({
         <p className="wa-card-note">Request <code className="wa-code">{receipt.operationId}</code></p>
         <ul className="nv-rows">
           {receipt.rows.map((row, i) => <li key={i}><div className="nv-row"><span className="nv-row__text">
-            {described(row) ? <span className="nv-row__meta wa-ink">{row.employeeName ?? "Open shift"} · <MetaParts text={rowWhen(row)} /></span> : null}
+            {described(row) ? <span className="nv-row__meta wa-ink">{row.employeeName ?? "Open shift"}{"\u00a0· "}<MetaParts text={rowWhen(row)} /></span> : null}
             <span className="nv-row__meta"><code className="wa-code">{row.sourceId}</code></span>
             <span className="nv-row__meta">{row.status === "COMMITTED" ? "Copied" : `Not copied · ${reasonText(row.reason)}`}</span>
           </span></div></li>)}
