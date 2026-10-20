@@ -12348,6 +12348,8 @@ body {
   box-shadow: var(--shadow-premium); font-family: inherit;
 }
 .portal-device-settings::backdrop { background: transparent; }
+/* The example alert is shown only in the employee app (employee-style.css). */
+.portal-device-example { display: none; }
 .portal-device-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .portal-device-heading > strong { font-size: calc(13 * var(--type-unit, 1px)); font-weight: 600; }
 .portal-device-close { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 22px; background: #f6f6f8; color: #18191f; font-size: calc(22 * var(--type-unit, 1px)); cursor: pointer; }

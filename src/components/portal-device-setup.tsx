@@ -22,6 +22,8 @@ export function DeviceSetupContent(props: ContentProps) {
   const pending = props.state === 'loading' || props.state === 'pending';
   return <div className="portal-device-content" aria-busy={pending}>
     <AuthBrand />
+    {/* Signature (phase 4): an example alert, shown only in the employee app's sheet. Decorative. */}
+    <figure className="portal-device-example" aria-hidden="true"><span>N</span><span><b>NEVORA · Example</b><span><b>Your shift moved</b> Thursday is now 12:00 – 8:00 PM.</span></span><small>now</small></figure>
     <h2 id="portal-device-title">Keep NEVORA Handy</h2>
     <p>Add NEVORA to your Home Screen for quick access to your schedule.</p>
     {props.standalone === true ? <p>Opened as a standalone app.</p> : <>

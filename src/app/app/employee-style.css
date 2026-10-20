@@ -226,3 +226,30 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navi
 
 /* Phase 3: the shared update page's wrapper keeps its own grey; behind the Signature sheet it takes the page colour. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .wb-update:has(> [data-sig]):not(#e5):not(#e52) { background: var(--e5-bg); }
+
+
+/* ---------- Phase 4: Alerts on this device, as a Signature sheet (approved Oct 20, 2026; target
+ * docs/product/specs/employee-style/signature/phase-4/p4b-board-b.png). An example alert on a deep card, then the two
+ * steps numbered, each with its own action. Same content, states and buttons. ---------- */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings:not(#e5):not(#e52) { padding: 10px 16px 24px; border: 0; border-radius: 28px; background: var(--e5-bg); box-shadow: 0 30px 80px rgba(9, 22, 21, .35); color: var(--e5-ink); counter-reset: e5step; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings::backdrop { background: rgba(9, 22, 21, .44); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-heading:not(#e5):not(#e52) { padding: 8px 4px 12px 8px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-heading > strong:not(#e5):not(#e52) { font: 600 .75rem/1rem var(--e5-font, inherit); letter-spacing: .13em; text-transform: uppercase; color: var(--e5-ink-2); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-close:not(#e5):not(#e52) { width: 40px; height: 40px; background: var(--e5-frame); color: var(--e5-ink-2); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content:not(#e5):not(#e52) { gap: 10px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > .login-brand-lockup:not(#e5):not(#e52) { display: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example:not(#e5):not(#e52) { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 8px; padding: 22px 14px; border-radius: 22px; background: radial-gradient(120% 90% at 20% 0%, #2B6E69 0%, #12403D 55%, #0B2725 100%); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:first-child:not(#e5):not(#e52) { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 9px; background: var(--e5-deep); color: #FFFFFF; font: 600 1rem/1 var(--e5-font, inherit); box-shadow: 0 0 0 1px rgba(255, 255, 255, .14); position: relative; z-index: 1; margin: 2px 0 0 10px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:nth-child(2):not(#e5):not(#e52) { flex: 1; min-width: 0; padding: 10px 12px; margin: -10px 0 -10px -46px; padding-left: 58px; border-radius: 16px; background: rgba(245, 247, 246, .88); font: 400 .875rem/1.1875rem var(--e5-font, inherit); color: var(--e5-ink); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:nth-child(2) > b:not(#e5):not(#e52) { display: block; font: 600 .6875rem/.875rem var(--e5-font, inherit); letter-spacing: .04em; text-transform: uppercase; color: var(--e5-ink-2); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:nth-child(2) span b:not(#e5):not(#e52) { display: block; font-weight: 600; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > small:not(#e5):not(#e52) { display: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > :is(h2, h3):not(#e5):not(#e52) { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; font: 500 1.0625rem/1.375rem var(--e5-font, inherit); color: var(--e5-ink); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > :is(h2, h3):not(#e5):not(#e52)::before { counter-increment: e5step; content: counter(e5step); flex: none; display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 10px; background: var(--e5-deep); color: #FFFFFF; font: 600 .875rem/1 var(--e5-font, inherit); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > p:not(#e5):not(#e52) { margin: 0 0 0 44px; font: 400 .9375rem/1.3125rem var(--e5-font, inherit); color: var(--e5-ink-2); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > p[role]:not(#e5):not(#e52) { color: var(--e5-ink-3); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-actions:not(#e5):not(#e52) { margin-left: 44px; gap: 8px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button:not(#e5):not(#e52) { min-height: 46px; border-radius: 14px; font-weight: 500; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.primary:not(#e5):not(#e52) { background: var(--e5-deep); color: #FFFFFF; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.secondary:not(#e5):not(#e52) { background: #FFFFFF; color: var(--e5-ink); box-shadow: inset 0 0 0 1px var(--e5-rule); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-instructions:not(#e5):not(#e52), html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-message:not(#e5):not(#e52) { margin-left: 44px; padding: 12px 14px; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--e5-rule); }
