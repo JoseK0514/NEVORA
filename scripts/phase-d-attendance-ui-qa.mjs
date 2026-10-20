@@ -376,14 +376,14 @@ try {
 
     fixture = { status: 503, payload: { state: 'unavailable', reason: 'read_failed' } };
     await refresh.click();
-    await page.getByText('Attendance review unavailable', { exact: true }).waitFor();
+    await page.getByText('Attendance unavailable', { exact: true }).waitFor();
     assert.equal(await page.getByText('Nothing to review', { exact: true }).count(), 0);
     checked(engine + ': unavailable clears healthy empty state');
 
     fixture = { status: 200, payload: { ...fixtureReady(), validForMs: 120 } };
     await refresh.click();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
-    await page.getByText('Attendance review unavailable', { exact: true }).waitFor({ timeout: 3000 });
+    await page.getByText('Attendance unavailable', { exact: true }).waitFor({ timeout: 3000 });
     assert.equal(await page.getByText('Sign in again', { exact: true }).count(), 0);
     checked(engine + ': expired source freshness is not mislabeled as sign-in failure');
 
