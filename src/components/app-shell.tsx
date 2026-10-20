@@ -279,6 +279,8 @@ export function AppShell({
       <div className="app-main">
         <header className="mobile-header">
           <span className="portal-workspace-name" title={workspaceName}>{workspaceName}</span>
+          {/* v3: Notifications has no navigation entry for Owners and Managers, so the trail names it directly. */}
+          {!activeItem && !employee && pathname === "/app/notifications" ? <nav className="portal-location-nav" aria-label="You are here"><ol className="portal-location"><li><span aria-current="page">Notifications</span></li></ol></nav> : null}
           {activeItem ? <nav className="portal-location-nav" aria-label="You are here">
             <ol className="portal-location">
               <li className="portal-location-workspace" title={workspaceName}>{workspaceName}</li>

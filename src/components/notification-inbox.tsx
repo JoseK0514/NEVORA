@@ -58,7 +58,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
 
  return <section ref={root} className={styles.inbox} aria-label="Notifications" data-private-view="notifications">
   <header className={styles.toolbar}>
-   <div className={styles.inboxTitle}><BellIcon size={22} aria-hidden="true"/><div><h2>Your alerts</h2><p>Review an update. Take the next step.</p></div></div>
+   <div className={styles.inboxTitle}><BellIcon size={22} aria-hidden="true"/><div><h2>Your alerts</h2>{/* Clean Manager (v3): no helper line for Owners and Managers. */}{onMarkRead?null:<p>Review an update. Take the next step.</p>}</div></div>
    {denied?<Link className={styles.refresh} href="/login">Sign in</Link>:<button className={styles.refresh} type="button" data-retry={unavailable?'true':undefined} disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Try again':'Refresh'}</span></button>}
   </header>
   {readNotice?<p className={styles.notice} role="status">{readNotice}</p>:null}
@@ -79,7 +79,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
      return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href}>
       <span className={styles.icon}><Icon size={22} weight="regular" aria-hidden="true"/></span>
       <div className={styles.copy}><div className={styles.rowHeading}><strong>{item.label}</strong><time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date(item.at)))}</time></div>
-       <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} aria-hidden="true"/>:null}{reviewLabels[review]}</span><span className={styles.action} data-state={action}>{actionLabels[action]}</span></div>
+       <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} aria-hidden="true"/>:null}{reviewLabels[review]}</span>{/* One status per row for Owners and Managers (v3); employees keep both. */}{onMarkRead?null:<span className={styles.action} data-state={action}>{actionLabels[action]}</span>}</div>
        <span className={styles.destination}>{presentation.destination}</span>
       </div>
       <span className={styles.open}>{presentation.action}<CaretRightIcon size={18} aria-hidden="true"/></span>
@@ -90,7 +90,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
     <p>{search?'Try another search, or clear it to see your updates.':ready.coverage==='partial'?'This view is incomplete. Retry to check what is available.':'Check Requests and Schedule for their current status.'}</p>
     {search?<button type="button" className={styles.secondary} onClick={()=>setSearch('')}>Clear search</button>:filter!=='all'?<button type="button" className={styles.secondary} onClick={()=>setFilter('all')}>View all notifications</button>:null}
    </div>}
-   <footer className={styles.footer}><p>Updates about your requests and schedule. Opening one doesn’t complete its action.</p><div><Link href={onMarkRead?"/app/inbox?filter=requests":"/app/requests/hub"}>Requests<CaretRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<CaretRightIcon size={16} aria-hidden="true"/></Link></div></footer>
+   <footer className={styles.footer}>{onMarkRead?null:<p>Updates about your requests and schedule. Opening one doesn’t complete its action.</p>}<div><Link href={onMarkRead?"/app/inbox?filter=requests":"/app/requests/hub"}>Requests<CaretRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<CaretRightIcon size={16} aria-hidden="true"/></Link></div></footer>
   </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load notifications':'Loading notifications…'}</h3><p>{state.paused?'Return to this window while online to check current information.':denied?'Sign in again to see notifications.':unavailable?'Check your connection, then try again.':'Checking your current access.'}</p></div>}
   </HoldHeight>
  </section>;

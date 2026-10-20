@@ -9,6 +9,8 @@ import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import {TrayIcon} from '@phosphor-icons/react/dist/ssr/Tray';
 import {NavIcon} from './nav-icon';
 import {HoldHeight} from './kit/hold-height';
+import {createPortal} from 'react-dom';
+import {useTopBarSlot} from './clean/top-bar-slot';
 import {UpdateEntrance, UpdateKind} from './update-visual';
 import {useCommunicationResource, type CommunicationMode} from '../lib/communications/client';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
@@ -29,6 +31,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   // H4 QA: a 401 (session_ended) and a 403 (access_denied) both mean signing in again; a 401 showed "Couldn’t load" with a Try again that kept failing.
   const signedOut = unavailableReason === 'access_denied' || unavailableReason === 'session_ended';
  const [filter, setFilter] = useState<Filter>('all');
+ const slot = useTopBarSlot(mode === 'manager', 'cm-tc-bar-tools cm-updates-bar');
  const current = paused ? null : list;
  const items = current?.items.filter((item): item is ReadyUpdate => item.state === 'ready') ?? [];
  const inReviewGroup = (item: ReadyUpdate) => mode === 'manager' ? item.acknowledgement === 'REQUIRED' : !isReviewed(item);
@@ -43,12 +46,14 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  const emptyTitle = current?.state === 'partial' ? 'No updates available in this view' : filter === 'all' ? 'No current updates' : mode === 'manager' ? filter === 'to-review' ? 'No updates requiring acknowledgement' : 'No optional updates' : filter === 'to-review' ? 'No updates waiting for review' : 'No reviewed updates yet';
  const emptyDescription = current?.state === 'partial' ? 'Some updates could not be checked. Refresh to try again.' : filter === 'all' ? 'New workplace updates will appear here.' : mode === 'manager' ? 'View all updates to check other review requirements.' : filter === 'reviewed' ? 'Updates you mark read or acknowledge will appear here.' : 'You can still find your reviewed updates in All.';
 
- // Phase 3: the kit band; the compose action leads the content column.
+ // Phase 3: the kit band; the compose action leads the content column. Clean Manager (v3): for managers at 1180px and wider
+ // it sits in the top bar, as the mockups place page actions.
+ const compose = <Link className="nv-btn updates-compose" data-kind="secondary" href="/app/updates/compose"><NavIcon name={mode === 'manager' ? 'updates' : 'employees'} />{mode === 'manager' ? 'Create update' : "Message today’s team"}</Link>;
  return <UpdateEntrance className="employee-view communication-view updates-page">
   <div className="nv-page premium-updates" data-nv-page="">
   <PageBand title="Updates" summary="Workplace news and notes, all in one place." overlap={false}/>
   <div className="premium-employee-content">
-  <Link className="nv-btn updates-compose" data-kind="secondary" href="/app/updates/compose"><NavIcon name={mode === 'manager' ? 'updates' : 'employees'} />{mode === 'manager' ? 'Create update' : "Message today’s team"}</Link>
+  {slot ? createPortal(compose, slot) : compose}
   <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
    <div className="updates-toolbar">
     {/* P3-ST-05: the filters are there from the first frame (disabled, counts "–" until read), so the list never jumps down. */}
