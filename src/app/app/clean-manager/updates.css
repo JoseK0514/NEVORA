@@ -1,1 +1,76 @@
-/* Clean Manager (v3): updates for Owner and Manager. Rules start with the data-nv-clean prefix. */
+/* Clean Manager (v3): updates for Owner and Manager. Rules start with the data-nv-clean prefix.
+ *   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d)
+ * No mockup for this page: it follows the rebuilt Inbox (rows, page foot) and the shared layer in premium-clean-manager.css, which
+ * already styles .updates-filters (segmented on phones, underline tabs on desktop), .updates-filter-count, the date headers
+ * (.updates-date-group > h2) and the inset grouped list (.updates-list). Employee and Lead pages have no .cm-updates. */
+
+/* ---------- Both widths ---------- */
+/* The list's own box draws the edges; nothing clips the rows' focus rings or the 44px hit areas. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-inbox { overflow: visible; }
+/* QA item 5: the filter track is the content's full width, at the same left edge as the title and the list (no toolbar inset). */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-toolbar { display: block; margin: 0; padding: 0; border: 0; background: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-filters { width: 100%; max-width: none; box-sizing: border-box; }
+/* QA item 6: the held list area keeps its first header's top margin inside it, so a state that replaces the list (offline, 503,
+ * 401) is measured and held at the same height as the list (the margin used to collapse out, and the page shrank 18-22px). */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-hold { display: flow-root; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-date-group > h2 { padding: 0; }
+/* One separator per row, inset to the text (the kit row draws it), as on the Inbox. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-list.nv-rows > li + li { border-top: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-list.nv-rows > li { position: relative; }
+/* A state in the list's place: one white box the size of a row. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state { background: #fff; border-radius: 10px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state > :is(h2, p) { margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state__action { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; color: var(--cm-tint); cursor: pointer; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-notice { display: flex; align-items: flex-start; gap: 6px; margin: 0; padding: 0; background: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-notice svg { flex: none; width: 1rem; height: 1rem; margin-top: .0625rem; color: var(--cm-tint); }
+/* QA item 4: the page foot, as on the Inbox: the status on the left, Refresh (or Sign in) on the right, on the list's edges. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-page-foot { justify-content: space-between; padding-left: 0; padding-right: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-page-foot__status { flex: 1 1 auto; min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-page-foot .cm-refresh { flex: none; margin-left: auto; margin-right: 0; text-decoration: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-page-foot .cm-refresh:is(:disabled, [aria-disabled="true"]) { color: var(--cm-label-3); cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates :is(.cm-page-foot .cm-refresh, .cm-updates-state__action, .premium-employee-content > .updates-compose):focus-visible { outline: 2px solid var(--cm-tint); outline-offset: 2px; }
+/* QA item 3: below 1180px Create update stays in the page, a compact tinted button under the summary at the content edge, with
+ * a 44px hit area (no visual change). At 1180px and wider it is in the top bar; the in-page copy never shows there, so the page
+ * doesn't jump when the top bar takes it after the first frame. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind] {
+  position: relative; align-self: flex-start; width: auto; height: auto; min-height: 2rem; margin: 0; padding: 0 .75rem; gap: 6px;
+  border: 0; box-shadow: none; white-space: nowrap;
+}
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind]::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind] svg { flex: none; width: 1rem; height: 1rem; }
+@media (min-width: 1180px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose { display: none; }
+}
+
+/* ============================ Phones ============================ */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind] {
+    border-radius: 8px; background: var(--cm-fill); color: var(--cm-tint); font: 600 .9375rem/1.25rem var(--cm-sys); letter-spacing: -.24px;
+  }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind]:active { background: rgba(120, 120, 128, .2); }
+  /* Rows: 17pt title, 15pt grey line, 64pt for two lines (the shared cm-page rule removes the gap between them). */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state { margin: 22px 0 0; padding: 11px 16px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state > h2 { font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.43px; color: var(--cm-label); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state > p { font: 400 .9375rem/1.25rem var(--cm-sys); letter-spacing: -.24px; color: var(--cm-label-2); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state__action { margin-bottom: -11px; font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.43px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-notice { margin: 16px 4px 0; font: 400 .8125rem/1.125rem var(--cm-sys); letter-spacing: -.08px; color: var(--cm-label-2); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-page-foot { min-height: 44px; }
+}
+
+/* ============================ Desktop ============================ */
+@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind] {
+    border-radius: 7px; background: #EAF3F2; color: #0B6B67; font: 500 .8125rem/1.125rem var(--cm-sys); letter-spacing: -.05px;
+  }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind]:hover { background: #DDEDEB; }
+  /* Rows: the title, then its status and time inline after a dot, as on the Inbox. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-list .nv-row__text { display: flex; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-list .nv-row__title:has(+ .nv-row__meta)::after { content: "\00a0·"; color: #8A8A87; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .updates-list .nv-row__meta { margin-top: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state { margin: 18px 0 0; padding: 10px 16px; border: 1px solid #ECECEA; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state > h2 { font: 500 .8438rem/1.125rem var(--cm-sys); letter-spacing: -.1px; color: #111; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state > p { font: 400 .8125rem/1.125rem var(--cm-sys); letter-spacing: -.05px; color: #6B6B68; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-state__action { margin-bottom: -10px; font: 500 .8438rem/1.125rem var(--cm-sys); color: #0B6B67; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-updates-notice { margin: 12px 0 0; font: 400 .7812rem/1rem var(--cm-sys); color: #6B6B68; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .cm-page-foot .cm-refresh:is(:disabled, [aria-disabled="true"]) { color: #B5B5B1; }
+}
