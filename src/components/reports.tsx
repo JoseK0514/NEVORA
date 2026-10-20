@@ -55,10 +55,13 @@ const timecardsHref=(period:Period)=>`/app/timecards?start=${period.startDate}&e
 /** v3 periods: Week and Month are the last 7 and 30 days ending today (the page's existing default is the first);
  * Custom is the existing 1 to 31 day form. Each one is the same report read for a different period. */
 type Mode='week'|'month'|'custom';
-const MODES:{mode:Mode;short:string;long:string}[]=[{mode:'week',short:'Week',long:'Last 7 days'},{mode:'month',short:'Month',long:'Last 30 days'},{mode:'custom',short:'Custom',long:'Custom period'}];
+const MODES:{mode:Mode;short:string;long:string}[]=[{mode:'week',short:'Week',long:'Last week'},{mode:'month',short:'Month',long:'Last 30 days'},{mode:'custom',short:'Custom',long:'Custom period'}];
 function presetPeriods(today?:string):Record<'week'|'month',Period>|null{
  if(!today)return null;
- try{const day=Temporal.PlainDate.from(today);return {week:{startDate:day.subtract({days:6}).toString(),endDate:today},month:{startDate:day.subtract({days:29}).toString(),endDate:today}};}catch{return null;}
+ try{const day=Temporal.PlainDate.from(today);
+  // QA r3: Week is the last full Monday to Sunday, as Timecards counts weeks (the mockup's "Last week").
+  const monday=day.subtract({days:day.dayOfWeek-1+7});
+  return {week:{startDate:monday.toString(),endDate:monday.add({days:6}).toString()},month:{startDate:day.subtract({days:29}).toString(),endDate:today}};}catch{return null;}
 }
 const samePeriod=(a:Period,b:Period)=>a.startDate===b.startDate&&a.endDate===b.endDate;
 const closeMenu=(id:string)=>{try{const menu=document.getElementById?.(id);if(menu?.matches?.(':popover-open'))menu.hidePopover();}catch{/* No popover support: nothing is open. */}};

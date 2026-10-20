@@ -396,7 +396,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <Details card={{...openItem.card,...h.snapshot}}/>
             </div>)}</details>:null}
         </div>:null}
-        {openId?<p className="cm-tc-sheet__message" aria-live="polite">{message}</p>:null}
+        {/* QA r3: the sheet says only what concerns this card (an action in progress or its result), not the list's count. */}
+        {openId&&(busy||pending)?<p className="cm-tc-sheet__message" aria-live="polite">{message}</p>:null}
       </dialog>
     </>;
   }

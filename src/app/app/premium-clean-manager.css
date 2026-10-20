@@ -701,3 +701,10 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .updates-compose { position: relative; min-height: 30px; height: 30px; padding: 0 11px; border: 1px solid #E2E2DF; border-radius: 7px; background: #fff; color: #222; font: 500 0.8125rem/1 var(--cm-sys); width: auto; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .updates-compose::after { content: ""; position: absolute; inset: -8px 0; }
 }
+/* P3: the value sits 8px from the chevron, as in the mockups. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-row__trail + .nv-row__chev { margin-left: -4px; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  /* P3: the bell's unread dot sits inside the button, never clipped. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .portal-notification-bell { position: relative; overflow: visible; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .portal-notification-count { position: absolute; top: 9px; right: 9px; margin: 0; }
+}
