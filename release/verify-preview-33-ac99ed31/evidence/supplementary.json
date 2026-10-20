@@ -1,0 +1,417 @@
+{
+  "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "rows": [
+    {
+      "engine": "chromium",
+      "id": "AL-47",
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "text": 200,
+      "controls": [
+        {
+          "text": "Availability",
+          "box": {
+            "x": 208,
+            "y": 78.015625,
+            "width": 166,
+            "height": 51,
+            "top": 78.015625,
+            "right": 374,
+            "bottom": 129.015625,
+            "left": 208
+          }
+        },
+        {
+          "text": "Specific week",
+          "box": {
+            "x": 142,
+            "y": 385.015625,
+            "width": 220,
+            "height": 44,
+            "top": 385.015625,
+            "right": 362,
+            "bottom": 429.015625,
+            "left": 142
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "id": "AL-47",
+      "size": {
+        "width": 320,
+        "height": 844
+      },
+      "text": 200,
+      "controls": [
+        {
+          "text": "Availability",
+          "box": {
+            "x": 138,
+            "y": 76.515625,
+            "width": 166,
+            "height": 51,
+            "top": 76.515625,
+            "right": 304,
+            "bottom": 127.515625,
+            "left": 138
+          }
+        },
+        {
+          "text": "Specific week",
+          "box": {
+            "x": 72,
+            "y": 383.515625,
+            "width": 220,
+            "height": 44,
+            "top": 383.515625,
+            "right": 292,
+            "bottom": 427.515625,
+            "left": 72
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "id": "AL-47",
+      "size": {
+        "width": 844,
+        "height": 390
+      },
+      "text": 200,
+      "controls": [
+        {
+          "text": "Availability",
+          "box": {
+            "x": 564,
+            "y": 76.515625,
+            "width": 166,
+            "height": 51,
+            "top": 76.515625,
+            "right": 730,
+            "bottom": 127.515625,
+            "left": 564
+          }
+        },
+        {
+          "text": "Specific week",
+          "box": {
+            "x": 206,
+            "y": 287.515625,
+            "width": 220,
+            "height": 44,
+            "top": 287.515625,
+            "right": 426,
+            "bottom": 331.515625,
+            "left": 206
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "id": "AL-47",
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "text": 200,
+      "controls": [
+        {
+          "text": "Availability",
+          "box": {
+            "x": 208,
+            "y": 78.015625,
+            "width": 166,
+            "height": 51,
+            "top": 78.015625,
+            "right": 374,
+            "bottom": 129.015625,
+            "left": 208
+          }
+        },
+        {
+          "text": "Specific week",
+          "box": {
+            "x": 142,
+            "y": 385.015625,
+            "width": 220,
+            "height": 44,
+            "top": 385.015625,
+            "right": 362,
+            "bottom": 429.015625,
+            "left": 142
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "id": "TC-WA-3",
+      "site": "shared ShiftBlock",
+      "text": 200,
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "atoms": [],
+      "ok": false
+    },
+    {
+      "engine": "chromium",
+      "id": "TC-P4-25",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "text": 100,
+      "metrics": [
+        {
+          "text": "Weekly submission",
+          "font": "12px",
+          "lineHeight": "18px",
+          "box": {
+            "x": 384,
+            "y": 317,
+            "width": 232,
+            "height": 18,
+            "top": 317,
+            "right": 616,
+            "bottom": 335,
+            "left": 384
+          }
+        },
+        {
+          "text": "These hours apply to this schedule week.",
+          "font": "12px",
+          "lineHeight": "18px",
+          "box": {
+            "x": 384,
+            "y": 375,
+            "width": 232,
+            "height": 18,
+            "top": 375,
+            "right": 616,
+            "bottom": 393,
+            "left": 384
+          }
+        }
+      ],
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "id": "AL-47",
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "text": 200,
+      "controls": [
+        {
+          "text": "Availability",
+          "box": {
+            "x": 194.421875,
+            "y": 78.015625,
+            "width": 179.59375,
+            "height": 51,
+            "top": 78.015625,
+            "right": 374.015625,
+            "bottom": 129.015625,
+            "left": 194.421875
+          }
+        },
+        {
+          "text": "Specific week",
+          "box": {
+            "x": 131.40625,
+            "y": 385.015625,
+            "width": 231.3125,
+            "height": 44,
+            "top": 385.015625,
+            "right": 362.71875,
+            "bottom": 429.015625,
+            "left": 131.40625
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "id": "AL-47",
+      "size": {
+        "width": 320,
+        "height": 844
+      },
+      "text": 200,
+      "controls": [
+        {
+          "text": "Availability",
+          "box": {
+            "x": 124.421875,
+            "y": 76.515625,
+            "width": 179.59375,
+            "height": 51,
+            "top": 76.515625,
+            "right": 304.015625,
+            "bottom": 127.515625,
+            "left": 124.421875
+          }
+        },
+        {
+          "text": "Specific week",
+          "box": {
+            "x": 61.40625,
+            "y": 455.515625,
+            "width": 231.3125,
+            "height": 44,
+            "top": 455.515625,
+            "right": 292.71875,
+            "bottom": 499.515625,
+            "left": 61.40625
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "id": "AL-47",
+      "size": {
+        "width": 844,
+        "height": 390
+      },
+      "text": 200,
+      "controls": [
+        {
+          "text": "Availability",
+          "box": {
+            "x": 602.421875,
+            "y": 76.515625,
+            "width": 179.59375,
+            "height": 51,
+            "top": 76.515625,
+            "right": 782.015625,
+            "bottom": 127.515625,
+            "left": 602.421875
+          }
+        },
+        {
+          "text": "Specific week",
+          "box": {
+            "x": 217.40625,
+            "y": 287.515625,
+            "width": 231.3125,
+            "height": 44,
+            "top": 287.515625,
+            "right": 448.71875,
+            "bottom": 331.515625,
+            "left": 217.40625
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "id": "AL-47",
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "text": 200,
+      "controls": [
+        {
+          "text": "Availability",
+          "box": {
+            "x": 194.421875,
+            "y": 78.015625,
+            "width": 179.59375,
+            "height": 51,
+            "top": 78.015625,
+            "right": 374.015625,
+            "bottom": 129.015625,
+            "left": 194.421875
+          }
+        },
+        {
+          "text": "Specific week",
+          "box": {
+            "x": 131.40625,
+            "y": 385.015625,
+            "width": 231.3125,
+            "height": 44,
+            "top": 385.015625,
+            "right": 362.71875,
+            "bottom": 429.015625,
+            "left": 131.40625
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "id": "TC-WA-3",
+      "site": "shared ShiftBlock",
+      "text": 200,
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "atoms": [],
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "id": "TC-P4-25",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "text": 100,
+      "metrics": [
+        {
+          "text": "Weekly submission",
+          "font": "12px",
+          "lineHeight": "18px",
+          "box": {
+            "x": 384,
+            "y": 317,
+            "width": 235.109375,
+            "height": 18,
+            "top": 317,
+            "right": 619.109375,
+            "bottom": 335,
+            "left": 384
+          }
+        },
+        {
+          "text": "These hours apply to this schedule week.",
+          "font": "12px",
+          "lineHeight": "18px",
+          "box": {
+            "x": 384,
+            "y": 375,
+            "width": 235.109375,
+            "height": 18,
+            "top": 375,
+            "right": 619.109375,
+            "bottom": 393,
+            "left": 384
+          }
+        }
+      ],
+      "ok": false
+    }
+  ]
+}

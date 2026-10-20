@@ -1,0 +1,865 @@
+{
+  "candidate": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "files": [
+    {
+      "path": "type-colour-copy.md",
+      "sha256": "51bce1060db0d6dc07108e6dfe4ac5309a7656c6a5bb2ba45f2c1404a463baee",
+      "bytes": 670
+    },
+    {
+      "path": "interaction-states.md",
+      "sha256": "c2dd4eff967c474b2e9e96104912e10606bf085e975f8d2ccbf52c38bfcdfbae",
+      "bytes": 782
+    },
+    {
+      "path": "widths-roles.md",
+      "sha256": "683ea4fbf38e6dbe9466663debe1ea3ebe20f94a491befc6b769aab2f6e3aea3",
+      "bytes": 803
+    },
+    {
+      "path": "stability.md",
+      "sha256": "cd2275943c2ce5955ab53e5772f1e368c836ee879594f6ed37a5ba1fcd05b650",
+      "bytes": 665
+    },
+    {
+      "path": "merge-and-gates.json",
+      "sha256": "0e53c11b0aa2b2fe6cf1cd0ecf686ee49bb03be81a1473c894fb44bf97276cf5",
+      "bytes": 1908
+    },
+    {
+      "path": "exit-followups.json",
+      "sha256": "882927ae7a04ace1c238584f47a63f2b5695cfbcd43afdc1dc53afc99f08d02d",
+      "bytes": 972
+    },
+    {
+      "path": "closure.json",
+      "sha256": "7e3bf67f98985b379905f1406f9c58427971964ce3baeefab2b5f90990cf0196",
+      "bytes": 621
+    },
+    {
+      "path": "ci.md",
+      "sha256": "340e0db1698060ecf15180deccd965b30f3990363b0b4821534b1a5977698bb6",
+      "bytes": 1833
+    },
+    {
+      "path": "alignment.md",
+      "sha256": "be303d191c74395eaf0c420f9f0774f4fb3f9245581737ee568179e385f84625",
+      "bytes": 682
+    },
+    {
+      "path": "ci.json",
+      "sha256": "4b7da54459f1253cbe4300921ab050c3c23bda4dabf8dff67f4128685667fbb1",
+      "bytes": 2010
+    },
+    {
+      "path": "README.md",
+      "sha256": "6c8849fd9e1b9e1a49e430c0fd295efd7ee0ea4ad8619e31594cb71dc3e4954b",
+      "bytes": 6805
+    },
+    {
+      "path": "owners/phase-3.md",
+      "sha256": "e24e530dd9d123ba977dae4f770f1f062613e0f6fba9d816652842e25341e669",
+      "bytes": 2751
+    },
+    {
+      "path": "owners/wave-b.md",
+      "sha256": "e6e3f3cfa9c4b2b643e8a37b5cf193cfdc305a985ea8b4eaf89629ebbe49b8b8",
+      "bytes": 845
+    },
+    {
+      "path": "owners/wave-a.md",
+      "sha256": "cabb32291a59d6a28966bf85d5a08d1197d38154c3e31f25241b64e11cc99d46",
+      "bytes": 3361
+    },
+    {
+      "path": "owners/wave-c.md",
+      "sha256": "cab848ad09a46a4373fcc75501bf37ca00f614a3637f28458d57f09135680bd4",
+      "bytes": 633
+    },
+    {
+      "path": "owners/desktop.md",
+      "sha256": "1f9efd1d961e61a9cf3a5b54c025b82b1d800c78a354272300744f1450aa76b8",
+      "bytes": 1588
+    },
+    {
+      "path": "gates/lint.log",
+      "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7",
+      "bytes": 41
+    },
+    {
+      "path": "gates/vitest.json",
+      "sha256": "7c4b080d7f47ec72d57af66bed7739aa91b0fcb622d9deb83c5b7863dfff37a1",
+      "bytes": 3078698
+    },
+    {
+      "path": "gates/build.log",
+      "sha256": "e6bc909b5b70c52f8db7eb5984882b33c07c5afabe9d70e9bce4df754d2457f6",
+      "bytes": 4688
+    },
+    {
+      "path": "gates/production-markers.log",
+      "sha256": "7b850b06c0429476e9f842ce19aeacfa81311286fd048203225e468ef858cc13",
+      "bytes": 4499
+    },
+    {
+      "path": "gates/vitest-summary.json",
+      "sha256": "42b7668a63bdcd02c7631bfb27ad1ad46e506a7082a15845b174f18f0cc93372",
+      "bytes": 536
+    },
+    {
+      "path": "gates/vitest.log",
+      "sha256": "6cd5ec91011d4cb1e6f4890a94c1d1b9bc297ee0ee3a00e19ce3779c1adaa3dd",
+      "bytes": 70
+    },
+    {
+      "path": "gates/typecheck.log",
+      "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+      "bytes": 50
+    },
+    {
+      "path": "evidence/named.log",
+      "sha256": "0d3fc97ddca3c9a4ad2ac47a35b20836e757eb040036b1897d222edfa8af242b",
+      "bytes": 9039
+    },
+    {
+      "path": "evidence/corrected-named-rechecks.json",
+      "sha256": "78fcdbd9d5ada62944e53009a144e3851ab65f5ca014be13135b47a1f4bbea13",
+      "bytes": 42757
+    },
+    {
+      "path": "evidence/ci-attendance-probe.json",
+      "sha256": "786bef09b1b179b05e2fc8d54ac5501c822afef615390d2d8f3eaa34ea60c7e2",
+      "bytes": 150
+    },
+    {
+      "path": "evidence/ci-attendance-probe.log",
+      "sha256": "10d85b3c4d9a41f149c2a196dff6f1f145ae04b6623b44f5f015aba3cfe32721",
+      "bytes": 130
+    },
+    {
+      "path": "evidence/replacement-qualified.json",
+      "sha256": "f5c8f4310e6338afddc324c0d11ff582c0047169be24a8b053b72b395919bbb2",
+      "bytes": 11087
+    },
+    {
+      "path": "evidence/harness-gap-dispositions.json",
+      "sha256": "279cffd763c59d3bef624b29ef1e457f4972815f5a162208d89ad64127bb564d",
+      "bytes": 1044
+    },
+    {
+      "path": "evidence/named-rechecks.json",
+      "sha256": "53194c978f505166ada1c41c102307ae315e7add193a58c7936a53fffdfd6802",
+      "bytes": 55941
+    },
+    {
+      "path": "evidence/supplementary-dispositions.json",
+      "sha256": "c185610b528223dcfc79d6d07d152aa16472c027b3be586e65721906bf49b1a5",
+      "bytes": 699
+    },
+    {
+      "path": "evidence/checker-phase3.json",
+      "sha256": "4391d137990d7b0b2d6848dca98137af23f6bdd4b1dcd7d58cb5c3d9e97aee9f",
+      "bytes": 12237
+    },
+    {
+      "path": "evidence/checker-replacement-AUDIT-M.json",
+      "sha256": "30ad4a9705637de28888952a4504aa99abdd9c7df42e34e867e3731399d674c6",
+      "bytes": 3483
+    },
+    {
+      "path": "evidence/corrected-named.log",
+      "sha256": "049001d65c0a77161963f6e9792666cc6e66ee26754f20d3552b4b3122fa0033",
+      "bytes": 2002
+    },
+    {
+      "path": "evidence/coverage-separators.log",
+      "sha256": "dcc7a9457dbf15d212d2a0ba95b60a0e6cb668a276224fb92d7f0271f720b2e4",
+      "bytes": 1352
+    },
+    {
+      "path": "evidence/supplementary.json",
+      "sha256": "680665d4ba41e897efecc24d69cf2a9b760c2ff4156c650a1f6e39c07fa53dfc",
+      "bytes": 8975
+    },
+    {
+      "path": "evidence/checker-replacement-redaction.json",
+      "sha256": "a2022a8f1a719e27de25b7d54e69423034fd7044915fd8c2eefc09d6fc629409",
+      "bytes": 701
+    },
+    {
+      "path": "evidence/checker-phase3.log",
+      "sha256": "36ba6eb0aca1087c1c1f9ff1543243a627357f1a2fba3d0cad0f80e0976f15c6",
+      "bytes": 918
+    },
+    {
+      "path": "evidence/checker-replacement-QAOWNER.json",
+      "sha256": "17f0959e97c0501e9aeb45f003be11703078769a239923acbaa114db20a5e36f",
+      "bytes": 3483
+    },
+    {
+      "path": "evidence/coverage-separators.json",
+      "sha256": "acae6d1dde55156311f4a62d02a32ac178b7df8f02efbbae756a3f6e17e23464",
+      "bytes": 3324
+    },
+    {
+      "path": "evidence/coverage-separators-corrected.log",
+      "sha256": "9eef492f858fcba38bf9c986ad8324bbb0a50c263e78a30170482327b248b95b",
+      "bytes": 504
+    },
+    {
+      "path": "evidence/supplementary.log",
+      "sha256": "deb9b5a5ad7db061faa097c140804bebc3fa7a6ae42e847d002149b6c8c43475",
+      "bytes": 597
+    },
+    {
+      "path": "evidence/replacement-rechecks.json",
+      "sha256": "1392c3f5520247de9af59b226ee4b4a538293eaa22ab0b58d47589a98e208ca7",
+      "bytes": 140740
+    },
+    {
+      "path": "evidence/checker-owners.log",
+      "sha256": "a24f3ff46dec0b936aa66e132402b335260b160f20a74aebaa7754b694a2f665",
+      "bytes": 334
+    },
+    {
+      "path": "evidence/checker-owners.json",
+      "sha256": "f34f808859645dbe869cb4b94abfbab57d2f6aecdaf2ebe08d40295353330db6",
+      "bytes": 17640
+    },
+    {
+      "path": "executed-scripts/initial-fixture.mts",
+      "sha256": "9303af67c269915a5614259f856bd75027ab08ce4af86b888e7e6a9349b3f882",
+      "bytes": 22117
+    },
+    {
+      "path": "executed-scripts/derivation.json",
+      "sha256": "65b7113bd852257b46cbc0dbc87fc4574d905e03b1fae85c1150c8bea66bb9c0",
+      "bytes": 516
+    },
+    {
+      "path": "executed-scripts/owned-preview-app-dev.mts",
+      "sha256": "5872657f543465c25828aaab17a8bfba78e548c9e85f40a562c4ffe7cb5306b0",
+      "bytes": 17190
+    },
+    {
+      "path": "executed-scripts/ci-attendance-probe.mjs",
+      "sha256": "907fd8aa75576cf4d85a48d34ed0c3223f405fce7eeb8895399f44bd32e5b8b7",
+      "bytes": 2452
+    },
+    {
+      "path": "executed-scripts/recheck.mjs",
+      "sha256": "f468d75f415140b0e00921cf24caba4d47bba9110cb7e3d261530a56c7321a34",
+      "bytes": 12824
+    },
+    {
+      "path": "executed-scripts/wave-a-recheck.mjs",
+      "sha256": "4d26a9e774b569fb98c96977e30432f6aeb2f250e1835bc676ea1f6240607e05",
+      "bytes": 4791
+    },
+    {
+      "path": "executed-scripts/fixture-ready.mjs",
+      "sha256": "9f349f2306855146a92334ff58b596729b7ea057e6314742eb5c9421c30b21c8",
+      "bytes": 1549
+    },
+    {
+      "path": "executed-scripts/initial-positive-fixture.mts",
+      "sha256": "fd95e346b3a399b91e7092e9d823002bcabe59317e0a8b029b256e54a50746f1",
+      "bytes": 22147
+    },
+    {
+      "path": "executed-scripts/preview-wave-a.mjs",
+      "sha256": "ddb2414f6c0573cd2a648e72db5690622d4b645b56ce06e7ee97110f86c5b3b8",
+      "bytes": 12885
+    },
+    {
+      "path": "executed-scripts/supplementary.mjs",
+      "sha256": "bf9dd571bd9bdb1c20c74fba143e197b0b429e65bd3fe7bbdbe100c5ee42d1e3",
+      "bytes": 6437
+    },
+    {
+      "path": "executed-scripts/preview-runtime.mjs",
+      "sha256": "3420626359443ca4c256a813c49a6e7d24034e55b3e43278399d863c512a9357",
+      "bytes": 12442
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-home.png",
+      "sha256": "80b037b53a024e41d09e54364510db258a8ac46456e226101bc004c79f043900",
+      "bytes": 76592
+    },
+    {
+      "path": "crops/chromium-IS-WA-12-QAOWNER-390-100-names.png",
+      "sha256": "c5709d1b9fd617584f77132d86ce328dc3aaa9b037109c75b24d3b24d1cb0fda",
+      "bytes": 47066
+    },
+    {
+      "path": "crops/chromium-IS-P4-11-AUDIT-M-1440-100-returned.png",
+      "sha256": "b8d1a076710ca79e659bf8e7185aed51671375b32c0d5fd1550f63840ee05b44",
+      "bytes": 110177
+    },
+    {
+      "path": "crops/chromium-replacement-QAOWNER-390-100.png",
+      "sha256": "f992c91c00f836848dc9312bc6aa722bbc5bb82090918f6f5eb507589bb0fd06",
+      "bytes": 60294
+    },
+    {
+      "path": "crops/webkit-IS-WA-12-QAOWNER-390-100-new-employee-names.png",
+      "sha256": "47168078569ed05c768c67ace8557d3eae2d6b923bdf9695ffc4de02d0ad7272",
+      "bytes": 54908
+    },
+    {
+      "path": "crops/chromium-P3-ST-01-payroll-qa-b-320-100-loading.png",
+      "sha256": "3241e775a28a05d8f228760d9ff36d148d00f8b11e9e35ae2c34e0e49104f384",
+      "bytes": 70648
+    },
+    {
+      "path": "crops/chromium-replacement-AUDIT-M-320-200.png",
+      "sha256": "b988c41ea84d6205c426738e59f77d8fea96ef7db2158a80ebe8a2b074489a5e",
+      "bytes": 52202
+    },
+    {
+      "path": "crops/webkit-replacement-QAOWNER-1440-200.png",
+      "sha256": "55922ebb8db789056c0cc835e1c5c3e52addb238981c9078c7cd7e308ace15d9",
+      "bytes": 174283
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-home.png",
+      "sha256": "78a52192b009875db338a2eb72272cbb7fb0841d04b4edf2031d5378e35a9eff",
+      "bytes": 59734
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-notifications.png",
+      "sha256": "0e5fbde033cad4adf8fda91f1173d0b30f40d0849b9456861f2d3699d089a2d5",
+      "bytes": 65996
+    },
+    {
+      "path": "crops/webkit-P3-ST-01-payroll-qa-a-320-100-ready.png",
+      "sha256": "dd891c8e397b928e3bef3268e0d437f5df1f7705d2dcbce19d0406145ce26378",
+      "bytes": 81470
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-availability.png",
+      "sha256": "fdc1e8410589a1275d921a2fa2cadba950b7c28c9f9acac82777a96769a739bf",
+      "bytes": 71480
+    },
+    {
+      "path": "crops/webkit-replacement-AUDIT-M-1440-100.png",
+      "sha256": "a157c0da58a495f9fd2fb7ad717fe5081d94b5fe4b86b54dbf4550b103921c3e",
+      "bytes": 114243
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-home.png",
+      "sha256": "de3e2016010e78223226899d5954c6f0381b18ec1428b946a8b5f15ae8afcc6e",
+      "bytes": 64254
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-notifications.png",
+      "sha256": "f483670b0a8d5979c593d8cdab1bfc16586d8980ca7c9097d84403a514217529",
+      "bytes": 62442
+    },
+    {
+      "path": "crops/chromium-P3-ST-01-payroll-qa-a-320-100-ready.png",
+      "sha256": "26e3c46439a721d452de58d8c428c75933e0003f44ebe051007f3e7118ad8463",
+      "bytes": 74724
+    },
+    {
+      "path": "crops/chromium-replacement-QAOWNER-320-100.png",
+      "sha256": "6021f9aaa27218360460df677f1e8d6bfe008f056d64bfb288f1585a66a7f7c3",
+      "bytes": 54782
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-availability.png",
+      "sha256": "d24d5041b467e010e59a0d8237684c9504c48972608eff5a328e45caa2caa725",
+      "bytes": 85018
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-availability.png",
+      "sha256": "af089e4df3c4a7a38cb592f6ca627720680e2fd883a9a49037f715a26c1fd9f1",
+      "bytes": 55618
+    },
+    {
+      "path": "crops/chromium-IS-WA-12-callout-AUDIT-E-390-100-callout-name.png",
+      "sha256": "c62f794edf12c2ec24b5c0ce1a91dd0b3336cb5c5b5ef74160c4ff02a140c273",
+      "bytes": 59669
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-notifications.png",
+      "sha256": "b7ae19b7b67dcc951cc8698ac3cfa410e635be0d479c2547974d042153d8b895",
+      "bytes": 70958
+    },
+    {
+      "path": "crops/chromium-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-390-200-gap.png",
+      "sha256": "e9c9ba29deac81f1959eb3912152d2a3aeaf061bf2ed53834e5c57705071d34c",
+      "bytes": 66635
+    },
+    {
+      "path": "crops/webkit-replacement-QAOWNER-1440-100.png",
+      "sha256": "090c17abb31681eac1b80e6f488e5d822cd5fc8f11e2a5f0d4133cac2011f7bb",
+      "bytes": 115288
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-QAOWNER-320-200-summary.png",
+      "sha256": "e891441bb8fd51d46755fb451a935e88c151146509636358488ad58d6af1b853",
+      "bytes": 44154
+    },
+    {
+      "path": "crops/chromium-replacement-AUDIT-M-390-100.png",
+      "sha256": "e6a548e207abec0a199e7d293d6460ef65066608f7649c176fcc7b2da39e282b",
+      "bytes": 59070
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-week-context-390-200.png",
+      "sha256": "86111ff9a2ced618698bbea58667a2db4b6d31c6d15a946614e4057825880171",
+      "bytes": 78970
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-availability.png",
+      "sha256": "b05cd26cfacbe6b9e517ae4dd21212325366a4b96b4479a6c7231f283690acda",
+      "bytes": 71797
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-QAOWNER-1440-200-summary.png",
+      "sha256": "41d58f9388bf8592a0ee34564f9dce699049f6ee95a58e8830c919fd6433b6dc",
+      "bytes": 166342
+    },
+    {
+      "path": "crops/webkit-IS-P4-11-AUDIT-M-1440-100-returned.png",
+      "sha256": "f24c7e00688d34fb1daa01c21e7bf279feed3b4d98f790f6730e77e43f90d77d",
+      "bytes": 137575
+    },
+    {
+      "path": "crops/chromium-tabs-390x844-4.png",
+      "sha256": "c9c1e5dd90f94a6796d21b5d8928e92b0fd100aa3fb5fb130b54ff1df588d47f",
+      "bytes": 63256
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-week-context-390-200.png",
+      "sha256": "eda3bed060655b71c640b4bb9d280f411e2d00ce7fba9bc77f963c623898967a",
+      "bytes": 60439
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-notifications.png",
+      "sha256": "f483670b0a8d5979c593d8cdab1bfc16586d8980ca7c9097d84403a514217529",
+      "bytes": 62442
+    },
+    {
+      "path": "crops/chromium-replacement-AUDIT-M-1440-200.png",
+      "sha256": "d9bd0d818b758cf4febe6d09d4ac9e0ef713aedcd1ca5e42fcac7a3646bc304e",
+      "bytes": 134481
+    },
+    {
+      "path": "crops/webkit-IS-WA-12-QAOWNER-390-100-names-corrected.png",
+      "sha256": "2af5e9be204ec7d5159f193e1509441ed3a7262ef5e94898cfdb95b6e27760f2",
+      "bytes": 62491
+    },
+    {
+      "path": "crops/chromium-replacement-AUDIT-M-390-200.png",
+      "sha256": "7471809ca2efd2f6e138675c481c9c149ead8043d7ee2798ed9c78aa24cff73a",
+      "bytes": 60086
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-availability.png",
+      "sha256": "d92380250e56556cdd147f30f34f0d368be8c2dccb7fb7d025769b8d4253492b",
+      "bytes": 61835
+    },
+    {
+      "path": "crops/chromium-replacement-QAOWNER-390-200.png",
+      "sha256": "1f0d5c085c72f72ad4d97e85a491dbde5f982020742b00d3f50d02cbe9e822ca",
+      "bytes": 59978
+    },
+    {
+      "path": "crops/chromium-IS-WA-12-AUDIT-M-390-100-names.png",
+      "sha256": "c5709d1b9fd617584f77132d86ce328dc3aaa9b037109c75b24d3b24d1cb0fda",
+      "bytes": 47066
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-coverage.png",
+      "sha256": "24c839ed4ba28993f49f40696621442033b71308d3e77fb250439105d6c1c8dd",
+      "bytes": 68975
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-QAOWNER-320-200-summary.png",
+      "sha256": "628fefec59fd869d95fd2dab9e09f55bb52027b224c7cfb9bec054fd83985d5c",
+      "bytes": 59010
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-home.png",
+      "sha256": "5ef039eddcc8327c7be91452050158259c77f5e8bef3480c55bb4850131675c7",
+      "bytes": 82433
+    },
+    {
+      "path": "crops/chromium-tabs-390x844-1.png",
+      "sha256": "c9c1e5dd90f94a6796d21b5d8928e92b0fd100aa3fb5fb130b54ff1df588d47f",
+      "bytes": 63256
+    },
+    {
+      "path": "crops/chromium-IS-WA-12-QAOWNER-390-100-names-corrected.png",
+      "sha256": "8e0a8c8c22317c9b083474f809f57396e76148073fb69aa5e7559fc8ce352f69",
+      "bytes": 47520
+    },
+    {
+      "path": "crops/webkit-tabs-320x844-8.png",
+      "sha256": "a532aee769328dca58fcb64c147b93bc4555f00ba72661c364c05d884fb2a2e1",
+      "bytes": 70266
+    },
+    {
+      "path": "crops/webkit-replacement-QAOWNER-320-200.png",
+      "sha256": "d9cf7367c84c7fedfde08ee3b85e068267f0b81eaf5372a627e12d543e1944c0",
+      "bytes": 66032
+    },
+    {
+      "path": "crops/webkit-replacement-AUDIT-M-390-100.png",
+      "sha256": "bb228af2164cce58df67e928a5189389b436524e99bdc753e8e62fc5700e3433",
+      "bytes": 78278
+    },
+    {
+      "path": "crops/chromium-P3-ST-01-payroll-qa-a-320-100-loading.png",
+      "sha256": "e530aca38969c29dc0b801dce3976284a250585c980236b119c150b998bb1175",
+      "bytes": 71917
+    },
+    {
+      "path": "crops/webkit-tabs-844x390-9.png",
+      "sha256": "67a687ea4e7aad77415db40a6c75284e5b55cac605e6d369de162470f4cccf28",
+      "bytes": 61420
+    },
+    {
+      "path": "crops/chromium-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-320-200-pending.png",
+      "sha256": "a7ce4739206002498a6fbd8e48aa56d94eb5dd190712f1c29eb7e5d9b2c4af45",
+      "bytes": 61840
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-shift-block.png",
+      "sha256": "11dcbe59b65b1f4652b64c24ce8fe2d541e01dd7db47af63610f54921cfc77ef",
+      "bytes": 57327
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-availability.png",
+      "sha256": "0dc9054839d252be5a947ae0c048c12fa373700d04069ceb85614332b40722b6",
+      "bytes": 53435
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-coverage.png",
+      "sha256": "0bee4c614d9114e834a2a3a443d73b32298c146208d1d5b11bb015784b026692",
+      "bytes": 53168
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-home.png",
+      "sha256": "20821c11b43e5daf52e6d18f7dcc752fe44ef207b534a606138fd5ed2341326e",
+      "bytes": 79972
+    },
+    {
+      "path": "crops/webkit-replacement-AUDIT-M-320-100.png",
+      "sha256": "21d5aa41e86814049979f0a59d2f130ed0aadeff9527de1a6911b7c23d8fb116",
+      "bytes": 70245
+    },
+    {
+      "path": "crops/webkit-tabs-390x844-10.png",
+      "sha256": "59704562fffb8278af4d64ee8e6c131ce8db41b428c8915efceb212917483822",
+      "bytes": 80101
+    },
+    {
+      "path": "crops/webkit-replacement-AUDIT-M-1440-200.png",
+      "sha256": "3cd4eebdab76101fc994f934892a5f29d91f9e9790f5a893ba57348de3c43626",
+      "bytes": 173493
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-QAOWNER-390-200-summary.png",
+      "sha256": "58439c32c9034ee5e5586b8d48988c65b501a8b5d48edecb4c6707eb08935d00",
+      "bytes": 62723
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-home.png",
+      "sha256": "f9003437445bfa82021b7ffee7e7a62d7485c7c034f5855fe4130bc673cf2fcd",
+      "bytes": 61425
+    },
+    {
+      "path": "crops/chromium-replacement-AUDIT-M-1440-100.png",
+      "sha256": "441bd951c670c6ee0db69680a155bddc7293184c352c5efb80bb98b58a6a55cf",
+      "bytes": 91658
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-notifications.png",
+      "sha256": "61bb6d9c00e85196a747ea43fb503c0971ee22475f6cdbf2d677fc32360e3d94",
+      "bytes": 53371
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-home.png",
+      "sha256": "701398857ad64cfe1620f3053acdad4a8f5e6b14bf9cc69beaafdb10f1a359d4",
+      "bytes": 82915
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-manager-shift-block.png",
+      "sha256": "9d1520bb7ef6c9d4a77796d9e1063a7103b6d2a84e751d8f3d2d3b1f8b8a8eb7",
+      "bytes": 83459
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-availability.png",
+      "sha256": "1b8c8910c8f3ccac27d2e77ecc89d89ef23fec46813017f03cd5eae35c6bd0dc",
+      "bytes": 76864
+    },
+    {
+      "path": "crops/webkit-IS-WA-12-AUDIT-M-390-100-names.png",
+      "sha256": "63a7a49557637fd32e87f5fac35bf595912409966f0ae47837e9bc07fc6add7c",
+      "bytes": 61147
+    },
+    {
+      "path": "crops/webkit-replacement-QAOWNER-390-100.png",
+      "sha256": "a97cdc30f77f0fc0dcf21d29f230cf3e69e825f0b8c1da60764f4216d87dbed3",
+      "bytes": 79585
+    },
+    {
+      "path": "crops/webkit-P3-ST-01-payroll-qa-b-320-100-ready.png",
+      "sha256": "d03cd1c7b74b1729b5babe93a91e2d3ef094b93403d877977884803f4895d82d",
+      "bytes": 79493
+    },
+    {
+      "path": "crops/chromium-IS-WA-12-AUDIT-M-390-100-names-corrected.png",
+      "sha256": "c5709d1b9fd617584f77132d86ce328dc3aaa9b037109c75b24d3b24d1cb0fda",
+      "bytes": 47066
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-notifications.png",
+      "sha256": "ec46d0504c152f8691fbc227a4ec2e4f2a30ae7a791cd451c34ca753b3499b34",
+      "bytes": 83373
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-notifications.png",
+      "sha256": "45f91e188448df1a625576ec5857fe27289a67179e2d839344335b7144fd7a29",
+      "bytes": 60134
+    },
+    {
+      "path": "crops/webkit-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-390-200-gap.png",
+      "sha256": "9d67ac1471a46a4f0c0dd606d65338bf65b7f10e1500d180e32418a39da2b0e1",
+      "bytes": 89355
+    },
+    {
+      "path": "crops/webkit-replacement-QAOWNER-390-200.png",
+      "sha256": "1c8815c5079a589e8b66ab185860f9942a29356349990d2ddeeef95a8603ebf1",
+      "bytes": 73547
+    },
+    {
+      "path": "crops/chromium-P3-ST-01-payroll-qa-b-320-100-ready.png",
+      "sha256": "90663c8febb0e541aa9e48fadf070dfac3f9844fb80ddf305346791194094407",
+      "bytes": 73597
+    },
+    {
+      "path": "crops/webkit-TC-P4-25-1440.png",
+      "sha256": "714d9e8d4ab7f1e73f04cd49e007aeac9dab0b3eeb040188e258048de8c0e3ae",
+      "bytes": 134751
+    },
+    {
+      "path": "crops/chromium-tabs-844x390-3.png",
+      "sha256": "dc89fe8020919b9fd6d25e187be32c157f2cd691b82b27492cb2a64beae5a6d6",
+      "bytes": 45163
+    },
+    {
+      "path": "crops/webkit-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-320-200-gap.png",
+      "sha256": "2996282ac1a841710817f397a176dea8708b68a23f03b5024633a81c2b6f215c",
+      "bytes": 78038
+    },
+    {
+      "path": "crops/webkit-IS-WA-12-QAOWNER-390-100-names.png",
+      "sha256": "3cde4c57e05002e86ac8d437177548faed137008db582f760b959419952be8dc",
+      "bytes": 61627
+    },
+    {
+      "path": "crops/webkit-replacement-AUDIT-M-390-200.png",
+      "sha256": "1c8815c5079a589e8b66ab185860f9942a29356349990d2ddeeef95a8603ebf1",
+      "bytes": 73547
+    },
+    {
+      "path": "crops/chromium-replacement-QAOWNER-320-200.png",
+      "sha256": "b0f7bac9f2473fb9d6e38f236b5b47607ebc1ab36a9ed2d96c27f279aa6a4848",
+      "bytes": 52665
+    },
+    {
+      "path": "crops/webkit-replacement-AUDIT-M-320-200.png",
+      "sha256": "d9cf7367c84c7fedfde08ee3b85e068267f0b81eaf5372a627e12d543e1944c0",
+      "bytes": 66032
+    },
+    {
+      "path": "crops/chromium-replacement-QAOWNER-1440-100.png",
+      "sha256": "a2692ee97da78b001b31933462252c45f8d308bfdfc2f954ffff8366d7f1d72a",
+      "bytes": 91579
+    },
+    {
+      "path": "crops/chromium-IS-P4-11-QAOWNER-1440-100-returned.png",
+      "sha256": "23f934793c208b09e65aacb99720a06661e5a6d18c54257ef7a7a3c0c194cc06",
+      "bytes": 110860
+    },
+    {
+      "path": "crops/chromium-tabs-320x844-2.png",
+      "sha256": "f8ff17ab8293134b7bf5c8d1e190f999f3e5b710c197a99e7fe4b63153380f64",
+      "bytes": 57080
+    },
+    {
+      "path": "crops/webkit-tabs-390x844-7.png",
+      "sha256": "59704562fffb8278af4d64ee8e6c131ce8db41b428c8915efceb212917483822",
+      "bytes": 80101
+    },
+    {
+      "path": "crops/webkit-IS-WA-12-callout-AUDIT-E-390-100-callout-name.png",
+      "sha256": "cd779375496b90a50b6f9e4467a70e75f670ce965ad66581fd8eb590663c7108",
+      "bytes": 82211
+    },
+    {
+      "path": "crops/webkit-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-320-200-pending.png",
+      "sha256": "ed9ff17eeeda03394bd1dcc23d05927a37dc4c522ab2d335843ee83eeb2973a2",
+      "bytes": 76936
+    },
+    {
+      "path": "crops/webkit-replacement-QAOWNER-320-100.png",
+      "sha256": "21d5aa41e86814049979f0a59d2f130ed0aadeff9527de1a6911b7c23d8fb116",
+      "bytes": 70245
+    },
+    {
+      "path": "crops/ci-attendance-label-scope.png",
+      "sha256": "71e1be93c2bbc400a9c8edf8f95cb3eb90e0e4cb286981ef4667e8966eb7b5c1",
+      "bytes": 116350
+    },
+    {
+      "path": "crops/chromium-replacement-QAOWNER-1440-200.png",
+      "sha256": "9b1edfe3f78b60b41ef773b146c9110080dfe218b910d8bf45cdaedb72c2a6b2",
+      "bytes": 134725
+    },
+    {
+      "path": "crops/chromium-TC-P4-25-1440.png",
+      "sha256": "ecbc4666b96a91c3befe222205f769c0a7bc11743a76762c4eb5dfac71306869",
+      "bytes": 107109
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-notifications.png",
+      "sha256": "61bb6d9c00e85196a747ea43fb503c0971ee22475f6cdbf2d677fc32360e3d94",
+      "bytes": 53371
+    },
+    {
+      "path": "crops/chromium-replacement-AUDIT-M-320-100.png",
+      "sha256": "6021f9aaa27218360460df677f1e8d6bfe008f056d64bfb288f1585a66a7f7c3",
+      "bytes": 54782
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-QAOWNER-1440-200-gap.png",
+      "sha256": "b74f6be531ba51e43a9f087b0bfada9f28ab5cf5c2d73c53c7fe5749e3623e7e",
+      "bytes": 112367
+    },
+    {
+      "path": "crops/chromium-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-320-200-gap.png",
+      "sha256": "1f926ed6f2ffa8bf06040d3258c4c37f4ec60b914de2c42b6f5f27ba1b223a06",
+      "bytes": 61911
+    },
+    {
+      "path": "crops/webkit-P3-ST-01-payroll-qa-b-320-100-loading.png",
+      "sha256": "0a0e09ee751fff93d8d0488eceea38e5e8195451c4057dfc73bd85576373445f",
+      "bytes": 74880
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-QAOWNER-1440-200-summary.png",
+      "sha256": "747bf82bb6d5f14ee4e0ea5a823fbadf0a60d2a368d0c3612c9a1695e8152612",
+      "bytes": 126729
+    },
+    {
+      "path": "crops/webkit-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-390-200-pending.png",
+      "sha256": "733003b3d6b50c57ad6d491252079276c2d7e76d2bda99419dc577d080ee6dbb",
+      "bytes": 96236
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-QAOWNER-320-200-gap.png",
+      "sha256": "0304e6e91cef924bcb48bc0a26b6b5ae4505125cc19bef798a2cfd0245edcc89",
+      "bytes": 62250
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-QAOWNER-390-200-gap.png",
+      "sha256": "b535d13f11f752950b0d034b2be7c04d0395117bc18e0592b48f7e32184fec2d",
+      "bytes": 52956
+    },
+    {
+      "path": "crops/webkit-IS-P4-11-QAOWNER-1440-100-returned.png",
+      "sha256": "fc7436b29f31a16854652fa9f020d3f789e1d732d24026376e1856bbe56353ca",
+      "bytes": 138061
+    },
+    {
+      "path": "crops/chromium-IS-WA-12-QAOWNER-390-100-new-employee-names.png",
+      "sha256": "be94dcf810d1656a6bc3ff3fb2bcdd40a950e8a365c29c474d40b832ce837cf9",
+      "bytes": 41799
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-manager-shift-block.png",
+      "sha256": "60d514f7fd2de77258ce1399786547f84a0adbf60439a19be1d421ce28b4f01d",
+      "bytes": 58964
+    },
+    {
+      "path": "crops/webkit-P3-ST-01-payroll-qa-a-320-100-loading.png",
+      "sha256": "222476ae4e87b26457ed51dd83ac9fadafb60865699ec1154d22eec75c146814",
+      "bytes": 76870
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-QAOWNER-1440-200-gap.png",
+      "sha256": "a6115bf7821952c648ae9bdf985dacf2010d41729b29a8d79165af28641608c9",
+      "bytes": 144670
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-shift-block.png",
+      "sha256": "17348ce3c8374b4e07be3147b58c72b8fdf607d5e0495198a29915e74f6e0684",
+      "bytes": 74486
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-QAOWNER-390-200-summary.png",
+      "sha256": "71242084e84d8c04f74b8be98667de19e5dda224f6fc4e61f8ebaa34dca0bf1b",
+      "bytes": 49379
+    },
+    {
+      "path": "crops/webkit-IS-WA-12-AUDIT-M-390-100-names-corrected.png",
+      "sha256": "63a7a49557637fd32e87f5fac35bf595912409966f0ae47837e9bc07fc6add7c",
+      "bytes": 61147
+    },
+    {
+      "path": "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-availability.png",
+      "sha256": "fa349981aa62570a7d19de1cc868e3269cb1d94c6fc735f446ffcf8bfbd5177e",
+      "bytes": 66545
+    },
+    {
+      "path": "crops/chromium-TC-WA-3-QAOWNER-320-200-gap.png",
+      "sha256": "c94354047fdc5f0ea018da78d0e79e6fa477644ed99fdb035614045be9c7b1d5",
+      "bytes": 50681
+    },
+    {
+      "path": "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-home.png",
+      "sha256": "84e6e44938809db44f78a8682c09ca2131b27ad2ed5218e625ee077cc210400f",
+      "bytes": 67374
+    },
+    {
+      "path": "crops/chromium-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-390-200-pending.png",
+      "sha256": "4623be3b30b35e2e9d39b0e65bf9b8a7a1902d03d6ede195d8b2955325b39460",
+      "bytes": 68737
+    },
+    {
+      "path": "crops/webkit-TC-WA-3-QAOWNER-390-200-gap.png",
+      "sha256": "ef4c0487e7768fddbcedd25928d09dd82c8b3093ee3f12fae0c632416b82a383",
+      "bytes": 67647
+    },
+    {
+      "path": "ci-artifacts/phase-e-failure.json",
+      "sha256": "21ef71dc64b5404039890a72020566cc00d6603bc57be645f2ede60781b88d77",
+      "bytes": 561
+    },
+    {
+      "path": "ci-artifacts/phase-e-source-manifest.json",
+      "sha256": "1ea76dc0fc73a43345445e40f49a5f1dfd33ec0a4641208e96eaa2cf9ee5fa26",
+      "bytes": 173354
+    },
+    {
+      "path": "ci-artifacts/attendance-report.json",
+      "sha256": "127cbdba0871140deb288524ebdf392aec9eefe89dd4cc86ed417912dfa3e116",
+      "bytes": 1504
+    },
+    {
+      "path": "ci-artifacts/phase-e-home-failure.png",
+      "sha256": "3f997a55f055fd88ef6afa691016c04d0dc93d31d8ad249d2431f8d86e63f4b8",
+      "bytes": 237484
+    },
+    {
+      "path": "ci-artifacts/attendance-source-manifest.json",
+      "sha256": "1ea76dc0fc73a43345445e40f49a5f1dfd33ec0a4641208e96eaa2cf9ee5fa26",
+      "bytes": 173354
+    }
+  ]
+}

@@ -1,0 +1,486 @@
+{
+  "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "disposition": "Original raw assertions are unchanged. The initial desktop band-edge assertion was outside AL-WA-10: its published criterion is 720px reading-card width. This derived judgment uses the retained measured boxes and that exact criterion; phone criteria are unchanged.",
+  "rows": [
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 100,
+      "card": {
+        "x": 16,
+        "y": 284,
+        "width": 288,
+        "height": 339,
+        "top": 284,
+        "right": 304,
+        "bottom": 623,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-QAOWNER-320-100.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "card": {
+        "x": 16,
+        "y": 520.515625,
+        "width": 288,
+        "height": 877,
+        "top": 520.515625,
+        "right": 304,
+        "bottom": 1397.515625,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-QAOWNER-320-200.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 100,
+      "card": {
+        "x": 16,
+        "y": 260,
+        "width": 358,
+        "height": 339,
+        "top": 260,
+        "right": 374,
+        "bottom": 599,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-QAOWNER-390-100.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "card": {
+        "x": 16,
+        "y": 450.015625,
+        "width": 358,
+        "height": 789,
+        "top": 450.015625,
+        "right": 374,
+        "bottom": 1239.015625,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-QAOWNER-390-200.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 100,
+      "card": {
+        "x": 476,
+        "y": 289,
+        "width": 720,
+        "height": 339,
+        "top": 289,
+        "right": 1196,
+        "bottom": 628,
+        "left": 476
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-QAOWNER-1440-100.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 200,
+      "card": {
+        "x": 476,
+        "y": 355,
+        "width": 720,
+        "height": 493,
+        "top": 355,
+        "right": 1196,
+        "bottom": 848,
+        "left": 476
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-QAOWNER-1440-200.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 320,
+      "text": 100,
+      "card": {
+        "x": 16,
+        "y": 284,
+        "width": 288,
+        "height": 339,
+        "top": 284,
+        "right": 304,
+        "bottom": 623,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-AUDIT-M-320-100.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 320,
+      "text": 200,
+      "card": {
+        "x": 16,
+        "y": 520.515625,
+        "width": 288,
+        "height": 877,
+        "top": 520.515625,
+        "right": 304,
+        "bottom": 1397.515625,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-AUDIT-M-320-200.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 100,
+      "card": {
+        "x": 16,
+        "y": 260,
+        "width": 358,
+        "height": 339,
+        "top": 260,
+        "right": 374,
+        "bottom": 599,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-AUDIT-M-390-100.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 200,
+      "card": {
+        "x": 16,
+        "y": 450.015625,
+        "width": 358,
+        "height": 789,
+        "top": 450.015625,
+        "right": 374,
+        "bottom": 1239.015625,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-AUDIT-M-390-200.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 100,
+      "card": {
+        "x": 476,
+        "y": 289,
+        "width": 720,
+        "height": 339,
+        "top": 289,
+        "right": 1196,
+        "bottom": 628,
+        "left": 476
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-AUDIT-M-1440-100.png"
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 200,
+      "card": {
+        "x": 476,
+        "y": 355,
+        "width": 720,
+        "height": 493,
+        "top": 355,
+        "right": 1196,
+        "bottom": 848,
+        "left": 476
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/chromium-replacement-AUDIT-M-1440-200.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 100,
+      "card": {
+        "x": 16,
+        "y": 284,
+        "width": 288,
+        "height": 339,
+        "top": 284,
+        "right": 304,
+        "bottom": 623,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-QAOWNER-320-100.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "card": {
+        "x": 16,
+        "y": 568.515625,
+        "width": 288,
+        "height": 877,
+        "top": 568.515625,
+        "right": 304,
+        "bottom": 1445.515625,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-QAOWNER-320-200.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 100,
+      "card": {
+        "x": 16,
+        "y": 260,
+        "width": 358,
+        "height": 339,
+        "top": 260,
+        "right": 374,
+        "bottom": 599,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-QAOWNER-390-100.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "card": {
+        "x": 16,
+        "y": 450.015625,
+        "width": 358,
+        "height": 789,
+        "top": 450.015625,
+        "right": 374,
+        "bottom": 1239.015625,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-QAOWNER-390-200.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 100,
+      "card": {
+        "x": 476,
+        "y": 289,
+        "width": 720,
+        "height": 339,
+        "top": 289,
+        "right": 1196,
+        "bottom": 628,
+        "left": 476
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-QAOWNER-1440-100.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 200,
+      "card": {
+        "x": 476,
+        "y": 355,
+        "width": 720,
+        "height": 493,
+        "top": 355,
+        "right": 1196,
+        "bottom": 848,
+        "left": 476
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-QAOWNER-1440-200.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 320,
+      "text": 100,
+      "card": {
+        "x": 16,
+        "y": 284,
+        "width": 288,
+        "height": 339,
+        "top": 284,
+        "right": 304,
+        "bottom": 623,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-AUDIT-M-320-100.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 320,
+      "text": 200,
+      "card": {
+        "x": 16,
+        "y": 568.515625,
+        "width": 288,
+        "height": 877,
+        "top": 568.515625,
+        "right": 304,
+        "bottom": 1445.515625,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-AUDIT-M-320-200.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 100,
+      "card": {
+        "x": 16,
+        "y": 260,
+        "width": 358,
+        "height": 339,
+        "top": 260,
+        "right": 374,
+        "bottom": 599,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-AUDIT-M-390-100.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 200,
+      "card": {
+        "x": 16,
+        "y": 450.015625,
+        "width": 358,
+        "height": 789,
+        "top": 450.015625,
+        "right": 374,
+        "bottom": 1239.015625,
+        "left": 16
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-AUDIT-M-390-200.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 100,
+      "card": {
+        "x": 476,
+        "y": 289,
+        "width": 720,
+        "height": 339,
+        "top": 289,
+        "right": 1196,
+        "bottom": 628,
+        "left": 476
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-AUDIT-M-1440-100.png"
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 200,
+      "card": {
+        "x": 476,
+        "y": 355,
+        "width": 720,
+        "height": 493,
+        "top": 355,
+        "right": 1196,
+        "bottom": 848,
+        "left": 476
+      },
+      "AL-WA-10": true,
+      "TC-WA-3": true,
+      "measuredSeparatorAtoms": 1,
+      "crop": "crops/webkit-replacement-AUDIT-M-1440-200.png"
+    }
+  ]
+}

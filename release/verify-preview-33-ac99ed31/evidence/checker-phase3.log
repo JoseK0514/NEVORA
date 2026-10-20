@@ -1,0 +1,7 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+FAIL chromium AUDIT-E 1440 100% /app/availability?week=2026-10-26 small=p. «Weekly submission» 12px; span. «These hours apply to this sche» 12px
+FAIL chromium AUDIT-E 1440 200% /app/availability?week=2026-10-26 small=p. «Weekly submission» 12px; span. «These hours apply to this sche» 12px
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+FAIL webkit AUDIT-E 1440 100% /app/availability?week=2026-10-26 small=p. «Weekly submission» 12px; span. «These hours apply to this sche» 12px
+FAIL webkit AUDIT-E 1440 200% /app/availability?week=2026-10-26 small=p. «Weekly submission» 12px; span. «These hours apply to this sche» 12px
+44/48 passed · /workspace/nevora-validation/preview/checks/2026-10-20T00-50-44-184Z.json

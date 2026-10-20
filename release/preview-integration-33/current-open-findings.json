@@ -16,7 +16,13 @@
       "candidateCommit": "e7ee28a23347f20c54bb7dafa5c2cb6ee271884b",
       "candidateFixStatus": "a216 held4/4+paint6/6PASS; no independent closure",
       "candidateFixReceipt": "candidate-a21650d/source-and-findings.json",
-      "newerBoundedEvidence": "candidate-a21650d-repairs/README.md"
+      "newerBoundedEvidence": "candidate-a21650d-repairs/README.md",
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "Company Save88\u219288px at320/390/200 inbothengines; one intercepted double-Enter request.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
+      }
     },
     {
       "id": "ST-P4-13",
@@ -33,7 +39,13 @@
       "measurement": "Employee320/200 next-weekAvailability LastupdatedOct19 splits over40px",
       "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/72d6196951ff88173583.json",
       "candidateCommit": "560f2e8e",
-      "candidateFixStatus": "Availability two date wrappers committed/pushed; type/lint pass; affected browser pending; My time date scope stays open"
+      "candidateFixStatus": "Availability two date wrappers committed/pushed; type/lint pass; affected browser pending; My time date scope stays open",
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "Partly fixed: Last updated date whole; context Nov 1 still splits at390/200 in both engines.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
+      }
     },
     {
       "id": "TC-P3-34",
@@ -45,6 +57,12 @@
         "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
         "coordinatorCommit": "4f666237",
         "status": "adopted owner source repair; fresh browser proof pending, no independent closure"
+      },
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "Checked Notifications title deliberately hyphenates at320/200; no title overflow.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
       }
     },
     {
@@ -58,6 +76,12 @@
         "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
         "coordinatorCommit": "4f666237",
         "status": "adopted owner source repair; fresh browser proof pending, no independent closure"
+      },
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "Selected controls pass text reflow and eight resize/rotation traces.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
       }
     },
     {
@@ -70,6 +94,12 @@
         "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
         "coordinatorCommit": "4f666237",
         "status": "adopted owner source repair; fresh browser proof pending, no independent closure"
+      },
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "Checked Home atoms pass eight Employee/Lead samples at320/390/200.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
       }
     },
     {
@@ -82,7 +112,13 @@
       "candidateCommit": "2ddb833f7fa34d4aa4ff62403aca51cbeaced287",
       "candidateFixStatus": "a216 all native pending painted frames>=5.1389/opacity1/no active color transition PASS; no independent closure",
       "candidateFixReceipt": "candidate-a21650d/source-and-findings.json",
-      "newerBoundedEvidence": "candidate-a21650d-repairs/README.md"
+      "newerBoundedEvidence": "candidate-a21650d-repairs/README.md",
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "Four painted transitions meet minimum5.13895:1.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
+      }
     },
     {
       "id": "P3-ST-01",
@@ -101,6 +137,12 @@
         "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
         "coordinatorCommit": "4f666237",
         "status": "adopted owner source repair; fresh browser proof pending, no independent closure"
+      },
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "Compact read-arrival criterion passes: 155\u2192155px and Chromium CLS0.000567; WebKit154.5\u2192154.5px, CLSunsupported.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
       }
     },
     {
@@ -113,7 +155,13 @@
       "candidateFixReceipt": "candidate-a21650d/source-and-findings.json",
       "patch": "later-unpublished-patches/46-AL-WA-10.patch",
       "candidateCommit": "0caadb3505342ef331e2adeb141c02eafcc13f96",
-      "candidateFixStatus": "a216 unchangedchecker24/24+canonicalgeometry24/24PASS, zero loading gaps; no independent closure"
+      "candidateFixStatus": "a216 unchangedchecker24/24+canonicalgeometry24/24PASS, zero loading gaps; no independent closure",
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "24 genuine replacement samples meet original phone-gutter/720px-desktop criteria.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
+      }
     },
     {
       "id": "TC-WA-3",
@@ -126,7 +174,13 @@
       "candidateCommits": [
         "08159520",
         "0f0cd372"
-      ]
+      ],
+      "latestBoundedEvidence": {
+        "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+        "result": "Partly fixed: Add shift/Coverage/replacement pass; shared Manager ShiftBlock still starts line with \u00b78h at390/200 inbothengines.",
+        "report": "../verify-preview-33-ac99ed31/README.md",
+        "independentFullClosure": false
+      }
     },
     {
       "id": "TC-P3-25",
@@ -241,6 +295,15 @@
       "report": "candidate-a21650d-repairs/README.md",
       "commandSafety": "one held command/same body and item retry all12PASS; no forwarded mutations",
       "notAFinding": "stronger exact status-paragraph assertion excluded from independent criterion"
+    },
+    {
+      "id": "TC-P4-25",
+      "owner": "Desktop",
+      "severity": "P2",
+      "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "status": "new measured open",
+      "measurement": "Availability context label and explanation 12px at1440/100 and200, both engines; desktop floor14px.",
+      "report": "../verify-preview-33-ac99ed31/owners/desktop.md"
     }
   ],
   "additionalUnderInvestigation": [
@@ -275,5 +338,17 @@
     "closureVerified": true,
     "report": "combined-15a0fcd-scoped/scoped-completion.json",
     "classification": "eightintentionalcoldlinkcontractobservations + eightTC-P3-25; fourcoldrowsalsoP3-ST-01; not16newfindings"
+  },
+  "latestBoundedRecheck": {
+    "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+    "report": "../verify-preview-33-ac99ed31/README.md",
+    "observedOpen": [
+      "TC-P3-09",
+      "TC-WA-3",
+      "TC-P4-25"
+    ],
+    "fullExitZeroCount": 0,
+    "scope": "Named-ID and bounded regression checks only; historical unrelated statuses retained",
+    "updatedAt": "2026-10-20T01:06:49.818883+00:00"
   }
 }

@@ -1,0 +1,1808 @@
+{
+  "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "scope": "Named-ID regression rechecks; full five-area exits remain open",
+  "records": [
+    {
+      "engine": "chromium",
+      "name": "IS-WA-12",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Exact accessible name: Access role"
+        },
+        {
+          "ok": false,
+          "message": "Access role retains help description"
+        },
+        {
+          "ok": true,
+          "message": "Exact accessible name: Status"
+        },
+        {
+          "ok": true,
+          "message": "Status retains help description"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - paragraph: Employee · Active\n  - heading \"Alexandra Rivera\" [level=1]\n  - paragraph: Main Office · 787-555-0101 · audit-e@example.invalid\n  - tablist \"Employee profile sections\":\n    - tab \"Details\" [selected]\n    - tab \"Scheduling\"\n  - tabpanel \"Details\":\n    - region \"Employee details\":\n      - heading \"Employee details\" [level=2]\n      - group:\n        - text: Employee ID AUDIT-E Employee IDs stay the same after they’re created. First name\n        - textbox \"First name\": Alexandra\n        - text: Last name\n        - textbox \"Last name\": Rivera\n        - text: Phone\n        - textbox \"Phone\":\n          - /placeholder: 787-555-1234\n          - text: 787-555-0101\n        - text: Email\n        - textbox \"Email\": audit-e@example.invalid\n        - text: Access role\n        - combobox \"Access role\":\n          - option \"Owner\"\n          - option \"Manager\"\n          - option \"Lead\"\n          - option \"Employee\" [selected]\n        - text: Primary location\n        - combobox \"Primary location\":\n          - option \"Main Office\" [selected]\n          - option \"West Office\"\n        - text: Status\n        - combobox \"Status\":\n          - option \"Active\" [selected]\n          - option \"Inactive\"\n        - text: Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\n        - button \"Save details\"\n    - heading \"Access\" [level=2]\n    - list \"Access\":\n      - listitem:\n        - link \"Clocker PIN For the shared tablet. Separate from portal sign-in.\":\n          - /url: /app/employees/AUDIT-E/clocker-pin\n      - listitem:\n        - link \"Account recovery Help them back in after you check who they are.\":\n          - /url: /app/account-recovery?employee=AUDIT-E",
+      "crops": [
+        "crops/chromium-IS-WA-12-QAOWNER-390-100-names.png"
+      ],
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "chromium",
+      "name": "IS-WA-12",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Exact accessible name: Access role"
+        },
+        {
+          "ok": false,
+          "message": "Access role retains help description"
+        },
+        {
+          "ok": true,
+          "message": "Exact accessible name: Status"
+        },
+        {
+          "ok": true,
+          "message": "Status retains help description"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - paragraph: Employee · Active\n  - heading \"Alexandra Rivera\" [level=1]\n  - paragraph: Main Office · 787-555-0101 · audit-e@example.invalid\n  - tablist \"Employee profile sections\":\n    - tab \"Details\" [selected]\n    - tab \"Scheduling\"\n  - tabpanel \"Details\":\n    - region \"Employee details\":\n      - heading \"Employee details\" [level=2]\n      - group:\n        - text: Employee ID AUDIT-E Employee IDs stay the same after they’re created. First name\n        - textbox \"First name\": Alexandra\n        - text: Last name\n        - textbox \"Last name\": Rivera\n        - text: Phone\n        - textbox \"Phone\":\n          - /placeholder: 787-555-1234\n          - text: 787-555-0101\n        - text: Email\n        - textbox \"Email\": audit-e@example.invalid\n        - text: Access role\n        - combobox \"Access role\":\n          - option \"Manager\"\n          - option \"Lead\"\n          - option \"Employee\" [selected]\n        - text: Primary location\n        - combobox \"Primary location\":\n          - option \"Main Office\" [selected]\n          - option \"West Office\"\n        - text: Status\n        - combobox \"Status\":\n          - option \"Active\" [selected]\n          - option \"Inactive\"\n        - text: Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\n        - button \"Save details\"\n    - heading \"Access\" [level=2]\n    - list \"Access\":\n      - listitem:\n        - link \"Clocker PIN For the shared tablet. Separate from portal sign-in.\":\n          - /url: /app/employees/AUDIT-E/clocker-pin\n      - listitem:\n        - link \"Account recovery Help them back in after you check who they are.\":\n          - /url: /app/account-recovery?employee=AUDIT-E",
+      "crops": [
+        "crops/chromium-IS-WA-12-AUDIT-M-390-100-names.png"
+      ],
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "chromium",
+      "name": "IS-P4-11",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Outgoing review retains selected item"
+        },
+        {
+          "ok": true,
+          "message": "Outgoing review retains filter"
+        },
+        {
+          "ok": true,
+          "message": "Back link retains item"
+        },
+        {
+          "ok": true,
+          "message": "Back link retains filter"
+        },
+        {
+          "ok": true,
+          "message": "Returned Inbox selects same row"
+        }
+      ],
+      "blocked": [],
+      "crops": [
+        "crops/chromium-IS-P4-11-QAOWNER-1440-100-returned.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "IS-P4-11",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Outgoing review retains selected item"
+        },
+        {
+          "ok": true,
+          "message": "Outgoing review retains filter"
+        },
+        {
+          "ok": true,
+          "message": "Back link retains item"
+        },
+        {
+          "ok": true,
+          "message": "Back link retains filter"
+        },
+        {
+          "ok": true,
+          "message": "Returned Inbox selects same row"
+        }
+      ],
+      "blocked": [],
+      "crops": [
+        "crops/chromium-IS-P4-11-AUDIT-M-1440-100-returned.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-P3-09-32-34-AL-47",
+      "actor": "AUDIT-E",
+      "width": 320,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "TC-P3-09: date and time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected section remains in viewport",
+          "data": {
+            "x": 138,
+            "y": 76.515625,
+            "width": 166,
+            "height": 51
+          }
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected Specific week remains visible",
+          "data": {
+            "x": 72,
+            "y": 383.515625,
+            "width": 220,
+            "height": 44
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-32: Home date/time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-34: title supplies deliberate word breaks"
+        },
+        {
+          "ok": true,
+          "message": "Notifications remains within viewport"
+        }
+      ],
+      "blocked": [],
+      "availability": {
+        "splits": [],
+        "selected": [
+          {
+            "text": "Availability",
+            "box": {
+              "x": 138,
+              "y": 76.515625,
+              "width": 166,
+              "height": 51,
+              "top": 76.515625,
+              "right": 304,
+              "bottom": 127.515625,
+              "left": 138
+            },
+            "track": {
+              "x": 16,
+              "y": 76.515625,
+              "width": 288,
+              "height": 51,
+              "top": 76.515625,
+              "right": 304,
+              "bottom": 127.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Specific week",
+            "box": {
+              "x": 72,
+              "y": 383.515625,
+              "width": 220,
+              "height": 44,
+              "top": 383.515625,
+              "right": 292,
+              "bottom": 427.515625,
+              "left": 72
+            },
+            "track": {
+              "x": 0,
+              "y": 379.515625,
+              "width": 320,
+              "height": 52,
+              "top": 379.515625,
+              "right": 320,
+              "bottom": 431.515625,
+              "left": 0
+            }
+          }
+        ]
+      },
+      "crops": [
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-availability.png",
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-home.png",
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-notifications.png"
+      ],
+      "home": {
+        "splits": []
+      },
+      "title": {
+        "text": "Notifi­ca­tions",
+        "softHyphen": true,
+        "box": {
+          "x": 16,
+          "y": 88.515625,
+          "width": 288,
+          "height": 144
+        }
+      },
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-P3-09-32-34-AL-47",
+      "actor": "AUDIT-E",
+      "width": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": false,
+          "message": "TC-P3-09: date and time atoms do not split",
+          "data": [
+            {
+              "text": "Nov 1",
+              "selector": "strong.",
+              "rects": [
+                {
+                  "x": 263.796875,
+                  "y": 539.015625,
+                  "width": 70.609375,
+                  "height": 49,
+                  "top": 539.015625,
+                  "right": 334.40625,
+                  "bottom": 588.015625,
+                  "left": 263.796875
+                },
+                {
+                  "x": 100,
+                  "y": 599.015625,
+                  "width": 25.203125,
+                  "height": 49,
+                  "top": 599.015625,
+                  "right": 125.203125,
+                  "bottom": 648.015625,
+                  "left": 100
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected section remains in viewport",
+          "data": {
+            "x": 208,
+            "y": 78.015625,
+            "width": 166,
+            "height": 51
+          }
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected Specific week remains visible",
+          "data": {
+            "x": 142,
+            "y": 385.015625,
+            "width": 220,
+            "height": 44
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-32: Home date/time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-34: title supplies deliberate word breaks"
+        },
+        {
+          "ok": true,
+          "message": "Notifications remains within viewport"
+        }
+      ],
+      "blocked": [],
+      "availability": {
+        "splits": [
+          {
+            "text": "Nov 1",
+            "selector": "strong.",
+            "rects": [
+              {
+                "x": 263.796875,
+                "y": 539.015625,
+                "width": 70.609375,
+                "height": 49,
+                "top": 539.015625,
+                "right": 334.40625,
+                "bottom": 588.015625,
+                "left": 263.796875
+              },
+              {
+                "x": 100,
+                "y": 599.015625,
+                "width": 25.203125,
+                "height": 49,
+                "top": 599.015625,
+                "right": 125.203125,
+                "bottom": 648.015625,
+                "left": 100
+              }
+            ]
+          }
+        ],
+        "selected": [
+          {
+            "text": "Availability",
+            "box": {
+              "x": 208,
+              "y": 78.015625,
+              "width": 166,
+              "height": 51,
+              "top": 78.015625,
+              "right": 374,
+              "bottom": 129.015625,
+              "left": 208
+            },
+            "track": {
+              "x": 16,
+              "y": 78.015625,
+              "width": 358,
+              "height": 51,
+              "top": 78.015625,
+              "right": 374,
+              "bottom": 129.015625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Specific week",
+            "box": {
+              "x": 142,
+              "y": 385.015625,
+              "width": 220,
+              "height": 44,
+              "top": 385.015625,
+              "right": 362,
+              "bottom": 429.015625,
+              "left": 142
+            },
+            "track": {
+              "x": 0,
+              "y": 381.015625,
+              "width": 390,
+              "height": 52,
+              "top": 381.015625,
+              "right": 390,
+              "bottom": 433.015625,
+              "left": 0
+            }
+          }
+        ]
+      },
+      "crops": [
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-availability.png",
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-home.png",
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-notifications.png"
+      ],
+      "home": {
+        "splits": []
+      },
+      "title": {
+        "text": "Notifi­ca­tions",
+        "softHyphen": true,
+        "box": {
+          "x": 16,
+          "y": 90.015625,
+          "width": 358,
+          "height": 72
+        }
+      },
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-P3-09-32-34-AL-47",
+      "actor": "AUDIT-LEAD",
+      "width": 320,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "TC-P3-09: date and time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected section remains in viewport",
+          "data": {
+            "x": 138,
+            "y": 76.515625,
+            "width": 166,
+            "height": 51
+          }
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected Specific week remains visible",
+          "data": {
+            "x": 72,
+            "y": 383.515625,
+            "width": 220,
+            "height": 44
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-32: Home date/time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-34: title supplies deliberate word breaks"
+        },
+        {
+          "ok": true,
+          "message": "Notifications remains within viewport"
+        }
+      ],
+      "blocked": [],
+      "availability": {
+        "splits": [],
+        "selected": [
+          {
+            "text": "Availability",
+            "box": {
+              "x": 138,
+              "y": 76.515625,
+              "width": 166,
+              "height": 51,
+              "top": 76.515625,
+              "right": 304,
+              "bottom": 127.515625,
+              "left": 138
+            },
+            "track": {
+              "x": 16,
+              "y": 76.515625,
+              "width": 288,
+              "height": 51,
+              "top": 76.515625,
+              "right": 304,
+              "bottom": 127.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Specific week",
+            "box": {
+              "x": 72,
+              "y": 383.515625,
+              "width": 220,
+              "height": 44,
+              "top": 383.515625,
+              "right": 292,
+              "bottom": 427.515625,
+              "left": 72
+            },
+            "track": {
+              "x": 0,
+              "y": 379.515625,
+              "width": 320,
+              "height": 52,
+              "top": 379.515625,
+              "right": 320,
+              "bottom": 431.515625,
+              "left": 0
+            }
+          }
+        ]
+      },
+      "crops": [
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-availability.png",
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-home.png",
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-notifications.png"
+      ],
+      "home": {
+        "splits": []
+      },
+      "title": {
+        "text": "Notifi­ca­tions",
+        "softHyphen": true,
+        "box": {
+          "x": 16,
+          "y": 88.515625,
+          "width": 288,
+          "height": 144
+        }
+      },
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-P3-09-32-34-AL-47",
+      "actor": "AUDIT-LEAD",
+      "width": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": false,
+          "message": "TC-P3-09: date and time atoms do not split",
+          "data": [
+            {
+              "text": "Nov 1",
+              "selector": "strong.",
+              "rects": [
+                {
+                  "x": 263.796875,
+                  "y": 539.015625,
+                  "width": 70.609375,
+                  "height": 49,
+                  "top": 539.015625,
+                  "right": 334.40625,
+                  "bottom": 588.015625,
+                  "left": 263.796875
+                },
+                {
+                  "x": 100,
+                  "y": 599.015625,
+                  "width": 25.203125,
+                  "height": 49,
+                  "top": 599.015625,
+                  "right": 125.203125,
+                  "bottom": 648.015625,
+                  "left": 100
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected section remains in viewport",
+          "data": {
+            "x": 208,
+            "y": 78.015625,
+            "width": 166,
+            "height": 51
+          }
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected Specific week remains visible",
+          "data": {
+            "x": 142,
+            "y": 385.015625,
+            "width": 220,
+            "height": 44
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-32: Home date/time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-34: title supplies deliberate word breaks"
+        },
+        {
+          "ok": true,
+          "message": "Notifications remains within viewport"
+        }
+      ],
+      "blocked": [],
+      "availability": {
+        "splits": [
+          {
+            "text": "Nov 1",
+            "selector": "strong.",
+            "rects": [
+              {
+                "x": 263.796875,
+                "y": 539.015625,
+                "width": 70.609375,
+                "height": 49,
+                "top": 539.015625,
+                "right": 334.40625,
+                "bottom": 588.015625,
+                "left": 263.796875
+              },
+              {
+                "x": 100,
+                "y": 599.015625,
+                "width": 25.203125,
+                "height": 49,
+                "top": 599.015625,
+                "right": 125.203125,
+                "bottom": 648.015625,
+                "left": 100
+              }
+            ]
+          }
+        ],
+        "selected": [
+          {
+            "text": "Availability",
+            "box": {
+              "x": 208,
+              "y": 78.015625,
+              "width": 166,
+              "height": 51,
+              "top": 78.015625,
+              "right": 374,
+              "bottom": 129.015625,
+              "left": 208
+            },
+            "track": {
+              "x": 16,
+              "y": 78.015625,
+              "width": 358,
+              "height": 51,
+              "top": 78.015625,
+              "right": 374,
+              "bottom": 129.015625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Specific week",
+            "box": {
+              "x": 142,
+              "y": 385.015625,
+              "width": 220,
+              "height": 44,
+              "top": 385.015625,
+              "right": 362,
+              "bottom": 429.015625,
+              "left": 142
+            },
+            "track": {
+              "x": 0,
+              "y": 381.015625,
+              "width": 390,
+              "height": 52,
+              "top": 381.015625,
+              "right": 390,
+              "bottom": 433.015625,
+              "left": 0
+            }
+          }
+        ]
+      },
+      "crops": [
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-availability.png",
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-home.png",
+        "crops/chromium-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-notifications.png"
+      ],
+      "home": {
+        "splits": []
+      },
+      "title": {
+        "text": "Notifi­ca­tions",
+        "softHyphen": true,
+        "box": {
+          "x": 16,
+          "y": 90.015625,
+          "width": 358,
+          "height": 72
+        }
+      },
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "chromium",
+      "name": "P3-ST-01",
+      "actor": "payroll-qa-a",
+      "width": 320,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Clock card height changes at most 1px",
+          "data": {
+            "before": {
+              "x": 36,
+              "y": 467,
+              "width": 248,
+              "height": 155
+            },
+            "after": {
+              "x": 36,
+              "y": 467,
+              "width": 248,
+              "height": 155
+            }
+          }
+        },
+        {
+          "ok": true,
+          "message": "Read arrival CLS at most .01",
+          "data": 0.0005671305395206756
+        }
+      ],
+      "blocked": [],
+      "before": {
+        "x": 36,
+        "y": 467,
+        "width": 248,
+        "height": 155
+      },
+      "crops": [
+        "crops/chromium-P3-ST-01-payroll-qa-a-320-100-loading.png",
+        "crops/chromium-P3-ST-01-payroll-qa-a-320-100-ready.png"
+      ],
+      "after": {
+        "x": 36,
+        "y": 467,
+        "width": 248,
+        "height": 155
+      },
+      "cls": 0.0005671305395206756,
+      "shiftSupported": true,
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "P3-ST-01",
+      "actor": "payroll-qa-b",
+      "width": 320,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Clock card height changes at most 1px",
+          "data": {
+            "before": {
+              "x": 36,
+              "y": 467,
+              "width": 248,
+              "height": 155
+            },
+            "after": {
+              "x": 36,
+              "y": 467,
+              "width": 248,
+              "height": 155
+            }
+          }
+        },
+        {
+          "ok": true,
+          "message": "Read arrival CLS at most .01",
+          "data": 0.0005671305395206756
+        }
+      ],
+      "blocked": [],
+      "before": {
+        "x": 36,
+        "y": 467,
+        "width": 248,
+        "height": 155
+      },
+      "crops": [
+        "crops/chromium-P3-ST-01-payroll-qa-b-320-100-loading.png",
+        "crops/chromium-P3-ST-01-payroll-qa-b-320-100-ready.png"
+      ],
+      "after": {
+        "x": 36,
+        "y": 467,
+        "width": 248,
+        "height": 155
+      },
+      "cls": 0.0005671305395206756,
+      "shiftSupported": true,
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "ST-RC-PAYROLL-SAVE-01-TC-WA-16",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "before": {
+        "x": 16,
+        "y": 379.515625,
+        "width": 288,
+        "height": 88
+      },
+      "error": "locator.boundingBox: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form[data-form=company]').getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/chromium-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-320-200-gap.png"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "name": "ST-RC-PAYROLL-SAVE-01-TC-WA-16",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "before": {
+        "x": 16,
+        "y": 380.015625,
+        "width": 358,
+        "height": 88
+      },
+      "error": "locator.boundingBox: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form[data-form=company]').getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/chromium-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-390-200-gap.png"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "error": "locator.innerText: Error: strict mode violation: locator('[aria-label=\"Shift summary\"]') resolved to 2 elements:\n    1) <aside class=\"wa-split__side\" aria-label=\"Shift summary\">…</aside> aka getByRole('complementary', { name: 'Shift summary' })\n    2) <dl class=\"wa-facts\" aria-label=\"Shift summary\">…</dl> aka getByText('DayMon, Oct 26Time8:00 AM – 4')\n\nCall log:\n\u001b[2m  - waiting for locator('[aria-label=\"Shift summary\"]')\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/chromium-TC-WA-3-QAOWNER-320-200-gap.png"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "error": "locator.innerText: Error: strict mode violation: locator('[aria-label=\"Shift summary\"]') resolved to 2 elements:\n    1) <aside class=\"wa-split__side\" aria-label=\"Shift summary\">…</aside> aka getByRole('complementary', { name: 'Shift summary' })\n    2) <dl class=\"wa-facts\" aria-label=\"Shift summary\">…</dl> aka getByText('DayMon, Oct 26Time8:00 AM – 4')\n\nCall log:\n\u001b[2m  - waiting for locator('[aria-label=\"Shift summary\"]')\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/chromium-TC-WA-3-QAOWNER-390-200-gap.png"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "error": "locator.innerText: Error: strict mode violation: locator('[aria-label=\"Shift summary\"]') resolved to 2 elements:\n    1) <aside class=\"wa-split__side\" aria-label=\"Shift summary\">…</aside> aka getByRole('complementary', { name: 'Shift summary' })\n    2) <dl class=\"wa-facts\" aria-label=\"Shift summary\">…</dl> aka getByText('DayMon, Oct 26Time8:00 AM – 4')\n\nCall log:\n\u001b[2m  - waiting for locator('[aria-label=\"Shift summary\"]')\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/chromium-TC-WA-3-QAOWNER-1440-200-gap.png"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "name": "IS-WA-12",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Exact accessible name: Access role"
+        },
+        {
+          "ok": false,
+          "message": "Access role retains help description"
+        },
+        {
+          "ok": true,
+          "message": "Exact accessible name: Status"
+        },
+        {
+          "ok": true,
+          "message": "Status retains help description"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - paragraph: Employee · Active\n  - heading \"Alexandra Rivera\" [level=1]\n  - paragraph: Main Office · 787-555-0101 · audit-e@example.invalid\n  - tablist \"Employee profile sections\":\n    - tab \"Details\" [selected]\n    - tab \"Scheduling\"\n  - tabpanel \"Details\":\n    - region \"Employee details\":\n      - heading \"Employee details\" [level=2]\n      - group:\n        - text: Employee ID AUDIT-E Employee IDs stay the same after they’re created. First name\n        - textbox \"First name\": Alexandra\n        - text: Last name\n        - textbox \"Last name\": Rivera\n        - text: Phone\n        - textbox \"Phone\":\n          - /placeholder: 787-555-1234\n          - text: 787-555-0101\n        - text: Email\n        - textbox \"Email\": audit-e@example.invalid\n        - text: Access role\n        - combobox \"Access role\":\n          - option \"Owner\"\n          - option \"Manager\"\n          - option \"Lead\"\n          - option \"Employee\" [selected]\n        - text: Primary location\n        - combobox \"Primary location\":\n          - option \"Main Office\" [selected]\n          - option \"West Office\"\n        - text: Status\n        - combobox \"Status\":\n          - option \"Active\" [selected]\n          - option \"Inactive\"\n        - text: Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\n        - button \"Save details\"\n    - heading \"Access\" [level=2]\n    - list \"Access\":\n      - listitem:\n        - link \"Clocker PIN For the shared tablet. Separate from portal sign-in.\":\n          - /url: /app/employees/AUDIT-E/clocker-pin\n      - listitem:\n        - link \"Account recovery Help them back in after you check who they are.\":\n          - /url: /app/account-recovery?employee=AUDIT-E",
+      "crops": [
+        "crops/webkit-IS-WA-12-QAOWNER-390-100-names.png"
+      ],
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "name": "IS-WA-12",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Exact accessible name: Access role"
+        },
+        {
+          "ok": false,
+          "message": "Access role retains help description"
+        },
+        {
+          "ok": true,
+          "message": "Exact accessible name: Status"
+        },
+        {
+          "ok": true,
+          "message": "Status retains help description"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - paragraph: Employee · Active\n  - heading \"Alexandra Rivera\" [level=1]\n  - paragraph: Main Office · 787-555-0101 · audit-e@example.invalid\n  - tablist \"Employee profile sections\":\n    - tab \"Details\" [selected]\n    - tab \"Scheduling\"\n  - tabpanel \"Details\":\n    - region \"Employee details\":\n      - heading \"Employee details\" [level=2]\n      - group:\n        - text: Employee ID AUDIT-E Employee IDs stay the same after they’re created. First name\n        - textbox \"First name\": Alexandra\n        - text: Last name\n        - textbox \"Last name\": Rivera\n        - text: Phone\n        - textbox \"Phone\":\n          - /placeholder: 787-555-1234\n          - text: 787-555-0101\n        - text: Email\n        - textbox \"Email\": audit-e@example.invalid\n        - text: Access role\n        - combobox \"Access role\":\n          - option \"Manager\"\n          - option \"Lead\"\n          - option \"Employee\" [selected]\n        - text: Primary location\n        - combobox \"Primary location\":\n          - option \"Main Office\" [selected]\n          - option \"West Office\"\n        - text: Status\n        - combobox \"Status\":\n          - option \"Active\" [selected]\n          - option \"Inactive\"\n        - text: Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\n        - button \"Save details\"\n    - heading \"Access\" [level=2]\n    - list \"Access\":\n      - listitem:\n        - link \"Clocker PIN For the shared tablet. Separate from portal sign-in.\":\n          - /url: /app/employees/AUDIT-E/clocker-pin\n      - listitem:\n        - link \"Account recovery Help them back in after you check who they are.\":\n          - /url: /app/account-recovery?employee=AUDIT-E",
+      "crops": [
+        "crops/webkit-IS-WA-12-AUDIT-M-390-100-names.png"
+      ],
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "name": "IS-P4-11",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Outgoing review retains selected item"
+        },
+        {
+          "ok": true,
+          "message": "Outgoing review retains filter"
+        },
+        {
+          "ok": true,
+          "message": "Back link retains item"
+        },
+        {
+          "ok": true,
+          "message": "Back link retains filter"
+        },
+        {
+          "ok": true,
+          "message": "Returned Inbox selects same row"
+        }
+      ],
+      "blocked": [],
+      "crops": [
+        "crops/webkit-IS-P4-11-QAOWNER-1440-100-returned.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "IS-P4-11",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Outgoing review retains selected item"
+        },
+        {
+          "ok": true,
+          "message": "Outgoing review retains filter"
+        },
+        {
+          "ok": true,
+          "message": "Back link retains item"
+        },
+        {
+          "ok": true,
+          "message": "Back link retains filter"
+        },
+        {
+          "ok": true,
+          "message": "Returned Inbox selects same row"
+        }
+      ],
+      "blocked": [],
+      "crops": [
+        "crops/webkit-IS-P4-11-AUDIT-M-1440-100-returned.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-P3-09-32-34-AL-47",
+      "actor": "AUDIT-E",
+      "width": 320,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "TC-P3-09: date and time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected section remains in viewport",
+          "data": {
+            "x": 124.421875,
+            "y": 76.515625,
+            "width": 179.59375,
+            "height": 51
+          }
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected Specific week remains visible",
+          "data": {
+            "x": 61.40625,
+            "y": 455.515625,
+            "width": 231.3125,
+            "height": 44
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-32: Home date/time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-34: title supplies deliberate word breaks"
+        },
+        {
+          "ok": true,
+          "message": "Notifications remains within viewport"
+        }
+      ],
+      "blocked": [],
+      "availability": {
+        "splits": [],
+        "selected": [
+          {
+            "text": "Availability",
+            "box": {
+              "x": 124.421875,
+              "y": 76.515625,
+              "width": 179.59375,
+              "height": 51,
+              "top": 76.515625,
+              "right": 304.015625,
+              "bottom": 127.515625,
+              "left": 124.421875
+            },
+            "track": {
+              "x": 16,
+              "y": 76.515625,
+              "width": 288,
+              "height": 51,
+              "top": 76.515625,
+              "right": 304,
+              "bottom": 127.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Specific week",
+            "box": {
+              "x": 61.40625,
+              "y": 455.515625,
+              "width": 231.3125,
+              "height": 44,
+              "top": 455.515625,
+              "right": 292.71875,
+              "bottom": 499.515625,
+              "left": 61.40625
+            },
+            "track": {
+              "x": 0,
+              "y": 451.515625,
+              "width": 320,
+              "height": 52,
+              "top": 451.515625,
+              "right": 320,
+              "bottom": 503.515625,
+              "left": 0
+            }
+          }
+        ]
+      },
+      "crops": [
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-availability.png",
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-home.png",
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-320-200-notifications.png"
+      ],
+      "home": {
+        "splits": []
+      },
+      "title": {
+        "text": "Notifi­ca­tions",
+        "softHyphen": true,
+        "box": {
+          "x": 16,
+          "y": 88.515625,
+          "width": 288,
+          "height": 144
+        }
+      },
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-P3-09-32-34-AL-47",
+      "actor": "AUDIT-E",
+      "width": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": false,
+          "message": "TC-P3-09: date and time atoms do not split",
+          "data": [
+            {
+              "text": "Nov 1",
+              "selector": "strong.",
+              "rects": [
+                {
+                  "x": 262,
+                  "y": 579.515625,
+                  "width": 76.015625,
+                  "height": 49,
+                  "top": 579.515625,
+                  "right": 338.015625,
+                  "bottom": 628.515625,
+                  "left": 262
+                },
+                {
+                  "x": 100,
+                  "y": 639.515625,
+                  "width": 25.078903198242188,
+                  "height": 49,
+                  "top": 639.515625,
+                  "right": 125.07890319824219,
+                  "bottom": 688.515625,
+                  "left": 100
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected section remains in viewport",
+          "data": {
+            "x": 194.421875,
+            "y": 78.015625,
+            "width": 179.59375,
+            "height": 51
+          }
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected Specific week remains visible",
+          "data": {
+            "x": 131.40625,
+            "y": 385.015625,
+            "width": 231.3125,
+            "height": 44
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-32: Home date/time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-34: title supplies deliberate word breaks"
+        },
+        {
+          "ok": true,
+          "message": "Notifications remains within viewport"
+        }
+      ],
+      "blocked": [],
+      "availability": {
+        "splits": [
+          {
+            "text": "Nov 1",
+            "selector": "strong.",
+            "rects": [
+              {
+                "x": 262,
+                "y": 579.515625,
+                "width": 76.015625,
+                "height": 49,
+                "top": 579.515625,
+                "right": 338.015625,
+                "bottom": 628.515625,
+                "left": 262
+              },
+              {
+                "x": 100,
+                "y": 639.515625,
+                "width": 25.078903198242188,
+                "height": 49,
+                "top": 639.515625,
+                "right": 125.07890319824219,
+                "bottom": 688.515625,
+                "left": 100
+              }
+            ]
+          }
+        ],
+        "selected": [
+          {
+            "text": "Availability",
+            "box": {
+              "x": 194.421875,
+              "y": 78.015625,
+              "width": 179.59375,
+              "height": 51,
+              "top": 78.015625,
+              "right": 374.015625,
+              "bottom": 129.015625,
+              "left": 194.421875
+            },
+            "track": {
+              "x": 16,
+              "y": 78.015625,
+              "width": 358,
+              "height": 51,
+              "top": 78.015625,
+              "right": 374,
+              "bottom": 129.015625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Specific week",
+            "box": {
+              "x": 131.40625,
+              "y": 385.015625,
+              "width": 231.3125,
+              "height": 44,
+              "top": 385.015625,
+              "right": 362.71875,
+              "bottom": 429.015625,
+              "left": 131.40625
+            },
+            "track": {
+              "x": 0,
+              "y": 381.015625,
+              "width": 390,
+              "height": 52,
+              "top": 381.015625,
+              "right": 390,
+              "bottom": 433.015625,
+              "left": 0
+            }
+          }
+        ]
+      },
+      "crops": [
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-availability.png",
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-home.png",
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-E-390-200-notifications.png"
+      ],
+      "home": {
+        "splits": []
+      },
+      "title": {
+        "text": "Notifi­ca­tions",
+        "softHyphen": true,
+        "box": {
+          "x": 16,
+          "y": 90.015625,
+          "width": 358,
+          "height": 72
+        }
+      },
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-P3-09-32-34-AL-47",
+      "actor": "AUDIT-LEAD",
+      "width": 320,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "TC-P3-09: date and time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected section remains in viewport",
+          "data": {
+            "x": 124.421875,
+            "y": 76.515625,
+            "width": 179.59375,
+            "height": 51
+          }
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected Specific week remains visible",
+          "data": {
+            "x": 61.40625,
+            "y": 455.515625,
+            "width": 231.3125,
+            "height": 44
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-32: Home date/time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-34: title supplies deliberate word breaks"
+        },
+        {
+          "ok": true,
+          "message": "Notifications remains within viewport"
+        }
+      ],
+      "blocked": [],
+      "availability": {
+        "splits": [],
+        "selected": [
+          {
+            "text": "Availability",
+            "box": {
+              "x": 124.421875,
+              "y": 76.515625,
+              "width": 179.59375,
+              "height": 51,
+              "top": 76.515625,
+              "right": 304.015625,
+              "bottom": 127.515625,
+              "left": 124.421875
+            },
+            "track": {
+              "x": 16,
+              "y": 76.515625,
+              "width": 288,
+              "height": 51,
+              "top": 76.515625,
+              "right": 304,
+              "bottom": 127.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Specific week",
+            "box": {
+              "x": 61.40625,
+              "y": 455.515625,
+              "width": 231.3125,
+              "height": 44,
+              "top": 455.515625,
+              "right": 292.71875,
+              "bottom": 499.515625,
+              "left": 61.40625
+            },
+            "track": {
+              "x": 0,
+              "y": 451.515625,
+              "width": 320,
+              "height": 52,
+              "top": 451.515625,
+              "right": 320,
+              "bottom": 503.515625,
+              "left": 0
+            }
+          }
+        ]
+      },
+      "crops": [
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-availability.png",
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-home.png",
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-320-200-notifications.png"
+      ],
+      "home": {
+        "splits": []
+      },
+      "title": {
+        "text": "Notifi­ca­tions",
+        "softHyphen": true,
+        "box": {
+          "x": 16,
+          "y": 88.515625,
+          "width": 288,
+          "height": 144
+        }
+      },
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-P3-09-32-34-AL-47",
+      "actor": "AUDIT-LEAD",
+      "width": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": false,
+          "message": "TC-P3-09: date and time atoms do not split",
+          "data": [
+            {
+              "text": "Nov 1",
+              "selector": "strong.",
+              "rects": [
+                {
+                  "x": 262,
+                  "y": 579.515625,
+                  "width": 76.015625,
+                  "height": 49,
+                  "top": 579.515625,
+                  "right": 338.015625,
+                  "bottom": 628.515625,
+                  "left": 262
+                },
+                {
+                  "x": 100,
+                  "y": 639.515625,
+                  "width": 25.078903198242188,
+                  "height": 49,
+                  "top": 639.515625,
+                  "right": 125.07890319824219,
+                  "bottom": 688.515625,
+                  "left": 100
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected section remains in viewport",
+          "data": {
+            "x": 194.421875,
+            "y": 78.015625,
+            "width": 179.59375,
+            "height": 51
+          }
+        },
+        {
+          "ok": true,
+          "message": "AL-47: selected Specific week remains visible",
+          "data": {
+            "x": 131.40625,
+            "y": 385.015625,
+            "width": 231.3125,
+            "height": 44
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-32: Home date/time atoms do not split",
+          "data": []
+        },
+        {
+          "ok": true,
+          "message": "TC-P3-34: title supplies deliberate word breaks"
+        },
+        {
+          "ok": true,
+          "message": "Notifications remains within viewport"
+        }
+      ],
+      "blocked": [],
+      "availability": {
+        "splits": [
+          {
+            "text": "Nov 1",
+            "selector": "strong.",
+            "rects": [
+              {
+                "x": 262,
+                "y": 579.515625,
+                "width": 76.015625,
+                "height": 49,
+                "top": 579.515625,
+                "right": 338.015625,
+                "bottom": 628.515625,
+                "left": 262
+              },
+              {
+                "x": 100,
+                "y": 639.515625,
+                "width": 25.078903198242188,
+                "height": 49,
+                "top": 639.515625,
+                "right": 125.07890319824219,
+                "bottom": 688.515625,
+                "left": 100
+              }
+            ]
+          }
+        ],
+        "selected": [
+          {
+            "text": "Availability",
+            "box": {
+              "x": 194.421875,
+              "y": 78.015625,
+              "width": 179.59375,
+              "height": 51,
+              "top": 78.015625,
+              "right": 374.015625,
+              "bottom": 129.015625,
+              "left": 194.421875
+            },
+            "track": {
+              "x": 16,
+              "y": 78.015625,
+              "width": 358,
+              "height": 51,
+              "top": 78.015625,
+              "right": 374,
+              "bottom": 129.015625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Specific week",
+            "box": {
+              "x": 131.40625,
+              "y": 385.015625,
+              "width": 231.3125,
+              "height": 44,
+              "top": 385.015625,
+              "right": 362.71875,
+              "bottom": 429.015625,
+              "left": 131.40625
+            },
+            "track": {
+              "x": 0,
+              "y": 381.015625,
+              "width": 390,
+              "height": 52,
+              "top": 381.015625,
+              "right": 390,
+              "bottom": 433.015625,
+              "left": 0
+            }
+          }
+        ]
+      },
+      "crops": [
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-availability.png",
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-home.png",
+        "crops/webkit-TC-P3-09-32-34-AL-47-AUDIT-LEAD-390-200-notifications.png"
+      ],
+      "home": {
+        "splits": []
+      },
+      "title": {
+        "text": "Notifi­ca­tions",
+        "softHyphen": true,
+        "box": {
+          "x": 16,
+          "y": 90.015625,
+          "width": 358,
+          "height": 72
+        }
+      },
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "name": "P3-ST-01",
+      "actor": "payroll-qa-a",
+      "width": 320,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Clock card height changes at most 1px",
+          "data": {
+            "before": {
+              "x": 36,
+              "y": 467,
+              "width": 248,
+              "height": 154.5
+            },
+            "after": {
+              "x": 36,
+              "y": 467,
+              "width": 248,
+              "height": 154.5
+            }
+          }
+        }
+      ],
+      "blocked": [],
+      "before": {
+        "x": 36,
+        "y": 467,
+        "width": 248,
+        "height": 154.5
+      },
+      "crops": [
+        "crops/webkit-P3-ST-01-payroll-qa-a-320-100-loading.png",
+        "crops/webkit-P3-ST-01-payroll-qa-a-320-100-ready.png"
+      ],
+      "after": {
+        "x": 36,
+        "y": 467,
+        "width": 248,
+        "height": 154.5
+      },
+      "cls": 0,
+      "shiftSupported": false,
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "P3-ST-01",
+      "actor": "payroll-qa-b",
+      "width": 320,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Clock card height changes at most 1px",
+          "data": {
+            "before": {
+              "x": 36,
+              "y": 467,
+              "width": 248,
+              "height": 154.5
+            },
+            "after": {
+              "x": 36,
+              "y": 467,
+              "width": 248,
+              "height": 154.5
+            }
+          }
+        }
+      ],
+      "blocked": [],
+      "before": {
+        "x": 36,
+        "y": 467,
+        "width": 248,
+        "height": 154.5
+      },
+      "crops": [
+        "crops/webkit-P3-ST-01-payroll-qa-b-320-100-loading.png",
+        "crops/webkit-P3-ST-01-payroll-qa-b-320-100-ready.png"
+      ],
+      "after": {
+        "x": 36,
+        "y": 467,
+        "width": 248,
+        "height": 154.5
+      },
+      "cls": 0,
+      "shiftSupported": false,
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "ST-RC-PAYROLL-SAVE-01-TC-WA-16",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "before": {
+        "x": 16,
+        "y": 379.515625,
+        "width": 288,
+        "height": 88
+      },
+      "error": "locator.boundingBox: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form[data-form=company]').getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/webkit-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-320-200-gap.png"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "name": "ST-RC-PAYROLL-SAVE-01-TC-WA-16",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "before": {
+        "x": 16,
+        "y": 379.015625,
+        "width": 358,
+        "height": 88
+      },
+      "error": "locator.boundingBox: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('form[data-form=company]').getByRole('button', { name: 'Save company preferences', exact: true })\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/webkit-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-390-200-gap.png"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "error": "locator.innerText: Error: strict mode violation: locator('[aria-label=\"Shift summary\"]') resolved to 2 elements:\n    1) <aside class=\"wa-split__side\" aria-label=\"Shift summary\">…</aside> aka getByRole('complementary', { name: 'Shift summary' })\n    2) <dl class=\"wa-facts\" aria-label=\"Shift summary\">…</dl> aka getByText('DayMon, Oct 26Time8:00 AM – 4')\n\nCall log:\n\u001b[2m  - waiting for locator('[aria-label=\"Shift summary\"]')\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/webkit-TC-WA-3-QAOWNER-320-200-gap.png"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "error": "locator.innerText: Error: strict mode violation: locator('[aria-label=\"Shift summary\"]') resolved to 2 elements:\n    1) <aside class=\"wa-split__side\" aria-label=\"Shift summary\">…</aside> aka getByRole('complementary', { name: 'Shift summary' })\n    2) <dl class=\"wa-facts\" aria-label=\"Shift summary\">…</dl> aka getByText('DayMon, Oct 26Time8:00 AM – 4')\n\nCall log:\n\u001b[2m  - waiting for locator('[aria-label=\"Shift summary\"]')\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/webkit-TC-WA-3-QAOWNER-390-200-gap.png"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 200,
+      "assertions": [],
+      "blocked": [],
+      "error": "locator.innerText: Error: strict mode violation: locator('[aria-label=\"Shift summary\"]') resolved to 2 elements:\n    1) <aside class=\"wa-split__side\" aria-label=\"Shift summary\">…</aside> aka getByRole('complementary', { name: 'Shift summary' })\n    2) <dl class=\"wa-facts\" aria-label=\"Shift summary\">…</dl> aka getByText('DayMon, Oct 26Time8:00 AM – 4')\n\nCall log:\n\u001b[2m  - waiting for locator('[aria-label=\"Shift summary\"]')\u001b[22m\n",
+      "ok": false,
+      "crops": [
+        "crops/webkit-TC-WA-3-QAOWNER-1440-200-gap.png"
+      ]
+    }
+  ]
+}

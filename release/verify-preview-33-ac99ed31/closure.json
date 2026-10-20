@@ -1,0 +1,24 @@
+[
+  {
+    "preview": "preview",
+    "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+    "completedAt": "2026-10-20T01:04:07.737Z",
+    "sourceAndMirrorVerified": true,
+    "postgresStopped": true,
+    "errors": [],
+    "ownershipClosed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true
+  },
+  {
+    "preview": "preview-wave-a2",
+    "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+    "completedAt": "2026-10-20T01:04:07.746Z",
+    "sourceAndMirrorVerified": true,
+    "postgresStopped": true,
+    "errors": [],
+    "ownershipClosed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true
+  }
+]

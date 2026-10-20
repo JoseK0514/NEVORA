@@ -1,0 +1,149 @@
+{
+  "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "rows": [
+    {
+      "engine": "chromium",
+      "id": "TC-WA-3",
+      "site": "CoverageAssistant",
+      "text": 200,
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "prior": {
+            "x": 308,
+            "y": 832.015625,
+            "width": 30,
+            "height": 41,
+            "top": 832.015625,
+            "right": 338,
+            "bottom": 873.015625,
+            "left": 308
+          },
+          "dot": {
+            "x": 338,
+            "y": 832.015625,
+            "width": 16,
+            "height": 41,
+            "top": 832.015625,
+            "right": 354,
+            "bottom": 873.015625,
+            "left": 338
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "id": "TC-WA-3",
+      "site": "shared ShiftBlock in manager callout review",
+      "text": 200,
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "prior": {
+            "x": 152,
+            "y": 942.015625,
+            "width": 30,
+            "height": 41,
+            "top": 942.015625,
+            "right": 182,
+            "bottom": 983.015625,
+            "left": 152
+          },
+          "dot": {
+            "x": 52,
+            "y": 986.015625,
+            "width": 16,
+            "height": 41,
+            "top": 986.015625,
+            "right": 68,
+            "bottom": 1027.015625,
+            "left": 52
+          }
+        }
+      ],
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "id": "TC-WA-3",
+      "site": "CoverageAssistant",
+      "text": 200,
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "prior": {
+            "x": 252,
+            "y": 924.515625,
+            "width": 31.6875,
+            "height": 41,
+            "top": 924.515625,
+            "right": 283.6875,
+            "bottom": 965.515625,
+            "left": 252
+          },
+          "dot": {
+            "x": 283.7021484375,
+            "y": 924.515625,
+            "width": 19.3740234375,
+            "height": 41,
+            "top": 924.515625,
+            "right": 303.076171875,
+            "bottom": 965.515625,
+            "left": 283.7021484375
+          }
+        }
+      ],
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "id": "TC-WA-3",
+      "site": "shared ShiftBlock in manager callout review",
+      "text": 200,
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "prior": {
+            "x": 159,
+            "y": 942.515625,
+            "width": 31.421875,
+            "height": 41,
+            "top": 942.515625,
+            "right": 190.421875,
+            "bottom": 983.515625,
+            "left": 159
+          },
+          "dot": {
+            "x": 52,
+            "y": 986.515625,
+            "width": 19.357421875,
+            "height": 41,
+            "top": 986.515625,
+            "right": 71.357421875,
+            "bottom": 1027.515625,
+            "left": 52
+          }
+        }
+      ],
+      "ok": false
+    }
+  ]
+}

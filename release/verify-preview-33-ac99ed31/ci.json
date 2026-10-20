@@ -1,0 +1,59 @@
+{
+  "head": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "actualBrowserCheckout": "9f9cd1db4bda843ea219bdc861730e1ca9f0bacb",
+  "run": 39350175628,
+  "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39350175628",
+  "jobs": [
+    {
+      "id": 118393063065,
+      "name": "phase-d-attendance-ui",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 118393063267,
+      "name": "phase-e-ui",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 118393063292,
+      "name": "clocker-postgres",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 118393063298,
+      "name": "release-postgres",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 118393063395,
+      "name": "validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118393063440,
+      "name": "phase-e-postgres",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "browserSourceCustody": "Both browser artifacts pin 1472 application/script/assets/config files; every source hash matches candidate ac99ed31. The workflow uses the PR merge checkout, not the head SHA.",
+  "failures": [
+    {
+      "owner": "Codex CI/Phase 3 coordinator",
+      "job": "phase-e-ui",
+      "cause": "Outdated exact text Clocked In at phase-e-home-browser-scenarios.mjs:38; screenshot shows current Clocked in.",
+      "classification": "CI test contract follow-up; no new UI defect counted"
+    },
+    {
+      "owner": "Codex CI/Phase 3 coordinator",
+      "job": "phase-d-attendance-ui",
+      "cause": "Global Main Office exact-text count is 1 after refreshed Renamed Main Office appears; assertion at phase-d-attendance-ui-qa.mjs:346 expected 0.",
+      "classification": "Unresolved CI gate. Bounded local same-source intercepted-read probe replaced the attendance label and observed global old count 0; it does not reproduce or close the failed CI assertion."
+    }
+  ]
+}

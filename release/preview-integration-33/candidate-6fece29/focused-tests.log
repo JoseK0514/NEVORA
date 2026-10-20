@@ -1,0 +1,12 @@
+
+ RUN  v5.0.2 /workspace/NEVORA
+
+
+ Test Files  8 passed (8)
+      Tests  141 passed (141)
+   Start at  01:08:12
+   Duration  17.44s (import 68%, tests 27%, transform 4%)
+
+    Isolate  8 workers spawned · ~131ms startup each (spawn + environment, per file)
+             at least ~916ms faster with isolate: false — reuses workers across files instead of one per file
+

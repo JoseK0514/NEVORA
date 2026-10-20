@@ -1,0 +1,1072 @@
+{
+  "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "scope": "Named-ID regression rechecks; full five-area exits remain open",
+  "records": [
+    {
+      "engine": "chromium",
+      "name": "IS-WA-12",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Exact accessible name: Access role"
+        },
+        {
+          "ok": true,
+          "message": "Exact accessible name: Status"
+        },
+        {
+          "ok": true,
+          "message": "Status retains the rendered help description"
+        },
+        {
+          "ok": true,
+          "message": "New employee exact accessible name: Employee ID"
+        },
+        {
+          "ok": true,
+          "message": "New employee exact accessible name: Phone"
+        },
+        {
+          "ok": true,
+          "message": "New employee exact accessible name: Email"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - paragraph: Employee · Active\n  - heading \"Alexandra Rivera\" [level=1]\n  - paragraph: Main Office · 787-555-0101 · audit-e@example.invalid\n  - tablist \"Employee profile sections\":\n    - tab \"Details\" [selected]\n    - tab \"Scheduling\"\n  - tabpanel \"Details\":\n    - region \"Employee details\":\n      - heading \"Employee details\" [level=2]\n      - group:\n        - text: Employee ID AUDIT-E Employee IDs stay the same after they’re created. First name\n        - textbox \"First name\": Alexandra\n        - text: Last name\n        - textbox \"Last name\": Rivera\n        - text: Phone\n        - textbox \"Phone\":\n          - /placeholder: 787-555-1234\n          - text: 787-555-0101\n        - text: Email\n        - textbox \"Email\": audit-e@example.invalid\n        - text: Access role\n        - combobox \"Access role\":\n          - option \"Owner\"\n          - option \"Manager\"\n          - option \"Lead\"\n          - option \"Employee\" [selected]\n        - text: Primary location\n        - combobox \"Primary location\":\n          - option \"Main Office\" [selected]\n          - option \"West Office\"\n        - text: Status\n        - combobox \"Status\":\n          - option \"Active\" [selected]\n          - option \"Inactive\"\n        - text: Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\n        - button \"Save details\"\n    - heading \"Access\" [level=2]\n    - list \"Access\":\n      - listitem:\n        - link \"Clocker PIN For the shared tablet. Separate from portal sign-in.\":\n          - /url: /app/employees/AUDIT-E/clocker-pin\n      - listitem:\n        - link \"Account recovery Help them back in after you check who they are.\":\n          - /url: /app/account-recovery?employee=AUDIT-E",
+      "crops": [
+        "crops/chromium-IS-WA-12-QAOWNER-390-100-names-corrected.png",
+        "crops/chromium-IS-WA-12-QAOWNER-390-100-new-employee-names.png"
+      ],
+      "newEmployeeAria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - heading \"Add employee\" [level=1]\n  - paragraph: Their contact, access and scheduling details. Email is optional.\n  - group:\n    - region \"Person\":\n      - heading \"Person\" [level=2]\n      - text: First name\n      - textbox \"First name\"\n      - text: Last name\n      - textbox \"Last name\"\n      - text: Employee ID\n      - textbox \"Employee ID\"\n      - text: Unique. They use it to sign in. Phone\n      - textbox \"Phone\":\n        - /placeholder: 787-555-1234\n      - text: They confirm it when they activate their account. Email\n      - textbox \"Email\"\n    - region \"Access\":\n      - heading \"Access\" [level=2]\n      - text: Access role\n      - combobox \"Access role\":\n        - option \"Owner\"\n        - option \"Manager\"\n        - option \"Lead\"\n        - option \"Employee\" [selected]\n      - text: What they can do in the app. Separate from job qualifications. Primary location\n      - combobox \"Primary location\":\n        - option \"Choose a location\" [disabled] [selected]\n        - option \"Main Office\"\n        - option \"West Office\"\n      - text: They can always be scheduled here.\n    - region \"Scheduling\":\n      - heading \"Scheduling\" [level=2]\n      - group \"Positions\":\n        - text: Positions\n        - paragraph: What they’re qualified to do. This is separate from their access role.\n        - checkbox \"Customer Support\"\n        - text: Customer Support\n        - checkbox \"Operations\"\n        - text: Operations\n      - group \"Locations they can work at\":\n        - text: Locations they can work at\n        - paragraph: Their primary location is always included.\n        - checkbox \"Main Office\"\n        - text: Main Office\n        - checkbox \"West Office\"\n        - text: West Office\n    - button \"Add employee\"\n    - link \"Cancel\":\n      - /url: /app/employees\n  - region \"What happens next\":\n    - heading \"What happens next\" [level=2]\n    - list:\n      - listitem: Give them their Employee ID.\n      - listitem: They open Activate account and enter their ID and phone number.\n      - listitem: They create a password and sign in.\n    - paragraph: The phone number must match when they activate, so check it carefully.",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "IS-WA-12",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Exact accessible name: Access role"
+        },
+        {
+          "ok": true,
+          "message": "Exact accessible name: Status"
+        },
+        {
+          "ok": true,
+          "message": "Status retains the rendered help description"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - paragraph: Employee · Active\n  - heading \"Alexandra Rivera\" [level=1]\n  - paragraph: Main Office · 787-555-0101 · audit-e@example.invalid\n  - tablist \"Employee profile sections\":\n    - tab \"Details\" [selected]\n    - tab \"Scheduling\"\n  - tabpanel \"Details\":\n    - region \"Employee details\":\n      - heading \"Employee details\" [level=2]\n      - group:\n        - text: Employee ID AUDIT-E Employee IDs stay the same after they’re created. First name\n        - textbox \"First name\": Alexandra\n        - text: Last name\n        - textbox \"Last name\": Rivera\n        - text: Phone\n        - textbox \"Phone\":\n          - /placeholder: 787-555-1234\n          - text: 787-555-0101\n        - text: Email\n        - textbox \"Email\": audit-e@example.invalid\n        - text: Access role\n        - combobox \"Access role\":\n          - option \"Manager\"\n          - option \"Lead\"\n          - option \"Employee\" [selected]\n        - text: Primary location\n        - combobox \"Primary location\":\n          - option \"Main Office\" [selected]\n          - option \"West Office\"\n        - text: Status\n        - combobox \"Status\":\n          - option \"Active\" [selected]\n          - option \"Inactive\"\n        - text: Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\n        - button \"Save details\"\n    - heading \"Access\" [level=2]\n    - list \"Access\":\n      - listitem:\n        - link \"Clocker PIN For the shared tablet. Separate from portal sign-in.\":\n          - /url: /app/employees/AUDIT-E/clocker-pin\n      - listitem:\n        - link \"Account recovery Help them back in after you check who they are.\":\n          - /url: /app/account-recovery?employee=AUDIT-E",
+      "crops": [
+        "crops/chromium-IS-WA-12-AUDIT-M-390-100-names-corrected.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "IS-WA-12-callout",
+      "actor": "AUDIT-E",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Callout More details name omits Optional, help, and count"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Shift requests\":\n    - /url: /app/exchange?tab=my\n  - heading \"Unable to work\" [level=1]\n  - paragraph: Tell your manager you can’t work this shift.\n  - region \"Your shift\":\n    - heading \"Your shift\" [level=2]\n    - region \"Can’t work\":\n      - paragraph: Can’t work\n      - paragraph:\n        - time: Tuesday, Oct 27, 2026\n      - paragraph: 8:00 AM – 4:00 PM\n      - paragraph: Main Office · Customer Support\n      - paragraph: Times in Puerto Rico time\n    - paragraph: It’s still your shift\n    - paragraph: You’re responsible for it until a manager approves your report.\n    - list:\n      - listitem: A manager reviews your report. You can follow it in Shift requests.\n      - listitem: If they approve it, the shift opens for someone else to pick up.\n    - link \"See my requests\":\n      - /url: /app/exchange?tab=requests\n  - region \"Why can’t you work it?\":\n    - heading \"Why can’t you work it?\" [level=2]\n    - group:\n      - text: Reason\n      - combobox \"Reason\":\n        - option \"Choose a reason\" [disabled] [selected]\n        - option \"Illness / sick\"\n        - option \"Family emergency\"\n        - option \"Transportation issue\"\n        - option \"School conflict\"\n        - option \"Personal emergency\"\n        - option \"Other\"\n      - text: Choose the closest match. More details\n      - textbox \"More details\":\n        - /placeholder: What should your manager know?\n      - text: Share only what your manager needs to review it. 0/300\n      - paragraph: A manager reviews it. If they approve it, the shift opens for someone else to pick up.\n      - button \"Send report\"\n      - link \"Cancel\":\n        - /url: /app/exchange?tab=my",
+      "crops": [
+        "crops/chromium-IS-WA-12-callout-AUDIT-E-390-100-callout-name.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "ST-RC-PAYROLL-SAVE-01-TC-WA-16",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Double Enter sends one intercepted request",
+          "data": 1
+        },
+        {
+          "ok": true,
+          "message": "ST-RC-PAYROLL-SAVE-01: pending height is stable",
+          "data": {
+            "before": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 88
+            },
+            "after": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 88
+            }
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-WA-16: visible transition text meets 4.5:1",
+          "data": 5.138948780308894
+        }
+      ],
+      "blocked": [],
+      "before": {
+        "x": 16,
+        "y": 379.515625,
+        "width": 288,
+        "height": 88
+      },
+      "after": {
+        "x": 16,
+        "y": 379.515625,
+        "width": 288,
+        "height": 88
+      },
+      "paint": [
+        {
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(7, 117, 114)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        }
+      ],
+      "crops": [
+        "crops/chromium-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-320-200-pending.png"
+      ],
+      "minContrast": 5.138948780308894,
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "ST-RC-PAYROLL-SAVE-01-TC-WA-16",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Double Enter sends one intercepted request",
+          "data": 1
+        },
+        {
+          "ok": true,
+          "message": "ST-RC-PAYROLL-SAVE-01: pending height is stable",
+          "data": {
+            "before": {
+              "x": 16,
+              "y": 380.015625,
+              "width": 358,
+              "height": 88
+            },
+            "after": {
+              "x": 16,
+              "y": 380.015625,
+              "width": 358,
+              "height": 88
+            }
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-WA-16: visible transition text meets 4.5:1",
+          "data": 5.138948780308894
+        }
+      ],
+      "blocked": [],
+      "before": {
+        "x": 16,
+        "y": 380.015625,
+        "width": 358,
+        "height": 88
+      },
+      "after": {
+        "x": 16,
+        "y": 380.015625,
+        "width": 358,
+        "height": 88
+      },
+      "paint": [
+        {
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(7, 117, 114)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        }
+      ],
+      "crops": [
+        "crops/chromium-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-390-200-pending.png"
+      ],
+      "minContrast": 5.138948780308894,
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Time separator is attached to preceding time with NBSP"
+        }
+      ],
+      "blocked": [],
+      "summaryText": "Summary\nDay\nMon, Oct 26\nTime\n8:00 AM – 4:00 PM · 8h\nPerson\nChoose someone\nLocation\nChoose a location\nPosition\nNone\nShift lead\nNo\n\nAvailability, time off, other shifts and weekly hours are checked when you save.",
+      "separator": {
+        "text": " ·",
+        "rects": [
+          {
+            "x": 221,
+            "y": 2360.515625,
+            "width": 16,
+            "height": 41,
+            "top": 2360.515625,
+            "right": 237,
+            "bottom": 2401.515625,
+            "left": 221
+          }
+        ],
+        "priorRects": []
+      },
+      "crops": [
+        "crops/chromium-TC-WA-3-QAOWNER-320-200-summary.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Time separator is attached to preceding time with NBSP"
+        }
+      ],
+      "blocked": [],
+      "summaryText": "Summary\nDay\nMon, Oct 26\nTime\n8:00 AM – 4:00 PM · 8h\nPerson\nChoose someone\nLocation\nChoose a location\nPosition\nNone\nShift lead\nNo\n\nAvailability, time off, other shifts and weekly hours are checked when you save.",
+      "separator": {
+        "text": " ·",
+        "rects": [
+          {
+            "x": 338,
+            "y": 2198.015625,
+            "width": 16,
+            "height": 41,
+            "top": 2198.015625,
+            "right": 354,
+            "bottom": 2239.015625,
+            "left": 338
+          }
+        ],
+        "priorRects": []
+      },
+      "crops": [
+        "crops/chromium-TC-WA-3-QAOWNER-390-200-summary.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Time separator is attached to preceding time with NBSP"
+        }
+      ],
+      "blocked": [],
+      "summaryText": "Summary\nDay\nMon, Oct 26\nTime\n8:00 AM – 4:00 PM · 8h\nPerson\nChoose someone\nLocation\nChoose a location\nPosition\nNone\nShift lead\nNo\n\nAvailability, time off, other shifts and weekly hours are checked when you save.",
+      "separator": {
+        "text": " ·",
+        "rects": [
+          {
+            "x": 1300,
+            "y": 1724,
+            "width": 15,
+            "height": 39,
+            "top": 1724,
+            "right": 1315,
+            "bottom": 1763,
+            "left": 1300
+          }
+        ],
+        "priorRects": []
+      },
+      "crops": [
+        "crops/chromium-TC-WA-3-QAOWNER-1440-200-summary.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "IS-WA-12",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Exact accessible name: Access role"
+        },
+        {
+          "ok": true,
+          "message": "Exact accessible name: Status"
+        },
+        {
+          "ok": true,
+          "message": "Status retains the rendered help description"
+        },
+        {
+          "ok": true,
+          "message": "New employee exact accessible name: Employee ID"
+        },
+        {
+          "ok": true,
+          "message": "New employee exact accessible name: Phone"
+        },
+        {
+          "ok": true,
+          "message": "New employee exact accessible name: Email"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - paragraph: Employee · Active\n  - heading \"Alexandra Rivera\" [level=1]\n  - paragraph: Main Office · 787-555-0101 · audit-e@example.invalid\n  - tablist \"Employee profile sections\":\n    - tab \"Details\" [selected]\n    - tab \"Scheduling\"\n  - tabpanel \"Details\":\n    - region \"Employee details\":\n      - heading \"Employee details\" [level=2]\n      - group:\n        - text: Employee ID AUDIT-E Employee IDs stay the same after they’re created. First name\n        - textbox \"First name\": Alexandra\n        - text: Last name\n        - textbox \"Last name\": Rivera\n        - text: Phone\n        - textbox \"Phone\":\n          - /placeholder: 787-555-1234\n          - text: 787-555-0101\n        - text: Email\n        - textbox \"Email\": audit-e@example.invalid\n        - text: Access role\n        - combobox \"Access role\":\n          - option \"Owner\"\n          - option \"Manager\"\n          - option \"Lead\"\n          - option \"Employee\" [selected]\n        - text: Primary location\n        - combobox \"Primary location\":\n          - option \"Main Office\" [selected]\n          - option \"West Office\"\n        - text: Status\n        - combobox \"Status\":\n          - option \"Active\" [selected]\n          - option \"Inactive\"\n        - text: Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\n        - button \"Save details\"\n    - heading \"Access\" [level=2]\n    - list \"Access\":\n      - listitem:\n        - link \"Clocker PIN For the shared tablet. Separate from portal sign-in.\":\n          - /url: /app/employees/AUDIT-E/clocker-pin\n      - listitem:\n        - link \"Account recovery Help them back in after you check who they are.\":\n          - /url: /app/account-recovery?employee=AUDIT-E",
+      "crops": [
+        "crops/webkit-IS-WA-12-QAOWNER-390-100-names-corrected.png",
+        "crops/webkit-IS-WA-12-QAOWNER-390-100-new-employee-names.png"
+      ],
+      "newEmployeeAria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - heading \"Add employee\" [level=1]\n  - paragraph: Their contact, access and scheduling details. Email is optional.\n  - group:\n    - region \"Person\":\n      - heading \"Person\" [level=2]\n      - text: First name\n      - textbox \"First name\"\n      - text: Last name\n      - textbox \"Last name\"\n      - text: Employee ID\n      - textbox \"Employee ID\"\n      - text: Unique. They use it to sign in. Phone\n      - textbox \"Phone\":\n        - /placeholder: 787-555-1234\n      - text: They confirm it when they activate their account. Email\n      - textbox \"Email\"\n    - region \"Access\":\n      - heading \"Access\" [level=2]\n      - text: Access role\n      - combobox \"Access role\":\n        - option \"Owner\"\n        - option \"Manager\"\n        - option \"Lead\"\n        - option \"Employee\" [selected]\n      - text: What they can do in the app. Separate from job qualifications. Primary location\n      - combobox \"Primary location\":\n        - option \"Choose a location\" [disabled] [selected]\n        - option \"Main Office\"\n        - option \"West Office\"\n      - text: They can always be scheduled here.\n    - region \"Scheduling\":\n      - heading \"Scheduling\" [level=2]\n      - group \"Positions\":\n        - text: Positions\n        - paragraph: What they’re qualified to do. This is separate from their access role.\n        - checkbox \"Customer Support\"\n        - text: Customer Support\n        - checkbox \"Operations\"\n        - text: Operations\n      - group \"Locations they can work at\":\n        - text: Locations they can work at\n        - paragraph: Their primary location is always included.\n        - checkbox \"Main Office\"\n        - text: Main Office\n        - checkbox \"West Office\"\n        - text: West Office\n    - button \"Add employee\"\n    - link \"Cancel\":\n      - /url: /app/employees\n  - region \"What happens next\":\n    - heading \"What happens next\" [level=2]\n    - list:\n      - listitem: Give them their Employee ID.\n      - listitem: They open Activate account and enter their ID and phone number.\n      - listitem: They create a password and sign in.\n    - paragraph: The phone number must match when they activate, so check it carefully.",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "IS-WA-12",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Exact accessible name: Access role"
+        },
+        {
+          "ok": true,
+          "message": "Exact accessible name: Status"
+        },
+        {
+          "ok": true,
+          "message": "Status retains the rendered help description"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Team\":\n    - /url: /app/employees\n  - paragraph: Employee · Active\n  - heading \"Alexandra Rivera\" [level=1]\n  - paragraph: Main Office · 787-555-0101 · audit-e@example.invalid\n  - tablist \"Employee profile sections\":\n    - tab \"Details\" [selected]\n    - tab \"Scheduling\"\n  - tabpanel \"Details\":\n    - region \"Employee details\":\n      - heading \"Employee details\" [level=2]\n      - group:\n        - text: Employee ID AUDIT-E Employee IDs stay the same after they’re created. First name\n        - textbox \"First name\": Alexandra\n        - text: Last name\n        - textbox \"Last name\": Rivera\n        - text: Phone\n        - textbox \"Phone\":\n          - /placeholder: 787-555-1234\n          - text: 787-555-0101\n        - text: Email\n        - textbox \"Email\": audit-e@example.invalid\n        - text: Access role\n        - combobox \"Access role\":\n          - option \"Manager\"\n          - option \"Lead\"\n          - option \"Employee\" [selected]\n        - text: Primary location\n        - combobox \"Primary location\":\n          - option \"Main Office\" [selected]\n          - option \"West Office\"\n        - text: Status\n        - combobox \"Status\":\n          - option \"Active\" [selected]\n          - option \"Inactive\"\n        - text: Deactivation signs this employee out immediately. Reactivation requires a fresh sign-in. History is preserved.\n        - button \"Save details\"\n    - heading \"Access\" [level=2]\n    - list \"Access\":\n      - listitem:\n        - link \"Clocker PIN For the shared tablet. Separate from portal sign-in.\":\n          - /url: /app/employees/AUDIT-E/clocker-pin\n      - listitem:\n        - link \"Account recovery Help them back in after you check who they are.\":\n          - /url: /app/account-recovery?employee=AUDIT-E",
+      "crops": [
+        "crops/webkit-IS-WA-12-AUDIT-M-390-100-names-corrected.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "IS-WA-12-callout",
+      "actor": "AUDIT-E",
+      "width": 390,
+      "text": 100,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Callout More details name omits Optional, help, and count"
+        }
+      ],
+      "blocked": [],
+      "aria": "- main:\n  - link \"Shift requests\":\n    - /url: /app/exchange?tab=my\n  - heading \"Unable to work\" [level=1]\n  - paragraph: Tell your manager you can’t work this shift.\n  - region \"Your shift\":\n    - heading \"Your shift\" [level=2]\n    - region \"Can’t work\":\n      - paragraph: Can’t work\n      - paragraph:\n        - time: Tuesday, Oct 27, 2026\n      - paragraph: 8:00 AM – 4:00 PM\n      - paragraph: Main Office · Customer Support\n      - paragraph: Times in Puerto Rico time\n    - paragraph: It’s still your shift\n    - paragraph: You’re responsible for it until a manager approves your report.\n    - list:\n      - listitem: A manager reviews your report. You can follow it in Shift requests.\n      - listitem: If they approve it, the shift opens for someone else to pick up.\n    - link \"See my requests\":\n      - /url: /app/exchange?tab=requests\n  - region \"Why can’t you work it?\":\n    - heading \"Why can’t you work it?\" [level=2]\n    - group:\n      - text: Reason\n      - combobox \"Reason\":\n        - option \"Choose a reason\" [disabled] [selected]\n        - option \"Illness / sick\"\n        - option \"Family emergency\"\n        - option \"Transportation issue\"\n        - option \"School conflict\"\n        - option \"Personal emergency\"\n        - option \"Other\"\n      - text: Choose the closest match. More details\n      - textbox \"More details\":\n        - /placeholder: What should your manager know?\n      - text: Share only what your manager needs to review it. 0/300\n      - paragraph: A manager reviews it. If they approve it, the shift opens for someone else to pick up.\n      - button \"Send report\"\n      - link \"Cancel\":\n        - /url: /app/exchange?tab=my",
+      "crops": [
+        "crops/webkit-IS-WA-12-callout-AUDIT-E-390-100-callout-name.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "ST-RC-PAYROLL-SAVE-01-TC-WA-16",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Double Enter sends one intercepted request",
+          "data": 1
+        },
+        {
+          "ok": true,
+          "message": "ST-RC-PAYROLL-SAVE-01: pending height is stable",
+          "data": {
+            "before": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 88
+            },
+            "after": {
+              "x": 16,
+              "y": 379.515625,
+              "width": 288,
+              "height": 88
+            }
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-WA-16: visible transition text meets 4.5:1",
+          "data": 5.138948780308894
+        }
+      ],
+      "blocked": [],
+      "before": {
+        "x": 16,
+        "y": 379.515625,
+        "width": 288,
+        "height": 88
+      },
+      "after": {
+        "x": 16,
+        "y": 379.515625,
+        "width": 288,
+        "height": 88
+      },
+      "paint": [
+        {
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(7, 117, 114)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        }
+      ],
+      "crops": [
+        "crops/webkit-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-320-200-pending.png"
+      ],
+      "minContrast": 5.138948780308894,
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "ST-RC-PAYROLL-SAVE-01-TC-WA-16",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Double Enter sends one intercepted request",
+          "data": 1
+        },
+        {
+          "ok": true,
+          "message": "ST-RC-PAYROLL-SAVE-01: pending height is stable",
+          "data": {
+            "before": {
+              "x": 16,
+              "y": 379.015625,
+              "width": 358,
+              "height": 88
+            },
+            "after": {
+              "x": 16,
+              "y": 379.015625,
+              "width": 358,
+              "height": 88
+            }
+          }
+        },
+        {
+          "ok": true,
+          "message": "TC-WA-16: visible transition text meets 4.5:1",
+          "data": 5.138948780308894
+        }
+      ],
+      "blocked": [],
+      "before": {
+        "x": 16,
+        "y": 379.015625,
+        "width": 358,
+        "height": 88
+      },
+      "after": {
+        "x": 16,
+        "y": 379.015625,
+        "width": 358,
+        "height": 88
+      },
+      "paint": [
+        {
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(7, 117, 114)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        },
+        {
+          "color": "rgb(95, 102, 106)",
+          "bg": "rgb(238, 241, 240)",
+          "opacity": "1",
+          "height": 88
+        }
+      ],
+      "crops": [
+        "crops/webkit-ST-RC-PAYROLL-SAVE-01-TC-WA-16-QAOWNER-390-200-pending.png"
+      ],
+      "minContrast": 5.138948780308894,
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Time separator is attached to preceding time with NBSP"
+        }
+      ],
+      "blocked": [],
+      "summaryText": "Summary\nDay\nMon, Oct 26\nTime\n8:00 AM – 4:00 PM · 8h\nPerson\nChoose someone\nLocation\nChoose a location\nPosition\nNone\nShift lead\nNo\n\nAvailability, time off, other shifts and weekly hours are checked when you save.",
+      "separator": {
+        "text": " ·",
+        "rects": [
+          {
+            "x": 213.7021484375,
+            "y": 2445.015625,
+            "width": 19.3740234375,
+            "height": 41,
+            "top": 2445.015625,
+            "right": 233.076171875,
+            "bottom": 2486.015625,
+            "left": 213.7021484375
+          }
+        ],
+        "priorRects": []
+      },
+      "crops": [
+        "crops/webkit-TC-WA-3-QAOWNER-320-200-summary.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Time separator is attached to preceding time with NBSP"
+        }
+      ],
+      "blocked": [],
+      "summaryText": "Summary\nDay\nMon, Oct 26\nTime\n8:00 AM – 4:00 PM · 8h\nPerson\nChoose someone\nLocation\nChoose a location\nPosition\nNone\nShift lead\nNo\n\nAvailability, time off, other shifts and weekly hours are checked when you save.",
+      "separator": {
+        "text": " ·",
+        "rects": [
+          {
+            "x": 283.7021484375,
+            "y": 2282.515625,
+            "width": 19.3740234375,
+            "height": 41,
+            "top": 2282.515625,
+            "right": 303.076171875,
+            "bottom": 2323.515625,
+            "left": 283.7021484375
+          }
+        ],
+        "priorRects": []
+      },
+      "crops": [
+        "crops/webkit-TC-WA-3-QAOWNER-390-200-summary.png"
+      ],
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "name": "TC-WA-3",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 200,
+      "assertions": [
+        {
+          "ok": true,
+          "message": "Time separator is attached to preceding time with NBSP"
+        }
+      ],
+      "blocked": [],
+      "summaryText": "Summary\nDay\nMon, Oct 26\nTime\n8:00 AM – 4:00 PM · 8h\nPerson\nChoose someone\nLocation\nChoose a location\nPosition\nNone\nShift lead\nNo\n\nAvailability, time off, other shifts and weekly hours are checked when you save.",
+      "separator": {
+        "text": " ·",
+        "rects": [
+          {
+            "x": 1293.84375,
+            "y": 1724.5,
+            "width": 18.234375,
+            "height": 39,
+            "top": 1724.5,
+            "right": 1312.078125,
+            "bottom": 1763.5,
+            "left": 1293.84375
+          }
+        ],
+        "priorRects": []
+      },
+      "crops": [
+        "crops/webkit-TC-WA-3-QAOWNER-1440-200-summary.png"
+      ],
+      "completed": true,
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"engine":"chromium","name":"IS-WA-12","actor":"QAOWNER","width":390,"text":100,"ok":true,"failed":[]}
+{"engine":"chromium","name":"IS-WA-12","actor":"AUDIT-M","width":390,"text":100,"ok":true,"failed":[]}
+{"engine":"chromium","name":"IS-WA-12-callout","actor":"AUDIT-E","width":390,"text":100,"ok":true,"failed":[]}
+{"engine":"chromium","name":"ST-RC-PAYROLL-SAVE-01-TC-WA-16","actor":"QAOWNER","width":320,"text":200,"ok":true,"failed":[]}
+{"engine":"chromium","name":"ST-RC-PAYROLL-SAVE-01-TC-WA-16","actor":"QAOWNER","width":390,"text":200,"ok":true,"failed":[]}
+{"engine":"chromium","name":"TC-WA-3","actor":"QAOWNER","width":320,"text":200,"ok":true,"failed":[]}
+{"engine":"chromium","name":"TC-WA-3","actor":"QAOWNER","width":390,"text":200,"ok":true,"failed":[]}
+{"engine":"chromium","name":"TC-WA-3","actor":"QAOWNER","width":1440,"text":200,"ok":true,"failed":[]}
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"engine":"webkit","name":"IS-WA-12","actor":"QAOWNER","width":390,"text":100,"ok":true,"failed":[]}
+{"engine":"webkit","name":"IS-WA-12","actor":"AUDIT-M","width":390,"text":100,"ok":true,"failed":[]}
+{"engine":"webkit","name":"IS-WA-12-callout","actor":"AUDIT-E","width":390,"text":100,"ok":true,"failed":[]}
+{"engine":"webkit","name":"ST-RC-PAYROLL-SAVE-01-TC-WA-16","actor":"QAOWNER","width":320,"text":200,"ok":true,"failed":[]}
+{"engine":"webkit","name":"ST-RC-PAYROLL-SAVE-01-TC-WA-16","actor":"QAOWNER","width":390,"text":200,"ok":true,"failed":[]}
+{"engine":"webkit","name":"TC-WA-3","actor":"QAOWNER","width":320,"text":200,"ok":true,"failed":[]}
+{"engine":"webkit","name":"TC-WA-3","actor":"QAOWNER","width":390,"text":200,"ok":true,"failed":[]}
+{"engine":"webkit","name":"TC-WA-3","actor":"QAOWNER","width":1440,"text":200,"ok":true,"failed":[]}
+{"total":16,"passed":16,"gaps":0}

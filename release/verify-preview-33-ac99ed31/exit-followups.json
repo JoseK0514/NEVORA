@@ -1,0 +1,38 @@
+{
+  "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "fullExitZeroCount": 0,
+  "owners": {
+    "Phase3": {
+      "report": "owners/phase-3.md",
+      "openInBoundedPass": [
+        "TC-P3-09"
+      ],
+      "fullPriorIds": 135
+    },
+    "WaveA": {
+      "report": "owners/wave-a.md",
+      "openInBoundedPass": [
+        "TC-WA-3"
+      ],
+      "fullPriorIds": 51
+    },
+    "WaveB": {
+      "report": "owners/wave-b.md",
+      "openInBoundedPass": [],
+      "fullPriorIds": 137
+    },
+    "WaveC": {
+      "report": "owners/wave-c.md",
+      "openInBoundedPass": [],
+      "fullPriorIds": 104
+    },
+    "Desktop": {
+      "report": "owners/desktop.md",
+      "openInBoundedPass": [
+        "TC-P4-25"
+      ],
+      "fullPriorIds": 111
+    }
+  },
+  "requiredBeforeZero": "Complete the owner full matrices, historical IDs, five areas, state/large-data and required device evidence on the authoritative source; no previous-source credit is silently inherited."
+}

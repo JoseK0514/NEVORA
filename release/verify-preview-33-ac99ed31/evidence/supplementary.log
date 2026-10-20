@@ -1,0 +1,3 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+{"rows":12,"failed":[{"id":"TC-WA-3","engine":"chromium","site":"shared ShiftBlock","size":{"width":390,"height":844}},{"id":"TC-P4-25","engine":"chromium","size":{"width":1440,"height":900}},{"id":"TC-WA-3","engine":"webkit","site":"shared ShiftBlock","size":{"width":390,"height":844}},{"id":"TC-P4-25","engine":"webkit","size":{"width":1440,"height":900}}]}

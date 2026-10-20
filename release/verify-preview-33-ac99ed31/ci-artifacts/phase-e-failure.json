@@ -1,0 +1,18 @@
+{
+  "checkpoint": "9f9cd1db4bda843ea219bdc861730e1ca9f0bacb",
+  "tree": "53310d801fb797ef554a8813a29106a4fec3b9d6",
+  "sourceClean": true,
+  "status": "failed",
+  "failure": {
+    "name": "TimeoutError",
+    "summary": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - waiting for getByText('Clocked In', { exact: true }) to be visible\n",
+    "sourceLocation": "phase-e-home-browser-scenarios.mjs:38:50",
+    "stage": "loading",
+    "cell": {
+      "suite": "home",
+      "engine": "chromium",
+      "width": 320,
+      "status": "failed"
+    }
+  }
+}
