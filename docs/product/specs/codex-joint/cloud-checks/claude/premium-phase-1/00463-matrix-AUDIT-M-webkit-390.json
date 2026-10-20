@@ -1,0 +1,271 @@
+[
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.status-pill.warning «Pending» 11px",
+   "strong. «Oct 29, 2026 – Oct 30, 2026» 14px",
+   "span. «Full day» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Puerto Rico time» 13.75px",
+   "th. «Employee» 13.75px",
+   "th. «Published plan» 13.75px",
+   "th. «Recorded time» 13.75px",
+   "th. «Difference» 13.75px",
+   "th. «Name» 13.75px",
+   "th. «Breaks recorded» 13.75px",
+   "span.reports-module__Iv4GWq__badge «draft» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.status-pill.warning «Pending» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/payroll-export",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/reports",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

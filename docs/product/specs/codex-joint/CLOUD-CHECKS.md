@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-20T01:25:51.901Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-20T01:28:35.644Z. premium-phase-1 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,7 +22,7 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 2636 | 3808 | 6444 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 2643 | 3817 | 6460 / 12580 |
 | claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 3462 | 2974 | 6436 / 12716 |
 | claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 3326 | 1334 | 4660 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2636 passed; 3808 failed. Completed checker batches: 462. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2643 passed; 3817 failed. Completed checker batches: 463. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -5038,6 +5038,16 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2636 passed;
 | /app/inbox | AUDIT-M | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 200% /app/inbox errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 | /app/my-pay | AUDIT-M | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 200% /app/my-pay errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 | /app/notifications | AUDIT-M | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 200% /app/notifications errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/payroll-export | AUDIT-M | 390 | 100 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 100% /app/payroll-export errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/requests | AUDIT-M | 390 | 100 | webkit | small text | UI — claude/p35-wave-a-1283c8 | FAIL webkit AUDIT-M 390 100% /app/requests small=span.status-pill.warning «Pending» 11px; strong. «Oct 29, 2026 – Oct 30, 2026» 14px; span. «Full day» 12px |
+| /app/payroll-export | AUDIT-M | 390 | 125 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 125% /app/payroll-export errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/reports | AUDIT-M | 390 | 125 | webkit | small text | UI — claude/p35-wave-b-808dfd | FAIL webkit AUDIT-M 390 125% /app/reports small=span. «Puerto Rico time» 13.75px; th. «Employee» 13.75px; th. «Published plan» 13.75px; th. «Recorded time» 13.75px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/reports | AUDIT-M | 390 | 125 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 125% /app/reports small=span. «Puerto Rico time» 13.75px; th. «Employee» 13.75px; th. «Published plan» 13.75px; th. «Recorded time» 13.75px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/requests | AUDIT-M | 390 | 125 | webkit | small text | UI — claude/p35-wave-a-1283c8 | FAIL webkit AUDIT-M 390 125% /app/requests small=span.status-pill.warning «Pending» 13.75px |
+| /app/payroll-export | AUDIT-M | 390 | 150 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 150% /app/payroll-export errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/payroll-export | AUDIT-M | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 200% /app/payroll-export errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/requests | AUDIT-M | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 200% /app/requests errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/schedule | AUDIT-M | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit AUDIT-M 390 200% /app/schedule errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 
 ### Timeout and server observations (separate from UI findings)
 
