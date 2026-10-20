@@ -1107,8 +1107,8 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 /* P1: the selected section tab (Payroll settings, runs, exports) showed a blank white block. The hit-area ::after took the
  * old dark-band tab's white underline and stretched it over the label. Section tabs get their hit area from ::before, and
  * their ::after is a 2px ink underline under the current tab. */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track > :is(a, button):not(#cm-hit)::after { inset: auto 0 0 0; height: 2px; background: transparent; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track > :is(a, button)[aria-current="page"]:not(#cm-hit)::after { background: var(--cm-label, #111); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track.section-tabs-track.section-tabs-track > :is(a, button):not(#cm-hit)::after { inset: auto 0 0 0; height: 2px; background: transparent; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track.section-tabs-track.section-tabs-track > :is(a, button)[aria-current="page"]:not(#cm-hit)::after { background: var(--cm-label, #111); }
 @media (pointer: coarse), (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track > :is(a, button):not(#cm-hit)::before { content: ""; position: absolute; inset: -6px 0; }
   /* P2: pills in a scrolling strip lost their 44px hit area to the strip's clip; the strip keeps 6px of room above and below. */
@@ -1126,3 +1126,4 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .command-finder-trigger:not(#cm-search):not(#cm-qa) { height: auto; }
 /* P2: a focused row in the More sheet stays clear of its sticky Close bar. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #manager-more-navigation.nevora-action-menu-popover:not(#cm-more) { scroll-padding-bottom: 64px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-masthead__body > .nv-pageband__eyebrow-row:not(#cm-bar) { position: relative; z-index: 2; } /* Team "Add employee" was under the h1 */
