@@ -36,7 +36,7 @@ try{
   report.navigation.push({engine,waitUntil:'domcontentloaded',status:response.status(),elapsedMs:Date.now()-navigationStarted});
   for(const width of [320,375,390,430,768,1024,1440]){
    await page.setViewportSize({width,height:1000});
-   await page.getByRole('button',{name:'Refresh',exact:true}).click();await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
+   await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/reports'&&r.request().method()==='POST'),page.getByRole('button',{name:'Refresh',exact:true}).click()]);await page.waitForFunction(()=>document.querySelector('button[aria-label="Refresh"]')?.getAttribute('aria-busy')!=='true');await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
    const tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';
    const backTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
    const details=page.locator('details').filter({has:page.locator('summary').filter({hasText:'Period details'})});
@@ -59,7 +59,7 @@ try{
      if(g.scroll>g.width+2)overflow.push(i);else assert(g.cells.every(c=>c.visible&&c.unclipped),'All nonoverflowing data cells must be visible and unclipped');
     }
     const focused=()=>page.evaluate(()=>{const e=document.activeElement;return {tag:e?.tagName,text:e?.textContent?.trim(),href:e?.getAttribute('href'),region:e?.matches('.wb-table-scroll')?e.getAttribute('aria-label'):null};});
-    const path=[],reached=[];await summary.focus();
+    const path=[],reached=[];await summary.focus();report.keyPaths.push({engine,viewportWidth:width,path,overflow,reached,start:await focused(),open:await details.evaluate(e=>e.open)});
     for(let step=0;step<30;step++){
      await page.keyboard.press(tab);const active=await focused();path.push(active);
      assert(await page.evaluate(()=>document.hasFocus()),'Native traversal must remain in the foreground page');
@@ -75,7 +75,6 @@ try{
       }
      }
     }
-    report.keyPaths.push({engine,viewportWidth:width,path,overflow,reached});
     assert.equal(path.at(-1)?.text,'Review timecards','Tab must reach the native exit without trapping focus');
     assert.deepEqual(path.filter(e=>e.tag==='A'&&e.href?.startsWith('#')).map(e=>e.href),['#report-hours','#report-attendance','#report-changes','#report-approvals']);
     assert(overflow.every(i=>reached.includes(i)),'Every overflowing region must be reached by native keyboard');

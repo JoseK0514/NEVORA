@@ -34,13 +34,13 @@ async function enroll(owner,p,name){
 }
 async function editBreak(owner,name,category,minutes){
  await goto(owner,'/app/settings/breaks');const row=owner.locator('[data-break-type="ui-rest"]');
- await row.getByRole('button',{name:/^Manage /}).click();await owner.getByRole('button',{name:'Edit',exact:true}).click();const d=owner.getByRole('dialog');
+ await row.getByRole('button',{name:/^Edit /}).click();const d=owner.getByRole('dialog');
  await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel('Reference minutes',{exact:true}).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function archiveBreak(owner,operation){
- const row=owner.locator('[data-break-type="ui-rest"]');await row.getByRole('button',{name:/^Manage /}).click();await owner.getByRole('button',{name:operation,exact:true}).click();
- const d=owner.getByRole('dialog');await d.getByRole('button',{name:operation+' Break Type',exact:true}).click();await d.waitFor({state:'hidden'});
+ const row=owner.locator('[data-break-type="ui-rest"]');await row.getByRole('button',{name:new RegExp('^'+operation+' ')}).click();
+ const d=owner.getByRole('dialog');await d.getByRole('button',{name:operation+' break type',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
 async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}
