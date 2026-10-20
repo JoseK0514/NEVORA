@@ -1,3 +1,4 @@
+import http from 'node:http';
 import {measureRenderedContrast} from './browser-contrast.mjs';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
@@ -23,6 +24,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
  const scenario=await seedOwnedScenario(app.database.executor,label,index+14),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
  const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task11 developer verification',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse,managerContext,manager;
+ const originalHttpRequest=http.request;details.homeTransport=[];
+ http.request=function(...args){const request=originalHttpRequest.apply(this,args),url=args[0];if(url instanceof URL&&url.origin===app.url&&url.pathname==='/api/employee/home'){
+  const record={stage,at:Date.now(),events:[]};details.homeTransport.push(record);
+  request.on('socket',socket=>record.events.push({event:'socket',reused:request.reusedSocket,connecting:socket.connecting,localPort:socket.localPort??null}));
+  request.on('response',response=>record.events.push({event:'response',status:response.statusCode,reused:request.reusedSocket}));
+  request.on('error',error=>record.events.push({event:'error',reset:error.code==='ECONNRESET',reused:request.reusedSocket,destroyed:request.destroyed,writableEnded:request.writableEnded}));
+ }return request;};
  page.on('pageerror',error=>runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')}));
  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/employee/home')binding=request.headers()['x-nevora-home'];});
  const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
@@ -42,10 +50,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
     const response=await route.fetch();operation='parse';if(path.includes('/home'))homeResponse=await response.json();started();await wait;operation='fulfill';
     try{await route.fulfill({response});outcome='fulfilled';}
     catch{if(navigationReleased)outcome='document-left';else if(route.request().failure())outcome='request-aborted';else throw Error('Held response fulfillment failed');}
-   }catch{
+   }catch(error){
     // Never leak Playwright's request headers through an unhandled route error.
     // Unexpected fetch/fulfillment failure remains a failed scenario, not a retry.
-    failure={stage,operation,name:'RouteError'};runtimeErrors.push(failure);started();await route.abort().catch(()=>{});
+    failure={stage,operation,name:'RouteError',transportReset:error.message.includes('ECONNRESET'),requestFailed:!!route.request().failure()};runtimeErrors.push(failure);started();await route.abort().catch(()=>{});
    }finally{finished();}
   };
   return {handler,get seen(){return seen.then(()=>{if(failure)throw Error('Held response operation failed; see sanitized runtimeErrors');});},get done(){return used?done:Promise.resolve();},get outcome(){return outcome;},get failure(){return failure;},release:(reason)=>{if(reason==='navigation'){assert.notEqual(page.url(),documentUrl,'Navigation release requires an actually changed document URL');navigationReleased=true;}release();},path};
@@ -267,5 +275,5 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Communications unavailable',{exact:true}).waitFor();assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await page.getByText("You’re all set.",{exact:true}).waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='axe-diagnostic';await page.addScriptTag({path:axeFile});details.axe=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target.map(t=>String(t).replace(/\[[^\]]*\]/g,'[attribute]')),contrast:n.any.filter(a=>a.id==='color-contrast').map(a=>({ratio:a.data?.contrastRatio,foreground:a.data?.fgColor,background:a.data?.bgColor}))}))}));});assert.deepEqual(details.axe,[]);
  details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
- }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{await managerContext?.close();}
+ }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{http.request=originalHttpRequest;await managerContext?.close();}
 }
