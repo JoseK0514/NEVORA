@@ -101,7 +101,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   const details=ep.locator('.employee-time-entry').first();
   await details.locator('summary').focus();await details.locator('summary').press('Enter');
   const trigger=details.getByRole('button',{name:'Request a correction',exact:true});
-  await trigger.focus();await trigger.press('Enter');
+  await details.evaluate(async e=>{await new Promise(requestAnimationFrame);await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
+  await trigger.focus();assert(await trigger.evaluate(e=>document.hasFocus()&&document.activeElement===e),'Correction trigger must have native foreground focus');await trigger.press('Enter');
   const form=details.locator('.employee-time-correction-form');await form.waitFor();
   await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);
   assert.equal(await form.getByLabel('Start',{exact:true}).inputValue(),local(canonical.start));
