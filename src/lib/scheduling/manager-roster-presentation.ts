@@ -35,3 +35,16 @@ export function filterRoster(employees: RosterEmployee[], query: string) {
   const search = query.trim().toLocaleLowerCase();
   return employees.filter(employee => `${employee.name} ${employee.role}`.toLocaleLowerCase().includes(search));
 }
+
+/** Approved leave dates are inclusive; both time bounds apply on every included day. */
+export type ApprovedAbsence = { employeeId: string; startDate: string; endDate: string; startTime?: string; endTime?: string };
+export type WeeklyApprovedAbsences = { state: "ready"; employeeIds: string[]; rows: ApprovedAbsence[] } | { state: "unavailable"; reason: "access_denied" | "read_failed" };
+export function absencesOn(read: WeeklyApprovedAbsences, employeeId: string, date: string) {
+  return read.state === "ready" ? read.rows.filter(row => row.employeeId === employeeId && row.startDate <= date && row.endDate >= date) : [];
+}
+export function fullDayAbsence(rows: ApprovedAbsence[]) {
+  const periods = rows.map(row => ({start: row.startTime ?? "00:00", end: row.endTime ?? "24:00"})).sort((a,b) => a.start.localeCompare(b.start));
+  let end = "00:00";
+  for (const period of periods) { if (period.start > end) break; if (period.end > end) end = period.end; }
+  return end === "24:00";
+}

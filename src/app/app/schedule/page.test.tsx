@@ -25,6 +25,7 @@ vi.mock('@/app/app/schedule/actions',()=>({copyPreviousWeekAction:vi.fn(),setAva
 vi.mock('@/lib/data/schedule-publication-review',()=>({getSchedulePublishReadiness:async()=>({locationName:'West Office',coverageGaps:3,missingLeadBlocks:1,positionNeedsSetup:false,staffingNeedsSetup:false,coverageNeedsSetup:false,underTargetCount:2,overTargetCount:1,unconfiguredTargetCount:1,hasWarnings:true})}));
 vi.mock('@/lib/data/week-settings',()=>({getWeekSettings:async()=>null}));
 // Clean Manager v3: Schedule shows the week's facts Home used to (availability, open shifts) from the dashboard's read.
+vi.mock('@/lib/data/weekly-approved-absences.server',()=>({readWeeklyApprovedAbsences:async()=>({state:'ready',employeeIds:f.employees.map(e=>e.id),rows:[]})}));
 vi.mock('@/lib/data/manager-dashboard',()=>({loadManagerDashboardData:async()=>f.dashboard}));
 vi.mock('@/lib/data/acknowledgements',()=>({getEmployeeAcknowledgementState:async()=>({latestRevisionId:'latest',acknowledgedRevisionId:'before',needsAcknowledgement:true,acknowledged:false})}));
 vi.mock('@/app/app/schedule/acknowledge-actions',()=>({acknowledgeScheduleAction:vi.fn()}));

@@ -13,6 +13,9 @@ import {
 } from "../../../../test/fixtures/fuel-scheduling-rules";
 import { calculateScheduleHealth } from "../../../../lib/scheduling/schedule-health";
 
+vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));
+vi.mock("@/lib/data/week-settings",()=>({getWeekSettings:async()=>({availabilityDeadline:"2030-10-04T13:00:00.000Z"})}));
+vi.mock("../actions",()=>({setAvailabilityDeadlineAction:vi.fn()}));
 vi.mock("@/lib/data/positions",()=>({listPositions:async()=>[]}));
 vi.mock("@/lib/data/shift-change-policy",()=>({readShiftChangePolicy:async()=>null}));
 vi.mock("@/lib/data/notification-transactions",()=>({neonNotificationExecutor:()=>({})}));
@@ -71,7 +74,7 @@ it("keeps every rule group and native fragment destination available from sectio
   for (const id of ["coverage-staffing", "target-hours", "coverage-windows"]) expect(html).toContain(`id="${id}"`);
   expect(html).toContain('id="staffing-loc-1"');
   expect(html).toContain('Save staffing and hours');
-  expect(html).toContain('href="/app/schedule"');
+  expect(html).toMatch(/href="\/app\/schedule\?week=\d{4}-\d{2}-\d{2}"/);
 });
 
 it("labels staffing and Lead controls separately while retaining submitted field names", async () => {
@@ -291,3 +294,12 @@ vi.mock('@/lib/data/shift-change-policy',()=>({readShiftChangePolicy:async()=>nu
 vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
 vi.mock('@/components/shift-change-policy-fields',()=>import('../../../../components/shift-change-policy-fields'));
 vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
+
+it("renders the selected week's deadline with workspace-local input and safe return destination",async()=>{
+ const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({week:"2030-10-07",deadlineSaved:"1"})}));
+ expect(html).toContain('name="weekStart" value="2030-10-07"');
+ expect(html).toContain('name="returnTo" value="/app/schedule/settings"');
+ expect(html).toContain('value="2030-10-04T09:00"');
+ expect(html).toContain('role="status">Availability deadline saved.');
+ expect(html).toContain('href="/app/schedule?week=2030-10-07"');
+});

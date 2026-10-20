@@ -322,12 +322,14 @@ export async function setAvailabilityDeadlineAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
+  const returnPath = formData.get("returnTo") === "/app/schedule/settings" ? "/app/schedule/settings" : "/app/schedule";
+  const returnUrl = (suffix: string) => `${returnPath}?week=${encodeURIComponent(weekStart)}${suffix}`;
   const deadlineLocal = String(formData.get("availabilityDeadline") ?? "").trim();
 
   if (
     !isValidWeekStart(weekStart)
   ) {
-    redirect("/app/schedule?error=INVALID_SHIFT");
+    redirect(`${returnPath}?error=INVALID_SHIFT`);
   }
 
   let deadlineIso: string | undefined;
@@ -335,7 +337,7 @@ export async function setAvailabilityDeadlineAction(formData: FormData) {
 
   if (deadlineLocal && conversionWorkspace) {
     try { deadlineIso = localDateTimeToInstant(deadlineLocal, conversionWorkspace.timeZone); }
-    catch { redirect(scheduleUrl(weekStart, `&error=INVALID_DEADLINE&availabilityDeadline=${encodeURIComponent(deadlineLocal)}`)); }
+    catch { redirect(returnUrl(`&error=INVALID_DEADLINE&availabilityDeadline=${encodeURIComponent(deadlineLocal)}`)); }
   }
 
   try {
@@ -348,12 +350,13 @@ export async function setAvailabilityDeadlineAction(formData: FormData) {
     });
   } catch (error) {
     if (error instanceof WorkspaceConcurrencyError) {
-      redirect(scheduleUrl(weekStart, `&error=DEADLINE_WORKSPACE_CHANGED&availabilityDeadline=${encodeURIComponent(deadlineLocal)}`));
+      redirect(returnUrl(`&error=DEADLINE_WORKSPACE_CHANGED&availabilityDeadline=${encodeURIComponent(deadlineLocal)}`));
     }
     throw error;
   }
 
   revalidatePath("/app/schedule");
   revalidatePath("/app/availability");
-  redirect(scheduleUrl(weekStart, "&deadlineSaved=1"));
+  revalidatePath("/app/schedule/settings");
+  redirect(returnUrl("&deadlineSaved=1"));
 }
