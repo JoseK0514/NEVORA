@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn() }));
+const state = vi.hoisted(() => ({ create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn() }));
 vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 vi.mock('@/lib/auth/session', () => ({ createSession: state.create, destroySession: state.destroy }));
 vi.mock('@/lib/data/employees', () => ({ findEmployeeCredential: state.credential, getEmployeeActivationState: state.activation, activateEmployeeCredential: state.activate }));
@@ -7,15 +7,23 @@ vi.mock('@/lib/auth/password', () => ({ verifyPassword: state.verify, hashPasswo
 vi.mock('@/lib/notifications/destinations', () => import('../../lib/notifications/destinations'));
 vi.mock('@/lib/notifications/logout', () => ({ prepareInstallationForLogin: state.prepare }));
 vi.mock('@/lib/phone', () => import('../../lib/phone'));
+vi.mock('@/lib/account-deletion/requests.server', () => ({ activeDeletionRequest: state.deletion }));
 import { login, logout } from './actions';
 import { activateAccountAction } from '../activate/actions';
 function form(returnTo?: string) { const f = new FormData(); f.set('employeeId', ' employee '); f.set('password', 'test-password'); f.set('confirmPassword', 'test-password'); f.set('phone', '7875550123'); if (returnTo)
     f.set('returnTo', returnTo); return f; }
-beforeEach(() => { vi.clearAllMocks(); state.activation.mockResolvedValue(null); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional', updated_at:'2030-01-01 00:00:00.123456+00', password_updated_at:'2030-01-01 00:00:00.234567+00' }); state.verify.mockResolvedValue(true); state.activate.mockResolvedValue(true); state.prepare.mockResolvedValue({ state: 'complete' }); });
+beforeEach(() => { vi.clearAllMocks(); state.activation.mockResolvedValue(null); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional', updated_at:'2030-01-01 00:00:00.123456+00', password_updated_at:'2030-01-01 00:00:00.234567+00' }); state.verify.mockResolvedValue(true); state.activate.mockResolvedValue(true); state.prepare.mockResolvedValue({ state: 'complete' }); state.deletion.mockResolvedValue(null); });
 it('login_defaults_and_permissions_remain_unchanged', async () => { await expect(login(form())).rejects.toThrow('redirect:/app'); expect(state.create).toHaveBeenCalledWith('EMPLOYEE',await state.credential()); state.credential.mockResolvedValue(null); await expect(login(form('/app/requests?tab=my'))).rejects.toThrow('redirect:/login?error=invalid'); });
 it('safe_notification_return_is_preserved_after_successful_login', async () => { await expect(login(form('/app/notifications/open?notificationId=fictional'))).rejects.toThrow('redirect:/app/notifications/open?notificationId=fictional'); expect(state.prepare).toHaveBeenCalledWith('EMPLOYEE'); expect(state.prepare.mock.invocationCallOrder[0]).toBeLessThan(state.create.mock.invocationCallOrder[0]); });
 it.each(['https://evil.test', '//evil.test', '/clocker/2', '/app/%2e%2e', '/application'])('unsafe_return_%s_falls_back_to_app', async (path) => { await expect(login(form(path))).rejects.toThrow('redirect:/app'); });
 it('activation_and_errors_keep_validated_return', async () => { const path = '/app/notifications/open?notificationId=fictional'; state.activation.mockResolvedValue({ active: true, has_credential: false }); await expect(login(form(path))).rejects.toThrow(`redirect:/activate?employeeId=EMPLOYEE&returnTo=${encodeURIComponent(path)}`); await expect(activateAccountAction(form(path))).rejects.toThrow(`redirect:/login?activated=1&returnTo=${encodeURIComponent(path)}`); });
+it('an_account_with_an_open_deletion_request_stays_signed_out_after_the_right_password', async () => {
+  state.deletion.mockResolvedValue({ reference: 'DEL-7KQ2M9XA', status: 'received', confirmedAt: '2030-01-01' });
+  await expect(login(form('/app/requests?tab=my'))).rejects.toThrow('redirect:/login?error=deleting&returnTo=%2Fapp%2Frequests%3Ftab%3Dmy');
+  expect(state.create).not.toHaveBeenCalled();
+  state.verify.mockResolvedValue(false);
+  await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');
+});
 it('javascript_disabled_native_signout_exits_after_cleanup_rejection', async () => { state.destroy.mockRejectedValue(new Error('storage failure')); await expect(logout()).rejects.toThrow('redirect:/login'); });
 vi.mock('@/components/brand-mark', () => ({ BrandMark: () => null, BrandWordmark: () => null }));
 vi.mock('@/components/brand-lockup', () => ({ BrandLockup: () => null }));

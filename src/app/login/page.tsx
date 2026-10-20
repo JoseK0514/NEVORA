@@ -37,7 +37,9 @@ export default async function LoginPage({
           </div>
 
           {params.error ? (
-            <p className="form-error" id="login-error" role="alert">Employee ID or password is incorrect.</p>
+            <p className="form-error" id="login-error" role="alert">{params.error === "deleting"
+              ? <>This account is being deleted, so it can’t be used to sign in. Email <a href="mailto:support@thevelani.com">support@thevelani.com</a> with your deletion reference if you have questions.</>
+              : "Employee ID or password is incorrect."}</p>
           ) : null}
           {params.activated ? (
             <p className="form-success" role="status">Account activated. You can sign in now.</p>

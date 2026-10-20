@@ -292,3 +292,7 @@ html body .employee-login-page.auth-refinement-page .brand-legal span { font-siz
 @media (forced-colors: active) {
   .employee-login-page.auth-refinement-page :is(.login-visual-art, .recovery-visual-art, .activation-visual-art) { filter: none; }
 }
+/* Policy links in the sign-in footer (shown once the policies are published). */
+html body .employee-login-page.auth-refinement-page .brand-legal-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 16px; }
+html body .employee-login-page.auth-refinement-page .brand-legal-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--login-blue); font-size: 0.875rem; text-decoration: none; }
+html body .employee-login-page.auth-refinement-page .brand-legal-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
