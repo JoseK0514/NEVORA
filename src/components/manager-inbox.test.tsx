@@ -44,7 +44,8 @@ it('keeps counts separate from labels for assistive tech', () => {
 });
 it('counts only what needs you today in the band (F1)', () => {
   const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('target', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT'), item('deadline', 'DEADLINE_MISSING', 'scheduling', 'MISSING_INPUT')]));
-  expect(output.replace(/\u00a0/g, ' ')).toContain('1 request needs you.');
+  // Clean Manager (v3): the band says the one count, as Home does.
+  expect(output.replace(/\u00a0/g, ' ')).toContain('1 thing needs you today.');
   expect(output).toContain('aria-label="Plan ahead, 2"');
   expect(output).not.toMatch(/miss(ed|ing) punch/i);
 });
