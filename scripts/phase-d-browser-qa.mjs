@@ -52,8 +52,8 @@ try{
     for(const width of [320,375,390,430,768,1024,1440]){
       await ep.setViewportSize({width,height:1000});
       const geometry=await ep.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,
-        controls:[...document.querySelectorAll('section[aria-label="Your period timecard"] button,section[aria-label="Your period timecard"] input')].map(e=>e.getBoundingClientRect().height)}));
-      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);assert(geometry.controls.every(h=>h>=43.5));checked(`${engine}: employee geometry ${width}`);
+        controls:[...document.querySelectorAll('section[aria-label="Your period timecard"] button,section[aria-label="Your period timecard"] input')].map(e=>({h:e.getBoundingClientRect().height,name:(e.getAttribute('aria-label')||e.textContent||e.name||e.type).trim().slice(0,40)}))}));
+      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);assert(geometry.controls.every(c=>c.h>=43.5),`${engine} ${width} controls under 44px: ${JSON.stringify(geometry.controls.filter(c=>c.h<43.5))}`);checked(`${engine}: employee geometry ${width}`);
     }
     await ep.getByLabel('Period start').focus();assert(await ep.getByLabel('Period start').evaluate(e=>document.activeElement===e));await ep.keyboard.press('Tab');checked(engine+': period keyboard focus');
     const {context:management,page:mp}=await context(browser,'D3-M');await mp.goto(app.url+url);
