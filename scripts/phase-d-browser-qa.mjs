@@ -61,16 +61,16 @@ try{
     const openCard=async()=>{await mp.locator('#timecard-D3-E').getByRole('button').click();await card.getByRole('heading',{name:/^(Avery|Renamed) Period QA$/}).waitFor();};
     const refreshCards=async()=>{await card.getByRole('button',{name:'Done',exact:true}).click();await mp.getByRole('button',{name:'Refresh timecards',exact:true}).click();await openCard();};
     await openCard();
-    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByText('Approved',{exact:true}).waitFor();
-    await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByText('Finalized',{exact:true}).waitFor();
+    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();
+    await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
     const frozenRevisions=await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' ORDER BY revision");
     const labels=await q("SELECT name,short_name FROM locations WHERE id='loc-1'");
     await q("UPDATE employees SET first_name='Renamed' WHERE id='D3-E'");await q("UPDATE locations SET name='Renamed historical location',short_name='Renamed' WHERE id='loc-1'");
-    await refreshCards();await card.getByText('Finalized',{exact:true}).waitFor();
-    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await card.getByText('Reopened',{exact:true}).waitFor();
+    await refreshCards();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
+    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Reopened$/}).waitFor();
     assert.deepEqual(await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' AND revision<=(SELECT max(revision)-1 FROM timecard_revisions WHERE employee_id='D3-E') ORDER BY revision"),frozenRevisions);
     await q("UPDATE employees SET first_name='Avery' WHERE id='D3-E'");await q("UPDATE locations SET name=$1,short_name=$2 WHERE id='loc-1'",[labels[0].name,labels[0].short_name]);
-    await refreshCards();await card.getByText('Reopened',{exact:true}).waitFor();checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
+    await refreshCards();await card.getByRole('definition').filter({hasText:/^Reopened$/}).waitFor();checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
     assert.match(await card.textContent(),/Historical revisions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
     for(const width of [320,375,390,430,768,1024,1440]){
       await mp.setViewportSize({width,height:1000});
@@ -86,7 +86,7 @@ try{
     await ep.unroute('**/api/timecards');
     const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
     assert.equal(await lp.getByRole('button',{name:'Approve timecard',exact:true}).count(),0);checked(engine+': Lead self-service without management controls');
-    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByText('Approved',{exact:true}).waitFor();await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByText('Finalized',{exact:true}).waitFor();
+    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
     await mp.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');await mp.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
     await mp.getByRole('checkbox',{name:/Avery Period QA/}).check();await mp.getByRole('button',{name:'Generate reviewed export',exact:true}).click();await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();checked(engine+': finalized neutral export receipt verified');
     for(const [name,extension] of [['Download mapped CSV','csv'],['Download canonical time record','json']]){const waiting=mp.waitForEvent('download');await mp.getByRole('button',{name,exact:true}).click();const file=await waiting;await file.saveAs(join(evidence,`${engine}-payroll-neutral.${extension}`));}checked(engine+': canonical and mapped export downloads');

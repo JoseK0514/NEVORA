@@ -54,7 +54,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   if(rows.length>3){
    const summary=overflow.locator('summary'),peer=page.locator(`[data-home-group="${kind==='actions'?'updates':'actions'}"] details`),peerOpen=await peer.count()?await peer.evaluate(e=>e.open):null;
    assert.equal(await overflow.evaluate(e=>e.open),false);await summary.focus();await page.keyboard.press('Enter');assert.equal(await overflow.evaluate(e=>e.open),true);assert(await summary.evaluate(e=>e.matches(':focus-visible')));
-   for(const link of await group.locator('li a').all())assert(await link.isVisible());
+   for(const link of await group.locator('li a').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
    await page.keyboard.press('Space');assert.equal(await overflow.evaluate(e=>e.open),false);await page.keyboard.press('Enter');assert.equal(await overflow.evaluate(e=>e.open),true);
    if(peerOpen!==null)assert.equal(await peer.evaluate(e=>e.open),peerOpen);
    disclosure.keyboardObserved=true;
