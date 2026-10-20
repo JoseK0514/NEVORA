@@ -14,6 +14,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import './profile.css';
 import {PageBand} from '@/components/kit/kit';
 import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
+import {PasskeySection} from '@/components/passkeys/passkey-section';
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
  const authority=employeeViewAuthority(proof,'profile');
@@ -38,6 +39,7 @@ export default async function ProfilePage(){
    </div>
   </section>
   </div>
+  <PasskeySection/>
   <section className="profile-signout" aria-label="Session"><PortalSignout><button type="submit" className="profile-setting-row profile-signout-row"><span className="profile-setting-copy"><NavIcon name="logout" size={20}/><strong>Sign out</strong></span></button></PortalSignout></section>
   </div></div>
  </ProfileFrame>;

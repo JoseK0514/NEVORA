@@ -7,7 +7,7 @@ import { readAuthLang } from "@/lib/auth-lang.server";
 import { AuthShell, WorkspaceEyebrow } from "@/components/auth-premium/auth-shell";
 import { Greeting } from "@/components/auth-premium/greeting";
 import { PasswordInput } from "@/components/auth-premium/password-input";
-import { PasskeySlot } from "@/components/auth-premium/passkey-slot";
+import { PasskeySlot, PasswordSignInMarker } from "@/components/auth-premium/passkey-slot";
 import { LoginSubmit } from "./login-submit";
 import "./auth-premium.css";
 
@@ -38,6 +38,7 @@ export default async function LoginPage({
 
       <form action={login} className="ap-form" data-invalid={params.error ? "" : undefined}>
         {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
+        <PasswordSignInMarker />
         <div className="ap-field">
           <label className="ap-label" htmlFor="login-employee-id">{t.employeeId}</label>
           <div className="ap-box">

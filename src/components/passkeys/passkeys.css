@@ -1,0 +1,25 @@
+/* Face ID and passkeys in Profile, and the one-time offer sheet. Kit tokens; rem sizes. */
+.pk-body { display: flex; flex-direction: column; gap: 12px; }
+.pk-muted { margin: 0; font: var(--nv-t-callout, 400 .9375rem/1.375rem system-ui); color: var(--nv-muted, #5F625E); text-wrap: pretty; }
+.pk-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.pk-item { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 0; border-top: 1px solid var(--nv-hairline, #ECECEA); }
+.pk-item:first-child { border-top: 0; }
+.pk-item__text { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.pk-item__name { font: var(--nv-t-row, 500 1rem/1.375rem system-ui); color: var(--nv-ink, #161C1B); overflow-wrap: anywhere; }
+.pk-item__meta { font: var(--nv-t-callout, 400 .875rem/1.25rem system-ui); color: var(--nv-muted, #5F625E); }
+.pk-remove { flex: none; min-height: 44px; }
+.pk-add { align-self: flex-start; }
+.pk-notice { margin: 0; padding: 10px 12px; border-radius: 10px; font: 500 .875rem/1.25rem system-ui, -apple-system, sans-serif; }
+.pk-notice[data-tone="done"] { background: var(--nv-done-fill, #E7F4EC); color: var(--nv-done-ink, #1D5B36); }
+.pk-notice[data-tone="error"] { background: var(--nv-urgent-fill, #FDECEC); color: var(--nv-urgent-ink, #B42318); }
+.pk-dialog { width: min(440px, calc(100vw - 32px)); max-width: none; padding: 0; border: 0; border-radius: 20px; background: var(--nv-canvas, #FFFFFF); color: var(--nv-ink, #161C1B); box-shadow: 0 24px 64px rgba(16, 40, 38, .28); }
+.pk-dialog::backdrop { background: rgba(16, 40, 38, .45); }
+.pk-dialog__form { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 24px; }
+.pk-dialog__title { margin: 0; font: 600 1.25rem/1.625rem system-ui, -apple-system, sans-serif; letter-spacing: -.01em; text-wrap: balance; }
+.pk-dialog__actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.pk-dialog__actions .nv-btn { width: 100%; }
+.pk-offer__icon { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: var(--nv-accent-wash, #E7F3F2); color: var(--nv-accent-strong, #055C5A); }
+@media (max-width: 599px) {
+  .pk-dialog { width: 100vw; margin: auto 0 0; border-radius: 20px 20px 0 0; }
+  .pk-dialog__form { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+}

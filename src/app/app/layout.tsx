@@ -32,6 +32,7 @@ import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/se
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import { DEFAULT_TOKENS } from "@/lib/workspace-presentation/derive";
+import { PasskeyOffer } from "@/components/passkeys/passkey-offer";
 
 export const metadata: Metadata = {
   manifest: "/fuel-portal.webmanifest",
@@ -73,6 +74,8 @@ export default async function PlatformLayout({ children }: { children: ReactNode
       }}
     >
       {children}
+      {/* Face ID offer after a password sign-in (hidden unless NEXT_PUBLIC_NEVORA_PASSKEYS=on). */}
+      <PasskeyOffer />
     </AppShell>
   );
 }
