@@ -83,8 +83,8 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   const approvals=new Map(await Promise.all([...livePending.map(e=>({id:e.id,revision:e.requestRevision,kind:'MANAGER_APPROVE' as const})),...callouts.map(e=>({id:e.id,revision:e.requestRevision,kind:'APPROVE_CALLOUT' as const}))].map(async e=>[e.id,e.revision?await readShiftChangeAvailability(proof,{kind:e.kind,requestId:e.id,expectedRevision:e.revision,operationId:randomUUID()}).catch(()=>({allowed:false,notice:'We couldn’t check this right now. Reload to try again.'})):{allowed:false,notice:'This request changed. Reload to see the latest.'}] as const)));
   const historyViews=new Map(await Promise.all([...exchanges,...history].map(async e=>[e.id,await readShiftChangeHistoryView(proof,e.id).catch(()=>null)] as const)));
   const activity = [
-    ...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, title: `${exchange.kind === "SWAP" ? "Swap" : "Coverage"} · ${exchange.requestedByName}`, lead: exchangeLead(exchange), body: <ExchangeShifts exchange={exchange} /> })),
-    ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, title: `Unable to work · ${callout.employeeName}`, lead: null, body: <>
+    ...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, title: `${exchange.kind === "SWAP" ? "Swap" : "Coverage"}\u00a0· ${exchange.requestedByName}`, lead: exchangeLead(exchange), body: <ExchangeShifts exchange={exchange} /> })),
+    ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, title: `Unable to work\u00a0· ${callout.employeeName}`, lead: null, body: <>
       <CalloutFacts callout={callout} />
       {callout.status === "APPROVED" && !callout.releaseApplies ? <p className="wa-card-note">This approval was for an earlier version of the shift. Check who is assigned now.</p> : null}
     </> })),
@@ -107,7 +107,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
 
       {livePending.length || callouts.length || liveCoverage.length ? <div className="wa-grid">
       {livePending.map(exchange => <div className="wa-target" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
-        <Card title={`${exchange.kind === "SWAP" ? "Swap" : "Coverage"} · ${exchange.requestedByName}`} meta={<Status tone="review">Waiting</Status>}>
+        <Card title={`${exchange.kind === "SWAP" ? "Swap" : "Coverage"}\u00a0· ${exchange.requestedByName}`} meta={<Status tone="review">Waiting</Status>}>
           <p className="wa-card-lead">{exchangeLead(exchange)}</p>
           <ExchangeShifts exchange={exchange} />
           {decisionNotice(exchange.id)}
@@ -124,7 +124,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
       </div>)}
 
       {callouts.map(callout => <div className="wa-target" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
-        <Card title={`Unable to work · ${callout.employeeName}`} meta={<Status tone="review">Waiting</Status>}>
+        <Card title={`Unable to work\u00a0· ${callout.employeeName}`} meta={<Status tone="review">Waiting</Status>}>
           <p className="wa-card-lead">Can’t work this shift</p>
           <CalloutFacts callout={callout} />
           {callout.status === "APPROVED" && !callout.releaseApplies ? <p className="wa-card-note">This approval was for an earlier version of the shift. Check who is assigned now.</p> : null}
@@ -141,7 +141,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
         </Card>
       </div>)}
 
-      {liveCoverage.map(exchange => <Card key={exchange.id} title={`Coverage · ${exchange.requestedByName}`} meta={<Status tone="neutral">Not picked up</Status>}>
+      {liveCoverage.map(exchange => <Card key={exchange.id} title={`Coverage\u00a0· ${exchange.requestedByName}`} meta={<Status tone="neutral">Not picked up</Status>}>
         <p className="wa-card-lead">{exchangeLead(exchange)}</p>
         <ExchangeShifts exchange={exchange} />
         <p className="wa-card-note">Closing stops anyone else from picking it up. The shift stays with {exchange.requestedByName}.</p>

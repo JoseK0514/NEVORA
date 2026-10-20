@@ -61,7 +61,7 @@ export default async function EmployeeProfilePage({
   // then Details (contact, access, tablet PIN, sign-in help) and Scheduling (positions, locations, Owner rules).
   return (
     <div className="nv-page wa-page wa-member" data-nv-page="">
-      <PageBand overlap={false} back={{ href: "/app/employees", label: "Team" }} eyebrow={`${roleLabel} · ${employee.active ? "Active" : "Inactive"}`}
+      <PageBand overlap={false} back={{ href: "/app/employees", label: "Team" }} eyebrow={`${roleLabel}\u00a0· ${employee.active ? "Active" : "Inactive"}`}
         title={`${employee.firstName} ${employee.lastName}`}
         summary={<MetaParts text={[primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : "No primary location", formatPhoneNumber(employee.phone), employee.email].filter(Boolean).join(" · ")} />} />
       <div className="nv-content wa-narrow">
