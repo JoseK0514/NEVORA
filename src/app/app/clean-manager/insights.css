@@ -45,7 +45,6 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 /* ============================ Phones ============================ */
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   /* The page has its own navigation bar (‹ More, Export), as in the mockup; the shell's bar steps aside here. */
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d):has(.cm-insights) .mobile-header { display: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-insights__nav {
     position: sticky; top: 0; z-index: 20; display: flex; align-items: center; min-height: 44px; margin: 0; padding: 0 4px 0 8px;
     background: rgba(242, 242, 247, .94); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
@@ -200,4 +199,10 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 @media print {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights :is(.cm-insights__nav, .cm-insights__seg, .cm-insights__menu, .cm-insights__custom, .cm-refresh) { display: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-chart__bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* With the shell's phone header kept (bell and search stay reachable), the page's own bar sits right under it, above the title. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights { position: relative; padding-top: 44px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-insights__nav { position: absolute; top: 0; left: 16px; right: 16px; margin: 0; }
 }
