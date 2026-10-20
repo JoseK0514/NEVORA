@@ -30,17 +30,17 @@ try{
   await record(engine+' employee cross-tab account switch clears uncertain missing command',async o=>{
    const c=await context();try{
     await login(c,'RV-E1');const p=await page(c,'/app/my-time');
-    await p.getByRole('button',{name:'Report missing time',exact:true}).click();const form=p.locator('#employee-missing-time-correction');
+    await p.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();const form=p.locator('#employee-missing-time-correction');
     await form.getByLabel('Start',{exact:true}).fill(`2020-10-${dates[0]}T02:00`);await form.getByLabel('End',{exact:true}).fill(`2020-10-${dates[0]}T03:00`);await form.getByLabel('Reason',{exact:true}).fill('RV-E1 private fictional reason '+engine);
     const commands=[];await p.route('**/api/employee/time-corrections',route=>{if(route.request().method()!=='POST')return route.continue();commands.push(route.request().postDataJSON());return commands.length===1?route.abort('failed'):route.continue();});
-    await form.getByRole('button',{name:'Send request',exact:true}).click();await p.getByRole('button',{name:'Retry same request',exact:true}).waitFor();
+    await form.getByRole('button',{name:'Send request',exact:true}).click();await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).waitFor();
     const preCount=(await q('SELECT count(*)::int AS n FROM time_correction_requests WHERE id=$1',[commands[0].operationId]))[0].n;assert.equal(preCount,0);
     await login(c,'RV-E2');await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));
-    await p.getByText('Sign in again',{exact:true}).waitFor();
-    const retryCount=await p.getByRole('button',{name:'Retry same request',exact:true}).count();
+    await p.locator('main .employee-time-message').getByText('Your session ended',{exact:true}).waitFor();
+    const retryCount=await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).count();
     await p.screenshot({path:dir+'/'+engine+'-employee-account-switch.png',fullPage:true});
     o({beforeCommit:true,originalAccount:'RV-E1',currentAccount:'RV-E2',retryCount,commandsBeforeRetry:JSON.parse(JSON.stringify(commands)),originalRequestCount:preCount});
-    if(retryCount){await p.getByRole('button',{name:'Retry same request',exact:true}).click();await p.getByText('Correction request sent for manager review.',{exact:true}).waitFor();o({replayedCommand:commands[1],sameCommand:JSON.stringify(commands[1])===JSON.stringify(commands[0]),persisted:await q('SELECT id::text,employee_id,reason FROM time_correction_requests WHERE id=$1',[commands[0].operationId])});}
+    if(retryCount){await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).click();await p.getByText('Correction request sent for manager review.',{exact:true}).waitFor();o({replayedCommand:commands[1],sameCommand:JSON.stringify(commands[1])===JSON.stringify(commands[0]),persisted:await q('SELECT id::text,employee_id,reason FROM time_correction_requests WHERE id=$1',[commands[0].operationId])});}
     assert.equal(retryCount,0,'Recovery must be cleared when the authenticated account changes in another tab');
    }finally{await c.close();}
   });
@@ -59,9 +59,9 @@ try{
   });
   await record(engine+' Employee malformed committed body retains exact-operation recovery',async o=>{
    const c=await context();try{
-    await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.getByRole('button',{name:'Report missing time',exact:true}).click();const form=p.locator('#employee-missing-time-correction');await form.getByLabel('Start',{exact:true}).fill(`2020-10-${dates[2]}T02:00`);await form.getByLabel('End',{exact:true}).fill(`2020-10-${dates[2]}T03:00`);await form.getByLabel('Reason',{exact:true}).fill('Malformed body fictional '+engine);
+    await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();const form=p.locator('#employee-missing-time-correction');await form.getByLabel('Start',{exact:true}).fill(`2020-10-${dates[2]}T02:00`);await form.getByLabel('End',{exact:true}).fill(`2020-10-${dates[2]}T03:00`);await form.getByLabel('Reason',{exact:true}).fill('Malformed body fictional '+engine);
     const commands=[];await p.route('**/api/employee/time-corrections',async route=>{if(route.request().method()!=='POST')return route.continue();commands.push(route.request().postDataJSON());if(commands.length!==1)return route.continue();const result=await route.fetch();assert.equal(result.status(),202);return route.fulfill({status:202,contentType:'application/json',body:'{'});});
-    await form.getByRole('button',{name:'Send request',exact:true}).click();await p.getByRole('button',{name:'Retry same request',exact:true}).waitFor();await p.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await p.getByText('Updates paused',{exact:true}).waitFor();await p.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await p.getByRole('button',{name:'Retry same request',exact:true}).waitFor();await p.getByRole('button',{name:'Retry same request',exact:true}).click();await p.getByText('Correction request sent for manager review.',{exact:true}).waitFor();assert.deepEqual(commands[1],commands[0]);assert.equal(commands.length,2);assert.equal((await q('SELECT count(*)::int AS n FROM time_correction_requests WHERE id=$1',[commands[0].operationId]))[0].n,1);o({commandsIdentical:true,postCalls:2,logicalMutations:1});
+    await form.getByRole('button',{name:'Send request',exact:true}).click();await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).waitFor();await p.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await p.getByText('Updates paused',{exact:true}).waitFor();await p.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).waitFor();await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).click();await p.getByText('Correction request sent for manager review.',{exact:true}).waitFor();assert.deepEqual(commands[1],commands[0]);assert.equal(commands.length,2);assert.equal((await q('SELECT count(*)::int AS n FROM time_correction_requests WHERE id=$1',[commands[0].operationId]))[0].n,1);o({commandsIdentical:true,postCalls:2,logicalMutations:1});
    }finally{await c.close();}
   });
 
@@ -69,7 +69,7 @@ try{
    await record(engine+' '+scenario+' rejects stale intent and clears late committed responses',async o=>{
     const c=await context();let release;
     try{
-     await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.getByRole('button',{name:'Report missing time',exact:true}).click();const form=p.locator('#employee-missing-time-correction');
+     await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();const form=p.locator('#employee-missing-time-correction');
      const day=scenario==='committed account switch'?(engine==='chromium'?'03':'13'):(engine==='chromium'?'04':'14');
      await form.getByLabel('Start',{exact:true}).fill(`2020-11-${day}T02:00`);await form.getByLabel('End',{exact:true}).fill(`2020-11-${day}T03:00`);await form.getByLabel('Reason',{exact:true}).fill('RV-E1 late private fictional reason '+engine+' '+scenario);
      let original,authority,committed=false;const barrier=new Promise(resolve=>{release=resolve;});
@@ -78,24 +78,24 @@ try{
       const response=await route.fetch();assert.equal(response.status(),202);committed=true;await barrier;return route.fulfill({status:202,contentType:'application/json',body:'{'});
      });
      await form.getByRole('button',{name:'Send request',exact:true}).click();const deadline=Date.now()+15000;while(!committed){assert(Date.now()<deadline);await new Promise(resolve=>setTimeout(resolve,20));}
-     await login(c,currentAccount);await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.getByText('Sign in again',{exact:true}).waitFor();
+     await login(c,currentAccount);await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.locator('main .employee-time-message').getByText('Your session ended',{exact:true}).waitFor();
      const settled=p.waitForResponse(r=>r.url().endsWith('/api/employee/time-corrections')&&r.request().method()==='POST');release();await settled;
      // Wait for the obsolete promise to settle; it must not resurrect shared recovery.
-     await p.waitForTimeout(150);assert.equal(await p.getByRole('button',{name:'Retry same request',exact:true}).count(),0);assert(!await p.locator('body').innerText().then(t=>t.includes('late private fictional reason')));
+     await p.waitForTimeout(150);assert.equal(await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).count(),0);assert(!await p.locator('body').innerText().then(t=>t.includes('late private fictional reason')));
      const refused=await Promise.all([1,2].map(()=>c.request.post(app.url+'/api/employee/time-corrections',{headers:{...headers(),'X-Nevora-Correction-Authority':authority},data:original})));
      assert.deepEqual(refused.map(r=>r.status()),[403,403]);const rows=await q('SELECT employee_id FROM time_correction_requests WHERE id=$1',[original.operationId]);assert.deepEqual(rows,[{employee_id:'RV-E1'}]);
-     await p.reload({waitUntil:'networkidle'});assert.equal(await p.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
+     await p.reload({waitUntil:'networkidle'});assert.equal(await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).count(),0);
      o({originalAccount:'RV-E1',currentAccount,staleConcurrentStatuses:[403,403],logicalRequests:1,lateReplyDiscarded:true,remountHasNoStaleRetry:true});
     }finally{release?.();await c.close();}
    });
   }
   await record(engine+' expired employee session refuses uncommitted recovery',async o=>{
    const c=await context();try{
-    await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.getByRole('button',{name:'Report missing time',exact:true}).click();const form=p.locator('#employee-missing-time-correction');const day=engine==='chromium'?'05':'15';
+    await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();const form=p.locator('#employee-missing-time-correction');const day=engine==='chromium'?'05':'15';
     await form.getByLabel('Start',{exact:true}).fill(`2020-11-${day}T02:00`);await form.getByLabel('End',{exact:true}).fill(`2020-11-${day}T03:00`);await form.getByLabel('Reason',{exact:true}).fill('Expired fictional intent '+engine);let command,authority;
     await p.route('**/api/employee/time-corrections',route=>{if(route.request().method()!=='POST')return route.continue();command=route.request().postDataJSON();authority=route.request().headers()['x-nevora-correction-authority'];return route.abort('failed');});
-    await form.getByRole('button',{name:'Send request',exact:true}).click();await p.getByRole('button',{name:'Retry same request',exact:true}).waitFor();
-    await q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id='RV-E1'");await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.getByText('Sign in again',{exact:true}).waitFor();assert.equal(await p.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
+    await form.getByRole('button',{name:'Send request',exact:true}).click();await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).waitFor();
+    await q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id='RV-E1'");await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.locator('main .employee-time-message').getByText('Your session ended',{exact:true}).waitFor();assert.equal(await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).count(),0);
     const response=await c.request.post(app.url+'/api/employee/time-corrections',{headers:{...headers(),'X-Nevora-Correction-Authority':authority},data:command});assert.equal(response.status(),401);assert.equal((await q('SELECT count(*)::int AS n FROM time_correction_requests WHERE id=$1',[command.operationId]))[0].n,0);
     o({status:401,logicalRequests:0,retryCleared:true});
    }finally{await c.close();}

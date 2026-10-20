@@ -52,7 +52,7 @@ try{
     const overflow=[];
     for(let i=0;i<4;i++){
      const region=scrolls.nth(i);const g=await region.evaluate(e=>{
-      const bounds=e.getBoundingClientRect();return {width:e.clientWidth,scroll:e.scrollWidth,name:e.getAttribute('aria-label'),headers:[...e.querySelectorAll('thead th')].map(c=>c.textContent.trim()),cells:[...e.querySelectorAll('tbody th,tbody td')].map(c=>{const box=c.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(c);const text=range.getBoundingClientRect();return {text:c.textContent.trim(),visible:box.width>0&&box.height>0,unclipped:c.scrollWidth<=c.clientWidth+2&&text.left>=bounds.left-2&&text.right<=bounds.right+2};})};
+      const bounds=e.getBoundingClientRect();return {width:e.clientWidth,scroll:e.scrollWidth,name:e.getAttribute('aria-label'),headers:[...e.querySelectorAll('thead th')].map(c=>c.textContent.trim()),cells:[...e.querySelectorAll('tbody th,tbody td')].map(c=>{const box=c.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(c);const text=range.getBoundingClientRect();return {text:(c.querySelector('.wb-cell-value')??c).textContent.trim(),visible:box.width>0&&box.height>0,unclipped:c.scrollWidth<=c.clientWidth+2&&text.left>=bounds.left-2&&text.right<=bounds.right+2};})};
      });report.geometry.push({engine,viewportWidth:width,region:i,...g});
      assert.deepEqual(g.headers,i===0?['Employee','Recorded time']:['Name','Recorded time','Breaks recorded']);assert(g.cells.some(c=>c.text==='8h'),'Known recorded hours remain in every table');
      if(i<2)assert(g.cells.some(c=>c.text==='LongReportEmployee'.repeat(4)+' QA'),'Complete fictional long name remains');
