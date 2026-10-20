@@ -149,9 +149,8 @@ const DAY = 24 * 60 * 60 * 1000;
 
 /** Set when the password form is submitted; the app reads it once after the sign-in lands. */
 export function markPasswordSignIn() { try { sessionStorage.setItem(OFFER_PENDING, "1"); } catch { /* storage off: no offer */ } }
-export function takePasswordSignIn(): boolean {
-  try { const pending = sessionStorage.getItem(OFFER_PENDING) === "1"; sessionStorage.removeItem(OFFER_PENDING); return pending; } catch { return false; }
-}
+export function passwordSignInPending(): boolean { try { return sessionStorage.getItem(OFFER_PENDING) === "1"; } catch { return false; } }
+export function clearPasswordSignIn() { try { sessionStorage.removeItem(OFFER_PENDING); } catch { /* storage off */ } }
 /** "Not now" is remembered on this device for 30 days. */
 export function offerDismissedRecently(now = Date.now()): boolean {
   try { const at = Number(localStorage.getItem(OFFER_DISMISSED)); return Number.isFinite(at) && at > 0 && now - at < 30 * DAY; } catch { return true; }

@@ -22,6 +22,7 @@ export function PasskeySection() {
   const [confirm, setConfirm] = useState<Passkey | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
+  const addButton = useRef<HTMLButtonElement>(null);
   const flagOn = passkeysFlagOn();
 
   const refresh = useCallback(async () => {
@@ -35,7 +36,11 @@ export function PasskeySection() {
     void listPasskeys().then(result => { if (live) setLoad(result.ok ? { state: "ready", passkeys: result.value.passkeys ?? [] } : { state: "failed" }); });
     return () => { live = false; };
   }, [flagOn]);
-  useEffect(() => { if (confirm) dialog.current?.showModal(); else if (dialog.current?.open) dialog.current.close(); }, [confirm]);
+  // Keep (the safe choice) takes focus when the confirmation opens.
+  useEffect(() => {
+    if (confirm) { dialog.current?.showModal(); dialog.current?.querySelector<HTMLElement>("[data-autofocus]")?.focus(); }
+    else if (dialog.current?.open) dialog.current.close();
+  }, [confirm]);
 
   if (!flagOn) return null;
 
@@ -53,9 +58,8 @@ export function PasskeySection() {
     setBusy("remove");
     const result = await removePasskey(passkey.id);
     setBusy(null); setConfirm(null);
-    if (result.ok) { setNotice({ tone: "done", text: t.removedDone }); await refresh(); }
-    else setNotice({ tone: "error", text: t.removeFailed });
-    opener.current?.focus();
+    if (result.ok) { setNotice({ tone: "done", text: t.removedDone }); await refresh(); addButton.current?.focus(); }
+    else { setNotice({ tone: "error", text: t.removeFailed }); opener.current?.focus(); }
   }
 
   const passkeys = load.state === "ready" ? load.passkeys : [];
@@ -79,7 +83,7 @@ export function PasskeySection() {
           ))}
         </ul> : null}
         {notice ? <p className="pk-notice" data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
-        {supported ? <button type="button" className="nv-btn pk-add" data-kind="secondary" onClick={() => void add()} disabled={busy !== null} aria-busy={busy === "add"}>
+        {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={() => void add()} disabled={busy !== null} aria-busy={busy === "add"}>
           {busy === "add" ? t.settingUp : phone ? t.setUpPhone : t.setUpDesktop}
         </button> : <p className="pk-muted">{t.notSupported}</p>}
       </div>
@@ -90,7 +94,7 @@ export function PasskeySection() {
           <p id="passkey-remove-body" className="pk-muted">{t.confirmBody}</p>
           <div className="pk-dialog__actions">
             <button type="button" className="nv-btn" data-kind="danger" onClick={() => void remove(confirm)} disabled={busy === "remove"} aria-busy={busy === "remove"}>{busy === "remove" ? t.removing : t.remove}</button>
-            <button type="button" className="nv-btn" data-kind="secondary" autoFocus onClick={() => setConfirm(null)} disabled={busy === "remove"}>{t.keep}</button>
+            <button type="button" className="nv-btn" data-kind="secondary" data-autofocus="" onClick={() => setConfirm(null)} disabled={busy === "remove"}>{t.keep}</button>
           </div>
         </form> : null}
       </dialog>

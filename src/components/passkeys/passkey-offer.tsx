@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PASSKEY_COPY } from "@/lib/passkeys/copy";
-import { deviceName, dismissOffer, isPhoneLike, listPasskeys, offerDismissedRecently, passkeysAvailable, registerPasskey, takePasswordSignIn } from "@/lib/passkeys/client";
+import { clearPasswordSignIn, deviceName, dismissOffer, isPhoneLike, listPasskeys, offerDismissedRecently, passkeysAvailable, passwordSignInPending, registerPasskey } from "@/lib/passkeys/client";
 import "./passkeys.css";
 
 const t = PASSKEY_COPY.en;
@@ -16,13 +16,18 @@ export function PasskeyOffer() {
   const sheet = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    if (!takePasswordSignIn() || !passkeysAvailable() || !isPhoneLike() || offerDismissedRecently()) return;
+    if (!passwordSignInPending()) return;
+    if (!passkeysAvailable() || !isPhoneLike() || offerDismissedRecently()) { clearPasswordSignIn(); return; }
+    // The flag is cleared only when a check finishes, so a re-run effect (React's development double run) still sees it.
     let live = true;
     (async () => {
       const platform = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable?.().catch(() => false);
-      if (!platform || !live) return;
+      if (!live) return;
+      if (!platform) { clearPasswordSignIn(); return; }
       const saved = await listPasskeys();
-      if (live && saved.ok && (saved.value.passkeys ?? []).length === 0) setOpen(true);
+      if (!live) return;
+      clearPasswordSignIn();
+      if (saved.ok && (saved.value.passkeys ?? []).length === 0) setOpen(true);
     })();
     return () => { live = false; };
   }, []);

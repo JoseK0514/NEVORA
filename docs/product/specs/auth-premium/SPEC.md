@@ -50,7 +50,7 @@ Check every text pair at 4.5:1 and every control boundary at 3:1 (placeholder `#
 - Fields: 52px tall (phone 50), radius 10, paper fill, 1px rule border. Focus: ink border with a 0.5px ink ring plus a 4px `rgba(13,54,52,.08)` halo. Errors: keep the current error colour and message placement; the border takes the error colour.
 - Primary button: 52px, radius 10, deep fill, white 16/20 weight 500. Pressed: 96% scale for 120ms (none with reduced motion). Busy: keep the current busy text.
 - Secondary links: ink with a `rule` underline, 15/22.
-- "or" divider and "Sign in with a passkey" (desktop) / "Sign in with Face ID" (phone): **build it hidden.** It needs WebAuthn from Codex, so leave the slot in place behind a flag that stays off.
+- "or" divider and "Sign in with a passkey" (desktop) / "Sign in with Face ID" (phone): built (October 20, Jose: "including Face ID"). Shown only when `NEXT_PUBLIC_NEVORA_PASSKEYS=on` and the browser has WebAuthn. Codex builds the server: `POST /api/auth/passkey/login/{options,verify}`, `POST /api/auth/passkey/register/{options,verify}`, `GET /api/auth/passkeys`, `DELETE /api/auth/passkeys/:id`, errors `{error: not_supported | cancelled | not_found | rate_limited | account_disabled | unavailable}`. The client is `src/lib/passkeys/client.ts` (native `navigator.credentials`, no dependency). Profile has "Face ID and passkeys" (set up, list, remove with confirm); after a password sign-in on a phone with none saved, a one-time sheet offers it ("Not now" is remembered 30 days on that device).
 - **Language switch: visible on all four pages (Jose, October 20: "leave the switch on… this is for dev").** It's a two-option segmented control ("English" / "Español"; on phones "EN" / "ES"). Choosing Español switches these four pages to the Spanish words below and stores the choice in a `nv-lang` cookie (one year, `SameSite=Lax`, not httpOnly). The rest of the app stays English until the Spanish phase. Set `lang` on the page content when Spanish is shown.
 
 ## Words
@@ -94,6 +94,21 @@ Spanish (draft for Jose's review; payroll and legal text is not involved):
 | Need your employee details? | ¿Necesitas tus datos de empleado? |
 | Back to sign in / Sign in (pill) | Volver a iniciar sesión / Iniciar sesión |
 | Privacy · Terms · Support | Privacidad · Términos · Soporte |
+| Waiting for Face ID… / Waiting for your passkey… | Esperando Face ID… / Esperando tu llave de acceso… |
+| Face ID isn’t set up for NEVORA on this device. Sign in with your password, then set it up in Profile. | Face ID no está configurado para NEVORA en este dispositivo. Inicia sesión con tu contraseña y luego configúralo en tu perfil. |
+| No passkey for NEVORA is saved on this device. Sign in with your password, then add one in Profile. | No hay una llave de acceso de NEVORA guardada en este dispositivo. Inicia sesión con tu contraseña y luego agrega una en tu perfil. |
+| Too many tries. Wait a minute, then try again. | Demasiados intentos. Espera un minuto e inténtalo de nuevo. |
+| This account can’t sign in. Contact your manager or Owner. | Esta cuenta no puede iniciar sesión. Comunícate con tu gerente o con el Owner. |
+| Face ID / Passkey sign-in isn’t available right now. Sign in with your password. | El inicio de sesión con Face ID / llave de acceso no está disponible ahora. Inicia sesión con tu contraseña. |
+| Face ID and passkeys | Face ID y llaves de acceso |
+| Sign in with Face ID or your device’s passkey instead of typing your password. | Inicia sesión con Face ID o con la llave de acceso de tu dispositivo en vez de escribir tu contraseña. |
+| Set up Face ID / Add a passkey / Setting up… | Configurar Face ID / Agregar una llave de acceso / Configurando… |
+| Added {date} · Last used {date} · Not used yet | Agregada el {date} · Último uso: {date} · Sin usar todavía |
+| Remove “{name}”? You’ll sign in with your password on that device until you set it up again. Remove / Keep | ¿Quitar “{name}”? Iniciarás sesión con tu contraseña en ese dispositivo hasta que lo configures de nuevo. Quitar / Conservar |
+| Face ID is set up. / Passkey removed. | Face ID está configurado. / Llave de acceso quitada. |
+| Couldn’t set up Face ID. Try again. / Couldn’t remove it. Try again. / Couldn’t load your passkeys. | No pudimos configurar Face ID. Inténtalo de nuevo. / No pudimos quitarla. Inténtalo de nuevo. / No pudimos cargar tus llaves de acceso. |
+| This browser can’t use passkeys. Try Safari or Chrome on this device. | Este navegador no puede usar llaves de acceso. Prueba Safari o Chrome en este dispositivo. |
+| Sign in faster next time with Face ID / Use Face ID instead of your password on this phone. / Not now | Inicia sesión más rápido la próxima vez con Face ID / Usa Face ID en vez de tu contraseña en este teléfono. / Ahora no |
 
 Translate the existing server error messages for these pages the same way, keeping their meaning exact. List any you aren't sure of for Jose.
 
