@@ -1,0 +1,100 @@
+{
+  "sha": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "sourceFiles": {
+    "src/components/notification-inbox.tsx": "91e67414ae8b07f95024fcb2b2aec0853db1c77cb21474931bc35f5dd0a920a8",
+    "src/components/employee-account-panel.tsx": "6fa6d60bdfbb776aff4bac637203916bbd6bbf77e5556d15bb708e279844933b",
+    "src/app/app/notifications/page.tsx": "dc7b5ba1285b448ceadd1edad2a9eead0295cdee81c4da2a137c6431780204ef",
+    "src/lib/employee-view-route.server.ts": "a3d1578a85d10f8db01d30cfa1c96091da80912b36d8b247c8ba494354db3179",
+    "src/lib/data/portal-notification-list.server.ts": "5ad00789b89a6434f314c74ad5840a2a7792a5595278cac382aa92d328b4497e",
+    "src/components/manager-profile/manager-profile-live.tsx": "0dd80c242e6a49343ce069e5fcd666507ff412499fe32eb349b75a7eba5751da"
+  },
+  "module": "management-mark-read-a216-v2.mjs",
+  "moduleSha256": "d5bbced6e4f18289c96ea5c0a2de0fb1cd4c7d2859f78d81ac26bcbf7a47a394",
+  "rows": 16,
+  "chromiumRows": 12,
+  "webkitRows": 4,
+  "actors": {
+    "AUDIT-M": "MANAGER",
+    "QAOWNER": "OWNER"
+  },
+  "sizes": {
+    "chromium": [
+      [
+        320,
+        844,
+        100
+      ],
+      [
+        320,
+        844,
+        200
+      ],
+      [
+        390,
+        844,
+        100
+      ],
+      [
+        390,
+        844,
+        200
+      ],
+      [
+        844,
+        390,
+        100
+      ],
+      [
+        844,
+        390,
+        200
+      ]
+    ],
+    "webkit": [
+      [
+        390,
+        844,
+        100
+      ],
+      [
+        390,
+        844,
+        200
+      ]
+    ]
+  },
+  "scope": [
+    "fresh exact-source/preview/initial receipt and actual Profile role proof",
+    "fresh actual GET /api/notifications ready200, current own unread item bound to fresh own receipt",
+    "native Enter, pending focus/native/aria state, geometry, double activation, held3s exactlyone request",
+    "first local abort; real unread row/intent retained; failure feedback visibility/focus",
+    "retry same genuine notificationId and complete body, second held3s exactlyone request, second local abort/feedback"
+  ],
+  "notCovered": [
+    "server mutation or delivery",
+    "authorization/decided or offline lifecycle",
+    "full cd764f6 action ledger completion",
+    "any source other than this explicit newer repair SHA"
+  ],
+  "safety": "No preview or browser is started by the module. Run one existing worker serially after its approved current scope. All mutation paths are intercepted and aborted; only actual own reads proceed. No earlier-cd tokens, notification ids, authority bindings or rendered intent are reused.",
+  "invocation": {
+    "VERIFY_ENGINES": "One of chromium or webkit; run serially in separate existing-worker invocations",
+    "VERIFY_SCOPED_MODULES": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/manual-harness/management-mark-read-a216-v2.mjs",
+    "VERIFY_ONLY": "scoped-p3-management-mark-read-pending-failure",
+    "VERIFY_SHA": "a21650de50374683d52e32b883d7f419d7344f22"
+  },
+  "fixtureGapPolicy": "Missing fresh actor/positive own unread row/actualGET200/capturedcommand is a setup gap. After a captured command is answered locally, absent focus/recovery is a completed failed assertion, not a setup gap.",
+  "provisionalOnly": true,
+  "executed": false,
+  "readinessVersion": 2,
+  "readinessPolicy": "After real own ready200, bounded wait for a genuine own receipt unread target and exactly one matching rendered row and visible enabled authorized Mark-read control; hydration then uses existing helper. First empty ready200 may precede a second populated ready200. Never wait for desired focus or a product outcome.",
+  "lineage": {
+    "parentModule": "management-mark-read-a216.mjs",
+    "parentModuleSha256": "215980893c4e2bd2e0048439fae7848dc3726ed6e1ea3b974ed83ce5a75ac07f",
+    "parentManifestSha256": "26f88f0e823c55cf06a72a72a82764e3600598a94a8ab89657d13d42279cb88b",
+    "reason": "Transport response handler can precede React commit. Original 320/100 attempt retained as setup gap; v2 changes initial readiness only; all 16 configurations and held-action/failure/retry oracles unchanged.",
+    "executed": false
+  },
+  "createdAt": "2026-10-20T00:57:34.319628+00:00"
+}

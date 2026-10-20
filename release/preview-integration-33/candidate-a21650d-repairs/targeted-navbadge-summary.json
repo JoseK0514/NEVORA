@@ -1,0 +1,393 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "completed": 4,
+  "passed": 0,
+  "total": 4,
+  "assertions": 24,
+  "failures": [
+    {
+      "name": "scoped-desktop-nav-badge-geometry",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "IS-P4-18: navigation count text Range fits the rendered pill at200%",
+          "passed": false,
+          "detail": {
+            "text": "29",
+            "pill": {
+              "x": 180.796875,
+              "y": 770,
+              "width": 46.3125,
+              "height": 20,
+              "top": 770,
+              "right": 227.109375,
+              "bottom": 790,
+              "left": 180.796875
+            },
+            "font": "24px",
+            "lineHeight": "16px",
+            "outsidePill": [
+              {
+                "text": "29",
+                "box": {
+                  "x": 187.796875,
+                  "y": 765,
+                  "width": 32.3125,
+                  "height": 29,
+                  "top": 765,
+                  "right": 220.109375,
+                  "bottom": 794,
+                  "left": 187.796875
+                }
+              }
+            ],
+            "neighborIcons": [
+              {
+                "label": "Team",
+                "href": "/app/employees",
+                "box": {
+                  "x": 221.921875,
+                  "y": 774,
+                  "width": 22,
+                  "height": 22,
+                  "top": 774,
+                  "right": 243.921875,
+                  "bottom": 796,
+                  "left": 221.921875
+                },
+                "pillIntersection": {
+                  "x": 221.921875,
+                  "y": 774,
+                  "width": 5.1875,
+                  "height": 16,
+                  "area": 83
+                },
+                "textRangeIntersections": [
+                  {
+                    "text": "29",
+                    "intersection": {
+                      "x": 221.921875,
+                      "y": 774,
+                      "width": 0,
+                      "height": 20,
+                      "area": 0
+                    }
+                  }
+                ]
+              }
+            ],
+            "clips": []
+          }
+        },
+        {
+          "message": "IS-P4-18: navigation count pill/text does not cross an adjacent navigation icon",
+          "passed": false,
+          "detail": {
+            "text": "29",
+            "pill": {
+              "x": 180.796875,
+              "y": 770,
+              "width": 46.3125,
+              "height": 20,
+              "top": 770,
+              "right": 227.109375,
+              "bottom": 790,
+              "left": 180.796875
+            },
+            "font": "24px",
+            "lineHeight": "16px",
+            "outsidePill": [
+              {
+                "text": "29",
+                "box": {
+                  "x": 187.796875,
+                  "y": 765,
+                  "width": 32.3125,
+                  "height": 29,
+                  "top": 765,
+                  "right": 220.109375,
+                  "bottom": 794,
+                  "left": 187.796875
+                }
+              }
+            ],
+            "neighborIcons": [
+              {
+                "label": "Team",
+                "href": "/app/employees",
+                "box": {
+                  "x": 221.921875,
+                  "y": 774,
+                  "width": 22,
+                  "height": 22,
+                  "top": 774,
+                  "right": 243.921875,
+                  "bottom": 796,
+                  "left": 221.921875
+                },
+                "pillIntersection": {
+                  "x": 221.921875,
+                  "y": 774,
+                  "width": 5.1875,
+                  "height": 16,
+                  "area": 83
+                },
+                "textRangeIntersections": [
+                  {
+                    "text": "29",
+                    "intersection": {
+                      "x": 221.921875,
+                      "y": 774,
+                      "width": 0,
+                      "height": 20,
+                      "area": 0
+                    }
+                  }
+                ]
+              }
+            ],
+            "clips": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoped-desktop-nav-badge-geometry",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "IS-P4-18: navigation count text Range fits the rendered pill at200%",
+          "passed": false,
+          "detail": {
+            "text": "29",
+            "pill": {
+              "x": 143,
+              "y": 202.578125,
+              "width": 44,
+              "height": 20,
+              "top": 202.578125,
+              "right": 187,
+              "bottom": 222.578125,
+              "left": 143
+            },
+            "font": "24px",
+            "lineHeight": "32px",
+            "outsidePill": [
+              {
+                "text": "29",
+                "box": {
+                  "x": 149,
+                  "y": 203.578125,
+                  "width": 32,
+                  "height": 29,
+                  "top": 203.578125,
+                  "right": 181,
+                  "bottom": 232.578125,
+                  "left": 149
+                }
+              }
+            ],
+            "neighborIcons": [],
+            "clips": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoped-desktop-nav-badge-geometry",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "IS-P4-18: navigation count text Range fits the rendered pill at200%",
+          "passed": false,
+          "detail": {
+            "text": "29",
+            "pill": {
+              "x": 174.140625,
+              "y": 770,
+              "width": 45.359375,
+              "height": 20,
+              "top": 770,
+              "right": 219.5,
+              "bottom": 790,
+              "left": 174.140625
+            },
+            "font": "24px",
+            "lineHeight": "16px",
+            "outsidePill": [
+              {
+                "text": "29",
+                "box": {
+                  "x": 181.14297485351562,
+                  "y": 765.5,
+                  "width": 31.35467529296875,
+                  "height": 29,
+                  "top": 765.5,
+                  "right": 212.49765014648438,
+                  "bottom": 794.5,
+                  "left": 181.14297485351562
+                }
+              }
+            ],
+            "neighborIcons": [
+              {
+                "label": "Team",
+                "href": "/app/employees",
+                "box": {
+                  "x": 217.484375,
+                  "y": 774,
+                  "width": 22,
+                  "height": 22,
+                  "top": 774,
+                  "right": 239.484375,
+                  "bottom": 796,
+                  "left": 217.484375
+                },
+                "pillIntersection": {
+                  "x": 217.484375,
+                  "y": 774,
+                  "width": 2.015625,
+                  "height": 16,
+                  "area": 32.25
+                },
+                "textRangeIntersections": [
+                  {
+                    "text": "29",
+                    "intersection": {
+                      "x": 217.484375,
+                      "y": 774,
+                      "width": 0,
+                      "height": 20.5,
+                      "area": 0
+                    }
+                  }
+                ]
+              }
+            ],
+            "clips": []
+          }
+        },
+        {
+          "message": "IS-P4-18: navigation count pill/text does not cross an adjacent navigation icon",
+          "passed": false,
+          "detail": {
+            "text": "29",
+            "pill": {
+              "x": 174.140625,
+              "y": 770,
+              "width": 45.359375,
+              "height": 20,
+              "top": 770,
+              "right": 219.5,
+              "bottom": 790,
+              "left": 174.140625
+            },
+            "font": "24px",
+            "lineHeight": "16px",
+            "outsidePill": [
+              {
+                "text": "29",
+                "box": {
+                  "x": 181.14297485351562,
+                  "y": 765.5,
+                  "width": 31.35467529296875,
+                  "height": 29,
+                  "top": 765.5,
+                  "right": 212.49765014648438,
+                  "bottom": 794.5,
+                  "left": 181.14297485351562
+                }
+              }
+            ],
+            "neighborIcons": [
+              {
+                "label": "Team",
+                "href": "/app/employees",
+                "box": {
+                  "x": 217.484375,
+                  "y": 774,
+                  "width": 22,
+                  "height": 22,
+                  "top": 774,
+                  "right": 239.484375,
+                  "bottom": 796,
+                  "left": 217.484375
+                },
+                "pillIntersection": {
+                  "x": 217.484375,
+                  "y": 774,
+                  "width": 2.015625,
+                  "height": 16,
+                  "area": 32.25
+                },
+                "textRangeIntersections": [
+                  {
+                    "text": "29",
+                    "intersection": {
+                      "x": 217.484375,
+                      "y": 774,
+                      "width": 0,
+                      "height": 20.5,
+                      "area": 0
+                    }
+                  }
+                ]
+              }
+            ],
+            "clips": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoped-desktop-nav-badge-geometry",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "IS-P4-18: navigation count text Range fits the rendered pill at200%",
+          "passed": false,
+          "detail": {
+            "text": "29",
+            "pill": {
+              "x": 143.9375,
+              "y": 202.578125,
+              "width": 43.0625,
+              "height": 20,
+              "top": 202.578125,
+              "right": 187,
+              "bottom": 222.578125,
+              "left": 143.9375
+            },
+            "font": "24px",
+            "lineHeight": "32px",
+            "outsidePill": [
+              {
+                "text": "29",
+                "box": {
+                  "x": 149.9375,
+                  "y": 204.078125,
+                  "width": 31.0546875,
+                  "height": 29,
+                  "top": 204.078125,
+                  "right": 180.9921875,
+                  "bottom": 233.078125,
+                  "left": 149.9375
+                }
+              }
+            ],
+            "neighborIcons": [],
+            "clips": []
+          }
+        }
+      ]
+    }
+  ]
+}

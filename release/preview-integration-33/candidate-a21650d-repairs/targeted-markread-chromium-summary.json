@@ -1,0 +1,3545 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "completed": 12,
+  "passed": 0,
+  "total": 12,
+  "assertions": 384,
+  "failures": [
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 108,
+              "y": 374.515625,
+              "width": 180,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 108
+            },
+            "pending": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": -794.484375,
+              "width": 252,
+              "height": 314
+            },
+            "usable": {
+              "top": 84.515625,
+              "bottom": 753
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 108,
+              "y": 374.515625,
+              "width": 180,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 108
+            },
+            "pending": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: entire feedback clears measured tab bar",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": 860.515625,
+              "width": 252,
+              "height": 314
+            },
+            "usable": {
+              "top": 84.515625,
+              "bottom": 753
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 249,
+              "y": 599.5,
+              "width": 109,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 249
+            },
+            "pending": {
+              "x": 211,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 211
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 485.5,
+              "width": 147,
+              "height": 44,
+              "top": 485.5,
+              "right": 358,
+              "bottom": 529.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 496.75,
+              "bottom": 516.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 485.5,
+              "width": 147,
+              "height": 44,
+              "top": 485.5,
+              "right": 358,
+              "bottom": 529.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 496.75,
+              "bottom": 516.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 485.5,
+              "width": 147,
+              "height": 44,
+              "top": 485.5,
+              "right": 358,
+              "bottom": 529.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 496.75,
+              "bottom": 516.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 249,
+              "y": 599.5,
+              "width": 109,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 249
+            },
+            "pending": {
+              "x": 211,
+              "y": 485.5,
+              "width": 147,
+              "height": 44,
+              "top": 485.5,
+              "right": 358,
+              "bottom": 529.5,
+              "left": 211
+            },
+            "delta": {
+              "x": -38,
+              "y": -114,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 374.015625,
+              "width": 247,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.015625,
+              "bottom": 429.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 374.015625,
+              "width": 247,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.015625,
+              "bottom": 429.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 374.015625,
+              "width": 247,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.015625,
+              "bottom": 429.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 178,
+              "y": 374.015625,
+              "width": 180,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 178
+            },
+            "pending": {
+              "x": 111,
+              "y": 374.015625,
+              "width": 247,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 111
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": -626.984375,
+              "width": 322,
+              "height": 266
+            },
+            "usable": {
+              "top": 86.015625,
+              "bottom": 753
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 374.015625,
+              "width": 247,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.015625,
+              "bottom": 429.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 374.015625,
+              "width": 247,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.015625,
+              "bottom": 429.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 374.015625,
+              "width": 247,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.015625,
+              "bottom": 429.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 178,
+              "y": 374.015625,
+              "width": 180,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 178
+            },
+            "pending": {
+              "x": 111,
+              "y": 374.015625,
+              "width": 247,
+              "height": 69,
+              "top": 374.015625,
+              "right": 358,
+              "bottom": 443.015625,
+              "left": 111
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: entire feedback clears measured tab bar",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": 654.015625,
+              "width": 322,
+              "height": 266
+            },
+            "usable": {
+              "top": 86.015625,
+              "bottom": 753
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 703,
+              "y": 123.5,
+              "width": 109,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 703
+            },
+            "pending": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 44,
+              "y": -285.5,
+              "width": 756,
+              "height": 54
+            },
+            "usable": {
+              "top": 76,
+              "bottom": 314
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 703,
+              "y": 123.5,
+              "width": 109,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 703
+            },
+            "pending": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: entire feedback clears measured tab bar",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 44,
+              "y": 344.5,
+              "width": 756,
+              "height": 54
+            },
+            "usable": {
+              "top": 76,
+              "bottom": 314
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 632,
+              "y": 111.515625,
+              "width": 180,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 632
+            },
+            "pending": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 44,
+              "y": -507.484375,
+              "width": 756,
+              "height": 126
+            },
+            "usable": {
+              "top": 84.515625,
+              "bottom": 299
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 632,
+              "y": 111.515625,
+              "width": 180,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 632
+            },
+            "pending": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: entire feedback clears measured tab bar",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 44,
+              "y": 568.515625,
+              "width": 756,
+              "height": 126
+            },
+            "usable": {
+              "top": 84.515625,
+              "bottom": 299
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 538.5,
+              "width": 147,
+              "height": 44,
+              "top": 538.5,
+              "right": 288,
+              "bottom": 582.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 549.75,
+              "bottom": 569.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 538.5,
+              "width": 147,
+              "height": 44,
+              "top": 538.5,
+              "right": 288,
+              "bottom": 582.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 549.75,
+              "bottom": 569.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 538.5,
+              "width": 147,
+              "height": 44,
+              "top": 538.5,
+              "right": 288,
+              "bottom": 582.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 549.75,
+              "bottom": 569.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 179,
+              "y": 538.5,
+              "width": 109,
+              "height": 44,
+              "top": 538.5,
+              "right": 288,
+              "bottom": 582.5,
+              "left": 179
+            },
+            "pending": {
+              "x": 141,
+              "y": 538.5,
+              "width": 147,
+              "height": 44,
+              "top": 538.5,
+              "right": 288,
+              "bottom": 582.5,
+              "left": 141
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 288,
+              "bottom": 643.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 288,
+              "bottom": 643.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 288,
+              "bottom": 643.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 179,
+              "y": 599.5,
+              "width": 109,
+              "height": 44,
+              "top": 599.5,
+              "right": 288,
+              "bottom": 643.5,
+              "left": 179
+            },
+            "pending": {
+              "x": 141,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 288,
+              "bottom": 643.5,
+              "left": 141
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 108,
+              "y": 374.515625,
+              "width": 180,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 108
+            },
+            "pending": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": -794.484375,
+              "width": 252,
+              "height": 314
+            },
+            "usable": {
+              "top": 84.515625,
+              "bottom": 753
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 388.515625,
+              "bottom": 429.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 108,
+              "y": 374.515625,
+              "width": 180,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 108
+            },
+            "pending": {
+              "x": 41,
+              "y": 374.515625,
+              "width": 247,
+              "height": 69,
+              "top": 374.515625,
+              "right": 288,
+              "bottom": 443.515625,
+              "left": 41
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: entire feedback clears measured tab bar",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": 860.515625,
+              "width": 252,
+              "height": 314
+            },
+            "usable": {
+              "top": 84.515625,
+              "bottom": 753
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 610.75,
+              "bottom": 630.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 249,
+              "y": 599.5,
+              "width": 109,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 249
+            },
+            "pending": {
+              "x": 211,
+              "y": 599.5,
+              "width": 147,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 211
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 558.5,
+              "width": 147,
+              "height": 44,
+              "top": 558.5,
+              "right": 358,
+              "bottom": 602.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 569.75,
+              "bottom": 589.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 558.5,
+              "width": 147,
+              "height": 44,
+              "top": 558.5,
+              "right": 358,
+              "bottom": 602.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 569.75,
+              "bottom": 589.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 211,
+              "y": 558.5,
+              "width": 147,
+              "height": 44,
+              "top": 558.5,
+              "right": 358,
+              "bottom": 602.5,
+              "left": 211
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 569.75,
+              "bottom": 589.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 249,
+              "y": 599.5,
+              "width": 109,
+              "height": 44,
+              "top": 599.5,
+              "right": 358,
+              "bottom": 643.5,
+              "left": 249
+            },
+            "pending": {
+              "x": 211,
+              "y": 558.5,
+              "width": 147,
+              "height": 44,
+              "top": 558.5,
+              "right": 358,
+              "bottom": 602.5,
+              "left": 211
+            },
+            "delta": {
+              "x": -38,
+              "y": -41,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 398.015625,
+              "width": 247,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 412.015625,
+              "bottom": 453.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 398.015625,
+              "width": 247,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 412.015625,
+              "bottom": 453.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 398.015625,
+              "width": 247,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 412.015625,
+              "bottom": 453.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 178,
+              "y": 398.015625,
+              "width": 180,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 178
+            },
+            "pending": {
+              "x": 111,
+              "y": 398.015625,
+              "width": 247,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 111
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": -562.984375,
+              "width": 322,
+              "height": 266
+            },
+            "usable": {
+              "top": 86.015625,
+              "bottom": 753
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 398.015625,
+              "width": 247,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 412.015625,
+              "bottom": 453.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 398.015625,
+              "width": 247,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 412.015625,
+              "bottom": 453.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 111,
+              "y": 398.015625,
+              "width": 247,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 111
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 412.015625,
+              "bottom": 453.015625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 178,
+              "y": 398.015625,
+              "width": 180,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 178
+            },
+            "pending": {
+              "x": 111,
+              "y": 398.015625,
+              "width": 247,
+              "height": 69,
+              "top": 398.015625,
+              "right": 358,
+              "bottom": 467.015625,
+              "left": 111
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: entire feedback clears measured tab bar",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": 654.015625,
+              "width": 322,
+              "height": 266
+            },
+            "usable": {
+              "top": 86.015625,
+              "bottom": 753
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 703,
+              "y": 123.5,
+              "width": 109,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 703
+            },
+            "pending": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 44,
+              "y": -285.5,
+              "width": 756,
+              "height": 54
+            },
+            "usable": {
+              "top": 76,
+              "bottom": 314
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 134.75,
+              "bottom": 154.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 703,
+              "y": 123.5,
+              "width": 109,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 703
+            },
+            "pending": {
+              "x": 665,
+              "y": 123.5,
+              "width": 147,
+              "height": 44,
+              "top": 123.5,
+              "right": 812,
+              "bottom": 167.5,
+              "left": 665
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: entire feedback clears measured tab bar",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 44,
+              "y": 344.5,
+              "width": 756,
+              "height": 54
+            },
+            "usable": {
+              "top": 76,
+              "bottom": 314
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "AUDIT-M",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 386.5,
+              "width": 147,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 397.75,
+              "bottom": 417.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 386.5,
+              "width": 147,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 397.75,
+              "bottom": 417.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 386.5,
+              "width": 147,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 397.75,
+              "bottom": 417.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 179,
+              "y": 386.5,
+              "width": 109,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 179
+            },
+            "pending": {
+              "x": 141,
+              "y": 386.5,
+              "width": 147,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 141
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 34,
+              "y": -152.5,
+              "width": 252,
+              "height": 98
+            },
+            "usable": {
+              "top": 76,
+              "bottom": 768
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 386.5,
+              "width": 147,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 397.75,
+              "bottom": 417.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 386.5,
+              "width": 147,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 397.75,
+              "bottom": 417.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 141,
+              "y": 386.5,
+              "width": 147,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 141
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 397.75,
+              "bottom": 417.75
+            },
+            "textCenterDeltaY": -0.75,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 179,
+              "y": 386.5,
+              "width": 109,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 179
+            },
+            "pending": {
+              "x": 141,
+              "y": 386.5,
+              "width": 147,
+              "height": 44,
+              "top": 386.5,
+              "right": 288,
+              "bottom": 430.5,
+              "left": 141
+            },
+            "delta": {
+              "x": -38,
+              "y": 0,
+              "width": 38,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-management-mark-read-pending-failure",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "mark-read-first: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-first: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 632,
+              "y": 111.515625,
+              "width": 180,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 632
+            },
+            "pending": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback top clears measured header",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 44,
+              "y": -507.484375,
+              "width": 756,
+              "height": 126
+            },
+            "usable": {
+              "top": 84.515625,
+              "bottom": 299
+            }
+          }
+        },
+        {
+          "message": "first-local-failure-feedback: feedback receives focus",
+          "passed": false
+        },
+        {
+          "message": "mark-read-same-item-retry: pending button retains focus",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action remains natively focusable",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending action announces disabled state",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "focused": false,
+            "disabled": true,
+            "ariaDisabled": null,
+            "fieldsetDisabled": false,
+            "text": "Marking read…",
+            "kit": false,
+            "color": "rgb(28, 28, 28)",
+            "background": "rgb(236, 237, 239)",
+            "opacity": "0.55",
+            "visibleText": "Marking read…",
+            "textBounds": {
+              "top": 125.515625,
+              "bottom": 166.515625
+            },
+            "textCenterDeltaY": 0,
+            "labelAlign": null
+          }
+        },
+        {
+          "message": "mark-read-same-item-retry: pending geometry stays within 1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "x": 632,
+              "y": 111.515625,
+              "width": 180,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 632
+            },
+            "pending": {
+              "x": 565,
+              "y": 111.515625,
+              "width": 247,
+              "height": 69,
+              "top": 111.515625,
+              "right": 812,
+              "bottom": 180.515625,
+              "left": 565
+            },
+            "delta": {
+              "x": -67,
+              "y": 0,
+              "width": 67,
+              "height": 0
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: entire feedback clears measured tab bar",
+          "passed": false,
+          "detail": {
+            "box": {
+              "x": 44,
+              "y": 568.515625,
+              "width": 756,
+              "height": 126
+            },
+            "usable": {
+              "top": 84.515625,
+              "bottom": 299
+            }
+          }
+        },
+        {
+          "message": "second-local-failure-feedback: feedback receives focus",
+          "passed": false
+        }
+      ]
+    }
+  ]
+}

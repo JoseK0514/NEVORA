@@ -53,13 +53,13 @@
     },
     {
       "path": "README.md",
-      "sha256": "8c7c889006a13e1709f88bd5ec6b2921019d549380efad029f82b103bfb13094",
-      "bytes": 6268
+      "sha256": "6c8849fd9e1b9e1a49e430c0fd295efd7ee0ea4ad8619e31594cb71dc3e4954b",
+      "bytes": 6805
     },
     {
       "path": "owners/phase-3.md",
-      "sha256": "5e0defd5106ce2c506529223c8bfd5426105477d6a28ed3f84be4fd53aec2703",
-      "bytes": 2456
+      "sha256": "e24e530dd9d123ba977dae4f770f1f062613e0f6fba9d816652842e25341e669",
+      "bytes": 2751
     },
     {
       "path": "owners/wave-b.md",
@@ -68,8 +68,8 @@
     },
     {
       "path": "owners/wave-a.md",
-      "sha256": "8b64f4f0b816fc07c781e39f88b5f1e20cfabc7f76e1aca346a4fe8010b9245b",
-      "bytes": 3066
+      "sha256": "cabb32291a59d6a28966bf85d5a08d1197d38154c3e31f25241b64e11cc99d46",
+      "bytes": 3361
     },
     {
       "path": "owners/wave-c.md",

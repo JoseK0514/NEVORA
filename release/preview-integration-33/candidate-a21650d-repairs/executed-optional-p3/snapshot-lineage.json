@@ -1,0 +1,39 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "preparedAt": "2026-10-19T23:48:39.796415+00:00",
+  "upstream": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/manual-harness",
+  "previousUnexecutedSnapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-optional-p3",
+  "correction": "Preexecution ACK action locator is pinned to original DOM node before label changes. Existing assertions and command lifetime checks preserved.",
+  "parentReleasedAfterRequiredRepairScope": true,
+  "files": [
+    {
+      "path": "management-mark-read-a216.mjs",
+      "sha256": "215980893c4e2bd2e0048439fae7848dc3726ed6e1ea3b974ed83ce5a75ac07f"
+    },
+    {
+      "path": "management-mark-read-a216.json",
+      "sha256": "26f88f0e823c55cf06a72a72a82764e3600598a94a8ab89657d13d42279cb88b"
+    },
+    {
+      "path": "ack-pause-recovery.mjs",
+      "sha256": "17efd84dfc9396599e1d0c09ffdb1d23164de4b94c1db0314bb458400c713a15"
+    },
+    {
+      "path": "ack-pause-recovery-a216.mjs",
+      "sha256": "f6ef1ed8ab30088da3fe5801ade86813fc66f03a4f95c6ad3efd474b6f7cb818"
+    },
+    {
+      "path": "ack-pause-recovery-a216.json",
+      "sha256": "910866ead8bfb56774775dcd2b533e541b5431572d6240be48952645d6715a92"
+    },
+    {
+      "path": "ack-pause-recovery-a216-v2.mjs",
+      "sha256": "f4c494fa8d35613a7118e7c66f5e298afdb3dc88eeabc53a4c02f443e42102f9"
+    },
+    {
+      "path": "ack-pause-recovery-a216-v2.json",
+      "sha256": "3d27b8a58548d8fab274ccf3107829a944a9d98d408f6e80cc19a7fe43ebdedf"
+    }
+  ],
+  "runtimeExecuted": false
+}

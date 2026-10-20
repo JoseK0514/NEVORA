@@ -1,0 +1,9 @@
+{
+  "preparedAt": "2026-10-19T23:45:32.158383+00:00",
+  "base": "/workspace/nevora-inspection-runtime/final-verification/pending-colour-attribution.mjs",
+  "baseSha256": "8e4cbcd5e6581c2da8c563b1337d4e9f48926e636c579eda9bf1cb4f07df2d92",
+  "derived": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/pending-colour-repair-proof.mjs",
+  "derivedSha256": "97d3ef62a756dda39c556eb403059137e793f14c5fcd03a35ff68d1da086685f",
+  "difference": "Same six causal positions/engines with real sampling extended to2000ms; explicit idle/two-pending-frame validity, focus/control identity, reserved height, computed/painted contrast, no pending transitions and user-scrolled visible sibling geometry assertions; no source/markup/style mutations; optional scopes separate",
+  "runtimeExecuted": false
+}

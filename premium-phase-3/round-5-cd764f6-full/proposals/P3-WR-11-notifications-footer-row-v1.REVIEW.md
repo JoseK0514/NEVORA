@@ -1,0 +1,19 @@
+# P3-WR-11: Notifications footer link row, version 1
+
+Unapplied, candidate-only external proposal. Base is `971f815da47f176d7c6781dd92a1a2bce294661b`; the sole edited source file is byte-identical on a216 and the measured cd764f6 source. No app/shared CSS, tests, live fixture or browser was changed. Existing candidate CI is untouched.
+
+## Report and exact evidence
+
+The original report is `docs/product/specs/premium-phase-3/inspection/widths-roles-consistency.md:1060`: at320/200, the Notifications footer Requests › Schedule path runs beyond the card. Current exact-cd AUDIT-E Chromium320/200 cell `../core/passive-geometry/cells/112274885136645ebdcb.json` independently records Schedule glyphs x198–323 against card right304. The reviewed `112274885136645ebdcb-bottom.png` visibly cuts the link, with scrollY2552. This preserves the historical P2 ID; it is separate from TC34 title fragmentation in the same cell. The current Review schedule row action already wraps correctly (glyphs x88–209), and this proposal leaves that fix untouched. The remaining Inbox metadata branch is independent and not covered.
+
+The actual footer markup is `src/components/notification-inbox.tsx:90`: a paragraph followed by a nested div containing the original Requests and Schedule links. The existing fix at `portal-premium.css:2056` wraps the outer footer; the actual inner row at `notification-inbox.module.css:47` retains a nonwrapping flex row with `flex:none`. Wrapping the outer footer does not make the links wrap inside their own row.
+
+## Minimal change and static review
+
+Add `flex-wrap:wrap`, `min-width:0` and `max-width:100%` to the existing local `.footer>div` rule. The div continues to use native flex layout, the same16px gap and the same links. Its width is bounded by the footer's available content width; each entire link can move to the next flex line. `min-width:0` permits narrow-layout sizing instead of an intrinsic minimum. No shared CSS change, truncation, font-size cap or forced mid-word break is introduced. The actual Review schedule row action, footer paragraph wording, route hrefs, glyphs, kit roles, reader scaling, data/authority and action handlers remain unchanged.
+
+This directly implements the existing report's prescribed link-row wrapping contract and needs no payroll/legal or product-policy decision. No unrelated paragraph/heading redesign is included. The current crop also shows clipped explanatory text; this patch may relieve its intrinsic width pressure, but that effect is not asserted without actual DOM/crop evidence. If paragraph clipping survives, it must stay open with the actual winning style and width recorded.
+
+Nonmutating `git apply --check` is recorded in the adjacent manifest. It is only patch applicability, not a test or product pass. CSS-only wrapping does not call for a new test that repeats declarations. Existing `src/lib/notification-inbox-view.test.ts` remains a meaningful check that row destinations and read/action states remain truthful; it cannot verify CSS line layout. No tests or imports were executed here.
+
+Fresh source-bound browser review must preserve originalcd evidence and bind the adopted SHA/tree. At320/390,100/125/150/200 and phone landscape in Chromium with WebKit spots, measure each footer link text/glyph/caret and its actual row/content/clip bounds, ensure complete visible wording and native focus ring, and verify native Requests/Schedule URLs for Employee/Lead and Manager/Owner as exposed. Include320/200 for the exact source case and1440/100 for the global local-style rule. Check the footer explanatory text separately, the repaired Review schedule row action, and current tab/control visibility. No API projection, hidden data edits, extra fixture writes or new-worker launch is needed for this read-only layout proof. Do not claim whole P3-WR-11 closure without its remaining Inbox/role/engine scope.

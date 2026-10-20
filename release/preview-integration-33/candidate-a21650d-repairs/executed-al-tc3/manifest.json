@@ -1,0 +1,80 @@
+{
+  "id": "AL-WA-10",
+  "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+  "sourceTree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "repairCommit": "0caadb3505342ef331e2adeb141c02eafcc13f96",
+  "state": "Prepared only for exacta216; no runtime/browser/test",
+  "immutableSourceFindingOpen": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "sourcePageHashChangedBecause": "08159520 also changes same time-fact markup for retainedTC-WA-3; geometry contract explicitly rebound, not oldhash inherited",
+  "sourcePageSha256": "317bba6436b474aea5c68ed1d63b001c4a76996035f36acc734d08a8cec5e7ca",
+  "sourcePageBlob": "c0418ba797057c9d1854d389936ed8ca451bad50",
+  "sourceFixtureInputs": {
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/lib/data/coverage-repair.server.ts": "a53cf3d1bc7b9e757193cd543ebe6e0a648e59ceddf6c5b6be765ea42334a5bf",
+    "src/lib/scheduling/coverage-repair.ts": "ca1aed303a9e8d29ebee09d4bdace57a63414d4cfef537b87df40fac747e1cbc",
+    "src/lib/data/generation-guards.ts": "a63622ce804204a04d846c0004e8d062131d10b03dada251697251f3b50edac5",
+    "src/lib/payroll-export/json.ts": "23c16ed9139de5f349843a5766165d379804bf9246aec490df2fb0e8d1a11a8a",
+    "src/lib/date-utils.ts": "4e4545d0a4a70df78fde730fb3bd99823c47ec5758e12d2e471142f8454a1e41"
+  },
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "guardSha256": "fd7d2c041b313a1127bf4326b0b459c2f064911399e91c645fe9cc4875487141",
+  "configurationCount": 24,
+  "geometryConfigurationCount": 24,
+  "requiredOrder": [
+    "unchanged source checker --axe24",
+    "registry geometry24",
+    "human crop review",
+    "verified close"
+  ],
+  "initialPrepare": "seedInitialALWA10 before communications publication",
+  "initialFinalize": "finalizeInitialALWA10 after finalemployee_credentials update and all long-manager changes, before communicationHook.deregister/return; no mutations follow",
+  "fixtures": "fresh actor-specific hints from real exact-source Coverage +selection reads; never reusecd/06 bindings",
+  "redaction": "Private route rewrite; sanitizer for every actual secret query value +path; geometry state Proxy and error catch",
+  "files": {
+    "scoped-al-wa-10.mjs": "2ea8af5abad83f50e27b75edfcb5101fc974431f01f4cd479c5f9e76d57a28cd",
+    "initial-al-wa-10.mts": "acc2b4006dc22f8cd0b43efa8b19be11787413fbc99fc197be49ee8ed8a6152d",
+    "checker-route-rewrite.cjs": "b818cbf68eda93754bbc05d771117b3221dc34cd6053766cbde7fe61989389e8",
+    "run-checker24.mjs": "71cf553ae301b6591b08d601f941eb4001a110814c5dfb45bce3d9a743a21c14",
+    "redact-checker-output.mjs": "a3df88d966da6408019d0a3684e1a80acebc3785868eaf842064ee12d5f5b8b9",
+    "initial-al-wa-10-and-tc3.mts": "532c484eb6b5349681b71600a078735dec3e83b0a5f1a54cd3a543d2502e03a6",
+    "scoped-tc-wa-3.mjs": "15599bd540bd8451b95b66b9b93ad3fc0f6ca4a4f0eb8b338a56e2ba69847b53"
+  },
+  "checkerRewriteOrigin": {
+    "source": "/workspace/nevora-inspections/p35-wave-a/complete-exit-cd764f6-preparation/state-preload.cjs",
+    "copiedByteExact": true,
+    "behavior": "Wraps Playwright newContext/newPage; aborts all POST; rewrites only Page.goto to in-memory actual route while checker receives stable safe route; checker code unchanged"
+  },
+  "historicalPreparation": "/workspace/nevora-inspections/p35-wave-a/repair-0815952-AL24-preparation",
+  "appBytesUnchangedFrom081": true,
+  "optionalTC3Fixture": {
+    "path": "initial-al-wa-10-and-tc3.mts",
+    "sha256": "532c484eb6b5349681b71600a078735dec3e83b0a5f1a54cd3a543d2502e03a6",
+    "sourceInputs": {
+      "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+      "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+      "src/lib/data/shift-change-snapshot.ts": "75e7e04998e8e17ad0e7da142b8f014641633545557bb457292787a330472e37",
+      "src/lib/data/shift-changes.ts": "6ec6c2ba95b34417890319dc150da8ed0703a85307f735ed2138612ad5d4038c"
+    },
+    "prepareExport": "seedInitialALWA10AndTC3",
+    "finalizeExport": "finalizeInitialALWA10AndTC3",
+    "state": "Prepared only; real executor pending callout+both manager eligibility reads before listen; optional explicit runtime selection",
+    "sameEarlyAndLateSlots": true
+  },
+  "optionalTC3Geometry": {
+    "module": "scoped-tc-wa-3.mjs",
+    "contexts": 16,
+    "realSitesPerContext": 4,
+    "textMeasurements": 64,
+    "requiresOptionalInitialFixtureForFourthSite": true,
+    "claim": "No full exit or repaired-source browser proof before execution"
+  },
+  "staticCorrections": [
+    {
+      "revision": 2,
+      "cause": "ConfigurationForm is a client onSubmit form, with default native method GET. Requiring native method POST was an invalid harness assumption. Wait for actual source onSubmit hydration and record native method instead; no action is sent.",
+      "historicalModulePreserved": "historical-v1/scoped-al-wa-10.mjs",
+      "beforeExecution": true,
+      "appSourceUnchanged": true
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "outerCoordinator": 288613,
+  "initialGeometryChild": 288656,
+  "startedAt": "2026-10-20T00:30:17.406Z",
+  "cause": "Missing stage READY_REVIEW_RELEASED_SHA; source checker refused before browser launch",
+  "originalStageFailurePreserved": true,
+  "jobs": [
+    {
+      "name": "checker24",
+      "startedAt": "2026-10-20T00:32:11.725Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-al-tc3/run-checker24.mjs",
+      "sha256": "71cf553ae301b6591b08d601f941eb4001a110814c5dfb45bce3d9a743a21c14",
+      "exitCode": 0,
+      "completedAt": "2026-10-20T00:35:19.501Z"
+    },
+    {
+      "name": "al-geometry24",
+      "startedAt": "2026-10-20T00:35:19.626Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-scripts/scoped-verify-v2.mjs",
+      "sha256": "df6dda0b909214e30d467bfa812a04a2b35f4be8cdf91479f6633da373219c66",
+      "exitCode": 0,
+      "completedAt": "2026-10-20T00:37:30.222Z"
+    }
+  ],
+  "extraConfigurationCredit": 0,
+  "initialChildClosedAt": "2026-10-20T00:32:11.447Z",
+  "earlyGeometry": {
+    "observed": 24,
+    "completed": 24,
+    "rawPassed": 24,
+    "credit": "Preserved early observations only; canonical ordered same-key replay follows checker"
+  },
+  "canonicalChecker": {
+    "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+    "expected": 24,
+    "recorded": 24,
+    "rawPassed": 24,
+    "complete": true,
+    "allRawPass": true,
+    "loadGaps": 0,
+    "geometryCredit": false,
+    "fullExitClaim": false
+  },
+  "canonicalGeometry": {
+    "required": 24,
+    "completed": 24,
+    "passed": 24,
+    "extraConfigurationCredit": 0
+  },
+  "sameExactKeysVerified": true,
+  "resumedAt": "2026-10-20T00:37:30.293Z"
+}

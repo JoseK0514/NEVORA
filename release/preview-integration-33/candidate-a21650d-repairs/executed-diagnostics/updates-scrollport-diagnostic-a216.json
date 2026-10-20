@@ -1,0 +1,46 @@
+{
+  "sha": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "sourceFiles": {
+    "scripts/ui-checks/checks.mjs": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+    "src/components/employee-updates.tsx": "37e1a914e84acfac57b3bf5257d6b8a7c0ee214ec69cc70d2e2d71f7109cedff",
+    "src/components/updates-review.css": "6913c22c1443d8e711f2779da1dbbe37dd62fda56903ea16ace177100b5fcc80",
+    "src/app/app/portal-premium.css": "c0a3a213ba88c7f6c60bcc97f0ef11f8ba5c4760d1dac44e9b40f1ddff5bea70",
+    "src/app/app/premium-wave-b.css": "d6ec1e4b23d31dd658df3dbb21d3b787b8b914c72a52adf2e384d596c2eb5ba3",
+    "src/components/kit/keep-selected-visible.tsx": "1e1e347d0981fa6c4cafaa509f5aaef156c14c1ef5f7cfa3d6acf45a8f6519e5",
+    "src/lib/communications/client.ts": "b912546b8cb3cd68685695d5e0408e2202b2d85483249f3221e3040caf8159c8",
+    "src/lib/private-snapshot-client.ts": "9935b70c010fad60ed15776589c98a0d85c55b57e796b7125282202dd41050c8",
+    "src/app/app/updates/page.tsx": "ad095b0c83f67a20bfccd29c0d30e04879957c915ee9cb4fdbbf6604f79a7d71"
+  },
+  "axeSha256": "c24f097bd2f451d4f933e8bc7d8d539f8672a2ebcb5cc9f9f3eec8ca9470a0c1",
+  "axeRunOnly": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag21aa",
+    "wcag22aa"
+  ],
+  "module": "updates-scrollport-diagnostic-a216.mjs",
+  "moduleSha256": "cf25cc323707eb5cd2bc3cf981a3f47d707642d09e9d49cd1be7c3364cd3da04",
+  "originalCheckpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "originalEvidence": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/core/baseline/batch-0120.json",
+  "configuration": {
+    "engine": "chromium",
+    "account": "AUDIT-LONG",
+    "route": "/app/updates",
+    "width": 390,
+    "height": 844,
+    "textPercent": 125
+  },
+  "rows": 1,
+  "createdAt": "2026-10-20T00:01:02.275975+00:00",
+  "executed": false,
+  "newPreviewOrWorkerLaunched": false,
+  "qualification": "Newer-source attribution only; original cd failure/historical/full exit remains independent and open until appropriately reviewed.",
+  "invocation": {
+    "VERIFY_SCOPED_MODULES": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/manual-harness/updates-scrollport-diagnostic-a216.mjs",
+    "VERIFY_ONLY": "scoped-p3-updates-scrollport-attribution-a216",
+    "VERIFY_ENGINES": "chromium",
+    "VERIFY_SHA": "a21650de50374683d52e32b883d7f419d7344f22"
+  },
+  "freshReadQualification": "Source/fixture-bound actual200 complete/partial with matching request/response authority hashes and the real initial own update. Error/loading paint retained; absent qualifying actual read throws setup gap after saving raw data."
+}

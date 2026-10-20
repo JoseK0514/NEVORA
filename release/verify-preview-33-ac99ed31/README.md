@@ -51,3 +51,7 @@ Initial harness gaps are retained: a nonexistent Access role hint; a payroll but
 Fresh fixtures were initialized before listen on two owned loopback PostgreSQL 17.11 databases. All action requests during inspection were intercepted; no inspection save reached the server. [Both previews closed with source/mirror verified and PostgreSQL stopped](closure.json). Source and derived harnesses are preserved under [executed-scripts](executed-scripts/); original application source stayed clean.
 
 Engineering: the requested merge is complete and passes local code validation. Program delivery: all five full exits remain open. Governance/release impact: **BLOCKER** while UI findings and mandatory CI browser gates remain open. The next gate belongs to the named owners and the CI owner; no new Jose decision is required for those handoffs.
+
+## Concurrent source-owner follow-ups
+
+While this packet was publishing, the inspection branch advanced with separate release-candidate work. That handoff is preserved. Candidate `0f0cd372` already includes `560f2e8e` for the Availability date wrapper and `0f0cd372` for the shared ShiftBlock carrier; their fresh proof is still pending there. These are existing owner repairs for the retained IDs, not additional fixes applied to this pinned target. See [the separate RC packet](../preview-integration-33/candidate-0f0cd37/README.md).

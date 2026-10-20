@@ -1,0 +1,47 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "preparedAt": "2026-10-20T00:10:16.666139+00:00",
+  "preparedOnly": true,
+  "sourceClean": true,
+  "materialized": false,
+  "runtimeLaunched": false,
+  "browserLaunched": false,
+  "releaseHold": "Root owned exacta216 code gates and automatic production build/markers must close first",
+  "files": [
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/candidate-a21650d-source-preparation.json",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/candidate-a21650d-source-preparation.json",
+      "sha256": "1826c5e80430c8b992e5455d6c998d10b2c60fb36949654f2c405be8348639f6"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/finalizer-adapter-v2-static-derivation.json",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/finalizer-adapter-v2-static-derivation.json",
+      "sha256": "d86b8315c7d7429fe963167576d1b8a00ec542008f46fdfa374fc8772bf2a2bd"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-al-tc3-v2-before-listen-dry-run.json",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/a21650d-al-tc3-v2-before-listen-dry-run.json",
+      "sha256": "44cc669f73a4096eef4b629368c81c0849ffaa5eb7916faa2ddea7e329353742"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/pending-colour-repair-proof-derivation.json",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/pending-colour-repair-proof-derivation.json",
+      "sha256": "2ac4cb1ff05b91d02c0acaf5ae566858d29199a8734631424c47526896050de0"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a216-v4-launch-sequence.md",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/a216-v4-launch-sequence.md",
+      "sha256": "351ada47afe65d8a79c3afef6e4b23c93a88e30256afb4d8285461c1110f6dd1"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/optional-oracle-preflight.json",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/optional-oracle-preflight.json",
+      "sha256": "1acb6758a8414a8f1fdaa5645f4e599236c54a689a2ee7f8692eb1b7a69a3c00"
+    }
+  ],
+  "stageCoordinator": {
+    "path": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/repair-stage-a216-v4.mjs",
+    "sha256": "5406db19c74bffd5d18c5942d88118df70c85345172258215b4c40284e2d38b4"
+  },
+  "newPassCredit": 0
+}

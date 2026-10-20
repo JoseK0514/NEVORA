@@ -1,0 +1,109 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "measuredAt": "2026-10-20T01:01:24.570799+00:00",
+  "MarkRead": {
+    "requiredDistinct": 12,
+    "completed": 12,
+    "firstAndRetryFocusLossCases": 12,
+    "activeElementDuringPending": "MAIN",
+    "nativeDisabledCases": 12,
+    "firstWidthGrowth100px": 38,
+    "firstWidthGrowth200px": 67,
+    "firstYDeltaAllCases": 0,
+    "feedbackFirstAboveHeaderCases": 9,
+    "feedbackSecondBelowTabsCases": 8,
+    "sameIntentAndOneHeldCommandAllCases": true,
+    "representative": {
+      "account": "AUDIT-M",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "during": {
+        "box": {
+          "x": 41,
+          "y": 374.515625,
+          "width": 247,
+          "height": 69,
+          "top": 374.515625,
+          "right": 288,
+          "bottom": 443.515625,
+          "left": 41
+        },
+        "focused": false,
+        "disabled": true,
+        "ariaDisabled": null,
+        "fieldsetDisabled": false,
+        "text": "Marking read\u2026",
+        "kit": false,
+        "color": "rgb(28, 28, 28)",
+        "background": "rgb(236, 237, 239)",
+        "opacity": "0.55",
+        "visibleText": "Marking read\u2026",
+        "textBounds": {
+          "top": 388.515625,
+          "bottom": 429.515625
+        },
+        "textCenterDeltaY": 0,
+        "labelAlign": null
+      },
+      "geometry": {
+        "before": {
+          "x": 108,
+          "y": 374.515625,
+          "width": 180,
+          "height": 69,
+          "top": 374.515625,
+          "right": 288,
+          "bottom": 443.515625,
+          "left": 108
+        },
+        "pending": {
+          "x": 41,
+          "y": 374.515625,
+          "width": 247,
+          "height": 69,
+          "top": 374.515625,
+          "right": 288,
+          "bottom": 443.515625,
+          "left": 41
+        },
+        "delta": {
+          "x": -67,
+          "y": 0,
+          "width": 67,
+          "height": 0
+        }
+      }
+    },
+    "strongerOracleExcludedFromIndependentProductFindings": [
+      "Exact status-paragraph focus",
+      "Missing aria-disabled when native disabled already exposes semantics"
+    ]
+  },
+  "newFindingIds": [
+    "IS-RC-MARK-READ-01",
+    "IS-RC-MARK-READ-02",
+    "ST-RC-MARK-READ-01"
+  ],
+  "existingFindingIds": [
+    "TC-WA-3",
+    "IS-P4-18"
+  ],
+  "current0fComponentComparison": {
+    "src/components/notification-inbox.tsx": {
+      "a216Sha256": "91e67414ae8b07f95024fcb2b2aec0853db1c77cb21474931bc35f5dd0a920a8",
+      "0fSha256": "91e67414ae8b07f95024fcb2b2aec0853db1c77cb21474931bc35f5dd0a920a8",
+      "byteIdentical": true,
+      "noRuntimeCreditFor0f": true
+    },
+    "src/components/notification-inbox.module.css": {
+      "a216Sha256": "6690ac55cf4ac7a85b76333a6968fb57db0f30661d680a008718ee25ad15ddcb",
+      "0fSha256": "3477f9c0878cab656a4cf363a39116d021919690d3e1476b581f90c033acd8a7",
+      "byteIdentical": false,
+      "noRuntimeCreditFor0f": true,
+      "deltaScope": "Only footer>div wrapping/min-width/max-width rule differs; Mark-read and disabled rules byte-identical",
+      "markReadRulesByteIdentical": true,
+      "markReadRuleSha256": "ccf3efbf33ee8c8b86929ea9b62434f721fa29c41995a197dbeff01aeb3013e7"
+    }
+  }
+}

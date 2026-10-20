@@ -1,0 +1,26 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "preparedOnly": true,
+  "files": [
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/wave-b-contrast-a216.mjs",
+      "snapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-diagnostics4/wave-b-contrast-a216.mjs",
+      "sha256": "6ab1d08bfe243851d380dec948388ca6c928f40217876bb409ccdb0ceb0b0271"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/wave-b-contrast-a216.md",
+      "snapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-diagnostics4/wave-b-contrast-a216.md",
+      "sha256": "553f26e985ceaea914a61bdc57954f43839f2cb1e510e3d1f59a0dd71b63d181"
+    },
+    {
+      "source": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/manual-harness/updates-scrollport-diagnostic-a216.mjs",
+      "snapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-diagnostics4/updates-scrollport-diagnostic-a216.mjs",
+      "sha256": "cf25cc323707eb5cd2bc3cf981a3f47d707642d09e9d49cd1be7c3364cd3da04"
+    },
+    {
+      "source": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/manual-harness/updates-scrollport-diagnostic-a216.json",
+      "snapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-diagnostics4/updates-scrollport-diagnostic-a216.json",
+      "sha256": "e1ae4fe1df27078a745faa26e4c8f5a04fdd6578ff1ead042475f7508153690e"
+    }
+  ]
+}

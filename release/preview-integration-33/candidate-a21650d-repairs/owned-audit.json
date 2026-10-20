@@ -1,0 +1,123 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "startedAt": "2026-10-20T00:27:54.384Z",
+  "screens": [],
+  "errors": [],
+  "checks": [
+    {
+      "name": "Fictional update inserted after all initial actors; every recipient read positively verified before listen",
+      "passed": true
+    },
+    {
+      "name": "Fresh AL-WA-10 canonical actor-bound Coverage review source eligibility before listen",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Owned local Next/PostgreSQL with fictional data; only DB adapter, bounded test transport and generated development type references substituted.",
+    "Viewport emulation is not physical iPhone/iPad testing.",
+    "Automated axe and keyboard checks do not certify a screen-reader audit.",
+    "Route visual inspection is not complete business workflow regression or production verification."
+  ],
+  "runtimeAdapter": {
+    "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+    "source": "/workspace/inspect-candidate-a21650d",
+    "mode": "PRIVATE external helper; all initial fixture work awaited before listening; no app/shared helper edits",
+    "runtimeAdapterChanges": [
+      "approved owned DB adapter",
+      "approved bounded pool12 scratch transport",
+      "approved generated type refs",
+      "physical dependency copy",
+      "awaited beforeListen fixture callback"
+    ],
+    "inputs": {
+      "runtimeTemplate": {
+        "path": "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/bindings/preview-runtime.private.mjs",
+        "sha256": "f97a0b2c2be4b0c459a81baac67a88222f666bed76f5be448594ade1dd37e4d7"
+      },
+      "ownedTemplate": {
+        "path": "/workspace/nevora-inspection-runtime/helpers/9bd265ebb5d2bdfa98eb51f4b386018d5aeecbf7/bee02a7b29a5/scripts/ui-checks/owned-preview-app-dev.mts",
+        "sha256": "4057b152a2a9d67b4234891fcb139271241d42165ec05beed10be12a7bd1a91a"
+      },
+      "initializer": {
+        "path": "/workspace/nevora-inspection-runtime/helpers/a21650de50374683d52e32b883d7f419d7344f22/before-listen-candidate-repairs-1792456072329937615/bindings/initial-fixture.mts",
+        "sha256": "a6cbe81a2518a8cc1656be7de6a3c8fdc3914a6b775bdc99a7fe5ab87e0c9d9f"
+      }
+    },
+    "helperHashes": {
+      "preview-runtime.mjs": "5a67c157d1ce0a91178c9a1c8f4bfe9de5706d635a160af2285866e6dee18f28",
+      "owned-preview-app-dev.mts": "80abb9020a6a2e217bb7db4cb01beac73f30e7e099a5f0dcbe3fc78b7146c89b"
+    },
+    "initializationOnly": true,
+    "noPreviewStarted": true
+  },
+  "fixtureDate": "2026-10-19",
+  "fixtureWeek": "2026-10-19",
+  "nextWeekSeeded": "2026-10-26",
+  "payrollFixtureSeeded": true,
+  "templateFixture": {
+    "variant": "populated",
+    "seededTemplates": [
+      {
+        "id": "11fd1a0d-b655-4855-8206-36269be34c2e",
+        "name": "Fictional support week",
+        "shifts": 42
+      },
+      {
+        "id": "5402bdd9-8feb-4573-8353-e8a16c491e44",
+        "name": "Fictional operations and customer service week 2",
+        "shifts": 42
+      }
+    ],
+    "initialOnly": true
+  },
+  "supplementalPayroll": null,
+  "alwa10Initial": {
+    "prepared": true,
+    "finalized": true,
+    "initializedBeforeListen": true,
+    "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+    "manifest": "/workspace/paused-previews/candidate-a21650d-repairs/evidence-2026-10-20T00-27-53-602Z/wave-a-positive-fixture.json",
+    "bindingsPath": "/workspace/paused-previews/candidate-a21650d-repairs/private-state-jobs/wave-a-bindings.json",
+    "actorReads": 2
+  },
+  "tc3Initial": {
+    "prepared": true,
+    "initializedBeforeListen": true,
+    "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+    "sourceInputs": {
+      "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+      "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+      "src/lib/data/shift-change-snapshot.ts": "75e7e04998e8e17ad0e7da142b8f014641633545557bb457292787a330472e37",
+      "src/lib/data/shift-changes.ts": "6ec6c2ba95b34417890319dc150da8ed0703a85307f735ed2138612ad5d4038c"
+    },
+    "finalized": true,
+    "manifest": "/workspace/paused-previews/candidate-a21650d-repairs/evidence-2026-10-20T00-27-53-602Z/tc-wa-3-initial-fixture.json"
+  },
+  "initialExtension": {
+    "moduleSha256": "532c484eb6b5349681b71600a078735dec3e83b0a5f1a54cd3a543d2502e03a6",
+    "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+    "initializedBeforeListen": true
+  },
+  "initialFixture": {
+    "manifest": "/workspace/paused-previews/candidate-a21650d-repairs/evidence-2026-10-20T00-27-53-602Z/inspection-initial-fixture.json",
+    "initializedBeforeListen": true,
+    "updateId": "fc9de905-e069-44af-b09c-3ed2c3968fe0",
+    "actors": 12,
+    "readyReads": 12
+  },
+  "bootstrapMethod": "fixture-only executor; no browser publication",
+  "demoAccounts": {
+    "owner": "QAOWNER",
+    "manager": "AUDIT-M",
+    "lead": "AUDIT-LEAD",
+    "employee": "AUDIT-E",
+    "payrollOwner": "payroll-qa-owner",
+    "payrollEmployee": "payroll-qa-a"
+  },
+  "sourceManifest": "/workspace/paused-previews/candidate-a21650d-repairs/evidence-2026-10-20T00-27-53-602Z/owned-next-bhqtwi/source-manifest.json",
+  "completedAt": "2026-10-20T01:00:17.711Z",
+  "sourceAndMirrorVerified": true,
+  "postgresStopped": true
+}

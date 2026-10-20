@@ -1,0 +1,10 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "outerCoordinatorPID": 329786,
+  "allowedExistingMarkReadChildPID": 339198,
+  "pausedAt": "2026-10-20T00:56:49.074229+00:00",
+  "reason": "Root authorized same-worker Timecards geometry2 and narrow same-key Mark-read real-ready setup replay; no existing action assertion changed",
+  "noNewBrowserUntilExistingChildClosed": true,
+  "existingChildClosedAt": "2026-10-20T00:58:12.795391+00:00",
+  "safeForSoleSerialFollowup": true
+}

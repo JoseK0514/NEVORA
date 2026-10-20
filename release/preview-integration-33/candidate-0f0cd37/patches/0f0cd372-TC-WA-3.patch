@@ -1,0 +1,26 @@
+From 0f0cd37226955c36e2bb67e482989e554c91810f Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Tue, 20 Oct 2026 00:40:47 +0000
+Subject: [PATCH] TC-WA-3: keep the shift-card separator inside its preceding
+ time atom
+
+---
+ src/components/wave-a/shift-block.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/components/wave-a/shift-block.tsx b/src/components/wave-a/shift-block.tsx
+index de4c43d2..844d1ec7 100644
+--- a/src/components/wave-a/shift-block.tsx
++++ b/src/components/wave-a/shift-block.tsx
+@@ -29,7 +29,7 @@ export function ShiftBlock({ shift, label, showPerson = false }: { shift: ShiftB
+     {label ? <p className="wa-shift__label">{label}</p> : null}
+     <p className="wa-shift__when">
+       <span className="nv-keep">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</span>{" "}
+-      <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span><span className="wa-shift__length">{"\u00a0·"}</span>{" "}
++      <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}<span className="wa-shift__length">{"\u00a0·"}</span></span>{" "}
+       <span className="wa-shift__length nv-keep">{keepDuration(durationMinutes(shift.startTime, shift.endTime))}</span>
+     </p>
+     <p className="wa-shift__where"><MetaParts text={where.join(" · ")} /></p>
+-- 
+2.52.0
+

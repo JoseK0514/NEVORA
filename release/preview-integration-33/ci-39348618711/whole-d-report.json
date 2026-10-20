@@ -1,0 +1,15 @@
+{
+  "checkpoint": "45cdfe442447d42ddc2698e3daf1ad05d1f8d61b",
+  "tree": "275e595b9566c31c24fbd6dd9831e5ae3741b3b5",
+  "sourceClean": true,
+  "checks": [],
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /8h 0m/. Input:\n\n'Your timecard\\n' +\n  'Sep 21, 2026 – Sep 27, 2026\\n' +\n  'Draft\\n' +\n  'Recorded time\\n' +\n  '8h\\n' +\n  'Break time\\n' +\n  '30m\\n' +\n  '\\n' +\n  'Times in Puerto Rico time. Hours include breaks, shown separately. These aren’t payroll hours.\\n' +\n  '\\n' +\n  'Sep 22, 2026, 8:00 AM\\n' +\n  'Main Office · Position not captured\\n' +\n  'Recorded punch'\n\n    at file:///home/runner/work/NEVORA/NEVORA/scripts/phase-d-browser-qa.mjs:50:12"
+  ],
+  "networkCancellations": [],
+  "screenshots": [],
+  "limitations": [
+    "Owned local runtime is not hosted verification.",
+    "Chromium/WebKit automation is not physical-device or screen-reader acceptance."
+  ]
+}

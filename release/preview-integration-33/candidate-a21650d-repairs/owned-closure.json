@@ -1,0 +1,19 @@
+{
+  "ownerId": "9830c650-9978-4ea3-b750-bc7c13111fde",
+  "source": "/workspace/inspect-candidate-a21650d",
+  "root": "/workspace/paused-previews/candidate-a21650d-repairs/evidence-2026-10-20T00-27-53-602Z/owned-next-bhqtwi",
+  "runtime": "Next production-mode review build + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 288198,
+  "port": 41829,
+  "url": "http://127.0.0.1:41829",
+  "identity": {
+    "name": "nevora_exchange_test_audit_2963af38537d",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:a5548561-9424-408a-b4ed-f1a389ed0ba4"
+  },
+  "closed": true,
+  "closedAt": "2026-10-20T01:00:18.397Z",
+  "sourceVerified": true,
+  "mirrorVerified": true
+}

@@ -1,0 +1,48 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "completedAt": "2026-10-20T00:54:04.685600+00:00",
+  "requiredDistinctContexts": 16,
+  "siteMeasurements": 64,
+  "replayedSameKeys": [
+    "scoped-wa-tc3-time-duration|webkit|QAOWNER|768|900|200|default",
+    "scoped-wa-tc3-time-duration|webkit|AUDIT-M|390|844|200|default",
+    "scoped-wa-tc3-time-duration|webkit|AUDIT-M|768|900|200|default"
+  ],
+  "unchangedOtherRows": 13,
+  "unchangedOtherRowsByteEquivalent": true,
+  "replayCases": [
+    {
+      "key": "scoped-wa-tc3-time-duration|webkit|QAOWNER|768|900|200|default",
+      "originalError": null,
+      "replayError": null,
+      "replayPassed": true,
+      "failedAssertions": [],
+      "pageErrors": [],
+      "blocked": [],
+      "telemetry": null
+    },
+    {
+      "key": "scoped-wa-tc3-time-duration|webkit|AUDIT-M|390|844|200|default",
+      "originalError": null,
+      "replayError": null,
+      "replayPassed": false,
+      "failedAssertions": [
+        "manager-shift-block: dot stays on preceding time line"
+      ],
+      "pageErrors": [],
+      "blocked": [],
+      "telemetry": null
+    },
+    {
+      "key": "scoped-wa-tc3-time-duration|webkit|AUDIT-M|768|900|200|default",
+      "originalError": null,
+      "replayError": null,
+      "replayPassed": true,
+      "failedAssertions": [],
+      "pageErrors": [],
+      "blocked": [],
+      "telemetry": null
+    }
+  ],
+  "qualification": "Original transport failures preserved. Clean same-key replays add no distinct context credit and do not erase original observations. Existing phone fourth-site TC-WA-3 remains."
+}

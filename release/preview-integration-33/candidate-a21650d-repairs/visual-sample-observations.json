@@ -1,0 +1,35 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "observedAt": "2026-10-20T00:57:25.346124+00:00",
+  "scope": "Explicit representative views only; not every generated crop manually reviewed",
+  "samples": [
+    {
+      "crop": "crops/chromium-scoped-desktop-nav-badge-geometry-QAOWNER-320x844-t200-default-actual-nav-badge.png",
+      "observed": "Count29 pill visibly overlaps adjacent Team icon; Plan ahead heading/count visible without character fragmentation in this crop. Other offscreen atoms remain provisional."
+    },
+    {
+      "crop": "crops/chromium-payroll-settings-focus-QAOWNER-320x844-t200-default-save-pending.png",
+      "observed": "Natural-position progress card occludes Save; this screenshot cannot independently prove visible Save flow."
+    },
+    {
+      "crop": "pending-colour/chromium-320-t200-above-feedback-settled.png",
+      "observed": "Actual user-scroll position exposes Saving and Employee exceptions together; reserved Save geometry and following heading placement retained."
+    },
+    {
+      "crop": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-mark-read-held3s.png",
+      "observed": "Actual disabled grey Marking read button visible. Pending label wider than idle as raw measurements show; no inferred contrast ratio from screenshot."
+    },
+    {
+      "crop": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-manager-shift-block.png",
+      "observed": "Fourth-site dot visibly starts duration line below preceding end-time PM, matching Range top measurements."
+    },
+    {
+      "crop": "home-painted-contrast/chromium-AUDIT-E-390x1000-pressed.png",
+      "observed": "Actual published-pass link white text on teal pressed paint. Pixel ratio routine records actual crop bytes and clear-padding-strip samples."
+    },
+    {
+      "crop": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-second-local-failure-feedback.png",
+      "observed": "After actual failed retry and scroll0, viewport shows Notifications band and top of Your alerts; the new failure status remains below the tab-bar viewport. Raw status y860.515625,h314 vs usable bottom753."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+  "expected": 24,
+  "recorded": 24,
+  "rawPassed": 24,
+  "complete": true,
+  "allRawPass": true,
+  "loadGaps": 0,
+  "geometryCredit": false,
+  "fullExitClaim": false
+}

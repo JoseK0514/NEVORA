@@ -1,0 +1,10 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "outerCoordinatorPID": 329786,
+  "allowedExistingWBChildPID": 329848,
+  "pausedAt": "2026-10-20T00:48:46.952034+00:00",
+  "reason": "Root authorized same-worker real Home four-state pixel routine and one same-key auxiliary framework diagnostic replay after core+priority, before remaining state optionals",
+  "noNewBrowserUntilExistingChildClosed": true,
+  "existingChildClosedAt": "2026-10-20T00:49:25.848404+00:00",
+  "safeForSoleSerialFollowup": true
+}

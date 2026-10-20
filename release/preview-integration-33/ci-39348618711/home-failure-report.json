@@ -1,0 +1,21 @@
+{
+  "checkpoint": "45cdfe442447d42ddc2698e3daf1ad05d1f8d61b",
+  "tree": "275e595b9566c31c24fbd6dd9831e5ae3741b3b5",
+  "sourceClean": true,
+  "status": "failed",
+  "failure": {
+    "name": "AssertionError",
+    "summary": "false == true",
+    "sourceLocation": "phase-e-home-browser-scenarios.mjs:167:948",
+    "stage": "keyboard",
+    "cell": {
+      "suite": "home",
+      "engine": "chromium",
+      "width": 320,
+      "status": "failed"
+    },
+    "operator": "==",
+    "actual": false,
+    "expected": true
+  }
+}

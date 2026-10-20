@@ -1,0 +1,38 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "keys": [
+    "scoped-wa-tc3-time-duration|webkit|QAOWNER|768|900|200|default",
+    "scoped-wa-tc3-time-duration|webkit|AUDIT-M|390|844|200|default",
+    "scoped-wa-tc3-time-duration|webkit|AUDIT-M|768|900|200|default"
+  ],
+  "rawFullErrorsPreserved": [
+    {
+      "key": "scoped-wa-tc3-time-duration|webkit|QAOWNER|768|900|200|default",
+      "pageErrors": [
+        "/127.0.0.1:41829/__nextjs_original-stack-frames due to access control checks."
+      ],
+      "blocked": []
+    },
+    {
+      "key": "scoped-wa-tc3-time-duration|webkit|AUDIT-M|390|844|200|default",
+      "pageErrors": [
+        "/127.0.0.1:41829/api/manager/inbox-count due to access control checks.",
+        "/127.0.0.1:41829/api/manager/inbox-count due to access control checks.",
+        "/127.0.0.1:41829/api/notifications due to access control checks."
+      ],
+      "blocked": []
+    },
+    {
+      "key": "scoped-wa-tc3-time-duration|webkit|AUDIT-M|768|900|200|default",
+      "pageErrors": [
+        "/127.0.0.1:41829/__nextjs_original-stack-frames due to access control checks."
+      ],
+      "blocked": []
+    }
+  ],
+  "guardAndOracleUnchanged": true,
+  "newInstrumentation": "Passive pathname/method/status/CORSheaders/native requestfailure and navigation telemetry only",
+  "noCauseAssumed": true,
+  "configurationCredit": 16,
+  "extraReplayCredit": 0
+}

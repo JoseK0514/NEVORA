@@ -1,0 +1,60 @@
+{
+  "sha": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "sourceFiles": {
+    "src/lib/communications/recovery.ts": "d88fcceb9b0b2c8b1505ca2e8a575f5c7a08aacd4c214a501e3e2be2a60363a0",
+    "src/lib/communications/client.ts": "b912546b8cb3cd68685695d5e0408e2202b2d85483249f3221e3040caf8159c8",
+    "src/lib/private-snapshot-client.ts": "9935b70c010fad60ed15776589c98a0d85c55b57e796b7125282202dd41050c8",
+    "src/components/communication-detail.tsx": "0ed63d6db2580fbd4f03d428581ed6e639f291e14d0012db7fa8f06f930f7390",
+    "src/lib/communications/types.ts": "67f161e9358b5281ef006193059912ed601bdf1d487f8140bb4dd79bd89c8800",
+    "src/lib/communications/http.server.ts": "7544cc606c632d9c23120ad7ef4d53236cad7775f4b6ac3e50cd0dce1be5562d",
+    "src/app/api/employee/communications/[id]/route.ts": "8b87cb09edff9d5c7fab882e5c719ff544a0535d7c6104dea38603ff73af179a",
+    "src/app/api/employee/communications/operations/[id]/route.ts": "26ddae6f807238aa1526e5bad33da1e2f80548e0f7127e06d5af2c0db41ac77d",
+    "src/app/api/employee/communications/route.ts": "7043ec208004717bbedf9f57c57a486a49f2b6960c7fa71d837beb972936ae3e",
+    "src/components/employee-profile-details.tsx": "2bae0afe6fd70143e3e67a8c768c2a82c234fbb31f455c655d47582a5a9e82c8"
+  },
+  "module": "ack-pause-recovery-a216.mjs",
+  "moduleSha256": "f6ef1ed8ab30088da3fe5801ade86813fc66f03a4f95c6ad3efd474b6f7cb818",
+  "originalGenericModule": "ack-pause-recovery.mjs",
+  "originalGenericSha256": "17efd84dfc9396599e1d0c09ffdb1d23164de4b94c1db0314bb458400c713a15",
+  "rows": 16,
+  "perEngine": 8,
+  "accounts": [
+    "AUDIT-E",
+    "AUDIT-LEAD"
+  ],
+  "sizes": [
+    [
+      390,
+      844,
+      100
+    ],
+    [
+      320,
+      844,
+      200
+    ]
+  ],
+  "variants": [
+    "offline",
+    "blur"
+  ],
+  "scope": [
+    "fresh own role/actor/grant and real detail200 binding",
+    "hold actualACK3s; secondactivation one command; pause removes private article",
+    "abort only locally, fresh actual authorized read of same revision/authority",
+    "original uncertain-operation Check status retained and fresh ACK forbidden",
+    "if lookup exists, actualGETlookup uses originaloperationId and localoutcome_unknown reply"
+  ],
+  "knownPriorContract": "src/lib/communications/recovery.ts:4-6; no matching named priorIS-B12 orIS-B29 finding; provisional until actual UI proof",
+  "mutationPolicy": "Every business POST held/aborted; optional statusGET answered locally. No operation reaches server and no server transaction claimed.",
+  "credit": "No cd764f6/full-exit or cross-source pass inheritance",
+  "invocation": {
+    "VERIFY_SCOPED_MODULES": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/manual-harness/ack-pause-recovery-a216.mjs",
+    "VERIFY_ONLY": "scoped-p3-ack-unknown-private-pause-a216",
+    "VERIFY_ENGINES": "chromium orwebkit, one atatime",
+    "VERIFY_SHA": "a21650de50374683d52e32b883d7f419d7344f22"
+  },
+  "executed": false,
+  "browserOrPreviewLaunched": false
+}

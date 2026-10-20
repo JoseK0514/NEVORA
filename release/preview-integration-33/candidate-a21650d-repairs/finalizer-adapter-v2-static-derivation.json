@@ -1,0 +1,30 @@
+{
+  "preparedAt": "2026-10-19T23:39:50.971342+00:00",
+  "mode": "Static derivation evaluated only; no materialization/runtime/DB/browser",
+  "supersedes": "prepare-before-listen-finalizer.py (unexecuted static v1; escaping corrected before use)",
+  "baseSha256": "3a72d7014b01e30dbedb5fef51207458046f40e501410a6d8b58b95d85d89f1f",
+  "adapter": {
+    "path": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/prepare-before-listen-finalizer-v2.py",
+    "sha256": "a54a4641c5b5761fc5ed558dde2f062ed5df5e13bc2fa42a7a31214099525a16"
+  },
+  "launcher": {
+    "path": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/launch-before-listen-finalizer-v2.sh",
+    "sha256": "7aa40f6bb5abcccd4522d35f3107162bc3d5c6dce10cc144e2ebb9aee3da588e"
+  },
+  "staticChecks": {
+    "validFinalizerExportAccepted": true,
+    "callbackRenderedAsRealJSLine": true,
+    "exactlyOneEarlyAndLateCall": true,
+    "lateAfterCredentialsBeforeDeregister": true,
+    "ancestor864AndAll12SourceHashes": true
+  },
+  "derivedInitializerSha256": "747d5fb69f0dd9c72ad7defbbb44fa41517b3bcd3650e32c17f75f87473643e4",
+  "initialExtension": {
+    "path": "/workspace/nevora-inspections/p35-wave-a/repair-a21650d-AL24-preparation/initial-al-wa-10.mts",
+    "sha256": "acc2b4006dc22f8cd0b43efa8b19be11787413fbc99fc197be49ee8ed8a6152d",
+    "export": "seedInitialALWA10",
+    "slot": "After base/seed-extra/templates; before communication publication and app listen",
+    "finalizerExport": "finalizeInitialALWA10",
+    "finalizerSlot": "After long-manager email and demo credential updates; immediately before communicationHook.deregister and return; before app spawn"
+  }
+}

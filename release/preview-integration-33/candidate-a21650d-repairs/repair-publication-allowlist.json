@@ -1,0 +1,2114 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "root": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "3e53720e7ce4c072873c0676a5b3f9479abcc8a047c69e587561780dbd78a4b1",
+      "bytes": 2318
+    },
+    {
+      "path": "a216-v4-launch-sequence.md",
+      "sha256": "351ada47afe65d8a79c3afef6e4b23c93a88e30256afb4d8285461c1110f6dd1",
+      "bytes": 1353
+    },
+    {
+      "path": "a21650d-al-tc3-v2-before-listen-dry-run.json",
+      "sha256": "44cc669f73a4096eef4b629368c81c0849ffaa5eb7916faa2ddea7e329353742",
+      "bytes": 2843
+    },
+    {
+      "path": "alignment.md",
+      "sha256": "b0cbd4e9edb2760e8b989d6ce4a10ac60dfc973b0f9c424c8c2323458a0192c2",
+      "bytes": 1592
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/ordered-recovery.json",
+      "sha256": "723f9bf6741daf87abb67c37393f4fe7740657631de6c41a4a5a29113e908708",
+      "bytes": 1842
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t100-default-ready-actions.png",
+      "sha256": "ed49b7090c1198cf524667de90a664c6a30166ed3ab6250b086bf5c0f0ceaa39",
+      "bytes": 90266
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t100-default-ready-top.png",
+      "sha256": "8dae1146140a146ac4503e956901f23b3b14bf99c7bf809743ec8c141f611452",
+      "bytes": 90363
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t200-default-ready-actions.png",
+      "sha256": "16622b9c1dac330963b70473c467fc51d94b043bfd7c05319b6f635d19ba3465",
+      "bytes": 135182
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t200-default-ready-top.png",
+      "sha256": "af3776f6402c25e36612bdef49b8f5dd43ac22fc6722f8859810e8e99295937c",
+      "bytes": 132825
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t100-default-ready-actions.png",
+      "sha256": "46476f37dec74f64f06110bbbc7f7b57b453bd111d0b1452a1962afb14d29d30",
+      "bytes": 48875
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t100-default-ready-top.png",
+      "sha256": "6021f9aaa27218360460df677f1e8d6bfe008f056d64bfb288f1585a66a7f7c3",
+      "bytes": 54782
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t200-default-ready-actions.png",
+      "sha256": "343642d3d563954b0b0a22b041a5766f68b797e1849d12603aab714ebea14379",
+      "bytes": 55476
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t200-default-ready-top.png",
+      "sha256": "b988c41ea84d6205c426738e59f77d8fea96ef7db2158a80ebe8a2b074489a5e",
+      "bytes": 52202
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t100-default-ready-actions.png",
+      "sha256": "1130da07e4144a66b09e52988eb8a9c7b44ae54bde7bfe57118bc691645a1990",
+      "bytes": 57031
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t100-default-ready-top.png",
+      "sha256": "e6a548e207abec0a199e7d293d6460ef65066608f7649c176fcc7b2da39e282b",
+      "bytes": 59070
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t200-default-ready-actions.png",
+      "sha256": "df5c860c19fdc9764ae820a0ce9b735736b452858474b8113ca4ab866a890092",
+      "bytes": 59916
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t200-default-ready-top.png",
+      "sha256": "d1bc02aa4be9440bbfc381f416150df34546b1e18c52e518956c1380825ebfa7",
+      "bytes": 58623
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t100-default-ready-actions.png",
+      "sha256": "6676398c9227d223b7c3135ff8271986708d547584ba460dce9056095e761797",
+      "bytes": 91373
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t100-default-ready-top.png",
+      "sha256": "ff17b126c8502461a6479eae684ab054e24b17198a271cc7e2ebc5b9702e5675",
+      "bytes": 91196
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t200-default-ready-actions.png",
+      "sha256": "0cc58c240f44a8317cb4d79c7a144df6cda9ffe43a797c1853fb62cabfc742d0",
+      "bytes": 135969
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t200-default-ready-top.png",
+      "sha256": "adaa78f9b1b6d6114aacbea4527417c2d448bd55f0bbebe8935930a0921ba63a",
+      "bytes": 133510
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-320x844-t100-default-ready-actions.png",
+      "sha256": "46476f37dec74f64f06110bbbc7f7b57b453bd111d0b1452a1962afb14d29d30",
+      "bytes": 48875
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-320x844-t100-default-ready-top.png",
+      "sha256": "6021f9aaa27218360460df677f1e8d6bfe008f056d64bfb288f1585a66a7f7c3",
+      "bytes": 54782
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-320x844-t200-default-ready-actions.png",
+      "sha256": "343642d3d563954b0b0a22b041a5766f68b797e1849d12603aab714ebea14379",
+      "bytes": 55476
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-320x844-t200-default-ready-top.png",
+      "sha256": "b988c41ea84d6205c426738e59f77d8fea96ef7db2158a80ebe8a2b074489a5e",
+      "bytes": 52202
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-390x844-t100-default-ready-actions.png",
+      "sha256": "1130da07e4144a66b09e52988eb8a9c7b44ae54bde7bfe57118bc691645a1990",
+      "bytes": 57031
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-390x844-t100-default-ready-top.png",
+      "sha256": "e6a548e207abec0a199e7d293d6460ef65066608f7649c176fcc7b2da39e282b",
+      "bytes": 59070
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-390x844-t200-default-ready-actions.png",
+      "sha256": "7d4be26361362db4d0dcca7466aacd7a1eb9ffc78c039cd010a98d30eba0f41e",
+      "bytes": 60385
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-390x844-t200-default-ready-top.png",
+      "sha256": "d1bc02aa4be9440bbfc381f416150df34546b1e18c52e518956c1380825ebfa7",
+      "bytes": 58623
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t100-default-ready-actions.png",
+      "sha256": "09777f9694010eed6eb106e725b35fe0001ab5105a969dcf0a90358c6f36936e",
+      "bytes": 113531
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t100-default-ready-top.png",
+      "sha256": "6a2a47fcfcb0ac4d1a3c36df3ddb207c2308c98517d163fb226481045e62a1ab",
+      "bytes": 113399
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t200-default-ready-actions.png",
+      "sha256": "2cdc149df4c706a9a94d9a0068facaed0698a2f6a5c7e22f4d88f0cd3f504018",
+      "bytes": 183568
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t200-default-ready-top.png",
+      "sha256": "3cd4eebdab76101fc994f934892a5f29d91f9e9790f5a893ba57348de3c43626",
+      "bytes": 173493
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t100-default-ready-actions.png",
+      "sha256": "9fe165f36ffee5f914a5db83de0f6be9c1d74fa5494edffd3513162bfa8f3333",
+      "bytes": 65768
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t100-default-ready-top.png",
+      "sha256": "21d5aa41e86814049979f0a59d2f130ed0aadeff9527de1a6911b7c23d8fb116",
+      "bytes": 70245
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t200-default-ready-actions.png",
+      "sha256": "765c2349cfed8eec3cc2e58b8d3799bc39c8ab51eb8972050f4b42d410d1a614",
+      "bytes": 74451
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t200-default-ready-top.png",
+      "sha256": "d9cf7367c84c7fedfde08ee3b85e068267f0b81eaf5372a627e12d543e1944c0",
+      "bytes": 66032
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t100-default-ready-actions.png",
+      "sha256": "5d87b0d889333a64ca12bebde10a3fa95b11631cb35761b391a14698e4f77117",
+      "bytes": 77591
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t100-default-ready-top.png",
+      "sha256": "bb228af2164cce58df67e928a5189389b436524e99bdc753e8e62fc5700e3433",
+      "bytes": 78278
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t200-default-ready-actions.png",
+      "sha256": "735fd9f67a5687188b7d37c09f1719b0a1e5d2dbe2a66a250ec45d5752b6b070",
+      "bytes": 82622
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t200-default-ready-top.png",
+      "sha256": "1c8815c5079a589e8b66ab185860f9942a29356349990d2ddeeef95a8603ebf1",
+      "bytes": 73547
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t100-default-ready-actions.png",
+      "sha256": "7f2cd43d7110163406d320b3f5dc678abde6df02579fb0a51f90b1ca563820ef",
+      "bytes": 115581
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t100-default-ready-top.png",
+      "sha256": "55b1c653df1da333c67ded670c6a5a960b2e8f57c0db1d3a1176351f7512c869",
+      "bytes": 114366
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t200-default-ready-actions.png",
+      "sha256": "5292e13b94119b8d6a541c096600417db87aebc16c21a3132f3ff9f42e3124cd",
+      "bytes": 183974
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t200-default-ready-top.png",
+      "sha256": "55922ebb8db789056c0cc835e1c5c3e52addb238981c9078c7cd7e308ace15d9",
+      "bytes": 174283
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-320x844-t100-default-ready-actions.png",
+      "sha256": "f3e170bca59a48bb136bfcb3133b79306fad37f5da3dba98b341bdf3fdf2b37b",
+      "bytes": 65605
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-320x844-t100-default-ready-top.png",
+      "sha256": "e67039a4d83bf1155dbaa62ed124913487e414576cefdb16003935ecce1d9da5",
+      "bytes": 70703
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-320x844-t200-default-ready-actions.png",
+      "sha256": "9201144d9ce394004b336e86fde149cc5926d5bdbc3f176ca64d278f2d952db4",
+      "bytes": 74323
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-320x844-t200-default-ready-top.png",
+      "sha256": "d9cf7367c84c7fedfde08ee3b85e068267f0b81eaf5372a627e12d543e1944c0",
+      "bytes": 66032
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-390x844-t100-default-ready-actions.png",
+      "sha256": "391f31eb8e8bf403486db305629a3b6378acac76be174ffb43bc6981b1f88839",
+      "bytes": 77447
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-390x844-t100-default-ready-top.png",
+      "sha256": "bb228af2164cce58df67e928a5189389b436524e99bdc753e8e62fc5700e3433",
+      "bytes": 78278
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-390x844-t200-default-ready-actions.png",
+      "sha256": "e94b069abfbb0b323264079193204e7c8704a889d80e9d618fd133f38b59aa62",
+      "bytes": 84409
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-390x844-t200-default-ready-top.png",
+      "sha256": "7d0979079fad12cde6d26a2a66bd4d56a6424932c2996971b72cf713b0fc3761",
+      "bytes": 74102
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/targeted-al24-states.json",
+      "sha256": "23f48074ed589bb43d8c2dbfccd6d7ec13cd55ea75edaca7c20a3e5425bcaf82",
+      "bytes": 323717
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/original/targeted-al24-summary.json",
+      "sha256": "84628f412ff67ca8b83394dec23ad26cfa7480c8019b36d593094f12d377ed62",
+      "bytes": 151
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/recovery-plan.json",
+      "sha256": "fda6bebade79426b9601aa4aac3f9ede3f8f838f01addc86f602e8d9f14efc48",
+      "bytes": 663
+    },
+    {
+      "path": "attempts/001-missing-stage-release-env/repair-stage-ledger.json",
+      "sha256": "990ae7daadae561146cd057c9a957f4e02c421b4dbfdf6bfe581ca8e5c7d0fac",
+      "bytes": 994
+    },
+    {
+      "path": "attempts/002-priority-continuation/original-stage-ledger.json",
+      "sha256": "f9d7c7a85e020945f249cfcc701376abd639b36075a6806bd85d2f5956188e03",
+      "bytes": 2586
+    },
+    {
+      "path": "attempts/002-priority-continuation/v5-control-stop-observation/executed-v5.mjs",
+      "sha256": "06577587bba6b622a4fc9fe57ca94602d047dee050c6850e3366555a82cd1e2e",
+      "bytes": 8460
+    },
+    {
+      "path": "attempts/002-priority-continuation/v5-control-stop-observation/original-control-ledger.json",
+      "sha256": "5ee6d80cd24262a61a1c1a32cabb21cfd0d78e688e87a084edecce677a972058",
+      "bytes": 365
+    },
+    {
+      "path": "attempts/002-priority-continuation/v5-control-stop-observation/qualification.json",
+      "sha256": "4bd19528b943063af8eccee07f74a6139dccf6ba27b76fca4df8f1395e42f6fc",
+      "bytes": 415
+    },
+    {
+      "path": "attempts/003-optional-diagnostic-checkpoint/pause.json",
+      "sha256": "aedea7e1efe0207bdd4a1142117dec97f09aab50d75a4c4bba9bbfff1f210076",
+      "bytes": 520
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-coverage-time.png",
+      "sha256": "f2d5ebcf35fe87e56d53ba7ad17af97f02a596bd8f07442718cb91869fde4df5",
+      "bytes": 69501
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-manager-shift-block.png",
+      "sha256": "1338df74245a3e81a04b855dcf2083bf282cfe887f521a6d4d6daa48868c8013",
+      "bytes": 76905
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-overnight-add-time.png",
+      "sha256": "83f8f5f4062de6dd79eb4e4d2470d12fc52e3799b57c213809570060597fa2e3",
+      "bytes": 71060
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-replacement-time.png",
+      "sha256": "5ca0ce8c50562616db1142bbff0de99f0f8601f714e6c16d5129f8de7c86499c",
+      "bytes": 72164
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-coverage-time.png",
+      "sha256": "1b8efb7e6428cb7fa5f7463e6af851c87446435099fe41c28c4d583a42894422",
+      "bytes": 132236
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-manager-shift-block.png",
+      "sha256": "24e1a022d1596156174e25828bf225445c8d33148dd0011d53fafc5e28bc49a9",
+      "bytes": 150334
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-overnight-add-time.png",
+      "sha256": "11f3279fc417bd3dabd768b802daec150cc0deb2a90be11522585ca5cda3df24",
+      "bytes": 128636
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-replacement-time.png",
+      "sha256": "ae6ed53fe569c11057cc7b0b1102ee450f67ec87969b0976ce4a3213f2b20fd9",
+      "bytes": 132583
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-coverage-time.png",
+      "sha256": "53e6131317d94bf6bcc56e6d42b1dd0b712523b2fc730ebde52d401e9b7cee89",
+      "bytes": 133362
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-manager-shift-block.png",
+      "sha256": "d707d2cb27cfece5d2944f93e25d73466b5ec72f387730af687825ff25e40b90",
+      "bytes": 151425
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-overnight-add-time.png",
+      "sha256": "c549e26d8e4c81bd971fd30c37e3861e2a468164613425e707ef5865a565002a",
+      "bytes": 129606
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-replacement-time.png",
+      "sha256": "5ee4313fe12eba2812db98b057e4d81fed4fbd00451a2a5eb34e734dd1d995d9",
+      "bytes": 133692
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/original-targeted-tc3-states.json",
+      "sha256": "5b887ba0389089e954feb5a005dc670806c9adf3624068589d923ee9c830fd21",
+      "bytes": 1379931
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/original-targeted-tc3-summary.json",
+      "sha256": "fc718760bfe6803284834e3397aa2afa5d16db96f743ed879c985cb7bb8ed0ad",
+      "bytes": 90836
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/replay-completion.json",
+      "sha256": "969ea0cac716f676fb5aea3641638e465e1aeac03b232dc076c2d6d647b11c12",
+      "bytes": 1605
+    },
+    {
+      "path": "attempts/004-tc3-auxiliary-transport/replay-plan.json",
+      "sha256": "d90d8cff98e2f1e01f9b23873d2627de5db92ee6997abeade34228758d1358d0",
+      "bytes": 1405
+    },
+    {
+      "path": "attempts/005-markread-ready-geometry-checkpoint/executed-pause-script.py",
+      "sha256": "1b60940f313067c4bc52273dea92d25d04f40d48fba7370fcbd53cdaee4e832b",
+      "bytes": 2435
+    },
+    {
+      "path": "attempts/005-markread-ready-geometry-checkpoint/pause.json",
+      "sha256": "6d7607cad984d8c0785c25809e2f50ed3af4bb044e6a5df3f8270fa7e56d74e9",
+      "bytes": 494
+    },
+    {
+      "path": "attempts/006-resource-priority-finalizer/original-continuation-v6.json",
+      "sha256": "7defa24b09fa3ed80a6c5458c2462d261235cf6a12629e6782274a3b19617ae0",
+      "bytes": 2671
+    },
+    {
+      "path": "attempts/006-resource-priority-finalizer/original-markread-chromium-states.json",
+      "sha256": "a4b1fe684a06d322385be493686fedbf94ce696b56983b94d8603bb47178d5cc",
+      "bytes": 499377
+    },
+    {
+      "path": "attempts/006-resource-priority-finalizer/original-markread-chromium-summary.json",
+      "sha256": "daa182dcae4887ebd2bf3f3b44449bfb33196862687704fa6c23451b73d8974b",
+      "bytes": 86123
+    },
+    {
+      "path": "attempts/006-resource-priority-finalizer/v7-finalizer.mjs",
+      "sha256": "41c41d685d6cfe812eb79efb6cc9f54b7b03cbe97f40c6a2aa4cc9eb39fbb234",
+      "bytes": 7064
+    },
+    {
+      "path": "attempts/006-resource-priority-finalizer/v7-guard-refusal.json",
+      "sha256": "82a3e8ea6264f4213ac67174ead932e1dc9c8aa906efa1da115a5223b71395d2",
+      "bytes": 543
+    },
+    {
+      "path": "candidate-a21650d-source-preparation.json",
+      "sha256": "1826c5e80430c8b992e5455d6c998d10b2c60fb36949654f2c405be8348639f6",
+      "bytes": 2326
+    },
+    {
+      "path": "candidate-findings.md",
+      "sha256": "731dcb8cbc719ea7e0689f75bf34a9f4d4412216beaa3f52afa527022302dc50",
+      "bytes": 3867
+    },
+    {
+      "path": "checker24/batch-1-checks.json",
+      "sha256": "84f8a92d8c54ef6302d454e2216df2103ecfc81c7038c1d6a07c3e4648faf49c",
+      "bytes": 1752
+    },
+    {
+      "path": "checker24/batch-2-checks.json",
+      "sha256": "41293ce643d5ff9d6a90ea0a8425e54ded1ce7e5709623dd6ed8e6bd8dd58dac",
+      "bytes": 1720
+    },
+    {
+      "path": "checker24/batch-3-checks.json",
+      "sha256": "1936fe0c6b62be62d86eadd518b87d16f7fe0bb3cd0bad13966ab3a7f71342cc",
+      "bytes": 1752
+    },
+    {
+      "path": "checker24/batch-4-checks.json",
+      "sha256": "8af18d8e9605bd71c4135f9fb1ce3a82143bb30810ab077a495ca2966557de8c",
+      "bytes": 1720
+    },
+    {
+      "path": "checker24/completion.json",
+      "sha256": "5c27aff95fb5480d885689fa4b6e64bf34e74c80dfaa7c6a39425f6b92b3ea5c",
+      "bytes": 228
+    },
+    {
+      "path": "checker24/summary.json",
+      "sha256": "7e240b1e357973d087b8b2d7175c5d0106c3cc31d57c6ea7b8ab5f75923b7023",
+      "bytes": 1723
+    },
+    {
+      "path": "contrast-diagnostic/diag-wb-contrast-rules-360-100-actual-after-axe.png",
+      "sha256": "a2a77a9de83e9d37253bbf27d6a40ea4f4a01c435f688dc6c517f8f5ec234b38",
+      "bytes": 61386
+    },
+    {
+      "path": "contrast-diagnostic/diag-wb-contrast-rules-430-125-actual-after-axe.png",
+      "sha256": "cf8939177b92fbf90fe929a4a5ef3ebb892355410a6957b969acaa1bf43c89d4",
+      "bytes": 74452
+    },
+    {
+      "path": "contrast-diagnostic/diag-wb-contrast-templates-320-200-actual-after-axe.png",
+      "sha256": "290190dea827b31cd0c35bbec848c12a3d8a04022c52f423d32a557f17436759",
+      "bytes": 65261
+    },
+    {
+      "path": "crops/chromium-payroll-settings-focus-QAOWNER-320x844-t200-default-409.png",
+      "sha256": "178b66a03f1054692908b35469ba9beaa4747a267b7fa5aa5c16f48de1bdc627",
+      "bytes": 68815
+    },
+    {
+      "path": "crops/chromium-payroll-settings-focus-QAOWNER-320x844-t200-default-save-pending.png",
+      "sha256": "54a9a99b749f65be85c31a1e44f68e972ad083cef509d6ab81d5f7c0c7b7e181",
+      "bytes": 61773
+    },
+    {
+      "path": "crops/chromium-payroll-settings-focus-QAOWNER-390x844-t100-default-409.png",
+      "sha256": "1dd551f142d284b9015963abd1c8c0d8d39f53885398b67a7b7404d6b24e524c",
+      "bytes": 57402
+    },
+    {
+      "path": "crops/chromium-payroll-settings-focus-QAOWNER-390x844-t100-default-save-pending.png",
+      "sha256": "2a9993abbb2654b596258052dcedb46a1dc3757b5a08112187d191f69adbaa19",
+      "bytes": 50411
+    },
+    {
+      "path": "crops/chromium-scoped-desktop-nav-badge-geometry-QAOWNER-1024x900-t200-default-actual-nav-badge.png",
+      "sha256": "2f684e0a1b041333beac71b0485f581e341374f71aa8f034567da4d61a17a8a6",
+      "bytes": 157292
+    },
+    {
+      "path": "crops/chromium-scoped-desktop-nav-badge-geometry-QAOWNER-320x844-t200-default-actual-nav-badge.png",
+      "sha256": "9fcf3de5ff8281c9d59618e1f7930abec8c69ac78da535ec1e7a9cdf6c99235f",
+      "bytes": 57222
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t100-default-execution-error.png",
+      "sha256": "0a7de5e95840bae0850cf340918b202a3bfe2fe655e9130f468650661702b8a1",
+      "bytes": 38491
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t100-default-first-local-failure-feedback.png",
+      "sha256": "5bfc4880c69e4ae0449ceeb556f272820f19201ef09eea2f22302be7d0f6c619",
+      "bytes": 49183
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t100-default-first-local-failure-settled.png",
+      "sha256": "5bfc4880c69e4ae0449ceeb556f272820f19201ef09eea2f22302be7d0f6c619",
+      "bytes": 49183
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t100-default-mark-read-first-pending.png",
+      "sha256": "2ace8b763deeb4d07c22cd73202126998b80a0c53a9a8e5268192ae856fb28d0",
+      "bytes": 49548
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t100-default-mark-read-held3s.png",
+      "sha256": "2ace8b763deeb4d07c22cd73202126998b80a0c53a9a8e5268192ae856fb28d0",
+      "bytes": 49548
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t100-default-mark-read-same-item-retry-pending.png",
+      "sha256": "2ace8b763deeb4d07c22cd73202126998b80a0c53a9a8e5268192ae856fb28d0",
+      "bytes": 49548
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t100-default-second-local-failure-feedback.png",
+      "sha256": "0ca82ed59ee1bba9b6111fe2c3f7c33bd91aa968d6d061a8c123806136427089",
+      "bytes": 53791
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t100-default-second-local-failure-settled.png",
+      "sha256": "0ca82ed59ee1bba9b6111fe2c3f7c33bd91aa968d6d061a8c123806136427089",
+      "bytes": 53791
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-first-local-failure-feedback.png",
+      "sha256": "3ef27f42317c9d0d34eef8d79f7db2bdda005fd64f39752f71765f7d146ff1ec",
+      "bytes": 51029
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-first-local-failure-settled.png",
+      "sha256": "3ef27f42317c9d0d34eef8d79f7db2bdda005fd64f39752f71765f7d146ff1ec",
+      "bytes": 51029
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-mark-read-first-pending.png",
+      "sha256": "b3f4e12c2df0a2b8d99cdbd8686eeef204481daad15ce31b43e7668c8698c079",
+      "bytes": 51822
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-mark-read-held3s.png",
+      "sha256": "b3f4e12c2df0a2b8d99cdbd8686eeef204481daad15ce31b43e7668c8698c079",
+      "bytes": 51822
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-mark-read-same-item-retry-pending.png",
+      "sha256": "b3f4e12c2df0a2b8d99cdbd8686eeef204481daad15ce31b43e7668c8698c079",
+      "bytes": 51822
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-second-local-failure-feedback.png",
+      "sha256": "d433ce8edc91f69afbac2ed51863e1240884b2f9ef7d07f8cbf48b920666a3fd",
+      "bytes": 55748
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-320x844-t200-default-second-local-failure-settled.png",
+      "sha256": "d433ce8edc91f69afbac2ed51863e1240884b2f9ef7d07f8cbf48b920666a3fd",
+      "bytes": 55748
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t100-default-first-local-failure-feedback.png",
+      "sha256": "9f6c204125cb442ddfabffe89cf819de56dbdd9bc089a343264940217eb3bff5",
+      "bytes": 54455
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t100-default-first-local-failure-settled.png",
+      "sha256": "9f6c204125cb442ddfabffe89cf819de56dbdd9bc089a343264940217eb3bff5",
+      "bytes": 54455
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t100-default-mark-read-first-pending.png",
+      "sha256": "602d70887c5a3830cda51dc120765651d64bb1ed458d639dcad5e41e1732f641",
+      "bytes": 58352
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t100-default-mark-read-held3s.png",
+      "sha256": "602d70887c5a3830cda51dc120765651d64bb1ed458d639dcad5e41e1732f641",
+      "bytes": 58352
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t100-default-mark-read-same-item-retry-pending.png",
+      "sha256": "790e3c925ee701dbd63d794a2645d367f804cdad529875e962196047435e4681",
+      "bytes": 54885
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t100-default-second-local-failure-feedback.png",
+      "sha256": "f117289680c396c88b6f5884c862b5bb69e079ee1e62fc5033f34d9c55cd61ea",
+      "bytes": 57505
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t100-default-second-local-failure-settled.png",
+      "sha256": "f117289680c396c88b6f5884c862b5bb69e079ee1e62fc5033f34d9c55cd61ea",
+      "bytes": 57505
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t200-default-first-local-failure-feedback.png",
+      "sha256": "f4abca52884b69cf308ae84b6fcd7a9ed4330184bba83cbaba808e0b2951c599",
+      "bytes": 59379
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t200-default-first-local-failure-settled.png",
+      "sha256": "f4abca52884b69cf308ae84b6fcd7a9ed4330184bba83cbaba808e0b2951c599",
+      "bytes": 59379
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t200-default-mark-read-first-pending.png",
+      "sha256": "ad741e2ed0456be3b74f4621470dc44da2db48b7e6f3f2dcf0a15d63d9d8d71e",
+      "bytes": 59830
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t200-default-mark-read-held3s.png",
+      "sha256": "ad741e2ed0456be3b74f4621470dc44da2db48b7e6f3f2dcf0a15d63d9d8d71e",
+      "bytes": 59830
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t200-default-mark-read-same-item-retry-pending.png",
+      "sha256": "ad741e2ed0456be3b74f4621470dc44da2db48b7e6f3f2dcf0a15d63d9d8d71e",
+      "bytes": 59830
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t200-default-second-local-failure-feedback.png",
+      "sha256": "2bbb02509f3d734cff975313a2616fa9df8da13a26ddda40672959e241f58fc5",
+      "bytes": 64417
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-390x844-t200-default-second-local-failure-settled.png",
+      "sha256": "2bbb02509f3d734cff975313a2616fa9df8da13a26ddda40672959e241f58fc5",
+      "bytes": 64417
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t100-default-first-local-failure-feedback.png",
+      "sha256": "79593a60555e915097229274cf215f59d208726837053a4bfc9d28e31ae28c11",
+      "bytes": 31596
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t100-default-first-local-failure-settled.png",
+      "sha256": "79593a60555e915097229274cf215f59d208726837053a4bfc9d28e31ae28c11",
+      "bytes": 31596
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t100-default-mark-read-first-pending.png",
+      "sha256": "fcaf7bac63ec34bd02b13553d36455fb50127cbe3e791a3f0c078536ae251f5b",
+      "bytes": 31847
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t100-default-mark-read-held3s.png",
+      "sha256": "fcaf7bac63ec34bd02b13553d36455fb50127cbe3e791a3f0c078536ae251f5b",
+      "bytes": 31847
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t100-default-mark-read-same-item-retry-pending.png",
+      "sha256": "fcaf7bac63ec34bd02b13553d36455fb50127cbe3e791a3f0c078536ae251f5b",
+      "bytes": 31847
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t100-default-second-local-failure-feedback.png",
+      "sha256": "6a85ed159a6718011c420cdd96cae04804f277813d0c025452edce5cb69af3bb",
+      "bytes": 34048
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t100-default-second-local-failure-settled.png",
+      "sha256": "6a85ed159a6718011c420cdd96cae04804f277813d0c025452edce5cb69af3bb",
+      "bytes": 34048
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t200-default-first-local-failure-feedback.png",
+      "sha256": "4faa8c31377954937edf4ad462b72cce531eae7b066c90742aef2de2dc9f8bb0",
+      "bytes": 40800
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t200-default-first-local-failure-settled.png",
+      "sha256": "4faa8c31377954937edf4ad462b72cce531eae7b066c90742aef2de2dc9f8bb0",
+      "bytes": 40800
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t200-default-mark-read-first-pending.png",
+      "sha256": "b03ccd15b2985c6b6e6715fd17a3a330d195eabdd5179f46dd9718503df79581",
+      "bytes": 41628
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t200-default-mark-read-held3s.png",
+      "sha256": "b03ccd15b2985c6b6e6715fd17a3a330d195eabdd5179f46dd9718503df79581",
+      "bytes": 41628
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t200-default-mark-read-same-item-retry-pending.png",
+      "sha256": "b03ccd15b2985c6b6e6715fd17a3a330d195eabdd5179f46dd9718503df79581",
+      "bytes": 41628
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t200-default-second-local-failure-feedback.png",
+      "sha256": "227fc44219b313ebb06282069398976e34e7b155b027d1da62d5d2ce1cb55d9b",
+      "bytes": 34446
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-AUDIT-M-844x390-t200-default-second-local-failure-settled.png",
+      "sha256": "227fc44219b313ebb06282069398976e34e7b155b027d1da62d5d2ce1cb55d9b",
+      "bytes": 34446
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t100-default-first-local-failure-feedback.png",
+      "sha256": "0583f21270e5cc65028a50c91b3cc7c40ed4e9f620219ab938f9d2b10eedb356",
+      "bytes": 47945
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t100-default-first-local-failure-settled.png",
+      "sha256": "0583f21270e5cc65028a50c91b3cc7c40ed4e9f620219ab938f9d2b10eedb356",
+      "bytes": 47945
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t100-default-mark-read-first-pending.png",
+      "sha256": "7d842d13934f81a4fa445c673813db6a66f68afd2cad53e29ba067b4c736b2e5",
+      "bytes": 46305
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t100-default-mark-read-held3s.png",
+      "sha256": "7d842d13934f81a4fa445c673813db6a66f68afd2cad53e29ba067b4c736b2e5",
+      "bytes": 46305
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t100-default-mark-read-same-item-retry-pending.png",
+      "sha256": "53d52c8de4971a758c3d7a1fe68fff46eba813320111c9618f25ca635ef1e4ab",
+      "bytes": 48170
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t100-default-second-local-failure-feedback.png",
+      "sha256": "4eb4f519af324efd3ac0fa11e29f35b22eaeb5057a97e5fe70dcb51369484e44",
+      "bytes": 53123
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t100-default-second-local-failure-settled.png",
+      "sha256": "4eb4f519af324efd3ac0fa11e29f35b22eaeb5057a97e5fe70dcb51369484e44",
+      "bytes": 53123
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t200-default-first-local-failure-feedback.png",
+      "sha256": "02ea6fa8e02ab12764b8114d18f379d72854828d16328ac76bc43c1a1c01135a",
+      "bytes": 53576
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t200-default-first-local-failure-settled.png",
+      "sha256": "02ea6fa8e02ab12764b8114d18f379d72854828d16328ac76bc43c1a1c01135a",
+      "bytes": 53576
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t200-default-mark-read-first-pending.png",
+      "sha256": "4f1ec7479f4b0e9ab46fd60a179aedb2c44e366d44dab68203d3a591d5be88f6",
+      "bytes": 54373
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t200-default-mark-read-held3s.png",
+      "sha256": "4f1ec7479f4b0e9ab46fd60a179aedb2c44e366d44dab68203d3a591d5be88f6",
+      "bytes": 54373
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t200-default-mark-read-same-item-retry-pending.png",
+      "sha256": "4f1ec7479f4b0e9ab46fd60a179aedb2c44e366d44dab68203d3a591d5be88f6",
+      "bytes": 54373
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t200-default-second-local-failure-feedback.png",
+      "sha256": "0d78a96b4397f64005c662c92023d6ba7648773ad73c2900f6839d1a554fdebc",
+      "bytes": 55659
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-320x844-t200-default-second-local-failure-settled.png",
+      "sha256": "0d78a96b4397f64005c662c92023d6ba7648773ad73c2900f6839d1a554fdebc",
+      "bytes": 55659
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t100-default-first-local-failure-feedback.png",
+      "sha256": "2aa0ee395675d7e4170ef33c2c98fed950e9447d11e2cd9712e3331f850dc5b9",
+      "bytes": 53772
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t100-default-first-local-failure-settled.png",
+      "sha256": "2aa0ee395675d7e4170ef33c2c98fed950e9447d11e2cd9712e3331f850dc5b9",
+      "bytes": 53772
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t100-default-mark-read-first-pending.png",
+      "sha256": "e0fdd868d6c761dacf4bfe88e5cd49db95fc2fd285cc79eb82abf05a89c13a5f",
+      "bytes": 54720
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t100-default-mark-read-held3s.png",
+      "sha256": "e0fdd868d6c761dacf4bfe88e5cd49db95fc2fd285cc79eb82abf05a89c13a5f",
+      "bytes": 54720
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t100-default-mark-read-same-item-retry-pending.png",
+      "sha256": "11b593656b0dee501ed98b7142cf45944da368e0d18430eec666db4170704e5d",
+      "bytes": 51649
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t100-default-second-local-failure-feedback.png",
+      "sha256": "76422943d1adeb62485ac4a986feb4f38a3f83f9d0c33a3b40beabee9d5fedbd",
+      "bytes": 56873
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t100-default-second-local-failure-settled.png",
+      "sha256": "76422943d1adeb62485ac4a986feb4f38a3f83f9d0c33a3b40beabee9d5fedbd",
+      "bytes": 56873
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t200-default-first-local-failure-feedback.png",
+      "sha256": "09b4186a1407077719d3f6b443c073d71d770e21d665eac41ed38aa7a37d304d",
+      "bytes": 60730
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t200-default-first-local-failure-settled.png",
+      "sha256": "09b4186a1407077719d3f6b443c073d71d770e21d665eac41ed38aa7a37d304d",
+      "bytes": 60730
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t200-default-mark-read-first-pending.png",
+      "sha256": "553506b11d7229ff1f77dc37ab203d59f2f58aa8bb69b200bb1fce0814f3f231",
+      "bytes": 61531
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t200-default-mark-read-held3s.png",
+      "sha256": "553506b11d7229ff1f77dc37ab203d59f2f58aa8bb69b200bb1fce0814f3f231",
+      "bytes": 61531
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t200-default-mark-read-same-item-retry-pending.png",
+      "sha256": "553506b11d7229ff1f77dc37ab203d59f2f58aa8bb69b200bb1fce0814f3f231",
+      "bytes": 61531
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t200-default-second-local-failure-feedback.png",
+      "sha256": "4f14fb57f7c6865ccec891109b037a2531a0e99366c0fd48389c21d99ff74136",
+      "bytes": 64317
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-390x844-t200-default-second-local-failure-settled.png",
+      "sha256": "4f14fb57f7c6865ccec891109b037a2531a0e99366c0fd48389c21d99ff74136",
+      "bytes": 64317
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t100-default-first-local-failure-feedback.png",
+      "sha256": "c62fd4e747b11080c09e62bfe6357057aa6e0fae1dc1560e8be66caceed5c11b",
+      "bytes": 25786
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t100-default-first-local-failure-settled.png",
+      "sha256": "c62fd4e747b11080c09e62bfe6357057aa6e0fae1dc1560e8be66caceed5c11b",
+      "bytes": 25786
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t100-default-mark-read-first-pending.png",
+      "sha256": "8eb89950a7c9a7640c3cf5c06099f09cdc68cf2d9c5b9c9ca01391b7f01efa29",
+      "bytes": 26196
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t100-default-mark-read-held3s.png",
+      "sha256": "8eb89950a7c9a7640c3cf5c06099f09cdc68cf2d9c5b9c9ca01391b7f01efa29",
+      "bytes": 26196
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t100-default-mark-read-same-item-retry-pending.png",
+      "sha256": "8eb89950a7c9a7640c3cf5c06099f09cdc68cf2d9c5b9c9ca01391b7f01efa29",
+      "bytes": 26196
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t100-default-second-local-failure-feedback.png",
+      "sha256": "0417e320087b40e790aad3e09065d3aab6a2b54a99d27d608fa119eaf90e3b40",
+      "bytes": 33941
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t100-default-second-local-failure-settled.png",
+      "sha256": "0417e320087b40e790aad3e09065d3aab6a2b54a99d27d608fa119eaf90e3b40",
+      "bytes": 33941
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t200-default-execution-error.png",
+      "sha256": "9caf208bdd16b25bb4548635520c9ffd452b7eb90a58c6ee6b5ce528da865580",
+      "bytes": 33104
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t200-default-first-local-failure-feedback.png",
+      "sha256": "16fba0830f9d98fbead544ae887e3d31c8fdd4230f9a05f807dec1ff9643bbfd",
+      "bytes": 34560
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t200-default-first-local-failure-settled.png",
+      "sha256": "16fba0830f9d98fbead544ae887e3d31c8fdd4230f9a05f807dec1ff9643bbfd",
+      "bytes": 34560
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t200-default-mark-read-first-pending.png",
+      "sha256": "723773b28aaf91b727a78f65a3ca622f4d33f89c3c548bc55fb256b0eca17861",
+      "bytes": 35394
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t200-default-mark-read-held3s.png",
+      "sha256": "723773b28aaf91b727a78f65a3ca622f4d33f89c3c548bc55fb256b0eca17861",
+      "bytes": 35394
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t200-default-mark-read-same-item-retry-pending.png",
+      "sha256": "723773b28aaf91b727a78f65a3ca622f4d33f89c3c548bc55fb256b0eca17861",
+      "bytes": 35394
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t200-default-second-local-failure-feedback.png",
+      "sha256": "3f94f57ee92df0e50bc2f5f7d6ad18fb727648b7e6e49354915d6898255ba0bc",
+      "bytes": 34359
+    },
+    {
+      "path": "crops/chromium-scoped-p3-management-mark-read-pending-failure-QAOWNER-844x390-t200-default-second-local-failure-settled.png",
+      "sha256": "3f94f57ee92df0e50bc2f5f7d6ad18fb727648b7e6e49354915d6898255ba0bc",
+      "bytes": 34359
+    },
+    {
+      "path": "crops/chromium-scoped-p3-timecards-controls-ci-attribution-a216-AUDIT-E-1440x1000-t100-default-fresh-target-ready.png",
+      "sha256": "70d309c574676449530676213c4c9f9c1e8afe8523cc5decfd249a267f45d5d8",
+      "bytes": 91654
+    },
+    {
+      "path": "crops/chromium-scoped-p3-timecards-controls-ci-attribution-a216-AUDIT-E-1440x1000-t100-default-native-resize-target-after600ms.png",
+      "sha256": "70d309c574676449530676213c4c9f9c1e8afe8523cc5decfd249a267f45d5d8",
+      "bytes": 91654
+    },
+    {
+      "path": "crops/chromium-scoped-p3-timecards-controls-ci-attribution-a216-AUDIT-E-768x1000-t100-default-fresh-target-ready.png",
+      "sha256": "cf5edf7b45d8ba2fbfb29ff23f0bc664045b790c19803822339bc6feb4fed0c7",
+      "bytes": 79473
+    },
+    {
+      "path": "crops/chromium-scoped-p3-timecards-controls-ci-attribution-a216-AUDIT-E-768x1000-t100-default-native-resize-target-after600ms.png",
+      "sha256": "74ed6797394086cc4273f7f2c5c5ee198d01bab4ba7857dc5a72fa762fd4c02b",
+      "bytes": 79458
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t100-default-ready-actions.png",
+      "sha256": "ed49b7090c1198cf524667de90a664c6a30166ed3ab6250b086bf5c0f0ceaa39",
+      "bytes": 90266
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t100-default-ready-top.png",
+      "sha256": "8dae1146140a146ac4503e956901f23b3b14bf99c7bf809743ec8c141f611452",
+      "bytes": 90363
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t200-default-ready-actions.png",
+      "sha256": "16622b9c1dac330963b70473c467fc51d94b043bfd7c05319b6f635d19ba3465",
+      "bytes": 135182
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t200-default-ready-top.png",
+      "sha256": "af3776f6402c25e36612bdef49b8f5dd43ac22fc6722f8859810e8e99295937c",
+      "bytes": 132825
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t100-default-ready-actions.png",
+      "sha256": "46476f37dec74f64f06110bbbc7f7b57b453bd111d0b1452a1962afb14d29d30",
+      "bytes": 48875
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t100-default-ready-top.png",
+      "sha256": "6021f9aaa27218360460df677f1e8d6bfe008f056d64bfb288f1585a66a7f7c3",
+      "bytes": 54782
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t200-default-ready-actions.png",
+      "sha256": "343642d3d563954b0b0a22b041a5766f68b797e1849d12603aab714ebea14379",
+      "bytes": 55476
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t200-default-ready-top.png",
+      "sha256": "b988c41ea84d6205c426738e59f77d8fea96ef7db2158a80ebe8a2b074489a5e",
+      "bytes": 52202
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t100-default-ready-actions.png",
+      "sha256": "1130da07e4144a66b09e52988eb8a9c7b44ae54bde7bfe57118bc691645a1990",
+      "bytes": 57031
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t100-default-ready-top.png",
+      "sha256": "e6a548e207abec0a199e7d293d6460ef65066608f7649c176fcc7b2da39e282b",
+      "bytes": 59070
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t200-default-ready-actions.png",
+      "sha256": "df5c860c19fdc9764ae820a0ce9b735736b452858474b8113ca4ab866a890092",
+      "bytes": 59916
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t200-default-ready-top.png",
+      "sha256": "d1bc02aa4be9440bbfc381f416150df34546b1e18c52e518956c1380825ebfa7",
+      "bytes": 58623
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t100-default-ready-actions.png",
+      "sha256": "74f5d98406a3738db400a329b66ec7fa5ebbd3ad50db7bddab6fe16cc016f33f",
+      "bytes": 90988
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t100-default-ready-top.png",
+      "sha256": "ff17b126c8502461a6479eae684ab054e24b17198a271cc7e2ebc5b9702e5675",
+      "bytes": 91196
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t200-default-ready-actions.png",
+      "sha256": "0cc58c240f44a8317cb4d79c7a144df6cda9ffe43a797c1853fb62cabfc742d0",
+      "bytes": 135969
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t200-default-ready-top.png",
+      "sha256": "adaa78f9b1b6d6114aacbea4527417c2d448bd55f0bbebe8935930a0921ba63a",
+      "bytes": 133510
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-320x844-t100-default-ready-actions.png",
+      "sha256": "46476f37dec74f64f06110bbbc7f7b57b453bd111d0b1452a1962afb14d29d30",
+      "bytes": 48875
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-320x844-t100-default-ready-top.png",
+      "sha256": "6021f9aaa27218360460df677f1e8d6bfe008f056d64bfb288f1585a66a7f7c3",
+      "bytes": 54782
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-320x844-t200-default-ready-actions.png",
+      "sha256": "343642d3d563954b0b0a22b041a5766f68b797e1849d12603aab714ebea14379",
+      "bytes": 55476
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-320x844-t200-default-ready-top.png",
+      "sha256": "b988c41ea84d6205c426738e59f77d8fea96ef7db2158a80ebe8a2b074489a5e",
+      "bytes": 52202
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-390x844-t100-default-ready-actions.png",
+      "sha256": "1130da07e4144a66b09e52988eb8a9c7b44ae54bde7bfe57118bc691645a1990",
+      "bytes": 57031
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-390x844-t100-default-ready-top.png",
+      "sha256": "e6a548e207abec0a199e7d293d6460ef65066608f7649c176fcc7b2da39e282b",
+      "bytes": 59070
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-390x844-t200-default-ready-actions.png",
+      "sha256": "df5c860c19fdc9764ae820a0ce9b735736b452858474b8113ca4ab866a890092",
+      "bytes": 59916
+    },
+    {
+      "path": "crops/chromium-scoped-wa-al10-review-replacement-QAOWNER-390x844-t200-default-ready-top.png",
+      "sha256": "d1bc02aa4be9440bbfc381f416150df34546b1e18c52e518956c1380825ebfa7",
+      "bytes": 58623
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-1440x900-t200-default-coverage-time.png",
+      "sha256": "3ff10d66490862f658585fdad9193a08f2e3f4eb6e43a3b9e2877173dc0c5527",
+      "bytes": 130470
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-1440x900-t200-default-manager-shift-block.png",
+      "sha256": "5b2128f73c95747d59ea686c7839cdfd13bcb816df62f8ed37691546f6aa5823",
+      "bytes": 142999
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-1440x900-t200-default-overnight-add-time.png",
+      "sha256": "1d196baeefe726a4e598d846969f9129ab0122bd58a0b69299a267899dbe58f7",
+      "bytes": 133056
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-1440x900-t200-default-replacement-time.png",
+      "sha256": "af3776f6402c25e36612bdef49b8f5dd43ac22fc6722f8859810e8e99295937c",
+      "bytes": 132825
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-320x844-t150-default-coverage-time.png",
+      "sha256": "2e03f1bda8df0888ec4959d9cb6e5ef7906ddbb9e95b9cf462b70cadf4f7ebfd",
+      "bytes": 49148
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-320x844-t150-default-manager-shift-block.png",
+      "sha256": "c59399bbb0dc7b6b0e5ff60b5678af584b3d52563c5eae3ed28344d4c12d099b",
+      "bytes": 62167
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-320x844-t150-default-overnight-add-time.png",
+      "sha256": "21163726a0f3cfb009f3c6f0d38dbe0296795fdc7cd53fa21c6e6c1e81a1cedc",
+      "bytes": 47311
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-320x844-t150-default-replacement-time.png",
+      "sha256": "ca605ad184fa56906f66e2da3f26c565e0e66d983e27ab0b2d3a6d20e0d1b2f3",
+      "bytes": 51194
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-coverage-time.png",
+      "sha256": "23b64950e1f589179d91680cf0e57f6620a752b66539f6a4b4ea844b04931e30",
+      "bytes": 53281
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-manager-shift-block.png",
+      "sha256": "2fe5dcc2f8e1b8ccc3ed6edbc6875fc66d8e5c39b1fc3f57020d34e2880b5a0a",
+      "bytes": 59371
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-overnight-add-time.png",
+      "sha256": "ffa431a56700aed27f51c65843af726c0241b6282158b5cfcae2d9bb0c6bdcff",
+      "bytes": 56237
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-replacement-time.png",
+      "sha256": "84f8043808a4ebe05a0f00497e4571791040a3c1b1223c243dfc9ec5bda35ed3",
+      "bytes": 48431
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-coverage-time.png",
+      "sha256": "79feaab2dc4e143062915bddece0f896855bae839b694bd00d2c21aaec1dce5b",
+      "bytes": 113851
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-manager-shift-block.png",
+      "sha256": "3581af1e75c5daa70bf22c964bb6a82740382073c5beaf50850e59ef9e43c332",
+      "bytes": 116095
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-overnight-add-time.png",
+      "sha256": "04d3e0c66903c6e544dd7399b9d55a11d97027a54a15d0e7bb5d4ea8cacf2716",
+      "bytes": 104450
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-replacement-time.png",
+      "sha256": "9b16fe617341d7025a5c34bea323795aae033cde04414632aee3d3b16b366bf4",
+      "bytes": 107489
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-1440x900-t200-default-coverage-time.png",
+      "sha256": "e3c848f1de677ed7e32cfbce009a83ebc2aa4b3316d2d290f865751693781a05",
+      "bytes": 131351
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-1440x900-t200-default-manager-shift-block.png",
+      "sha256": "a5c914e739543d0904d46e3a1e06fd7abf6d8b4285aeb77dd4c7d357561784da",
+      "bytes": 144006
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-1440x900-t200-default-overnight-add-time.png",
+      "sha256": "f6f9d3311c2b93cddd0647709a63d224510f01c7d4ee470e86a756bae2836ec7",
+      "bytes": 134001
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-1440x900-t200-default-replacement-time.png",
+      "sha256": "adaa78f9b1b6d6114aacbea4527417c2d448bd55f0bbebe8935930a0921ba63a",
+      "bytes": 133510
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-coverage-time.png",
+      "sha256": "2e03f1bda8df0888ec4959d9cb6e5ef7906ddbb9e95b9cf462b70cadf4f7ebfd",
+      "bytes": 49148
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-manager-shift-block.png",
+      "sha256": "c59399bbb0dc7b6b0e5ff60b5678af584b3d52563c5eae3ed28344d4c12d099b",
+      "bytes": 62167
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-overnight-add-time.png",
+      "sha256": "21163726a0f3cfb009f3c6f0d38dbe0296795fdc7cd53fa21c6e6c1e81a1cedc",
+      "bytes": 47311
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-replacement-time.png",
+      "sha256": "ca605ad184fa56906f66e2da3f26c565e0e66d983e27ab0b2d3a6d20e0d1b2f3",
+      "bytes": 51194
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-390x844-t200-default-coverage-time.png",
+      "sha256": "23b64950e1f589179d91680cf0e57f6620a752b66539f6a4b4ea844b04931e30",
+      "bytes": 53281
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-390x844-t200-default-manager-shift-block.png",
+      "sha256": "2fe5dcc2f8e1b8ccc3ed6edbc6875fc66d8e5c39b1fc3f57020d34e2880b5a0a",
+      "bytes": 59371
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-390x844-t200-default-overnight-add-time.png",
+      "sha256": "ffa431a56700aed27f51c65843af726c0241b6282158b5cfcae2d9bb0c6bdcff",
+      "bytes": 56237
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-390x844-t200-default-replacement-time.png",
+      "sha256": "84f8043808a4ebe05a0f00497e4571791040a3c1b1223c243dfc9ec5bda35ed3",
+      "bytes": 48431
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-coverage-time.png",
+      "sha256": "8958e7d816e625ba2092d6d2d5d5a7faec0bf9848eecef8cb78238d0ca28cdc3",
+      "bytes": 115491
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-manager-shift-block.png",
+      "sha256": "561ec98c31ee8ce2e39a6b9d90ab0e7811a459738b71be900ea7058b0cc49d9f",
+      "bytes": 117008
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-overnight-add-time.png",
+      "sha256": "c0bf55d95d9cb1855d5e6ffb01de44048af600def80e81d010ecd25bca0a4cef",
+      "bytes": 104908
+    },
+    {
+      "path": "crops/chromium-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-replacement-time.png",
+      "sha256": "7ef9efb8bacbb032dd1826b97d8b892310b5ac9940480f8fff197d5ce8992e0a",
+      "bytes": 108201
+    },
+    {
+      "path": "crops/webkit-payroll-settings-focus-QAOWNER-320x844-t200-default-409.png",
+      "sha256": "f13524db73a6edacc23440cdc11d5a1c4c62d29a6d46d6da521108ec672e5175",
+      "bytes": 77104
+    },
+    {
+      "path": "crops/webkit-payroll-settings-focus-QAOWNER-320x844-t200-default-save-pending.png",
+      "sha256": "1f0926b2e5c39038a6c3c261b1304e2a0a9743ca8844015b63983fadad3cb958",
+      "bytes": 74098
+    },
+    {
+      "path": "crops/webkit-payroll-settings-focus-QAOWNER-390x844-t100-default-409.png",
+      "sha256": "eb257cb74021a43f007297033ed08d1000bace366b045a91c655e730f85ba295",
+      "bytes": 83950
+    },
+    {
+      "path": "crops/webkit-payroll-settings-focus-QAOWNER-390x844-t100-default-save-pending.png",
+      "sha256": "975115a1941803dec98b33072b85204857a771431459aea3f7ae4fc7ac80922f",
+      "bytes": 71136
+    },
+    {
+      "path": "crops/webkit-scoped-desktop-nav-badge-geometry-QAOWNER-1024x900-t200-default-actual-nav-badge.png",
+      "sha256": "3bcd50ebadc9e2ae0880c2dec484dcb371efa0d7e8b4231aaf51ef2aacad122f",
+      "bytes": 204629
+    },
+    {
+      "path": "crops/webkit-scoped-desktop-nav-badge-geometry-QAOWNER-320x844-t200-default-actual-nav-badge.png",
+      "sha256": "850337968f22574c53e86a46a31950795dcf46a4098bdf987ea01db5d7e6d043",
+      "bytes": 73867
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t100-default-ready-actions.png",
+      "sha256": "115d841004e807dbb5894f63123731b42532401553abf43576a9186f9028aa81",
+      "bytes": 115068
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t100-default-ready-top.png",
+      "sha256": "6a2a47fcfcb0ac4d1a3c36df3ddb207c2308c98517d163fb226481045e62a1ab",
+      "bytes": 113399
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t200-default-ready-actions.png",
+      "sha256": "2cdc149df4c706a9a94d9a0068facaed0698a2f6a5c7e22f4d88f0cd3f504018",
+      "bytes": 183568
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-1440x900-t200-default-ready-top.png",
+      "sha256": "3cd4eebdab76101fc994f934892a5f29d91f9e9790f5a893ba57348de3c43626",
+      "bytes": 173493
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t100-default-ready-actions.png",
+      "sha256": "3fbd6038cd63ea8da7a3ce316c5e45ad7beb90ea7836ac3ded0e649a54a07b8c",
+      "bytes": 65137
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t100-default-ready-top.png",
+      "sha256": "21d5aa41e86814049979f0a59d2f130ed0aadeff9527de1a6911b7c23d8fb116",
+      "bytes": 70245
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t200-default-ready-actions.png",
+      "sha256": "765c2349cfed8eec3cc2e58b8d3799bc39c8ab51eb8972050f4b42d410d1a614",
+      "bytes": 74451
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-320x844-t200-default-ready-top.png",
+      "sha256": "d9cf7367c84c7fedfde08ee3b85e068267f0b81eaf5372a627e12d543e1944c0",
+      "bytes": 66032
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t100-default-ready-actions.png",
+      "sha256": "5d87b0d889333a64ca12bebde10a3fa95b11631cb35761b391a14698e4f77117",
+      "bytes": 77591
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t100-default-ready-top.png",
+      "sha256": "bb228af2164cce58df67e928a5189389b436524e99bdc753e8e62fc5700e3433",
+      "bytes": 78278
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t200-default-ready-actions.png",
+      "sha256": "0f3db9e0a0ae8a0b856ce1f24c524e87d3822f9273a779b27a5d1f3388b2ea67",
+      "bytes": 83827
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-AUDIT-M-390x844-t200-default-ready-top.png",
+      "sha256": "1c8815c5079a589e8b66ab185860f9942a29356349990d2ddeeef95a8603ebf1",
+      "bytes": 73547
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t100-default-ready-actions.png",
+      "sha256": "7f2cd43d7110163406d320b3f5dc678abde6df02579fb0a51f90b1ca563820ef",
+      "bytes": 115581
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t100-default-ready-top.png",
+      "sha256": "d153b11359722d7e2afebe7a9be1b5db1ff3c3913e4749eb4a4ea89d511a91e3",
+      "bytes": 114024
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t200-default-ready-actions.png",
+      "sha256": "5292e13b94119b8d6a541c096600417db87aebc16c21a3132f3ff9f42e3124cd",
+      "bytes": 183974
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-1440x900-t200-default-ready-top.png",
+      "sha256": "55922ebb8db789056c0cc835e1c5c3e52addb238981c9078c7cd7e308ace15d9",
+      "bytes": 174283
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-320x844-t100-default-ready-actions.png",
+      "sha256": "0bbc31d3a980c51f570f2e1832e87e66c66752babc9da44483a04028f2ac9c91",
+      "bytes": 64299
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-320x844-t100-default-ready-top.png",
+      "sha256": "21d5aa41e86814049979f0a59d2f130ed0aadeff9527de1a6911b7c23d8fb116",
+      "bytes": 70245
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-320x844-t200-default-ready-actions.png",
+      "sha256": "9201144d9ce394004b336e86fde149cc5926d5bdbc3f176ca64d278f2d952db4",
+      "bytes": 74323
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-320x844-t200-default-ready-top.png",
+      "sha256": "d9cf7367c84c7fedfde08ee3b85e068267f0b81eaf5372a627e12d543e1944c0",
+      "bytes": 66032
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-390x844-t100-default-ready-actions.png",
+      "sha256": "db6530a9567afe8d440a0e9d899116b8847eb421f4c14cc03f3d9b9773dc9a22",
+      "bytes": 76165
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-390x844-t100-default-ready-top.png",
+      "sha256": "bb228af2164cce58df67e928a5189389b436524e99bdc753e8e62fc5700e3433",
+      "bytes": 78278
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-390x844-t200-default-ready-actions.png",
+      "sha256": "e94b069abfbb0b323264079193204e7c8704a889d80e9d618fd133f38b59aa62",
+      "bytes": 84409
+    },
+    {
+      "path": "crops/webkit-scoped-wa-al10-review-replacement-QAOWNER-390x844-t200-default-ready-top.png",
+      "sha256": "1c8815c5079a589e8b66ab185860f9942a29356349990d2ddeeef95a8603ebf1",
+      "bytes": 73547
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-1440x900-t200-default-coverage-time.png",
+      "sha256": "86ba4c3b41fcfbe38c66606d7661e19ad8a6b3c6dc5151b74dc59f19bb268d1f",
+      "bytes": 176223
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-1440x900-t200-default-manager-shift-block.png",
+      "sha256": "1522678858042e0a26942966084f48be0872b0cb4b54f42121aada884dc31055",
+      "bytes": 188064
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-1440x900-t200-default-overnight-add-time.png",
+      "sha256": "b643a73fae606b1125c75ebd308b298ed4fab0d8fbf28c8cae1398afc0fd51b6",
+      "bytes": 171576
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-1440x900-t200-default-replacement-time.png",
+      "sha256": "3cd4eebdab76101fc994f934892a5f29d91f9e9790f5a893ba57348de3c43626",
+      "bytes": 173493
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-320x844-t150-default-coverage-time.png",
+      "sha256": "f1115ec777a868cbedc073c091539cf6e073cc88fadeb7b345a3a321eb733160",
+      "bytes": 66728
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-320x844-t150-default-manager-shift-block.png",
+      "sha256": "1ec71358026ef4f1f1be3fc8a112969ecee2e44bfb68799337637c5050015212",
+      "bytes": 73038
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-320x844-t150-default-overnight-add-time.png",
+      "sha256": "39740d10f71115e25db9a4b756fbabe01ee0af285dff680e2a30d2cbf6e4bbd4",
+      "bytes": 62944
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-320x844-t150-default-replacement-time.png",
+      "sha256": "e20342f48067547fd78edb4da6ee5f5bda143888ad0d260efbd72bd4c9071d5e",
+      "bytes": 66069
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-coverage-time.png",
+      "sha256": "f2d5ebcf35fe87e56d53ba7ad17af97f02a596bd8f07442718cb91869fde4df5",
+      "bytes": 69501
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-manager-shift-block.png",
+      "sha256": "393f20f6e2834e47a1bec298830dc2427540d9f88b84ee94126b8c4ecab435d0",
+      "bytes": 76713
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-overnight-add-time.png",
+      "sha256": "83f8f5f4062de6dd79eb4e4d2470d12fc52e3799b57c213809570060597fa2e3",
+      "bytes": 71060
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-390x844-t200-default-replacement-time.png",
+      "sha256": "5ca0ce8c50562616db1142bbff0de99f0f8601f714e6c16d5129f8de7c86499c",
+      "bytes": 72164
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-coverage-time.png",
+      "sha256": "6bad723cea87f64251907b2f25e7793baecf51d395b687e4fb94146cd1e2d17d",
+      "bytes": 134160
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-manager-shift-block.png",
+      "sha256": "24e1a022d1596156174e25828bf225445c8d33148dd0011d53fafc5e28bc49a9",
+      "bytes": 150334
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-overnight-add-time.png",
+      "sha256": "11f3279fc417bd3dabd768b802daec150cc0deb2a90be11522585ca5cda3df24",
+      "bytes": 128636
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-AUDIT-M-768x900-t200-default-replacement-time.png",
+      "sha256": "ae6ed53fe569c11057cc7b0b1102ee450f67ec87969b0976ce4a3213f2b20fd9",
+      "bytes": 132583
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-1440x900-t200-default-coverage-time.png",
+      "sha256": "54af228783c4a826fb0e7c47865785f473bcb596906da04d44ff4cc5a402e69a",
+      "bytes": 176798
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-1440x900-t200-default-manager-shift-block.png",
+      "sha256": "a472148fd189d2707b31ed885d5cfd07c639eb605dcb5c254add6566473eb2f8",
+      "bytes": 190115
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-1440x900-t200-default-overnight-add-time.png",
+      "sha256": "29cc0c86d3fbf16bd121104370c8970805758507e5f38f9c89c2e055b8f39dd9",
+      "bytes": 173099
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-1440x900-t200-default-replacement-time.png",
+      "sha256": "55922ebb8db789056c0cc835e1c5c3e52addb238981c9078c7cd7e308ace15d9",
+      "bytes": 174283
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-coverage-time.png",
+      "sha256": "f1115ec777a868cbedc073c091539cf6e073cc88fadeb7b345a3a321eb733160",
+      "bytes": 66728
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-manager-shift-block.png",
+      "sha256": "b0375566ae2453a7cc017810745250862a943b61a0c781dd442b9d4e2a19ce96",
+      "bytes": 73272
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-overnight-add-time.png",
+      "sha256": "39740d10f71115e25db9a4b756fbabe01ee0af285dff680e2a30d2cbf6e4bbd4",
+      "bytes": 62944
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-320x844-t150-default-replacement-time.png",
+      "sha256": "e20342f48067547fd78edb4da6ee5f5bda143888ad0d260efbd72bd4c9071d5e",
+      "bytes": 66069
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-390x844-t200-default-coverage-time.png",
+      "sha256": "f2d5ebcf35fe87e56d53ba7ad17af97f02a596bd8f07442718cb91869fde4df5",
+      "bytes": 69501
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-390x844-t200-default-manager-shift-block.png",
+      "sha256": "1338df74245a3e81a04b855dcf2083bf282cfe887f521a6d4d6daa48868c8013",
+      "bytes": 76905
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-390x844-t200-default-overnight-add-time.png",
+      "sha256": "83f8f5f4062de6dd79eb4e4d2470d12fc52e3799b57c213809570060597fa2e3",
+      "bytes": 71060
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-390x844-t200-default-replacement-time.png",
+      "sha256": "5ca0ce8c50562616db1142bbff0de99f0f8601f714e6c16d5129f8de7c86499c",
+      "bytes": 72164
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-coverage-time.png",
+      "sha256": "53e6131317d94bf6bcc56e6d42b1dd0b712523b2fc730ebde52d401e9b7cee89",
+      "bytes": 133362
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-manager-shift-block.png",
+      "sha256": "d707d2cb27cfece5d2944f93e25d73466b5ec72f387730af687825ff25e40b90",
+      "bytes": 151425
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-overnight-add-time.png",
+      "sha256": "c549e26d8e4c81bd971fd30c37e3861e2a468164613425e707ef5865a565002a",
+      "bytes": 129606
+    },
+    {
+      "path": "crops/webkit-scoped-wa-tc3-time-duration-QAOWNER-768x900-t200-default-replacement-time.png",
+      "sha256": "5ee4313fe12eba2812db98b057e4d81fed4fbd00451a2a5eb34e734dd1d995d9",
+      "bytes": 133692
+    },
+    {
+      "path": "executed-al-tc3/README.md",
+      "sha256": "36a89ff4343b25d0ccf6c3604f7348b26a6cc0cdb83463b854272522a81e2693",
+      "bytes": 4705
+    },
+    {
+      "path": "executed-al-tc3/checker-route-rewrite.cjs",
+      "sha256": "b818cbf68eda93754bbc05d771117b3221dc34cd6053766cbde7fe61989389e8",
+      "bytes": 1523
+    },
+    {
+      "path": "executed-al-tc3/initial-al-wa-10-and-tc3.mts",
+      "sha256": "532c484eb6b5349681b71600a078735dec3e83b0a5f1a54cd3a543d2502e03a6",
+      "bytes": 3881
+    },
+    {
+      "path": "executed-al-tc3/initial-al-wa-10.mts",
+      "sha256": "acc2b4006dc22f8cd0b43efa8b19be11787413fbc99fc197be49ee8ed8a6152d",
+      "bytes": 8684
+    },
+    {
+      "path": "executed-al-tc3/manifest.json",
+      "sha256": "70a1f1ed20b2d1fab2240abae38fb09d35ea521ad113fc395e63279c72331556",
+      "bytes": 5084
+    },
+    {
+      "path": "executed-al-tc3/redact-checker-output.mjs",
+      "sha256": "a3df88d966da6408019d0a3684e1a80acebc3785868eaf842064ee12d5f5b8b9",
+      "bytes": 668
+    },
+    {
+      "path": "executed-al-tc3/run-checker24.mjs",
+      "sha256": "71cf553ae301b6591b08d601f941eb4001a110814c5dfb45bce3d9a743a21c14",
+      "bytes": 4381
+    },
+    {
+      "path": "executed-al-tc3/scoped-al-wa-10.mjs",
+      "sha256": "2ea8af5abad83f50e27b75edfcb5101fc974431f01f4cd479c5f9e76d57a28cd",
+      "bytes": 10664
+    },
+    {
+      "path": "executed-al-tc3/scoped-tc-wa-3.mjs",
+      "sha256": "15599bd540bd8451b95b66b9b93ad3fc0f6ca4a4f0eb8b338a56e2ba69847b53",
+      "bytes": 5596
+    },
+    {
+      "path": "executed-al-tc3/snapshot-lineage.json",
+      "sha256": "1f9e0762f141ab181d7c86763fbbfc58301da8fc42b5c688cd85fe16e0547efd",
+      "bytes": 1771
+    },
+    {
+      "path": "executed-diagnostics/snapshot-lineage.json",
+      "sha256": "281e5c1e86d1227ab458e82010b3b44b490d22b89f3b8c92e8e706037cda9f43",
+      "bytes": 1608
+    },
+    {
+      "path": "executed-diagnostics/updates-scrollport-diagnostic-a216.json",
+      "sha256": "e1ae4fe1df27078a745faa26e4c8f5a04fdd6578ff1ead042475f7508153690e",
+      "bytes": 2653
+    },
+    {
+      "path": "executed-diagnostics/updates-scrollport-diagnostic-a216.mjs",
+      "sha256": "cf25cc323707eb5cd2bc3cf981a3f47d707642d09e9d49cd1be7c3364cd3da04",
+      "bytes": 11580
+    },
+    {
+      "path": "executed-diagnostics/wave-b-contrast-a216.md",
+      "sha256": "553f26e985ceaea914a61bdc57954f43839f2cb1e510e3d1f59a0dd71b63d181",
+      "bytes": 2240
+    },
+    {
+      "path": "executed-diagnostics/wave-b-contrast-a216.mjs",
+      "sha256": "6ab1d08bfe243851d380dec948388ca6c928f40217876bb409ccdb0ceb0b0271",
+      "bytes": 10305
+    },
+    {
+      "path": "executed-home-paint/home-painted-manifest.json",
+      "sha256": "1ffc3a4216cc4c08a957142e40b75bb39e85907d554ab7be8f186057c498fdbd",
+      "bytes": 1327
+    },
+    {
+      "path": "executed-home-paint/home-painted-measure.mjs",
+      "sha256": "fc2423c9669d973cc4d6f7bbd88f4f76bb3edfecf4160b5d9917c6a4ba0c44d1",
+      "bytes": 2524
+    },
+    {
+      "path": "executed-home-paint/scoped-home-painted.mjs",
+      "sha256": "4582c4da1f460463e80c05e5659882e5f310f890f0c18587050e2d4e16aef141",
+      "bytes": 5420
+    },
+    {
+      "path": "executed-home-paint/snapshot-lineage.json",
+      "sha256": "46c92e27a149d769699bd67e48d55448314fa985de1a2f1d83f0638e6a3e22ad",
+      "bytes": 1371
+    },
+    {
+      "path": "executed-navbadge/measure-inbox-group-atoms.mjs",
+      "sha256": "65ae9fd19e668538bcd0dde08a34be54267bc801b7ccda730eced8692dcffec9",
+      "bytes": 3503
+    },
+    {
+      "path": "executed-navbadge/measure-nav-badges.mjs",
+      "sha256": "ad33f05cf1d7000192d07402aec1eea1d3cc64117793945d7599d286c3004677",
+      "bytes": 3926
+    },
+    {
+      "path": "executed-navbadge/scoped-nav-badge-a216.mjs",
+      "sha256": "4acca44590f8bed77462940bf559dba0ce07f7b9371c8a9a80fb900cffb432e8",
+      "bytes": 5612
+    },
+    {
+      "path": "executed-navbadge/scoped-nav-badge-atoms-a216.mjs",
+      "sha256": "aa1db79c2d3eae5c4a672fe632c17b33d4bf5dc4595a275c93453d73db378296",
+      "bytes": 937
+    },
+    {
+      "path": "executed-navbadge/snapshot-lineage.json",
+      "sha256": "0aea23020bf6bdc6813f92abd7c1675d121348cdbb819f041eadda903457a2d1",
+      "bytes": 1664
+    },
+    {
+      "path": "executed-optional-p3/ack-pause-recovery-a216-v2.json",
+      "sha256": "3d27b8a58548d8fab274ccf3107829a944a9d98d408f6e80cc19a7fe43ebdedf",
+      "bytes": 3603
+    },
+    {
+      "path": "executed-optional-p3/ack-pause-recovery-a216-v2.mjs",
+      "sha256": "f4c494fa8d35613a7118e7c66f5e298afdb3dc88eeabc53a4c02f443e42102f9",
+      "bytes": 7040
+    },
+    {
+      "path": "executed-optional-p3/ack-pause-recovery-a216.json",
+      "sha256": "910866ead8bfb56774775dcd2b533e541b5431572d6240be48952645d6715a92",
+      "bytes": 3015
+    },
+    {
+      "path": "executed-optional-p3/ack-pause-recovery-a216.mjs",
+      "sha256": "f6ef1ed8ab30088da3fe5801ade86813fc66f03a4f95c6ad3efd474b6f7cb818",
+      "bytes": 5583
+    },
+    {
+      "path": "executed-optional-p3/ack-pause-recovery.mjs",
+      "sha256": "17efd84dfc9396599e1d0c09ffdb1d23164de4b94c1db0314bb458400c713a15",
+      "bytes": 4955
+    },
+    {
+      "path": "executed-optional-p3/management-mark-read-a216-v2.json",
+      "sha256": "c7e038e223438a9e52e3c91933a909b9c30ee104be27b41b4806c6945a595f45",
+      "bytes": 4246
+    },
+    {
+      "path": "executed-optional-p3/management-mark-read-a216-v2.mjs",
+      "sha256": "d5bbced6e4f18289c96ea5c0a2de0fb1cd4c7d2859f78d81ac26bcbf7a47a394",
+      "bytes": 9967
+    },
+    {
+      "path": "executed-optional-p3/management-mark-read-a216.json",
+      "sha256": "26f88f0e823c55cf06a72a72a82764e3600598a94a8ab89657d13d42279cb88b",
+      "bytes": 3315
+    },
+    {
+      "path": "executed-optional-p3/management-mark-read-a216.mjs",
+      "sha256": "215980893c4e2bd2e0048439fae7848dc3726ed6e1ea3b974ed83ce5a75ac07f",
+      "bytes": 8982
+    },
+    {
+      "path": "executed-optional-p3/snapshot-lineage.json",
+      "sha256": "4fff150bf0a3c02ed5b06dc0d34008f0e04958b3ec14aac8a5e6cec5313ee8c1",
+      "bytes": 1608
+    },
+    {
+      "path": "executed-priority-continuation-v5.mjs",
+      "sha256": "06577587bba6b622a4fc9fe57ca94602d047dee050c6850e3366555a82cd1e2e",
+      "bytes": 8460
+    },
+    {
+      "path": "executed-priority-continuation-v6.mjs",
+      "sha256": "ba3db0824da9ad22347c5c237dc6463041528f4aef1c8753f618ce82d4d77dea",
+      "bytes": 8692
+    },
+    {
+      "path": "executed-resource-priority-finalizer-v8.mjs",
+      "sha256": "e4275dfb725900ce5577410aaa0f28b29730725f664299f1150b79dd0555f85a",
+      "bytes": 7332
+    },
+    {
+      "path": "executed-script-lineage.json",
+      "sha256": "d3bccdb527568a132731266981004839ef266f7985b25772cae86a1484ff62b5",
+      "bytes": 13775
+    },
+    {
+      "path": "executed-scripts/checker-guard-v2.mjs",
+      "sha256": "ea648114396ab4af29732163b4e7349c14c01420dd64a374be847bd92c987fce",
+      "bytes": 2227
+    },
+    {
+      "path": "executed-scripts/close.mjs",
+      "sha256": "5a8aac12daece7d807de01c2bbba38fdea9c14461207409da47b95763f33f521",
+      "bytes": 2358
+    },
+    {
+      "path": "executed-scripts/combined-extra-cases.mjs",
+      "sha256": "5bfa141ab7093f32ea64d51825d00ad4af73712653c94f8f324e0e851eaf0072",
+      "bytes": 15398
+    },
+    {
+      "path": "executed-scripts/owned-read-barrier.mjs",
+      "sha256": "33e045da90d9a43de0308974a7b0d5d62419aaf0189d8417c2ddc8b74b36fbc9",
+      "bytes": 3241
+    },
+    {
+      "path": "executed-scripts/pending-colour-repair-proof.mjs",
+      "sha256": "97d3ef62a756dda39c556eb403059137e793f14c5fcd03a35ff68d1da086685f",
+      "bytes": 10085
+    },
+    {
+      "path": "executed-scripts/read-contract-v2.mjs",
+      "sha256": "83f9113881557849a332632dff7a2dda758fc902cd23aa537cd4041ab9535a00",
+      "bytes": 973
+    },
+    {
+      "path": "executed-scripts/render-a216-repair-results.py",
+      "sha256": "99c16fb72a8c59447f576d5a31fb5e74dba6a4269d5e7386cfb38350788771ea",
+      "bytes": 14224
+    },
+    {
+      "path": "executed-scripts/scoped-verify-v2.mjs",
+      "sha256": "df6dda0b909214e30d467bfa812a04a2b35f4be8cdf91479f6633da373219c66",
+      "bytes": 40456
+    },
+    {
+      "path": "executed-scripts/tc3-passive-transport-replay.mjs",
+      "sha256": "b1ee01d6855c124a37400df447e706394fb22f59d392a154d89e16713ae9e1ca",
+      "bytes": 1634
+    },
+    {
+      "path": "executed-timecards-geometry/timecards-controls-diagnostic-a216.json",
+      "sha256": "8ede61629132b3fd801a472d707f50c68b617cd0cfa01b402fa3caa7b83b9905",
+      "bytes": 2537
+    },
+    {
+      "path": "executed-timecards-geometry/timecards-controls-diagnostic-a216.mjs",
+      "sha256": "3e45e9fe1580c1d100079ea97e077771db1d0b75d69469ad5a2d60234f92984c",
+      "bytes": 9698
+    },
+    {
+      "path": "executed-wr17/wr17-mytime-diagnostic-a216.json",
+      "sha256": "9225b7e82d7b2982745fa3a61ec3fa65b77d73d10ac908a8e7bf446efab52579",
+      "bytes": 5050
+    },
+    {
+      "path": "executed-wr17/wr17-mytime-diagnostic-a216.mjs",
+      "sha256": "bd7c3e17ad9d7d72c8ecf06e1e9f550c5565f4f97a096e948bfad3f01a37eb5d",
+      "bytes": 11687
+    },
+    {
+      "path": "finalizer-adapter-v2-static-derivation.json",
+      "sha256": "d86b8315c7d7429fe963167576d1b8a00ec542008f46fdfa374fc8772bf2a2bd",
+      "bytes": 1706
+    },
+    {
+      "path": "finding-metrics.json",
+      "sha256": "757d7d3d8beb9dadfaf3ad328e043595067304daf773a657bed070dc05f5e323",
+      "bytes": 3225
+    },
+    {
+      "path": "home-painted-contrast/chromium-AUDIT-E-390x1000-focus.png",
+      "sha256": "ca43975fbedf6649568203aaf9ec8e6ce6fcb442fcaec1321316e3bd6222cfc2",
+      "bytes": 5332
+    },
+    {
+      "path": "home-painted-contrast/chromium-AUDIT-E-390x1000-hover.png",
+      "sha256": "ca43975fbedf6649568203aaf9ec8e6ce6fcb442fcaec1321316e3bd6222cfc2",
+      "bytes": 5332
+    },
+    {
+      "path": "home-painted-contrast/chromium-AUDIT-E-390x1000-normal.png",
+      "sha256": "ca43975fbedf6649568203aaf9ec8e6ce6fcb442fcaec1321316e3bd6222cfc2",
+      "bytes": 5332
+    },
+    {
+      "path": "home-painted-contrast/chromium-AUDIT-E-390x1000-pressed.png",
+      "sha256": "a7214e11b6cbb4f405e316920cf7d1587c4d219bff1d0483586dda6c096e29ca",
+      "bytes": 6937
+    },
+    {
+      "path": "home-painted-contrast/chromium-report.json",
+      "sha256": "7c23f5acc436aa91eaf96d4699a0caffcbfeee63df404fe7b1706e1d27bcb831",
+      "bytes": 24665
+    },
+    {
+      "path": "home-painted-contrast/webkit-AUDIT-E-390x1000-focus.png",
+      "sha256": "a0eb7c12b4d20f8f3fb6d4e72559b19b627ee72a46fd13d16c18395a0ada44df",
+      "bytes": 4310
+    },
+    {
+      "path": "home-painted-contrast/webkit-AUDIT-E-390x1000-hover.png",
+      "sha256": "a0eb7c12b4d20f8f3fb6d4e72559b19b627ee72a46fd13d16c18395a0ada44df",
+      "bytes": 4310
+    },
+    {
+      "path": "home-painted-contrast/webkit-AUDIT-E-390x1000-normal.png",
+      "sha256": "a0eb7c12b4d20f8f3fb6d4e72559b19b627ee72a46fd13d16c18395a0ada44df",
+      "bytes": 4310
+    },
+    {
+      "path": "home-painted-contrast/webkit-AUDIT-E-390x1000-pressed.png",
+      "sha256": "ed85c307750e48a548b61b18fa628a9b1fbd50c99916a8a13c1b07f7860b62c4",
+      "bytes": 4375
+    },
+    {
+      "path": "home-painted-contrast/webkit-report.json",
+      "sha256": "ce168100af3a2264b131fd55409220f26f0964c76632d8cc4b6489e3eb7c7f71",
+      "bytes": 24680
+    },
+    {
+      "path": "initial-owned-readiness.json",
+      "sha256": "f04eac75233f1190d3036690b3236fb4dd38064c15fcf5cc16973166d246823d",
+      "bytes": 1427
+    },
+    {
+      "path": "interaction-states.md",
+      "sha256": "4266e4fe099588bb18ace0e6468fc4d48b15b8b01e7160ccb006ccc950b63080",
+      "bytes": 1602
+    },
+    {
+      "path": "optional-oracle-preflight.json",
+      "sha256": "1acb6758a8414a8f1fdaa5645f4e599236c54a689a2ee7f8692eb1b7a69a3c00",
+      "bytes": 1599
+    },
+    {
+      "path": "owned-audit.json",
+      "sha256": "c4c1183054194c13a3450aae438a8e44083d35a5e3bb17e41821c0e311102821",
+      "bytes": 5406
+    },
+    {
+      "path": "owned-closure.json",
+      "sha256": "8da7834fbb687b677027cb47d09e256e9e55a4c9195402bb45b77e6f23669913",
+      "bytes": 690
+    },
+    {
+      "path": "pending-colour/chromium-320-t200-above-feedback-early.png",
+      "sha256": "c20a283e90d0486817169cd13cc182cd3b454f4b4c91b50026f016b9a5eeb769",
+      "bytes": 55304
+    },
+    {
+      "path": "pending-colour/chromium-320-t200-above-feedback-settled.png",
+      "sha256": "c20a283e90d0486817169cd13cc182cd3b454f4b4c91b50026f016b9a5eeb769",
+      "bytes": 55304
+    },
+    {
+      "path": "pending-colour/chromium-320-t200-natural-focus-early.png",
+      "sha256": "417726eedbff1cdff838c95df15d5eaf04b912f66a14300a452966a94ad7e45a",
+      "bytes": 63405
+    },
+    {
+      "path": "pending-colour/chromium-320-t200-natural-focus-settled.png",
+      "sha256": "417726eedbff1cdff838c95df15d5eaf04b912f66a14300a452966a94ad7e45a",
+      "bytes": 63405
+    },
+    {
+      "path": "pending-colour/chromium-390-t100-natural-focus-early.png",
+      "sha256": "85dffbc43fb5a3bbe5cbbf7d4619057b79c7482d9f214b58ed6247924b952982",
+      "bytes": 51349
+    },
+    {
+      "path": "pending-colour/chromium-390-t100-natural-focus-settled.png",
+      "sha256": "3d7776389594daf8bb6698b9e983ecc17c1529ed298ffc4c32c2ad647a94339d",
+      "bytes": 51340
+    },
+    {
+      "path": "pending-colour/webkit-320-t200-above-feedback-early.png",
+      "sha256": "e9e3a725bd66d602660e4724a7243b7f293bdf29196a35df06ecd3df6e76a1fa",
+      "bytes": 68126
+    },
+    {
+      "path": "pending-colour/webkit-320-t200-above-feedback-settled.png",
+      "sha256": "e9e3a725bd66d602660e4724a7243b7f293bdf29196a35df06ecd3df6e76a1fa",
+      "bytes": 68126
+    },
+    {
+      "path": "pending-colour/webkit-320-t200-natural-focus-early.png",
+      "sha256": "b228c3560454ffdd9d72a94c563bc86f123e26078f04eed2e03ccf06b7d5faa4",
+      "bytes": 71799
+    },
+    {
+      "path": "pending-colour/webkit-320-t200-natural-focus-settled.png",
+      "sha256": "19968800b0c339c776747f08765bad67d2e71dfec587f5830303f55f4e63fdc9",
+      "bytes": 73128
+    },
+    {
+      "path": "pending-colour/webkit-390-t100-natural-focus-early.png",
+      "sha256": "faf6789cf0972fcfb3543eeebe35854fb9a8058a00fa36c075d0f626d3820859",
+      "bytes": 81067
+    },
+    {
+      "path": "pending-colour/webkit-390-t100-natural-focus-settled.png",
+      "sha256": "faf6789cf0972fcfb3543eeebe35854fb9a8058a00fa36c075d0f626d3820859",
+      "bytes": 81067
+    },
+    {
+      "path": "pending-colour-attribution.json",
+      "sha256": "d54b2d4311574112bd7dd4d1be57117ccbe3dbf53c7af30f38c9adeaae8a5f5d",
+      "bytes": 3356175
+    },
+    {
+      "path": "pending-colour-repair-proof-derivation.json",
+      "sha256": "2ac4cb1ff05b91d02c0acaf5ae566858d29199a8734631424c47526896050de0",
+      "bytes": 826
+    },
+    {
+      "path": "prelaunch-preparation.json",
+      "sha256": "19be4291234aea4b1b97ef2b7d90c770b688bf88ba947423d03939ed18453cef",
+      "bytes": 2946
+    },
+    {
+      "path": "priority-continuation-v5.json",
+      "sha256": "5ee6d80cd24262a61a1c1a32cabb21cfd0d78e688e87a084edecce677a972058",
+      "bytes": 365
+    },
+    {
+      "path": "priority-continuation-v6.json",
+      "sha256": "7defa24b09fa3ed80a6c5458c2462d261235cf6a12629e6782274a3b19617ae0",
+      "bytes": 2671
+    },
+    {
+      "path": "repair-completion.json",
+      "sha256": "ba0cf396c09c0783bb65a480e9ea3c56e9e6788b5783e00cf784c1a2c93c418f",
+      "bytes": 23089
+    },
+    {
+      "path": "repair-stage-ledger.json",
+      "sha256": "f9d7c7a85e020945f249cfcc701376abd639b36075a6806bd85d2f5956188e03",
+      "bytes": 2586
+    },
+    {
+      "path": "resource-priority-finalization-v8.json",
+      "sha256": "ad390702aacdef8a2b3884900ce4ca5756d06349b2e83877bd4fcede44dd7b8e",
+      "bytes": 2354
+    },
+    {
+      "path": "source-manifest.json",
+      "sha256": "d660a5bf658bd108cc248fc0b7a99c6e2e46d9ccf1c0d5c095ea1ca9f0f2a381",
+      "bytes": 184072
+    },
+    {
+      "path": "stability.md",
+      "sha256": "a810ab18fbdf5e471c3e3ecdcbc04d1ee5df95fdb69b394f1cfaedd6f4e5be3e",
+      "bytes": 2157
+    },
+    {
+      "path": "targeted-al24-states.json",
+      "sha256": "af0737582e555ad6821052b069dab45815f4dec2ac46beeeb9e51c66011b18fd",
+      "bytes": 323717
+    },
+    {
+      "path": "targeted-al24-summary.json",
+      "sha256": "84628f412ff67ca8b83394dec23ad26cfa7480c8019b36d593094f12d377ed62",
+      "bytes": 151
+    },
+    {
+      "path": "targeted-home-painted-states.json",
+      "sha256": "7a119c5f72a37487ffd798e18ff8dcdff3f05693892b1b269f23c766e447c2ce",
+      "bytes": 116144
+    },
+    {
+      "path": "targeted-home-painted-summary.json",
+      "sha256": "944b33802fccaab6b0d14ae10da837c8c5999042ce138a59ee9e4bce1616510f",
+      "bytes": 147
+    },
+    {
+      "path": "targeted-markread-chromium-states.json",
+      "sha256": "8eca05261e00be26d15ef217458213d37748a1655e6a267f2bb8dcdbba5f4011",
+      "bytes": 587081
+    },
+    {
+      "path": "targeted-markread-chromium-summary.json",
+      "sha256": "a7222a889f891a1e3bca89327ff77f316a0a17159554783c248726e78b170d05",
+      "bytes": 101861
+    },
+    {
+      "path": "targeted-navbadge-states.json",
+      "sha256": "81f0d58d1d1fb924fd71429c318600fd78ef556a3f0e2612f3103fcc550a882f",
+      "bytes": 250203
+    },
+    {
+      "path": "targeted-navbadge-summary.json",
+      "sha256": "748852112d8146c82682b49ff02fbd3a25bc99155b0bc0f2470a0721584a0126",
+      "bytes": 11104
+    },
+    {
+      "path": "targeted-payroll-states.json",
+      "sha256": "022fa14faaa95492e279cc7f365da16e756da1bec245d6f8d98fbbccf6805508",
+      "bytes": 96236
+    },
+    {
+      "path": "targeted-payroll-summary.json",
+      "sha256": "d405d75ef04b2913b33f1415d3d9476afe054d52d188fdc7442c93a9d2d166d1",
+      "bytes": 147
+    },
+    {
+      "path": "targeted-tc3-states.json",
+      "sha256": "c821b9e5de243dbaae7671163e29708ae44c95c31964a61edbbd942156749a6f",
+      "bytes": 1389670
+    },
+    {
+      "path": "targeted-tc3-summary.json",
+      "sha256": "0574e17f701fabf98730ca6c057850a8527a08e486ea130f191af1c6d79a987d",
+      "bytes": 89660
+    },
+    {
+      "path": "targeted-timecards-geometry-states.json",
+      "sha256": "8dd476f8bc4fc3361b9a4119b760e5d91d56798cc3f14ae2c100aec6963bcef6",
+      "bytes": 3463779
+    },
+    {
+      "path": "targeted-timecards-geometry-summary.json",
+      "sha256": "a78db6bf80a2abd55323d84b9c0da5061877ffecbfaaa527a2a6c43ffc7f03f8",
+      "bytes": 30461
+    },
+    {
+      "path": "targeted-wb-contrast-states.json",
+      "sha256": "02c6ca0a245a7496e5bc5033f7b6d5fb14f6a9278062d02df87c9815d42cade7",
+      "bytes": 2020170
+    },
+    {
+      "path": "targeted-wb-contrast-summary.json",
+      "sha256": "2237d5af1898e51a89aa0557b8f11ffff8cf3ab41ee9182064174257cac2276d",
+      "bytes": 147
+    },
+    {
+      "path": "type-colour-copy.md",
+      "sha256": "1a11b8f9d7d6796e828ba3115e5d2eb67347d99f14fb28875ddf745000399615",
+      "bytes": 1736
+    },
+    {
+      "path": "visual-review.md",
+      "sha256": "d26fbea86586b0cbefeced8dbcb7c10e16b0a93355a656c1f8e02e552ab3e13c",
+      "bytes": 1326
+    },
+    {
+      "path": "visual-sample-observations.json",
+      "sha256": "47acc8e5e57ee9f98afcc0b0f32cb440755cef5edef7018ac160338328388140",
+      "bytes": 2236
+    },
+    {
+      "path": "widths-roles.md",
+      "sha256": "e9bc5260a6068f8dd8f4339594f2f9f760ba583cd5b97d0b9196821ece96cc69",
+      "bytes": 1776
+    }
+  ],
+  "exclusions": [
+    "Every unallowlisted artifact",
+    "All access/session/cookie/state/env/database files",
+    "Private signed fixture hints and actor bindings",
+    "All raw preview/login/runtime/control stdout logs; structured original attempts retained",
+    "No full source exit, physical-phone, hosted or full-CI credit",
+    "Deferred Mark-read WebKit4,ACK16,Updates1,MyTime prerequisite4 have zero execution/pass credit"
+  ]
+}

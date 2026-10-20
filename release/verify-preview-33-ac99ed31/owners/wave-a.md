@@ -19,3 +19,5 @@ At Manager Shift requests, the first pending swap's `.wa-shift__when`, 390px / 2
 [Chromium crop](../crops/chromium-TC-WA-3-manager-shift-block.png), [WebKit crop](../crops/webkit-TC-WA-3-manager-shift-block.png), [raw rectangles](../evidence/coverage-separators.json).
 
 Cause: `src/components/wave-a/shift-block.tsx:32` leaves the NBSP/dot in a sibling after the `.nv-keep` time span. `.nv-keep` is an inline-block (`kit.css:153`), so the following sibling can wrap after the whole inline box even though the final time glyph is farther left. Move the styled NBSP/dot **inside** the preceding time span; leave the normal break before the duration. Recheck this shared component on Manager Shift requests at 320/390 and 150/200% in both engines. The other three modified sites have passing browser evidence. No additional application patch was applied here.
+
+Concurrent owner handoff: separate release-candidate commit `0f0cd372` already proposes this remaining repair. Its publication was preserved during report integration; fixed-source browser proof is pending on that other source. Reuse/reconcile that patch rather than assign another finding ID.

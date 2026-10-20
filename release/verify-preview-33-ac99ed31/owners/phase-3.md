@@ -16,3 +16,5 @@ TC-P3-09 cause: `src/app/app/availability/page.tsx:165` still renders the contex
 Evidence: [named observations](../evidence/named-rechecks.json), [resize observations](../evidence/supplementary.json), [Chromium range crop](../crops/chromium-TC-P3-09-week-context-390-200.png), [WebKit range crop](../crops/webkit-TC-P3-09-week-context-390-200.png).
 
 The 135-ID/full-state/large-data Phase 3 exit scope remains open. Earlier source reports are preserved under their actual SHA; no full-round pass counts are inherited.
+
+Concurrent owner handoff: separate release-candidate commit `560f2e8e` already proposes this remaining repair. Its publication was preserved during report integration; fixed-source browser proof is pending on that other source. Reuse/reconcile that patch rather than assign another finding ID.

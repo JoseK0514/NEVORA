@@ -1,0 +1,897 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "completed": 2,
+  "passed": 0,
+  "total": 2,
+  "assertions": 12,
+  "failures": [
+    {
+      "name": "scoped-p3-timecards-controls-ci-attribution-a216",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "fresh-target-ready: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+          "passed": false,
+          "detail": {
+            "controls": [
+              {
+                "index": 0,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 280,
+                  "y": 379,
+                  "width": 204,
+                  "height": 48,
+                  "top": 379,
+                  "right": 484,
+                  "bottom": 427,
+                  "left": 280
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 1,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 496,
+                  "y": 379,
+                  "width": 204,
+                  "height": 48,
+                  "top": 379,
+                  "right": 700,
+                  "bottom": 427,
+                  "left": 496
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 2,
+                "tag": "BUTTON",
+                "type": null,
+                "classes": "employee-corporate-button employee-corporate-button--primary button primary",
+                "box": {
+                  "x": 280,
+                  "y": 439,
+                  "width": 204,
+                  "height": 52,
+                  "top": 439,
+                  "right": 484,
+                  "bottom": 491,
+                  "left": 280
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 3,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "employee-corporate-button employee-corporate-button--secondary button secondary",
+                "box": {
+                  "x": 496,
+                  "y": 439,
+                  "width": 204,
+                  "height": 52,
+                  "top": 439,
+                  "right": 700,
+                  "bottom": 491,
+                  "left": 496
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 4,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "mobile-home-disclosure-trigger",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "display": "none",
+                "ancestorHidden": false,
+                "minHeight": "44px",
+                "transition": "background 0.18s, border-color 0.18s, transform 0.18s"
+              }
+            ],
+            "animations": []
+          }
+        },
+        {
+          "message": "native-resize-target-immediate: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+          "passed": false,
+          "detail": {
+            "controls": [
+              {
+                "index": 0,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 280,
+                  "y": 379,
+                  "width": 204,
+                  "height": 48,
+                  "top": 379,
+                  "right": 484,
+                  "bottom": 427,
+                  "left": 280
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 1,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 496,
+                  "y": 379,
+                  "width": 204,
+                  "height": 48,
+                  "top": 379,
+                  "right": 700,
+                  "bottom": 427,
+                  "left": 496
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 2,
+                "tag": "BUTTON",
+                "type": null,
+                "classes": "employee-corporate-button employee-corporate-button--primary button primary",
+                "box": {
+                  "x": 280,
+                  "y": 439,
+                  "width": 204,
+                  "height": 52,
+                  "top": 439,
+                  "right": 484,
+                  "bottom": 491,
+                  "left": 280
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 3,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "employee-corporate-button employee-corporate-button--secondary button secondary",
+                "box": {
+                  "x": 496,
+                  "y": 439,
+                  "width": 204,
+                  "height": 52,
+                  "top": 439,
+                  "right": 700,
+                  "bottom": 491,
+                  "left": 496
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 4,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "mobile-home-disclosure-trigger",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "display": "none",
+                "ancestorHidden": false,
+                "minHeight": "44px",
+                "transition": "background 0.18s, border-color 0.18s, transform 0.18s"
+              }
+            ],
+            "animations": []
+          }
+        },
+        {
+          "message": "native-resize-target-two-rAF: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+          "passed": false,
+          "detail": {
+            "controls": [
+              {
+                "index": 0,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 280,
+                  "y": 379,
+                  "width": 204,
+                  "height": 48,
+                  "top": 379,
+                  "right": 484,
+                  "bottom": 427,
+                  "left": 280
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 1,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 496,
+                  "y": 379,
+                  "width": 204,
+                  "height": 48,
+                  "top": 379,
+                  "right": 700,
+                  "bottom": 427,
+                  "left": 496
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 2,
+                "tag": "BUTTON",
+                "type": null,
+                "classes": "employee-corporate-button employee-corporate-button--primary button primary",
+                "box": {
+                  "x": 280,
+                  "y": 439,
+                  "width": 204,
+                  "height": 52,
+                  "top": 439,
+                  "right": 484,
+                  "bottom": 491,
+                  "left": 280
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 3,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "employee-corporate-button employee-corporate-button--secondary button secondary",
+                "box": {
+                  "x": 496,
+                  "y": 439,
+                  "width": 204,
+                  "height": 52,
+                  "top": 439,
+                  "right": 700,
+                  "bottom": 491,
+                  "left": 496
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 4,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "mobile-home-disclosure-trigger",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "display": "none",
+                "ancestorHidden": false,
+                "minHeight": "44px",
+                "transition": "background 0.18s, border-color 0.18s, transform 0.18s"
+              }
+            ],
+            "animations": []
+          }
+        },
+        {
+          "message": "native-resize-target-after600ms: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+          "passed": false,
+          "detail": {
+            "controls": [
+              {
+                "index": 0,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 280,
+                  "y": 379,
+                  "width": 204,
+                  "height": 48,
+                  "top": 379,
+                  "right": 484,
+                  "bottom": 427,
+                  "left": 280
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 1,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 496,
+                  "y": 379,
+                  "width": 204,
+                  "height": 48,
+                  "top": 379,
+                  "right": 700,
+                  "bottom": 427,
+                  "left": 496
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 2,
+                "tag": "BUTTON",
+                "type": null,
+                "classes": "employee-corporate-button employee-corporate-button--primary button primary",
+                "box": {
+                  "x": 280,
+                  "y": 439,
+                  "width": 204,
+                  "height": 52,
+                  "top": 439,
+                  "right": 484,
+                  "bottom": 491,
+                  "left": 280
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 3,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "employee-corporate-button employee-corporate-button--secondary button secondary",
+                "box": {
+                  "x": 496,
+                  "y": 439,
+                  "width": 204,
+                  "height": 52,
+                  "top": 439,
+                  "right": 700,
+                  "bottom": 491,
+                  "left": 496
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 4,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "mobile-home-disclosure-trigger",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "display": "none",
+                "ancestorHidden": false,
+                "minHeight": "44px",
+                "transition": "background 0.18s, border-color 0.18s, transform 0.18s"
+              }
+            ],
+            "animations": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoped-p3-timecards-controls-ci-attribution-a216",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "variant": "default",
+      "failed": [
+        {
+          "message": "fresh-target-ready: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+          "passed": false,
+          "detail": {
+            "controls": [
+              {
+                "index": 0,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 312,
+                  "y": 387,
+                  "width": 357.5,
+                  "height": 48,
+                  "top": 387,
+                  "right": 669.5,
+                  "bottom": 435,
+                  "left": 312
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 1,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 681.5,
+                  "y": 387,
+                  "width": 357.5,
+                  "height": 48,
+                  "top": 387,
+                  "right": 1039,
+                  "bottom": 435,
+                  "left": 681.5
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 2,
+                "tag": "BUTTON",
+                "type": null,
+                "classes": "employee-corporate-button employee-corporate-button--primary button primary",
+                "box": {
+                  "x": 1051,
+                  "y": 383,
+                  "width": 131,
+                  "height": 52,
+                  "top": 383,
+                  "right": 1182,
+                  "bottom": 435,
+                  "left": 1051
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 3,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "employee-corporate-button employee-corporate-button--secondary button secondary",
+                "box": {
+                  "x": 1194,
+                  "y": 383,
+                  "width": 166,
+                  "height": 52,
+                  "top": 383,
+                  "right": 1360,
+                  "bottom": 435,
+                  "left": 1194
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 4,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "mobile-home-disclosure-trigger",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "display": "none",
+                "ancestorHidden": false,
+                "minHeight": "44px",
+                "transition": "background 0.18s, border-color 0.18s, transform 0.18s"
+              }
+            ],
+            "animations": []
+          }
+        },
+        {
+          "message": "native-resize-target-immediate: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+          "passed": false,
+          "detail": {
+            "controls": [
+              {
+                "index": 0,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 282.671875,
+                  "y": 387,
+                  "width": 357.5,
+                  "height": 48,
+                  "top": 387,
+                  "right": 640.171875,
+                  "bottom": 435,
+                  "left": 282.671875
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 1,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 652.171875,
+                  "y": 387,
+                  "width": 357.5,
+                  "height": 48,
+                  "top": 387,
+                  "right": 1009.671875,
+                  "bottom": 435,
+                  "left": 652.171875
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 2,
+                "tag": "BUTTON",
+                "type": null,
+                "classes": "employee-corporate-button employee-corporate-button--primary button primary",
+                "box": {
+                  "x": 1021.671875,
+                  "y": 383,
+                  "width": 131,
+                  "height": 52,
+                  "top": 383,
+                  "right": 1152.671875,
+                  "bottom": 435,
+                  "left": 1021.671875
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 3,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "employee-corporate-button employee-corporate-button--secondary button secondary",
+                "box": {
+                  "x": 1164.671875,
+                  "y": 383,
+                  "width": 166,
+                  "height": 52,
+                  "top": 383,
+                  "right": 1330.671875,
+                  "bottom": 435,
+                  "left": 1164.671875
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 4,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "mobile-home-disclosure-trigger",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "display": "none",
+                "ancestorHidden": false,
+                "minHeight": "44px",
+                "transition": "background 0.18s, border-color 0.18s, transform 0.18s"
+              }
+            ],
+            "animations": []
+          }
+        },
+        {
+          "message": "native-resize-target-two-rAF: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+          "passed": false,
+          "detail": {
+            "controls": [
+              {
+                "index": 0,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 312,
+                  "y": 387,
+                  "width": 357.5,
+                  "height": 48,
+                  "top": 387,
+                  "right": 669.5,
+                  "bottom": 435,
+                  "left": 312
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 1,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 681.5,
+                  "y": 387,
+                  "width": 357.5,
+                  "height": 48,
+                  "top": 387,
+                  "right": 1039,
+                  "bottom": 435,
+                  "left": 681.5
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 2,
+                "tag": "BUTTON",
+                "type": null,
+                "classes": "employee-corporate-button employee-corporate-button--primary button primary",
+                "box": {
+                  "x": 1051,
+                  "y": 383,
+                  "width": 131,
+                  "height": 52,
+                  "top": 383,
+                  "right": 1182,
+                  "bottom": 435,
+                  "left": 1051
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 3,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "employee-corporate-button employee-corporate-button--secondary button secondary",
+                "box": {
+                  "x": 1194,
+                  "y": 383,
+                  "width": 166,
+                  "height": 52,
+                  "top": 383,
+                  "right": 1360,
+                  "bottom": 435,
+                  "left": 1194
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 4,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "mobile-home-disclosure-trigger",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "display": "none",
+                "ancestorHidden": false,
+                "minHeight": "44px",
+                "transition": "background 0.18s, border-color 0.18s, transform 0.18s"
+              }
+            ],
+            "animations": []
+          }
+        },
+        {
+          "message": "native-resize-target-after600ms: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+          "passed": false,
+          "detail": {
+            "controls": [
+              {
+                "index": 0,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 312,
+                  "y": 387,
+                  "width": 357.5,
+                  "height": 48,
+                  "top": 387,
+                  "right": 669.5,
+                  "bottom": 435,
+                  "left": 312
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 1,
+                "tag": "INPUT",
+                "type": "date",
+                "classes": "employee-corporate-input",
+                "box": {
+                  "x": 681.5,
+                  "y": 387,
+                  "width": 357.5,
+                  "height": 48,
+                  "top": 387,
+                  "right": 1039,
+                  "bottom": 435,
+                  "left": 681.5
+                },
+                "display": "block",
+                "ancestorHidden": false,
+                "minHeight": "48px",
+                "transition": "all"
+              },
+              {
+                "index": 2,
+                "tag": "BUTTON",
+                "type": null,
+                "classes": "employee-corporate-button employee-corporate-button--primary button primary",
+                "box": {
+                  "x": 1051,
+                  "y": 383,
+                  "width": 131,
+                  "height": 52,
+                  "top": 383,
+                  "right": 1182,
+                  "bottom": 435,
+                  "left": 1051
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 3,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "employee-corporate-button employee-corporate-button--secondary button secondary",
+                "box": {
+                  "x": 1194,
+                  "y": 383,
+                  "width": 166,
+                  "height": 52,
+                  "top": 383,
+                  "right": 1360,
+                  "bottom": 435,
+                  "left": 1194
+                },
+                "display": "flex",
+                "ancestorHidden": false,
+                "minHeight": "52px",
+                "transition": "background 0.12s ease-out, border-color 0.12s ease-out, color 0.12s ease-out, transform 0.12s ease-out"
+              },
+              {
+                "index": 4,
+                "tag": "BUTTON",
+                "type": "button",
+                "classes": "mobile-home-disclosure-trigger",
+                "box": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "display": "none",
+                "ancestorHidden": false,
+                "minHeight": "44px",
+                "transition": "background 0.18s, border-color 0.18s, transform 0.18s"
+              }
+            ],
+            "animations": []
+          }
+        }
+      ]
+    }
+  ]
+}
