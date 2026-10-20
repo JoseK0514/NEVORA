@@ -70,7 +70,7 @@ try{
     assert.deepEqual(await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' AND revision<=(SELECT max(revision)-1 FROM timecard_revisions WHERE employee_id='D3-E') ORDER BY revision"),frozenRevisions);
     await q("UPDATE employees SET first_name='Avery' WHERE id='D3-E'");await q("UPDATE locations SET name=$1,short_name=$2 WHERE id='loc-1'",[labels[0].name,labels[0].short_name]);
     await mp.getByRole('button',{name:'Refresh timecards',exact:true}).click();await card.getByText('Reopened',{exact:true}).waitFor();checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
-    assert.match(await card.innerText(),/Historical revisions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
+    assert.match(await card.textContent(),/Historical revisions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
     for(const width of [320,375,390,430,768,1024,1440]){
       await mp.setViewportSize({width,height:1000});
       const geometry=await mp.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('*')].filter(e=>getComputedStyle(e).display!=='none'&&(e.getBoundingClientRect().right+window.scrollX>document.documentElement.clientWidth+2||e.scrollWidth>e.clientWidth+2)).map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right,scroll:e.scrollWidth,client:e.clientWidth,minWidth:getComputedStyle(e).minWidth,whiteSpace:getComputedStyle(e).whiteSpace})).slice(-25)}));
