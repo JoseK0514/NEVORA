@@ -9575,6 +9575,29 @@
       "code": 1,
       "passed": 0,
       "failed": 16
+    },
+    {
+      "name": "00417-matrix-AUDIT-LONG-chromium-1024",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-20T00-24-43-929Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00417-matrix-AUDIT-LONG-chromium-1024.log",
+      "args": [
+        "--routes",
+        "/app/profile,/app/requests,/app/requests/hub,/app/schedule",
+        "--accounts",
+        "AUDIT-LONG",
+        "--widths",
+        "1024",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "53f6a46de97c26e3b9a4af494cf72676b758a24e57612dca2cdbd94b8b111a59",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
     }
   ],
   "planned": 12716,
