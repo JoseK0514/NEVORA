@@ -25,7 +25,7 @@ class TestResizeObserver{
 }
 function flush(){const pending=[...frames.values()];frames.clear();pending.forEach(callback=>callback(0));}
 function resize(){observers.filter(observer=>observer.connected).forEach(observer=>observer.callback());flush();}
-function mount(ready=true){usePrivateFragmentFocus('correction-',ready);dispose=hooks.effects.at(-1)!();}
+function useMount(ready=true){usePrivateFragmentFocus('correction-',ready);return hooks.effects.at(-1)!();}
 beforeEach(()=>{
  hooks.effects=[];hooks.ref.current='';frames=new Map();sequence=0;observers=[];body={};active=body;target=row();rows=new Map([['correction-fixture',target]]);
  vi.stubGlobal('window',Object.assign(new EventTarget(),{location:{hash:'#correction-fixture'}}));
@@ -38,19 +38,19 @@ beforeEach(()=>{
 afterEach(()=>{dispose?.();dispose=undefined;vi.unstubAllGlobals();});
 
 it('waits for a ready but display-hidden row to render before consuming its focus intent',()=>{
- mount();flush();expect(active).toBe(body);expect(target.focus).not.toHaveBeenCalled();
+ dispose=useMount();flush();expect(active).toBe(body);expect(target.focus).not.toHaveBeenCalled();
  target.visible=true;resize();expect(active).toBe(target);expect(target.focus).toHaveBeenCalledTimes(1);
  expect(target.scrollIntoView).toHaveBeenCalledOnce();
  active=body;resize();window.dispatchEvent(new Event('hashchange'));flush();
  expect(active).toBe(body);expect(target.focus).toHaveBeenCalledTimes(1);
 });
 it('cancels pending reveal focus when the protected snapshot leaves ready',()=>{
- mount();flush();dispose?.();mount(false);target.isConnected=false;target.visible=true;resize();flush();
+ dispose=useMount();flush();dispose?.();dispose=useMount(false);target.isConnected=false;target.visible=true;resize();flush();
  expect(active).toBe(body);expect(target.focus).not.toHaveBeenCalled();
  expect(observers.every(observer=>!observer.connected)).toBe(true);
 });
 it('does not focus a former hash target when a different target is selected',()=>{
- mount();flush();const next=row();next.visible=true;rows.set('correction-next',next);
+ dispose=useMount();flush();const next=row();next.visible=true;rows.set('correction-next',next);
  window.location.hash='#correction-next';window.dispatchEvent(new Event('hashchange'));flush();
  expect(active).toBe(next);target.visible=true;resize();expect(active).toBe(next);expect(target.focus).not.toHaveBeenCalled();
 });
@@ -60,7 +60,7 @@ it.each(['attendance-','timecard-','request-'])('preserves visible immediate arr
  expect(active).toBe(target);expect(target.focus).toHaveBeenCalledOnce();
 });
 it('does not attempt focus for an absent or unrelated private target',()=>{
- window.location.hash='#unrelated';mount();flush();expect(target.focus).not.toHaveBeenCalled();
+ window.location.hash='#unrelated';dispose=useMount();flush();expect(target.focus).not.toHaveBeenCalled();
  window.location.hash='#correction-absent';window.dispatchEvent(new Event('hashchange'));flush();
  expect(active).toBe(body);expect(observers.every(observer=>!observer.connected)).toBe(true);
 });
