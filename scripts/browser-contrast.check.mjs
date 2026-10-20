@@ -18,3 +18,13 @@ test('composites translucent hover white over the dark background',()=>{
  assert.deepEqual(result.samples[0].background,[30.599999999999998,30.599999999999998,30.599999999999998,1]);assert(result.ratio>16);
 });
 test('unknown image remains a measurement limitation',()=>assert.throws(()=>measure({backgroundImage:'url("image.png")'}),/Unsupported background image/));
+test('transparent image cannot hide the same-layer white background',()=>{
+ assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)'},{backgroundColor:'rgb(255, 255, 255)',backgroundImage:'linear-gradient(145deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%)'}),/Foreground crosses background bounds/);
+});
+test('partial-alpha image paints over its own color before the black ancestor',()=>{
+ const result=measure({backgroundColor:'rgb(0, 0, 0)'},{backgroundColor:'rgb(255, 255, 255)',backgroundImage:'linear-gradient(145deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%)'});
+ assert.deepEqual(result.samples[0].background,[127.5,127.5,127.5,1]);assert(result.ratio<4.5);assert(result.ratio>3.97);
+});
+test('varying alpha retains the transparent endpoint over its own color',()=>{
+ assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)'},{backgroundColor:'rgb(255, 255, 255)',backgroundImage:'linear-gradient(145deg, rgba(0, 0, 0, 0) 0%, rgba(119, 119, 119, 0.5) 100%)'}),/Foreground crosses background bounds/);
+});

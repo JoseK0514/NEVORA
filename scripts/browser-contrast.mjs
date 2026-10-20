@@ -45,14 +45,22 @@ export function measureRenderedContrast(element) {
       if (!(length>0&&end>start)) throw Error('Unsupported gradient range');
       const positions=[targetBounds.left,targetBounds.right].flatMap(x=>[targetBounds.top,targetBounds.bottom].map(y=>((x-b.left-b.width/2)*dx+(y-b.top-b.height/2)*dy)/length+.5));
       const a=rgba(match[2]),z=rgba(match[4]);
+      // Alpha gradients interpolate premultiplied colors. Bound the full stop
+      // range instead of narrowing with unpremultiplied channel interpolation.
+      if (a[3] !== z[3]) return [a,z];
       return [Math.min(...positions),Math.max(...positions)].map(t=>{const f=Math.max(0,Math.min(1,(t-start)/(end-start)));return a.map((v,i)=>v+(z[i]-v)*f);});
     }
     return stops.map(rgba);
   };
+  const paint = (layer, backgrounds) => {
+    // CSS paints background-color beneath background-image on the same box.
+    const base = backgrounds.map(back => over(rgba(layer.color), back));
+    return layer.image === 'none' ? base : colors(layer).flatMap(front => base.map(back => over(front, back)));
+  };
   let backgrounds = [[255,255,255,1]];
   for (const layer of layers.slice().reverse()) {
-    backgrounds = colors(layer).flatMap(front => backgrounds.map(back => over(front, back)));
-    for (const overlay of layer.overlays) backgrounds = [ ...backgrounds, ...colors(overlay).flatMap(front => backgrounds.map(back => over(front, back))) ];
+    backgrounds = paint(layer, backgrounds);
+    for (const overlay of layer.overlays) backgrounds = [ ...backgrounds, ...paint(overlay, backgrounds) ];
     // All sRGB interpolants lie within these channel bounds. Their extreme
     // luminances bound contrast against the light foreground used by this link.
     backgrounds = [0,1].map(high => [0,1,2].map(i => Math[high?'max':'min'](...backgrounds.map(c => c[i]))).concat(1));
