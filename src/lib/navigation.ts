@@ -227,7 +227,8 @@ export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCa
         : [{ label: "Hours", items: [{ href: "/app/my-time", label: "My time" }, { href: "/app/timecards", label: "Timecards" }] }]),
     ]
     : [
-      { label: "Requests", items: requests },
+      // Clean Manager (v3): Owners and Managers move between the three request pages from the band (RequestPagesNav),
+      // so those pages have one pill row. The employee Requests tabs above are unchanged.
       { label: "Time and pay", items: [
         { href: "/app/timecards", label: "Timecards" },
         ...(navigationForRole(role, payroll, context).some(item => item.href === "/app/payroll") ? [{ href: "/app/payroll", label: "Payroll runs" }] : []),

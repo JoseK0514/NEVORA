@@ -10,7 +10,8 @@ import { listAvailabilitySubmissionStatuses } from "@/lib/data/availability-subm
 import { getUpcomingAvailabilityWeek, getWeekSettings } from "@/lib/data/week-settings";
 import { addDays, formatWeekRange, weekStartFor } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
-import { Card, KitLink, PageBand, StatGrid } from "./kit/kit";
+import { KitLink, PageBand } from "./kit/kit";
+import { RequestPagesNav } from "./clean/request-pages-nav";
 import { Notice } from "./wave-a/parts";
 import {ManagerIssueFocus} from './manager-issue-focus';
 
@@ -50,18 +51,12 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
           <span>{keepWhole(formatWeekRange(selectedWeek))}</span>
           <Link className="nv-band-control premium-week-arrow" href={`/app/availability?week=${addDays(selectedWeek, 7)}`} aria-label="Next week"><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></Link>
         </span>}
-        summary={statuses.length ? `${statuses.length - notSubmitted} of ${statuses.length} submitted for this week.` : "No one submits availability yet."} />
+        // Clean Manager (v3): the deadline joins the summary; the chips below carry the counts, so the stat card goes.
+        summary={<>{statuses.length ? `${statuses.length - notSubmitted} of ${statuses.length} submitted for this week. ` : "No one submits availability yet. "}{locked ? `Closed ${deadline}.` : deadline ? `People can submit until ${deadline}.` : <>No deadline set. <KitLink href="/app/schedule/settings">Set one in Scheduling rules</KitLink>.</>}</>}
+        extra={<RequestPagesNav current="/app/availability" />} />
       <div className="nv-content">
         <ManagerIssueFocus prefix="employee-" />
         {invalidWeek ? <Notice tone="urgent" title="That schedule week is not valid">Showing the upcoming week instead.</Notice> : null}
-        <Card title="This week" id="availability-week"
-          foot={<div className="wa-foot"><span>{locked ? `Closed ${deadline}. Submitted hours stay here to review.` : deadline ? `People can submit until ${deadline}.` : "No deadline set. Set one in Scheduling rules to collect submissions."}</span><KitLink href={`/app/schedule?week=${selectedWeek}`}>Open schedule</KitLink></div>}>
-          <StatGrid stats={[
-            { label: "Submitted", value: <>{statuses.length - notSubmitted}<span className="wa-stat-of"> / {statuses.length}</span></>, ariaLabel: `${statuses.length - notSubmitted} of ${statuses.length} submitted` },
-            { label: "Not submitted", value: notSubmitted },
-            { label: "Unavailable all week", value: unavailable },
-          ]} />
-        </Card>
         <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} />
       </div>
     </div>

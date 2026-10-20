@@ -5,6 +5,7 @@ import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime, weekStartFor } from "@/lib/date-utils";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { Card, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, Status, Tile } from "@/components/kit/kit";
+import { RequestPagesNav } from "@/components/clean/request-pages-nav";
 import { Fact, Facts, Notice } from "@/components/wave-a/parts";
 import { ActionForm } from "@/components/wave-a/action-form";
 import { TimeOffReviewDecision } from "@/components/time-off-review-decision";
@@ -131,7 +132,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
     <div className="nv-page wa-page wa-timeoff" data-nv-page="">
       <PageBand title="Time off" overlap={false}
         summary={selected.id === "pending" ? (count ? `${plural(count)} waiting for your review.` : "Nothing is waiting for your review.") : `Your team’s ${selected.label.toLowerCase()} time off, latest dates first.`}
-        extra={<FilterPills label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} />} />
+        extra={<><RequestPagesNav current="/app/requests" /><FilterPills label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} /></>} />
       <div className="nv-content">
         <ManagerIssueFocus prefix="request-" />
         {error ? <Notice tone="urgent" title="That decision wasn’t saved">The request may have changed. Check it and decide again.</Notice> : null}

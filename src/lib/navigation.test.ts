@@ -70,7 +70,9 @@ describe('section tabs', () => {
   });
   it('keeps tabs off nested and unrelated pages', () => {
     expect(sectionTabsFor('EMPLOYEE', '/app/exchange/swap')).toBeNull();
-    expect(sectionTabsFor('MANAGER', '/app/requests?tab=pending')?.label).toBe('Requests');
+    // Clean Manager (v3): the request pages link to each other in their band instead.
+    expect(sectionTabsFor('MANAGER', '/app/requests?tab=pending')).toBeNull();
+    expect(sectionTabsFor('EMPLOYEE', '/app/requests')?.label).toBe('Requests');
     expect(sectionTabsFor('MANAGER', '/app/employees')).toBeNull();
   });
 });

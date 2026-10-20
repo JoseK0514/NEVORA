@@ -64,10 +64,11 @@ it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and r
 it("distinguishes missing, intentionally unavailable and submitted windows without treating seeded hours as a submission", async () => {
   // Times are kept whole with no-break spaces; compare the words.
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"})).replace(/\u00a0/g, " ");
-  expect(html).toMatch(/Not submitted<\/span><span class="nv-stat__value">1</); expect(html).toContain("Unavailable all week"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
+  // Clean Manager (v3): the stat card went; the filter chips carry the counts.
+  expect(html).toMatch(/Not submitted<span class="wa-chip__count" aria-label=", 1">1</); expect(html).toContain("Unavailable all week"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
   expect(html).toMatch(/data-tone="review">.*?Not submitted<\/span>/);
   expect(html).toContain('2 of 3 submitted');
-  expect(html).toMatch(/Unavailable all week<\/span><span class="nv-stat__value">1</);
+  expect(html).toMatch(/Unavailable all week<span class="wa-chip__count" aria-label=", 1">1</);
   expect(html).toMatch(/data-tone="neutral">.*?Unavailable all week<\/span>/);
   expect(html).toMatch(/data-tone="done">.*?Submitted<\/span>/);
 });

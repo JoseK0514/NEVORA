@@ -188,7 +188,9 @@ it.each([['MANAGER','/app/exchange','/app/inbox'],['OWNER','/app/availability','
  expect(mobile).toContain(`href="${tab}" class="mobile-nav-link active" aria-current="page"`);
 });
 
-it.each([['OWNER','/app/requests',['/app/requests','/app/exchange','/app/availability']],['EMPLOYEE','/app/requests/hub',['/app/requests/hub','/app/requests','/app/exchange','/app/availability']]] as const)('shows %s section tabs on %s with real URLs',(role,pathname,hrefs)=>{
+// Clean Manager (v3): Owners and Managers move between the request pages from the band (RequestPagesNav), not section tabs.
+it('shows no section tabs on the request pages for OWNER', () => { expect(render('OWNER','/app/requests').html).not.toContain('class="section-tabs"'); });
+it.each([['EMPLOYEE','/app/requests/hub',['/app/requests/hub','/app/requests','/app/exchange','/app/availability']]] as const)('shows %s section tabs on %s with real URLs',(role,pathname,hrefs)=>{
  const {html}=render(role,pathname);
  const tabs=html.split('class="section-tabs"')[1].split('</nav>')[0];
  expect([...tabs.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual(hrefs);

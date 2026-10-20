@@ -10,6 +10,7 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord } from "@/lib/data/exchanges";
 import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from "@/lib/data/callouts";
 import { Card, FilterPills, PageBand, Status } from "./kit/kit";
+import { RequestPagesNav } from "./clean/request-pages-nav";
 import { Fact, Facts, Notice } from "./wave-a/parts";
 import { PendingButton } from "./wave-a/pending-button";
 import { ShiftBlock } from "./wave-a/shift-block";
@@ -100,7 +101,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
       summary={selected.id === "pending" ? (count ? `${plural(count, "request needs", "requests need")} your decision.` : "Nothing needs your decision.")
         : selected.id === "coverage" ? (count ? `${plural(count, "shift", "shifts")} nobody has picked up yet.` : "Every offered shift has been picked up.")
         : "Recent outcomes, newest first."}
-      extra={<FilterPills label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} />} />
+      extra={<><RequestPagesNav current="/app/exchange" /><FilterPills label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} /></>} />
     <div className="nv-content">
       <ManagerIssueFocus prefix="request-" />
       {error ? <Notice tone="urgent" title="That decision wasn’t saved">{errors[error] ?? "The request may have changed. Check it and decide again."}</Notice> : null}
