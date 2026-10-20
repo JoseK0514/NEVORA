@@ -85,6 +85,13 @@ describe('More sheet groups (MG3)', () => {
       expect(groups.every(group => group.items.length > 0)).toBe(true);
     }
     const own = moreNavigationGroups([{href: '/app/my-pay', label: 'My pay', icon: 'pay'} as never, {href: '/app/timecards', label: 'Timecards', icon: 'clock'} as never]);
-    expect(own.map(group => group.label)).toEqual(['Time and reporting', 'My account']);
+    expect(own.map(group => group.label)).toEqual(['Time and pay', 'Account']);
+    // Clean Manager (v3): Home's team tools get their own group, before Account.
+    const {teamToolsForRole} = await import('./navigation');
+    const withTools = moreNavigationGroups(mobileMoreForRole('MANAGER', {enabled: true} as never), teamToolsForRole('MANAGER'));
+    expect(withTools.map(group => group.label)).toEqual(['Time and pay', 'Planning', 'Team tools', 'Account']);
+    expect(withTools.find(group => group.label === 'Team tools')?.items.map(item => item.label)).toEqual(['Attendance', 'Team overview', 'Schedule activity', 'Clocker recovery', 'Account recovery']);
+    expect(teamToolsForRole('EMPLOYEE')).toEqual([]);
+    expect(teamToolsForRole('LEAD')).toEqual([]);
   });
 });

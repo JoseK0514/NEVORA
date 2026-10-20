@@ -141,15 +141,17 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
  expect(mobile).toContain('popoverTarget="manager-more-navigation"');
  const menu=mobile.split('id="manager-more-navigation"')[1] ?? '';
  const hrefs=[...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1]);
- // The same destinations as before, now grouped by job (MG3).
- expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),'/app/profile'].sort());
- expect(hrefs).toEqual(['/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...(role==='OWNER'?['/app/settings']:[]),'/app/profile']);
- // Phase 3.5: Owners and Managers reach their Profile from More › My account and the desktop account menu, never the sidebar.
- expect(menu).toContain('aria-label="My account"');
+ // The same destinations as before, grouped by job (MG3), plus Home's team tools at their old addresses (clean Manager v3).
+ const tools=['/app?view=attendance','/app?view=team','/app?view=activity','/app/clocker-recovery','/app/account-recovery'];
+ expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),'/app/profile',...tools].sort());
+ expect(hrefs).toEqual(['/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...tools,'/app/profile',...(role==='OWNER'?['/app/settings']:[])]);
+ // Phase 3.5: Owners and Managers reach their Profile from More › Account and the desktop account menu, never the sidebar.
+ expect(menu).toContain('aria-label="Account"');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toContain('href="/app/profile"');
  expect(html.split('id="portal-account-menu"')[1]).toContain('href="/app/profile" class="nevora-action-menu-item"');
- expect(menu).toContain('aria-label="Time and reporting"');
+ expect(menu).toContain('aria-label="Time and pay"');
+ expect(menu).toContain('aria-label="Team tools"');
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessible shell affordances for %s',role=>{

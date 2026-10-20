@@ -17,7 +17,7 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, moreNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
+import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, moreNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { CommandFinder, OPEN_FINDER_EVENT, type OpenFinderDetail } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
@@ -79,20 +79,25 @@ export function AppShell({
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
   const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
   const sidebarItems = sidebarNavigation(user.role, navigation);
-  const sidebarActive = sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
-  const navGroups = employee ? [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems);
+  // Clean Manager (v3): Home's occasional tools (its views and the two recovery pages) have their own group.
+  const teamTools = teamToolsForRole(user.role);
+  const toolView = pathname === "/app" ? search?.get("view") : null;
+  const activeTool = teamTools.find(tool => tool.href === pathname || (toolView && tool.href === `/app?view=${toolView}`));
+  const sidebarActive = activeTool?.href ?? sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
+  const navGroups = employee ? [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems, teamTools);
   // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
   const activeGroup = navGroups.find(group => group.items.some(item => item.href === sidebarActive));
   // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
   const activeItem = activeGroup?.items.find(item => item.href === sidebarActive) ?? navigation.find(item => item.href === activeHref);
-  const deeper = !!activeItem && pathname !== activeItem.href;
+  // A team tool is its own page in the trail ("Team tools › Attendance"), never "Attendance › Attendance".
+  const deeper = !!activeItem && !activeTool && pathname !== activeItem.href;
   // A page whose own entry left the sidebar (Time off under Inbox, Time exports under Timecards) still ends the trail with its own name,
   // and so do Home's views (IS-P4-09), which share Home's address.
   const view = useSearchParams()?.get("view");
   const homeView = !employee && pathname === "/app" && view && view in HOME_VIEWS ? { href: `/app?view=${view}`, label: HOME_VIEWS[view as keyof typeof HOME_VIEWS] } : undefined;
   // WR4-07: a section tab with no navigation entry of its own (Payroll settings) also ends the trail with its name.
   const currentTab = sectionTabs?.items.find(item => item.href === pathname);
-  const pageItem = homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined)
+  const pageItem = activeTool ? undefined : homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined)
     ?? (activeItem && currentTab && currentTab.href !== activeItem.href ? currentTab : undefined);
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
@@ -211,7 +216,7 @@ export function AppShell({
                 href={item.href}
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
-                aria-current={active ? (item.href === activeHref && !pageItem && !deeper ? "page" : "true") : undefined}
+                aria-current={active ? (activeTool?.href === item.href || (item.href === activeHref && !pageItem && !deeper) ? "page" : "true") : undefined}
                 aria-label={item.href === "/app/inbox" && inboxCount ? `${item.label}, ${inboxCount} need${inboxCount === 1 ? "s" : ""} you` : item.label}
                 title={collapsed ? item.label : undefined}
               >
@@ -257,7 +262,7 @@ export function AppShell({
             <ol className="portal-location">
               <li className="portal-location-workspace" title={workspaceName}>{workspaceName}</li>
               {activeGroup?.label ? <li>{activeGroup.label}</li> : null}
-              <li>{deeper || homeView ? <Link href={activeItem.href}>{activeItem.label}</Link> : <span aria-current="page">{activeItem.label}</span>}</li>
+              <li>{deeper || (homeView && !activeTool) ? <Link href={activeItem.href}>{activeItem.label}</Link> : <span aria-current="page">{activeItem.label}</span>}</li>
               {pageItem ? <li>{!homeView && pathname !== pageItem.href ? <Link href={pageItem.href}>{pageItem.label}</Link> : <span aria-current="page">{pageItem.label}</span>}</li> : null}
             </ol>
           </nav> : null}
@@ -382,12 +387,14 @@ export function AppShell({
                 </button>
                 <div className="nevora-action-menu-divider nevora-more-search-divider" />
                 {/* MG3: grouped by job. Headings are labels only; every link is unchanged. */}
-                {moreNavigationGroups(mobileMore).map(group => <div key={group.label} className="nevora-more-group" role="group" aria-label={group.label}>
+                {moreNavigationGroups(mobileMore, teamTools).map(group => <div key={group.label} className="nevora-more-group" role="group" aria-label={group.label} data-group={group.label}>
                   <p className="nevora-more-group-label" aria-hidden="true">{group.label}</p>
                   {group.items.map(item => (
                     <Link key={item.href} href={item.href} className="nevora-action-menu-item"
-                      aria-current={item.href === activeHref ? 'page' : undefined}
+                      aria-current={item.href === (activeTool?.href ?? activeHref) ? 'page' : undefined}
                       onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+                      {/* v3: a small coloured square per row, as in iOS Settings. Decoration only. */}
+                      <span className="cm-more-icon" aria-hidden="true"><NavIcon name={item.icon} size={18} /></span>
                       {item.label}
                     </Link>
                   ))}

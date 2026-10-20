@@ -53,7 +53,7 @@ const SIDEBAR_HOLDERS: Record<string, string> = {
   "/app/exchange": "/app/inbox",
   "/app/payroll-export": "/app/timecards",
   "/app/schedule/templates": "/app/schedule",
-  "/app/schedule/settings": "/app/settings",
+  // Clean Manager (v3): Scheduling rules sits in Plan for Owners too; Settings no longer holds it.
 };
 const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
   "/app/availability": "/app/requests/hub",
@@ -81,29 +81,44 @@ export function sidebarActiveHref(role: UserRole, path: string | null | undefine
   return holder && shown.has(holder) ? holder : undefined;
 }
 
-/** Presentation groups consume only already-authorized navigation entries. */
-export function managementNavigationGroups(items: NavigationItem[]) {
+/** Clean Manager (v3): the occasional tools that used to sit on Home. They keep their addresses (Home's views and the two
+ * recovery pages); only their place in the navigation is new. Owners and Managers only. */
+const TEAM_TOOLS: NavigationItem[] = [
+  { href: "/app?view=attendance", label: "Attendance", icon: "hours" },
+  { href: "/app?view=team", label: "Team overview", icon: "employees" },
+  { href: "/app?view=activity", label: "Schedule activity", icon: "calendar" },
+  { href: "/app/clocker-recovery", label: "Clocker recovery", icon: "refresh" },
+  { href: "/app/account-recovery", label: "Account recovery", icon: "employee" },
+];
+export function teamToolsForRole(role: UserRole): NavigationItem[] {
+  return role === "OWNER" || role === "MANAGER" ? TEAM_TOOLS : [];
+}
+
+/** Presentation groups consume only already-authorized navigation entries. Team tools, when given, sit before Workspace. */
+export function managementNavigationGroups(items: NavigationItem[], tools: NavigationItem[] = []) {
   const definitions = [
-    {label:'Plan', hrefs:['/app','/app/inbox','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates']},
+    {label:'Plan', hrefs:['/app','/app/inbox','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates','/app/schedule/settings']},
     // "People", not "Team", so the Team entry isn't filed under a heading of the same name.
     {label:'People', hrefs:['/app/employees','/app/requests','/app/updates']},
     {label:'Time and pay', hrefs:['/app/timecards','/app/payroll','/app/payroll-export','/app/reports','/app/my-pay']},
-    {label:'Workspace', hrefs:['/app/settings','/app/schedule/settings']},
+    {label:'Workspace', hrefs:['/app/settings']},
   ];
-  return definitions.map(group=>({...group,items:group.hrefs.flatMap(href=>items.filter(item=>item.href===href))})).filter(group=>group.items.length);
+  const groups = definitions.map(group=>({label:group.label,items:group.hrefs.flatMap(href=>items.filter(item=>item.href===href))}));
+  if (tools.length) groups.splice(3, 0, {label:'Team tools', items:tools});
+  return groups.filter(group=>group.items.length);
 }
 
-/** MG3: the phone More sheet grouped by job. Grouping grants nothing: it only
- * orders the items the role already has, and anything unlisted stays under "More". */
-export function moreNavigationGroups(items: NavigationItem[]) {
+/** MG3, regrouped for the clean Manager app (v3): the phone More sheet by job. Grouping grants nothing: it only
+ * orders the items the role already has (plus the team tools passed in), and anything unlisted stays under "More". */
+export function moreNavigationGroups(items: NavigationItem[], tools: NavigationItem[] = []) {
   const definitions = [
-    {label: 'Time and reporting', hrefs: ['/app/timecards', '/app/payroll', '/app/payroll-export', '/app/reports']},
-    {label: 'Scheduling tools', hrefs: ['/app/schedule/templates', '/app/schedule/settings', '/app/availability', '/app/exchange']},
-    {label: 'Workplace', hrefs: ['/app/updates', '/app/requests', '/app/settings']},
-    {label: 'My account', hrefs: ['/app/my-pay', '/app/profile']},
+    {label: 'Time and pay', hrefs: ['/app/timecards', '/app/payroll', '/app/payroll-export', '/app/reports']},
+    {label: 'Planning', hrefs: ['/app/schedule/templates', '/app/schedule/settings', '/app/updates', '/app/availability', '/app/exchange', '/app/requests']},
+    {label: 'Account', hrefs: ['/app/profile', '/app/my-pay', '/app/settings']},
   ];
   const listed = new Set(definitions.flatMap(group => group.hrefs));
   const groups = definitions.map(group => ({label: group.label, items: group.hrefs.flatMap(href => items.filter(item => item.href === href))}));
+  if (tools.length) groups.splice(2, 0, {label: 'Team tools', items: tools});
   groups.push({label: 'More', items: items.filter(item => !listed.has(item.href))});
   return groups.filter(group => group.items.length);
 }
