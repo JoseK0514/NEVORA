@@ -135,6 +135,25 @@ export function AppShell({
     return () => document.removeEventListener("focusin", follow);
   }, []);
 
+  // Clean Manager (v3), QA r3: the tab bar and a page's decision bar grow with large text, so their real heights are shared as
+  // --cm-tabbar-h and --cm-actionbar-h; the decision bar docks above the tab bar and the page reserves both (Owner and Manager).
+  useEffect(() => {
+    if (employee || typeof ResizeObserver === "undefined") return;
+    const shell = document.querySelector<HTMLElement>(".app-shell[data-nv-clean]");
+    if (!shell) return;
+    const measure = () => {
+      const nav = shell.querySelector<HTMLElement>(".mobile-nav"), bar = shell.querySelector<HTMLElement>(".nv-actionbar");
+      shell.style.setProperty("--cm-tabbar-h", `${nav && getComputedStyle(nav).display !== "none" ? Math.round(nav.getBoundingClientRect().height) : 0}px`);
+      shell.style.setProperty("--cm-actionbar-h", `${bar ? Math.round(bar.getBoundingClientRect().height) : 0}px`);
+    };
+    const observer = new ResizeObserver(measure);
+    const watch = () => { observer.disconnect(); for (const element of shell.querySelectorAll(".mobile-nav, .nv-actionbar")) observer.observe(element); measure(); };
+    watch();
+    const changes = new MutationObserver(watch);
+    changes.observe(shell, { childList: true, subtree: true });
+    return () => { observer.disconnect(); changes.disconnect(); };
+  }, [employee, pathname]);
+
   // Arrow keys move between rows of dense lists that opt in (D6).
   useEffect(() => {
     document.addEventListener("keydown", handleRowNavigation);

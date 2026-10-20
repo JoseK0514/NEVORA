@@ -8,6 +8,7 @@ import {useState} from 'react';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import {TrayIcon} from '@phosphor-icons/react/dist/ssr/Tray';
 import {NavIcon} from './nav-icon';
+import {HoldHeight} from './kit/hold-height';
 import {UpdateEntrance, UpdateKind} from './update-visual';
 import {useCommunicationResource, type CommunicationMode} from '../lib/communications/client';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
@@ -52,8 +53,11 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
    <div className="updates-toolbar">
     {/* P3-ST-05: the filters are there from the first frame (disabled, counts "–" until read), so the list never jumps down. */}
     <fieldset className="updates-filters" disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
-    <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason && !signedOut ? 'Try again' : 'Refresh'}</span></button>
+    {/* Signed out, Refresh would only fetch the same refusal; Sign in is the way forward (QA r3). */}
+    {signedOut ? null : <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason ? 'Try again' : 'Refresh'}</span></button>}
    </div>
+   {/* QA r3: paused, offline, a failed read or a signed-out read keeps the list's height; the state shows in its place. */}
+   <HoldHeight holding={!current} memory={`updates-${mode}`}>
    {current?.state === 'partial' ? <p className="updates-partial" role="status"><NavIcon name="alert" />Some updates couldn’t load. Try again to check for the rest.</p> : null}
    {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : signedOut ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : signedOut ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.'}</p>{signedOut ? <Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link> : null}</div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
     <h2>{keepWhole(date)}</h2><ul className="updates-list">{rows.map(item => {
@@ -66,6 +70,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
      </Link></li>;
     })}</ul>
    </section>)}</div> : <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{emptyTitle}</h2><p>{emptyDescription}</p>{filter !== 'all' ? <button className="button secondary" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
+   </HoldHeight>
   </section>
   {/* Clean Manager (v3): the manager footnote goes; the employee one prevents a mistake and stays. */}
   {mode === 'manager' ? null : <p className="updates-footnote">Opening an update doesn’t confirm it. Read the full message, then confirm.</p>}

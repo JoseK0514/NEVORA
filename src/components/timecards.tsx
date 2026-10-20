@@ -326,14 +326,14 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           </div>
           <div className="cm-tc-table-box"><table className="cm-tc-table" aria-label="Timecards in this period" data-row-nav="tbody > tr">
             <thead><tr>
-              <th scope="col" className="cm-tc-check"><input type="checkbox" aria-label="Select all eligible timecards" checked={eligible.length>0&&eligible.slice(0,100).every(item=>selected.includes(item.card.employeeId))}
-                disabled={locked||!eligible.length} onChange={e=>{setSelected(e.target.checked?eligible.slice(0,100).map(item=>item.card.employeeId):[]);setReview(null);setConfirmed(false);}}/></th>
+              <th scope="col" className="cm-tc-check"><label className="cm-tc-hit"><input type="checkbox" aria-label="Select all eligible timecards" checked={eligible.length>0&&eligible.slice(0,100).every(item=>selected.includes(item.card.employeeId))}
+                disabled={locked||!eligible.length} onChange={e=>{setSelected(e.target.checked?eligible.slice(0,100).map(item=>item.card.employeeId):[]);setReview(null);setConfirmed(false);}}/></label></th>
               <th scope="col">Person</th><th scope="col">Role</th><th scope="col" className="cm-num">Recorded</th><th scope="col" className="cm-num">Breaks</th><th scope="col">Status</th>
             </tr></thead>
             <tbody>{tableItems.length?tableItems.map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowStatus(item),breaks=formatRecordedHours(item.card.breakNanoseconds);
               return <tr key={id} id={`timecard-${id}`} tabIndex={-1} data-review={needsReview(item)||undefined}>
-                <td className="cm-tc-check"><input type="checkbox" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/></td>
+                <td className="cm-tc-check"><label className="cm-tc-hit"><input type="checkbox" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/></label></td>
                 <td><button type="button" className="cm-tc-person" onClick={()=>setOpenId(id)}><Avatar initials={initialsOf(name)}/><span>{name}</span></button></td>
                 <td className="cm-tc-role">{roleOf(item.card)??'—'}</td>
                 <td className="cm-num">{formatRecordedHours(item.card.recordedNanoseconds)}</td>
