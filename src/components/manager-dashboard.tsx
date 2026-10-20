@@ -1,21 +1,16 @@
-import { ManagerClockMonitor } from "./manager-clock-monitor";
 import { ManagerAttendanceReview } from "./manager-attendance-review";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
-import {HomeActionCenterProvider, ManagerActionCenter} from './manager-action-center';
-import {OwnerSetupCardLive} from './owner-setup-card';
+import {HomeActionCenterProvider} from './manager-action-center';
+import {OwnerSetupRowLive} from './owner-setup-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
-import { NavIcon } from "@/components/nav-icon";
-import { StatusPill } from "@/components/status-pill";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
-import { CaretLeftIcon, CaretRightIcon, CheckCircleIcon } from '@phosphor-icons/react/ssr';
-import { EmptyState } from './empty-state';
+import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react/ssr';
 import './manager-home.css';
 import './manager-home-mobile.css';
 import './manager-home-gusto.css';
-import { HomeRecentActivity, MobileHomeOverview, MobileHomeTools } from './mobile-home-overview';
-import { ManagerTodayTiles } from './manager-today';
 import type { ReactNode } from 'react';
+import type { ClockMonitor } from '@/lib/time-clock';
 import { PremiumHomeLive, PremiumHomeSurface, type PremiumHomeWeek } from './premium-home';
 import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status, Tile } from './kit/kit';
 import { presentItem } from '@/lib/action-center/present';
@@ -73,7 +68,7 @@ export type DashboardRevisionItem = {
 
 type Props = {
   /** Display-only compositions can supply prepared panels without mounting readers. */
-  overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode; /** Fictional snapshots for the premium Home preview. */ snapshots?: { today: Today; actions: ActionCenter } };
+  overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode; /** Fictional snapshots for the premium Home preview. */ snapshots?: { today: Today; actions: ActionCenter; monitor?: ClockMonitor } };
   /** Workspace date for the Home band, e.g. "Sunday, October 18". */
   dateLabel?: string;
   role?: "OWNER" | "MANAGER";
@@ -127,15 +122,6 @@ function revisionSourceLabel(sourceType: string) {
   return "Published schedule updated";
 }
 
-function DashboardEmptyTray({
-  title,
-  detail,
-}: {
-  title: string;
-  detail: string;
-}) {
-  return <EmptyState className="manager-empty-tray" icon={<CheckCircleIcon size={22} />} title={title}>{detail}</EmptyState>;
-}
 
 /** Team overview (Phase 7 rebuild): kit stats and rows from the dashboard's existing read. */
 function TeamTab(props: Props) {
@@ -191,7 +177,7 @@ function SharedHomeRead({live, children, ...read}: {live: boolean; weekStart: st
 }
 
 /** The week facts Home shows, from the dashboard's existing read. */
-function homeWeek(props: Props): PremiumHomeWeek {
+export function homeWeek(props: Props): PremiumHomeWeek {
   return {
     weekStart: props.weekStart, weekLabel: props.weekLabel,
     plannedShifts: props.days.reduce((total, day) => total + day.shiftCount, 0),
@@ -211,10 +197,10 @@ function PremiumOverview(props: Props) {
   const common = { greeting: `${greeting(props.timeZone)}, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props) };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
-    today={slots.snapshots.today} actions={slots.snapshots.actions} actionsConnection="ready" />;
+    today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} setup={props.role === 'OWNER' ? <OwnerSetupCardLive locationCount={props.totalLocations}/> : null} />
+    <PremiumHomeLive {...common} setup={props.role === 'OWNER' ? <OwnerSetupRowLive locationCount={props.totalLocations}/> : null} />
   </SharedHomeRead>;
 }
 
@@ -246,109 +232,7 @@ function PremiumHomeView(props: Props & { view: Exclude<ManagerDashboardView, 'o
 }
 
 export function ManagerDashboard(props: Props) {
-  if (props.view === 'overview' && (!props.overviewSlots || props.overviewSlots.snapshots)) return <PremiumOverview {...props} />;
-  if (props.view !== 'overview' && !props.overviewSlots) return <PremiumHomeView {...props} view={props.view} />;
-  const actions = props.overviewSlots?.actions ?? <ManagerActionCenter key={`${props.actorId}:${props.weekStart}`} weekStart={props.weekStart} actorId={props.actorId??''} timeZone={props.timeZone}/>;
-  const activity = props.overviewSlots?.activity ?? <div className="manager-monitor-block" key="recorded-activity">
-    <ManagerClockMonitor />
-    <Link className="manager-attendance-link" href={dashboardHref(props.weekStart, 'attendance')}><NavIcon name="clock" size={18} />Review attendance</Link>
-  </div>;
-  return (
-    <div
-      className={
-        props.view === "overview"
-          ? "manager-dashboard-v3 dashboard-overview-active manager-portal-home"
-          : props.view === "attendance"
-            ? "manager-dashboard-v3 dashboard-attendance-active"
-            : "manager-dashboard-v3"
-      }
-    >
-      {props.view === 'overview' ? <div className="mobile-home-heading"><h1>Home</h1><p>{props.workspaceName}</p></div> : null}
-      <section className="dashboard-hero">
-        <div className="dashboard-hero-copy">
-          {props.view !== 'overview' ? <p>{props.view === "attendance" ? "Attendance" : "Manager dashboard"}</p> : null}
-          <h1 suppressHydrationWarning>{props.view === "attendance" ? "Time review" : props.view === 'overview' ? `${greeting(props.timeZone)}, ${props.firstName}` : `Welcome back, ${props.firstName}.`}</h1>
-          <span>
-            {props.view === "attendance"
-              ? `Who clocked in today at ${props.workspaceName}, and anything that needs a look.`
-              : props.view === 'overview' ? `Here’s what’s going on with your team at ${props.workspaceName}.` : `Here’s what’s happening this week at ${props.workspaceName}.`}
-          </span>
-        </div>
-
-        {props.view !== "attendance" && props.view !== 'overview' ? (
-          <div className="dashboard-hero-actions">
-            <div className="dashboard-week-nav">
-              <Link
-                href={dashboardHref(props.previousWeek, props.view)}
-                aria-label="Previous week"
-              >
-                <CaretLeftIcon size={18} aria-hidden="true" />
-              </Link>
-              <span className="dashboard-week-label">
-                <NavIcon name="calendar" size={16} />
-                <strong>{props.weekLabel}</strong>
-              </span>
-              <Link
-                href={dashboardHref(props.nextWeek, props.view)}
-                aria-label="Next week"
-              >
-                <CaretRightIcon size={18} aria-hidden="true" />
-              </Link>
-            </div>
-            <Link className="button primary" href={`/app/schedule?week=${props.weekStart}`}>
-              Open schedule
-            </Link>
-          </div>
-        ) : null}
-      </section>
-
-      {props.view !== 'overview' ? <nav className="dashboard-tabs" aria-label="Dashboard views">
-        {tabs.map((tab) => (
-          <Link
-            className={props.view === tab.id ? "active" : ""}
-            href={dashboardHref(props.weekStart, tab.id)}
-            key={tab.id}
-            aria-current={props.view === tab.id ? 'page' : undefined}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav> : null}
-
-      {props.view === "overview" ? (
-        /* Gusto-style Home: Tasks lead; this week, live activity and shortcuts form the rail.
-         * Live Home shares one action-center read between Tasks and the Owner setup card. */
-        <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live={!props.overviewSlots?.actions} weekStart={props.weekStart} actorId={props.actorId ?? ''}
-          owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-        <div className="home-layout">
-          {props.overviewSlots ? props.overviewSlots.setup ?? null : props.role === 'OWNER' ? <OwnerSetupCardLive locationCount={props.totalLocations}/> : null}
-          <div className="home-layout-today">{props.overviewSlots?.today ?? <ManagerTodayTiles />}</div>
-          {/* U1: Tasks before This week, so phones reach them on the first screen; desktop places both by grid area. */}
-          <div className="home-layout-tasks">{actions}</div>
-          <MobileHomeOverview weekStart={props.weekStart} weekLabel={props.weekLabel}
-            previousWeek={props.previousWeek} nextWeek={props.nextWeek}
-            plannedShifts={props.days.reduce((total, day) => total + day.shiftCount, 0)}
-            availabilityReceived={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible}
-            publishedLocations={props.locations.filter(location => location.scheduleStatus === 'PUBLISHED').length}
-            locations={props.locations.length}/>
-          <div className="home-layout-live">{activity}</div>
-          {props.latestRevision ? <HomeRecentActivity weekStart={props.weekStart} label={revisionSourceLabel(props.latestRevision.sourceType)}
-            dateTime={props.latestRevision.createdAt}
-            detail={`Revision ${props.latestRevision.revisionNumber} · ${formatBusinessTimestamp(props.latestRevision.createdAt, props.timeZone)}`}/> : null}
-          <MobileHomeTools weekStart={props.weekStart}/>
-        </div>
-        </SharedHomeRead>
-      ) : props.view === "attendance" ? (
-        <div className="manager-attendance-stack">
-          <ManagerAttendanceReview />
-          <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
-          <Link className="button secondary" href="/app/clocker-recovery">Clocker recovery</Link>
-        </div>
-      ) : props.view === "team" ? (
-        <TeamTab {...props} />
-      ) : (
-        <ActivityTab {...props} />
-      )}
-    </div>
-  );
+  // Clean Manager (v3): Home is "Today"; its views keep their addresses. The old Home layout is gone (deleted, not restyled).
+  if (props.view === 'overview') return <PremiumOverview {...props} />;
+  return <PremiumHomeView {...props} view={props.view} />;
 }

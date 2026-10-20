@@ -2,7 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import SchedulePage from './page';
-const f=vi.hoisted(()=>({positions:[] as {id:string,name:string}[], shifts:[] as Record<string,unknown>[], employees:[] as Record<string,unknown>[], history:[] as Record<string,unknown>[], captured:[] as Record<string,unknown>[], managerReads:vi.fn(), locations:[] as {id:string,shortName:string}[],enabled:true,active:true,role:'EMPLOYEE',reads:vi.fn(),before:[{sourceShiftId:'self-shift',employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'08:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false}],after:[{sourceShiftId:'self-shift',employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'09:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false}]}));
+const f=vi.hoisted(()=>({positions:[] as {id:string,name:string}[], shifts:[] as Record<string,unknown>[], employees:[] as Record<string,unknown>[], history:[] as Record<string,unknown>[], captured:[] as Record<string,unknown>[], managerReads:vi.fn(), dashboard:null as unknown, statuses:[] as {locationId:string,status:string}[], locations:[] as {id:string,shortName:string}[],enabled:true,active:true,role:'EMPLOYEE',reads:vi.fn(),before:[{sourceShiftId:'self-shift',employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'08:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false}],after:[{sourceShiftId:'self-shift',employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'09:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false}]}));
 vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn()})}));
 vi.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>)=>createElement('a',props,children)}));
 vi.mock('@/lib/scheduling/validate-shift',()=>({schedulingIssueMessage:()=>''}));
@@ -17,13 +17,15 @@ vi.mock('@/lib/data/employee-weekly-review.server',()=>({readEmployeeWeeklyRevie
 vi.mock('@/lib/data/employee-schedule',()=>({readEmployeeSchedule:async()=>({state:'unpublished',shifts:f.shifts,locations:f.locations}),emptyScheduleLabel:(state:string)=>state==='published'?'Off — no assignment':state==='unpublished'?'Schedule not published yet':'Schedule unavailable — try again'}));
 vi.mock('@/lib/auth/permissions',()=>({isManagerRole:(role:string)=>['MANAGER','OWNER'].includes(role)}));
 vi.mock('@/lib/data/employees',()=>({listEmployees:async()=>f.employees,listLocations:async()=>f.locations}));
-vi.mock('@/lib/data/schedules',()=>({listWeekShifts:async()=>f.shifts,listScheduleStatuses:async()=>[]}));
+vi.mock('@/lib/data/schedules',()=>({listWeekShifts:async()=>f.shifts,listScheduleStatuses:async()=>f.statuses}));
 vi.mock('@/lib/data/schedule-health',()=>({listEmployeeHourTargets:async()=>[]}));
 vi.mock('@/lib/data/exchanges',()=>({listOpenCoverage:async()=>[],listEmployeeExchangeActivity:async()=>[]}));
 vi.mock('@/lib/date-utils',()=>import('../../../lib/date-utils'));
 vi.mock('@/app/app/schedule/actions',()=>({copyPreviousWeekAction:vi.fn(),setAvailabilityDeadlineAction:vi.fn(),publishScheduleAction:vi.fn()}));
 vi.mock('@/lib/data/schedule-publication-review',()=>({getSchedulePublishReadiness:async()=>({locationName:'West Office',coverageGaps:3,missingLeadBlocks:1,positionNeedsSetup:false,staffingNeedsSetup:false,coverageNeedsSetup:false,underTargetCount:2,overTargetCount:1,unconfiguredTargetCount:1,hasWarnings:true})}));
 vi.mock('@/lib/data/week-settings',()=>({getWeekSettings:async()=>null}));
+// Clean Manager v3: Schedule shows the week's facts Home used to (availability, open shifts) from the dashboard's read.
+vi.mock('@/lib/data/manager-dashboard',()=>({loadManagerDashboardData:async()=>{f.managerReads('dashboard');return f.dashboard;}}));
 vi.mock('@/lib/data/acknowledgements',()=>({getEmployeeAcknowledgementState:async()=>({latestRevisionId:'latest',acknowledgedRevisionId:'before',needsAcknowledgement:true,acknowledged:false})}));
 vi.mock('@/app/app/schedule/acknowledge-actions',()=>({acknowledgeScheduleAction:vi.fn()}));
 vi.mock('@/lib/employee-display',()=>({employeeRoleLabel:()=>''}));
@@ -31,7 +33,7 @@ vi.mock('@/lib/notifications/config',()=>({readNotificationConfig:()=>({featureE
 vi.mock('@/lib/data/publication-revisions',()=>({getLatestPublicationRevision:async()=>({id:'latest'}),listCapturedShiftPositions:async({weekStart,shiftIds}:{weekStart:string;shiftIds:string[]})=>{f.managerReads({weekStart,shiftIds});return f.history.length?f.history:f.captured;},listRevisionShifts:async(id:string)=>{f.reads(id);return f.role==='MANAGER'?f.captured:id==='before'?f.before:f.after;}}));
 vi.mock('@/lib/data/notification-state',()=>({sqlNotificationStateRepository:()=>({recipientAccess:async()=>({employeeId:'self',role:f.role,active:f.active,allowedLocationIds:['2']})})}));
 vi.mock('@/lib/notifications/device-state',()=>import('../../../lib/notifications/device-state'));
-beforeEach(()=>{f.positions=[];f.shifts=[];f.employees=[];f.captured=[];f.history=[];f.managerReads.mockClear();f.locations=[];f.enabled=true;f.active=true;f.role='EMPLOYEE';f.reads.mockClear();f.after=[{...f.before[0],startTime:'09:00'}];});
+beforeEach(()=>{f.dashboard=null;f.statuses=[];f.positions=[];f.shifts=[];f.employees=[];f.captured=[];f.history=[];f.managerReads.mockClear();f.locations=[];f.enabled=true;f.active=true;f.role='EMPLOYEE';f.reads.mockClear();f.after=[{...f.before[0],startTime:'09:00'}];});
 async function html(){return renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05'})}));}
 it('loads actual history and renders own changes behind authenticated access',async()=>{
  f.after.push({...f.after[0],sourceShiftId:'private',employeeId:'coworker',startTime:'15:00'});
@@ -171,4 +173,36 @@ it('preserves the existing Company error and warning messages',async()=>{
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',error:'INVALID_SHIFT',warning:'OUTSIDE_AVAILABILITY'})}));
  expect(output).toContain('The shift information is incomplete or outside this week.');expect(output).toContain("Shift saved, but it is outside the employee&#x27;s submitted availability.");
  expect(output).toContain('role="alert"');expect(output).toContain('role="status"');
+});
+it('v3: the week facts sit in the title lines, open shifts link to Find cover, and an unplanned location offers Plan',async()=>{
+ f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'},{id:'west',shortName:'West Office'}];
+ f.statuses=[{locationId:'main',status:'PUBLISHED'}];
+ f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];
+ f.shifts=[{id:'s1',employeeId:'worker',locationId:'main',date:'2026-10-05',startTime:'06:00',endTime:'14:00',scheduleStatus:'PUBLISHED'}];
+ const repair='/app/schedule/coverage?week=2026-10-05&date=2026-10-05&locationId=main&start=17%3A00&end=24%3A00&repair=x';
+ f.dashboard={availabilitySubmissionSummary:{submittedEmployees:0,eligibleEmployees:8},latestRevision:{affectedLocationId:'main',createdAt:'2026-10-02T15:00:00Z'},
+  managerActions:[{id:'COVERAGE:a',type:'COVERAGE_GAP',priority:'URGENT',title:'Coverage gap at Main Office',detail:'',href:repair,locationId:'main'},
+   {id:'COVERAGE:setup',type:'COVERAGE_GAP',priority:'REVIEW',title:'Staffing setup needed at West Office',detail:'',href:'/app/schedule/settings',locationId:'west'}]};
+ const output=(await html()).replace(/ /g,' ');
+ expect(output).toContain('Oct 5 – 11 · Main Office published');
+ expect(output).toContain('Main Office published Oct 2');
+ expect(output).toContain('>West Office not planned</a>');
+ expect(output).toContain('availability 0 of 8');
+ expect(output).toContain('Availability received from 0 of 8 people.');
+ expect(output).toContain('West Office isn’t planned');
+ expect(output).toContain('href="/app/schedule?week=2026-10-05&amp;location=west&amp;plan=1#schedule-planning"');
+ expect(output).toContain(`href="${repair.replaceAll('&','&amp;')}"`);
+ expect(output).toContain('Find Cover');
+ expect(output).toContain('1 this week');
+ // The planning panel, copy week, templates and add shift stay reachable.
+ expect(output).toContain('Publish West Office');expect(output).toContain('Copy previous week');
+ expect(output).toContain('/app/schedule/templates?week=2026-10-05');expect(output).toContain('href="/app/schedule/new?week=2026-10-05"');
+});
+it('v3: a failed dashboard read leaves availability and open shifts out instead of showing zero',async()=>{
+ f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'}];f.dashboard=null;
+ f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];
+ f.shifts=[{id:'s1',employeeId:'worker',locationId:'main',date:'2026-10-05',startTime:'06:00',endTime:'14:00',scheduleStatus:'PUBLISHED'}];
+ const output=await html();
+ expect(output).toContain('Fictional Worker');
+ expect(output).not.toContain('availability 0');expect(output).not.toContain('Availability received');expect(output).not.toContain('Open shifts');
 });

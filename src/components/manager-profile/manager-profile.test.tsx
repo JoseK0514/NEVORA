@@ -89,6 +89,19 @@ describe('Owner and Manager Profile', () => {
     expect(html).not.toMatch(/missing|missed/i);
   });
 
+  it('renders the details head meta only when there is a state word or an action', () => {
+    const ready = render(owner, parseManagerProfile(fixture('owner')));
+    expect(ready).not.toMatch(/id="profile-details-title"[^]*?<\/h2><span class="nv-card__meta"/);
+    expect(render(owner, null)).toContain('<span class="nv-card__meta"><span>Checking…</span>');
+    expect(render(owner, { state: 'unavailable', reason: 'read_failed' })).toMatch(/<span class="nv-card__meta"><button/);
+  });
+
+  it('gives labels and values the kit row classes, so their type matches the rows beside them', () => {
+    const html = render(owner, parseManagerProfile(fixture('owner')));
+    expect(html).toContain('<dt class="nv-row__meta">Email</dt><dd class="nv-row__title">');
+    expect(html.match(/<dt class="nv-row__meta">/g)).toHaveLength(7);
+  });
+
   it('keeps a phone extension with its number', () => {
     const large = parseManagerProfile(fixture('owner-large'));
     expect(render(owner, large)).toContain('<span class="pmp-part">ext. 4021</span>');

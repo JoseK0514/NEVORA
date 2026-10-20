@@ -16,6 +16,22 @@ vi.mock("next/image", () => ({ default: () => null }));
 
 const company={state:'ready' as const,employeeId:'actor',role:'MANAGER' as const,source:'LEGACY_ADOPTION' as const,scope:{mode:'COMPANY' as const,locationIds:[] as []},scopeRevision:1,authority:'fictional',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000};
 
+it.each([undefined,{state:'unavailable',reason:'read_failed'} as const,{...company,scope:null,source:'UNASSIGNED' as const}])('does not add clean Manager operational shortcuts without current scope',operationalAuthority=>{
+ const html=renderToStaticMarkup(<AppShell workspaceName="QA" operationalAuthority={operationalAuthority} user={{id:'actor',firstName:'Sam',lastName:'Cruz',role:'MANAGER'}}>Content</AppShell>);
+ expect(html).not.toContain('href="/app/schedule/new"');
+ expect(html).not.toContain('href="/app?view=attendance"');
+ expect(html).not.toContain('href="/app/account-recovery"');
+ expect(html).toContain('href="/app/profile"');
+});
+it('keeps the clean Add shift action for scoped Managers without exposing Company-only Team tools',()=>{
+ const operationalAuthority={...company,source:'OWNER_ASSIGNMENT' as const,scope:{mode:'LOCATIONS' as const,locationIds:['L1']}};
+ const html=renderToStaticMarkup(<AppShell workspaceName="QA" operationalAuthority={operationalAuthority} user={{id:'actor',firstName:'Sam',lastName:'Cruz',role:'MANAGER'}}>Content</AppShell>);
+ expect(html).toContain('href="/app/schedule/new"');
+ expect(html).not.toContain('href="/app?view=attendance"');
+ expect(html).not.toContain('href="/app/account-recovery"');
+ expect(html).not.toContain('command-finder-trigger');
+});
+
 function render(role: "EMPLOYEE" | "LEAD" | "MANAGER" | "OWNER", pathname = "/app/my-time") {
   navigationMock.pathname = pathname;
   const html = renderToStaticMarkup(
@@ -143,15 +159,18 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
  expect(mobile).toContain('popoverTarget="manager-more-navigation"');
  const menu=mobile.split('id="manager-more-navigation"')[1] ?? '';
  const hrefs=[...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1]);
- // The same destinations as before, now grouped by job (MG3).
- expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),'/app/profile'].sort());
- expect(hrefs).toEqual(['/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...(role==='OWNER'?['/app/settings']:[]),'/app/profile']);
- // Phase 3.5: Owners and Managers reach their Profile from More › My account and the desktop account menu, never the sidebar.
- expect(menu).toContain('aria-label="My account"');
+ // The same destinations as before, grouped by job (MG3), plus Home's team tools at their old addresses (clean Manager v3).
+ const tools=['/app?view=attendance','/app?view=team','/app?view=activity','/app/clocker-recovery','/app/account-recovery'];
+ expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),'/app/profile',...tools].sort());
+ // v3: the account (Profile) leads the sheet, as in iOS Settings; the rest follow by job.
+ expect(hrefs).toEqual(['/app/profile','/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...tools,...(role==='OWNER'?['/app/settings']:[])]);
+ expect(menu).toContain('role="dialog"');expect(menu).toContain('aria-modal="true"');
+ // Phase 3.5: Owners and Managers reach their Profile from More and the desktop account menu, never the sidebar.
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toContain('href="/app/profile"');
  expect(html.split('id="portal-account-menu"')[1]).toContain('href="/app/profile" class="nevora-action-menu-item"');
- expect(menu).toContain('aria-label="Time and reporting"');
+ expect(menu).toContain('aria-label="Time and pay"');
+ expect(menu).toContain('aria-label="Team tools"');
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessible shell affordances for %s',role=>{
@@ -187,7 +206,9 @@ it.each([['MANAGER','/app/exchange','/app/inbox'],['OWNER','/app/availability','
  expect(mobile).toContain(`href="${tab}" class="mobile-nav-link active" aria-current="page"`);
 });
 
-it.each([['OWNER','/app/requests',['/app/requests','/app/exchange','/app/availability']],['EMPLOYEE','/app/requests/hub',['/app/requests/hub','/app/requests','/app/exchange','/app/availability']]] as const)('shows %s section tabs on %s with real URLs',(role,pathname,hrefs)=>{
+// Clean Manager (v3): Owners and Managers move between the request pages from the band (RequestPagesNav), not section tabs.
+it('shows no section tabs on the request pages for OWNER', () => { expect(render('OWNER','/app/requests').html).not.toContain('class="section-tabs"'); });
+it.each([['EMPLOYEE','/app/requests/hub',['/app/requests/hub','/app/requests','/app/exchange','/app/availability']]] as const)('shows %s section tabs on %s with real URLs',(role,pathname,hrefs)=>{
  const {html}=render(role,pathname);
  const tabs=html.split('class="section-tabs"')[1].split('</nav>')[0];
  expect([...tabs.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual(hrefs);

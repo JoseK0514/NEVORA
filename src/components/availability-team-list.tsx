@@ -5,6 +5,7 @@ import { formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { Avatar, Card, Status } from "@/components/kit/kit";
 import { HoldHeight } from "@/components/kit/hold-height";
+import { KeepSelectedVisible } from "@/components/kit/keep-selected-visible";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
 
@@ -43,7 +44,10 @@ export function AvailabilityTeamList({ employees, employeeId }: {
   const visible = employees.filter(employee => matchesAvailabilityFilter(employee, filter));
   useEffect(() => { target.current?.focus(); }, [employeeId]);
 
-  return <Card title="Team" id="availability-team" meta={`${visible.length} ${visible.length === 1 ? "person" : "people"}`}>
+  // QA r3: "People" (not "Team", the Team page's name); the "submit" note is said once, under the list.
+  const waiting = visible.some(employee => !employee.submitted);
+  return <Card title="People" id="availability-team" meta={`${visible.length} ${visible.length === 1 ? "person" : "people"}`}
+    foot={waiting ? "Hours show here once each person submits." : undefined}>
     <div className="wa-chips" role="group" aria-label="Show" ref={chips}>
       {FILTERS.map(item => {
         const count = employees.filter(employee => matchesAvailabilityFilter(employee, item.value)).length;
@@ -51,6 +55,7 @@ export function AvailabilityTeamList({ employees, employeeId }: {
           {item.label}<span className="wa-chip__count" aria-label={`, ${count}`}>{count}</span>
         </button>;
       })}
+      <KeepSelectedVisible />
     </div>
     <p className="nv-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
     {/* ST-WA-3: a filter keeps the list at the full team's height, so the chips never jump under the finger.
@@ -62,13 +67,13 @@ export function AvailabilityTeamList({ employees, employeeId }: {
           <Avatar initials={initials(employee.employeeName)} />
           <span className="wa-person__text">
             <span className="nv-row__title">{employee.employeeName}</span>
-            <span className="nv-row__meta">{employee.locationName}{employee.updatedLabel ? <> · <span className="nv-keep">Updated {employee.updatedLabel}</span></> : null}</span>
+            <span className="nv-row__meta">{employee.locationName}{employee.updatedLabel ? <>{"\u00a0· "}<span className="nv-keep">Updated {employee.updatedLabel}</span></> : null}</span>
             <span className="nv-row__status"><Status tone={!employee.submitted ? "review" : employee.windowCount === 0 ? "neutral" : "done"}>{!employee.submitted ? "Not submitted" : employee.windowCount === 0 ? "Unavailable all week" : "Submitted"}</Status></span>
           </span>
         </div>
         {employee.windows.length ? <ul className="wa-hours" aria-label={`${employee.employeeName} available hours`}>
           {employee.windows.map(window => <li key={window.id}><span className="wa-hours__day">{DAYS[window.dayOfWeek]}</span><span>{keepWhole(`${formatTime(window.startTime)} – ${formatTime(window.endTime)}`)}</span></li>)}
-        </ul> : employee.submitted ? <p className="wa-person__note">Can’t work this week.</p> : <p className="wa-person__note">Hours show here once they submit.</p>}
+        </ul> : null}
       </li>)}
     </ul> : <div className="wa-card-body">
       <p className="wa-text wa-muted">{employees.length ? "No one matches this filter." : "Employees and Leads show here once they’re added."}</p>

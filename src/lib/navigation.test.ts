@@ -73,7 +73,9 @@ describe('section tabs', () => {
   });
   it('keeps tabs off nested and unrelated pages', () => {
     expect(sectionTabsFor('EMPLOYEE', '/app/exchange/swap')).toBeNull();
-    expect(sectionTabsFor('MANAGER', '/app/requests?tab=pending',undefined,{operational:company})?.label).toBe('Requests');
+    // Clean Manager (v3): the request pages link to each other in their band instead.
+    expect(sectionTabsFor('MANAGER', '/app/requests?tab=pending',undefined,{operational:company})).toBeNull();
+    expect(sectionTabsFor('EMPLOYEE', '/app/requests')?.label).toBe('Requests');
     expect(sectionTabsFor('MANAGER', '/app/employees')).toBeNull();
   });
 });
@@ -88,6 +90,13 @@ describe('More sheet groups (MG3)', () => {
       expect(groups.every(group => group.items.length > 0)).toBe(true);
     }
     const own = moreNavigationGroups([{href: '/app/my-pay', label: 'My pay', icon: 'pay'} as never, {href: '/app/timecards', label: 'Timecards', icon: 'clock'} as never]);
-    expect(own.map(group => group.label)).toEqual(['Time and reporting', 'My account']);
+    expect(own.map(group => group.label)).toEqual(['Time and pay', 'Account']);
+    // Clean Manager (v3): Home's team tools get their own group, before Account.
+    const {teamToolsForRole} = await import('./navigation');
+    const withTools = moreNavigationGroups(mobileMoreForRole('MANAGER', {enabled: true} as never, {operational:company}), teamToolsForRole('MANAGER', {operational:company}));
+    expect(withTools.map(group => group.label)).toEqual(['Time and pay', 'Planning', 'Team tools', 'Account']);
+    expect(withTools.find(group => group.label === 'Team tools')?.items.map(item => item.label)).toEqual(['Attendance', 'Team overview', 'Schedule activity', 'Clocker recovery', 'Account recovery']);
+    expect(teamToolsForRole('EMPLOYEE')).toEqual([]);
+    expect(teamToolsForRole('LEAD')).toEqual([]);
   });
 });

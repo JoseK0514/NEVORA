@@ -16,7 +16,7 @@ let app;const browsers=[];
 const checked=name=>{report.checks.push(name);console.log('[C3/C4 HTTP] PASS '+name);};
 async function context(browser){const c=await browser.newContext({viewport:{width:1024,height:768},serviceWorkers:'block'});await c.route('**/*',r=>new URL(r.request().url()).origin===app.url?r.continue():r.abort());return c;}
 async function goto(page,path){const response=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(response.status(),200,'Working route '+path);}
-async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign In',exact:true}).click()]);await p.close();}
+async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);await p.close();}
 async function api(page,payload){return page.evaluate(async data=>{
  try{const r=await fetch('/api/clocker/2/punch',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','X-Nevora-Clocker':'1'},body:JSON.stringify(data),signal:AbortSignal.timeout(12000)});
   let body=null;try{body=await r.json();}catch{}return {status:r.status,body,cache:r.headers.get('cache-control')};

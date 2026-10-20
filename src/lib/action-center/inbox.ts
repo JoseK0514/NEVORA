@@ -23,11 +23,17 @@ export function isPastCoverageGap(item: ActionItem, today?: string) {
   return !!today && item.type === 'COVERAGE_GAP' && !!item.dateTime && item.dateTime.slice(0, 10) < today;
 }
 
+/** Clean Manager (v3, approved Oct 19): a coverage gap on a later day is planning, not "act now". It moves to the
+ * planning section, so Needs you (Home, the Inbox badge and its title) counts today's gaps only. Nothing is dropped. */
+export function isLaterCoverageGap(item: ActionItem, today?: string) {
+  return !!today && item.type === 'COVERAGE_GAP' && !!item.dateTime && item.dateTime.slice(0, 10) > today;
+}
+
 export function inboxSections(items: ActionItem[], today?: string): InboxSection[] {
   const past = items.filter(item => isPastCoverageGap(item, today));
   const current = items.filter(item => !isPastCoverageGap(item, today));
-  const urgent = current.filter(item => item.priority === 'URGENT');
-  const rest = current.filter(item => item.priority !== 'URGENT');
+  const urgent = current.filter(item => item.priority === 'URGENT' && !isLaterCoverageGap(item, today));
+  const rest = current.filter(item => item.priority !== 'URGENT' || isLaterCoverageGap(item, today));
   return [
     {id: 'urgent' as const, title: 'Needs attention now', items: ordered(urgent, {...exceptionRank, ...requestRank})},
     {id: 'exceptions' as const, title: 'To review', items: ordered(rest.filter(item => item.category !== 'requests'), exceptionRank)},

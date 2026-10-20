@@ -1,0 +1,277 @@
+/* Clean Manager and Owner app (v3): the timecards page. Owner and Manager only: every rule starts with the prefix
+ *   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d)
+ * (see premium-clean-manager.css, which holds the shared shell, kit and grouped-list rules this file builds on).
+ * Mockups: docs/product/specs/clean-manager/mockups/png/timecards-390.png and timecards-1440.png.
+ * The employee Timecards view never carries .cm-timecards and never sits under data-nv-clean, so it is untouched. */
+
+/* ---------- Both widths ---------- */
+/* The page's section tabs (Timecards · Time exports) go: Export in the bar opens Time exports for the same period. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .page-frame:has(> .cm-timecards) > .section-tabs { display: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards > .nv-pageband { grid-template-columns: minmax(0, 1fr); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards > .nv-pageband > .nv-masthead__extra { grid-column: 1 / -1; justify-self: stretch; width: auto; max-width: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-content > [hidden] { display: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards :is(.cm-tc-navbar, .cm-tc-seg, .cm-tc-tabs, .cm-tc-table, .cm-tc-bulk, .cm-tc-foot) button { font-family: var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-review { color: var(--cm-amber); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-review[data-zero] { color: inherit; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-of { font-style: normal; font-weight: 400; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-row__meta[data-tone="review"], html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-timecards, .cm-tc-sheet) .cm-tc-status[data-tone="review"] { color: var(--cm-amber); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet .cm-tc-status[data-tone="done"] { color: var(--cm-green); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet .cm-tc-status[data-tone="neutral"] { color: var(--cm-label-2); }
+
+/* Buttons used by the bulk review and the detail. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-timecards, .cm-tc-sheet) .cm-tc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid transparent; font: 600 1rem/1.25rem var(--cm-sys); cursor: pointer; box-shadow: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-timecards, .cm-tc-sheet) .cm-tc-btn[data-kind="primary"] { background: var(--cm-tint); border-color: var(--cm-tint); color: #fff; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-timecards, .cm-tc-sheet) .cm-tc-btn[data-kind="secondary"] { background: #fff; border-color: #E2E2DF; color: var(--cm-tint); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-timecards, .cm-tc-sheet) .cm-tc-btn:disabled { opacity: .45; cursor: not-allowed; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-timecards, .cm-tc-sheet, .cm-tc-bar-tools) :is(button, a, input, select, summary):focus-visible { outline: 2px solid var(--cm-tint); outline-offset: 2px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards [id^="timecard-"]:focus { outline: 2px solid var(--cm-tint); outline-offset: -2px; }
+
+/* The period controls: a stepper with the period in the middle, the dates behind it, and Export. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools { display: flex; align-items: center; gap: 8px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools .cm-tc-kbtn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 30px; padding: 0 12px; border: 1px solid #E2E2DF; border-radius: 7px; background: #fff; color: #222; font: 500 .8125rem/1rem var(--cm-sys); text-decoration: none; white-space: nowrap; cursor: pointer; box-shadow: none; list-style: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools .cm-tc-kbtn::-webkit-details-marker { display: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools .cm-tc-step { width: 30px; padding: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools .cm-tc-kbtn:disabled { color: #B5B5B1; cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools .cm-tc-kbtn:not(:disabled):hover { background: #FAFAF9; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-period { position: relative; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-dates { display: grid; gap: 12px; min-width: 260px; padding: 16px; border: 1px solid #ECECEA; border-radius: 10px; background: #fff; box-shadow: 0 8px 24px rgba(0, 0, 0, .1); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-dates label { display: grid; gap: 6px; font: 500 .8125rem/1.125rem var(--cm-sys); color: #6B6B68; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-dates input { min-height: 44px; padding: 0 12px; border: 1px solid #E2E2DF; border-radius: 8px; background: #fff; color: #111; font: 400 1rem/1.25rem var(--cm-sys); }
+
+/* The status line and Refresh under the list. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-foot { flex-wrap: wrap; justify-content: space-between; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-foot a { color: var(--cm-tint); }
+
+/* The detail: one modal sheet with the person's time and the actions that used to sit on every row. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet { --tc-line: #ECECEA; --tc-muted: #6B6B68; --tc-ink: #111; --tc-panel: #fff; --tc-inset: #F4F4F2;
+  padding: 0; border: 0; color: #111; font-family: var(--cm-sys); overflow: auto; overscroll-behavior: contain; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet::backdrop { background: rgba(0, 0, 0, .3); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: inherit; border-bottom: 1px solid #ECECEA; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head > div { flex: 1; min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head h2 { margin: 0; font: 600 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.02em; overflow-wrap: anywhere; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head .cm-tc-status { display: block; margin: 2px 0 0; font: 400 .9375rem/1.25rem var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head .nv-avatar { width: 2.5rem; height: 2.5rem; font-size: .9375rem; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-done { flex: none; min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--cm-tint); font: 600 1.0625rem/1.375rem var(--cm-sys); cursor: pointer; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__body { padding: 8px 16px 16px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; margin: 8px 0 4px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-figures div { min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-figures dt { font: 400 .8125rem/1.125rem var(--cm-sys); color: #6B6B68; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-figures dd { margin: 2px 0 0; font: 500 1rem/1.375rem var(--cm-sys); font-variant-numeric: tabular-nums; color: #111; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-actions { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-top: 18px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-actions label { display: grid; gap: 6px; flex: 1 1 220px; font: 500 .8125rem/1.125rem var(--cm-sys); color: #6B6B68; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-actions input { min-height: 44px; padding: 0 12px; border: 1px solid #E2E2DF; border-radius: 8px; font: 400 1rem/1.25rem var(--cm-sys); color: #111; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-actions p { margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__message { margin: 0; padding: 0 16px 16px; font: 400 .8125rem/1.125rem var(--cm-sys); color: #6B6B68; }
+
+/* Bulk review: shows once something is selected (or Select is on); the confirm step holds the legal wording. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__count { display: grid; flex: 1 1 240px; gap: 2px; margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__count strong { font: 600 .9375rem/1.25rem var(--cm-sys); color: #111; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__count span { font: 400 .8125rem/1.125rem var(--cm-sys); color: #6B6B68; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__action { display: inline-flex; align-items: center; gap: 8px; font: 500 .8125rem/1.125rem var(--cm-sys); color: #6B6B68; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__action select { min-height: 44px; padding: 0 10px; border: 1px solid #E2E2DF; border-radius: 8px; background: #fff; color: #111; font: 400 .9375rem/1.25rem var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk > .cm-tc-btn { margin-top: 12px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-confirm { margin-top: 14px; padding-top: 14px; border-top: 1px solid #ECECEA; font: 400 .875rem/1.375rem var(--cm-sys); color: #111; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-confirm h3 { margin: 0 0 6px; font: 600 .9375rem/1.25rem var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-confirm p { margin: 0; color: #3B3B39; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-confirm ul { margin: 10px 0; padding-left: 20px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-confirm__check { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; margin: 4px 0 12px; cursor: pointer; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-confirm__check input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--cm-tint); }
+
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-empty h2 { margin: 0 0 4px; font: 600 1.0625rem/1.375rem var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-empty p { margin: 0; color: var(--cm-label-2); }
+
+/* ============================ Phones ============================ */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  /* The navigation bar is this page's own: "‹ More" back to the More sheet, and Select. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-desk { display: none; }
+  /* The four figures are a desktop strip; phones read the counts in the section headers and the footnote. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-navbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 8px 0 4px;
+    background: rgba(242, 242, 247, .94); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-navbar button { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 8px; border: 0; background: none; box-shadow: none; color: var(--cm-tint); font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.026em; cursor: pointer; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-navbar .cm-tc-select[data-on] { font-weight: 600; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-navbar button:disabled { color: var(--cm-label-3); cursor: default; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-navbar button:active:not(:disabled) { opacity: .5; }
+
+  /* Large title, the period under it, then the week control. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards > .nv-pageband { padding-top: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards > .nv-pageband .nv-masthead__summary { margin-top: 2px; font: 400 .9375rem/1.25rem var(--cm-sys); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards > .nv-pageband .nv-masthead__extra { margin-top: 16px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-seg { display: grid; grid-template-columns: 1fr 1fr; padding: 2px; border-radius: 9px; background: var(--cm-fill); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-seg button { position: relative; min-height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: none; box-shadow: none; color: var(--cm-label); font: 500 .8125rem/1.125rem var(--cm-sys); letter-spacing: -.005em; cursor: pointer; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-seg button::after { content: ""; position: absolute; inset: -6px 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-seg button[aria-pressed="true"] { background: #fff; font-weight: 600; box-shadow: 0 3px 8px rgba(0, 0, 0, .12), 0 3px 1px rgba(0, 0, 0, .04); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-seg button:disabled { cursor: default; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-content { padding-top: 14px; gap: 26px; }
+
+  /* Small uppercase section headers with the count beside them, as in the mockup. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-card__head { padding: 0 4px 7px 4px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-card__title { font: 400 .8125rem/1.125rem var(--cm-sys); letter-spacing: -.005em; text-transform: uppercase; color: var(--cm-label-2); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-card__foot { padding: 7px 4px 0; }
+
+  /* Rows: a button (or a checkbox label while selecting) in the shared grouped row. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-rows > li { position: relative; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards :is(button, label).nv-row { width: 100%; margin: 0; border: 0; background: none; box-shadow: none; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards button.nv-row:active { background: #D1D1D6; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-row .nv-row__meta[data-tone="neutral"] { color: var(--cm-label-2); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-row__trail { white-space: nowrap; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-pick input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--cm-tint); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-pick:has(input:disabled) { cursor: default; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-pick:has(input:disabled) :is(.nv-row__title, .nv-avatar) { opacity: .5; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-rows > li + li:has(> .cm-tc-pick)::before { left: 94px; }
+
+  /* "Show N more": a tint row; the rest of the list opens in place. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-more > details > summary { list-style: none; min-height: 44px; padding: 11px 16px; color: var(--cm-tint); font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.026em; cursor: pointer; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-more > details > summary::-webkit-details-marker { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-more > details[open] > summary { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .nv-rows > li.cm-tc-more:has(> details[open])::before { left: 60px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-more > details > .nv-rows > li:first-child::before { content: none; }
+
+  /* Other dates and Export, quietly, under the lists. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-tools { justify-content: flex-start; gap: 24px; padding: 0 4px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-tools .cm-tc-step { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-tools .cm-tc-kbtn { min-height: 44px; padding: 0; border: 0; background: none; color: var(--cm-tint); font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.026em; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-tools .cm-tc-export svg { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-period[open] { flex: 1 1 100%; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-tools:has(.cm-tc-period[open]) { flex-wrap: wrap; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-dates { min-width: 0; margin-top: 4px; border: 0; border-radius: 10px; box-shadow: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-dates .cm-tc-btn { width: 100%; }
+
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk { padding: 12px 16px; border-radius: 10px; background: #fff; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__action { flex: 1 1 100%; justify-content: space-between; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__bar > .cm-tc-btn { flex: 1 1 100%; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-confirm .cm-tc-btn { width: 100%; }
+
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-foot { padding: 0 4px; }
+
+  /* The detail is a sheet from the bottom on the grouped grey. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet { width: 100%; max-width: none; max-height: 92dvh; margin: auto 0 0; border-radius: 12px 12px 0 0; background: var(--cm-grouped); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head { border-bottom: 0; box-shadow: 0 .5px 0 var(--cm-sep); background: rgba(242, 242, 247, .94); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__body { padding: 12px 16px 16px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-figures { padding: 12px 16px; border-radius: 10px; background: #fff; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__body > [class*="details"] { margin-top: 16px; padding: 0 16px; border-radius: 10px; background: #fff; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-actions .cm-tc-btn { flex: 1 1 100%; min-height: 50px; border-radius: 12px; font-size: 1.0625rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-actions .cm-tc-btn[data-kind="secondary"] { background: var(--cm-fill); border-color: transparent; }
+}
+
+/* ============================ Desktop ============================ */
+@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-navbar, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-phone, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards > .nv-pageband > .nv-masthead__extra { display: none; }
+
+  /* The stepper and Export in the top bar, before the shell's own actions. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header > .cm-tc-bar-tools { display: flex; align-items: center; margin-left: auto; margin-right: 8px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header:has(> .cm-tc-bar-tools) > .mobile-header-actions { margin-left: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bar-tools .cm-tc-dates, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-dates { position: absolute; top: calc(100% + 6px); right: 0; z-index: 30; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bar-tools .cm-tc-export { margin-left: 4px; }
+  /* No top bar to hold them: the same controls at the top right of the page. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-content > .cm-tc-tools { justify-content: flex-end; margin-bottom: -8px; }
+
+  /* Title, then "Approvals open after …" under it. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards > .nv-pageband .nv-masthead__summary { margin-top: 2px; }
+
+  /* Four figures in one bordered strip. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats { border: 1px solid #ECECEA; border-radius: 10px; overflow: hidden; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stat, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stat:first-child { gap: 6px; padding: 18px 16px 16px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stat__label { font: 400 .78125rem/1rem var(--cm-sys); color: #6B6B68; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stat__value { font: 600 1.375rem/1.75rem var(--cm-sys); letter-spacing: -.02em; color: #111; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .cm-tc-review { color: #93500A; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .cm-tc-review[data-zero] { color: #111; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .cm-tc-of { margin-left: 2px; font: 400 .8125rem/1 var(--cm-sys); letter-spacing: 0; color: #6B6B68; }
+
+  /* Underline tabs with counts. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tabs { display: flex; gap: 22px; margin: 4px 0 -4px; border-bottom: 1px solid #ECECEA; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tabs button { display: inline-flex; align-items: center; min-height: 36px; padding: 0 0 2px; border: 0; border-radius: 0; background: none; box-shadow: none; color: #6B6B68; font: 500 .84375rem/1.125rem var(--cm-sys); letter-spacing: -.007em; cursor: pointer; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tabs button em { margin-left: 5px; font-style: normal; font-weight: 400; color: #6B6B68; font-variant-numeric: tabular-nums; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tabs button[aria-pressed="true"] { color: #111; box-shadow: inset 0 -2px 0 #111; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tabs button:hover { color: #111; }
+
+  /* One table: checkbox, person, role, recorded, breaks, status. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table-box { position: relative; border: 1px solid #ECECEA; border-radius: 10px; overflow: hidden; overflow-x: auto; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table { width: 100%; table-layout: fixed; border-collapse: collapse; font: 400 .84375rem/1.125rem var(--cm-sys); color: #111; font-variant-numeric: tabular-nums; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table th { height: 36px; padding: 0 16px; background: #FAFAF9; border-bottom: 1px solid #ECECEA; text-align: left; font: 400 .78125rem/1rem var(--cm-sys); color: #6B6B68; white-space: nowrap; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table td { height: 44px; padding: 0 16px; border-top: 1px solid #F1F1EF; vertical-align: middle; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table tbody tr:first-child td { border-top: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table tbody tr:hover { background: #FAFAF9; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-num { width: 5.5rem; text-align: right; white-space: nowrap; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table th:nth-child(3) { width: 20%; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table th:last-child { width: 10.5rem; padding-left: 28px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table td:last-child { padding-left: 28px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-check { width: 44px; padding: 0 0 0 16px; }
+  /* r4 P2-E: the header row is 44px, so the select-all hit area isn't clipped by the box. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table thead th { height: 44px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-check input { display: block; width: 14px; height: 14px; margin: 0; accent-color: #0B6B67; cursor: pointer; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-check input:disabled { cursor: default; opacity: .45; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-person { display: inline-flex; align-items: center; gap: 10px; min-height: 32px; max-width: 100%; padding: 0; border: 0; background: none; box-shadow: none; color: #111; font: 500 .84375rem/1.125rem var(--cm-sys); text-align: left; cursor: pointer; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-person:hover span { text-decoration: underline; text-underline-offset: 2px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-person .nv-avatar { width: 1.5rem; height: 1.5rem; font-size: .5625rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-role { color: #6B6B68; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-breaks { color: #6B6B68; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-status { color: #6B6B68; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-status[data-tone="review"] { color: #93500A; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-status[data-tone="done"] { color: #1D6F33; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-tc-none { color: #6B6B68; }
+
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk { padding: 12px 16px; border: 1px solid #ECECEA; border-radius: 10px; background: #FAFAF9; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk .cm-tc-btn { min-height: 36px; border-radius: 8px; font: 500 .875rem/1.125rem var(--cm-sys); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-bulk__action select { min-height: 36px; }
+
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-foot { padding: 0; }
+
+  /* The detail opens as a panel on the right. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet { width: min(520px, 100vw); max-width: none; height: 100dvh; max-height: none; margin: 0 0 0 auto; border-left: 1px solid #ECECEA; background: #fff; box-shadow: -12px 0 32px rgba(0, 0, 0, .08); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head { padding: 14px 24px; background: #fff; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head h2 { font-size: 1.125rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__head .cm-tc-status { font-size: .84375rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__body { padding: 8px 24px 24px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-figures { grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 12px 0 16px; border-bottom: 1px solid #ECECEA; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-done { font-size: .9375rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-actions .cm-tc-btn { min-height: 40px; border-radius: 8px; font: 500 .875rem/1.125rem var(--cm-sys); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet__message { padding: 0 24px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools .cm-tc-kbtn, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards button.nv-row { transition: none; }
+}
+
+/* No current snapshot (paused, offline, expired, failed, signed out): the state sits where the lists were. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-state { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px 20px; border-radius: 10px; background: #fff; text-align: center; color: var(--cm-label-2); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-state h2 { margin: 0; font: 600 1.0625rem/1.375rem var(--cm-sys); color: var(--cm-label); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-state p { margin: 0; font: 400 0.9375rem/1.25rem var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-state .button { min-height: 44px; margin-top: 8px; }
+
+/* QA r3: the HoldHeight wrapper passes its parent's gap on, so the spacing between blocks is unchanged (both views). */
+html body .app-shell.nevora-portal .cm-hold { display: flex; flex-direction: column; gap: inherit; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  /* The page's own bar scrolls with the page; the shell header stays the one sticky bar, so More and Select are never covered. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-navbar { position: static; }
+}
+
+
+/* r4: the sheet's punch rows (shared module classes) use the system font like the rest of the sheet. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet :is(*, *::before, *::after) { font-family: var(--cm-sys); }
+
+/* Final pass P1-3 / P2-6: the table's columns follow its own width in em, so they respond to the window and to large text
+ * alike. Under 55em (below about 1180px, or wide windows at 200% text) Role goes and Person keeps its room; under 40em Breaks
+ * goes too (it is in the sheet) and Status gets room for "Missing clock-out" on one line. The stats go 2 x 2 under 45em. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table-box, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats { container-type: inline-size; }
+@container (max-width: 55em) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table :is(th, td):nth-child(3) { display: none; }
+}
+@container (max-width: 40em) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table :is(th, td):nth-child(5) { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table .cm-num { width: 5rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table th:last-child { width: 9.5rem; padding-left: 20px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table td:last-child { padding-left: 20px; }
+}
+@container (max-width: 45em) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stat:nth-child(n+3) { border-top: 1px solid #ECECEA; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stat:nth-child(3) { border-left: 0; }
+}
+
+/* Coordinator QA fix (P2): below 1300px the period picker opens to the right of its button, never over the sidebar. */
+@media (max-width: 1299px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-dates:not(#cm-qa) { right: auto; left: 0; }
+}

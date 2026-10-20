@@ -92,7 +92,8 @@ html body .app-shell.nevora-portal .page-frame .mobile-home-disclosure[data-reve
 
 /* 4. Translucent chrome: a frosted top bar whose edge appears only once content
  * scrolls under it, and a frosted phone tab bar. */
-@media (min-width: 761px) {
+/* H5 QA: not on landscape phones, where the header scrolls away (portal-gusto.css) so focus never hides under it. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .mobile-header {
     position: sticky; top: 0; z-index: 30;
     background: var(--m-glass);

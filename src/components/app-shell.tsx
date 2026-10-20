@@ -7,7 +7,7 @@ import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
-import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { PlusIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -17,7 +17,7 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, moreNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
+import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, moreNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { CommandFinder, OPEN_FINDER_EVENT, type OpenFinderDetail } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
@@ -91,20 +91,25 @@ function AppShellView({
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
   const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
   const sidebarItems = sidebarNavigation(user.role, navigation);
-  const sidebarActive = sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
-  const navGroups = employee ? [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems);
+  // Clean Manager (v3): Home's occasional tools (its views and the two recovery pages) have their own group.
+  const teamTools = teamToolsForRole(user.role, context);
+  const toolView = pathname === "/app" ? search?.get("view") : null;
+  const activeTool = teamTools.find(tool => tool.href === pathname || (toolView && tool.href === `/app?view=${toolView}`));
+  const sidebarActive = activeTool?.href ?? sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
+  const navGroups = employee ? [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems, teamTools);
   // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
   const activeGroup = navGroups.find(group => group.items.some(item => item.href === sidebarActive));
   // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
   const activeItem = activeGroup?.items.find(item => item.href === sidebarActive) ?? navigation.find(item => item.href === activeHref);
-  const deeper = !!activeItem && pathname !== activeItem.href;
+  // A team tool is its own page in the trail ("Team tools › Attendance"), never "Attendance › Attendance".
+  const deeper = !!activeItem && !activeTool && pathname !== activeItem.href;
   // A page whose own entry left the sidebar (Time off under Inbox, Time exports under Timecards) still ends the trail with its own name,
   // and so do Home's views (IS-P4-09), which share Home's address.
   const view = useSearchParams()?.get("view");
   const homeView = !employee && pathname === "/app" && view && view in HOME_VIEWS ? { href: `/app?view=${view}`, label: HOME_VIEWS[view as keyof typeof HOME_VIEWS] } : undefined;
   // WR4-07: a section tab with no navigation entry of its own (Payroll settings) also ends the trail with its name.
   const currentTab = sectionTabs?.items.find(item => item.href === pathname);
-  const pageItem = homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined)
+  const pageItem = activeTool ? undefined : homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined)
     ?? (activeItem && currentTab && currentTab.href !== activeItem.href ? currentTab : undefined);
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
@@ -141,6 +146,25 @@ function AppShellView({
     document.addEventListener("focusin", follow);
     return () => document.removeEventListener("focusin", follow);
   }, []);
+
+  // Clean Manager (v3), QA r3: the tab bar and a page's decision bar grow with large text, so their real heights are shared as
+  // --cm-tabbar-h and --cm-actionbar-h; the decision bar docks above the tab bar and the page reserves both (Owner and Manager).
+  useEffect(() => {
+    if (employee || typeof ResizeObserver === "undefined") return;
+    const shell = document.querySelector<HTMLElement>(".app-shell[data-nv-clean]");
+    if (!shell) return;
+    const measure = () => {
+      const nav = shell.querySelector<HTMLElement>(".mobile-nav"), bar = shell.querySelector<HTMLElement>(".nv-actionbar");
+      shell.style.setProperty("--cm-tabbar-h", `${nav && getComputedStyle(nav).display !== "none" ? Math.round(nav.getBoundingClientRect().height) : 0}px`);
+      shell.style.setProperty("--cm-actionbar-h", `${bar ? Math.round(bar.getBoundingClientRect().height) : 0}px`);
+    };
+    const observer = new ResizeObserver(measure);
+    const watch = () => { observer.disconnect(); for (const element of shell.querySelectorAll(".mobile-nav, .nv-actionbar")) observer.observe(element); measure(); };
+    watch();
+    const changes = new MutationObserver(watch);
+    changes.observe(shell, { childList: true, subtree: true });
+    return () => { observer.disconnect(); changes.disconnect(); };
+  }, [employee, pathname]);
 
   // Arrow keys move between rows of dense lists that opt in (D6).
   useEffect(() => {
@@ -194,6 +218,8 @@ function AppShellView({
   </span> : null;
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
+      // Clean Manager and Owner app (v3): premium-clean-manager.css applies only under this attribute, so Employee and Lead pages never change.
+      data-nv-clean={employee ? undefined : ""}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
       // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
       data-mobile-workforce={pathname ? "true" : undefined}
@@ -206,6 +232,8 @@ function AppShellView({
           <AuthBrand />
         </Link>
         {companyLogo}
+        {/* v3: the workspace at the top of the sidebar (Owner and Manager; desktop only). */}
+        {!employee ? <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.trim()[0]?.toUpperCase() ?? ""}</span><span className="cm-org__name">{workspaceName}</span></p> : null}
 
         <button className="sidebar-toggle" type="button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={22} /></button>
         </div>
@@ -221,7 +249,7 @@ function AppShellView({
                 href={item.href}
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
-                aria-current={active ? (item.href === activeHref && !pageItem && !deeper ? "page" : "true") : undefined}
+                aria-current={active ? (activeTool?.href === item.href || (item.href === activeHref && !pageItem && !deeper) ? "page" : "true") : undefined}
                 aria-label={item.href === "/app/inbox" && inboxCount ? `${item.label}, ${inboxCount} need${inboxCount === 1 ? "s" : ""} you` : item.label}
                 title={collapsed ? item.label : undefined}
               >
@@ -263,11 +291,13 @@ function AppShellView({
       <div className="app-main">
         <header className="mobile-header">
           <span className="portal-workspace-name" title={workspaceName}>{workspaceName}</span>
+          {/* v3: Notifications has no navigation entry for Owners and Managers, so the trail names it directly. */}
+          {!activeItem && !employee && pathname === "/app/notifications" ? <nav className="portal-location-nav" aria-label="You are here"><ol className="portal-location"><li><span aria-current="page">Notifications</span></li></ol></nav> : null}
           {activeItem ? <nav className="portal-location-nav" aria-label="You are here">
             <ol className="portal-location">
               <li className="portal-location-workspace" title={workspaceName}>{workspaceName}</li>
               {activeGroup?.label ? <li>{activeGroup.label}</li> : null}
-              <li>{deeper || homeView ? <Link href={activeItem.href}>{activeItem.label}</Link> : <span aria-current="page">{activeItem.label}</span>}</li>
+              <li>{deeper || (homeView && !activeTool) ? <Link href={activeItem.href}>{activeItem.label}</Link> : <span aria-current="page">{activeItem.label}</span>}</li>
               {pageItem ? <li>{!homeView && pathname !== pageItem.href ? <Link href={pageItem.href}>{pageItem.label}</Link> : <span aria-current="page">{pageItem.label}</span>}</li> : null}
             </ol>
           </nav> : null}
@@ -276,6 +306,8 @@ function AppShellView({
           </Link>
           {companyLogo}
           <div className="mobile-header-actions">
+          {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
+          {!employee && navigation.some(item => item.href === "/app/schedule") ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
           {!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY") ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
           {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
           <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
@@ -372,15 +404,16 @@ function AppShellView({
                     aria-current={active ? "page" : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                   >
-                    <NavIcon name={item.icon} size={22} />
+                    {/* v3: filled iOS-style glyphs on the Owner and Manager tab bar. */}
+                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={22} weight="fill" />
                     <span>{item.label}</span>
                     {needsYou !== null ? <span className="mobile-nav-count" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
                   </Link>
                 );
               })}
-              <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation"
+              <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation" sheet
                 triggerClassName={activeTab === "more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
-                triggerContent={<><NavIcon name="more" size={22} /><span>More</span></>}>
+                triggerContent={<><NavIcon name="moreCircle" size={22} weight="fill" /><span>More</span></>}>
                 {/* A tool, not a destination: opens the one finder dialog in the same tap (no timer), so iOS raises the keyboard. */}
                 <button type="button" className="nevora-action-menu-item nevora-more-search" aria-haspopup="dialog"
                   onClick={event => {
@@ -391,13 +424,22 @@ function AppShellView({
                   <MagnifyingGlassIcon size={22} aria-hidden="true" /><span>Search</span>
                 </button>
                 <div className="nevora-action-menu-divider nevora-more-search-divider" />
+                {/* v3: the account sits at the top of More, as in iOS Settings. */}
+                {navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item cm-more-profile"
+                  aria-current={activeHref === "/app/profile" ? "page" : undefined}
+                  onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+                  <span className="avatar" aria-hidden="true">{initials}</span>
+                  <span className="cm-more-profile__text"><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "OWNER" ? "Owner" : "Manager"} · {workspaceName}</small></span>
+                </Link> : null}
                 {/* MG3: grouped by job. Headings are labels only; every link is unchanged. */}
-                {moreNavigationGroups(mobileMore).map(group => <div key={group.label} className="nevora-more-group" role="group" aria-label={group.label}>
+                {moreNavigationGroups(mobileMore.filter(item => item.href !== "/app/profile"), teamTools).map(group => <div key={group.label} className="nevora-more-group" role="group" aria-label={group.label} data-group={group.label}>
                   <p className="nevora-more-group-label" aria-hidden="true">{group.label}</p>
                   {group.items.map(item => (
                     <Link key={item.href} href={item.href} className="nevora-action-menu-item"
-                      aria-current={item.href === activeHref ? 'page' : undefined}
+                      aria-current={item.href === (activeTool?.href ?? activeHref) ? 'page' : undefined}
                       onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+                      {/* v3: a small coloured square per row, as in iOS Settings. Decoration only. */}
+                      <span className="cm-more-icon" aria-hidden="true"><NavIcon name={item.icon} size={18} /></span>
                       {item.label}
                     </Link>
                   ))}

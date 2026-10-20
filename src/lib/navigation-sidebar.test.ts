@@ -7,9 +7,10 @@ const company={state:'ready' as const,employeeId:'M1',role:'MANAGER' as const,so
 const labels = (role: Parameters<typeof navigationForRole>[0], context = {}) => sidebarNavigation(role, navigationForRole(role, payroll, {operational:company,...context})).map(item => item.label);
 
 describe("desktop sidebar (D3)", () => {
-  it("gives the Owner nine destinations; the rest stay one step away", () => {
+  it("gives the Owner ten destinations; the rest stay one step away", () => {
     // D-4: Requests folds into Inbox, and the people page reads "Team" as on the phone tab.
-    expect(labels("OWNER")).toEqual(["Home", "Inbox", "Schedule", "Updates", "Team", "Timecards", "Insights", "Payroll", "Settings"]);
+    // Clean Manager (v3): Scheduling rules stays for Owners too (shown under Plan), instead of hiding under Settings.
+    expect(labels("OWNER")).toEqual(["Home", "Inbox", "Schedule", "Updates", "Team", "Timecards", "Insights", "Payroll", "Scheduling rules", "Settings"]);
     // The full list still drives phones, More menus and the finder.
     expect(navigationForRole("OWNER", payroll).map(item => item.href)).toEqual(expect.arrayContaining(["/app/availability", "/app/exchange", "/app/payroll-export", "/app/schedule/templates", "/app/schedule/settings", "/app/my-pay"]));
   });
@@ -33,7 +34,7 @@ describe("desktop sidebar (D3)", () => {
     expect(sidebarActiveHref("MANAGER", "/app/requests", sidebarNavigation("MANAGER", navigationForRole("MANAGER", payroll,company)), payroll,{operational:company})).toBe("/app/inbox");
     expect(sidebarActiveHref("OWNER", "/app/payroll-export", items, payroll)).toBe("/app/timecards");
     expect(sidebarActiveHref("OWNER", "/app/schedule/templates/abc", items, payroll)).toBe("/app/schedule");
-    expect(sidebarActiveHref("OWNER", "/app/schedule/settings", items, payroll)).toBe("/app/settings");
+    expect(sidebarActiveHref("OWNER", "/app/schedule/settings", items, payroll)).toBe("/app/schedule/settings");
     expect(sidebarActiveHref("OWNER", "/app/my-pay", items, payroll)).toBeUndefined();
   });
 

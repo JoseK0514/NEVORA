@@ -1,0 +1,16 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useState, type ComponentProps } from "react";
+
+/** Clean Manager (v3): Schedule's Add shift opens the form on the day chosen in the week strip. The roster announces the
+ * chosen day (a "cm-schedule-day" event); until it does, the link keeps the page's own href. */
+export function DayAwareLink({ href, ...props }: ComponentProps<typeof Link> & { href: string }) {
+  const [day, setDay] = useState<string | null>(null);
+  useEffect(() => {
+    const chosen = (event: Event) => setDay((event as CustomEvent<string>).detail);
+    window.addEventListener("cm-schedule-day", chosen);
+    return () => window.removeEventListener("cm-schedule-day", chosen);
+  }, []);
+  const target = day ? (() => { const url = new URL(href, "https://nevora.invalid"); url.searchParams.set("date", day); return url.pathname + url.search; })() : href;
+  return <Link {...props} href={target} />;
+}

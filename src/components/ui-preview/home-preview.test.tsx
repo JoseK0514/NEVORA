@@ -43,14 +43,15 @@ it('the preview composition replaces private readers while the native Home keeps
   expect(preview).toContain('Updated');
 });
 
-it('the premium Overview leads with a greeting, drops the tab row and keeps every team view reachable', () => {
+it('the clean Overview is "Today", drops the tab row, and Home\'s own views still open from their addresses', () => {
   const html = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome}/>);
-  expect(html).toMatch(/Good (morning|afternoon|evening), /);
+  // Clean Manager (v3): no greeting, no week summary, no team tools on Home (they live in More and the sidebar).
+  expect(html).toContain('>Today</h1>');
+  expect(html).not.toMatch(/Good (morning|afternoon|evening), /);
   expect(html).not.toContain('aria-label="Home views"');
   expect(html).not.toContain('manager-planning-summary');
-  expect(html).toContain('This week');
-  expect(html).toContain('Team tools');
-  for (const view of ['attendance', 'team', 'activity']) expect(html).toContain(`&amp;view=${view}`);
+  expect(html).toContain('Needs you');
+  expect(html).not.toContain('Team tools');
   const team = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} view="team"/>);
   expect(team).toContain('aria-label="Home views"');
   expect(team).toContain('class="nv-masthead__back"');

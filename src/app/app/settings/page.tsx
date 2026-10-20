@@ -71,6 +71,8 @@ const groups = [
   },
 ];
 
+const leftColumn = new Set(["workspace", "work-rules"]);
+
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
   const payroll = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;
@@ -84,7 +86,10 @@ export default async function SettingsPage() {
   return (
     <SettingsFrame back={null} eyebrow={workspace.name} title="Settings" summary="Set up your workspace and the way your team works.">
       <div className="wc-hub">
-        {visibleGroups.map((group) => (
+        {/* Two fixed columns on wide screens (company and work rules on the left, the rest on the right);
+            one column on phones, in the same order. */}
+        {[visibleGroups.filter(group => leftColumn.has(group.id)), visibleGroups.filter(group => !leftColumn.has(group.id))].map((column, index) => <div key={index} className="wc-hub__column">
+        {column.map((group) => (
           <section key={group.id} className="nv-card" aria-labelledby={`settings-${group.id}`}>
             <div className="nv-card__head">
               <h2 className="nv-card__title" id={`settings-${group.id}`}>{group.title}</h2>
@@ -106,7 +111,7 @@ export default async function SettingsPage() {
               ))}
             </ul>
           </section>
-        ))}
+        ))}</div>)}
       </div>
       <p className="wc-footnote">
         <ShieldCheckIcon size={18} weight="regular" aria-hidden="true" focusable="false" />

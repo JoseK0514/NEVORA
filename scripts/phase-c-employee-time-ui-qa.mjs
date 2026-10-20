@@ -16,7 +16,7 @@ let app;const browsers=[];const q=(text,values=[])=>app.database.executor.query(
 const endpoint='/api/employee/my-time';
 const checked=name=>{report.checks.push(name);console.log('[C8 browser] PASS '+name);};
 async function context(browser){const c=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});await c.route('**/*',r=>new URL(r.request().url()).origin===app.url?r.continue():r.abort());return c;}
-async function login(c,id){const p=await c.newPage();p.setDefaultTimeout(15000);p.on('pageerror',e=>report.errors.push(e.message));await p.goto(app.url+'/login');await p.getByLabel('Employee ID',{exact:true}).fill(id);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign In',exact:true}).click()]);return p;}
+async function login(c,id){const p=await c.newPage();p.setDefaultTimeout(15000);p.on('pageerror',e=>report.errors.push(e.message));await p.goto(app.url+'/login');await p.getByLabel('Employee ID',{exact:true}).fill(id);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);return p;}
 const panel=p=>p.locator('.employee-time-panel,.employee-clock-compact');
 async function refresh(p){await Promise.all([p.waitForResponse(r=>r.url()===app.url+endpoint),panel(p).getByRole('button',{name:'Refresh recorded time'}).click()]);await p.waitForFunction(()=>{const b=document.querySelector('.employee-time-refresh');return b&&!b.disabled;});}
 async function api(c,suffix='',headers={}){return c.request.get(app.url+endpoint+suffix,{headers:{'X-Nevora-My-Time':'1',...headers}});}

@@ -133,7 +133,7 @@ async function main() {
         await login.goto(access.url + '/login');
         await login.getByLabel('Employee ID', { exact: true }).fill(access.demoAccounts[role]);
         await login.getByLabel('Password', { exact: true }).fill(access.password);
-        await Promise.all([login.waitForURL(u => u.pathname.startsWith('/app'), { timeout: 60000 }), login.getByRole('button', { name: 'Sign In', exact: true }).click()]);
+        await Promise.all([login.waitForURL(u => u.pathname.startsWith('/app'), { timeout: 60000 }), login.getByRole('button', { name: 'Sign in', exact: true }).click()]);
         await login.close();
       }
       for (const view of views) {

@@ -26,7 +26,7 @@ try{
  for(const engine of ['webkit','chromium']){
   browser=await pw[engine].launch({headless:true});const context=await browser.newContext({viewport:{width:390,height:1000},serviceWorkers:'block'});
   await context.route('**/*',r=>new URL(r.request().url()).origin!==app.url?r.abort():r.continue());const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',e=>{if(e.message.endsWith('due to access control checks.')&&e.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push({engine,error:String(e)});else report.errors.push({name:engine+' runtime',error:String(e)});});
-  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);
+  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
   // The report responds before WebKit's load event settles in this owned dev
   // runtime. DOM readiness plus the real report heading is the test precondition.
   const navigationStarted=Date.now();

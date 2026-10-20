@@ -118,7 +118,7 @@ export function AttendanceReviewSurface({
         </div>
         {/* The summary row is there while loading too ("–" for each count), so nothing moves when the numbers arrive.
             It is busy only while loading: the desktop layout hides the footer while busy, and a failed, paused or
-            signed-out review needs its footer (Refresh, Sign In). */}
+            signed-out review needs its footer (Refresh, Sign in). */}
         <div className="attendance-review-summary" aria-label="Attendance exception summary" aria-busy={ready || unavailable || denied || paused ? undefined : true}>
           <span>
             <strong>{ready ? ready.signalCount : '–'}</strong>
@@ -217,7 +217,7 @@ export function AttendanceReviewSurface({
           </small>
         </div>
         {denied ? (
-          <Link className="attendance-review-refresh" href="/login">Sign In</Link>
+          <Link className="attendance-review-refresh" href="/login">Sign in</Link>
         ) : (
           <button
             className="attendance-review-refresh"

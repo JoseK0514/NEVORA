@@ -32,7 +32,7 @@ export function KeepSelectedVisible() {
     const row = marker.current?.parentElement;
     if (!row) return;
     // WR-52: data-start marks a row scrolled away from its start, so it fades on the left too.
-    const mark = () => { row.dataset.overflow = String(overflows(row, marker.current)); row.dataset.start = String(row.scrollLeft > 1); };
+    const mark = () => { row.dataset.overflow = String(overflows(row, marker.current)); row.dataset.start = String(row.scrollLeft > 1); row.dataset.end = String(row.scrollLeft + row.clientWidth >= row.scrollWidth - 1); }; // H5 QA: data-end drops the right fade once scrolled to the end
     // AL-47: a size change (larger text, turning the phone) brings a selection that is now cut off back into view.
     const resized = () => { reveal(row, marker.current); mark(); };
     mark();

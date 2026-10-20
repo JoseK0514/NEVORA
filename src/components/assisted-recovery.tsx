@@ -42,7 +42,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
  },[message,issued]);
  const until=issued?keepWhole(new Date(issued.expiresAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone,timeZoneName:'short'})):'';
 
- return <SettingsFrame back={back} title="Account recovery"
+ return <SettingsFrame back={back} settingsCrumb={false} title="Account recovery"
   summary="Help a verified employee get back into their account."
   aside={<GuideCard title="How recovery works">
    <ol className="wc-steps">

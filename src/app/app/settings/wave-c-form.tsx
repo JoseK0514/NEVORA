@@ -71,6 +71,27 @@ type FieldProps = {
   inputRef?: Ref<HTMLInputElement & HTMLSelectElement & HTMLTextAreaElement>;
 } & (InputControl | SelectControl | TextareaControl);
 
+/** A one-line text field that wraps long values onto more lines instead of cutting them off
+ * (a business name at 200% text). Enter saves, like a single-line field; line breaks are never kept. */
+type WrapProps = { label: ReactNode; help?: ReactNode; helpId?: string; optional?: boolean; error?: string; fieldClassName?: string } & Common
+  & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "id" | "name" | "className" | "rows" | "onKeyDown" | "onInput">;
+export function WrapField({ className, ...rest }: WrapProps) {
+  const area = useRef<HTMLInputElement & HTMLSelectElement & HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const element = area.current;
+    if (!element) return;
+    const fit = () => { element.style.height = "auto"; element.style.height = `${element.scrollHeight + element.offsetHeight - element.clientHeight}px`; };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(element.parentElement ?? element);
+    element.addEventListener("input", fit);
+    return () => { observer.disconnect(); element.removeEventListener("input", fit); };
+  }, []);
+  return <Field {...rest} kind="textarea" rows={1} inputRef={area} className={className ? `wc-wrap ${className}` : "wc-wrap"}
+    onKeyDown={event => { if (event.key === "Enter" && !event.nativeEvent.isComposing) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }}
+    onInput={event => { const target = event.currentTarget; if (/[\r\n]/.test(target.value)) target.value = target.value.replace(/[\r\n]+/g, " "); }} />;
+}
+
 /** One field: label, the control, its error and help. Renders its own control so it works from server pages. */
 export function Field(props: FieldProps) {
   const { label, help, helpId, optional, labelAside, error, unit, fieldClassName, inputRef, kind = "input", className, ...control } = props;

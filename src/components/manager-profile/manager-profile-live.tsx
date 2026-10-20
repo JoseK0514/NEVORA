@@ -175,29 +175,26 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   const sizing = visible(held)?.alerts ?? (identity.owner ? identity.payrollAlerts === false ? ALERT_TOPIC_SIZING.manager : ALERT_TOPIC_SIZING.owner : ALERT_TOPIC_SIZING.manager);
   return <div className="pmp-grid">
     <div className="pmp-col">
-      <Card id="profile-details" title="Your details" meta={<>
-        {/* Never empty: the head lines up on this text's baseline in every state. */}
-        {/* The head lines up on the first text in it: the state word, a non-breaking space, or the action. An empty span
-            would give it a made-up baseline, so it is left out when an action shows (the alert below speaks for it). */}
-        {read.kind === 'failed' || read.kind === 'denied' ? null : <span>{read.head ?? '\u00a0'}</span>}
-        {/* Never disabled while busy, so focus stays on it; a second press only restarts the same read. */}
+      <Card id="profile-details" title="Your details" meta={read.head || read.kind === 'failed' || read.kind === 'denied' ? <>
+        {/* Only when there is a state word or an action: an empty meta would hold a blank line where the head stacks. */}
+        {read.head ? <span>{read.head}</span> : null}
         {read.kind === 'failed' ? <button type="button" className="pmp-text-button pmp-head-action" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('details')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
         {read.kind === 'denied' ? <Link className="pmp-text-button pmp-head-action" href="/login">Sign in</Link> : null}
-      </>} foot={identity.owner
+      </> : undefined} foot={identity.owner
         ? <KitLink href={`/app/employees/${encodeURIComponent(identity.employeeId)}`}>Edit your details</KitLink>
         : <p className="pmp-foot-copy">Something wrong here? Ask the account owner to update it.</p>}>
         <p className="sr-only" role="alert" id="profile-read-said">{said}</p>
         {/* Always present, so what it says is spoken: a pause, or the result of a retry the reader asked for. */}
         <p className="sr-only" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</p>
         <dl className="pmp-details" id="profile-details-list" tabIndex={-1} aria-labelledby="profile-details-title">
-          <div><dt>Name</dt><dd>{identity.name}</dd></div>
-          <div><dt>Role</dt><dd>{identity.owner ? 'Owner' : 'Manager'}</dd></div>
-          <div><dt>Company</dt><dd>{identity.company}</dd></div>
-          <div><dt>Time zone</dt><dd>{identity.timeZone}</dd></div>
+          <div><dt className="nv-row__meta">Name</dt><dd className="nv-row__title">{identity.name}</dd></div>
+          <div><dt className="nv-row__meta">Role</dt><dd className="nv-row__title">{identity.owner ? 'Owner' : 'Manager'}</dd></div>
+          <div><dt className="nv-row__meta">Company</dt><dd className="nv-row__title">{identity.company}</dd></div>
+          <div><dt className="nv-row__meta">Time zone</dt><dd className="nv-row__title">{identity.timeZone}</dd></div>
           {/* The read's rows come last, so a value that arrives taller only pushes what is below the card. */}
-          <div data-row="email" style={rowStyle('email')}><dt>Email</dt><dd>{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
-          <div data-row="phone" style={rowStyle('phone')}><dt>Phone</dt><dd>{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
-          <div data-row="locations" style={rowStyle('locations')}><dt>Locations</dt><dd>{cell(snapshot => <Locations snapshot={snapshot} owner={identity.owner} />)}</dd></div>
+          <div data-row="email" style={rowStyle('email')}><dt className="nv-row__meta">Email</dt><dd className="nv-row__title">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
+          <div data-row="phone" style={rowStyle('phone')}><dt className="nv-row__meta">Phone</dt><dd className="nv-row__title">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span className="pmp-muted">Not added</span>)}</dd></div>
+          <div data-row="locations" style={rowStyle('locations')}><dt className="nv-row__meta">Locations</dt><dd className="nv-row__title">{cell(snapshot => <Locations snapshot={snapshot} owner={identity.owner} />)}</dd></div>
         </dl>
       </Card>
     </div>

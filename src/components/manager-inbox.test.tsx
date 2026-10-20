@@ -44,7 +44,8 @@ it('keeps counts separate from labels for assistive tech', () => {
 });
 it('counts only what needs you today in the band (F1)', () => {
   const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('target', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT'), item('deadline', 'DEADLINE_MISSING', 'scheduling', 'MISSING_INPUT')]));
-  expect(output.replace(/\u00a0/g, ' ')).toContain('1 request needs you.');
+  // Clean Manager (v3): the band says the one count, as Home does.
+  expect(output.replace(/\u00a0/g, ' ')).toContain('1 thing needs you today.');
   expect(output).toContain('aria-label="Plan ahead, 2"');
   expect(output).not.toMatch(/miss(ed|ing) punch/i);
 });
@@ -78,7 +79,8 @@ it("Codex's optional request facts fill the pane; the decision stays on the full
   const request = {...item('TIME_OFF:r1', 'TIME_OFF', 'requests'), request: {startDate: '2026-10-28', endDate: '2026-10-29', lengthText: '2 days', locationName: 'Main Office', note: 'Fictional family appointment', reviewHref: '/app/requests?tab=pending&requestId=r1&from=inbox'}} as ActionItem;
   const pane = html(ready([request])).split('class="nv-card inbox-detail"')[1].split('</section>')[0];
   expect(pane).toContain('<dt>Dates</dt><dd><span class="nv-keep">Wed, Oct 28 – Thu, Oct 29</span></dd>');
-  expect(pane).toContain('<dt>Length</dt><dd>2 days</dd>');
+  // r4 QA: whole days read as the full review words them ("2 full days"), not the read's shorter "2 days".
+  expect(pane).toContain('<dt>Length</dt><dd>2 full days</dd>');
   expect(pane).toContain('<dt>Works at</dt><dd>Main Office</dd>');
   expect(pane).toContain('data-fact="note"><dt>Note</dt><dd>Fictional family appointment</dd>');
   expect(pane).not.toMatch(/Approve<|Decline<|<form/);

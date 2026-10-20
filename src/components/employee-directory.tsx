@@ -6,6 +6,7 @@ import { employeeInitials, employeeRoleLabel } from "@/lib/employee-display";
 import { formatPhoneNumber } from "@/lib/phone";
 import { DIRECTORY_ROLES, filterDirectoryEmployees, hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-directory";
 import { PageBand, Status } from "./kit/kit";
+import { KeepSelectedVisible } from "./kit/keep-selected-visible";
 import { EmployeeDirectoryFilters } from "./employee-directory-filters";
 
 export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, words = DEFAULT_WORDS.en }: {
@@ -14,7 +15,6 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   employees: readonly Employee[]; visibleEmployees: readonly Employee[];
   locations: readonly Location[]; filters: DirectoryFilters;
 }) {
-  const activeCount = employees.filter(employee => employee.active).length;
   // IS-36: status counts follow the other filters (search, role, location).
   const scoped = filterDirectoryEmployees(employees, { ...filters, status: "all" });
   const filtered = hasDirectoryFilters(filters);
@@ -25,18 +25,17 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
     { value: "active", label: "Active", count: scoped.filter(employee => employee.active).length },
     { value: "inactive", label: "Inactive", count: scoped.filter(employee => !employee.active).length },
   ];
-  const inactiveCount = employees.length - activeCount;
   const people = lower(words.people), person = lower(words.person);
   return (
     <div className="nv-page premium-team" data-nv-page="">
       {/* F8: the summary counts people by status. The tab, the band and D-4 all say Team. */}
-      <PageBand eyebrow={`${activeCount} active ${activeCount === 1 ? person : people}`} title="Team"
-        summary={inactiveCount ? `${inactiveCount} inactive ${inactiveCount === 1 ? person : people} kept for the record.` : "Find someone, or add a new hire."}
+      {/* Clean Manager (v3): the band says Team and how many people; the Active and Inactive counts live on the filter. */}
+      <PageBand title="Team" summary={`${employees.length} ${employees.length === 1 ? person : people}`}
         aside={<Link className="nv-band-control" href="/app/employees/new"><UserPlus size={18} weight="bold" aria-hidden="true" /> Add<span className="premium-band-wide"> {person}</span></Link>} />
       <div className="nv-content">
         <section className="nv-card premium-team-find" aria-labelledby="team-find-title">
           <div className="nv-card__head"><h2 className="nv-card__title" id="team-find-title">Find people</h2>
-            <span className="nv-card__meta" role="status" aria-live="polite" aria-atomic="true">{filtered ? `${visibleEmployees.length} of ${employees.length}` : employees.length} {employees.length === 1 ? person : people}</span></div>
+            <span className="nv-card__meta" role="status" aria-live="polite" aria-atomic="true">{/* One number per idea (v3): the band says the total; this says only how many a filter shows. */}{filtered ? `${visibleEmployees.length} of ${employees.length} ${employees.length === 1 ? person : people}` : ""}</span></div>
           <EmployeeDirectoryFilters className="premium-team-form">
             {/* Without scripts, Enter and this button apply the filters; with scripts they apply as you type (IS-35). */}
             <button type="submit" name="status" value={filters.status} className="nv-link premium-apply sr-only-focusable" data-apply="">Apply filters</button>
@@ -61,6 +60,8 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
               {segments.map(segment => <button key={segment.value} type="submit" name="status" value={segment.value} aria-pressed={segment.value === filters.status} aria-label={`${segment.label}, ${segment.count}`} className="nv-filter premium-filter-light">
                 {segment.label} <span className="premium-filter-count" aria-hidden="true">{segment.count}</span>
               </button>)}
+              {/* Final phone pass: marks overflow (edge fades in every engine) and keeps the chosen status in view. */}
+              <KeepSelectedVisible />
             </div>
             <div className="premium-team-actions">
               {filtered ? <Link href="/app/employees" className="nv-link"><X size={16} aria-hidden="true" /> Clear filters</Link> : null}

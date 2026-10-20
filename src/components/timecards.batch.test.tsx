@@ -144,3 +144,64 @@ it('preserves only the original unknown command through a healthy early fresh pr
 it('does not start the deferred first read after unmount',async()=>{
  transport();render();host.mounted=true;cleanup=host.effects[0]();cleanup?.();cleanup=undefined;await flush();expect(html()).not.toContain('PRIVATE');expect(commands).toHaveLength(0);
 });
+// Clean Manager v3: one table with a four-figure overview. "Need review" uses the Inbox's rule (not finalized, with
+// recorded time or history), each row says why in a few words, and the batch wording stays for the confirm step only.
+it('counts Need review as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
+ const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:'p1',positionName:'Front desk',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:null,rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:null,breaks:[]};
+ const timed=card('E1');
+ vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]});commands.push(JSON.parse(String(init?.body)));return Response.json({status:'approved'});});
+ await mount();const rendered=html();
+ expect(rendered).toContain('aria-label="Period overview"');
+ expect(rendered).toContain('aria-label="Need review, 1"');
+ expect(rendered).toContain('aria-label="Approved, 0"');
+ expect(rendered).toContain('Missing clock-out');
+ expect(rendered).toContain('Front desk');
+ expect(rendered).not.toMatch(/Approve timecard|Finalize period/);
+ expect(rendered).not.toContain('Each card commits separately');
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);
+ check('Select PRIVATE E2');click('Review selected timecards');
+ expect(html()).toContain('Each card commits separately; a stopped set leaves remaining cards unsubmitted. Approval never automatically finalizes time.');
+ expect(html()).toContain('I reviewed this exact selected set and its recorded time for approval.');
+ expect(commands).toHaveLength(0);
+});
+it('approves from the clean detail sheet with the exact current revision and clears its private content on blur',async()=>{
+ transport('unknown');await mount();
+ expect(html()).not.toContain('Approve timecard');
+ const person=control(n=>n.type==='button'&&n.props.className==='cm-tc-person');
+ (person.onClick as ()=>void)();
+ expect(html()).toContain('Approve timecard');
+ expect(control(n=>n.type==='button'&&n.props.children==='Approve timecard').disabled).toBe(false);
+ click('Approve timecard');await flush();
+ expect(commands).toHaveLength(1);
+ expect(commands[0]).toMatchObject({...period,employeeId:'E1',action:'APPROVE',expectedRevision:0,expectedSourceHash:'a'.repeat(32)});
+ expect(html()).toContain('Retry pending action');
+ window.dispatchEvent(new Event('blur'));
+ expect(html()).not.toContain('PRIVATE');
+ expect(html()).not.toContain('Approve timecard');
+ expect(html()).not.toContain('Retry pending action');
+});
+it('retires failed background data and offers Try again to obtain a fresh protected snapshot',async()=>{
+ let reads=0;
+ vi.stubGlobal('fetch',async()=>++reads===2?new Response(null,{status:503}):Response.json(ready(15000)));
+ await mount();check('Select PRIVATE E1');click('Review selected timecards');
+ await vi.advanceTimersByTimeAsync(10000);
+ expect(html()).not.toContain('PRIVATE');
+ expect(html()).not.toContain('Reviewed approval set');
+ expect(html()).toContain('Couldn’t load timecards');
+ expect(html()).toContain('Try again');
+ (control(n=>typeof n.type==='function'&&typeof n.props.onRetry==='function').onRetry as ()=>void)();
+ await flush();
+ expect(reads).toBe(3);
+ expect(html()).toContain('PRIVATE E1');
+ expect(html()).not.toContain('Try again');
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);
+ expect(commands).toHaveLength(0);
+});
+it('offers recovery after a stalled initial read reaches its finite request deadline',async()=>{
+ vi.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));
+ await mount();await vi.advanceTimersByTimeAsync(45001);
+ expect(html()).not.toContain('PRIVATE');
+ expect(html()).toContain('Try again');
+ expect(control(n=>n.type==='button'&&n.props['aria-label']==='Refresh timecards').disabled).toBe(false);
+ expect(commands).toHaveLength(0);
+});

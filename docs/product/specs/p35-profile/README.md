@@ -93,3 +93,16 @@ Load shift when a value too long for its column arrives with the read: the Manag
 ## Screenshots
 
 `screens/` (final build, `caef395`): Owner and Manager at 390 and 1440, ready, loading and failed read; saving (Owner 1440); save failed and empty (Manager 390); 60 locations with a long email at 200% text (Owner 390).
+
+## After the merge: integration QA fixes (October 19, night)
+
+From the coordinator's layout QA of the integration preview (QAOWNER and AUDIT-M). The branch is now `claude/premium-phase-1` (which includes `codex/verify-preview-33`, with Codex's merge of Profile, the `initial` server read and IS-PROFILE-17).
+
+| Finding | Fix |
+|---|---|
+| P2, phones: Email and Phone stacked (77px) while every other row sat beside its label (52px) | All rows follow one rule: the value sits beside its label when the card has room, otherwise every row stacks (container query, `16rem + 40px`, in rem, so large text stacks too). Measured: all stacked at 320 and at 200% text, all side by side at 360, 390 and 1440. The stacked contact rows were only there to keep the read from moving the page, and the `initial` server read now does that. |
+| P2, 200% text: an empty card meta wrapped into a 40px blank line in the "Your details" head | The meta renders only when there is a state word or an action. The head is 38–44px (clean) or 50px (kit) in the ready state at every width. |
+| P3, desktop: detail values 17px beside 13.5px row titles | Labels and values take the kit row classes (`nv-row__meta`, `nv-row__title`), so they follow whichever layer styles rows. With the clean v3 layer: 13.5px values and 13px labels on desktop (equal to the Pay and Notifications rows), 17px and 15px on phones. A lower-specificity kit fallback covers pages without it. |
+| Card title 16px from the edge, content 20px | Left to Wave A's shared fix, as asked. |
+
+Checked in my one preview, in both the kit and a simulated clean context (the clean stylesheet and `data-nv-clean` injected in the browser) at 320, 360, 390 and 1440, 100% and 200%.

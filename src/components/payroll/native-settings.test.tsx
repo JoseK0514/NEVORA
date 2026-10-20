@@ -15,10 +15,19 @@ it('explains native company preferences and automatic publication without asking
   expect(html).toContain('automatically after generation');
   expect(html).toContain('Save company preferences');
   expect(html).toContain('specific payroll locations');
+  expect(html).not.toContain('name="bankProfile"');
+  expect(html).not.toContain('name="sourceProvider"');
+  expect(html).not.toContain('name="publish"');
+  expect(html).toMatch(/Review the change<\/h3>[\s\S]*Save company preferences[\s\S]*<\/section><\/fieldset><\/form>/);
 });
 it('keeps the historical provider preference workflow available before native adoption', () => {
   boundary.native = false;
-  expect(renderToStaticMarkup(<PayrollSettings recoveryScope="fictional-owner" nativeSources={{employees:[],locations:[],breakTypes:[]}} />)).toContain('imported provider amounts remain the authority');
+  const html = renderToStaticMarkup(<PayrollSettings recoveryScope="fictional-owner" nativeSources={{employees:[],locations:[],breakTypes:[]}} />);
+  expect(html).toContain('imported provider amounts remain the authority');
+  expect(html).toContain('name="bankProfile"');
+  expect(html).toContain('name="sourceProvider"');
+  expect(html).toContain('name="publish"');
+  expect(html).toMatch(/Review the change<\/h3>[\s\S]*Save company preferences[\s\S]*<\/section><\/fieldset><\/form>/);
 });
 it('waits for fresh Owner access before presenting saved company preferences', () => {
   boundary.loading = true;

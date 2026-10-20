@@ -8,7 +8,9 @@ import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime, weekStartFor } from "@/lib/date-utils";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { TrayIcon } from "@phosphor-icons/react/dist/ssr/Tray";
 import { Card, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, Status, Tile } from "@/components/kit/kit";
+import { RequestPagesNav } from "@/components/clean/request-pages-nav";
 import { Fact, Facts, Notice } from "@/components/wave-a/parts";
 import { ActionForm } from "@/components/wave-a/action-form";
 import { TimeOffReviewDecision } from "@/components/time-off-review-decision";
@@ -72,11 +74,12 @@ function FocusedReview({ request, origin, error }: { request: PendingRequest; or
       <Card id="request-note" title="Note">
         <p className="premium-review-note">{request.reason ? request.reason : "No note was added."}</p>
       </Card>
-      <p className="premium-review-more"><KitLink href="/app/requests?tab=pending">All pending time-off requests</KitLink></p>
       <Card id="request-context" title="Before you decide">
         <Rows label="Before you decide">
           <Row href={`/app/schedule?week=${encodeURIComponent(week)}`} title="See that week’s schedule" meta="Who else is working those days"
             leading={<Tile><CalendarBlankIcon size={20} weight="bold" /></Tile>} />
+          {/* r4 REQ P2-5: the way back to the list is a row here, on the content edge, not a floating link. */}
+          <Row href="/app/requests?tab=pending" title="All pending time-off requests" leading={<Tile><TrayIcon size={20} weight="bold" /></Tile>} />
         </Rows>
       </Card>
       {/* Sticky inside the form, so the decision stays on screen while the facts scroll. */}
@@ -136,7 +139,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
     <div className="nv-page wa-page wa-timeoff" data-nv-page="">
       <PageBand title="Time off" overlap={false}
         summary={selected.id === "pending" ? (count ? `${plural(count)} waiting for your review.` : "Nothing is waiting for your review.") : `Your team’s ${selected.label.toLowerCase()} time off, latest dates first.`}
-        extra={<FilterPills label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} />} />
+        extra={<><RequestPagesNav current="/app/requests" /><FilterPills label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} /></>} />
       <div className="nv-content">
         <ManagerIssueFocus prefix="request-" />
         {error ? <Notice tone="urgent" title="That decision wasn’t saved">The request may have changed. Check it and decide again.</Notice> : null}

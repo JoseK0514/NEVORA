@@ -11,6 +11,13 @@ import "./premium-wave-a.css";
 import "./premium-wave-b.css";
 import "./premium-wave-c.css";
 import "./premium-desktop.css";
+// Clean Manager and Owner app (v3): loaded last, scoped to those roles by the shell's data-nv-clean.
+import "./premium-clean-manager.css";
+import "./clean-manager/schedule.css";
+import "./clean-manager/timecards.css";
+import "./clean-manager/insights.css";
+import "./clean-manager/updates.css";
+import "./clean-manager/notifications.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";

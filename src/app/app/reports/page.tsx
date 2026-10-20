@@ -17,8 +17,11 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Reports unavailable" reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
-  let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
+  // QA r3: the default is last week, Monday to Sunday (the Week preset).
+  const lastMonday=today.subtract({days:today.dayOfWeek-1+7});
+  let period={startDate:lastMonday.toString(),endDate:lastMonday.add({days:6}).toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
-  return <ScopedReadFrame observation={access}><ReportsEntrance><PageBand title="Insights" summary="Hours, attendance and schedule changes for any period."/>
-    <div className="nv-content"><Reports key={session.id} initialPeriod={period}/></div></ReportsEntrance></ScopedReadFrame>;
+  // v3: Reports renders the navigation bar (More, period, Export), the segmented periods and the content after the title.
+  return <ScopedReadFrame observation={access}><ReportsEntrance><PageBand title="Insights" summary="Recorded hours, time off and approvals for the period"/>
+    <Reports key={session.id} initialPeriod={period} today={today.toString()}/></ReportsEntrance></ScopedReadFrame>;
 }
