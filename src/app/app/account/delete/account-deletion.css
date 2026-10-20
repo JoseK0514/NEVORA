@@ -2,4 +2,4 @@
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .ad-effects p { margin: 0; font: var(--nv-t-callout); color: var(--nv-ink-2); text-wrap: pretty; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .ad-reference { font-family: var(--nv-font-mono, ui-monospace, monospace); letter-spacing: .04em; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .ad-check { align-items: flex-start; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .legal-unresolved { padding: 0 4px; border-radius: 4px; background: #FDF0C4; color: #6B4E00; font-family: var(--nv-font-mono, ui-monospace, monospace); font-size: .875em; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .legal-unresolved { padding: 0 4px; border-radius: 4px; background: #FDF0C4; color: #6B4E00; font-family: var(--nv-font-mono, ui-monospace, monospace); font-size: .875em; overflow-wrap: anywhere; word-break: break-all; }

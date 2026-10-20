@@ -7,6 +7,7 @@ vi.mock("next/image", () => ({ default: () => null }));
 vi.mock("next/navigation", () => ({ notFound: () => { throw new Error("NEXT_NOT_FOUND"); } }));
 vi.mock("@/components/brand-mark", () => ({ BrandMark: () => null, BrandWordmark: () => null }));
 vi.mock("@/app/app/account/delete/actions", () => ({ requestAccountDeletion: vi.fn() }));
+vi.mock("@/app/login/actions", () => ({ logout: vi.fn() }));
 import PrivacyPage from "./privacy/page";
 import TermsPage from "./terms/page";
 import SupportPage from "./support/page";

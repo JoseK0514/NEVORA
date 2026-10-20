@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { requestAccountDeletion, type DeletionFormState } from "@/app/app/account/delete/actions";
+import { logout } from "@/app/login/actions";
 import { Notice } from "@/app/app/settings/wave-c-kit";
 import { ButtonLabel, Field, FieldErrors, FormActions, useFieldErrors } from "@/app/app/settings/wave-c-form";
 import { SUPPORT_EMAIL } from "@/lib/legal/policies";
@@ -42,7 +43,7 @@ export function AccountDeletionForm({ account, period, retention, existing }: {
         <div className="nv-card__body wc-fields">
           <p>You’ve been signed out on every device and can’t sign in again. Your account is deleted within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</p>
           <p>To ask about your request, email <a className="wc-inline-link" href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`Account deletion ${state.reference}`)}`}>{SUPPORT_EMAIL}</a> with your reference. Keep it somewhere safe; we won’t ask for your password.</p>
-          <FormActions><Link className="nv-btn" data-kind="secondary" href="/login">Done</Link></FormActions>
+          <form action={logout}><FormActions><button type="submit" className="nv-btn" data-kind="secondary">Done</button></FormActions></form>
         </div>
       </section>
     );
