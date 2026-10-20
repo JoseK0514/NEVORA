@@ -31,6 +31,52 @@
       "code": 0,
       "passed": 16,
       "failed": 0
+    },
+    {
+      "name": "00002-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-b-808dfd/checks/2026-10-20T03-27-21-193Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-b-808dfd-00002-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/employees,/app/employees/AUDIT-LONG,/app/employees/AUDIT-LONG/clocker-pin,/app/employees/new",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "14ad530c0445139982feb495bf537569ec06d7baeea190fdfaf0d9591e395386",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
+    },
+    {
+      "name": "00003-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-b-808dfd/checks/2026-10-20T03-28-20-970Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-b-808dfd-00003-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/exchange,/app/inbox,/app/my-pay,/app/notifications",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "d49680265ef2c25757a2e0252620129c0fa9f1abe7846702e15f7974970f8097",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
     }
   ],
   "planned": 12716,
