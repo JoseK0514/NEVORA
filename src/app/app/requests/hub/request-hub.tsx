@@ -26,7 +26,7 @@ export function RequestHub({ modules = ALL_MODULES_ON }: { modules?: EnabledModu
 
         {modules.timeOff || modules.marketplace ? <Card title="Track your requests" id="request-hub-track">
           <Rows label="Track your requests">
-            {modules.timeOff ? <Row href="/app/requests?tab=my" title="My time-off requests" meta="Waiting, approved and past requests" leading={<Tile><ClockCounterClockwiseIcon size={20} /></Tile>} /> : null}
+            {modules.timeOff ? <Row href="/app/requests?tab=my" title={<>My <span className="nv-nowrap">time-off</span> requests</>} meta="Waiting, approved and past requests" leading={<Tile><ClockCounterClockwiseIcon size={20} /></Tile>} /> : null}
             {modules.marketplace ? <Row href="/app/exchange?tab=requests" title="My shift requests" meta="Swaps, coverage and Unable to work" leading={<Tile><ArrowsLeftRightIcon size={20} /></Tile>} /> : null}
           </Rows>
         </Card> : null}

@@ -217,8 +217,8 @@ html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; 
   html body .app-shell.nevora-portal .sidebar[data-collapsed="true"] .nav-link { border-radius: 8px; box-shadow: none; }
 }
 
-/* Phones: the account menu stays in the existing menus; dark-teal mastheads. */
-@media (max-width: 760px) {
+/* Phones (and landscape phones, H5 QA: they showed the old blue accent): the account menu stays in the existing menus; dark-teal mastheads. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal .portal-account-menu { display: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-mobile-workforce="true"] {
     --mobile-masthead: var(--g-masthead);
@@ -365,7 +365,7 @@ html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px sol
  * sticky chrome stays to the tab bar instead of covering half the screen (WCAG 1.4.10). */
 @media (max-width: 760px) and (max-height: 500px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal .mobile-header { position: relative; }
-  html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-top: 12px; }
+  html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-top: 12px; scroll-padding-bottom: calc(var(--nv-tabbar-height, 68px) + 16px); } /* H5 QA: focus never lands under the tab bar */
 }
 
 /* ⌘K finder (U8): a desktop tool. Opens without animation; native modal dialog. */
@@ -527,3 +527,7 @@ html body .app-shell.nevora-portal .employee-profile-work-title { margin: 0 0 10
 html body .app-shell.nevora-portal .employee-profile-correction { margin: 10px 0 0; color: var(--g-muted, #5f6368); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.5; }
 html body .app-shell.nevora-portal .employee-profile-work-title + .employee-profile-details { margin-top: 0; }
 html body .app-shell.nevora-portal #employee-reviewed-actions-heading { scroll-margin-top: 96px; } /* M8 to-do link target clears the header */
+/* Final QA: portrait phones also keep a focused field clear of the tab bar (a focused Note sat 10px under it). */
+@media (max-width: 760px) {
+  html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-bottom: calc(var(--nv-tabbar-height, 68px) + 16px); }
+}
