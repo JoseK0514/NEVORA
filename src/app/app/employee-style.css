@@ -56,7 +56,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-nav .mobile
 
 /* ---------- Signature pages draw their own band from the top edge: no frame padding on phones ---------- */
 @media (max-width: 767px) {
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame:is(:has([class*="__s6Root"], [class*="__r6Root"]), :has(> .route-skeleton[data-route="schedule"]), :has(> .route-skeleton[data-route="hub"])):not(#e5):not(#e52) { padding: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame:is(:has([class*="__s6Root"], [class*="__r6Root"], [data-sig]), :has(> .route-skeleton[data-route="schedule"]), :has(> .route-skeleton[data-route="hub"]), :has(> .route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))):not(#e5):not(#e52) { padding: 0; }
 }
 
 /* ---------- Home's route placeholder: the teal band with two light lines, then the paper shift card on the sheet ---------- */
@@ -127,14 +127,14 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .rout
 /* ---------- Section tabs (Requests and Pay groups) on phones: white words on the deep teal, continuous with the header
  * and the page's band; the current page underlined in mint. ---------- */
 @media (max-width: 767px) {
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ .route-skeleton[data-route="hub"])):not(#e5):not(#e52) { margin: 0; padding: 0 12px; border: 0; background: var(--e5-deep); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ .route-skeleton[data-route="hub"])) .section-tabs-track:not(#e5):not(#e52) { gap: 4px; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ .route-skeleton[data-route="hub"])) .section-tab:not(#e5):not(#e52) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ [data-sig]), :has(+ .route-skeleton:is([data-route="hub"], [data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))):not(#e5):not(#e52) { margin: 0; padding: 0 12px; border: 0; background: var(--e5-deep); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ [data-sig]), :has(+ .route-skeleton:is([data-route="hub"], [data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))) .section-tabs-track:not(#e5):not(#e52) { gap: 4px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ [data-sig]), :has(+ .route-skeleton:is([data-route="hub"], [data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))) .section-tab:not(#e5):not(#e52) {
     display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border: 0; border-radius: 0; background: none; box-shadow: inset 0 -2px 0 transparent;
     color: rgba(255, 255, 255, .66); font: 500 .9375rem/1.25rem var(--nv-font); white-space: nowrap; text-decoration: none;
   }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ .route-skeleton[data-route="hub"])) .section-tab[aria-current="page"]:not(#e5):not(#e52) { color: #FFFFFF; box-shadow: inset 0 -2px 0 #A9E2DA; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ .route-skeleton[data-route="hub"])) .section-tab:focus-visible:not(#e5):not(#e52) { outline: 2px solid #FFFFFF; outline-offset: -4px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ [data-sig]), :has(+ .route-skeleton:is([data-route="hub"], [data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))) .section-tab[aria-current="page"]:not(#e5):not(#e52) { color: #FFFFFF; box-shadow: inset 0 -2px 0 #A9E2DA; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ [data-sig]), :has(+ .route-skeleton:is([data-route="hub"], [data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))) .section-tab:focus-visible:not(#e5):not(#e52) { outline: 2px solid #FFFFFF; outline-offset: -4px; }
 }
 
 /* ---------- Requests' route placeholder: the band, then the main button and two lists on the sheet ---------- */
@@ -154,8 +154,23 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .rout
 
 /* Section tabs on wider screens for Signature pages: quiet ink words on the page, the current one underlined in deep teal. */
 @media (min-width: 768px) {
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ .route-skeleton[data-route="hub"])) .section-tab:not(#e5):not(#e52) { color: var(--e5-ink-3); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ .route-skeleton[data-route="hub"])) .section-tab[aria-current="page"]:not(#e5):not(#e52) { color: var(--e5-ink); box-shadow: inset 0 -2px 0 var(--e5-deep); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ .route-skeleton[data-route="hub"])):not(#e5):not(#e52) { border-bottom-color: var(--e5-rule); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ [data-sig]), :has(+ .route-skeleton:is([data-route="hub"], [data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))) .section-tab:not(#e5):not(#e52) { color: var(--e5-ink-3); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ [data-sig]), :has(+ .route-skeleton:is([data-route="hub"], [data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))) .section-tab[aria-current="page"]:not(#e5):not(#e52) { color: var(--e5-ink); box-shadow: inset 0 -2px 0 var(--e5-deep); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .section-tabs:is(:has(+ [class*="__r6Root"]), :has(+ [data-sig]), :has(+ .route-skeleton:is([data-route="hub"], [data-route="mypay"], [data-route="mytime"], [data-route="timecards"]))):not(#e5):not(#e52) { border-bottom-color: var(--e5-rule); }
+}
+
+/* ---------- Pay group placeholders (My pay, My time, Timecards): the band with its large figure, then two cards ---------- */
+@media (max-width: 767px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]):not(#e5):not(#e52) { gap: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .route-skeleton-band:not(#e5):not(#e52) { display: flex; height: 206px; margin: 0; padding: 22px 24px 0; border-radius: 0; background: var(--e5-deep); gap: 14px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"])[data-route="mytime"] > .route-skeleton-band:not(#e5):not(#e52) { height: 287px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="timecards"] > .route-skeleton-band:not(#e5):not(#e52) { height: 211px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .route-skeleton-band i:not(#e5):not(#e52) { height: 1rem; width: 44%; border-radius: 6px; background: rgba(255, 255, 255, .12); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .route-skeleton-band i:nth-child(2):not(#e5):not(#e52) { height: 3.5rem; width: 54%; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .route-skeleton-band i:nth-child(3):not(#e5):not(#e52) { height: 1.25rem; width: 40%; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .route-skeleton-header:not(#e5):not(#e52), html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .nevora-skeleton:not(#e5):not(#e52) { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .route-skeleton-cards:not(#e5):not(#e52) { position: relative; display: flex; flex-direction: column; gap: 14px; margin: -30px 0 0; padding: 26px 16px 0; border-radius: 28px 28px 0 0; background: var(--e5-bg); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .route-skeleton-cards > i:not(#e5):not(#e52) { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"]) > .route-skeleton-cards > i:nth-child(-n+2):not(#e5):not(#e52) { display: block; height: 112px; border-radius: 20px; background: var(--e5-card); box-shadow: inset 0 0 0 1px var(--e5-rule); }
 }
 

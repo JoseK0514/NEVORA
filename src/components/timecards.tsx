@@ -25,6 +25,14 @@ import {ExportIcon} from '@phosphor-icons/react/dist/ssr/Export';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import type {TimecardIssue} from '@/lib/timecards/project';
 import {Avatar,Card,PageBand,StatGrid} from './kit/kit';
+import {Duration,SigBand,SigLinkRow,SigPage,SigSection} from './signature/signature';
+import sigStyles from './timecards-signature.module.css';
+
+/** "Oct 14–20", or "Sep 28 – Oct 4" across a month. */
+function signatureRange(start:string,end:string){
+  const month=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short'}).format(new Date(`${date}T12:00:00Z`));
+  return start.slice(0,7)===end.slice(0,7)?`${month(start)} ${Number(start.slice(8))}–${Number(end.slice(8))}`:`${month(start)} ${Number(start.slice(8))} – ${month(end)} ${Number(end.slice(8))}`;
+}
 
 const stamp=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at));
 const issueNames:Record<string,string>={period_open:'Period is still open',open_entry:'No clock-out yet',open_break:'Open break',pending_correction:'Correction awaiting review',overlapping_time:'Overlapping recorded time'};
@@ -99,7 +107,9 @@ function TimecardsState({title,message,failed,signIn,onRetry,className}:{title:s
   </div>;
 }
 
-export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
+export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
+  /** Employee Signature (phase 1, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-1/p1c-timecards.png). */
+  signature?:boolean;
   /** The workspace's date (manager view): sets This week and Last week and whether approvals are open yet. */
   today?:string}){
   const corporate=employeeCorporate&&!manager;
@@ -411,6 +421,48 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         {openId&&(busy||pending)?<p className="cm-tc-sheet__message" aria-live="polite">{message}</p>:null}
       </dialog>
     </>;
+  }
+  if(signature&&!manager){
+    // Signature: the band carries the period and its worked total; the sheet holds the period form, this card and the
+    // way to a correction. The period fields, View period and Refresh timecards stay (the Phase D suite uses them).
+    const mine=cards[0],seconds=(ns:string)=>/^\d+$/.test(ns)?Number(BigInt(ns)/BigInt(1_000_000_000)):0;
+    const range=signatureRange(period.startDate,period.endDate);
+    const hoursMinutes=(total:number)=>{const m=Math.floor(total/60);return `${Math.floor(m/60)}h ${String(m%60).padStart(2,'0')}m`;};
+    const presentation=mine?employeeTimecardPresentation(mine.card.issues):null;
+    return <SigPage className={sigStyles.tcRoot} band={<SigBand eyebrow={<>Your timecard · {range}</>}>
+      <h1 className="nv-sr">Timecards</h1>
+      {mine?<Duration seconds={seconds(mine.card.recordedNanoseconds)}/>:<span className={sigStyles.tcDash} aria-hidden="true">–</span>}
+      <p className="sg-sub">{mine?<><span>Worked</span><span aria-hidden="true">·</span><span>{keepWhole(hoursMinutes(seconds(mine.card.breakNanoseconds)))} on break</span></>:<span>{busy?'Checking your timecard…':'Not available right now'}</span>}</p>
+    </SigBand>}>
+      <form onSubmit={choose} className={sigStyles.tcPeriod} aria-label="Choose a period">
+        <label>Period start<input type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
+        <label>Period end<input type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
+        <button className="sg-primary" disabled={paused||busy||!!pending}>View period</button>
+      </form>
+      <div className="sg-quiet"><p role="status" aria-live="polite" className={sigStyles.tcStatus}>{message}</p><button type="button" className="sg-link" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button></div>
+      <HoldHeight holding={!data} memory="timecards-employee" className={sigStyles.tcHold}>
+      {!data&&!busy?<div className="sg-alert" data-timecards-state=""><strong>{stateTitle}</strong>{signInRequired?<Link className="sg-link" href="/login">Sign in</Link>:failed?<button type="button" className="sg-link" onClick={()=>void refresh(period)}>Try again</button>:null}</div>:null}
+      {cards.map(item=><article key={item.card.employeeId} className={sigStyles.tcCard} tabIndex={-1} id={`timecard-${item.card.employeeId}`}>
+        <header><h2>Your timecard</h2><strong className={sigStyles.tcState} data-state={item.state}>{stateLabel(item.state)}</strong></header>
+        <dl className="nv-sr"><div><dt>Recorded time</dt><dd>{formatRecordedHours(item.card.recordedNanoseconds)}</dd></div><div><dt>Break time</dt><dd>{formatRecordedHours(item.card.breakNanoseconds)}</dd></div></dl>
+        {item.card.issues.length?<div className={sigStyles.tcIssues} data-tone={presentation?.tone}><i aria-hidden="true"/>{presentation?.tone==='neutral'
+          ?<div><h3 className="nv-sr">{presentation.heading}</h3><ul className="nv-sr">{presentation.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>Open period. Totals can still change until it closes.</p></div>
+          :<div><h3>{presentation?.heading}</h3><ul>{(presentation?.issues??item.card.issues).map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>Review your recorded entries. Request corrections in My time.</p></div>}</div>:null}
+        <MobileHomeDisclosure id={`mobile-timecard-${item.card.employeeId}`} label="Daily punches" expandedLabel="Close daily punches"
+          available={!busy && pending?.employeeId !== item.card.employeeId && !outcomes && !review}>
+          <Details card={item.card}/>
+          {item.history.length?<details className={styles.history}><summary>Historical revisions ({item.history.length})</summary>
+            {item.history.map(h=><div key={h.operationId}><h3>Revision {h.revision} · {h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>
+              <p>{stamp(h.occurredAt,item.card.timeZone)} · {h.actorName}{h.note?` · ${h.note}`:''}</p>
+              <Details card={{...item.card,...h.snapshot}}/>
+            </div>)}</details>:null}
+        </MobileHomeDisclosure>
+      </article>)}
+      </HoldHeight>
+      <SigSection id="timecards-wrong" title="Something wrong?">
+        <div className="sg-list"><SigLinkRow href="/app/my-time" title="Request a correction" sub="Continue in My time. Your original punches are kept."/></div>
+      </SigSection>
+    </SigPage>;
   }
   return <section className={(corporate?'employee-corporate-timecards ':'')+styles.root+(manager?' '+styles.managerRoot:'')} aria-label={manager?'Manager timecards':'Your period timecard'}>
     <div className={(corporate?'employee-corporate-period ':'')+styles.periodPanel}>
