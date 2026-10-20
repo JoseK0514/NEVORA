@@ -20,6 +20,7 @@ import {employeeButtonClass,employeeInputClass,employeeRowClass} from './employe
 import {employeeTimecardPresentation} from './employee-timecard-presentation';
 import {createPortal} from 'react-dom';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
+import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import {ExportIcon} from '@phosphor-icons/react/dist/ssr/Export';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import type {TimecardIssue} from '@/lib/timecards/project';
@@ -361,8 +362,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </HoldHeight>
         {phone?tools:null}
         <p className="cm-page-foot cm-tc-foot">
-          <span role="status" aria-live="polite">{message}</span>
-          <button type="button" className="cm-refresh" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>
+          {/* r4 QA: a failed or signed-out load says so once, in the state card; the foot keeps only the live status. */}
+          <span role="status" aria-live="polite">{!data&&!busy?'':message}</span>
+          <button type="button" className="cm-refresh" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button>
         </p>
       </div>
       <dialog ref={sheet} className="cm-tc-sheet" aria-labelledby="cm-tc-sheet-title" onClose={()=>setOpenId(null)}>

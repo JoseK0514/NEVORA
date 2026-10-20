@@ -221,3 +221,18 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
  * collide at 200% text. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights :is(.cm-chart__tick, .cm-chart__days > span) { font-size: 11px; line-height: 13px; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-chart__days > span { overflow: hidden; text-overflow: clip; }
+
+/* r4 QA: on a narrow chart (320, or a narrow card) day names become single letters and every other week label shows. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-chart__days { container-type: inline-size; container-name: cm-days; }
+@container cm-days (max-width: 300px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-chart__days > span[data-short] { font-size: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-chart__days > span[data-short]::before { content: attr(data-short); font-size: 11px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-chart__days > span:is([data-week="1"], [data-week="3"]) { visibility: hidden; }
+}
+
+/* r4 P3: from 761 to 1179px the tools aren't in the top bar; they sit under the summary, so the summary keeps the full width. */
+@media (min-width: 761px) and (max-width: 1179px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-insights { grid-template-columns: minmax(0, 1fr); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights > .cm-insights__nav { grid-column: 1; grid-row: 2; justify-self: start; margin: 12px 0 16px; padding-top: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights > .nv-content { grid-row: 3; }
+}

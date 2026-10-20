@@ -16,7 +16,7 @@ import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {ExportIcon} from '@phosphor-icons/react/dist/ssr/Export';
 import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
+import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
@@ -98,7 +98,9 @@ function Plot({days}:{days:{date:string;minutes:number}[]}){
    {days.map(day=><i key={day.date} className="cm-chart__bar" style={{height:`${Math.min(100,(day.minutes/(top*60))*100)}%`}}/>)}
   </div>
   <div className="cm-chart__days" aria-hidden="true" data-dense={dense||undefined} style={{'--cm-bars':days.length} as CSSProperties}>
-   {days.map((day,index)=><span key={day.date}>{dense?(index%7===0?shortDay(day.date):''):dayName(day.date)}</span>)}
+   {/* r4 QA: a week label that has no room before the plot's end is left out; at large text (container query in
+     * insights.css) every other week label shows, and day names become single letters. */}
+   {days.map((day,index)=><span key={day.date} data-week={dense&&index%7===0?index/7:undefined} data-short={dense?undefined:dayName(day.date).slice(0,1)}>{dense?(index%7===0&&index<=days.length-5?shortDay(day.date):''):dayName(day.date)}</span>)}
   </div>
   <ul className="nv-sr" aria-label="Recorded time by day">{days.map(day=><li key={day.date}>{dayLabel(day.date)}: {formatRecordedHours((BigInt(day.minutes)*MINUTE_NS).toString())}</li>)}</ul>
  </>;
@@ -334,7 +336,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
     </section>:null}
     {notice&&notice!==PERIOD_ERROR&&<p className="wb-error" id="report-export-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true"/><span>{notice}</span></p>}
     <ReportsView report={report} state={state}/>
-    <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowClockwiseIcon size={16} aria-hidden="true"/>Refresh</button></p>
+    <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button></p>
    </div>
   </div>
  </>;

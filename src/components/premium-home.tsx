@@ -1,7 +1,7 @@
 "use client";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
-import { useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { Avatar, Button, Card, CardBody, Freshness, KitLink, KitStack, PageBand, Row, Rows, Tile } from "@/components/kit/kit";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
@@ -91,6 +91,9 @@ export type PremiumHomeSurfaceProps = PremiumHomeProps & {
 export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems = false, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
   actions, actionsConnection, onRetryActions, liveReaders, offline = false }: PremiumHomeSurfaceProps) {
   const readyToday = today?.state === "ready" ? today : null;
+  // r4 QA: Home remembers whether the Owner setup card shows, so the next route placeholder starts with its shape.
+  const hasSetup = !!setup;
+  useEffect(() => { try { sessionStorage.setItem("cm-home-setup", hasSetup ? "1" : "0"); } catch { /* storage off: the placeholder keeps its default shape */ } }, [hasSetup]);
   const readyActions = actions?.state === "ready" ? (setupHoldsItems ? withoutSetupItems(actions).snapshot : actions) : null;
   const items = readyActions?.state === "ready" ? readyActions.items : [];
   const day = readyActions?.state === "ready" ? workspaceDay(readyActions.observedAt, timeZone) : undefined;

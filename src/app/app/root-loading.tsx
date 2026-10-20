@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
 import { RouteSkeleton } from "@/components/route-skeleton";
 
 type Shape = { route: string; label: string; shape: "grid" | "list" | "cards"; band: number; overlap?: boolean };
@@ -48,8 +49,13 @@ const shapes: [string | RegExp, Shape][] = [
 ];
 const home: Shape = { route: "home", label: "your workspace", shape: "cards", band: 220 };
 
+const subscribeNever = () => () => {};
+const readSetup = () => { try { return sessionStorage.getItem("cm-home-setup") === "1"; } catch { return false; } };
+
 export function RootLoading() {
   const pathname = usePathname() ?? "/app";
   const match = shapes.find(([prefix]) => typeof prefix === "string" ? pathname === prefix || pathname.startsWith(`${prefix}/`) : prefix.test(pathname))?.[1] ?? home;
-  return <RouteSkeleton {...match} />;
+  // r4 QA: Home's placeholder takes the Owner setup card's shape when Home last showed it (remembered for this tab).
+  const setup = useSyncExternalStore(subscribeNever, readSetup, () => false);
+  return <RouteSkeleton {...match} setup={match === home && setup} />;
 }

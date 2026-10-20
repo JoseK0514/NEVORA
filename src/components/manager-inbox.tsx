@@ -108,12 +108,14 @@ const categoryNote: Record<ActionItem["category"], string> = {
 type RequestFacts = { startDate: string; endDate: string; partialDay?: { start: string; end: string }; lengthText: string; locationName: string; note?: string; reviewHref?: string };
 const dayText = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T00:00:00Z`));
 const timeText = (hhmm: string) => { const [h, m] = hhmm.split(":").map(Number); if (h === 24 || (h === 0 && m === 0)) return "midnight"; return `${(h % 12) || 12}:${String(m).padStart(2, "0")}\u00a0${h < 12 ? "AM" : "PM"}`; };
+const wholeDays = (start: string, end: string) => { const days = Math.round((Date.parse(`${end}T12:00:00Z`) - Date.parse(`${start}T12:00:00Z`)) / 86_400_000) + 1; return days === 1 ? "Full day" : `${days} full days`; };
 function requestFacts(facts: RequestFacts): [string, ReactNode][] {
   const dates = facts.startDate === facts.endDate ? dayText(facts.startDate) : `${dayText(facts.startDate)} – ${dayText(facts.endDate)}`;
   return [
     ["Dates", <span key="d" className="nv-keep">{dates}</span>],
     ...(facts.partialDay ? [["Time", <span key="t" className="nv-keep">{keepWhole(`${timeText(facts.partialDay.start)} – ${timeText(facts.partialDay.end)}`)}</span>] as [string, ReactNode]] : []),
-    ["Length", facts.lengthText],
+    // r4 QA: whole days read as the review does ("Full day", "2 full days"); a partial day keeps the read's duration.
+    ["Length", facts.partialDay ? facts.lengthText : wholeDays(facts.startDate, facts.endDate)],
     ["Works at", facts.locationName],
     ...(facts.note ? [["Note", facts.note] as [string, ReactNode]] : []),
   ];
@@ -256,7 +258,8 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const wide = useSyncExternalStore(wideSubscribe, () => window.matchMedia(WIDE).matches, () => false);
   const [selectedKey, setSelectedKey] = useState<string | null>(() => typeof window === "undefined" ? null : new URL(window.location.href).searchParams.get("item"));
   const focusPane = useRef(false);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  // r4 QA: on a phone, reloading /app/inbox?item=… opens that item's sheet again; closing the sheet drops it from the URL.
+  const [sheetOpen, setSheetOpen] = useState(() => typeof window !== "undefined" && new URL(window.location.href).searchParams.has("item"));
   // IS-P4-17: a Refresh the user asks for says so until the new read lands (background re-reads stay silent).
   const [refreshFrom, setRefreshFrom] = useState<string | null>(null);
   // ST-P4-03: once the list has shown, a pause, an offline spell, a refresh or a failed read keeps both columns
@@ -449,7 +452,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         </button>
       </p> : null}
       </div>
-      {!wide && sheetOpen && ready && current ? <ItemSheet entry={current} onClose={() => setSheetOpen(false)} /> : null}
+      {!wide && sheetOpen && ready && current && current.key === selectedKey ? <ItemSheet entry={current} onClose={() => { setSheetOpen(false); const url = new URL(window.location.href); if (url.searchParams.has("item")) { url.searchParams.delete("item"); window.history.replaceState(window.history.state, "", url); } }} /> : null}
       <div className="inbox-side-column">
         {ready && total ? current ? <InboxDetail entry={current} /> : null
           : !ready ? <DetailPlaceholder still={connection !== "loading" && connection !== "reconnecting"} /> : null}

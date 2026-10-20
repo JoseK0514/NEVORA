@@ -254,3 +254,6 @@ html body .app-shell.nevora-portal .cm-hold { display: flex; flex-direction: col
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table th:last-child { width: 8.5rem; padding-left: 20px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table td:last-child { padding-left: 20px; }
 }
+
+/* r4: the sheet's punch rows (shared module classes) use the system font like the rest of the sheet. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet :is(*, *::before, *::after) { font-family: var(--cm-sys); }
