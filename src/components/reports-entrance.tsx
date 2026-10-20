@@ -15,5 +15,5 @@ export function ReportsEntrance({children}:{children:ReactNode}) {
   },container);
   return()=>media.revert();
  },{scope:container});
- return <div ref={container} className="nv-page wb-page wb-reports" data-nv-page="">{children}</div>;
+ return <div ref={container} className="nv-page wb-page wb-reports cm-page cm-insights" data-nv-page="">{children}</div>;
 }
