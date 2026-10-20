@@ -144,9 +144,10 @@ it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reac
  // The same destinations as before, grouped by job (MG3), plus Home's team tools at their old addresses (clean Manager v3).
  const tools=['/app?view=attendance','/app?view=team','/app?view=activity','/app/clocker-recovery','/app/account-recovery'];
  expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),'/app/profile',...tools].sort());
- expect(hrefs).toEqual(['/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...tools,'/app/profile',...(role==='OWNER'?['/app/settings']:[])]);
- // Phase 3.5: Owners and Managers reach their Profile from More › Account and the desktop account menu, never the sidebar.
- expect(menu).toContain('aria-label="Account"');
+ // v3: the account (Profile) leads the sheet, as in iOS Settings; the rest follow by job.
+ expect(hrefs).toEqual(['/app/profile','/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...tools,...(role==='OWNER'?['/app/settings']:[])]);
+ expect(menu).toContain('role="dialog"');expect(menu).toContain('aria-modal="true"');
+ // Phase 3.5: Owners and Managers reach their Profile from More and the desktop account menu, never the sidebar.
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toContain('href="/app/profile"');
  expect(html.split('id="portal-account-menu"')[1]).toContain('href="/app/profile" class="nevora-action-menu-item"');

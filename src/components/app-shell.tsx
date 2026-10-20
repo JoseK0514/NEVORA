@@ -7,7 +7,7 @@ import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
-import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { PlusIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -201,6 +201,8 @@ export function AppShell({
           <AuthBrand />
         </Link>
         {companyLogo}
+        {/* v3: the workspace at the top of the sidebar (Owner and Manager; desktop only). */}
+        {!employee ? <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.trim()[0]?.toUpperCase() ?? ""}</span><span className="cm-org__name">{workspaceName}</span></p> : null}
 
         <button className="sidebar-toggle" type="button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={22} /></button>
         </div>
@@ -271,6 +273,8 @@ export function AppShell({
           </Link>
           {companyLogo}
           <div className="mobile-header-actions">
+          {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
+          {!employee ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
           {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
           <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
@@ -374,7 +378,7 @@ export function AppShell({
                   </Link>
                 );
               })}
-              <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation"
+              <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation" sheet
                 triggerClassName={activeTab === "more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
                 triggerContent={<><NavIcon name="moreCircle" size={22} weight="fill" /><span>More</span></>}>
                 {/* A tool, not a destination: opens the one finder dialog in the same tap (no timer), so iOS raises the keyboard. */}
@@ -387,8 +391,15 @@ export function AppShell({
                   <MagnifyingGlassIcon size={22} aria-hidden="true" /><span>Search</span>
                 </button>
                 <div className="nevora-action-menu-divider nevora-more-search-divider" />
+                {/* v3: the account sits at the top of More, as in iOS Settings. */}
+                {navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item cm-more-profile"
+                  aria-current={activeHref === "/app/profile" ? "page" : undefined}
+                  onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
+                  <span className="avatar" aria-hidden="true">{initials}</span>
+                  <span className="cm-more-profile__text"><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "OWNER" ? "Owner" : "Manager"} · {workspaceName}</small></span>
+                </Link> : null}
                 {/* MG3: grouped by job. Headings are labels only; every link is unchanged. */}
-                {moreNavigationGroups(mobileMore, teamTools).map(group => <div key={group.label} className="nevora-more-group" role="group" aria-label={group.label} data-group={group.label}>
+                {moreNavigationGroups(mobileMore.filter(item => item.href !== "/app/profile"), teamTools).map(group => <div key={group.label} className="nevora-more-group" role="group" aria-label={group.label} data-group={group.label}>
                   <p className="nevora-more-group-label" aria-hidden="true">{group.label}</p>
                   {group.items.map(item => (
                     <Link key={item.href} href={item.href} className="nevora-action-menu-item"

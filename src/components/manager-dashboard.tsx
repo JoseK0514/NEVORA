@@ -16,6 +16,7 @@ import './manager-home-gusto.css';
 import { HomeRecentActivity, MobileHomeOverview, MobileHomeTools } from './mobile-home-overview';
 import { ManagerTodayTiles } from './manager-today';
 import type { ReactNode } from 'react';
+import type { ClockMonitor } from '@/lib/time-clock';
 import { PremiumHomeLive, PremiumHomeSurface, type PremiumHomeWeek } from './premium-home';
 import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status, Tile } from './kit/kit';
 import { presentItem } from '@/lib/action-center/present';
@@ -73,7 +74,7 @@ export type DashboardRevisionItem = {
 
 type Props = {
   /** Display-only compositions can supply prepared panels without mounting readers. */
-  overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode; /** Fictional snapshots for the premium Home preview. */ snapshots?: { today: Today; actions: ActionCenter } };
+  overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode; /** Fictional snapshots for the premium Home preview. */ snapshots?: { today: Today; actions: ActionCenter; monitor?: ClockMonitor } };
   /** Workspace date for the Home band, e.g. "Sunday, October 18". */
   dateLabel?: string;
   role?: "OWNER" | "MANAGER";
@@ -211,7 +212,7 @@ function PremiumOverview(props: Props) {
   const common = { greeting: `${greeting(props.timeZone)}, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props) };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
-    today={slots.snapshots.today} actions={slots.snapshots.actions} actionsConnection="ready" />;
+    today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
     <PremiumHomeLive {...common} setup={props.role === 'OWNER' ? <OwnerSetupRowLive locationCount={props.totalLocations}/> : null} />

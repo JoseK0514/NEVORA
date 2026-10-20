@@ -15,6 +15,8 @@ type ActionMenuProps = {
   /** Replaces the default trigger look, e.g. for a tab-bar More button. */
   triggerClassName?: string;
   triggerContent?: ReactNode;
+  /** A full sheet (the Owner and Manager More): announced as a modal dialog, and focus moves into it however it opens. */
+  sheet?: boolean;
 };
 
 export function ActionMenu({
@@ -27,6 +29,7 @@ export function ActionMenu({
   iconOnly = false,
   triggerClassName,
   triggerContent,
+  sheet = false,
 }: ActionMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -88,7 +91,7 @@ export function ActionMenu({
         keyboardOpenRef.current = false;
         return;
       }
-      if (!keyboardOpenRef.current) return;
+      if (!keyboardOpenRef.current && !sheet) return;
       // The toggle event runs after the popover opens. Keyboard focus must
       // not wait for a paint that a busy/background document can defer.
       const first = menu.querySelector<HTMLElement>(
@@ -113,7 +116,7 @@ export function ActionMenu({
       window.visualViewport?.removeEventListener("resize", position);
       window.visualViewport?.removeEventListener("scroll", position);
     };
-  }, [align]);
+  }, [align, sheet]);
 
   return (
     <div className="nevora-action-menu">
@@ -158,6 +161,8 @@ export function ActionMenu({
         id={id}
         className={`nevora-action-menu-popover align-${align}`}
         popover="auto"
+        role={sheet ? "dialog" : undefined}
+        aria-modal={sheet || undefined}
         aria-label={ariaLabel ?? `${label} actions`}
       >
         {children}

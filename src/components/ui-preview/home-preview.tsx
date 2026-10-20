@@ -121,7 +121,7 @@ export function HomePreview() {
         status="ready" refreshing={false} onRetry={refresh} displayName="Alexandra"
         ownTimeSlot={<EmployeeTimeView compact state={{time: previewOwnTime, paused: false, refreshing: false}} onRefresh={refresh}/>}/></div>
         : <ManagerDashboard {...previewManagerHome} role={role} firstName={role === 'OWNER' ? 'Fictional' : 'Morgan'}
-          overviewSlots={{snapshots: {today: previewToday, actions: previewActionCenter}, today: <TodayTilesSurface snapshot={previewToday} />,
+          overviewSlots={{snapshots: {today: previewToday, actions: previewActionCenter, monitor: previewMonitor}, today: <TodayTilesSurface snapshot={previewToday} />,
             setup: role === 'OWNER' ? <OwnerSetupCard steps={setupSteps(previewActionCenter.state === 'ready' ? previewActionCenter.items : [])} locationCount={homePreviewRecords.locations.length}/> : null,
             actions: <ActionCenterSurface snapshot={role === 'OWNER' ? ownerTasks.snapshot : previewActionCenter} setupListed={role === 'OWNER' ? ownerTasks.removed : 0}
             connection="ready" timeZone={homePreviewRecords.workspace.time_zone}

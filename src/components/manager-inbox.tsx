@@ -46,7 +46,7 @@ type InboxEntry = {
   /** Clean Manager (v3): a short value on the right ("2h 15m", "Waiting"). Decoration: the status says it to screen readers. */
   trailing?: ReactNode; trailingTone?: "urgent" | "review";
   /** Detail pane only: labelled facts and one plain sentence on what to do. */
-  facts?: [string, ReactNode][]; note?: string; secondary?: { href: string; label: string }; paneMeta?: boolean;
+  facts?: [string, ReactNode][]; note?: string; secondary?: { href: string; label: string }[]; paneMeta?: boolean;
 };
 
 /** Desktop list and detail (Phase 4): the row a wide screen has selected, and how to select one. */
@@ -164,9 +164,15 @@ function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, sh
     trailing: running ? lateBy(shift, observedAt) : "Ended", trailingTone: "urgent",
     // TCD-08: the pane says each thing once: the pill is the condition, the facts are when and where, the note is what to do.
     paneMeta: false,
-    facts: [["Shift", <span key="t" className="nv-keep">{keepWhole(`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}`)}</span>], ["Location", shift.locationName]],
+    facts: [["Shift", <span key="t" className="nv-keep">{keepWhole(`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}`)}</span>], ["Location", shift.locationName],
+      ...(shift.positionName ? [["Role", shift.positionName] as [string, ReactNode]] : [])],
     note: running ? "Check in with them, or look at the Clocker." : "Check the timecard before you approve it.",
-    secondary: running ? { href: `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`, label: "Open timecard" } : undefined };
+    // v3: the shift and the person are one step from here too.
+    secondary: [
+      ...(running ? [{ href: `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`, label: "Open timecard" }] : []),
+      // No "Edit shift" yet: Today's shift ids are the published snapshot's, not the live shift's (see CODEX.md).
+      ...(running ? [] : [{ href: `/app/employees/${encodeURIComponent(shift.employeeId)}`, label: "View profile" }]),
+    ] };
 }
 
 function ShiftRow({ shift, timeZone, observedAt, showPlace }: { shift: TodayShift; timeZone: string; observedAt?: string; showPlace?: boolean }) {
@@ -250,6 +256,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const wide = useSyncExternalStore(wideSubscribe, () => window.matchMedia(WIDE).matches, () => false);
   const [selectedKey, setSelectedKey] = useState<string | null>(() => typeof window === "undefined" ? null : new URL(window.location.href).searchParams.get("item"));
   const focusPane = useRef(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   // IS-P4-17: a Refresh the user asks for says so until the new read lands (background re-reads stay silent).
   const [refreshFrom, setRefreshFrom] = useState<string | null>(null);
   // ST-P4-03: once the list has shown, a pause, an offline spell, a refresh or a failed read keeps both columns
@@ -285,9 +292,10 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   ] : [];
   const current = entries.find(entry => entry.key === selectedKey) ?? entries[0] ?? null;
   const select = (entry: InboxEntry, event: MouseEvent<HTMLAnchorElement>) => {
-    if (!wide || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
     event.preventDefault();
-    focusPane.current = true;
+    // v3: below 1024px the item opens in a half-height sheet; on wide screens, in the pane.
+    if (wide) focusPane.current = true; else setSheetOpen(true);
     setSelectedKey(entry.key);
     const url = new URL(window.location.href);
     url.searchParams.set("item", entry.key);
@@ -299,8 +307,11 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   if (showing && !hasShown) setHasShown(true);
   // IS-P4-21: when the list goes away under the reader's focus, focus lands on the status message, not on the page body.
   // IS-P4-22: when the list comes back and focus was lost with the message, it lands on the selected row or the first section heading.
+  // The first list after load is not a "return": focus stays where the reader is (v3 QA: no ring on the first row).
+  const firstShow = useRef(true);
   useEffect(() => {
     if (!hasShown) return;
+    if (firstShow.current && ready) { firstShow.current = false; return; }
     if (document.activeElement !== document.body && document.activeElement !== null) return;
     if (!ready) { document.querySelector<HTMLElement>(".premium-inbox .inbox-status-message")?.focus({ preventScroll: true }); return; }
     const row = document.querySelector<HTMLElement>(".premium-inbox [data-inbox-key][aria-current]");
@@ -437,6 +448,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         </button>
       </p>
       </div>
+      {!wide && sheetOpen && ready && current ? <ItemSheet entry={current} onClose={() => setSheetOpen(false)} /> : null}
       <div className="inbox-side-column">
         {ready && total ? current ? <InboxDetail entry={current} /> : null
           : !ready ? <DetailPlaceholder still={connection !== "loading" && connection !== "reconnecting"} /> : null}
@@ -455,9 +467,10 @@ function wideSubscribe(change: () => void) {
 }
 
 /** The desktop detail pane: the selected row's facts and its one action, which opens the full review. */
-function InboxDetail({ entry }: { entry: InboxEntry }) {
+function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet?: boolean }) {
   return <section className="nv-card inbox-detail" aria-labelledby="inbox-detail-title"
     onKeyDown={event => {
+      if (sheet) return;
       // Escape, or Shift+Tab from the heading, goes back to the selected row (IS-P4-06).
       const back = event.key === "Escape" || (event.key === "Tab" && event.shiftKey && event.target === document.getElementById("inbox-detail-title"));
       if (!back) return;
@@ -479,9 +492,26 @@ function InboxDetail({ entry }: { entry: InboxEntry }) {
     {entry.note ? <p className="inbox-detail__note">{entry.note}</p> : null}
     <div className="inbox-detail__actions">
       <Button href={entry.href}>{entry.action}</Button>
-      {entry.secondary ? <Link className="nv-link" href={entry.secondary.href}>{entry.secondary.label}</Link> : null}
+      {entry.secondary?.map(link => <Link key={link.href} className="nv-btn" data-kind="secondary" href={link.href}>{link.label}</Link>)}
     </div>
   </section>;
+}
+
+/** Phones and tablets: the selected item in a half-height sheet (a modal dialog: focus moves in, Escape or Done closes it,
+ * and focus returns to the row). The row's link still works without JavaScript. */
+function ItemSheet({ entry, onClose }: { entry: InboxEntry; onClose: () => void }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const element = dialog.current;
+    if (element && !element.open) element.showModal();
+    document.getElementById("inbox-detail-title")?.focus({ preventScroll: true });
+  }, []);
+  return <dialog ref={dialog} className="cm-sheet" aria-labelledby="inbox-detail-title" onClose={onClose}
+    onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close(); }}>
+    <div className="cm-sheet__bar"><span className="cm-sheet__grab" aria-hidden="true" />
+      <form method="dialog"><button type="submit" className="cm-sheet__done">Done</button></form></div>
+    <InboxDetail entry={entry} sheet />
+  </dialog>;
 }
 
 /** While the Inbox loads, the pane holds its place. */

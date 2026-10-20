@@ -12,6 +12,8 @@ import { withoutSetupItems } from "@/lib/action-center/setup";
 import { needsYou, needsYouSentence, type NeedsYou } from "@/lib/action-center/needs-you";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
+import type { ClockMonitor } from "@/lib/time-clock";
+import { useClockMonitor } from "./clean/use-clock-monitor";
 
 /* Manager and Owner Home, rebuilt for the clean Manager app (v3, approved Oct 19; spec in
  * docs/product/specs/clean-manager/spec.md). One job: what needs me now, and how today is going.
@@ -54,11 +56,12 @@ const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2)
 /** Live Home: one Today read and the shared action center read. */
 export function PremiumHomeLive(props: PremiumHomeProps) {
   const { snapshot: today, refreshing, refresh } = useToday();
+  const { monitor } = useClockMonitor();
   const online = useSyncExternalStore(onlineSubscribe, () => navigator.onLine, () => true);
   const shared = useSharedHomeRead();
   const read = shared?.read;
   const actions = read && read.connection === "ready" ? read.snapshot : null;
-  return <PremiumHomeSurface {...props} today={today} todayRefreshing={refreshing} onRetryToday={refresh}
+  return <PremiumHomeSurface {...props} today={today} monitor={monitor} todayRefreshing={refreshing} onRetryToday={refresh}
     actions={actions} actionsConnection={read?.connection ?? "loading"} onRetryActions={read?.refresh}
     setupHoldsItems={props.setupHoldsItems ?? !!shared?.setup} liveReaders="today actions" offline={!online} />;
 }
@@ -70,6 +73,8 @@ function onlineSubscribe(change: () => void) {
 
 export type PremiumHomeSurfaceProps = PremiumHomeProps & {
   today: Today | null;
+  /** Open clock-ins (the Attendance monitor's read). Working now lists them; without it, Today's shifts stand in. */
+  monitor?: ClockMonitor | null;
   todayRefreshing?: boolean;
   onRetryToday?: () => void;
   actions: ActionCenter | null;
@@ -81,7 +86,7 @@ export type PremiumHomeSurfaceProps = PremiumHomeProps & {
 };
 
 /** Presentation only, so the fictional preview can show Home without a session. */
-export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems = false, today, todayRefreshing = false, onRetryToday,
+export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems = false, today, monitor = null, todayRefreshing = false, onRetryToday,
   actions, actionsConnection, onRetryActions, liveReaders, offline = false }: PremiumHomeSurfaceProps) {
   const readyToday = today?.state === "ready" ? today : null;
   const readyActions = actions?.state === "ready" ? (setupHoldsItems ? withoutSetupItems(actions).snapshot : actions) : null;
@@ -130,7 +135,7 @@ export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems
         {value ? <NeedsYouCard value={value} timeZone={timeZone} /> : <PendingCard connection={offline ? "offline" : actionsConnection} onRetry={retryAll} />}
       </div>
       <div className="cm-home__people">
-        <PeopleCards today={today} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
+        <PeopleCards today={today} monitor={monitor} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
       </div>
       {readyToday && readyToday.shifts.length ? <div className="cm-home__timeline"><ShiftTimeline today={readyToday} timeZone={timeZone} /></div> : null}
     </KitStack>
@@ -188,7 +193,7 @@ const working = (shift: TodayShift) => shift.status === "clocked_in" || shift.st
 const later = (shift: TodayShift) => shift.status === "upcoming" || shift.status === "starting";
 
 /** Who is working now and who starts later today, from the published-shift snapshot. */
-function PeopleCards({ today, refreshing, onRetry, timeZone, offline = false, paused = false }: { today: Today | null; refreshing: boolean; onRetry?: () => void; timeZone: string; offline?: boolean; paused?: boolean }) {
+function PeopleCards({ today, monitor, refreshing, onRetry, timeZone, offline = false, paused = false }: { today: Today | null; monitor: ClockMonitor | null; refreshing: boolean; onRetry?: () => void; timeZone: string; offline?: boolean; paused?: boolean }) {
   if (!today || today.state !== "ready") {
     const stamp = !today && offline ? <Freshness state="offline">Offline</Freshness> : !today && paused ? <Freshness state="stale">Paused</Freshness>
       : !today ? <Freshness state="stale">Loading…</Freshness>
@@ -200,17 +205,26 @@ function PeopleCards({ today, refreshing, onRetry, timeZone, offline = false, pa
       <div className="premium-skeleton premium-skeleton--rows premium-skeleton--still" aria-hidden="true">{[0, 1].map(i => <span key={i} className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span>)}</div>
     </Card>;
   }
+  // Who is on the clock: the open clock-ins when that read is in, else today's shifts that show a clock-in.
+  const open = monitor?.state === "ready" ? [...monitor.employees].sort((a, b) => a.clockInAt.localeCompare(b.clockInAt)) : null;
+  const shiftFor = (employeeId: string) => today.shifts.find(shift => shift.employeeId === employeeId && working(shift));
   const now = today.shifts.filter(working);
+  const count = open ? open.length : now.length || today.counts.clockedIn;
   const next = today.shifts.filter(later).sort((a, b) => a.startAt.localeCompare(b.startAt));
   return <>
-    <Card id="home-working" title={<>Working now<span className="cm-count">{now.length || today.counts.clockedIn}</span></>}
+    <Card id="home-working" title={<>Working now<span className="cm-count">{count}</span></>}
       foot={<Freshness>Updated <time dateTime={today.observedAt}>{clock(today.observedAt, timeZone)}</time></Freshness>}>
-      {now.length ? <Rows label="Working now">
+      {open && open.length ? <Rows label="Working now">
+        {open.map(person => { const shift = shiftFor(person.employeeId); return <Row key={person.timeEntryId}
+          leading={<Avatar initials={initials(person.employeeName)} />} title={person.employeeName}
+          meta={`${person.locationName}\u00a0· ${person.state === "ON_BREAK" ? "on break" : `in at ${clock(person.clockInAt, timeZone)}`}`}
+          trailing={shift ? `until ${short(shift.endAt, timeZone)}` : undefined} />; })}
+      </Rows> : now.length ? <Rows label="Working now">
         {now.map(shift => <Row key={shift.id}
           leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName}
           meta={`${shift.locationName}\u00a0· ${shift.status === "on_break" ? "on break" : shift.firstClockInAt ? `in at ${clock(shift.firstClockInAt, timeZone)}` : "clocked in"}`}
           trailing={`until ${short(shift.endAt, timeZone)}`} />)}
-      </Rows> : <CardBody><p className="premium-note">{today.counts.clockedIn
+      </Rows> : <CardBody><p className="premium-note">{!open && today.counts.clockedIn
         // A snapshot can carry counts without its shift list; the count is still true.
         ? `${plural(today.counts.clockedIn, "person is", "people are")} clocked in.` : "No one is clocked in right now."}</p></CardBody>}
     </Card>

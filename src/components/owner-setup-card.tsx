@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {useId, type ReactNode} from 'react';
-import {CaretRightIcon, CheckCircleIcon, CircleIcon} from '@phosphor-icons/react/ssr';
+import {CaretRightIcon, CheckCircleIcon, CircleIcon, SquaresFourIcon} from '@phosphor-icons/react/ssr';
 import {lower} from '@/lib/workspace-presentation/words';
 import {hasSetupGaps, setupDoneCount, type SetupSteps} from '@/lib/action-center/setup';
 import {usePresentation} from './presentation-context';
@@ -74,7 +74,7 @@ export function OwnerSetupRow({steps, locationCount}: {steps: SetupSteps | null;
   return <section className="nv-card cm-setup" aria-label="Finish setting up">
     <ul className="nv-rows">
       <li><Link className="nv-row" href={next.href} data-leading="true">
-        <span className="cm-setup__ring" style={{['--done' as string]: `${done * 50}%`}} aria-hidden="true">{done}/2</span>
+        <span className="cm-tile-tint"><span className="nv-tile" data-tone="neutral" aria-hidden="true"><SquaresFourIcon size={18} weight="fill"/></span></span>
         <span className="nv-row__text"><span className="nv-row__title">Finish setting up</span><span className="nv-row__meta">{`Next: ${next.label}`}</span></span>
         <span className="nv-row__trail">{`${done} of 2`}</span>
         <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true"/>

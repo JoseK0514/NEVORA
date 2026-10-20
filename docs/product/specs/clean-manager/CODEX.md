@@ -22,3 +22,9 @@ Every visual change is scoped to Owner and Manager: `premium-clean-manager.css` 
 
 Please pause the exit sweeps on Manager and Owner pages (Wave A, Wave B, Desktop, and the Manager parts of Profile) until
 this branch asks for its exit round; they are out of date. Phase 3, Wave C and Employee sweeps are unaffected.
+
+## Contract request: live shift id on Today's shifts
+
+The mockup's Inbox item (no clock-in) offers "Edit shift". `TodayShift.id` comes from `schedule_publication_revision_shifts`
+(the published snapshot), so it can't open `/app/schedule/edit?shiftId=…`. If the Today read can also return the live shift's
+id (for example `shiftId`), the Inbox will add that action. Until then it offers Open/Review timecard and View profile.
