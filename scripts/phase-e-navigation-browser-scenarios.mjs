@@ -163,14 +163,15 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }
   assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
   await q("UPDATE employees SET first_name=$1,last_name=$2 WHERE id=$3",['Avery With A Very Long Fictional Display Name','Long Employee Name For Reflow Verification',actor]);await page.reload();await ready('profile');await bounds();
-  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.zoom='2';});await bounds();await screenshot('zoom-long-content');await page.evaluate(()=>{document.documentElement.style.zoom='';});await page.emulateMedia({reducedMotion:'no-preference'});
+  // Match scripts/ui-checks/checks.mjs: text zoom scales the rem-based kit, not the whole page box.
+  await page.emulateMedia({reducedMotion:'reduce'});const normalFont=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});await page.waitForTimeout(600);assert.equal(await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize)),normalFont*2,'200% root-font text scale is applied');await bounds();await screenshot('text-200-long-content');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.emulateMedia({reducedMotion:'no-preference'});
   if(width<768){
    // The kit reserves tab-bar space on the page, rather than the old outer frame.
    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
    const clearance=await page.locator('.premium-employee-profile').evaluate(e=>{const nav=document.querySelector('.mobile-nav').getBoundingClientRect(),signout=e.querySelector('.profile-signout button').getBoundingClientRect();return {padding:parseFloat(getComputedStyle(e).paddingBottom),navigationHeight:nav.height,signoutBottom:signout.bottom,navigationTop:nav.top};});
    assert(clearance.navigationHeight>0);assert(clearance.padding>=clearance.navigationHeight,'Page reserves the actual fixed navigation height');assert(clearance.signoutBottom<=clearance.navigationTop,'Final Sign out control clears fixed navigation at the document end');
   }
-  checks.push('long_content_safe_area_keyboard: real long identity, 200% CSS zoom/reflow, bounds, reduced-motion and mobile bottom clearance');
+  checks.push('long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
   await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
