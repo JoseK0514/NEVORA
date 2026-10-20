@@ -62,6 +62,7 @@ Spanish (draft for Jose's review; payroll and legal text is not involved):
 | English | Español |
 |---|---|
 | Good morning / Good afternoon / Good evening | Buenos días / Buenas tardes / Buenas noches |
+| Welcome back (server render before the greeting swaps in) | Te damos la bienvenida (Jose, October 20: gender-neutral) |
 | Sign in to see your schedule, time and pay. | Inicia sesión para ver tu horario, tus horas y tu pago. |
 | Your week, in one place. | Tu semana, en un solo lugar. |
 | Shifts, hours, time off and pay, ready the moment you sign in. | Turnos, horas, tiempo libre y pago, listos al iniciar sesión. |
@@ -94,6 +95,7 @@ Spanish (draft for Jose's review; payroll and legal text is not involved):
 | Need your employee details? | ¿Necesitas tus datos de empleado? |
 | Back to sign in / Sign in (pill) | Volver a iniciar sesión / Iniciar sesión |
 | Privacy · Terms · Support | Privacidad · Términos · Soporte |
+| Device screen (decorative): TUESDAY, OCTOBER 20 · Good morning, Alex · NEXT SHIFT · In 22 min · Front desk · Main Office · Clock in · THIS WEEK · Scheduled · Worked · Next payday · Fri, Oct 23 · Time off · Oct 26 · Approved by Morgan · Approved · Home / Schedule / Requests / Pay | MARTES, 20 DE OCTUBRE · Buenos días, Alex · PRÓXIMO TURNO · En 22 min · Recepción · Oficina principal · Marcar entrada · ESTA SEMANA · Programadas · Trabajadas · Próximo pago · vie, 23 oct · Tiempo libre · 26 oct · Aprobado por Morgan · Aprobado · Inicio / Horario / Solicitudes / Pago |
 | Waiting for Face ID… / Waiting for your passkey… | Esperando Face ID… / Esperando tu llave de acceso… |
 | Face ID isn’t set up for NEVORA on this device. Sign in with your password, then set it up in Profile. | Face ID no está configurado para NEVORA en este dispositivo. Inicia sesión con tu contraseña y luego configúralo en tu perfil. |
 | No passkey for NEVORA is saved on this device. Sign in with your password, then add one in Profile. | No hay una llave de acceso de NEVORA guardada en este dispositivo. Inicia sesión con tu contraseña y luego agrega una en tu perfil. |
@@ -110,7 +112,7 @@ Spanish (draft for Jose's review; payroll and legal text is not involved):
 | This browser can’t use passkeys. Try Safari or Chrome on this device. | Este navegador no puede usar llaves de acceso. Prueba Safari o Chrome en este dispositivo. |
 | Sign in faster next time with Face ID / Use Face ID instead of your password on this phone. / Not now | Inicia sesión más rápido la próxima vez con Face ID / Usa Face ID en vez de tu contraseña en este teléfono. / Ahora no |
 
-Translate the existing server error messages for these pages the same way, keeping their meaning exact. List any you aren't sure of for Jose.
+Translate the existing server error messages for these pages the same way, keeping their meaning exact. List any you aren't sure of for Jose. ("Owner" stays in English in Spanish text, Jose, October 20.)
 
 ## Assets
 

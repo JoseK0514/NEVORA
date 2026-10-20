@@ -23,7 +23,7 @@ function TwoLines({ text }: { text: string }) {
 }
 
 /** A static, fictional employee Today screen in an iPhone frame. Decorative only. */
-function Device() {
+function Device({ d }: { d: AuthCopy["device"] }) {
   return (
     <div className="ap-device" aria-hidden="true">
       <span className="ap-device__side" />
@@ -37,25 +37,25 @@ function Device() {
             <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".35" /><rect x="2" y="2" width="20" height="9" rx="2" /><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2Z" opacity=".4" /></svg>
           </span>
         </div>
-        <div className="ap-scr-greet"><small>Tuesday, October 20</small><b>Good morning, Alex</b></div>
+        <div className="ap-scr-greet"><small>{d.date}</small><b>{d.greeting}</b></div>
         <div className="ap-scr-card">
-          <div className="ap-scr-row"><span className="ap-scr-k">Next shift</span><span className="ap-scr-pill">In 22 min</span></div>
-          <div className="ap-scr-time">8:00 AM – 4:00 PM</div>
-          <div className="ap-scr-place">Front desk · Main Office</div>
-          <div className="ap-scr-cta">Clock in</div>
+          <div className="ap-scr-row"><span className="ap-scr-k">{d.nextShift}</span><span className="ap-scr-pill">{d.inMinutes}</span></div>
+          <div className="ap-scr-time">{d.time}</div>
+          <div className="ap-scr-place">{d.place}</div>
+          <div className="ap-scr-cta">{d.clockIn}</div>
         </div>
-        <div className="ap-scr-lab">This week</div>
+        <div className="ap-scr-lab">{d.thisWeek}</div>
         <div className="ap-scr-rows">
-          <div>Scheduled<span>32h</span></div>
-          <div>Worked<span>16h 05m</span></div>
-          <div>Next payday<span>Fri, Oct 23</span></div>
+          <div>{d.scheduled}<span>32h</span></div>
+          <div>{d.worked}<span>16h 05m</span></div>
+          <div>{d.nextPayday}<span>{d.payday}</span></div>
         </div>
         <div className="ap-scr-req">
           <span className="ap-scr-dot"><svg width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M173.7 98.3a8 8 0 0 1 0 11.4l-56 56a8 8 0 0 1-11.4 0l-24-24a8 8 0 0 1 11.4-11.4l18.3 18.4 50.3-50.4a8 8 0 0 1 11.4 0Z" /></svg></span>
-          <span><b>Time off · Mon, Oct 26</b><span className="ap-scr-s">Approved by Morgan</span></span>
-          <span className="ap-scr-st">Approved</span>
+          <span className="ap-scr-req__text"><b>{d.timeOff}</b><span className="ap-scr-s">{d.approvedBy}</span></span>
+          <span className="ap-scr-st">{d.approved}</span>
         </div>
-        <div className="ap-scr-tabs"><span className="on"><i />Home</span><span><i />Schedule</span><span><i />Requests</span><span><i />Pay</span></div>
+        <div className="ap-scr-tabs">{d.tabs.map((tab, index) => <span key={tab} className={index === 0 ? "on" : undefined}><i />{tab}</span>)}</div>
       </div>
     </div>
   );
@@ -103,7 +103,7 @@ export function AuthShell({ lang, t, variant, back, children }: {
           <p className="ap-panel__line"><TwoLines text={t.bandLine} /></p>
           <p className="ap-panel__support">{t.panelSupport}</p>
         </div>
-        <Device />
+        <Device d={t.device} />
       </aside>
     </main>
   );
