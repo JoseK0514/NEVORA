@@ -36,6 +36,10 @@ try{
   report.navigation.push({engine,waitUntil:'domcontentloaded',status:response.status(),elapsedMs:Date.now()-navigationStarted});
   for(const width of [320,375,390,430,768,1024,1440]){
    await page.setViewportSize({width,height:1000});
+   // Start each native traversal in a fresh document: WebKit preserves its
+   // sequential focus starting point across refreshes of the reused disclosure.
+   await page.goto(app.url+'/app/reports?start=2026-09-21&end=2026-09-27',{waitUntil:'domcontentloaded'});
+   await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
    await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/reports'&&r.request().method()==='POST'),page.getByRole('button',{name:'Refresh',exact:true}).click()]);await page.waitForFunction(()=>document.querySelector('button[aria-label="Refresh"]')?.getAttribute('aria-busy')!=='true');await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
    const tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';
    const backTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
