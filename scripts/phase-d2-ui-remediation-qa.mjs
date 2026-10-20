@@ -97,6 +97,9 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   });
   assert(contrast.length>0);assert(contrast.every(pair=>pair.opacity===1&&pair.ratio>=4.5));observations.contrast=contrast;
 
+  observations.keyboard.push({stage:'employee-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
+  await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
+  observations.keyboard.push({stage:'employee-after-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus())});
   await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   const details=ep.locator('.employee-time-entry').first();
   await details.locator('summary').focus();await details.locator('summary').press('Enter');
@@ -124,6 +127,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   // Actual visible focus is the contract; WebKit's recorded pseudo-class flag
   // remains false for its native date control despite a real Tab transition.
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
+  observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
+  await mp.bringToFront();assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
   const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
