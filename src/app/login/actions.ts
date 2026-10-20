@@ -6,6 +6,7 @@ import { verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession } from "@/lib/auth/session";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { prepareInstallationForLogin } from "@/lib/notifications/logout";
+import { passwordLoginAllowed } from "@/lib/auth/login-limits";
 
 export async function login(formData: FormData) {
   const returnTo = safeReturnTo(String(formData.get("returnTo") ?? ""));
@@ -19,6 +20,7 @@ export async function login(formData: FormData) {
     redirect(`/login?error=invalid${returnQuery}`);
   }
 
+  if (!(await passwordLoginAllowed(employeeId))) redirect(`/login?error=invalid${returnQuery}`);
   const activation = await getEmployeeActivationState(employeeId);
 
   if (activation && activation.active && !activation.has_credential) {
