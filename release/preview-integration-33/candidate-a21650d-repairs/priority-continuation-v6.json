@@ -1,0 +1,72 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "scope": "Continuation after required AL/checker+Payroll+TC3 and passive nav4. WBcontrast3 prioritized before remaining optional Mark16/ACK16/Updates1/WR17prerequisite4. All scopes separate; no full exit credit.",
+  "preparedAt": "2026-10-20T00:48:42.870Z",
+  "jobs": [
+    {
+      "stage": "wb-contrast",
+      "startedAt": "2026-10-20T00:48:44.649Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-scripts/scoped-verify-v2.mjs",
+      "module": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-diagnostics/wave-b-contrast-a216.mjs",
+      "moduleSha256": "6ab1d08bfe243851d380dec948388ca6c928f40217876bb409ccdb0ceb0b0271",
+      "exitCode": 0,
+      "completedAt": "2026-10-20T00:54:04.794Z"
+    },
+    {
+      "stage": "markread-chromium",
+      "startedAt": "2026-10-20T00:54:04.967Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-scripts/scoped-verify-v2.mjs",
+      "module": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-optional-p3/management-mark-read-a216.mjs",
+      "moduleSha256": "215980893c4e2bd2e0048439fae7848dc3726ed6e1ea3b974ed83ce5a75ac07f"
+    }
+  ],
+  "oneBrowserWorker": true,
+  "handoff": {
+    "outer": 288613,
+    "child": 319425,
+    "pausedAt": "2026-10-20T00:48:44.445Z",
+    "requestedPriority": "Actual nav/people attribution then WBcontrast3 before remaining optional state proofs",
+    "childClosedAt": "2026-10-20T00:48:44.445Z",
+    "originalNavStdoutQualification": "Outer paused while child finished; complete structured nav rows retained, stdout tail may not have drained",
+    "originalOuterTerminatedAfterBrowserChildClosed": true,
+    "newContinuationOwnsFinallyClosure": true
+  },
+  "completedBeforeHandoff": {
+    "AL": {
+      "required": 24,
+      "completed": 24,
+      "passed": 24
+    },
+    "Payroll": {
+      "required": 4,
+      "completed": 4,
+      "passed": 4
+    },
+    "PayrollPaint": {
+      "required": 6,
+      "completed": 6,
+      "passed": 6
+    },
+    "TC3": {
+      "required": 16,
+      "completed": 16,
+      "passed": 6
+    },
+    "Nav": {
+      "required": 4,
+      "completed": 4,
+      "passed": 0
+    },
+    "unchangedChecker": {
+      "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+      "expected": 24,
+      "recorded": 24,
+      "rawPassed": 24,
+      "complete": true,
+      "allRawPass": true,
+      "loadGaps": 0,
+      "geometryCredit": false,
+      "fullExitClaim": false
+    }
+  }
+}

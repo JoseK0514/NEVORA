@@ -1,0 +1,40 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "source": "/workspace/inspect-candidate-a21650d",
+  "preview": "/workspace/paused-previews/candidate-a21650d-repairs",
+  "checkedAt": "2026-10-20T00:28:55.455Z",
+  "sourceClean": true,
+  "sourceManifestCheckpointVerified": true,
+  "ownedDatabaseIdentityVerified": true,
+  "initializedBeforeListen": true,
+  "fixtureMode": "normal",
+  "fixtureCounts": {
+    "people": 16,
+    "largepeople": 0,
+    "largecurrentshifts": 0,
+    "yearentries": 0,
+    "openentries": 2,
+    "publishedschedules": 4
+  },
+  "longManagerEmailCharacters": 69,
+  "actorCount": 12,
+  "positiveCommunicationReads": 12,
+  "positiveReviewReplacementActors": 2,
+  "canonicalPendingCallout": true,
+  "positiveManagerCalloutReads": 2,
+  "privateHintsExcluded": true,
+  "loggedIn": [
+    "QAOWNER",
+    "AUDIT-M",
+    "AUDIT-E",
+    "AUDIT-LEAD",
+    "AUDIT-LONG"
+  ],
+  "receiptSha256": {
+    "base": "244965492116ecea79885c8b16a4dae945d9ebe3d412e59e4465e8911458d4c7",
+    "AL": "6e6c36a0f7a838c676bab4c0a04ef482b1f054fcad75f5d9a87c5f8bdc17e4d8",
+    "TC3": "973b7795f9ae6ed0c8b165be5a82686d6eef9d4f9a202e6e51600e248989b5c8",
+    "sourceManifest": "d660a5bf658bd108cc248fc0b7a99c6e2e46d9ccf1c0d5c095ea1ca9f0f2a381"
+  },
+  "scope": "AL24/checker,Payroll geometry+contrast and TC3 four-site repaired-source proof plus separately reported optional scopes; no152/72/fullgate/full-exit inheritance"
+}

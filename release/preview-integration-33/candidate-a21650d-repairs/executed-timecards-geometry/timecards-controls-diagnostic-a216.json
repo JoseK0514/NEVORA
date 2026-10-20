@@ -1,0 +1,58 @@
+{
+  "sha": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "module": "timecards-controls-diagnostic-a216.mjs",
+  "moduleSha256": "3e45e9fe1580c1d100079ea97e077771db1d0b75d69469ad5a2d60234f92984c",
+  "sourceFiles": {
+    "src/components/timecards.tsx": "57a2fd10eb112739a5a5de81aa55babd604e6f7b9a32823a9a995b27642d1ecd",
+    "src/components/timecards.module.css": "60bad72d837ed8c5b8969d5e41a0ba9798e3c875e1a9907dc453776175a6ad68",
+    "src/app/app/timecards/page.tsx": "e4e6d97de41f9646c0127bf9819b35ca40b9a441c64cb51057e00f747f0b1f5b",
+    "src/app/api/timecards/route.ts": "0786b28f20ac463d78209174f4896e53c917394d438cd6cb03e9d7c2b91064cf",
+    "src/lib/timecards/read-model.ts": "be412d0f0bc9c8444bddf2abd2cf6abfa3398b909c739d4542f61624d4a8783e",
+    "src/app/app/portal-premium.css": "c0a3a213ba88c7f6c60bcc97f0ef11f8ba5c4760d1dac44e9b40f1ddff5bea70",
+    "src/app/app/layout.tsx": "daf909658e8738898e580edc31a731955a6da0ace1fb989e436d0acd0c18ea16"
+  },
+  "contexts": 2,
+  "engine": "chromium",
+  "account": "AUDIT-E",
+  "sizes": [
+    [
+      768,
+      1000,
+      100
+    ],
+    [
+      1440,
+      1000,
+      100
+    ]
+  ],
+  "nativeResponsiveSequences": [
+    [
+      430,
+      768
+    ],
+    [
+      1024,
+      1440
+    ]
+  ],
+  "fixtureReadiness": "Exact initial employee actor; actual POST /api/timecards200 ready, exact2key current fixture period, source header and actor; actual matching ready/empty DOM. No GET200 assumption, no requiring nonempty card.",
+  "ciOracle": {
+    "source": "/workspace/validate-preview-followups/scripts/phase-d-browser-qa.mjs",
+    "sourceSha256": "8f5a56fd82adc656e5f5715aa42abdc41c78a47750205731724b6d8acac5efe7",
+    "lines": "52\u201356",
+    "allButtonInputHeightThreshold": 43.5,
+    "includeHiddenZero": true
+  },
+  "mutationPolicy": "No mutations, clicks, focus, DB writes, fixtures, source/style/attribute repairs. Only ordinary motion preference, standard100% root text, native viewport resizes and passive snapshots of original nodes. Exact harmless POST read allowed by owner guard.",
+  "executed": false,
+  "fullCdCredit": false,
+  "createdAt": "2026-10-20T00:58:30.291182+00:00",
+  "invocation": {
+    "VERIFY_ENGINES": "chromium",
+    "VERIFY_SCOPED_MODULES": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/manual-harness/timecards-controls-diagnostic-a216.mjs",
+    "VERIFY_ONLY": "scoped-p3-timecards-controls-ci-attribution-a216",
+    "VERIFY_SHA": "a21650de50374683d52e32b883d7f419d7344f22"
+  }
+}

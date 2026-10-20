@@ -1,0 +1,60 @@
+{
+  "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "scope": "AL-WA-10 scoped24 checker only; geometry/human review still required",
+  "records": [
+    {
+      "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+      "account": "QAOWNER",
+      "engine": "chromium",
+      "startedAt": "2026-10-20T00:32:11.874Z",
+      "completedAt": "2026-10-20T00:32:50.049Z",
+      "exitCode": 0,
+      "expectedCells": 6,
+      "sourceCheckerUnchanged": true,
+      "cells": 6,
+      "rawPass": 6,
+      "loadGaps": 0
+    },
+    {
+      "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+      "account": "QAOWNER",
+      "engine": "webkit",
+      "startedAt": "2026-10-20T00:32:50.098Z",
+      "completedAt": "2026-10-20T00:33:40.912Z",
+      "exitCode": 0,
+      "expectedCells": 6,
+      "sourceCheckerUnchanged": true,
+      "cells": 6,
+      "rawPass": 6,
+      "loadGaps": 0
+    },
+    {
+      "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+      "account": "AUDIT-M",
+      "engine": "chromium",
+      "startedAt": "2026-10-20T00:33:40.917Z",
+      "completedAt": "2026-10-20T00:34:23.862Z",
+      "exitCode": 0,
+      "expectedCells": 6,
+      "sourceCheckerUnchanged": true,
+      "cells": 6,
+      "rawPass": 6,
+      "loadGaps": 0
+    },
+    {
+      "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+      "account": "AUDIT-M",
+      "engine": "webkit",
+      "startedAt": "2026-10-20T00:34:23.916Z",
+      "completedAt": "2026-10-20T00:35:19.416Z",
+      "exitCode": 0,
+      "expectedCells": 6,
+      "sourceCheckerUnchanged": true,
+      "cells": 6,
+      "rawPass": 6,
+      "loadGaps": 0
+    }
+  ],
+  "fullExitClaim": false
+}

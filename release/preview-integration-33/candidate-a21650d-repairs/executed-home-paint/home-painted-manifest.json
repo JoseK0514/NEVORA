@@ -1,0 +1,24 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "sourceFiles": {
+    "src/components/employee-home-reviewed.tsx": "9e64e4319ae71b9eb6808d4b2aafde57dcfd141b96e3c6f66f8ad656d3f6c298",
+    "src/components/employee-home-reviewed.module.css": "8848c4613132eb272037ba487a81941258683112326e815150b264bef0829942",
+    "src/components/employee-home-actions.tsx": "745f6ca3fe9e4923598510e8dacf49d1d44fc3ddb657231d4efe3d138949078c",
+    "src/lib/employee-home/types.ts": "cd853b226ab23b5598c9997d9d5f5ca28d3ed47057aacecb5dffdc8999c0d945",
+    "src/app/api/employee/home/route.ts": "b50e0e2d3c246051f620828c93e11886ad53fcadfec69801ab4943273075252d"
+  },
+  "helperSource": "/workspace/validate-preview-followups/scripts/phase-e-home-browser-scenarios.mjs",
+  "helperSourceSha256": "fbf35cc2c60239ae601f7220c9d75cae8e75136a1f3637d312f89661a76fe109",
+  "exactExtractedRoutineSha256": "e5b3a55a4d9ce9f41378abdbf2310ab3b88746752e2497fb43f70794f7c54165",
+  "measureModuleSha256": "fc2423c9669d973cc4d6f7bbd88f4f76bb3edfecf4160b5d9917c6a4ba0c44d1",
+  "contexts": 2,
+  "actualStatesPerContext": [
+    "focus",
+    "normal",
+    "hover",
+    "pressed"
+  ],
+  "oracleMinimum": 4.5,
+  "sourceOrFixtureMutation": false,
+  "credit": "Bounded actual published-pass paint diagnostic only; no full Home CI journey or source exit credit"
+}

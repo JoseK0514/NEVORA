@@ -1,0 +1,119 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "preparedAt": "2026-10-20T01:02:43.744647+00:00",
+  "scope": "Exact a216 bounded repairs and separately qualified diagnostics, retained old/new findings, original attempts and verified owned closure",
+  "groups": {
+    "AL geometry": {
+      "required": 24,
+      "completed": 24,
+      "rawPassed": 24
+    },
+    "Payroll pending": {
+      "required": 4,
+      "completed": 4,
+      "rawPassed": 4
+    },
+    "Payroll paint causal": {
+      "required": 6,
+      "completed": 6,
+      "rawPassed": 6
+    },
+    "TC3 four sites": {
+      "required": 16,
+      "completed": 16,
+      "rawPassed": 8
+    },
+    "Navigation badge": {
+      "required": 4,
+      "completed": 4,
+      "rawPassed": 0
+    },
+    "Wave B contrast diagnostic": {
+      "required": 3,
+      "completed": 3,
+      "rawPassed": 3
+    },
+    "Home painted contrast": {
+      "required": 2,
+      "completed": 2,
+      "rawPassed": 2
+    },
+    "Mark read Chromium": {
+      "required": 12,
+      "completed": 12,
+      "rawPassed": 0
+    },
+    "Timecards control geometry diagnostic": {
+      "required": 2,
+      "completed": 2,
+      "rawPassed": 0
+    }
+  },
+  "unchangedSourceChecker": {
+    "required": 24,
+    "completed": 24,
+    "passed": 24,
+    "axe": true,
+    "sha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d"
+  },
+  "overlappingScopesNotAddedAsUniqueFullMatrix": true,
+  "sameKeyReplayExtraConfigurationCredit": 0,
+  "deferredOptionalScopes": [
+    {
+      "scope": "Mark-read WebKit",
+      "configurations": 4
+    },
+    {
+      "scope": "ACK private pause",
+      "configurations": 16
+    },
+    {
+      "scope": "Updates scrollport diagnostic",
+      "configurations": 1
+    },
+    {
+      "scope": "My Time completed-entry prerequisite diagnostic",
+      "configurations": 4
+    }
+  ],
+  "deferredExecuted": 0,
+  "deferredPassCredit": 0,
+  "credentialLiteralScan": {
+    "actualRuntimePasswordChecked": true,
+    "allActualSessionCookiesChecked": true,
+    "sessionStateFilesChecked": 5,
+    "privateFixtureHintFilesChecked": 1,
+    "rawAndEncodedLiteralMatches": [],
+    "secretValuesPrintedOrRecorded": false,
+    "method": "Literal byte scan including raw,URL-encoded and double-encoded values; private hints are never painted in application screenshots"
+  },
+  "closure": {
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "postgresStopped": true,
+    "errors": [],
+    "closedAt": "2026-10-20T01:00:18.397Z"
+  },
+  "sourceCleanAtPacket": true,
+  "allBusinessActionsBrowserLocal": true,
+  "originalSetupTransportAndControlAttemptsPreserved": true,
+  "plainStatusFocusAndDuplicateAriaOracleQualificationsPreserved": true,
+  "timecardsHiddenZeroOracleFailuresPreserved": true,
+  "artifactCount": 420,
+  "bytes": 37512063,
+  "fullExitOrFullGateClaim": false,
+  "publishMetadataSeparately": [
+    "repair-publication-allowlist.json",
+    "repair-publication-custody.json"
+  ],
+  "exclusions": [
+    "Every unallowlisted artifact",
+    "All access/session/cookie/state/env/database files",
+    "Private signed fixture hints and actor bindings",
+    "All raw preview/login/runtime/control stdout logs; structured original attempts retained",
+    "No full source exit, physical-phone, hosted or full-CI credit",
+    "Deferred Mark-read WebKit4,ACK16,Updates1,MyTime prerequisite4 have zero execution/pass credit"
+  ]
+}

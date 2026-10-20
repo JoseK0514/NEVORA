@@ -1,0 +1,65 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "startedAt": "2026-10-20T00:59:08.651Z",
+  "reason": "Root prioritizes required fifth full exit. Only already prepared short actual-ready replay and requested Timecards geometry2 follow current unchanged Mark-read Chromium12.",
+  "currentMarkReadAttempted": 12,
+  "currentMarkReadCompleted": 10,
+  "jobs": [
+    {
+      "stage": "timecards-geometry2",
+      "module": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-timecards-geometry/timecards-controls-diagnostic-a216.mjs",
+      "moduleSha256": "3e45e9fe1580c1d100079ea97e077771db1d0b75d69469ad5a2d60234f92984c",
+      "startedAt": "2026-10-20T00:59:08.811Z",
+      "pid": 347295,
+      "exitCode": 1,
+      "completedAt": "2026-10-20T00:59:39.422Z"
+    },
+    {
+      "stage": "markread-ready-same-key-replay",
+      "module": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-optional-p3/management-mark-read-a216-v2.mjs",
+      "moduleSha256": "d5bbced6e4f18289c96ea5c0a2de0fb1cd4c7d2859f78d81ac26bcbf7a47a394",
+      "startedAt": "2026-10-20T00:59:39.549Z",
+      "pid": 348150,
+      "exitCode": 1,
+      "completedAt": "2026-10-20T01:00:17.494Z"
+    }
+  ],
+  "deferred": [
+    {
+      "scope": "Mark-read WebKit",
+      "configurations": 4
+    },
+    {
+      "scope": "ACK private pause",
+      "configurations": 16
+    },
+    {
+      "scope": "Updates scrollport diagnostic",
+      "configurations": 1
+    },
+    {
+      "scope": "My Time completed-entry prerequisite diagnostic",
+      "configurations": 4
+    }
+  ],
+  "deferredExecuted": 0,
+  "deferredPassCredit": 0,
+  "oneSerialBrowserWorker": true,
+  "handoff": {
+    "previousCoordinatorRetiredAfterItsOnlyBrowserChildClosed": true,
+    "newFinallyOwnsClosure": true,
+    "previousStdoutMayHaveUndrainedTail": true,
+    "completeStructuredMarkReadRowsPreserved": true
+  },
+  "markReadReplay": {
+    "sameKeys": [
+      "scoped-p3-management-mark-read-pending-failure|chromium|AUDIT-M|320|844|100|default",
+      "scoped-p3-management-mark-read-pending-failure|chromium|QAOWNER|844|390|200|default"
+    ],
+    "otherCompletedRowsByteEquivalent": true,
+    "extraConfigurationCredit": 0,
+    "completed": 12
+  },
+  "closureExitCode": 0,
+  "closedAt": "2026-10-20T01:00:24.671Z"
+}

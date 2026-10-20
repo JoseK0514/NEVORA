@@ -1,0 +1,38 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "source": "/workspace/inspect-candidate-a21650d",
+  "mode": "Static external beforeListen fixture adapter; no application source edits or runtime startup",
+  "upstreamInitializer": "/workspace/nevora-inspections/p35-wave-b/full-exit-8640247/preparation/bindings/initial-fixture.mts",
+  "upstreamInitializerSourceCheckpoint": "8640247be632ee6382c68b3b1ae3bbed532a5d65",
+  "upstreamInitializerSha256": "9215bec95956ee0c9f7dd367bc136ae09cb253a9ff40e97e00dbbf0f66020d23",
+  "derivedInitializerSha256": "a6cbe81a2518a8cc1656be7de6a3c8fdc3914a6b775bdc99a7fe5ab87e0c9d9f",
+  "verifiedExactSourceFixtureHashes": {
+    "src/test/integration/owned-app-fixture.ts": "83c48a29d92af1e1a64b877def4d5be645ad69ed103cda269f9e5194a8d10f3a",
+    "src/test/integration/payroll-preview-fixture.ts": "41462a7d5deaf2d331e7c400b92c079cbfa71efac9e360f88496d1ef25c8dd65",
+    "src/test/integration/shift-change-api.ts": "57a529ef303aa417081c71a81a52d89b7c52fdf52acdb3d1c0fd9ac40b870ee7",
+    "src/test/integration/management-api.ts": "8575a34686d72c0d0d9f569034781915ba722e45d1ae6ec9fc3eb7eacc4891b3",
+    "src/lib/communications/service.server.ts": "22d302752a77c76fcf60b492330e8db6008a66f8bf64efbf00c319980c1457b0",
+    "scripts/ui-checks/seed-extra.mts": "759710272461fe6b14bd1511c040d44e8aa071f31e6e51692b9e4bb22e0ef454",
+    "src/lib/data/schedule-templates.ts": "3d2f42c02304b1ea49b394810854c1ddfd41b974b8235aaf59fedeceb2a0067d",
+    "src/lib/data/schedule-health.ts": "1d4599d0bfdcd71092ee8aab9770aecadfc316648d5df4b9a632bb37ada22bef",
+    "src/lib/payroll/service.ts": "28e8a0286b533aa31638f6b4d6da2a33df056693bb7e168272556f5ca3d220d8",
+    "src/lib/payroll/worker.ts": "3a8bef47ac894b414bb0f83f55b9a5614f2908744abb55f347c989f52effe640",
+    "src/lib/timecards/service.ts": "fdd405b6ede4a102fcd0d480a02835c2914f11d6eab8d43b996b0ae9d3aaac39",
+    "src/lib/period-close/service.ts": "496582db2f13a761c997f440b9c6ea5e918135fc9480a15fe66665a1b43a2512"
+  },
+  "initialExtension": {
+    "path": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-AL24-TC3-v2/initial-al-wa-10-and-tc3.mts",
+    "sha256": "532c484eb6b5349681b71600a078735dec3e83b0a5f1a54cd3a543d2502e03a6",
+    "export": "seedInitialALWA10AndTC3",
+    "slot": "After base/seed-extra/templates; before communication publication and app listen",
+    "finalizerExport": "finalizeInitialALWA10AndTC3",
+    "finalizerSlot": "After long-manager email and demo credential updates; immediately before communicationHook.deregister and return; before app spawn"
+  },
+  "changes": [
+    "Exact source import binding",
+    "Actual source fixture hash verification",
+    "Actual DB name/oid/marker equality before first write",
+    "Explicit normal/large beforeListen receipt"
+  ],
+  "materialized": false
+}

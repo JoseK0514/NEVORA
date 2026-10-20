@@ -1,0 +1,24 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "preparedAt": "2026-10-20T00:06:56.511377+00:00",
+  "executed": false,
+  "managementMarkRead": {
+    "immutableModulePreserved": true,
+    "directPendingNativeFocusAndSameNodeAssertions": "Actual application measurements; judge against source-specific control contract",
+    "visibleRevealGeometry": "Actual geometry retained",
+    "plainLiveStatusParagraphExactFocus": "Generic assertRevealed additionally demands exact paragraph focus; retain raw assertion separately; do not name product finding from this alone without source-specific requirement",
+    "noAssertionRewriteOrWaiver": true
+  },
+  "ACK": {
+    "sameOperationRecoveryAndPrivatePause": "Source-specific recovery contract, actual held/read authority evidence required",
+    "plainLiveStatusExactFocus": "Separate generic oracle from retained initiating or actual Check-status child focus where source permits"
+  },
+  "WaveBContrast": {
+    "moduleSha256": "6ab1d08bfe243851d380dec948388ca6c928f40217876bb409ccdb0ceb0b0271",
+    "rawFlagsAndAxeNodesPreserved": true,
+    "actualPNG": "Untouched screenshot immediately after full axe; exact capture interval retained",
+    "passiveTrace": "75ms DOM/style/hit/animation samples through actual banner animation end",
+    "paintTimingLimit": "A transient may fade between axe sampling and PNG; later absent pixels cannot prove earlier visible pixels. Preserve timing gap without waiver or visible-failure claim from hidden computed ratio",
+    "diagnosticPassMeaning": "Evidence capture completed, not contrast passed"
+  }
+}

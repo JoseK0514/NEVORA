@@ -1,0 +1,76 @@
+{
+  "createdAt": "2026-10-20T00:35:22.732207+00:00",
+  "sha": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "sourceFiles": {
+    "scripts/ui-checks/checks.mjs": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+    "src/app/layout.tsx": "cec8a5324aa0a313305a09b6566f6f0ef5e352e5a0cf62639d53d743e01335a6",
+    "src/app/app/my-time/page.tsx": "becfe6ef2419999fe334428bdbb2fd12050e0bf9d5b6af92dc0c12e8c21b0cae",
+    "src/app/app/portal-premium.css": "c0a3a213ba88c7f6c60bcc97f0ef11f8ba5c4760d1dac44e9b40f1ddff5bea70",
+    "src/app/employee-mobile-corporate.css": "56ce4e3f1086704f0a81d0322401d16d8163b9fe4259bbd46442f4c96ed800e8",
+    "src/app/globals.css": "4b66fa8133ae6d9f49bf68d02a7d8d8960bc69e9ca16cb77dd3884edb5c95491",
+    "src/components/employee-time-panel.tsx": "caae005cf115af15370738d19829ae693127a61860d177a7dde7006d500f48a5",
+    "src/lib/employee-time-client.ts": "13bbf56df3fd967c4a68a309cc34abd90cd920c6e5320e6ab76a7e6d1486e37a",
+    "src/lib/employee-time.ts": "0f8f7e75cc131b5d19369b818a74de349dab5513117d0ac4b8edf3e0d332d327",
+    "src/app/api/employee/my-time/route.ts": "e9368afe6f8fcd07960a72898a776ff5690fc14aac232c97567d5a05c88ad8e7"
+  },
+  "module": "wr17-mytime-diagnostic-a216.mjs",
+  "moduleSha256": "bd7c3e17ad9d7d72c8ecf06e1e9f550c5565f4f97a096e948bfad3f01a37eb5d",
+  "originalCheckpoint": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "originalCdEvidence": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/c6ac3b3fa7b5c0626485.json",
+  "wr17SourceSection": "/* P3-WR-17: at 150 and 200% text the entry total moves under the entry, so \"In progress\" and \"3h 3m\" stay inside the card. */\n@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {\n  html:is([data-text-step=\"150\"], [data-text-step=\"200\"]) body .app-shell.nevora-portal[data-employee-corporate=\"true\"] .page-frame .employee-time-entry > summary:not(#nv-kit) { grid-template-columns: minmax(0, 1fr) var(--corporate-space-6, 24px); }\n  html:is([data-text-step=\"150\"], [data-text-step=\"200\"]) body .app-shell.nevora-portal[data-employee-corporate=\"true\"] .page-frame .employee-time-entry > summary > .employee-time-entry-total:not(#nv-kit) { grid-column: 1; grid-row: 2; justify-self: start; text-align: left; white-space: nowrap; }\n  html:is([data-text-step=\"150\"], [data-text-step=\"200\"]) body .app-shell.nevora-portal[data-employee-corporate=\"true\"] .page-frame .employee-time-entry > summary > .employee-time-disclosure:not(#nv-kit) { grid-column: 2; grid-row: 1; }\n}\n",
+  "wr17Rules": [
+    {
+      "selector": "html:is([data-text-step=\"150\"], [data-text-step=\"200\"]) body .app-shell.nevora-portal[data-employee-corporate=\"true\"] .page-frame .employee-time-entry > summary:not(#nv-kit)",
+      "declarations": "grid-template-columns: minmax(0, 1fr) var(--corporate-space-6, 24px);"
+    },
+    {
+      "selector": "html:is([data-text-step=\"150\"], [data-text-step=\"200\"]) body .app-shell.nevora-portal[data-employee-corporate=\"true\"] .page-frame .employee-time-entry > summary > .employee-time-entry-total:not(#nv-kit)",
+      "declarations": "grid-column: 1; grid-row: 2; justify-self: start; text-align: left; white-space: nowrap;"
+    },
+    {
+      "selector": "html:is([data-text-step=\"150\"], [data-text-step=\"200\"]) body .app-shell.nevora-portal[data-employee-corporate=\"true\"] .page-frame .employee-time-entry > summary > .employee-time-disclosure:not(#nv-kit)",
+      "declarations": "grid-column: 2; grid-row: 1;"
+    }
+  ],
+  "rows": 4,
+  "configurations": {
+    "accounts": [
+      "AUDIT-E"
+    ],
+    "sizes": [
+      [
+        320,
+        844,
+        200
+      ],
+      [
+        390,
+        844,
+        200
+      ]
+    ],
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "serialEnginesOnly": true
+  },
+  "prerequisites": [
+    "Fresh matching initial AUDIT-E EMPLOYEE receipt",
+    "Actual own /api/employee/my-time GET200 with real existing closed entry",
+    "Exactly one actual Completed summary matching own API clockInAt"
+  ],
+  "setupGapPolicy": "Absent real closed entry or missing matching own200 is setup gap; no fake entries/API projection or post-listen DB writes",
+  "browserMutations": "Only original normal root text size and target scroll; no data-text-step or nv-text-scale override",
+  "executed": false,
+  "newPreviewOrWorkerLaunched": false,
+  "fullCdLedgerCredit": false,
+  "invocation": {
+    "VERIFY_SCOPED_MODULES": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/manual-harness/wr17-mytime-diagnostic-a216.mjs",
+    "VERIFY_ONLY": "scoped-p3-wr17-mytime-completed-attribution-a216",
+    "VERIFY_ENGINES": "chromium (then webkit separately on same owned worker)",
+    "VERIFY_SHA": "a21650de50374683d52e32b883d7f419d7344f22"
+  },
+  "qualification": "Newer-source diagnostic only; does not close original cd finding,135IDs,5280baseline or1562manualscope"
+}

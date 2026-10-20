@@ -1,0 +1,598 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "tree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
+  "scope": "Separate bounded repair and diagnostic evidence; no full source exit or inherited152/72/full gate credit",
+  "completedAt": "2026-10-20T01:02:17.693755+00:00",
+  "groups": {
+    "AL geometry": {
+      "file": "targeted-al24-states.json",
+      "required": 24,
+      "attempted": 24,
+      "completed": 24,
+      "rawPassed": 24,
+      "rawFalse": 0,
+      "setupGaps": [],
+      "failedCriteria": []
+    },
+    "Payroll pending": {
+      "file": "targeted-payroll-states.json",
+      "required": 4,
+      "attempted": 4,
+      "completed": 4,
+      "rawPassed": 4,
+      "rawFalse": 0,
+      "setupGaps": [],
+      "failedCriteria": []
+    },
+    "Payroll paint causal": {
+      "file": "pending-colour-attribution.json",
+      "required": 6,
+      "attempted": 6,
+      "completed": 6,
+      "rawPassed": 6,
+      "rawFalse": 0,
+      "setupGaps": [],
+      "failedCriteria": []
+    },
+    "TC3 four sites": {
+      "file": "targeted-tc3-states.json",
+      "required": 16,
+      "attempted": 16,
+      "completed": 16,
+      "rawPassed": 8,
+      "rawFalse": 8,
+      "setupGaps": [],
+      "failedCriteria": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 320,
+          "height": 844,
+          "text": 150,
+          "variant": "default",
+          "criteria": [
+            "manager-shift-block: dot stays on preceding time line"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 390,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "manager-shift-block: dot stays on preceding time line"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "AUDIT-M",
+          "width": 320,
+          "height": 844,
+          "text": 150,
+          "variant": "default",
+          "criteria": [
+            "manager-shift-block: dot stays on preceding time line"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "AUDIT-M",
+          "width": 390,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "manager-shift-block: dot stays on preceding time line"
+          ]
+        },
+        {
+          "engine": "webkit",
+          "account": "QAOWNER",
+          "width": 320,
+          "height": 844,
+          "text": 150,
+          "variant": "default",
+          "criteria": [
+            "manager-shift-block: dot stays on preceding time line"
+          ]
+        },
+        {
+          "engine": "webkit",
+          "account": "QAOWNER",
+          "width": 390,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "manager-shift-block: dot stays on preceding time line"
+          ]
+        },
+        {
+          "engine": "webkit",
+          "account": "AUDIT-M",
+          "width": 320,
+          "height": 844,
+          "text": 150,
+          "variant": "default",
+          "criteria": [
+            "manager-shift-block: dot stays on preceding time line"
+          ]
+        },
+        {
+          "engine": "webkit",
+          "account": "AUDIT-M",
+          "width": 390,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "manager-shift-block: dot stays on preceding time line"
+          ]
+        }
+      ]
+    },
+    "Navigation badge": {
+      "file": "targeted-navbadge-states.json",
+      "required": 4,
+      "attempted": 4,
+      "completed": 4,
+      "rawPassed": 0,
+      "rawFalse": 4,
+      "setupGaps": [],
+      "failedCriteria": [
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 320,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "IS-P4-18: navigation count text Range fits the rendered pill at200%",
+            "IS-P4-18: navigation count pill/text does not cross an adjacent navigation icon"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 1024,
+          "height": 900,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "IS-P4-18: navigation count text Range fits the rendered pill at200%"
+          ]
+        },
+        {
+          "engine": "webkit",
+          "account": "QAOWNER",
+          "width": 320,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "IS-P4-18: navigation count text Range fits the rendered pill at200%",
+            "IS-P4-18: navigation count pill/text does not cross an adjacent navigation icon"
+          ]
+        },
+        {
+          "engine": "webkit",
+          "account": "QAOWNER",
+          "width": 1024,
+          "height": 900,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "IS-P4-18: navigation count text Range fits the rendered pill at200%"
+          ]
+        }
+      ]
+    },
+    "Wave B contrast diagnostic": {
+      "file": "targeted-wb-contrast-states.json",
+      "required": 3,
+      "attempted": 3,
+      "completed": 3,
+      "rawPassed": 3,
+      "rawFalse": 0,
+      "setupGaps": [],
+      "failedCriteria": []
+    },
+    "Home painted contrast": {
+      "file": "targeted-home-painted-states.json",
+      "required": 2,
+      "attempted": 2,
+      "completed": 2,
+      "rawPassed": 2,
+      "rawFalse": 0,
+      "setupGaps": [],
+      "failedCriteria": []
+    },
+    "Mark read Chromium": {
+      "file": "targeted-markread-chromium-states.json",
+      "required": 12,
+      "attempted": 12,
+      "completed": 12,
+      "rawPassed": 0,
+      "rawFalse": 12,
+      "setupGaps": [],
+      "failedCriteria": [
+        {
+          "engine": "chromium",
+          "account": "AUDIT-M",
+          "width": 320,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: entire feedback clears measured tab bar",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "AUDIT-M",
+          "width": 390,
+          "height": 844,
+          "text": 100,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "AUDIT-M",
+          "width": 390,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: entire feedback clears measured tab bar",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "AUDIT-M",
+          "width": 844,
+          "height": 390,
+          "text": 100,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: entire feedback clears measured tab bar",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "AUDIT-M",
+          "width": 844,
+          "height": 390,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: entire feedback clears measured tab bar",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 320,
+          "height": 844,
+          "text": 100,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 320,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: entire feedback clears measured tab bar",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 390,
+          "height": 844,
+          "text": 100,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 390,
+          "height": 844,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: entire feedback clears measured tab bar",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 844,
+          "height": 390,
+          "text": 100,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: entire feedback clears measured tab bar",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "AUDIT-M",
+          "width": 320,
+          "height": 844,
+          "text": 100,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "QAOWNER",
+          "width": 844,
+          "height": 390,
+          "text": 200,
+          "variant": "default",
+          "criteria": [
+            "mark-read-first: pending button retains focus",
+            "mark-read-first: pending action remains natively focusable",
+            "mark-read-first: pending action announces disabled state",
+            "mark-read-first: pending geometry stays within 1px",
+            "first-local-failure-feedback: feedback top clears measured header",
+            "first-local-failure-feedback: feedback receives focus",
+            "mark-read-same-item-retry: pending button retains focus",
+            "mark-read-same-item-retry: pending action remains natively focusable",
+            "mark-read-same-item-retry: pending action announces disabled state",
+            "mark-read-same-item-retry: pending geometry stays within 1px",
+            "second-local-failure-feedback: entire feedback clears measured tab bar",
+            "second-local-failure-feedback: feedback receives focus"
+          ]
+        }
+      ]
+    },
+    "Timecards control geometry diagnostic": {
+      "file": "targeted-timecards-geometry-states.json",
+      "required": 2,
+      "attempted": 2,
+      "completed": 2,
+      "rawPassed": 0,
+      "rawFalse": 2,
+      "setupGaps": [],
+      "failedCriteria": [
+        {
+          "engine": "chromium",
+          "account": "AUDIT-E",
+          "width": 768,
+          "height": 1000,
+          "text": 100,
+          "variant": "default",
+          "criteria": [
+            "fresh-target-ready: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+            "native-resize-target-immediate: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+            "native-resize-target-two-rAF: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+            "native-resize-target-after600ms: original all button/input height>=43.5 criterion (hidden zero nodes retained)"
+          ]
+        },
+        {
+          "engine": "chromium",
+          "account": "AUDIT-E",
+          "width": 1440,
+          "height": 1000,
+          "text": 100,
+          "variant": "default",
+          "criteria": [
+            "fresh-target-ready: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+            "native-resize-target-immediate: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+            "native-resize-target-two-rAF: original all button/input height>=43.5 criterion (hidden zero nodes retained)",
+            "native-resize-target-after600ms: original all button/input height>=43.5 criterion (hidden zero nodes retained)"
+          ]
+        }
+      ]
+    }
+  },
+  "unchangedChecker24": {
+    "sourceSha": "a21650de50374683d52e32b883d7f419d7344f22",
+    "expected": 24,
+    "recorded": 24,
+    "rawPassed": 24,
+    "complete": true,
+    "allRawPass": true,
+    "loadGaps": 0,
+    "geometryCredit": false,
+    "fullExitClaim": false
+  },
+  "sameKeyReplaysAddConfigurationCredit": 0,
+  "deferredOptionalScopes": [
+    {
+      "scope": "Mark-read WebKit",
+      "configurations": 4
+    },
+    {
+      "scope": "ACK private pause",
+      "configurations": 16
+    },
+    {
+      "scope": "Updates scrollport diagnostic",
+      "configurations": 1
+    },
+    {
+      "scope": "My Time completed-entry prerequisite diagnostic",
+      "configurations": 4
+    }
+  ],
+  "deferredExecuted": 0,
+  "deferredPassCredit": 0,
+  "closure": {
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "postgresStopped": true,
+    "errors": [],
+    "closedAt": "2026-10-20T01:00:18.397Z"
+  },
+  "qualifications": [
+    "AL checker24 and geometry24 use the same24 configurations and separate check types",
+    "Payroll four action states and six causal positions overlap; no additive unique-route claim",
+    "TC3 sixteen contexts each measure four actual sites; three same-key transport replays retain all original errors and thirteen untouched rows",
+    "TC3 original a216 registry lacks explicit source text-bridge qualification; future0f v2 proof is independent",
+    "Diagnostic capture completion is not a blanket contrast or accessibility pass",
+    "Mark-read exact status-paragraph focus and absent aria-disabled attribute are not independent product findings; native disabled already exposes semantics",
+    "Missing genuine closed entry is a My Time diagnostic fixture gap, never replaced by another actor or post-listen seed",
+    "Home paint helper exercises mobile390 normal-motion four-state pixels only, not desktop hover or full CI journey",
+    "WebKit CLS is unsupported; no physical handset or hosted deployment proof"
+  ],
+  "findingIds": {
+    "existing": [
+      "TC-WA-3",
+      "IS-P4-18"
+    ],
+    "newMeasured": [
+      "IS-RC-MARK-READ-01",
+      "IS-RC-MARK-READ-02",
+      "ST-RC-MARK-READ-01"
+    ]
+  },
+  "markReadCanonicalKeys": 12,
+  "markReadOriginalReadyGapsArchived": 2,
+  "markReadSameKeyReplaysAddDistinctCredit": 0,
+  "timecardsSizingOracleMismatch": {
+    "contexts": 2,
+    "allRawThresholdFailuresRetained": true,
+    "visibleControlsHeightPx": [
+      48,
+      48,
+      52,
+      52
+    ],
+    "intentionallyHiddenMobileDisclosureHeightPx": 0,
+    "noVisibleTargetFinding": true
+  }
+}

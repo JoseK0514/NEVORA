@@ -1,0 +1,24 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "exactParentPixelRoutine": true,
+  "genuinePassRequired": true,
+  "contexts": 2,
+  "actualStates": 4,
+  "files": [
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a216-home-paint/scoped-home-painted.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-home-paint/scoped-home-painted.mjs",
+      "sha256": "4582c4da1f460463e80c05e5659882e5f310f890f0c18587050e2d4e16aef141"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a216-home-paint/home-painted-measure.mjs",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-home-paint/home-painted-measure.mjs",
+      "sha256": "fc2423c9669d973cc4d6f7bbd88f4f76bb3edfecf4160b5d9917c6a4ba0c44d1"
+    },
+    {
+      "source": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a216-home-paint/home-painted-manifest.json",
+      "snapshot": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-home-paint/home-painted-manifest.json",
+      "sha256": "1ffc3a4216cc4c08a957142e40b75bb39e85907d554ab7be8f186057c498fdbd"
+    }
+  ]
+}

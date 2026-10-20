@@ -1,0 +1,46 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "snapshottedAt": "2026-10-19T23:45:58.779801+00:00",
+  "upstream": "/workspace/nevora-inspections/p35-wave-a/repair-a21650d-AL24-preparation",
+  "previousUnexecutedSnapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-AL24-TC3",
+  "correction": "Before execution only: ConfigurationForm uses JS onSubmit with nativeGET method; assert actual hydrated submit handler instead of invalid nativePOST expectation",
+  "files": [
+    {
+      "path": "manifest.json",
+      "sha256": "70a1f1ed20b2d1fab2240abae38fb09d35ea521ad113fc395e63279c72331556"
+    },
+    {
+      "path": "initial-al-wa-10.mts",
+      "sha256": "acc2b4006dc22f8cd0b43efa8b19be11787413fbc99fc197be49ee8ed8a6152d"
+    },
+    {
+      "path": "initial-al-wa-10-and-tc3.mts",
+      "sha256": "532c484eb6b5349681b71600a078735dec3e83b0a5f1a54cd3a543d2502e03a6"
+    },
+    {
+      "path": "scoped-al-wa-10.mjs",
+      "sha256": "2ea8af5abad83f50e27b75edfcb5101fc974431f01f4cd479c5f9e76d57a28cd"
+    },
+    {
+      "path": "scoped-tc-wa-3.mjs",
+      "sha256": "15599bd540bd8451b95b66b9b93ad3fc0f6ca4a4f0eb8b338a56e2ba69847b53"
+    },
+    {
+      "path": "checker-route-rewrite.cjs",
+      "sha256": "b818cbf68eda93754bbc05d771117b3221dc34cd6053766cbde7fe61989389e8"
+    },
+    {
+      "path": "redact-checker-output.mjs",
+      "sha256": "a3df88d966da6408019d0a3684e1a80acebc3785868eaf842064ee12d5f5b8b9"
+    },
+    {
+      "path": "run-checker24.mjs",
+      "sha256": "71cf553ae301b6591b08d601f941eb4001a110814c5dfb45bce3d9a743a21c14"
+    },
+    {
+      "path": "README.md",
+      "sha256": "36a89ff4343b25d0ccf6c3604f7348b26a6cc0cdb83463b854272522a81e2693"
+    }
+  ],
+  "runtimeExecuted": false
+}

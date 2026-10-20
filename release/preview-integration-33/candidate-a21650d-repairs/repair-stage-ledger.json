@@ -1,0 +1,52 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "scope": "Required AL24/checker24,Payroll4+paint6,TC3 sixteen contexts/four real sites; optional existing IS-P4-18 navbadge4, Mark-read16, ACKpause16 and WBcontrast3/Updates-scrollport1 diagnostics separately. No full gate/source exit credit.",
+  "jobs": [
+    {
+      "stage": "al-checker24",
+      "classification": "Required unchanged source checker/axe24",
+      "startedAt": "2026-10-20T00:29:02.888Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-al-tc3/run-checker24.mjs",
+      "exitCode": 1,
+      "completedAt": "2026-10-20T00:29:03.042Z"
+    },
+    {
+      "stage": "al-geometry24",
+      "classification": "Required AL24 actual eligible geometry",
+      "startedAt": "2026-10-20T00:29:03.075Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-scripts/scoped-verify-v2.mjs",
+      "exitCode": 0,
+      "completedAt": "2026-10-20T00:37:30.311Z"
+    },
+    {
+      "stage": "payroll-state4",
+      "classification": "Required Payroll held focus/geometry/deduplication4",
+      "startedAt": "2026-10-20T00:37:30.343Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-scripts/scoped-verify-v2.mjs",
+      "exitCode": 0,
+      "completedAt": "2026-10-20T00:38:02.216Z"
+    },
+    {
+      "stage": "payroll-paint6",
+      "classification": "Required actual-paint/height causal six positions; separate observations",
+      "startedAt": "2026-10-20T00:38:02.247Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-scripts/pending-colour-repair-proof.mjs",
+      "exitCode": 0,
+      "completedAt": "2026-10-20T00:38:47.248Z"
+    },
+    {
+      "stage": "tc3-four-sites",
+      "classification": "Required TC3 sixteen contexts/four real text sites=64 measurements",
+      "startedAt": "2026-10-20T00:38:47.285Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-scripts/scoped-verify-v2.mjs",
+      "exitCode": 1,
+      "completedAt": "2026-10-20T00:43:53.239Z"
+    },
+    {
+      "stage": "nav-badge4",
+      "classification": "Existing IS-P4-18 passive attribution4; no duplicate finding",
+      "startedAt": "2026-10-20T00:43:53.350Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/candidate-a21650d-repairs/executed-scripts/scoped-verify-v2.mjs"
+    }
+  ]
+}

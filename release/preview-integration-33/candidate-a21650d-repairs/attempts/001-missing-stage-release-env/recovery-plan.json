@@ -1,0 +1,11 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "recordedAt": "2026-10-20T00:29:26.662210+00:00",
+  "cause": "Stage shell omitted READY_REVIEW_RELEASED_SHA; initial checker refused before launching any browser",
+  "productFinding": false,
+  "outerCoordinatorPID": 288613,
+  "outerCoordinatorPausedOnly": true,
+  "existingGeometryChild": "Allowed to finish without interruption; no second browser worker",
+  "repair": "After child exits, export exact READY_REVIEW_RELEASED_SHA, run unchangedchecker24, then ALgeometry24 as canonical same-key ordered observations; preserve prior observations and failedstageexit",
+  "extraConfigurationCredit": 0
+}

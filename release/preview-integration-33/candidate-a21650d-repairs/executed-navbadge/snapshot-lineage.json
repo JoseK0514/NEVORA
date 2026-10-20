@@ -1,0 +1,28 @@
+{
+  "checkpoint": "a21650de50374683d52e32b883d7f419d7344f22",
+  "preparedOnly": true,
+  "passiveAtomsAssertionsAdded": 0,
+  "originalFourCasesPreserved": true,
+  "files": [
+    {
+      "source": "/workspace/nevora-inspections/p4-desktop/exit-cd764f6/execution-tools/scoped-nav-badge-atoms-a216.mjs",
+      "snapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-navbadge-atoms4/scoped-nav-badge-atoms-a216.mjs",
+      "sha256": "aa1db79c2d3eae5c4a672fe632c17b33d4bf5dc4595a275c93453d73db378296"
+    },
+    {
+      "source": "/workspace/nevora-inspections/p4-desktop/exit-cd764f6/execution-tools/scoped-nav-badge-a216.mjs",
+      "snapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-navbadge-atoms4/scoped-nav-badge-a216.mjs",
+      "sha256": "4acca44590f8bed77462940bf559dba0ce07f7b9371c8a9a80fb900cffb432e8"
+    },
+    {
+      "source": "/workspace/nevora-inspections/p4-desktop/exit-cd764f6/execution-tools/measure-nav-badges.mjs",
+      "snapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-navbadge-atoms4/measure-nav-badges.mjs",
+      "sha256": "ad33f05cf1d7000192d07402aec1eea1d3cc64117793945d7599d286c3004677"
+    },
+    {
+      "source": "/workspace/nevora-inspections/p4-desktop/exit-cd764f6/execution-tools/measure-inbox-group-atoms.mjs",
+      "snapshot": "/workspace/nevora-inspection-runtime/final-verification/candidate-repairs-preparation/a21650d-navbadge-atoms4/measure-inbox-group-atoms.mjs",
+      "sha256": "65ae9fd19e668538bcd0dde08a34be54267bc801b7ccda730eced8692dcffec9"
+    }
+  ]
+}
