@@ -50,6 +50,9 @@ try{
     await page.getByRole('button',{name:'Print / Save PDF',exact:true}).waitFor();await page.keyboard.press('Escape');await page.getByRole('button',{name:'Print / Save PDF',exact:true}).waitFor({state:'hidden'});
     await summary.focus();if(!await details.evaluate(e=>e.open))await page.keyboard.press('Enter');await until(()=>details.evaluate(e=>e.open));
     await details.getByRole('heading',{name:'Scheduled vs recorded',exact:true}).waitFor();
+    // Native tab order observes the animated ::details-content visibility.
+    // DOM open/heading presence alone can precede its discrete transition.
+    await details.evaluate(async e=>{await new Promise(requestAnimationFrame);await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
     const scrolls=details.locator('.wb-table-scroll[role="region"]');
     const names=['Scheduled vs recorded columns','Hours by employee columns','Hours by location columns','Hours by position columns'];
     assert.deepEqual(await scrolls.evaluateAll(nodes=>nodes.map(e=>e.getAttribute('aria-label'))),names);
