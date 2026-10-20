@@ -577,7 +577,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger kbd { font: var(--nv-t-callout); }
 }
 
-/* Focus rings inside scrolling rows (keyboard QA, Oct 19): the rows clip what overflows them, so each keeps 5px of room
- * for the 2px ring and its offset, with an equal negative margin so nothing moves. Every width. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(.updates-filters, [class*="notification-inbox-module"][class*="__filters"]) { padding-block: 5px; margin-block: -5px; }
+/* Focus rings inside scrolling rows (keyboard QA, Oct 19): the rows clip what overflows them. Every width. */
+/* Updates and Notifications filters keep their own 4px track padding (and so their height); the ring sits 2px out, so 2px ring
+ * + 2px offset fits inside it exactly instead of being cut. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(.updates-filters, [class*="notification-inbox-module"][class*="__filters"]) > button:focus-visible { outline-offset: 2px; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .section-tabs .section-tabs-track { padding: 4px; margin: -4px; }
