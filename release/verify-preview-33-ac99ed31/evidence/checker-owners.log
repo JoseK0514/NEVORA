@@ -1,0 +1,3 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+72/72 passed · /workspace/nevora-validation/preview-wave-a2/checks/2026-10-20T00-59-28-231Z.json

@@ -1,0 +1,21 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+Error: Error reading storage state from /workspace/nevora-validation/preview-wave-a2/state/AUDIT-E.json:
+ENOENT: no such file or directory, open '/workspace/nevora-validation/preview-wave-a2/state/AUDIT-E.json'
+    at async open (node:internal/fs/promises:697:25)
+    at async Object.readFile (node:internal/fs/promises:1348:14)
+    at async prepareStorageState (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright-core/lib/coreBundle.js:61724:23)
+    at async prepareBrowserContextParams (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright-core/lib/coreBundle.js:61739:42)
+    at async Browser2._innerNewContext (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright-core/lib/coreBundle.js:62273:32)
+    at async Browser2.newContext (/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright-core/lib/coreBundle.js:62255:16)
+    at async file:///workspace/nevora-runtime/supplementary.mjs:8:10 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/workspace/nevora-validation/preview-wave-a2/state/AUDIT-E.json'
+}
+
+Node.js v24.19.0
