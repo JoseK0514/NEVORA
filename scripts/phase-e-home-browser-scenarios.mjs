@@ -195,7 +195,8 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const removed=items().filter({has:page.locator('a[href="/app/schedule?week='+scenario.week+'"]')});
  await removed.getByText('Schedule removed',{exact:true}).waitFor();assert(await removed.getByText('Review needed',{exact:true}).isVisible());
  const removalResponse=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{headers:{'X-Nevora-Home':binding},cache:'no-store'});return response.json();},binding);
- assert.equal(removalResponse.snapshot.sources.acknowledgements.state,'complete');
+ details.removalSource=removalResponse.snapshot.sources.acknowledgements;
+ assert.equal(details.removalSource.state,'partial');assert.equal(details.removalSource.reason,'unpublished');
  assert(removalResponse.snapshot.attention.some(item=>item.ref.kind==='SCHEDULE'&&item.ref.id===scenario.week&&item.required&&item.actionable));
  assert.equal(removalResponse.allSet,false);
  assert(await page.getByText('Time off approved · Nov 1, 2030 – Nov 2, 2030',{exact:true}).isVisible());
