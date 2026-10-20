@@ -38,7 +38,7 @@ try{
   async function context(browser,id){
     const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
     await context.route('**/*',route=>{const target=new URL(route.request().url());return ['http:','https:'].includes(target.protocol)&&target.origin!==app.url?route.abort():route.continue();});
-    const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',error=>{if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);else report.errors.push(engineName(id)+': '+error.message);});
+    const page=await context.newPage();currentPage=page;page.setDefaultTimeout(15000);page.on('pageerror',error=>{if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);else report.errors.push(engineName(id)+': '+error.message);});
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
     await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
     return {context,page};
@@ -107,7 +107,7 @@ try{
     await management.setOffline(false);await mp.evaluate(()=>window.dispatchEvent(new Event('online')));await mp.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
     await mp.route('**/api/reports',route=>route.fulfill({status:403,contentType:'application/json',body:'{"state":"unavailable"}'}));await mp.getByRole('button',{name:'Refresh',exact:true}).click();await mp.getByRole('heading',{name:'Your session ended',exact:true}).waitFor();assert.equal(await mp.getByRole('heading',{name:'Hours by person',exact:true}).count(),0);checked(engine+': report authorization-loss clearing');
     await lp.goto(app.url+'/app/reports');await lp.waitForURL(u=>u.pathname==='/app');checked(engine+': Lead denied reports');
-    let releaseQueue;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));
+    await mp.bringToFront();currentPage=mp;let releaseQueue;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));
     await mp.goto(app.url+'/app?view=attendance');await mp.getByText('Loading correction requests',{exact:true}).waitFor();assert.equal(await mp.getByText('No correction requests',{exact:true}).count(),0);checked(engine+': UX-04 loading never claims empty');
     await waitUntil(()=>releaseQueue);assert(releaseQueue);await releaseQueue();await mp.unroute('**/api/manager/time-corrections');await mp.getByText('No correction requests',{exact:true}).waitFor();checked(engine+': UX-04 verified empty');
     const requestId=crypto.randomUUID(),submitted=await boundCorrectionPost(ep.request,app.url+'/api/employee/time-corrections',{headers:{origin:app.url,'x-nevora-time-correction':'1'},data:{operationId:requestId,kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:'2026-09-28T12:00:00Z',proposedEndAt:'2026-09-28T13:00:00Z',reason:'Fictional completed work for queue verification'}});assert(submitted.ok());const submittedBody=await submitted.json();
