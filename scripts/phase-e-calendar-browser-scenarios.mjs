@@ -4,8 +4,10 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 export async function runScenario({app,page,context,engine,width,evidenceDirectory}){
- const checks=[],receipt=join(evidenceDirectory,`calendar-case-${engine}-${width}.json`);
- const step=async(name,run)=>{await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks}));}catch(error){await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));throw Error('Calendar case failed: '+name);}};
+ const checks=[],runtimeErrors=[],receipt=join(evidenceDirectory,`calendar-case-${engine}-${width}.json`);let stage='seed';
+ page.on('pageerror',error=>runtimeErrors.push({stage,...safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));
+ const step=async(name,run)=>{stage=name;await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks,runtimeErrors}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks,runtimeErrors}));}catch(error){await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks,runtimeErrors,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));throw Error('Calendar case failed: '+name);}};
+ const currentPageReady=async()=>{await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');await page.waitForLoadState('networkidle');};
  const panel=page.locator('[data-calendar-setting]');
  const retry=()=>panel.getByRole('button',{name:'Try again to load the calendar link',exact:true});
  const management=()=>panel.locator('details.employee-calendar-management');
@@ -25,8 +27,8 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
  const q=(text,values=[])=>app.database.executor.query({text,values});
  await step('Real fictional login and Schedule secondary calendar entry',async()=>{
   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.actors[0]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-  await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);await page.waitForLoadState('networkidle');
-  await page.goto(app.url+'/app/schedule');await page.getByRole('link',{name:'Add shifts to your calendar',exact:true}).click();await state('No calendar link');
+  await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);await currentPageReady();
+  await page.goto(app.url+'/app/schedule');await currentPageReady();await page.getByRole('link',{name:'Add shifts to your calendar',exact:true}).click();await state('No calendar link');await currentPageReady();
  });
  await step('Deliberate create produces one transient URL and own private GET/HEAD feed',async()=>{
   await panel.getByRole('button',{name:'Create link',exact:true}).click();await panel.getByText('Link created.',{exact:true}).waitFor();firstUrl=await panel.getByLabel('Your private calendar link',{exact:true}).inputValue();assert.equal(new URL(firstUrl).origin,app.url);
