@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
@@ -241,6 +242,8 @@ function PeopleCards({ today, monitor, monitorPending = false, refreshing, onRet
         {next.slice(0, 4).map(shift => <Row key={shift.id}
           leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName} meta={shift.locationName}
           trailing={`${short(shift.startAt, timeZone)} – ${short(shift.endAt, timeZone)}`} />)}
+        {/* Final re-pass P3: the count says 6, so the rest are one step away. */}
+        {next.length > 4 ? <li className="cm-later-more"><Link className="nv-row" href="/app/schedule">{`Show ${next.length - 4} more`}</Link></li> : null}
       </Rows>
     </Card> : null}
   </>;

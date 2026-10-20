@@ -46,7 +46,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications .cm-page-foot .cm-refresh { flex: none; margin-left: auto; margin-right: 0; text-decoration: none; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications .cm-page-foot .cm-refresh:is(:disabled, [aria-disabled="true"]) { color: var(--cm-label-3); cursor: default; }
 /* The module's -3px rings suit the clipped list rows; controls outside the list (and Mark read) get the tint ring outside. */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications :is(.cm-page-foot .cm-refresh, .cm-notifications-state__action, .cm-notifications-links a, button.cm-notifications-mark):focus-visible:not(#cm-focus) { outline: 2px solid var(--cm-tint); outline-offset: 2px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-notifications :is(.cm-page-foot .cm-refresh, .cm-notifications-state__action, .cm-notifications-links a, button.cm-notifications-mark):focus-visible:not(#cm-focus) { outline: 2px solid var(--cm-tint); outline-offset: -2px; }
 
 /* ============================ Phones ============================ */
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
