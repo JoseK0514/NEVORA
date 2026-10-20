@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 export function useTopBarSlot(enabled: boolean, className: string) {
   const [slot, setSlot] = useState<HTMLElement | null | undefined>(undefined);
   useEffect(() => {
-    if (!enabled || typeof window.matchMedia !== "function") return;
+    // A test document without querySelector (or no matchMedia) keeps the tools in the page.
+    if (!enabled || typeof window.matchMedia !== "function" || typeof document.querySelector !== "function") return;
     const query = window.matchMedia("(min-width: 1180px)");
     let element: HTMLElement | null = null, live = true;
     const sync = () => {
