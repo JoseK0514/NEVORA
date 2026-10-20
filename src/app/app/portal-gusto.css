@@ -527,3 +527,7 @@ html body .app-shell.nevora-portal .employee-profile-work-title { margin: 0 0 10
 html body .app-shell.nevora-portal .employee-profile-correction { margin: 10px 0 0; color: var(--g-muted, #5f6368); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.5; }
 html body .app-shell.nevora-portal .employee-profile-work-title + .employee-profile-details { margin-top: 0; }
 html body .app-shell.nevora-portal #employee-reviewed-actions-heading { scroll-margin-top: 96px; } /* M8 to-do link target clears the header */
+/* Final QA: portrait phones also keep a focused field clear of the tab bar (a focused Note sat 10px under it). */
+@media (max-width: 760px) {
+  html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-bottom: calc(var(--nv-tabbar-height, 68px) + 16px); }
+}
