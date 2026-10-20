@@ -16,7 +16,7 @@ Written October 20, 2026 by the Claude coordinator. This covers the Manager/Owne
 
 The merge order was verify-preview-33, then premium-phase-1, clean-manager, wave-c, profile and desktop. Every merge was clean, with no conflicts. Its `src/` is byte-identical to the integration tree every confirmation pass tested (e21a3da3).
 
-**Not included: `claude/nevora-compliance` (b326ebc3).** Jose asked the Wave C chat directly for this branch, which is based on verify-preview-33. It adds public /privacy, /terms, /support and /account-deletion pages, a "Delete my account" option for every role, and migration 0034_account_deletion_requests. Jose has confirmed every policy fact, so the pages and links show in production. Until migration 0034 is applied, Delete my account says it isn't available yet and points people to the support email. Sign-in isn't affected. Migration 0034 needs Jose's separate authorization before it reaches production, and Jose plans to push this branch himself. A trial merge into this branch conflicts in one file, `src/app/login/auth-refinement.css`, against Wave C's rem changes. Merge it only on Jose's go. Details are in `docs/compliance/README.md` on that branch.
+**Not included: `claude/nevora-compliance` (d0b6d1f5).** Jose asked the Wave C chat directly for this branch, which is based on verify-preview-33. It adds public /privacy, /terms, /support and /account-deletion pages, a "Delete my account" option for every role, and migration 0034_account_deletion_requests. Jose has confirmed every policy fact, so the pages and links show in production. Until migration 0034 is applied, Delete my account says it isn't available yet and points people to the support email. Sign-in isn't affected. Migration 0034 needs Jose's separate authorization before it reaches production, and Jose plans to push this branch himself. A trial merge into this branch conflicts in one file, `src/app/login/auth-refinement.css`, against Wave C's rem changes. Merge it only on Jose's go. Details are in `docs/compliance/README.md` on that branch.
 
 Checks on the integration branch (ed4bf218, Node from Jose's Mac): `tsc --noEmit` passes, `eslint src` passes with no errors, and `vitest run` passes 7,377 tests in 448 files (801 skipped, 27 files skipped), with no failures.
 
@@ -62,7 +62,8 @@ The clean pages changed markup that some older browser scripts depend on. The UI
 ## 7. Still needed before production (Jose decides)
 
 - Jose's real-device pass (iPhone with VoiceOver, Android with TalkBack), using DEVICE-CHECKLIST-REVIEWED.md
-- Production settings, and migration 0033
+- **Release blocker: the production database is at about migration 0002.** On October 20 the Wave C chat ran a read-only check of Neon project NEVORA (rough-fire-63258908), branch main (br-green-night-b87vx3ud, the Vercel production branch), database fuel_scheduler. The tables employees, locations, employee_sessions and location_staffing_settings exist; it has 3 employee rows and no live sessions. Everything from 0003 on is missing, including time_entries (0005), push_subscriptions (0007) and workspaces / locations.workspace_id (0008). The release code needs 0003–0034 applied as one reviewed step, after a backup branch and with Jose's authorization. Codex owns this migration plan. Nothing was written to the database. Details are in `docs/compliance/README.md` on the compliance branch.
+- Production settings
 - The Schedule load decision (section 2, item 3)
 - The scheduling rules wording, which is legal text and needs Jose's approval
 - Jose's explicit go for the merge into main and the deploy. Nothing here is merged into main or deployed.
