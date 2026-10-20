@@ -10104,6 +10104,29 @@
       "code": 1,
       "passed": 2,
       "failed": 2
+    },
+    {
+      "name": "00440-matrix-AUDIT-ON-webkit-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-20T00-56-51-641Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00440-matrix-AUDIT-ON-webkit-390.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=x-audit-next-AUDIT-ON-0",
+        "--accounts",
+        "AUDIT-ON",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "webkit"
+      ],
+      "rawSha256": "61cd18e4791636986b4fc5ed8f8151635447574f589bda8c10ff56d7219f8daa",
+      "code": 1,
+      "passed": 15,
+      "failed": 1
     }
   ],
   "planned": 12580,
