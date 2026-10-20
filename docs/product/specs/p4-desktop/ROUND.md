@@ -19,6 +19,7 @@
 | AL4-31, AL4-32, AL4-33, AL4-34, AL4-21 | Time exports mapping card inset; open Shift options span the row; Home clock Refresh on the text edge; collapsed sidebar shows the wordmark alone; no chip fade from 1060. |
 | WR4-19 | Below 900px the account button is avatar and chevron, and Search drops its key hint, so the trail keeps the page's name. |
 | Employee placeholders | Employee Home and My schedule placeholder bands match their final bands (168/116 from 1024, 160/170 at 761–1023), found in the local stability pass. |
+| Placeholders at large text (coordinator's report) | Desktop placeholder bands grow with text size by each page's measured growth, and the first block starts where the page's does (the placeholder's 20px grid gap is taken back; Employee Time off is flat on desktop). Measured at 1440, 100% and 200%: every Employee route and every Owner route matches band height and first-block top, except Payroll runs, whose first line of text sits 14px lower at 100% and 4px lower at 200%. |
 | P3-WR-11 (coordinator's report) | Inbox row and pane times stay whole and wrap as units at large text. |
 
 ## Scope
