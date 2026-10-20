@@ -625,3 +625,8 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .secti
   .employee-shell .route-skeleton[data-route="timecards"] { --route-band-grow-desktop: 132px; }
   .employee-shell .route-skeleton:is([data-route="mypay"], [data-route="notifications"]) { --route-band-grow-desktop: 136px; }
 }
+/* Final QA: from 1024px "App settings" heads its own card (Profile abb9aa2f), so the Employee and Lead Profile
+ * placeholder no longer skips a heading: its first block lands on the cards (y225 at 1440/100%, y289 at 200%). */
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="profile"][data-band] > .route-skeleton-band + .route-skeleton-header + *:not(#nv-kit) { margin-top: calc(var(--nv-s-4) - 20px); }
+}
