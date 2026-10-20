@@ -1,0 +1,322 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 100,
+  "route": "/app/profile",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px",
+   "small. «Updates about your schedule an» 13px",
+   "p.profile-setting-note «Alerts on this device aren’t t» 13px",
+   "small. «Apple Calendar, Google Calenda» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 100,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Your dates will appear here.» 13px",
+   "strong. «Manager review comes next» 12px",
+   "span. «Track the decision in My reque» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0002,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 100,
+  "route": "/app/requests/hub",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0002,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 100,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px",
+   "a.my-schedule-link «Request a swap» 13px",
+   "a.my-schedule-link «Unable to work» 13px",
+   "p. «Your shift stays yours until a» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 125,
+  "route": "/app/profile",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px",
+   "small. «Updates about your schedule an» 13px",
+   "p.profile-setting-note «Alerts on this device aren’t t» 13px",
+   "small. «Apple Calendar, Google Calenda» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0111,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 125,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Your dates will appear here.» 13px",
+   "strong. «Manager review comes next» 12px",
+   "span. «Track the decision in My reque» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0426,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 125,
+  "route": "/app/requests/hub",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0459,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 125,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px",
+   "a.my-schedule-link «Request a swap» 13px",
+   "a.my-schedule-link «Unable to work» 13px",
+   "p. «Your shift stays yours until a» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0357,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 150,
+  "route": "/app/profile",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px",
+   "small. «Updates about your schedule an» 13px",
+   "p.profile-setting-note «Alerts on this device aren’t t» 13px",
+   "small. «Apple Calendar, Google Calenda» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0247,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 150,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Your dates will appear here.» 13px",
+   "strong. «Manager review comes next» 12px",
+   "span. «Track the decision in My reque» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0804,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 150,
+  "route": "/app/requests/hub",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0917,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 150,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px",
+   "a.my-schedule-link «Request a swap» 13px",
+   "a.my-schedule-link «Unable to work» 13px",
+   "p. «Your shift stays yours until a» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0677,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 200,
+  "route": "/app/profile",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px",
+   "small. «Updates about your schedule an» 13px",
+   "p.profile-setting-note «Alerts on this device aren’t t» 13px",
+   "small. «Apple Calendar, Google Calenda» 13px"
+  ],
+  "targets": [],
+  "cls": 0.052,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 200,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Your dates will appear here.» 13px",
+   "strong. «Manager review comes next» 12px",
+   "span. «Track the decision in My reque» 12px"
+  ],
+  "targets": [],
+  "cls": 0.12,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 200,
+  "route": "/app/requests/hub",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.2063,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-ON",
+  "size": "1024",
+  "text": 200,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px",
+   "a.my-schedule-link «Request a swap» 13px",
+   "a.my-schedule-link «Unable to work» 13px",
+   "p. «Your shift stays yours until a» 12px"
+  ],
+  "targets": [],
+  "cls": 0.1306,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]

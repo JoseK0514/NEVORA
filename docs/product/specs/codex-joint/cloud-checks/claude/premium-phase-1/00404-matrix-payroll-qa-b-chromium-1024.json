@@ -1,0 +1,310 @@
+[
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 100,
+  "route": "/app/profile",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px",
+   "small. «Updates about your schedule an» 13px",
+   "p.profile-setting-note «Alerts on this device aren’t t» 13px",
+   "small. «Apple Calendar, Google Calenda» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 100,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Your dates will appear here.» 13px",
+   "strong. «Manager review comes next» 12px",
+   "span. «Track the decision in My reque» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0006,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 100,
+  "route": "/app/requests/hub",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0002,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 100,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 125,
+  "route": "/app/profile",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px",
+   "small. «Updates about your schedule an» 13px",
+   "p.profile-setting-note «Alerts on this device aren’t t» 13px",
+   "small. «Apple Calendar, Google Calenda» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0111,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 125,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Your dates will appear here.» 13px",
+   "strong. «Manager review comes next» 12px",
+   "span. «Track the decision in My reque» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0419,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 125,
+  "route": "/app/requests/hub",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0459,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 125,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0222,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 150,
+  "route": "/app/profile",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px",
+   "small. «Updates about your schedule an» 13px",
+   "p.profile-setting-note «Alerts on this device aren’t t» 13px",
+   "small. «Apple Calendar, Google Calenda» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0248,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 150,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Your dates will appear here.» 13px",
+   "strong. «Manager review comes next» 12px",
+   "span. «Track the decision in My reque» 12px"
+  ],
+  "targets": [],
+  "cls": 0.0806,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 150,
+  "route": "/app/requests/hub",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0917,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 150,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px"
+  ],
+  "targets": [],
+  "cls": 0.049,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 200,
+  "route": "/app/profile",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.profile-supporting-copy.employee-profile-correction «Something wrong here? Ask your» 13px",
+   "small. «Updates about your schedule an» 13px",
+   "p.profile-setting-note «Alerts on this device aren’t t» 13px",
+   "small. «Apple Calendar, Google Calenda» 13px"
+  ],
+  "targets": [],
+  "cls": 0.052,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 200,
+  "route": "/app/requests",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «Your dates will appear here.» 13px",
+   "strong. «Manager review comes next» 12px",
+   "span. «Track the decision in My reque» 12px"
+  ],
+  "targets": [],
+  "cls": 0.1204,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 200,
+  "route": "/app/requests/hub",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.2063,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "payroll-qa-b",
+  "size": "1024",
+  "text": 200,
+  "route": "/app/schedule",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p. «2026 · Puerto Rico time» 13px",
+   "small. «Today» 12px"
+  ],
+  "targets": [],
+  "cls": 0.106,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]
