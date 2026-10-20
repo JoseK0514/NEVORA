@@ -1,0 +1,9 @@
+{
+  "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "changes": "External harness only: absolute source imports; ownership-checked complete fictional fixture before Next listen; no browser publication.",
+  "files": {
+    "initial-fixture.mts": "9303af67c269915a5614259f856bd75027ab08ce4af86b888e7e6a9349b3f882",
+    "owned-preview-app-dev.mts": "5872657f543465c25828aaab17a8bfba78e548c9e85f40a562c4ffe7cb5306b0",
+    "preview-runtime.mjs": "3420626359443ca4c256a813c49a6e7d24034e55b3e43278399d863c512a9357"
+  }
+}

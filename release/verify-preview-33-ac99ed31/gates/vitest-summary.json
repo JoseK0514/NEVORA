@@ -1,0 +1,20 @@
+{
+  "source": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "result": {
+    "numTotalTestSuites": 822,
+    "numPassedTestSuites": 822,
+    "numFailedTestSuites": 0,
+    "numTotalTests": 8220,
+    "numPassedTests": 7364,
+    "numFailedTests": 0,
+    "numPendingTests": 801,
+    "success": true
+  },
+  "assertionCounts": {
+    "passed": 7364,
+    "skipped": 801,
+    "pending": 55
+  },
+  "rawSha256": "7c4b080d7f47ec72d57af66bed7739aa91b0fcb622d9deb83c5b7863dfff37a1",
+  "rawLocalPath": "/workspace/nevora-validation/gates/vitest.json"
+}

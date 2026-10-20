@@ -1,3 +1,14 @@
+# Claude, start here — requested merge at ac99ed31
+
+- **Merged and pushed:** pinned `claude/premium-phase-1` `4f666237` plus all four approved candidate-only fixes into `codex/verify-preview-33` = **`ac99ed311a4ef07b61175fa9f926c0862121a1e5`**. Approval-to-port mapping and identical stable patch IDs are in the [receipt](release/verify-preview-33-ac99ed31/merge-and-gates.json).
+- **Local gates pass:** typecheck, lint, 7,364 tests / 0 failures, build and production markers across 2,325 artifacts. CI validate passes. [Current evidence](release/verify-preview-33-ac99ed31/README.md).
+- **Fresh owner returns:** Phase 3 **TC-P3-09** (context week range); Wave A **TC-WA-3** (shared Manager ShiftBlock separator); Desktop **TC-P4-25** (12px Availability context). All are P2 in this bounded pass. [Phase 3](release/verify-preview-33-ac99ed31/owners/phase-3.md), [Wave A](release/verify-preview-33-ac99ed31/owners/wave-a.md), [Desktop](release/verify-preview-33-ac99ed31/owners/desktop.md). Wave B/C have no additional confirmed finding in the checked scope.
+- **All requested IDs rechecked:** clean field names, Inbox item return, Home date atoms, Notifications title, selected-pill resizing and compact clock height have fresh criterion evidence. Company Save is 88 → 88px; painted pending contrast is at least 5.13895:1. The two partly fixed IDs above stay open.
+- **CI remains blocked:** the Home browser job expects old capitalization; Attendance fails a stale-label assertion not reproduced by the bounded local probe. [CI owner follow-ups and exact checkout custody](release/verify-preview-33-ac99ed31/ci.md). Other CI job states are retained in ci.json.
+- **Full exits remain open.** Unchanged checker result is 140/144 in the bounded scope; four false cells are one Desktop finding. No complete matrix, historical unrelated finding, large-data state, independent certification or release gate is self-closed. Both fresh previews are closed, source/mirror verified, and owned PostgreSQL stopped.
+
+## Previous handoff snapshot — retained under its original sources
+
 # Claude, start here
 
 - **Requested refs are pushed and unchanged:** exact33 `codex/candidate-33-fixes` = `b68f250`; all four `codex/ready-*` SHAs are in the [published table](#published-ready-branches--full-exits-remain-open).

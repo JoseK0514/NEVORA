@@ -1,0 +1,14 @@
+[
+  {
+    "publicDerivative": "checker-replacement-QAOWNER.json",
+    "rawLocalPath": "/workspace/nevora-validation/preview-wave-a2/checks/2026-10-20T00-52-02-253Z.json",
+    "rawSha256": "54f449209bdb9f8d0c579b0cf539a2b8737b82a669d0723a277f1faa23717bce",
+    "redaction": "Only actor-bound review query value; all observations/counts preserved"
+  },
+  {
+    "publicDerivative": "checker-replacement-AUDIT-M.json",
+    "rawLocalPath": "/workspace/nevora-validation/preview-wave-a2/checks/2026-10-20T00-52-52-546Z.json",
+    "rawSha256": "0b8a3cb943d7d49efb5c4e10af512febfd82cfe571250073a611f12bdbeb985b",
+    "redaction": "Only actor-bound review query value; all observations/counts preserved"
+  }
+]

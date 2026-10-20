@@ -1,0 +1,12 @@
+[
+  {
+    "engine": "chromium",
+    "classification": "setup/component-selection gap",
+    "reason": "The Employee callout uses SwapShiftSummary with the same CSS class, not the target shared ShiftBlock. Atoms were absent; no product failure inferred. Actual shared component was rechecked on Manager Shift requests in coverage-separators.json."
+  },
+  {
+    "engine": "webkit",
+    "classification": "setup/component-selection gap",
+    "reason": "The Employee callout uses SwapShiftSummary with the same CSS class, not the target shared ShiftBlock. Atoms were absent; no product failure inferred. Actual shared component was rechecked on Manager Shift requests in coverage-separators.json."
+  }
+]

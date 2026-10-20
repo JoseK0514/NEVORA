@@ -1,0 +1,57 @@
+{
+  "candidate": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "sourceBranch": "claude/premium-phase-1",
+  "pinnedSource": "4f6662375508ba2ba8cecf40188413d97588aee6",
+  "merge": "e0298be2",
+  "remoteTarget": "codex/verify-preview-33",
+  "approvedFixPorts": [
+    {
+      "approved": "0caadb35",
+      "candidate": "7bed90cedc2ffc1ac31bde16ca80a7c9db810334",
+      "finding": "AL-WA-10",
+      "stablePatchId": "11ccaec36504a8edf9756eabbf0a913b8426505e"
+    },
+    {
+      "approved": "2ddb833f",
+      "candidate": "e90abeaff64d5ac92760508fc4186d2b8b0a0120",
+      "finding": "TC-WA-16",
+      "stablePatchId": "9720dfc38852f8aca61297f23995b95214303fd5"
+    },
+    {
+      "approved": "e7ee28a2",
+      "candidate": "1ba3743473fa69142293c7aca0942db9c5c9b0d0",
+      "finding": "ST-RC-PAYROLL-SAVE-01",
+      "stablePatchId": "8e5ba363d09548014c0d352679edd06692663fc2"
+    },
+    {
+      "approved": "08159520",
+      "candidate": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "finding": "TC-WA-3",
+      "stablePatchId": "3dbd223e0c4616989d5e9ee161ef3c9034e86258"
+    }
+  ],
+  "gates": {
+    "npmCi": "passed, 410 packages",
+    "typecheck": "passed",
+    "lint": "passed",
+    "tests": {
+      "passed": 7364,
+      "failed": 0,
+      "skipped": 801,
+      "pending": 55
+    },
+    "productionBuild": "passed",
+    "productionMarkers": {
+      "artifacts": 2325,
+      "developmentMarkers": "absent"
+    }
+  },
+  "runtime": "Fresh private loopback PostgreSQL 17.11 + exact-source Next 16.3.8 mirror; complete fictional fixtures before listen; no application writes during inspections",
+  "fullExits": "Open; previous-source evidence retained; no full exit zero claim",
+  "ci": {
+    "run": 39350175628,
+    "status": "validate passed; two browser jobs failed; PostgreSQL job states in ci.json",
+    "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39350175628"
+  },
+  "sourceIsAncestor": true
+}

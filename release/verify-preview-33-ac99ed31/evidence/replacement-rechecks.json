@@ -1,0 +1,5621 @@
+{
+  "scope": "Genuine eligible replacement; before-listen fictional fixture; no mutations after readiness",
+  "rows": [
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 284,
+            "width": 288,
+            "height": 339,
+            "top": 284,
+            "right": 304,
+            "bottom": 623,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 250,
+                "y": 441,
+                "width": 9,
+                "height": 20,
+                "top": 441,
+                "right": 259,
+                "bottom": 461,
+                "left": 250
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 235,
+                "y": 441,
+                "width": 15,
+                "height": 20,
+                "top": 441,
+                "right": 250,
+                "bottom": 461,
+                "left": 235
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 284,
+          "width": 288,
+          "height": 339,
+          "top": 284,
+          "right": 304,
+          "bottom": 623,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 284,
+          "width": 320,
+          "height": 665,
+          "top": 284,
+          "right": 320,
+          "bottom": 949,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 68,
+          "width": 320,
+          "height": 288,
+          "top": 68,
+          "right": 320,
+          "bottom": 356,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 103,
+              "y": 346,
+              "width": 181,
+              "height": 22,
+              "top": 346,
+              "right": 284,
+              "bottom": 368,
+              "left": 103
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 80,
+              "y": 393,
+              "width": 204,
+              "height": 22,
+              "top": 393,
+              "right": 284,
+              "bottom": 415,
+              "left": 80
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 88,
+              "y": 440,
+              "width": 196,
+              "height": 22,
+              "top": 440,
+              "right": 284,
+              "bottom": 462,
+              "left": 88
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 113,
+              "y": 487,
+              "width": 171,
+              "height": 22,
+              "top": 487,
+              "right": 284,
+              "bottom": 509,
+              "left": 113
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 110,
+              "y": 534,
+              "width": 174,
+              "height": 22,
+              "top": 534,
+              "right": 284,
+              "bottom": 556,
+              "left": 110
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 119,
+              "y": 581,
+              "width": 165,
+              "height": 22,
+              "top": 581,
+              "right": 284,
+              "bottom": 603,
+              "left": 119
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 250,
+              "y": 441,
+              "width": 9,
+              "height": 20,
+              "top": 441,
+              "right": 259,
+              "bottom": 461,
+              "left": 250
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 235,
+              "y": 441,
+              "width": 15,
+              "height": 20,
+              "top": 441,
+              "right": 250,
+              "bottom": 461,
+              "left": 235
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-QAOWNER-320-100.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 520.515625,
+            "width": 288,
+            "height": 877,
+            "top": 520.515625,
+            "right": 304,
+            "bottom": 1397.515625,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 221,
+                "y": 1001.515625,
+                "width": 16,
+                "height": 41,
+                "top": 1001.515625,
+                "right": 237,
+                "bottom": 1042.515625,
+                "left": 221
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 191,
+                "y": 1001.515625,
+                "width": 30,
+                "height": 41,
+                "top": 1001.515625,
+                "right": 221,
+                "bottom": 1042.515625,
+                "left": 191
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 520.515625,
+          "width": 288,
+          "height": 877,
+          "top": 520.515625,
+          "right": 304,
+          "bottom": 1397.515625,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 520.515625,
+          "width": 320,
+          "height": 1583,
+          "top": 520.515625,
+          "right": 320,
+          "bottom": 2103.515625,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 76.515625,
+          "width": 320,
+          "height": 516,
+          "top": 76.515625,
+          "right": 320,
+          "bottom": 592.515625,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 36,
+              "y": 646.515625,
+              "width": 248,
+              "height": 88,
+              "top": 646.515625,
+              "right": 284,
+              "bottom": 734.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 36,
+              "y": 801.515625,
+              "width": 248,
+              "height": 88,
+              "top": 801.515625,
+              "right": 284,
+              "bottom": 889.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 36,
+              "y": 956.515625,
+              "width": 248,
+              "height": 88,
+              "top": 956.515625,
+              "right": 284,
+              "bottom": 1044.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 36,
+              "y": 1111.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1111.515625,
+              "right": 284,
+              "bottom": 1155.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 36,
+              "y": 1222.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1222.515625,
+              "right": 284,
+              "bottom": 1266.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 36,
+              "y": 1333.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1333.515625,
+              "right": 284,
+              "bottom": 1377.515625,
+              "left": 36
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 221,
+              "y": 1001.515625,
+              "width": 16,
+              "height": 41,
+              "top": 1001.515625,
+              "right": 237,
+              "bottom": 1042.515625,
+              "left": 221
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 191,
+              "y": 1001.515625,
+              "width": 30,
+              "height": 41,
+              "top": 1001.515625,
+              "right": 221,
+              "bottom": 1042.515625,
+              "left": 191
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-QAOWNER-320-200.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 260,
+            "width": 358,
+            "height": 339,
+            "top": 260,
+            "right": 374,
+            "bottom": 599,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 320,
+                "y": 417,
+                "width": 9,
+                "height": 20,
+                "top": 417,
+                "right": 329,
+                "bottom": 437,
+                "left": 320
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 305,
+                "y": 417,
+                "width": 15,
+                "height": 20,
+                "top": 417,
+                "right": 320,
+                "bottom": 437,
+                "left": 305
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 260,
+          "width": 358,
+          "height": 339,
+          "top": 260,
+          "right": 374,
+          "bottom": 599,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 260,
+          "width": 390,
+          "height": 603,
+          "top": 260,
+          "right": 390,
+          "bottom": 863,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 68,
+          "width": 390,
+          "height": 264,
+          "top": 68,
+          "right": 390,
+          "bottom": 332,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 103,
+              "y": 322,
+              "width": 251,
+              "height": 22,
+              "top": 322,
+              "right": 354,
+              "bottom": 344,
+              "left": 103
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 80,
+              "y": 369,
+              "width": 274,
+              "height": 22,
+              "top": 369,
+              "right": 354,
+              "bottom": 391,
+              "left": 80
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 88,
+              "y": 416,
+              "width": 266,
+              "height": 22,
+              "top": 416,
+              "right": 354,
+              "bottom": 438,
+              "left": 88
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 113,
+              "y": 463,
+              "width": 241,
+              "height": 22,
+              "top": 463,
+              "right": 354,
+              "bottom": 485,
+              "left": 113
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 110,
+              "y": 510,
+              "width": 244,
+              "height": 22,
+              "top": 510,
+              "right": 354,
+              "bottom": 532,
+              "left": 110
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 119,
+              "y": 557,
+              "width": 235,
+              "height": 22,
+              "top": 557,
+              "right": 354,
+              "bottom": 579,
+              "left": 119
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 320,
+              "y": 417,
+              "width": 9,
+              "height": 20,
+              "top": 417,
+              "right": 329,
+              "bottom": 437,
+              "left": 320
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 305,
+              "y": 417,
+              "width": 15,
+              "height": 20,
+              "top": 417,
+              "right": 320,
+              "bottom": 437,
+              "left": 305
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-QAOWNER-390-100.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 450.015625,
+            "width": 358,
+            "height": 789,
+            "top": 450.015625,
+            "right": 374,
+            "bottom": 1239.015625,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 338,
+                "y": 799.015625,
+                "width": 16,
+                "height": 41,
+                "top": 799.015625,
+                "right": 354,
+                "bottom": 840.015625,
+                "left": 338
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 308,
+                "y": 799.015625,
+                "width": 30,
+                "height": 41,
+                "top": 799.015625,
+                "right": 338,
+                "bottom": 840.015625,
+                "left": 308
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 450.015625,
+          "width": 358,
+          "height": 789,
+          "top": 450.015625,
+          "right": 374,
+          "bottom": 1239.015625,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 450.015625,
+          "width": 390,
+          "height": 1343,
+          "top": 450.015625,
+          "right": 390,
+          "bottom": 1793.015625,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 78.015625,
+          "width": 390,
+          "height": 444,
+          "top": 78.015625,
+          "right": 390,
+          "bottom": 522.015625,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 36,
+              "y": 576.015625,
+              "width": 318,
+              "height": 44,
+              "top": 576.015625,
+              "right": 354,
+              "bottom": 620.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 36,
+              "y": 687.015625,
+              "width": 318,
+              "height": 44,
+              "top": 687.015625,
+              "right": 354,
+              "bottom": 731.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 36,
+              "y": 798.015625,
+              "width": 318,
+              "height": 88,
+              "top": 798.015625,
+              "right": 354,
+              "bottom": 886.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 36,
+              "y": 953.015625,
+              "width": 318,
+              "height": 44,
+              "top": 953.015625,
+              "right": 354,
+              "bottom": 997.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 36,
+              "y": 1064.015625,
+              "width": 318,
+              "height": 44,
+              "top": 1064.015625,
+              "right": 354,
+              "bottom": 1108.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 36,
+              "y": 1175.015625,
+              "width": 318,
+              "height": 44,
+              "top": 1175.015625,
+              "right": 354,
+              "bottom": 1219.015625,
+              "left": 36
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 338,
+              "y": 799.015625,
+              "width": 16,
+              "height": 41,
+              "top": 799.015625,
+              "right": 354,
+              "bottom": 840.015625,
+              "left": 338
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 308,
+              "y": 799.015625,
+              "width": 30,
+              "height": 41,
+              "top": 799.015625,
+              "right": 338,
+              "bottom": 840.015625,
+              "left": 308
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-QAOWNER-390-200.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": false,
+          "message": "Replacement card aligns with desktop band",
+          "geometry": {
+            "card": {
+              "x": 476,
+              "y": 289,
+              "width": 720,
+              "height": 339,
+              "top": 289,
+              "right": 1196,
+              "bottom": 628,
+              "left": 476
+            },
+            "content": {
+              "x": 460,
+              "y": 289,
+              "width": 752,
+              "height": 567,
+              "top": 289,
+              "right": 1212,
+              "bottom": 856,
+              "left": 460
+            },
+            "band": {
+              "x": 276,
+              "y": 93,
+              "width": 1120,
+              "height": 252,
+              "top": 93,
+              "right": 1396,
+              "bottom": 345,
+              "left": 276
+            },
+            "facts": [
+              {
+                "text": "Alexandra Rivera",
+                "box": {
+                  "x": 558,
+                  "y": 351,
+                  "width": 618,
+                  "height": 22,
+                  "top": 351,
+                  "right": 1176,
+                  "bottom": 373,
+                  "left": 558
+                }
+              },
+              {
+                "text": "Sun, Nov 1, 2026",
+                "box": {
+                  "x": 538,
+                  "y": 398,
+                  "width": 638,
+                  "height": 22,
+                  "top": 398,
+                  "right": 1176,
+                  "bottom": 420,
+                  "left": 538
+                }
+              },
+              {
+                "text": "8:00 AM – 4:00 PM · 8h",
+                "box": {
+                  "x": 545,
+                  "y": 445,
+                  "width": 631,
+                  "height": 22,
+                  "top": 445,
+                  "right": 1176,
+                  "bottom": 467,
+                  "left": 545
+                }
+              },
+              {
+                "text": "West Office",
+                "box": {
+                  "x": 569,
+                  "y": 492,
+                  "width": 607,
+                  "height": 22,
+                  "top": 492,
+                  "right": 1176,
+                  "bottom": 514,
+                  "left": 569
+                }
+              },
+              {
+                "text": "None needed",
+                "box": {
+                  "x": 566,
+                  "y": 539,
+                  "width": 610,
+                  "height": 22,
+                  "top": 539,
+                  "right": 1176,
+                  "bottom": 561,
+                  "left": 566
+                }
+              },
+              {
+                "text": "Not needed",
+                "box": {
+                  "x": 575,
+                  "y": 586,
+                  "width": 601,
+                  "height": 22,
+                  "top": 586,
+                  "right": 1176,
+                  "bottom": 608,
+                  "left": 575
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 1143,
+                "y": 446,
+                "width": 9,
+                "height": 20,
+                "top": 446,
+                "right": 1152,
+                "bottom": 466,
+                "left": 1143
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 1128,
+                "y": 446,
+                "width": 15,
+                "height": 20,
+                "top": 446,
+                "right": 1143,
+                "bottom": 466,
+                "left": 1128
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 476,
+          "y": 289,
+          "width": 720,
+          "height": 339,
+          "top": 289,
+          "right": 1196,
+          "bottom": 628,
+          "left": 476
+        },
+        "content": {
+          "x": 460,
+          "y": 289,
+          "width": 752,
+          "height": 567,
+          "top": 289,
+          "right": 1212,
+          "bottom": 856,
+          "left": 460
+        },
+        "band": {
+          "x": 276,
+          "y": 93,
+          "width": 1120,
+          "height": 252,
+          "top": 93,
+          "right": 1396,
+          "bottom": 345,
+          "left": 276
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 558,
+              "y": 351,
+              "width": 618,
+              "height": 22,
+              "top": 351,
+              "right": 1176,
+              "bottom": 373,
+              "left": 558
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 538,
+              "y": 398,
+              "width": 638,
+              "height": 22,
+              "top": 398,
+              "right": 1176,
+              "bottom": 420,
+              "left": 538
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 545,
+              "y": 445,
+              "width": 631,
+              "height": 22,
+              "top": 445,
+              "right": 1176,
+              "bottom": 467,
+              "left": 545
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 569,
+              "y": 492,
+              "width": 607,
+              "height": 22,
+              "top": 492,
+              "right": 1176,
+              "bottom": 514,
+              "left": 569
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 566,
+              "y": 539,
+              "width": 610,
+              "height": 22,
+              "top": 539,
+              "right": 1176,
+              "bottom": 561,
+              "left": 566
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 575,
+              "y": 586,
+              "width": 601,
+              "height": 22,
+              "top": 586,
+              "right": 1176,
+              "bottom": 608,
+              "left": 575
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 1143,
+              "y": 446,
+              "width": 9,
+              "height": 20,
+              "top": 446,
+              "right": 1152,
+              "bottom": 466,
+              "left": 1143
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 1128,
+              "y": 446,
+              "width": 15,
+              "height": 20,
+              "top": 446,
+              "right": 1143,
+              "bottom": 466,
+              "left": 1128
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-QAOWNER-1440-100.png",
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "chromium",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": false,
+          "message": "Replacement card aligns with desktop band",
+          "geometry": {
+            "card": {
+              "x": 476,
+              "y": 355,
+              "width": 720,
+              "height": 493,
+              "top": 355,
+              "right": 1196,
+              "bottom": 848,
+              "left": 476
+            },
+            "content": {
+              "x": 460,
+              "y": 355,
+              "width": 752,
+              "height": 823,
+              "top": 355,
+              "right": 1212,
+              "bottom": 1178,
+              "left": 460
+            },
+            "band": {
+              "x": 276,
+              "y": 95,
+              "width": 1120,
+              "height": 316,
+              "top": 95,
+              "right": 1396,
+              "bottom": 411,
+              "left": 276
+            },
+            "facts": [
+              {
+                "text": "Alexandra Rivera",
+                "box": {
+                  "x": 600,
+                  "y": 439,
+                  "width": 576,
+                  "height": 44,
+                  "top": 439,
+                  "right": 1176,
+                  "bottom": 483,
+                  "left": 600
+                }
+              },
+              {
+                "text": "Sun, Nov 1, 2026",
+                "box": {
+                  "x": 561,
+                  "y": 508,
+                  "width": 615,
+                  "height": 44,
+                  "top": 508,
+                  "right": 1176,
+                  "bottom": 552,
+                  "left": 561
+                }
+              },
+              {
+                "text": "8:00 AM – 4:00 PM · 8h",
+                "box": {
+                  "x": 576,
+                  "y": 577,
+                  "width": 600,
+                  "height": 44,
+                  "top": 577,
+                  "right": 1176,
+                  "bottom": 621,
+                  "left": 576
+                }
+              },
+              {
+                "text": "West Office",
+                "box": {
+                  "x": 620,
+                  "y": 646,
+                  "width": 556,
+                  "height": 44,
+                  "top": 646,
+                  "right": 1176,
+                  "bottom": 690,
+                  "left": 620
+                }
+              },
+              {
+                "text": "None needed",
+                "box": {
+                  "x": 611,
+                  "y": 715,
+                  "width": 565,
+                  "height": 44,
+                  "top": 715,
+                  "right": 1176,
+                  "bottom": 759,
+                  "left": 611
+                }
+              },
+              {
+                "text": "Not needed",
+                "box": {
+                  "x": 630,
+                  "y": 784,
+                  "width": 546,
+                  "height": 44,
+                  "top": 784,
+                  "right": 1176,
+                  "bottom": 828,
+                  "left": 630
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 1116,
+                "y": 579,
+                "width": 15,
+                "height": 39,
+                "top": 579,
+                "right": 1131,
+                "bottom": 618,
+                "left": 1116
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 1088,
+                "y": 579,
+                "width": 28,
+                "height": 39,
+                "top": 579,
+                "right": 1116,
+                "bottom": 618,
+                "left": 1088
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 476,
+          "y": 355,
+          "width": 720,
+          "height": 493,
+          "top": 355,
+          "right": 1196,
+          "bottom": 848,
+          "left": 476
+        },
+        "content": {
+          "x": 460,
+          "y": 355,
+          "width": 752,
+          "height": 823,
+          "top": 355,
+          "right": 1212,
+          "bottom": 1178,
+          "left": 460
+        },
+        "band": {
+          "x": 276,
+          "y": 95,
+          "width": 1120,
+          "height": 316,
+          "top": 95,
+          "right": 1396,
+          "bottom": 411,
+          "left": 276
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 600,
+              "y": 439,
+              "width": 576,
+              "height": 44,
+              "top": 439,
+              "right": 1176,
+              "bottom": 483,
+              "left": 600
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 561,
+              "y": 508,
+              "width": 615,
+              "height": 44,
+              "top": 508,
+              "right": 1176,
+              "bottom": 552,
+              "left": 561
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 576,
+              "y": 577,
+              "width": 600,
+              "height": 44,
+              "top": 577,
+              "right": 1176,
+              "bottom": 621,
+              "left": 576
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 620,
+              "y": 646,
+              "width": 556,
+              "height": 44,
+              "top": 646,
+              "right": 1176,
+              "bottom": 690,
+              "left": 620
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 611,
+              "y": 715,
+              "width": 565,
+              "height": 44,
+              "top": 715,
+              "right": 1176,
+              "bottom": 759,
+              "left": 611
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 630,
+              "y": 784,
+              "width": 546,
+              "height": 44,
+              "top": 784,
+              "right": 1176,
+              "bottom": 828,
+              "left": 630
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 1116,
+              "y": 579,
+              "width": 15,
+              "height": 39,
+              "top": 579,
+              "right": 1131,
+              "bottom": 618,
+              "left": 1116
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 1088,
+              "y": 579,
+              "width": 28,
+              "height": 39,
+              "top": 579,
+              "right": 1116,
+              "bottom": 618,
+              "left": 1088
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-QAOWNER-1440-200.png",
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 320,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 284,
+            "width": 288,
+            "height": 339,
+            "top": 284,
+            "right": 304,
+            "bottom": 623,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 250,
+                "y": 441,
+                "width": 9,
+                "height": 20,
+                "top": 441,
+                "right": 259,
+                "bottom": 461,
+                "left": 250
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 235,
+                "y": 441,
+                "width": 15,
+                "height": 20,
+                "top": 441,
+                "right": 250,
+                "bottom": 461,
+                "left": 235
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 284,
+          "width": 288,
+          "height": 339,
+          "top": 284,
+          "right": 304,
+          "bottom": 623,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 284,
+          "width": 320,
+          "height": 665,
+          "top": 284,
+          "right": 320,
+          "bottom": 949,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 68,
+          "width": 320,
+          "height": 288,
+          "top": 68,
+          "right": 320,
+          "bottom": 356,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 103,
+              "y": 346,
+              "width": 181,
+              "height": 22,
+              "top": 346,
+              "right": 284,
+              "bottom": 368,
+              "left": 103
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 80,
+              "y": 393,
+              "width": 204,
+              "height": 22,
+              "top": 393,
+              "right": 284,
+              "bottom": 415,
+              "left": 80
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 88,
+              "y": 440,
+              "width": 196,
+              "height": 22,
+              "top": 440,
+              "right": 284,
+              "bottom": 462,
+              "left": 88
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 113,
+              "y": 487,
+              "width": 171,
+              "height": 22,
+              "top": 487,
+              "right": 284,
+              "bottom": 509,
+              "left": 113
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 110,
+              "y": 534,
+              "width": 174,
+              "height": 22,
+              "top": 534,
+              "right": 284,
+              "bottom": 556,
+              "left": 110
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 119,
+              "y": 581,
+              "width": 165,
+              "height": 22,
+              "top": 581,
+              "right": 284,
+              "bottom": 603,
+              "left": 119
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 250,
+              "y": 441,
+              "width": 9,
+              "height": 20,
+              "top": 441,
+              "right": 259,
+              "bottom": 461,
+              "left": 250
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 235,
+              "y": 441,
+              "width": 15,
+              "height": 20,
+              "top": 441,
+              "right": 250,
+              "bottom": 461,
+              "left": 235
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-AUDIT-M-320-100.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 320,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 520.515625,
+            "width": 288,
+            "height": 877,
+            "top": 520.515625,
+            "right": 304,
+            "bottom": 1397.515625,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 221,
+                "y": 1001.515625,
+                "width": 16,
+                "height": 41,
+                "top": 1001.515625,
+                "right": 237,
+                "bottom": 1042.515625,
+                "left": 221
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 191,
+                "y": 1001.515625,
+                "width": 30,
+                "height": 41,
+                "top": 1001.515625,
+                "right": 221,
+                "bottom": 1042.515625,
+                "left": 191
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 520.515625,
+          "width": 288,
+          "height": 877,
+          "top": 520.515625,
+          "right": 304,
+          "bottom": 1397.515625,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 520.515625,
+          "width": 320,
+          "height": 1583,
+          "top": 520.515625,
+          "right": 320,
+          "bottom": 2103.515625,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 76.515625,
+          "width": 320,
+          "height": 516,
+          "top": 76.515625,
+          "right": 320,
+          "bottom": 592.515625,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 36,
+              "y": 646.515625,
+              "width": 248,
+              "height": 88,
+              "top": 646.515625,
+              "right": 284,
+              "bottom": 734.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 36,
+              "y": 801.515625,
+              "width": 248,
+              "height": 88,
+              "top": 801.515625,
+              "right": 284,
+              "bottom": 889.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 36,
+              "y": 956.515625,
+              "width": 248,
+              "height": 88,
+              "top": 956.515625,
+              "right": 284,
+              "bottom": 1044.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 36,
+              "y": 1111.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1111.515625,
+              "right": 284,
+              "bottom": 1155.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 36,
+              "y": 1222.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1222.515625,
+              "right": 284,
+              "bottom": 1266.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 36,
+              "y": 1333.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1333.515625,
+              "right": 284,
+              "bottom": 1377.515625,
+              "left": 36
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 221,
+              "y": 1001.515625,
+              "width": 16,
+              "height": 41,
+              "top": 1001.515625,
+              "right": 237,
+              "bottom": 1042.515625,
+              "left": 221
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 191,
+              "y": 1001.515625,
+              "width": 30,
+              "height": 41,
+              "top": 1001.515625,
+              "right": 221,
+              "bottom": 1042.515625,
+              "left": 191
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-AUDIT-M-320-200.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 260,
+            "width": 358,
+            "height": 339,
+            "top": 260,
+            "right": 374,
+            "bottom": 599,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 320,
+                "y": 417,
+                "width": 9,
+                "height": 20,
+                "top": 417,
+                "right": 329,
+                "bottom": 437,
+                "left": 320
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 305,
+                "y": 417,
+                "width": 15,
+                "height": 20,
+                "top": 417,
+                "right": 320,
+                "bottom": 437,
+                "left": 305
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 260,
+          "width": 358,
+          "height": 339,
+          "top": 260,
+          "right": 374,
+          "bottom": 599,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 260,
+          "width": 390,
+          "height": 603,
+          "top": 260,
+          "right": 390,
+          "bottom": 863,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 68,
+          "width": 390,
+          "height": 264,
+          "top": 68,
+          "right": 390,
+          "bottom": 332,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 103,
+              "y": 322,
+              "width": 251,
+              "height": 22,
+              "top": 322,
+              "right": 354,
+              "bottom": 344,
+              "left": 103
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 80,
+              "y": 369,
+              "width": 274,
+              "height": 22,
+              "top": 369,
+              "right": 354,
+              "bottom": 391,
+              "left": 80
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 88,
+              "y": 416,
+              "width": 266,
+              "height": 22,
+              "top": 416,
+              "right": 354,
+              "bottom": 438,
+              "left": 88
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 113,
+              "y": 463,
+              "width": 241,
+              "height": 22,
+              "top": 463,
+              "right": 354,
+              "bottom": 485,
+              "left": 113
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 110,
+              "y": 510,
+              "width": 244,
+              "height": 22,
+              "top": 510,
+              "right": 354,
+              "bottom": 532,
+              "left": 110
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 119,
+              "y": 557,
+              "width": 235,
+              "height": 22,
+              "top": 557,
+              "right": 354,
+              "bottom": 579,
+              "left": 119
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 320,
+              "y": 417,
+              "width": 9,
+              "height": 20,
+              "top": 417,
+              "right": 329,
+              "bottom": 437,
+              "left": 320
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 305,
+              "y": 417,
+              "width": 15,
+              "height": 20,
+              "top": 417,
+              "right": 320,
+              "bottom": 437,
+              "left": 305
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-AUDIT-M-390-100.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 450.015625,
+            "width": 358,
+            "height": 789,
+            "top": 450.015625,
+            "right": 374,
+            "bottom": 1239.015625,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 338,
+                "y": 799.015625,
+                "width": 16,
+                "height": 41,
+                "top": 799.015625,
+                "right": 354,
+                "bottom": 840.015625,
+                "left": 338
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 308,
+                "y": 799.015625,
+                "width": 30,
+                "height": 41,
+                "top": 799.015625,
+                "right": 338,
+                "bottom": 840.015625,
+                "left": 308
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 450.015625,
+          "width": 358,
+          "height": 789,
+          "top": 450.015625,
+          "right": 374,
+          "bottom": 1239.015625,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 450.015625,
+          "width": 390,
+          "height": 1343,
+          "top": 450.015625,
+          "right": 390,
+          "bottom": 1793.015625,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 78.015625,
+          "width": 390,
+          "height": 444,
+          "top": 78.015625,
+          "right": 390,
+          "bottom": 522.015625,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 36,
+              "y": 576.015625,
+              "width": 318,
+              "height": 44,
+              "top": 576.015625,
+              "right": 354,
+              "bottom": 620.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 36,
+              "y": 687.015625,
+              "width": 318,
+              "height": 44,
+              "top": 687.015625,
+              "right": 354,
+              "bottom": 731.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 36,
+              "y": 798.015625,
+              "width": 318,
+              "height": 88,
+              "top": 798.015625,
+              "right": 354,
+              "bottom": 886.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 36,
+              "y": 953.015625,
+              "width": 318,
+              "height": 44,
+              "top": 953.015625,
+              "right": 354,
+              "bottom": 997.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 36,
+              "y": 1064.015625,
+              "width": 318,
+              "height": 44,
+              "top": 1064.015625,
+              "right": 354,
+              "bottom": 1108.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 36,
+              "y": 1175.015625,
+              "width": 318,
+              "height": 44,
+              "top": 1175.015625,
+              "right": 354,
+              "bottom": 1219.015625,
+              "left": 36
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 338,
+              "y": 799.015625,
+              "width": 16,
+              "height": 41,
+              "top": 799.015625,
+              "right": 354,
+              "bottom": 840.015625,
+              "left": 338
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 308,
+              "y": 799.015625,
+              "width": 30,
+              "height": 41,
+              "top": 799.015625,
+              "right": 338,
+              "bottom": 840.015625,
+              "left": 308
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-AUDIT-M-390-200.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": false,
+          "message": "Replacement card aligns with desktop band",
+          "geometry": {
+            "card": {
+              "x": 476,
+              "y": 289,
+              "width": 720,
+              "height": 339,
+              "top": 289,
+              "right": 1196,
+              "bottom": 628,
+              "left": 476
+            },
+            "content": {
+              "x": 460,
+              "y": 289,
+              "width": 752,
+              "height": 567,
+              "top": 289,
+              "right": 1212,
+              "bottom": 856,
+              "left": 460
+            },
+            "band": {
+              "x": 276,
+              "y": 93,
+              "width": 1120,
+              "height": 252,
+              "top": 93,
+              "right": 1396,
+              "bottom": 345,
+              "left": 276
+            },
+            "facts": [
+              {
+                "text": "Alexandra Rivera",
+                "box": {
+                  "x": 558,
+                  "y": 351,
+                  "width": 618,
+                  "height": 22,
+                  "top": 351,
+                  "right": 1176,
+                  "bottom": 373,
+                  "left": 558
+                }
+              },
+              {
+                "text": "Sun, Nov 1, 2026",
+                "box": {
+                  "x": 538,
+                  "y": 398,
+                  "width": 638,
+                  "height": 22,
+                  "top": 398,
+                  "right": 1176,
+                  "bottom": 420,
+                  "left": 538
+                }
+              },
+              {
+                "text": "8:00 AM – 4:00 PM · 8h",
+                "box": {
+                  "x": 545,
+                  "y": 445,
+                  "width": 631,
+                  "height": 22,
+                  "top": 445,
+                  "right": 1176,
+                  "bottom": 467,
+                  "left": 545
+                }
+              },
+              {
+                "text": "West Office",
+                "box": {
+                  "x": 569,
+                  "y": 492,
+                  "width": 607,
+                  "height": 22,
+                  "top": 492,
+                  "right": 1176,
+                  "bottom": 514,
+                  "left": 569
+                }
+              },
+              {
+                "text": "None needed",
+                "box": {
+                  "x": 566,
+                  "y": 539,
+                  "width": 610,
+                  "height": 22,
+                  "top": 539,
+                  "right": 1176,
+                  "bottom": 561,
+                  "left": 566
+                }
+              },
+              {
+                "text": "Not needed",
+                "box": {
+                  "x": 575,
+                  "y": 586,
+                  "width": 601,
+                  "height": 22,
+                  "top": 586,
+                  "right": 1176,
+                  "bottom": 608,
+                  "left": 575
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 1143,
+                "y": 446,
+                "width": 9,
+                "height": 20,
+                "top": 446,
+                "right": 1152,
+                "bottom": 466,
+                "left": 1143
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 1128,
+                "y": 446,
+                "width": 15,
+                "height": 20,
+                "top": 446,
+                "right": 1143,
+                "bottom": 466,
+                "left": 1128
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 476,
+          "y": 289,
+          "width": 720,
+          "height": 339,
+          "top": 289,
+          "right": 1196,
+          "bottom": 628,
+          "left": 476
+        },
+        "content": {
+          "x": 460,
+          "y": 289,
+          "width": 752,
+          "height": 567,
+          "top": 289,
+          "right": 1212,
+          "bottom": 856,
+          "left": 460
+        },
+        "band": {
+          "x": 276,
+          "y": 93,
+          "width": 1120,
+          "height": 252,
+          "top": 93,
+          "right": 1396,
+          "bottom": 345,
+          "left": 276
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 558,
+              "y": 351,
+              "width": 618,
+              "height": 22,
+              "top": 351,
+              "right": 1176,
+              "bottom": 373,
+              "left": 558
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 538,
+              "y": 398,
+              "width": 638,
+              "height": 22,
+              "top": 398,
+              "right": 1176,
+              "bottom": 420,
+              "left": 538
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 545,
+              "y": 445,
+              "width": 631,
+              "height": 22,
+              "top": 445,
+              "right": 1176,
+              "bottom": 467,
+              "left": 545
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 569,
+              "y": 492,
+              "width": 607,
+              "height": 22,
+              "top": 492,
+              "right": 1176,
+              "bottom": 514,
+              "left": 569
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 566,
+              "y": 539,
+              "width": 610,
+              "height": 22,
+              "top": 539,
+              "right": 1176,
+              "bottom": 561,
+              "left": 566
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 575,
+              "y": 586,
+              "width": 601,
+              "height": 22,
+              "top": 586,
+              "right": 1176,
+              "bottom": 608,
+              "left": 575
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 1143,
+              "y": 446,
+              "width": 9,
+              "height": 20,
+              "top": 446,
+              "right": 1152,
+              "bottom": 466,
+              "left": 1143
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 1128,
+              "y": 446,
+              "width": 15,
+              "height": 20,
+              "top": 446,
+              "right": 1143,
+              "bottom": 466,
+              "left": 1128
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-AUDIT-M-1440-100.png",
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "chromium",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": false,
+          "message": "Replacement card aligns with desktop band",
+          "geometry": {
+            "card": {
+              "x": 476,
+              "y": 355,
+              "width": 720,
+              "height": 493,
+              "top": 355,
+              "right": 1196,
+              "bottom": 848,
+              "left": 476
+            },
+            "content": {
+              "x": 460,
+              "y": 355,
+              "width": 752,
+              "height": 823,
+              "top": 355,
+              "right": 1212,
+              "bottom": 1178,
+              "left": 460
+            },
+            "band": {
+              "x": 276,
+              "y": 95,
+              "width": 1120,
+              "height": 316,
+              "top": 95,
+              "right": 1396,
+              "bottom": 411,
+              "left": 276
+            },
+            "facts": [
+              {
+                "text": "Alexandra Rivera",
+                "box": {
+                  "x": 600,
+                  "y": 439,
+                  "width": 576,
+                  "height": 44,
+                  "top": 439,
+                  "right": 1176,
+                  "bottom": 483,
+                  "left": 600
+                }
+              },
+              {
+                "text": "Sun, Nov 1, 2026",
+                "box": {
+                  "x": 561,
+                  "y": 508,
+                  "width": 615,
+                  "height": 44,
+                  "top": 508,
+                  "right": 1176,
+                  "bottom": 552,
+                  "left": 561
+                }
+              },
+              {
+                "text": "8:00 AM – 4:00 PM · 8h",
+                "box": {
+                  "x": 576,
+                  "y": 577,
+                  "width": 600,
+                  "height": 44,
+                  "top": 577,
+                  "right": 1176,
+                  "bottom": 621,
+                  "left": 576
+                }
+              },
+              {
+                "text": "West Office",
+                "box": {
+                  "x": 620,
+                  "y": 646,
+                  "width": 556,
+                  "height": 44,
+                  "top": 646,
+                  "right": 1176,
+                  "bottom": 690,
+                  "left": 620
+                }
+              },
+              {
+                "text": "None needed",
+                "box": {
+                  "x": 611,
+                  "y": 715,
+                  "width": 565,
+                  "height": 44,
+                  "top": 715,
+                  "right": 1176,
+                  "bottom": 759,
+                  "left": 611
+                }
+              },
+              {
+                "text": "Not needed",
+                "box": {
+                  "x": 630,
+                  "y": 784,
+                  "width": 546,
+                  "height": 44,
+                  "top": 784,
+                  "right": 1176,
+                  "bottom": 828,
+                  "left": 630
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 1116,
+                "y": 579,
+                "width": 15,
+                "height": 39,
+                "top": 579,
+                "right": 1131,
+                "bottom": 618,
+                "left": 1116
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 1088,
+                "y": 579,
+                "width": 28,
+                "height": 39,
+                "top": 579,
+                "right": 1116,
+                "bottom": 618,
+                "left": 1088
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 476,
+          "y": 355,
+          "width": 720,
+          "height": 493,
+          "top": 355,
+          "right": 1196,
+          "bottom": 848,
+          "left": 476
+        },
+        "content": {
+          "x": 460,
+          "y": 355,
+          "width": 752,
+          "height": 823,
+          "top": 355,
+          "right": 1212,
+          "bottom": 1178,
+          "left": 460
+        },
+        "band": {
+          "x": 276,
+          "y": 95,
+          "width": 1120,
+          "height": 316,
+          "top": 95,
+          "right": 1396,
+          "bottom": 411,
+          "left": 276
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 600,
+              "y": 439,
+              "width": 576,
+              "height": 44,
+              "top": 439,
+              "right": 1176,
+              "bottom": 483,
+              "left": 600
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 561,
+              "y": 508,
+              "width": 615,
+              "height": 44,
+              "top": 508,
+              "right": 1176,
+              "bottom": 552,
+              "left": 561
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 576,
+              "y": 577,
+              "width": 600,
+              "height": 44,
+              "top": 577,
+              "right": 1176,
+              "bottom": 621,
+              "left": 576
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 620,
+              "y": 646,
+              "width": 556,
+              "height": 44,
+              "top": 646,
+              "right": 1176,
+              "bottom": 690,
+              "left": 620
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 611,
+              "y": 715,
+              "width": 565,
+              "height": 44,
+              "top": 715,
+              "right": 1176,
+              "bottom": 759,
+              "left": 611
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 630,
+              "y": 784,
+              "width": 546,
+              "height": 44,
+              "top": 784,
+              "right": 1176,
+              "bottom": 828,
+              "left": 630
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 1116,
+              "y": 579,
+              "width": 15,
+              "height": 39,
+              "top": 579,
+              "right": 1131,
+              "bottom": 618,
+              "left": 1116
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 1088,
+              "y": 579,
+              "width": 28,
+              "height": 39,
+              "top": 579,
+              "right": 1116,
+              "bottom": 618,
+              "left": 1088
+            }
+          ]
+        }
+      ],
+      "crop": "crops/chromium-replacement-AUDIT-M-1440-200.png",
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 284,
+            "width": 288,
+            "height": 339,
+            "top": 284,
+            "right": 304,
+            "bottom": 623,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 248.84326171875,
+                "y": 441,
+                "width": 9.68701171875,
+                "height": 20,
+                "top": 441,
+                "right": 258.5302734375,
+                "bottom": 461,
+                "left": 248.84326171875
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 232.71875,
+                "y": 441,
+                "width": 16.109375,
+                "height": 20,
+                "top": 441,
+                "right": 248.828125,
+                "bottom": 461,
+                "left": 232.71875
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 284,
+          "width": 288,
+          "height": 339,
+          "top": 284,
+          "right": 304,
+          "bottom": 623,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 284,
+          "width": 320,
+          "height": 665,
+          "top": 284,
+          "right": 320,
+          "bottom": 949,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 68,
+          "width": 320,
+          "height": 288,
+          "top": 68,
+          "right": 320,
+          "bottom": 356,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 102.3125,
+              "y": 346,
+              "width": 181.6875,
+              "height": 22,
+              "top": 346,
+              "right": 284,
+              "bottom": 368,
+              "left": 102.3125
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 79.75,
+              "y": 393,
+              "width": 204.25,
+              "height": 22,
+              "top": 393,
+              "right": 284,
+              "bottom": 415,
+              "left": 79.75
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 87.71875,
+              "y": 440,
+              "width": 196.28125,
+              "height": 22,
+              "top": 440,
+              "right": 284,
+              "bottom": 462,
+              "left": 87.71875
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 113.84375,
+              "y": 487,
+              "width": 170.15625,
+              "height": 22,
+              "top": 487,
+              "right": 284,
+              "bottom": 509,
+              "left": 113.84375
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 109.421875,
+              "y": 534,
+              "width": 174.578125,
+              "height": 22,
+              "top": 534,
+              "right": 284,
+              "bottom": 556,
+              "left": 109.421875
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 119.28125,
+              "y": 581,
+              "width": 164.71875,
+              "height": 22,
+              "top": 581,
+              "right": 284,
+              "bottom": 603,
+              "left": 119.28125
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 248.84326171875,
+              "y": 441,
+              "width": 9.68701171875,
+              "height": 20,
+              "top": 441,
+              "right": 258.5302734375,
+              "bottom": 461,
+              "left": 248.84326171875
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 232.71875,
+              "y": 441,
+              "width": 16.109375,
+              "height": 20,
+              "top": 441,
+              "right": 248.828125,
+              "bottom": 461,
+              "left": 232.71875
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-QAOWNER-320-100.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 320,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 568.515625,
+            "width": 288,
+            "height": 877,
+            "top": 568.515625,
+            "right": 304,
+            "bottom": 1445.515625,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 213.7021484375,
+                "y": 1050.015625,
+                "width": 19.3740234375,
+                "height": 41,
+                "top": 1050.015625,
+                "right": 233.076171875,
+                "bottom": 1091.015625,
+                "left": 213.7021484375
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 182,
+                "y": 1050.015625,
+                "width": 31.6875,
+                "height": 41,
+                "top": 1050.015625,
+                "right": 213.6875,
+                "bottom": 1091.015625,
+                "left": 182
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 568.515625,
+          "width": 288,
+          "height": 877,
+          "top": 568.515625,
+          "right": 304,
+          "bottom": 1445.515625,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 568.515625,
+          "width": 320,
+          "height": 1623,
+          "top": 568.515625,
+          "right": 320,
+          "bottom": 2191.515625,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 76.515625,
+          "width": 320,
+          "height": 564,
+          "top": 76.515625,
+          "right": 320,
+          "bottom": 640.515625,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 36,
+              "y": 694.515625,
+              "width": 248,
+              "height": 88,
+              "top": 694.515625,
+              "right": 284,
+              "bottom": 782.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 36,
+              "y": 849.515625,
+              "width": 248,
+              "height": 88,
+              "top": 849.515625,
+              "right": 284,
+              "bottom": 937.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 36,
+              "y": 1004.515625,
+              "width": 248,
+              "height": 88,
+              "top": 1004.515625,
+              "right": 284,
+              "bottom": 1092.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 36,
+              "y": 1159.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1159.515625,
+              "right": 284,
+              "bottom": 1203.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 36,
+              "y": 1270.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1270.515625,
+              "right": 284,
+              "bottom": 1314.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 36,
+              "y": 1381.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1381.515625,
+              "right": 284,
+              "bottom": 1425.515625,
+              "left": 36
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 213.7021484375,
+              "y": 1050.015625,
+              "width": 19.3740234375,
+              "height": 41,
+              "top": 1050.015625,
+              "right": 233.076171875,
+              "bottom": 1091.015625,
+              "left": 213.7021484375
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 182,
+              "y": 1050.015625,
+              "width": 31.6875,
+              "height": 41,
+              "top": 1050.015625,
+              "right": 213.6875,
+              "bottom": 1091.015625,
+              "left": 182
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-QAOWNER-320-200.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 260,
+            "width": 358,
+            "height": 339,
+            "top": 260,
+            "right": 374,
+            "bottom": 599,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 318.84326171875,
+                "y": 417,
+                "width": 9.68701171875,
+                "height": 20,
+                "top": 417,
+                "right": 328.5302734375,
+                "bottom": 437,
+                "left": 318.84326171875
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 302.71875,
+                "y": 417,
+                "width": 16.109375,
+                "height": 20,
+                "top": 417,
+                "right": 318.828125,
+                "bottom": 437,
+                "left": 302.71875
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 260,
+          "width": 358,
+          "height": 339,
+          "top": 260,
+          "right": 374,
+          "bottom": 599,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 260,
+          "width": 390,
+          "height": 603,
+          "top": 260,
+          "right": 390,
+          "bottom": 863,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 68,
+          "width": 390,
+          "height": 264,
+          "top": 68,
+          "right": 390,
+          "bottom": 332,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 102.3125,
+              "y": 322,
+              "width": 251.6875,
+              "height": 22,
+              "top": 322,
+              "right": 354,
+              "bottom": 344,
+              "left": 102.3125
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 79.75,
+              "y": 369,
+              "width": 274.25,
+              "height": 22,
+              "top": 369,
+              "right": 354,
+              "bottom": 391,
+              "left": 79.75
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 87.71875,
+              "y": 416,
+              "width": 266.28125,
+              "height": 22,
+              "top": 416,
+              "right": 354,
+              "bottom": 438,
+              "left": 87.71875
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 113.84375,
+              "y": 463,
+              "width": 240.15625,
+              "height": 22,
+              "top": 463,
+              "right": 354,
+              "bottom": 485,
+              "left": 113.84375
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 109.421875,
+              "y": 510,
+              "width": 244.578125,
+              "height": 22,
+              "top": 510,
+              "right": 354,
+              "bottom": 532,
+              "left": 109.421875
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 119.28125,
+              "y": 557,
+              "width": 234.71875,
+              "height": 22,
+              "top": 557,
+              "right": 354,
+              "bottom": 579,
+              "left": 119.28125
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 318.84326171875,
+              "y": 417,
+              "width": 9.68701171875,
+              "height": 20,
+              "top": 417,
+              "right": 328.5302734375,
+              "bottom": 437,
+              "left": 318.84326171875
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 302.71875,
+              "y": 417,
+              "width": 16.109375,
+              "height": 20,
+              "top": 417,
+              "right": 318.828125,
+              "bottom": 437,
+              "left": 302.71875
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-QAOWNER-390-100.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 390,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 450.015625,
+            "width": 358,
+            "height": 789,
+            "top": 450.015625,
+            "right": 374,
+            "bottom": 1239.015625,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 283.7021484375,
+                "y": 843.515625,
+                "width": 19.3740234375,
+                "height": 41,
+                "top": 843.515625,
+                "right": 303.076171875,
+                "bottom": 884.515625,
+                "left": 283.7021484375
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 252,
+                "y": 843.515625,
+                "width": 31.6875,
+                "height": 41,
+                "top": 843.515625,
+                "right": 283.6875,
+                "bottom": 884.515625,
+                "left": 252
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 450.015625,
+          "width": 358,
+          "height": 789,
+          "top": 450.015625,
+          "right": 374,
+          "bottom": 1239.015625,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 450.015625,
+          "width": 390,
+          "height": 1343,
+          "top": 450.015625,
+          "right": 390,
+          "bottom": 1793.015625,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 78.015625,
+          "width": 390,
+          "height": 444,
+          "top": 78.015625,
+          "right": 390,
+          "bottom": 522.015625,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 36,
+              "y": 576.015625,
+              "width": 318,
+              "height": 44,
+              "top": 576.015625,
+              "right": 354,
+              "bottom": 620.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 36,
+              "y": 687.015625,
+              "width": 318,
+              "height": 44,
+              "top": 687.015625,
+              "right": 354,
+              "bottom": 731.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 36,
+              "y": 798.015625,
+              "width": 318,
+              "height": 88,
+              "top": 798.015625,
+              "right": 354,
+              "bottom": 886.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 36,
+              "y": 953.015625,
+              "width": 318,
+              "height": 44,
+              "top": 953.015625,
+              "right": 354,
+              "bottom": 997.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 36,
+              "y": 1064.015625,
+              "width": 318,
+              "height": 44,
+              "top": 1064.015625,
+              "right": 354,
+              "bottom": 1108.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 36,
+              "y": 1175.015625,
+              "width": 318,
+              "height": 44,
+              "top": 1175.015625,
+              "right": 354,
+              "bottom": 1219.015625,
+              "left": 36
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 283.7021484375,
+              "y": 843.515625,
+              "width": 19.3740234375,
+              "height": 41,
+              "top": 843.515625,
+              "right": 303.076171875,
+              "bottom": 884.515625,
+              "left": 283.7021484375
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 252,
+              "y": 843.515625,
+              "width": 31.6875,
+              "height": 41,
+              "top": 843.515625,
+              "right": 283.6875,
+              "bottom": 884.515625,
+              "left": 252
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-QAOWNER-390-200.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": false,
+          "message": "Replacement card aligns with desktop band",
+          "geometry": {
+            "card": {
+              "x": 476,
+              "y": 289,
+              "width": 720,
+              "height": 339,
+              "top": 289,
+              "right": 1196,
+              "bottom": 628,
+              "left": 476
+            },
+            "content": {
+              "x": 460,
+              "y": 289,
+              "width": 752,
+              "height": 567,
+              "top": 289,
+              "right": 1212,
+              "bottom": 856,
+              "left": 460
+            },
+            "band": {
+              "x": 276,
+              "y": 93,
+              "width": 1120,
+              "height": 252,
+              "top": 93,
+              "right": 1396,
+              "bottom": 345,
+              "left": 276
+            },
+            "facts": [
+              {
+                "text": "Alexandra Rivera",
+                "box": {
+                  "x": 558.953125,
+                  "y": 351,
+                  "width": 617.046875,
+                  "height": 22,
+                  "top": 351,
+                  "right": 1176,
+                  "bottom": 373,
+                  "left": 558.953125
+                }
+              },
+              {
+                "text": "Sun, Nov 1, 2026",
+                "box": {
+                  "x": 537.890625,
+                  "y": 398,
+                  "width": 638.109375,
+                  "height": 22,
+                  "top": 398,
+                  "right": 1176,
+                  "bottom": 420,
+                  "left": 537.890625
+                }
+              },
+              {
+                "text": "8:00 AM – 4:00 PM · 8h",
+                "box": {
+                  "x": 545.328125,
+                  "y": 445,
+                  "width": 630.671875,
+                  "height": 22,
+                  "top": 445,
+                  "right": 1176,
+                  "bottom": 467,
+                  "left": 545.328125
+                }
+              },
+              {
+                "text": "West Office",
+                "box": {
+                  "x": 569.71875,
+                  "y": 492,
+                  "width": 606.28125,
+                  "height": 22,
+                  "top": 492,
+                  "right": 1176,
+                  "bottom": 514,
+                  "left": 569.71875
+                }
+              },
+              {
+                "text": "None needed",
+                "box": {
+                  "x": 565.59375,
+                  "y": 539,
+                  "width": 610.40625,
+                  "height": 22,
+                  "top": 539,
+                  "right": 1176,
+                  "bottom": 561,
+                  "left": 565.59375
+                }
+              },
+              {
+                "text": "Not needed",
+                "box": {
+                  "x": 574.796875,
+                  "y": 586,
+                  "width": 601.203125,
+                  "height": 22,
+                  "top": 586,
+                  "right": 1176,
+                  "bottom": 608,
+                  "left": 574.796875
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 1142.9140625,
+                "y": 446,
+                "width": 9.1171875,
+                "height": 20,
+                "top": 446,
+                "right": 1152.03125,
+                "bottom": 466,
+                "left": 1142.9140625
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 1127.328125,
+                "y": 446,
+                "width": 15.578125,
+                "height": 20,
+                "top": 446,
+                "right": 1142.90625,
+                "bottom": 466,
+                "left": 1127.328125
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 476,
+          "y": 289,
+          "width": 720,
+          "height": 339,
+          "top": 289,
+          "right": 1196,
+          "bottom": 628,
+          "left": 476
+        },
+        "content": {
+          "x": 460,
+          "y": 289,
+          "width": 752,
+          "height": 567,
+          "top": 289,
+          "right": 1212,
+          "bottom": 856,
+          "left": 460
+        },
+        "band": {
+          "x": 276,
+          "y": 93,
+          "width": 1120,
+          "height": 252,
+          "top": 93,
+          "right": 1396,
+          "bottom": 345,
+          "left": 276
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 558.953125,
+              "y": 351,
+              "width": 617.046875,
+              "height": 22,
+              "top": 351,
+              "right": 1176,
+              "bottom": 373,
+              "left": 558.953125
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 537.890625,
+              "y": 398,
+              "width": 638.109375,
+              "height": 22,
+              "top": 398,
+              "right": 1176,
+              "bottom": 420,
+              "left": 537.890625
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 545.328125,
+              "y": 445,
+              "width": 630.671875,
+              "height": 22,
+              "top": 445,
+              "right": 1176,
+              "bottom": 467,
+              "left": 545.328125
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 569.71875,
+              "y": 492,
+              "width": 606.28125,
+              "height": 22,
+              "top": 492,
+              "right": 1176,
+              "bottom": 514,
+              "left": 569.71875
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 565.59375,
+              "y": 539,
+              "width": 610.40625,
+              "height": 22,
+              "top": 539,
+              "right": 1176,
+              "bottom": 561,
+              "left": 565.59375
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 574.796875,
+              "y": 586,
+              "width": 601.203125,
+              "height": 22,
+              "top": 586,
+              "right": 1176,
+              "bottom": 608,
+              "left": 574.796875
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 1142.9140625,
+              "y": 446,
+              "width": 9.1171875,
+              "height": 20,
+              "top": 446,
+              "right": 1152.03125,
+              "bottom": 466,
+              "left": 1142.9140625
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 1127.328125,
+              "y": 446,
+              "width": 15.578125,
+              "height": 20,
+              "top": 446,
+              "right": 1142.90625,
+              "bottom": 466,
+              "left": 1127.328125
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-QAOWNER-1440-100.png",
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "actor": "QAOWNER",
+      "width": 1440,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": false,
+          "message": "Replacement card aligns with desktop band",
+          "geometry": {
+            "card": {
+              "x": 476,
+              "y": 355,
+              "width": 720,
+              "height": 493,
+              "top": 355,
+              "right": 1196,
+              "bottom": 848,
+              "left": 476
+            },
+            "content": {
+              "x": 460,
+              "y": 355,
+              "width": 752,
+              "height": 823,
+              "top": 355,
+              "right": 1212,
+              "bottom": 1178,
+              "left": 460
+            },
+            "band": {
+              "x": 276,
+              "y": 95,
+              "width": 1120,
+              "height": 316,
+              "top": 95,
+              "right": 1396,
+              "bottom": 411,
+              "left": 276
+            },
+            "facts": [
+              {
+                "text": "Alexandra Rivera",
+                "box": {
+                  "x": 605.90625,
+                  "y": 439,
+                  "width": 570.09375,
+                  "height": 44,
+                  "top": 439,
+                  "right": 1176,
+                  "bottom": 483,
+                  "left": 605.90625
+                }
+              },
+              {
+                "text": "Sun, Nov 1, 2026",
+                "box": {
+                  "x": 563.78125,
+                  "y": 508,
+                  "width": 612.21875,
+                  "height": 44,
+                  "top": 508,
+                  "right": 1176,
+                  "bottom": 552,
+                  "left": 563.78125
+                }
+              },
+              {
+                "text": "8:00 AM – 4:00 PM · 8h",
+                "box": {
+                  "x": 578.65625,
+                  "y": 577,
+                  "width": 597.34375,
+                  "height": 44,
+                  "top": 577,
+                  "right": 1176,
+                  "bottom": 621,
+                  "left": 578.65625
+                }
+              },
+              {
+                "text": "West Office",
+                "box": {
+                  "x": 627.421875,
+                  "y": 646,
+                  "width": 548.578125,
+                  "height": 44,
+                  "top": 646,
+                  "right": 1176,
+                  "bottom": 690,
+                  "left": 627.421875
+                }
+              },
+              {
+                "text": "None needed",
+                "box": {
+                  "x": 619.171875,
+                  "y": 715,
+                  "width": 556.828125,
+                  "height": 44,
+                  "top": 715,
+                  "right": 1176,
+                  "bottom": 759,
+                  "left": 619.171875
+                }
+              },
+              {
+                "text": "Not needed",
+                "box": {
+                  "x": 637.59375,
+                  "y": 784,
+                  "width": 538.40625,
+                  "height": 44,
+                  "top": 784,
+                  "right": 1176,
+                  "bottom": 828,
+                  "left": 637.59375
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 1109.84375,
+                "y": 579.5,
+                "width": 18.234375,
+                "height": 39,
+                "top": 579.5,
+                "right": 1128.078125,
+                "bottom": 618.5,
+                "left": 1109.84375
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 1079.65625,
+                "y": 579.5,
+                "width": 30.1875,
+                "height": 39,
+                "top": 579.5,
+                "right": 1109.84375,
+                "bottom": 618.5,
+                "left": 1079.65625
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 476,
+          "y": 355,
+          "width": 720,
+          "height": 493,
+          "top": 355,
+          "right": 1196,
+          "bottom": 848,
+          "left": 476
+        },
+        "content": {
+          "x": 460,
+          "y": 355,
+          "width": 752,
+          "height": 823,
+          "top": 355,
+          "right": 1212,
+          "bottom": 1178,
+          "left": 460
+        },
+        "band": {
+          "x": 276,
+          "y": 95,
+          "width": 1120,
+          "height": 316,
+          "top": 95,
+          "right": 1396,
+          "bottom": 411,
+          "left": 276
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 605.90625,
+              "y": 439,
+              "width": 570.09375,
+              "height": 44,
+              "top": 439,
+              "right": 1176,
+              "bottom": 483,
+              "left": 605.90625
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 563.78125,
+              "y": 508,
+              "width": 612.21875,
+              "height": 44,
+              "top": 508,
+              "right": 1176,
+              "bottom": 552,
+              "left": 563.78125
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 578.65625,
+              "y": 577,
+              "width": 597.34375,
+              "height": 44,
+              "top": 577,
+              "right": 1176,
+              "bottom": 621,
+              "left": 578.65625
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 627.421875,
+              "y": 646,
+              "width": 548.578125,
+              "height": 44,
+              "top": 646,
+              "right": 1176,
+              "bottom": 690,
+              "left": 627.421875
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 619.171875,
+              "y": 715,
+              "width": 556.828125,
+              "height": 44,
+              "top": 715,
+              "right": 1176,
+              "bottom": 759,
+              "left": 619.171875
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 637.59375,
+              "y": 784,
+              "width": 538.40625,
+              "height": 44,
+              "top": 784,
+              "right": 1176,
+              "bottom": 828,
+              "left": 637.59375
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 1109.84375,
+              "y": 579.5,
+              "width": 18.234375,
+              "height": 39,
+              "top": 579.5,
+              "right": 1128.078125,
+              "bottom": 618.5,
+              "left": 1109.84375
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 1079.65625,
+              "y": 579.5,
+              "width": 30.1875,
+              "height": 39,
+              "top": 579.5,
+              "right": 1109.84375,
+              "bottom": 618.5,
+              "left": 1079.65625
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-QAOWNER-1440-200.png",
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 320,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 284,
+            "width": 288,
+            "height": 339,
+            "top": 284,
+            "right": 304,
+            "bottom": 623,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 248.84326171875,
+                "y": 441,
+                "width": 9.68701171875,
+                "height": 20,
+                "top": 441,
+                "right": 258.5302734375,
+                "bottom": 461,
+                "left": 248.84326171875
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 232.71875,
+                "y": 441,
+                "width": 16.109375,
+                "height": 20,
+                "top": 441,
+                "right": 248.828125,
+                "bottom": 461,
+                "left": 232.71875
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 284,
+          "width": 288,
+          "height": 339,
+          "top": 284,
+          "right": 304,
+          "bottom": 623,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 284,
+          "width": 320,
+          "height": 665,
+          "top": 284,
+          "right": 320,
+          "bottom": 949,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 68,
+          "width": 320,
+          "height": 288,
+          "top": 68,
+          "right": 320,
+          "bottom": 356,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 102.3125,
+              "y": 346,
+              "width": 181.6875,
+              "height": 22,
+              "top": 346,
+              "right": 284,
+              "bottom": 368,
+              "left": 102.3125
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 79.75,
+              "y": 393,
+              "width": 204.25,
+              "height": 22,
+              "top": 393,
+              "right": 284,
+              "bottom": 415,
+              "left": 79.75
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 87.71875,
+              "y": 440,
+              "width": 196.28125,
+              "height": 22,
+              "top": 440,
+              "right": 284,
+              "bottom": 462,
+              "left": 87.71875
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 113.84375,
+              "y": 487,
+              "width": 170.15625,
+              "height": 22,
+              "top": 487,
+              "right": 284,
+              "bottom": 509,
+              "left": 113.84375
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 109.421875,
+              "y": 534,
+              "width": 174.578125,
+              "height": 22,
+              "top": 534,
+              "right": 284,
+              "bottom": 556,
+              "left": 109.421875
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 119.28125,
+              "y": 581,
+              "width": 164.71875,
+              "height": 22,
+              "top": 581,
+              "right": 284,
+              "bottom": 603,
+              "left": 119.28125
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 248.84326171875,
+              "y": 441,
+              "width": 9.68701171875,
+              "height": 20,
+              "top": 441,
+              "right": 258.5302734375,
+              "bottom": 461,
+              "left": 248.84326171875
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 232.71875,
+              "y": 441,
+              "width": 16.109375,
+              "height": 20,
+              "top": 441,
+              "right": 248.828125,
+              "bottom": 461,
+              "left": 232.71875
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-AUDIT-M-320-100.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 320,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 568.515625,
+            "width": 288,
+            "height": 877,
+            "top": 568.515625,
+            "right": 304,
+            "bottom": 1445.515625,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 213.7021484375,
+                "y": 1050.015625,
+                "width": 19.3740234375,
+                "height": 41,
+                "top": 1050.015625,
+                "right": 233.076171875,
+                "bottom": 1091.015625,
+                "left": 213.7021484375
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 182,
+                "y": 1050.015625,
+                "width": 31.6875,
+                "height": 41,
+                "top": 1050.015625,
+                "right": 213.6875,
+                "bottom": 1091.015625,
+                "left": 182
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 568.515625,
+          "width": 288,
+          "height": 877,
+          "top": 568.515625,
+          "right": 304,
+          "bottom": 1445.515625,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 568.515625,
+          "width": 320,
+          "height": 1623,
+          "top": 568.515625,
+          "right": 320,
+          "bottom": 2191.515625,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 76.515625,
+          "width": 320,
+          "height": 564,
+          "top": 76.515625,
+          "right": 320,
+          "bottom": 640.515625,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 36,
+              "y": 694.515625,
+              "width": 248,
+              "height": 88,
+              "top": 694.515625,
+              "right": 284,
+              "bottom": 782.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 36,
+              "y": 849.515625,
+              "width": 248,
+              "height": 88,
+              "top": 849.515625,
+              "right": 284,
+              "bottom": 937.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 36,
+              "y": 1004.515625,
+              "width": 248,
+              "height": 88,
+              "top": 1004.515625,
+              "right": 284,
+              "bottom": 1092.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 36,
+              "y": 1159.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1159.515625,
+              "right": 284,
+              "bottom": 1203.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 36,
+              "y": 1270.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1270.515625,
+              "right": 284,
+              "bottom": 1314.515625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 36,
+              "y": 1381.515625,
+              "width": 248,
+              "height": 44,
+              "top": 1381.515625,
+              "right": 284,
+              "bottom": 1425.515625,
+              "left": 36
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 213.7021484375,
+              "y": 1050.015625,
+              "width": 19.3740234375,
+              "height": 41,
+              "top": 1050.015625,
+              "right": 233.076171875,
+              "bottom": 1091.015625,
+              "left": 213.7021484375
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 182,
+              "y": 1050.015625,
+              "width": 31.6875,
+              "height": 41,
+              "top": 1050.015625,
+              "right": 213.6875,
+              "bottom": 1091.015625,
+              "left": 182
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-AUDIT-M-320-200.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 260,
+            "width": 358,
+            "height": 339,
+            "top": 260,
+            "right": 374,
+            "bottom": 599,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 318.84326171875,
+                "y": 417,
+                "width": 9.68701171875,
+                "height": 20,
+                "top": 417,
+                "right": 328.5302734375,
+                "bottom": 437,
+                "left": 318.84326171875
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 302.71875,
+                "y": 417,
+                "width": 16.109375,
+                "height": 20,
+                "top": 417,
+                "right": 318.828125,
+                "bottom": 437,
+                "left": 302.71875
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 260,
+          "width": 358,
+          "height": 339,
+          "top": 260,
+          "right": 374,
+          "bottom": 599,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 260,
+          "width": 390,
+          "height": 603,
+          "top": 260,
+          "right": 390,
+          "bottom": 863,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 68,
+          "width": 390,
+          "height": 264,
+          "top": 68,
+          "right": 390,
+          "bottom": 332,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 102.3125,
+              "y": 322,
+              "width": 251.6875,
+              "height": 22,
+              "top": 322,
+              "right": 354,
+              "bottom": 344,
+              "left": 102.3125
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 79.75,
+              "y": 369,
+              "width": 274.25,
+              "height": 22,
+              "top": 369,
+              "right": 354,
+              "bottom": 391,
+              "left": 79.75
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 87.71875,
+              "y": 416,
+              "width": 266.28125,
+              "height": 22,
+              "top": 416,
+              "right": 354,
+              "bottom": 438,
+              "left": 87.71875
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 113.84375,
+              "y": 463,
+              "width": 240.15625,
+              "height": 22,
+              "top": 463,
+              "right": 354,
+              "bottom": 485,
+              "left": 113.84375
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 109.421875,
+              "y": 510,
+              "width": 244.578125,
+              "height": 22,
+              "top": 510,
+              "right": 354,
+              "bottom": 532,
+              "left": 109.421875
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 119.28125,
+              "y": 557,
+              "width": 234.71875,
+              "height": 22,
+              "top": 557,
+              "right": 354,
+              "bottom": 579,
+              "left": 119.28125
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 318.84326171875,
+              "y": 417,
+              "width": 9.68701171875,
+              "height": 20,
+              "top": 417,
+              "right": 328.5302734375,
+              "bottom": 437,
+              "left": 318.84326171875
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 302.71875,
+              "y": 417,
+              "width": 16.109375,
+              "height": 20,
+              "top": 417,
+              "right": 318.828125,
+              "bottom": 437,
+              "left": 302.71875
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-AUDIT-M-390-100.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 390,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": true,
+          "message": "Replacement card has 16px outer phone gutters",
+          "geometry": {
+            "x": 16,
+            "y": 450.015625,
+            "width": 358,
+            "height": 789,
+            "top": 450.015625,
+            "right": 374,
+            "bottom": 1239.015625,
+            "left": 16
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 283.7021484375,
+                "y": 843.515625,
+                "width": 19.3740234375,
+                "height": 41,
+                "top": 843.515625,
+                "right": 303.076171875,
+                "bottom": 884.515625,
+                "left": 283.7021484375
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 252,
+                "y": 843.515625,
+                "width": 31.6875,
+                "height": 41,
+                "top": 843.515625,
+                "right": 283.6875,
+                "bottom": 884.515625,
+                "left": 252
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 16,
+          "y": 450.015625,
+          "width": 358,
+          "height": 789,
+          "top": 450.015625,
+          "right": 374,
+          "bottom": 1239.015625,
+          "left": 16
+        },
+        "content": {
+          "x": 0,
+          "y": 450.015625,
+          "width": 390,
+          "height": 1343,
+          "top": 450.015625,
+          "right": 390,
+          "bottom": 1793.015625,
+          "left": 0
+        },
+        "band": {
+          "x": 0,
+          "y": 78.015625,
+          "width": 390,
+          "height": 444,
+          "top": 78.015625,
+          "right": 390,
+          "bottom": 522.015625,
+          "left": 0
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 36,
+              "y": 576.015625,
+              "width": 318,
+              "height": 44,
+              "top": 576.015625,
+              "right": 354,
+              "bottom": 620.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 36,
+              "y": 687.015625,
+              "width": 318,
+              "height": 44,
+              "top": 687.015625,
+              "right": 354,
+              "bottom": 731.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 36,
+              "y": 798.015625,
+              "width": 318,
+              "height": 88,
+              "top": 798.015625,
+              "right": 354,
+              "bottom": 886.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 36,
+              "y": 953.015625,
+              "width": 318,
+              "height": 44,
+              "top": 953.015625,
+              "right": 354,
+              "bottom": 997.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 36,
+              "y": 1064.015625,
+              "width": 318,
+              "height": 44,
+              "top": 1064.015625,
+              "right": 354,
+              "bottom": 1108.015625,
+              "left": 36
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 36,
+              "y": 1175.015625,
+              "width": 318,
+              "height": 44,
+              "top": 1175.015625,
+              "right": 354,
+              "bottom": 1219.015625,
+              "left": 36
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 283.7021484375,
+              "y": 843.515625,
+              "width": 19.3740234375,
+              "height": 41,
+              "top": 843.515625,
+              "right": 303.076171875,
+              "bottom": 884.515625,
+              "left": 283.7021484375
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 252,
+              "y": 843.515625,
+              "width": 31.6875,
+              "height": 41,
+              "top": 843.515625,
+              "right": 283.6875,
+              "bottom": 884.515625,
+              "left": 252
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-AUDIT-M-390-200.png",
+      "completed": true,
+      "ok": true
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 100,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": false,
+          "message": "Replacement card aligns with desktop band",
+          "geometry": {
+            "card": {
+              "x": 476,
+              "y": 289,
+              "width": 720,
+              "height": 339,
+              "top": 289,
+              "right": 1196,
+              "bottom": 628,
+              "left": 476
+            },
+            "content": {
+              "x": 460,
+              "y": 289,
+              "width": 752,
+              "height": 567,
+              "top": 289,
+              "right": 1212,
+              "bottom": 856,
+              "left": 460
+            },
+            "band": {
+              "x": 276,
+              "y": 93,
+              "width": 1120,
+              "height": 252,
+              "top": 93,
+              "right": 1396,
+              "bottom": 345,
+              "left": 276
+            },
+            "facts": [
+              {
+                "text": "Alexandra Rivera",
+                "box": {
+                  "x": 558.953125,
+                  "y": 351,
+                  "width": 617.046875,
+                  "height": 22,
+                  "top": 351,
+                  "right": 1176,
+                  "bottom": 373,
+                  "left": 558.953125
+                }
+              },
+              {
+                "text": "Sun, Nov 1, 2026",
+                "box": {
+                  "x": 537.890625,
+                  "y": 398,
+                  "width": 638.109375,
+                  "height": 22,
+                  "top": 398,
+                  "right": 1176,
+                  "bottom": 420,
+                  "left": 537.890625
+                }
+              },
+              {
+                "text": "8:00 AM – 4:00 PM · 8h",
+                "box": {
+                  "x": 545.328125,
+                  "y": 445,
+                  "width": 630.671875,
+                  "height": 22,
+                  "top": 445,
+                  "right": 1176,
+                  "bottom": 467,
+                  "left": 545.328125
+                }
+              },
+              {
+                "text": "West Office",
+                "box": {
+                  "x": 569.71875,
+                  "y": 492,
+                  "width": 606.28125,
+                  "height": 22,
+                  "top": 492,
+                  "right": 1176,
+                  "bottom": 514,
+                  "left": 569.71875
+                }
+              },
+              {
+                "text": "None needed",
+                "box": {
+                  "x": 565.59375,
+                  "y": 539,
+                  "width": 610.40625,
+                  "height": 22,
+                  "top": 539,
+                  "right": 1176,
+                  "bottom": 561,
+                  "left": 565.59375
+                }
+              },
+              {
+                "text": "Not needed",
+                "box": {
+                  "x": 574.796875,
+                  "y": 586,
+                  "width": 601.203125,
+                  "height": 22,
+                  "top": 586,
+                  "right": 1176,
+                  "bottom": 608,
+                  "left": 574.796875
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 1142.9140625,
+                "y": 446,
+                "width": 9.1171875,
+                "height": 20,
+                "top": 446,
+                "right": 1152.03125,
+                "bottom": 466,
+                "left": 1142.9140625
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 1127.328125,
+                "y": 446,
+                "width": 15.578125,
+                "height": 20,
+                "top": 446,
+                "right": 1142.90625,
+                "bottom": 466,
+                "left": 1127.328125
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 476,
+          "y": 289,
+          "width": 720,
+          "height": 339,
+          "top": 289,
+          "right": 1196,
+          "bottom": 628,
+          "left": 476
+        },
+        "content": {
+          "x": 460,
+          "y": 289,
+          "width": 752,
+          "height": 567,
+          "top": 289,
+          "right": 1212,
+          "bottom": 856,
+          "left": 460
+        },
+        "band": {
+          "x": 276,
+          "y": 93,
+          "width": 1120,
+          "height": 252,
+          "top": 93,
+          "right": 1396,
+          "bottom": 345,
+          "left": 276
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 558.953125,
+              "y": 351,
+              "width": 617.046875,
+              "height": 22,
+              "top": 351,
+              "right": 1176,
+              "bottom": 373,
+              "left": 558.953125
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 537.890625,
+              "y": 398,
+              "width": 638.109375,
+              "height": 22,
+              "top": 398,
+              "right": 1176,
+              "bottom": 420,
+              "left": 537.890625
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 545.328125,
+              "y": 445,
+              "width": 630.671875,
+              "height": 22,
+              "top": 445,
+              "right": 1176,
+              "bottom": 467,
+              "left": 545.328125
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 569.71875,
+              "y": 492,
+              "width": 606.28125,
+              "height": 22,
+              "top": 492,
+              "right": 1176,
+              "bottom": 514,
+              "left": 569.71875
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 565.59375,
+              "y": 539,
+              "width": 610.40625,
+              "height": 22,
+              "top": 539,
+              "right": 1176,
+              "bottom": 561,
+              "left": 565.59375
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 574.796875,
+              "y": 586,
+              "width": 601.203125,
+              "height": 22,
+              "top": 586,
+              "right": 1176,
+              "bottom": 608,
+              "left": 574.796875
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 1142.9140625,
+              "y": 446,
+              "width": 9.1171875,
+              "height": 20,
+              "top": 446,
+              "right": 1152.03125,
+              "bottom": 466,
+              "left": 1142.9140625
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 1127.328125,
+              "y": 446,
+              "width": 15.578125,
+              "height": 20,
+              "top": 446,
+              "right": 1142.90625,
+              "bottom": 466,
+              "left": 1127.328125
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-AUDIT-M-1440-100.png",
+      "completed": true,
+      "ok": false
+    },
+    {
+      "engine": "webkit",
+      "actor": "AUDIT-M",
+      "width": 1440,
+      "text": 200,
+      "sha": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+      "assertions": [
+        {
+          "id": "AL-WA-10",
+          "ok": false,
+          "message": "Replacement card aligns with desktop band",
+          "geometry": {
+            "card": {
+              "x": 476,
+              "y": 355,
+              "width": 720,
+              "height": 493,
+              "top": 355,
+              "right": 1196,
+              "bottom": 848,
+              "left": 476
+            },
+            "content": {
+              "x": 460,
+              "y": 355,
+              "width": 752,
+              "height": 823,
+              "top": 355,
+              "right": 1212,
+              "bottom": 1178,
+              "left": 460
+            },
+            "band": {
+              "x": 276,
+              "y": 95,
+              "width": 1120,
+              "height": 316,
+              "top": 95,
+              "right": 1396,
+              "bottom": 411,
+              "left": 276
+            },
+            "facts": [
+              {
+                "text": "Alexandra Rivera",
+                "box": {
+                  "x": 605.90625,
+                  "y": 439,
+                  "width": 570.09375,
+                  "height": 44,
+                  "top": 439,
+                  "right": 1176,
+                  "bottom": 483,
+                  "left": 605.90625
+                }
+              },
+              {
+                "text": "Sun, Nov 1, 2026",
+                "box": {
+                  "x": 563.78125,
+                  "y": 508,
+                  "width": 612.21875,
+                  "height": 44,
+                  "top": 508,
+                  "right": 1176,
+                  "bottom": 552,
+                  "left": 563.78125
+                }
+              },
+              {
+                "text": "8:00 AM – 4:00 PM · 8h",
+                "box": {
+                  "x": 578.65625,
+                  "y": 577,
+                  "width": 597.34375,
+                  "height": 44,
+                  "top": 577,
+                  "right": 1176,
+                  "bottom": 621,
+                  "left": 578.65625
+                }
+              },
+              {
+                "text": "West Office",
+                "box": {
+                  "x": 627.421875,
+                  "y": 646,
+                  "width": 548.578125,
+                  "height": 44,
+                  "top": 646,
+                  "right": 1176,
+                  "bottom": 690,
+                  "left": 627.421875
+                }
+              },
+              {
+                "text": "None needed",
+                "box": {
+                  "x": 619.171875,
+                  "y": 715,
+                  "width": 556.828125,
+                  "height": 44,
+                  "top": 715,
+                  "right": 1176,
+                  "bottom": 759,
+                  "left": 619.171875
+                }
+              },
+              {
+                "text": "Not needed",
+                "box": {
+                  "x": 637.59375,
+                  "y": 784,
+                  "width": 538.40625,
+                  "height": 44,
+                  "top": 784,
+                  "right": 1176,
+                  "bottom": 828,
+                  "left": 637.59375
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "TC-WA-3",
+          "ok": true,
+          "message": "Replacement time separator remains on the preceding time line",
+          "data": {
+            "separator": " ·",
+            "separatorRects": [
+              {
+                "x": 1109.84375,
+                "y": 579.5,
+                "width": 18.234375,
+                "height": 39,
+                "top": 579.5,
+                "right": 1128.078125,
+                "bottom": 618.5,
+                "left": 1109.84375
+              }
+            ],
+            "previousRects": [
+              {
+                "x": 1079.65625,
+                "y": 579.5,
+                "width": 30.1875,
+                "height": 39,
+                "top": 579.5,
+                "right": 1109.84375,
+                "bottom": 618.5,
+                "left": 1079.65625
+              }
+            ]
+          }
+        }
+      ],
+      "geometry": {
+        "card": {
+          "x": 476,
+          "y": 355,
+          "width": 720,
+          "height": 493,
+          "top": 355,
+          "right": 1196,
+          "bottom": 848,
+          "left": 476
+        },
+        "content": {
+          "x": 460,
+          "y": 355,
+          "width": 752,
+          "height": 823,
+          "top": 355,
+          "right": 1212,
+          "bottom": 1178,
+          "left": 460
+        },
+        "band": {
+          "x": 276,
+          "y": 95,
+          "width": 1120,
+          "height": 316,
+          "top": 95,
+          "right": 1396,
+          "bottom": 411,
+          "left": 276
+        },
+        "facts": [
+          {
+            "text": "Alexandra Rivera",
+            "box": {
+              "x": 605.90625,
+              "y": 439,
+              "width": 570.09375,
+              "height": 44,
+              "top": 439,
+              "right": 1176,
+              "bottom": 483,
+              "left": 605.90625
+            }
+          },
+          {
+            "text": "Sun, Nov 1, 2026",
+            "box": {
+              "x": 563.78125,
+              "y": 508,
+              "width": 612.21875,
+              "height": 44,
+              "top": 508,
+              "right": 1176,
+              "bottom": 552,
+              "left": 563.78125
+            }
+          },
+          {
+            "text": "8:00 AM – 4:00 PM · 8h",
+            "box": {
+              "x": 578.65625,
+              "y": 577,
+              "width": 597.34375,
+              "height": 44,
+              "top": 577,
+              "right": 1176,
+              "bottom": 621,
+              "left": 578.65625
+            }
+          },
+          {
+            "text": "West Office",
+            "box": {
+              "x": 627.421875,
+              "y": 646,
+              "width": 548.578125,
+              "height": 44,
+              "top": 646,
+              "right": 1176,
+              "bottom": 690,
+              "left": 627.421875
+            }
+          },
+          {
+            "text": "None needed",
+            "box": {
+              "x": 619.171875,
+              "y": 715,
+              "width": 556.828125,
+              "height": 44,
+              "top": 715,
+              "right": 1176,
+              "bottom": 759,
+              "left": 619.171875
+            }
+          },
+          {
+            "text": "Not needed",
+            "box": {
+              "x": 637.59375,
+              "y": 784,
+              "width": 538.40625,
+              "height": 44,
+              "top": 784,
+              "right": 1176,
+              "bottom": 828,
+              "left": 637.59375
+            }
+          }
+        ]
+      },
+      "atoms": [
+        {
+          "separator": " ·",
+          "separatorRects": [
+            {
+              "x": 1109.84375,
+              "y": 579.5,
+              "width": 18.234375,
+              "height": 39,
+              "top": 579.5,
+              "right": 1128.078125,
+              "bottom": 618.5,
+              "left": 1109.84375
+            }
+          ],
+          "previousRects": [
+            {
+              "x": 1079.65625,
+              "y": 579.5,
+              "width": 30.1875,
+              "height": 39,
+              "top": 579.5,
+              "right": 1109.84375,
+              "bottom": 618.5,
+              "left": 1079.65625
+            }
+          ]
+        }
+      ],
+      "crop": "crops/webkit-replacement-AUDIT-M-1440-200.png",
+      "completed": true,
+      "ok": false
+    }
+  ]
+}
