@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-20T03:24:30.119Z. premium-phase-1 complete. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-20T03:26:14.619Z. p35-wave-b-808dfd partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -23,9 +23,9 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
 | claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Complete | 2687 | 9893 | 12580 / 12580 |
-| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 3717 | 3467 | 7184 / 12716 |
+| claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 3717 | 3487 | 7204 / 12716 |
 | claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 3326 | 1334 | 4660 / 12580 |
-| claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
+| claude/p35-wave-b-808dfd | `469bc5a05d4ecc0c153a6304aca9df63e262216b` | Running matrix | 16 | 0 | 16 / 12716 |
 | claude/p35-wave-c-93e13c | `e3a99fe7b6cda3c3b8049ff62f0de376d710b58f` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
 | claude/p4-desktop-240fe0 | `578748d705b941d14f37c0b01bfcfb1332343e31` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / pending inventory |
 | claude/premium-phase-1 (large data) | `672232896b66a520d39939c1ae3e0227c8b1dc90` | Complete | 0 | 952 | 952 / 952 |
@@ -11888,7 +11888,7 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Complete. 2687 passed; 9893 
 
 ## claude/p35-profile-6cdee8
 
-Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 3717 passed; 3467 failed. Completed checker batches: 527. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
+Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 3717 passed; 3487 failed. Completed checker batches: 529. Raw evidence: [cloud-checks/claude/p35-profile-6cdee8/](cloud-checks/claude/p35-profile-6cdee8/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -15433,6 +15433,26 @@ Source: `be4a232a1e6a26b58314ff549f88e5a8a79e82c6`. Running matrix. 3717 passed;
 | /app/requests | AUDIT-LONG | 1440 | 200 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 200% /app/requests small=small. «Powered by VELANI LLC» 10px; p. «Your dates will appear here.» 13px; strong. «Manager review comes next» 12px; span. «Track the decision in My reque» 12px |
 | /app/requests/hub | AUDIT-LONG | 1440 | 200 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 200% /app/requests/hub small=small. «Powered by VELANI LLC» 10px |
 | /app/schedule | AUDIT-LONG | 1440 | 200 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 200% /app/schedule small=small. «Powered by VELANI LLC» 10px; p. «2026 · Puerto Rico time» 13px; small. «Today» 12px; a.my-schedule-link «Request a swap» 13px |
+| /app/schedule/coverage | AUDIT-LONG | 1440 | 100 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 100% /app/schedule/coverage small=small. «Powered by VELANI LLC» 10px |
+| /app/timecards | AUDIT-LONG | 1440 | 100 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 100% /app/timecards small=small. «Powered by VELANI LLC» 10px; label. «Period start» 13px; label. «Period end» 13px; p.timecards-module__DJfzSW__status «1 timecard in this period.» 13px |
+| /app/updates | AUDIT-LONG | 1440 | 100 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 100% /app/updates small=small. «Powered by VELANI LLC» 10px; span. «Refresh updates» 13px; span. «Review update» 12px; p.updates-footnote «Opening an update doesn’t conf» 12px |
+| /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca | AUDIT-LONG | 1440 | 100 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 100% /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca small=small. «Powered by VELANI LLC» 10px; p.communication-category «Location announcement» 13px; span.communication-status.attention «Acknowledgement required» 12px; p. «Published Oct 19, 2026, 2:15 P» 13px |
+| /app/schedule/coverage | AUDIT-LONG | 1440 | 125 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 125% /app/schedule/coverage small=small. «Powered by VELANI LLC» 10px |
+| /app/timecards | AUDIT-LONG | 1440 | 125 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 125% /app/timecards small=small. «Powered by VELANI LLC» 10px; label. «Period start» 13px; label. «Period end» 13px; p.timecards-module__DJfzSW__status «1 timecard in this period.» 13px |
+| /app/updates | AUDIT-LONG | 1440 | 125 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 125% /app/updates small=small. «Powered by VELANI LLC» 10px; span. «Refresh updates» 13px; span. «Review update» 12px; p.updates-footnote «Opening an update doesn’t conf» 12px |
+| /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca | AUDIT-LONG | 1440 | 125 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 125% /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca small=small. «Powered by VELANI LLC» 10px; p.communication-category «Location announcement» 13px; span.communication-status.attention «Acknowledgement required» 12px; p. «Published Oct 19, 2026, 2:15 P» 13px |
+| /app/schedule/coverage | AUDIT-LONG | 1440 | 150 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 150% /app/schedule/coverage small=small. «Powered by VELANI LLC» 10px |
+| /app/timecards | AUDIT-LONG | 1440 | 150 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 150% /app/timecards small=small. «Powered by VELANI LLC» 10px; label. «Period start» 13px; label. «Period end» 13px; p.timecards-module__DJfzSW__status «1 timecard in this period.» 13px |
+| /app/updates | AUDIT-LONG | 1440 | 150 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 150% /app/updates small=small. «Powered by VELANI LLC» 10px; span. «Refresh updates» 13px; span. «Review update» 12px; p.updates-footnote «Opening an update doesn’t conf» 12px |
+| /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca | AUDIT-LONG | 1440 | 150 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 150% /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca small=small. «Powered by VELANI LLC» 10px; p.communication-category «Location announcement» 13px; span.communication-status.attention «Acknowledgement required» 12px; p. «Published Oct 19, 2026, 2:15 P» 13px |
+| /app/schedule/coverage | AUDIT-LONG | 1440 | 200 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 200% /app/schedule/coverage small=small. «Powered by VELANI LLC» 10px |
+| /app/timecards | AUDIT-LONG | 1440 | 200 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 200% /app/timecards small=small. «Powered by VELANI LLC» 10px; label. «Period start» 13px; label. «Period end» 13px; p.timecards-module__DJfzSW__status «1 timecard in this period.» 13px |
+| /app/updates | AUDIT-LONG | 1440 | 200 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 200% /app/updates small=small. «Powered by VELANI LLC» 10px; span. «Refresh updates» 13px; span. «Review update» 12px; p.updates-footnote «Opening an update doesn’t conf» 12px |
+| /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca | AUDIT-LONG | 1440 | 200 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 200% /app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca small=small. «Powered by VELANI LLC» 10px; p.communication-category «Location announcement» 13px; span.communication-status.attention «Acknowledgement required» 12px; p. «Published Oct 19, 2026, 2:15 P» 13px |
+| /app/updates/compose | AUDIT-LONG | 1440 | 100 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 100% /app/updates/compose small=small. «Powered by VELANI LLC» 10px; span.compose-status «Unpublished» 12px; p. «Keep your team informed, one c» 13px; label. «Title» 13px |
+| /app/updates/compose | AUDIT-LONG | 1440 | 125 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 125% /app/updates/compose small=small. «Powered by VELANI LLC» 10px; span.compose-status «Unpublished» 12px; p. «Keep your team informed, one c» 13px; label. «Title» 13px |
+| /app/updates/compose | AUDIT-LONG | 1440 | 150 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 150% /app/updates/compose small=small. «Powered by VELANI LLC» 10px; span.compose-status «Unpublished» 12px; p. «Keep your team informed, one c» 13px; label. «Title» 13px |
+| /app/updates/compose | AUDIT-LONG | 1440 | 200 | webkit | small text | UI — claude/p4-desktop-240fe0 (desktop); shared kit/shell: claude/premium-phase-1 | FAIL webkit AUDIT-LONG 1440 200% /app/updates/compose small=small. «Powered by VELANI LLC» 10px; span.compose-status «Unpublished» 12px; p. «Keep your team informed, one c» 13px; label. «Title» 13px |
 
 ### Timeout and server observations (separate from UI findings)
 
@@ -16837,7 +16857,7 @@ Source: `76514905153c906bb76efc45808426e9d484cb64`. Running matrix. 3326 passed;
 
 ## claude/p35-wave-b-808dfd
 
-Source: `b0e051a951642ff34692604147fcd76ba805a3e7`. Queued; exact source/runtime SHA will be checked before the first batch. 0 passed; 0 failed. Completed checker batches: 0. Raw evidence: [cloud-checks/claude/p35-wave-b-808dfd/](cloud-checks/claude/p35-wave-b-808dfd/).
+Source: `469bc5a05d4ecc0c153a6304aca9df63e262216b`. Running matrix. 16 passed; 0 failed. Completed checker batches: 1. Raw evidence: [cloud-checks/claude/p35-wave-b-808dfd/](cloud-checks/claude/p35-wave-b-808dfd/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
