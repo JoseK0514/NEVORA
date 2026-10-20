@@ -6,6 +6,11 @@ import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+export function ownedExecutionTimeout(mode, suite) {
+  assert(['sql','browser'].includes(mode), 'Unknown execution mode');
+  return mode === 'sql' ? 480_000 : suite === 'all' ? 2_700_000 : 1_800_000;
+}
+
 // Suite owners add real fixtures at these paths. Absence never means success.
 export const SQL_SUITES = Object.freeze({
   assignments: 'src/test/integration/phase-e-published-assignments.integration.ts',
@@ -437,7 +442,7 @@ async function runOwned(mode, suite, source, custody, evidence) {
       rmSync(mode === 'sql' ? output : join(evidence, 'browser-report.json'), { force: true });
       const args = mode === 'sql' ? sqlCommand(item, evidence).slice(1) : ['--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', item];
       controller.signal.throwIfAborted();
-      const result = await superviseOwnedChild({ command: process.execPath, args, cwd: source, env: childEnv, ownerId, timeoutMs: mode === 'sql' ? 480_000 : 1_800_000, signal: controller.signal });
+      const result = await superviseOwnedChild({ command: process.execPath, args, cwd: source, env: childEnv, ownerId, timeoutMs: ownedExecutionTimeout(mode, item), signal: controller.signal });
       const record = { suite: item, command: [process.execPath, ...args], exitCode: result.status ?? 1, checks: [], resources: result.resources, observationFailure: result.observationFailure }; report.results.push(record);
       if (result.error || result.status !== 0) { exitCode = result.status ?? 1; throw Error(`Phase E child failed: ${item} (exit ${exitCode})${result.error ? ': ' + result.error : ''}`); }
       if (mode === 'sql') record.checks = verifySqlExecution(json(output), source, item);

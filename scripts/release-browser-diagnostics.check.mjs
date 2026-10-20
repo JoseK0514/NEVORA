@@ -80,3 +80,13 @@ test('new diagnostic report matches the existing artifact selection', () => {
   assert(harness.includes('process.exitCode = 1'));
   assert(harness.includes('verifyBrowserExecutions(report.executions, suites)'));
 });
+
+test('cell progress retains bounded identifiers and timings without arbitrary payload',async()=>{
+ const {browserCellProgress}=await import('./phase-e-browser-qa.mjs');
+ const start=browserCellProgress({...cell,url:'secret',actor:'private'},'start',1000,1000,0,70);
+ assert.deepEqual(start,{suite:cell.suite,engine:cell.engine,width:cell.width,event:'start',startedAt:'1970-01-01T00:00:01.000Z',at:'1970-01-01T00:00:01.000Z',durationMs:0,completed:0,total:70});
+ const end=browserCellProgress(cell,'failed',1000,1500,0,70);
+ assert.equal(end.durationMs,500);assert.equal(end.event,'failed');assert.equal(end.completed,0);
+ assert.throws(()=>browserCellProgress({...cell,suite:'private'},'start',1000,1000,0,70));
+ assert.throws(()=>browserCellProgress(cell,'secret',1000,1000,0,70));
+});

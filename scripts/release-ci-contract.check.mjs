@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
-import {verifyRequiredJobs} from './phase-e-owned.mjs';
+import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
@@ -30,4 +30,12 @@ test('owner release hold disables Vercel Git deployments for every branch',()=>{
  // Branch maps leave unspecified integration branches enabled by default.
  assert.equal(config.git?.deploymentEnabled,false,
   'The release hold requires global false; branch exclusions do not cover eventual integration');
+});
+
+test('all-browser budget fits the existing job while single-suite and SQL budgets stay bounded',()=>{
+ assert.equal(ownedExecutionTimeout('browser','all'),45*60_000);
+ assert.equal(ownedExecutionTimeout('browser','home'),30*60_000);
+ assert.equal(ownedExecutionTimeout('sql','all'),8*60_000);
+ assert.equal(workflow.jobs['phase-e-ui']['timeout-minutes'],50);
+ assert.throws(()=>ownedExecutionTimeout('unknown','all'));
 });

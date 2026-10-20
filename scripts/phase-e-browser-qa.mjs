@@ -8,6 +8,15 @@ import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 
+/** Progress is an allowlist: never serialize scenario payloads, actors or URLs. */
+export function browserCellProgress(cell, event, started, now, completed, total) {
+  const {suite,engine,width}=cell;
+  assert(Object.hasOwn(BROWSER_SUITES,suite)&&ENGINES.includes(engine)&&WIDTHS.includes(width));
+  assert(['start','passed','failed'].includes(event));
+  assert([started,now,completed,total].every(Number.isSafeInteger)&&started>=0&&now>=started&&completed>=0&&total>0&&total<=70&&completed<=total);
+  return {suite,engine,width,event,startedAt:new Date(started).toISOString(),at:new Date(now).toISOString(),durationMs:now-started,completed,total};
+}
+
 /** Darwin's pinned wrapper launches a child whose marker macOS can inspect;
  * launch that exact packaged binary directly, with the wrapper's two DYLD vars.
  * This keeps the strict marked-root supervisor unchanged. */
@@ -62,6 +71,13 @@ async function main() {
   const { createOwnedNextApp } = await import('../src/test/integration/owned-next-app.ts');
   const { seedOwnedApp } = await import('../src/test/integration/owned-app-fixture.ts');
   const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, launches: [], sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
+  const progress=[];
+  const emitProgress=(cell,event,started)=>{
+    const entry=browserCellProgress(cell,event,started,Date.now(),report.executions.filter(item=>item.status==='passed').length,ENGINES.length*modules.length*WIDTHS.length);
+    progress.push(entry);
+    writeFileSync(join(evidence,'browser-progress-report.json'),JSON.stringify({checkpoint:custody.checkpoint,events:progress},null,2));
+    console.log('[Phase E progress] '+JSON.stringify(entry));
+  };
   const controller = new AbortController(), servers = new Set();
   const removeSignals = installTerminationHandlers(() => controller.abort(Error('Owned browser termination signal')));
   let app;
@@ -89,8 +105,11 @@ async function main() {
         for (const [item, runScenario] of modules) for (const width of WIDTHS) {
           controller.signal.throwIfAborted();
           const record = { suite: item, engine, width, status: 'failed', checks: [] }; report.executions.push(record);
-          const context = await browser.newContext({ viewport: { width, height: 1000 }, hasTouch: width < 768, isMobile: width < 768, serviceWorkers: 'block' });
+          const started=Date.now();emitProgress(record,'start',started);
+          let context;
           try {
+            context = await browser.newContext({ viewport: { width, height: 1000 }, hasTouch: width < 768, isMobile: width < 768, serviceWorkers: 'block' });
+            try {
             await context.route('**/*', route => {
               const target = new URL(route.request().url());
               if (['http:', 'https:'].includes(target.protocol) && target.origin !== app.url) {
@@ -106,9 +125,11 @@ async function main() {
             await page.addScriptTag({ path: axeFile });
             const violations = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(item => item.id));
             assert.deepEqual(violations, [], `${item} ${engine} ${width}: accessibility violations`);
-            record.checks = [...result.checks, 'axe WCAG A/AA check']; record.status = 'passed';
-          } finally { await context.close(); }
-          assertOwnedFixture(); verifySourceManifest(source, app.root, custody.checkpoint); assertSourceUnchanged(source, custody);
+            record.checks = [...result.checks, 'axe WCAG A/AA check'];
+            } finally { await context.close(); }
+            assertOwnedFixture(); verifySourceManifest(source, app.root, custody.checkpoint); assertSourceUnchanged(source, custody);
+            record.status = 'passed';
+          } finally { emitProgress(record,record.status,started); }
         }
       } finally { await browser.close(); await server.close(); servers.delete(server); }
     }
