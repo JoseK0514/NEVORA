@@ -8,6 +8,35 @@ import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 
+/** Page exceptions can contain arbitrary private content. Persist categories,
+ * never the original message, URL or stack; do not exempt any category. */
+export function observeBrowserCell(execution, errors) {
+  const start = errors.length;
+  let phase = 'scenario', readStage = () => null, pageIndex = 0;
+  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement']);
+  return {
+    setStageReader(reader) { readStage = reader; },
+    setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },
+    observeContext(context, role) {
+      assert(['primary', 'manager'].includes(role));
+      context.on('page', page => {
+        const index = pageIndex++;
+        page.on('pageerror', error => {
+          const message = typeof error?.message === 'string' ? error.message : '';
+          const summary = /load failed|failed to fetch|networkerror|network request failed/i.test(message) ? 'Network load failure'
+            : /abort|cancelled|canceled/i.test(message) ? 'Operation aborted'
+              : /chunkloaderror|loading chunk/i.test(message) ? 'Module load failure'
+                : 'Unclassified page runtime error';
+          const stage = readStage();
+          errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase,
+            failure: safeBrowserFailure({ name: error?.name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
+        });
+      });
+    },
+    assertClean() { assert.equal(errors.length, start, 'Browser runtime/network errors recorded in current cell'); },
+  };
+}
+
 /** Progress is an allowlist: never serialize scenario payloads, actors or URLs. */
 export function browserCellProgress(cell, event, started, now, completed, total) {
   const {suite,engine,width}=cell;
@@ -105,6 +134,7 @@ async function main() {
         for (const [item, runScenario] of modules) for (const width of WIDTHS) {
           controller.signal.throwIfAborted();
           const record = { suite: item, engine, width, status: 'failed', checks: [] }; report.executions.push(record);
+          const runtimeErrors = observeBrowserCell(record, report.errors);
           const started=Date.now();emitProgress(record,'start',started);
           let context;
           try {
@@ -117,16 +147,18 @@ async function main() {
               }
               return route.continue();
             });
-            context.on('page', page => page.on('pageerror', () => report.errors.push(`${item} ${engine} ${width}: page runtime error`)));
+            runtimeErrors.observeContext(context, 'primary');
             const page = await context.newPage(); page.setDefaultTimeout(15_000);
-            const result = await raceOwnedAbort(runScenario({ app, browser, context, page, engine, width, evidenceDirectory: evidence, axeFile }), controller.signal);
+            const result = await raceOwnedAbort(runScenario({ app, browser, context, page, engine, width, evidenceDirectory: evidence, axeFile, runtimeErrors }), controller.signal);
             if (!result || !Array.isArray(result.checks) || !result.checks.length || result.checks.some(check => typeof check !== 'string' || !check.trim())) throw Error('Missing executed browser cases: ' + item);
             if (new URL(page.url()).origin !== app.url) throw Error('Browser scenario did not exercise the owned application: ' + item);
+            runtimeErrors.setPhase('axe');
             await page.addScriptTag({ path: axeFile });
             const violations = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(item => item.id));
             assert.deepEqual(violations, [], `${item} ${engine} ${width}: accessibility violations`);
             record.checks = [...result.checks, 'axe WCAG A/AA check'];
-            } finally { await context.close(); }
+            } finally { runtimeErrors.setPhase('context-close'); await context.close(); }
+            runtimeErrors.assertClean();
             assertOwnedFixture(); verifySourceManifest(source, app.root, custody.checkpoint); assertSourceUnchanged(source, custody);
             record.status = 'passed';
           } finally { emitProgress(record,record.status,started); }
@@ -157,6 +189,7 @@ async function main() {
       writeFileSync(join(evidence, 'browser-failure-report.json'), JSON.stringify({
         checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: custody.sourceClean,
         status: 'failed', failure: safeBrowserFailure(error, execution, scenario),
+        runtimeErrors: report.errors.filter(item => typeof item === 'object' && item.type === 'page-runtime-error'),
       }, null, 2));
     } catch { report.errors.push('Scrubbed browser diagnostic receipt unavailable'); }
   } finally {
