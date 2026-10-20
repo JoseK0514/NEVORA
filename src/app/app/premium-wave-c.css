@@ -98,16 +98,16 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch-row__label { font: var(--nv-t-row); color: var(--nv-ink); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch-row__description { font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch {
-  flex: none; position: relative; box-sizing: content-box; width: 48px; height: 28px; min-height: 0; margin: 8px 0; padding: 0;
+  flex: none; position: relative; box-sizing: content-box; width: 3rem; height: 1.75rem; min-height: 0; margin: .5rem 0; padding: 0;
   border: 0; border-radius: var(--nv-r-pill); background: var(--nv-track); box-shadow: inset 0 0 0 1px #C9D0CE; cursor: pointer;
   appearance: none; -webkit-appearance: none; transition: background-color var(--nv-m-quick) var(--nv-ease-out);
 }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch::before {
-  content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF;
+  content: ""; position: absolute; top: .1875rem; left: .1875rem; width: 1.375rem; height: 1.375rem; border-radius: 50%; background: #FFFFFF;
   box-shadow: 0 1px 3px rgba(16, 40, 38, .25); transition: transform var(--nv-m-quick) var(--nv-ease-out);
 }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch:checked { background: var(--nv-accent); box-shadow: none; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch:checked::before { transform: translateX(20px); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch:checked::before { transform: translateX(1.25rem); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch:disabled { background: var(--nv-inset); box-shadow: inset 0 0 0 1px var(--nv-hairline); cursor: not-allowed; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch:checked:disabled { background: #8FBDBA; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
@@ -279,7 +279,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-linkbox__path:hover { background: var(--nv-track); text-decoration: underline; text-underline-offset: 3px; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-linkbox > .nv-btn { flex: none; padding-inline: var(--nv-s-4); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-search--plain > input.wc-control { padding-left: var(--nv-s-4); }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-search-form > .nv-btn { min-width: 48px; min-height: 48px; padding-inline: var(--nv-s-3); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-search-form > .nv-btn { min-width: 3rem; min-height: 3rem; padding-block: 0; padding-inline: var(--nv-s-3); }
 @media (max-width: 599px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-wide-only { display: none; } }
 @media (min-width: 600px) { html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-search-form > .nv-btn { min-width: 8.5rem; padding-inline: var(--nv-s-4); } }
 @keyframes wc-spin { to { transform: rotate(360deg); } }
@@ -582,3 +582,28 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 @media (max-width: 599px) {
  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-actions.nv-actionbar > .wc-feedback { max-height: min(28dvh, 12rem); overflow-y: auto; overscroll-behavior: contain; }
 }
+
+/* Owner Settings QA (Oct 19, night) */
+/* Search fields grow with the reader's text size like the form fields (48px at 100%, 96px at 200%); the search button matches the field. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page input[type="search"].wc-control.wc-control.wc-control { height: auto; min-height: 3rem; padding-block: var(--nv-s-2); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-search-form { align-items: stretch; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-search-form > .nv-btn.nv-btn { height: auto; min-height: 3rem; }
+/* Every dialog button is one height: 52px at 100% on phones and desktop, growing with text. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-dialog .wc-actions > .nv-btn.nv-btn { box-sizing: border-box; height: auto; min-height: 3.25rem; padding-block: 12px; border-width: 0; }
+/* Branding: the logo box is as tall as the Upload logo button beside it. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-current.wc-logo-current { min-height: 3.25rem; padding-block: 4px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-current.wc-logo-current img { max-height: 2.75rem; }
+/* Branding: eight swatches sit in two even rows of four on narrow phones. */
+@media (max-width: 599px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-swatches.wc-swatches { display: grid; grid-template-columns: repeat(4, 44px); }
+}
+/* Business name: one line at 48px that wraps long names instead of cutting them off; text sits centred like an input's. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page textarea.wc-control.wc-wrap { min-height: 3rem; padding-block: max(var(--nv-s-2), calc((3rem - 2px - 1lh) / 2)); resize: none; overflow: hidden; overflow-wrap: anywhere; }
+/* Branding: the logo box and the Upload logo button share one height, whatever the text size. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-row.wc-logo-row { align-items: stretch; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-current.wc-logo-current.wc-logo-current { min-height: 2.75rem; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-logo-actions.wc-logo-actions { align-items: stretch; }
+/* Locations search: at large text sizes the button moves under the field (right-aligned) so the field keeps room for its placeholder. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-search-form { flex-wrap: wrap; row-gap: var(--nv-s-2); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-search-form > .wc-search { flex: 1 1 12rem; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-search-form > .nv-btn.nv-btn { margin-left: auto; }

@@ -13,7 +13,7 @@ import {
 } from "@/lib/data/workspaces";
 import { saveWorkspaceProfileAction } from "../actions";
 import { Fact, GuideCard, SettingsFrame } from "../wave-c-kit";
-import { Field, SettingsForm } from "../wave-c-form";
+import { Field, SettingsForm, WrapField } from "../wave-c-form";
 
 export default async function WorkspacePage() {
   await requireRoles(["OWNER"]);
@@ -33,7 +33,7 @@ export default async function WorkspacePage() {
         <section className="nv-card" aria-labelledby="workspace-identity-title">
           <div className="nv-card__head"><h2 className="nv-card__title" id="workspace-identity-title">Your business</h2></div>
           <div className="nv-card__body">
-            <Field label="Business name" help="Use the name your team knows you by."
+            <WrapField label="Business name" help="Use the name your team knows you by."
               id="workspace-name" name="name" defaultValue={workspace.name} required maxLength={160} autoComplete="organization" />
           </div>
         </section>

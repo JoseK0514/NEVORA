@@ -24,8 +24,8 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(mocks.requireRoles).toHaveBeenCalledWith(["OWNER"]);
   expect(html).toContain('for="workspace-name"');
   expect(html).toContain('for="workspace-timezone"');
-  expect(html).toMatch(/<input(?=[^>]*name="name")(?=[^>]*maxLength="160")(?=[^>]*required="")[^>]*>/);
-  expect(html).toContain('value="Northside Operations"');
+  // The business name wraps long names (one row that grows); Enter still saves.
+  expect(html).toMatch(/<textarea(?=[^>]*name="name")(?=[^>]*maxLength="160")(?=[^>]*required="")(?=[^>]*rows="1")(?=[^>]*class="wc-control wc-wrap")[^>]*>Northside Operations<\/textarea>/);
   expect(html).toContain('value="America/Puerto_Rico"');
   expect(html).not.toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
   expect(html).toContain("Monday at 12:00\u00a0AM");
@@ -41,7 +41,7 @@ it("explains a protected timezone without locking the workspace name", async () 
   expect(html).not.toContain('name="timeZone"');
   expect(html).toContain(">Puerto Rico time</p>");
   expect(html).not.toContain(">America/Puerto_Rico</p>");
-  expect(html).not.toMatch(/<input(?=[^>]*name="name")(?=[^>]*disabled="")[^>]*>/);
+  expect(html).not.toMatch(/<(?:input|textarea)(?=[^>]*name="name")(?=[^>]*disabled="")[^>]*>/);
   expect(html).toContain("You can still change your business name.");
   expect(html).toContain("Changing the business timezone requires a separately reviewed conversion because operational records already exist.");
   expect(html).toContain("Why is the timezone protected?");
@@ -52,3 +52,4 @@ it("does not fetch or render workspace details when access is denied", async () 
   mocks.requireRoles.mockRejectedValueOnce(new Error("Forbidden"));
   await expect(WorkspacePage()).rejects.toThrow("Forbidden");
 });
+
