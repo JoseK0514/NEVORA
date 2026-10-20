@@ -10,7 +10,7 @@ import type { ClockerIdentityProof } from '../../lib/clocker/pin-identity.server
 import type { PunchAction, PunchCommand } from '../../lib/clocker/punch-types';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>,service:ClockerPunchService,proof:ClockerIdentityProof;
-beforeEach(async()=>{f=await createPunchFixture({breaks:true});service=new ClockerPunchService(f.key,f.db.executor);proof=(await f.identity()).proof;});
+beforeEach(async()=>{f=await createPunchFixture({breaks:true,companyAccess:true});service=new ClockerPunchService(f.key,f.db.executor);proof=(await f.identity()).proof;});
 afterEach(async()=>{if(f)await f.db.dispose();});
 const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>f.q<T>(text,values);
 const state=async()=>(await service.read(proof)).snapshot;

@@ -1,0 +1,9 @@
+import {it,expect} from 'vitest';
+import {input} from './fixtures.test-support';
+import {parseYtd} from './model';
+import {calculateNativePayroll} from './calculate';
+const bases=['socialSecurityWagesMinor','medicareWagesMinor','sinotWagesMinor'] as const;
+it.each(bases)('rejects positive %s with zero attested prior gross at save and direct calculation boundaries',field=>{const i=input();i.ytd![field]='1';expect(()=>parseYtd(i.ytd)).toThrow('YTD_TAXABLE_BASE_CONFLICT');expect(calculateNativePayroll(i)).toMatchObject({state:'blocked',issues:[{code:'YTD_TAXABLE_BASE_CONFLICT'}]});});
+it.each(bases)('rejects %s beyond documented prior gross rather than changing cap history',field=>{const i=input();i.ytd!.grossMinor='10000';i.ytd!.netMinor='10000';i.ytd!.locationIds=['L1'];i.ytd![field]='10001';expect(()=>parseYtd(i.ytd)).toThrow('YTD_TAXABLE_BASE_CONFLICT');expect(calculateNativePayroll(i)).toMatchObject({state:'blocked',issues:[{code:'YTD_TAXABLE_BASE_CONFLICT'}]});});
+it.each(['1','900000'])('rejects employer prior base %s above zero prior gross',amount=>{const i=input();i.ytd!.employerWagesMinor.CFSE=amount;expect(()=>parseYtd(i.ytd)).toThrow('YTD_TAXABLE_BASE_CONFLICT');expect(calculateNativePayroll(i)).toMatchObject({state:'blocked',issues:[{code:'YTD_TAXABLE_BASE_CONFLICT'}]});});
+it('preserves separately documented lower and unequal tax bases without imposing universal equality',()=>{const i=input();Object.assign(i.ytd!,{grossMinor:'20000000',netMinor:'20000000',socialSecurityWagesMinor:'18445000',medicareWagesMinor:'19995000',sinotWagesMinor:'899000',employerWagesMinor:{FUTA:'150000',PR_UI:'700000',CFSE:'20000000'},locationIds:['L1']});const before=structuredClone(i.ytd);expect(parseYtd(i.ytd)).toEqual(before);expect(calculateNativePayroll(i).state).toBe('ready');expect(i.ytd).toEqual(before);});

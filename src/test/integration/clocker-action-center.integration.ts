@@ -8,7 +8,7 @@ import type {SessionMutationProof} from '../../lib/shift-changes/types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 const proof:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const action={id:'SETUP:DEADLINE',type:'DEADLINE_MISSING' as const,priority:'MISSING_INPUT' as const,title:'Availability deadline not set',detail:'Fictional deadline input required',href:'/app/schedule?week=2026-09-21'};
-beforeEach(async()=>{f=await createPunchFixture();});afterEach(async()=>{await f?.db.dispose();});
+beforeEach(async()=>{f=await createPunchFixture({companyAccess:true});});afterEach(async()=>{await f?.db.dispose();});
 const read=()=>readActionCenter(proof,'2026-09-21',f.db.executor,async()=>[action,action]);
 it('D7 deduplicates scheduling records and combines actual canonical correction/timecard sources without private reasons',async()=>{
  await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day')");

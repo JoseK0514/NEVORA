@@ -9,7 +9,7 @@ import { loadWorkspaceNotificationConfig } from '../../lib/notifications/config'
 import { sqlNotificationStateRepository } from '../../lib/data/notification-state';
 let db: Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 const q = (text: string, values: readonly unknown[] = []) => db.executor.query<Record<string, unknown>>({ text, values });
-beforeAll(async () => { db = await createDisposableExchangeDatabase({ mode: 'current-runtime' }); await seedShiftChanges(db.executor); });
+beforeAll(async () => { db = await createDisposableExchangeDatabase({ mode: 'current-runtime' }); await seedShiftChanges(db.executor,{companyAccess:true}); });
 afterAll(async () => db?.dispose());
 async function offer(id: string, date: string) {
     const terms = await fixtureShift(db.executor, id, 'e1', date);

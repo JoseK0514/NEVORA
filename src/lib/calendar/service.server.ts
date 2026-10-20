@@ -1,4 +1,5 @@
 import 'server-only';
+import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {createHash,randomUUID} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
@@ -15,7 +16,7 @@ import {addDays} from '../date-utils';
 import {serializeCalendar} from './ical';
 export const calendarAuthority=(proof:SessionMutationProof)=>createHash('sha256').update(JSON.stringify(['nevora:calendar:v1',proof.employee.id,proof.sessionTokenHash])).digest('hex');
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-const denied=(error:unknown)=>isManagementAuthorizationError(error)||!!(error&&typeof error==='object'&&'code' in error&&error.code==='22P02'&&'message' in error&&error.message==='invalid input syntax for type integer: "calendar_authorization"');
+const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)||!!(error&&typeof error==='object'&&'code' in error&&error.code==='22P02'&&'message' in error&&error.message==='invalid input syntax for type integer: "calendar_authorization"');
 const unavailable:CalendarManagementResult={status:'unavailable',reason:'read_failed'};
 function ownProof(proof:SessionMutationProof){assertManagementProof(proof,proof?.employee?.id);if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))throw Error('calendar_own_role');}
 export function validCalendarCommand(value:unknown):value is CalendarCommand {
@@ -46,13 +47,16 @@ async function manage(proof:SessionMutationProof,employeeId:string,command:Calen
  if(!validCalendarCommand(command)||command.authority!==calendarAuthority(proof)||manager&&command.kind!=='REVOKE')return {status:'blocked',reason:'authority_changed'};
  let started=false;
  try{
-  const workspace=await getWorkspace(executor),guards=calendarManagementGuards(proof,workspace,employeeId,manager);
+  const access=manager?await assertOperationalAccess(proof,{kind:'COMPANY'},executor):null;
+  const workspace=access?.workspace??await getWorkspace(executor),guards=calendarManagementGuards(proof,workspace,employeeId,manager,access?.authority);
+  const authority=()=>manager?operationalScopeStatements(proof,workspace,{kind:'COMPANY'},access!.authority):managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD']);
+  const responseFence=async()=>{if(manager)await executor.transaction(calendarManagementGuards(proof,workspace,employeeId,true,access!.authority));};
   const payload=calendarDigest(JSON.stringify([employeeId,command]));
   // Pre-read only plans the batch. Its operation and generation guard are fresh
   // statements after employee/catalog locks, so a waiting writer cannot overwrite.
   const [current]=await executor.query<SubscriptionRow>(latestSql(employeeId,workspace.id));
   const [operation]=await executor.query<{payload_hash:string;result:CalendarManagementResult}>({text:'SELECT payload_hash,result FROM calendar_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid',values:[workspace.id,proof.employee.id,command.operationId]});
-  if(operation){await executor.transaction(guards);return operation.payload_hash===payload?operation.result:{status:'conflict',reason:'operation_changed'};}
+  if(operation){await executor.transaction(guards);await responseFence();return operation.payload_hash===payload?operation.result:{status:'conflict',reason:'operation_changed'};}
   if(!manager&&(current?.generation??null)!==command.expectedGeneration)return {status:'conflict',reason:'generation_changed'};
   if(command.kind==='ISSUE'&&current&&!current.revoked_at)return {status:'conflict',reason:'link_exists'};
   const [scope]=await executor.query<{ids:string[]}>({text:`WITH allowed AS (${employeeAllowedLocationsSql()}) SELECT ARRAY(SELECT id FROM allowed ORDER BY id) AS ids`,values:[workspace.id,employeeId]});
@@ -68,8 +72,9 @@ async function manage(proof:SessionMutationProof,employeeId:string,command:Calen
   if(command.kind!=='REVOKE')statements.push(
    {text:`WITH allowed AS (${employeeAllowedLocationsSql()}) SELECT (CASE WHEN ARRAY(SELECT id FROM allowed ORDER BY id)=$3::text[] THEN '1' ELSE 'calendar_generation_conflict' END)::integer`,values:[workspace.id,employeeId,scope.ids]},
    {text:'INSERT INTO calendar_subscriptions(id,workspace_id,employee_id,digest,generation,allowed_location_ids) VALUES($1::uuid,$2,$3,$4,$5::uuid,$6::text[])',values:[id,workspace.id,employeeId,credential.digest,generation,scope.ids]});
-  statements.push({text:'INSERT INTO calendar_operations(workspace_id,actor_employee_id,operation_id,authority,payload_hash,result) VALUES($1,$2,$3::uuid,$4,$5,$6::jsonb)',values:[workspace.id,proof.employee.id,command.operationId,command.authority,payload,JSON.stringify(safeResult)]},...managementSessionStatements(proof,proof.employee.id,manager?['OWNER','MANAGER']:['EMPLOYEE','LEAD']));
+  statements.push({text:'INSERT INTO calendar_operations(workspace_id,actor_employee_id,operation_id,authority,payload_hash,result) VALUES($1,$2,$3::uuid,$4,$5,$6::jsonb)',values:[workspace.id,proof.employee.id,command.operationId,command.authority,payload,JSON.stringify(safeResult)]},...authority());
   started=true;await executor.transaction(statements);
+  await responseFence();
   return command.kind==='REVOKE'?safeResult:{status:'created',operationId:command.operationId,id,generation,url:`/api/calendar/${credential.token}/schedule.ics`};
  }catch(error){
   if(denied(error))return {status:'blocked',reason:'access_denied'};

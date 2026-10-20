@@ -44,6 +44,10 @@ it('H06 historical-9 upgrade preserves immutable source/target times, position a
   await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES ('one','s','a','2035-10-02','10:00','18:00','legacy-position',true),('two','s','b','2035-10-03','11:00','19:00',NULL,false)");
   await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,target_shift_id,requested_by_employee_id,target_employee_id,status) VALUES ('legacy','SWAP','one','two','a','b','APPROVED'); INSERT INTO shift_callouts(id,shift_id,employee_id,reason_code,status) VALUES ('legacy-callout','one','a','OTHER','APPROVED')");
   await q(await readFile('db/migrations/0010_shift_coverage_automation.sql','utf8'));
+  // Preserve the original historical-9 ->0010 assertions/source; the current
+  // Owner presentation requires an explicit access sidecar, not a missing-schema fallback.
+  // This overlay is not a supported production migration-chain claim.
+  for(const file of ['0024_schedule_copy_receipts.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
   const {fixtureProof}=await import('./shift-change-api');const proof=await fixtureProof(db.executor,'a');
   const {readShiftChangeHistoryView}=await import('../../lib/data/shift-change-views');
   await q("DELETE FROM schedules WHERE id='s'");

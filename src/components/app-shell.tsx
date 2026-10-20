@@ -5,11 +5,11 @@ import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import { PortalAccountMenu } from "./portal-account-menu";
@@ -24,11 +24,36 @@ import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
 import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
+import type {OperationalAuthorityView} from '@/lib/company-access/model';
+import {useOperationalNavigation} from './company-access/use-operational-navigation';
 
 /** Home's views share Home's address; the trail names them as their bands do. */
 const HOME_VIEWS = { attendance: "Attendance", team: "Team overview", activity: "Schedule activity" } as const;
 
-export function AppShell({
+type AppShellProps = {
+  brand?: { style?: Record<string, string>; logoUrl?: string | null };
+  presentation?: NavContext;
+  workspaceName: string;
+  initialCollapsed?: boolean;
+  preferenceCookie?: string;
+  notificationAuthority?: string;
+  notificationsEnabled?: boolean;
+  payrollCapabilities?: PayrollCapabilities;
+  operationalAuthority?: OperationalAuthorityView;
+  children: ReactNode;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    role: UserRole;
+  };
+};
+
+export function AppShell(props:AppShellProps){
+ return <AppShellView key={JSON.stringify([props.user.id,props.user.role])} {...props}/>;
+}
+
+function AppShellView({
   children,
   workspaceName,
   user,
@@ -39,26 +64,11 @@ export function AppShell({
   notificationAuthority,
   brand,
   presentation,
-}: {
-  workspaceName: string;
-  /** Company brand (B1): derived colour tokens and an optional logo. */
-  brand?: { style?: Record<string, string>; logoUrl?: string | null };
-  /** Company modules and words (B2). */
-  presentation?: NavContext;
-  initialCollapsed?: boolean;
-  preferenceCookie?: string;
-  notificationAuthority?: string;
-  notificationsEnabled?: boolean;
-  payrollCapabilities?: PayrollCapabilities;
-  children: ReactNode;
-  user: {
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-  };
-}) {
+  operationalAuthority,
+}:AppShellProps) {
   const pathname = usePathname();
   const search = useSearchParams();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   function toggleSidebar() {
     const next = !collapsed; setCollapsed(next);
@@ -66,8 +76,10 @@ export function AppShell({
   }
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
-  const inboxCount = useInboxCount(!employee, pathname);
-  const context = presentation ?? {};
+  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')window.location.reload();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router]);
+  const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
+  const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.view?.state === 'ready' && operational.view.scope?.mode === 'COMPANY'), pathname);
+  const context:NavContext = {...presentation, operational:operational.view??undefined};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);
   const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
   const mobileMore = mobileMoreForRole(user.role, payrollCapabilities, context);
@@ -264,8 +276,8 @@ export function AppShell({
           </Link>
           {companyLogo}
           <div className="mobile-header-actions">
-          {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
-          {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
+          {!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY") ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
+          {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
           <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
             {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
               onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
@@ -278,9 +290,9 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></main>
+        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}{children}</PresentationProvider></main>
 
-        <nav className="mobile-nav" aria-label="Mobile navigation">
+        <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${Math.min(navigation.length,5)},minmax(0,1fr))`}:undefined}>
           {employee ? (
             <>
               {mobileTabs.map((item) => (

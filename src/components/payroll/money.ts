@@ -18,3 +18,9 @@ export function minorToDollars(value: string) {
   const amount = BigInt(value);
   return `${amount / BigInt(100)}.${(amount % BigInt(100)).toString().padStart(2, '0')}`;
 }
+
+export function formatPayrollRate(value: string) {
+  if (!/^(0|[1-9]\d{0,8})(\.[0-9]{1,4})?$/.test(value)) throw Error('Invalid hourly wage');
+  const [whole, sub = ''] = value.split('.');
+  return formatPayrollMoney(whole) + sub;
+}

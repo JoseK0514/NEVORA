@@ -13,7 +13,7 @@ import {loadWorkspaceNotificationConfig} from '../../lib/notifications/config';
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 vi.mock('../../lib/db',()=>({getDb:()=>({query:(text:string,values:readonly unknown[]=[])=>db.executor.query({text,values})}),queryRows:(r:unknown)=>r}));
 const q=(text:string,values:readonly unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
-beforeEach(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor);});
+beforeEach(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor,{companyAccess:true});});
 afterEach(async()=>db?.dispose());
 const review=async(id:string)=>{const t=await reviewedFixtureTerms(db.executor,id);return {sourceShiftId:id,sourceEpisodeId:t.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(t)};};
 async function offer(id='source'){const terms=await fixtureShift(db.executor,id);const r=await executeShiftChange(proof('e1'),{kind:'OFFER_COVERAGE',operationId:randomUUID(),...terms},db.executor);expect(r.status).toBe('pending');if(r.status!=='pending')throw Error(JSON.stringify(r));return r;}
@@ -86,12 +86,14 @@ it.each(['2037-03-08','2037-11-01'])('H07 strict DST %s report is truthful and c
  const r=await executeShiftChange(proof('e1'),{kind:'OFFER_COVERAGE',operationId:randomUUID(),...await review('source')},db.executor);expect(r.status).toBe('pending');if(r.status!=='pending')throw Error(JSON.stringify(r));
  await q("UPDATE workspaces SET time_zone='America/New_York'");
  const command={kind:'SUBMIT_CALLOUT' as const,operationId:randomUUID(),...await review('source'),reasonCode:'ILLNESS' as const};
- let calls=0;const executor={...db.executor,transaction:(statements:Parameters<typeof db.executor.transaction>[0])=>{calls++;return db.executor.transaction(statements);}};
+ let calls=0,admissions=0;const executor={...db.executor,transaction:(statements:Parameters<typeof db.executor.transaction>[0])=>{if(statements.some(s=>s.text.startsWith('INSERT INTO shift_change_operations')))calls++;else admissions++;return db.executor.transaction(statements);}};
  expect(await executeShiftChange(proof('e1'),command,executor)).toMatchObject({status:'pending'});expect(calls).toBe(1);
  expect(await findShiftChangeOperation(proof('e1'),command.operationId,db.executor)).toMatchObject({status:'pending'});
  const [{id:reportId}]=await q('SELECT id FROM shift_callouts');
  const approval={kind:'APPROVE_CALLOUT' as const,operationId:randomUUID(),requestId:String(reportId),expectedRevision:1};
- calls=0;expect(await executeShiftChange(proof('owner'),approval,executor)).toMatchObject({status:'blocked',issues:[{code:'INVALID_TIME_RANGE'}]});expect(calls).toBe(0);expect(await findShiftChangeOperation(proof('owner'),approval.operationId,db.executor)).toBeNull();
+ const {readGenerationSource}=await import('../../lib/data/generation-guards'),{readNotificationWeekState}=await import('../../lib/data/notification-transactions');
+ const snapshot=async()=>({source:(await readGenerationSource(db.executor)).source,week:await readNotificationWeekState(['2035-10-01'],db.executor)}),beforeApproval=await snapshot();
+ calls=0;expect(await executeShiftChange(proof('owner'),approval,executor)).toMatchObject({status:'blocked',issues:[{code:'INVALID_TIME_RANGE'}]});expect(calls).toBe(0);expect(await findShiftChangeOperation(proof('owner'),approval.operationId,db.executor)).toBeNull();expect(admissions).toBeGreaterThan(0);expect(await snapshot()).toEqual(beforeApproval);
  // The inability report cancels incompatible voluntary participation; a legacy status-only close needs no civil-time interpretation either.
  await q("UPDATE shift_callouts SET status='CANCELLED' WHERE shift_id='source'");
  await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status) VALUES('legacy-close','COVERAGE','source','e1','OPEN')");

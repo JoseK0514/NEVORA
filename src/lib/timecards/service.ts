@@ -1,3 +1,4 @@
+import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import { createHash } from 'node:crypto';
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
@@ -147,15 +148,16 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
   if(!manager(proof))return {status:'unavailable'};
   const command=parseTimecardCommand(input);
   let workspace;
-  try{workspace=await getWorkspace(executor);}catch{return {status:'unavailable'};}
+  let authority:string;
+  try{const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);workspace=access.workspace;authority=access.authority;}catch{return {status:'unavailable'};}
   const actor=proof.employee.id;
   const statements=[...workspaceReadGuard(workspace),
     {text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([actor,command.employeeId])].sort()]},
-    ...managementSessionStatements(proof,actor,['OWNER','MANAGER']),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
     {text:'SELECT nevora_timecard_command($1::uuid,$2,$3,$4,$5::date,$6::date,$7::integer,$8,$9,$10,$11) AS result',
       values:[command.operationId,workspace.id,command.employeeId,actor,command.startDate,command.endDate,command.expectedRevision,
         command.expectedSourceHash,command.action,command.note??null,createHash('sha256').update(JSON.stringify(command)).digest('hex')]},
-    ...managementSessionStatements(proof,actor,['OWNER','MANAGER']),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
   ];
   for(let attempt=0;attempt<3;attempt++){
     try{
@@ -165,7 +167,7 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
       if(!object(v)||!['approved','finalized','reopened'].includes(String(v.status))||v.operationId!==command.operationId||!Number.isSafeInteger(v.revision)||Number(v.revision)<1)throw new Error('Invalid timecard receipt');
       return {status:v.status as 'approved'|'finalized'|'reopened',operationId:command.operationId,revision:Number(v.revision)};
     }catch(error){
-      if(isManagementAuthorizationError(error))return {status:'unavailable'};
+      if(isManagementAuthorizationError(error)||isOperationalAuthorizationError(error))return {status:'unavailable'};
       const message=error instanceof Error?error.message:'';const code=object(error)?String(error.code??''):'';
       if(/nevora_timecard_CONFLICT/.test(message)||code==='23505')return {status:'conflict'};
       const reasons=[['SELF_REVIEW','self_review'],['UNRESOLVED','unresolved_time'],['APPROVAL_REQUIRED','approval_required'],['STATE','period_state'],['OVERLAPPING_PERIOD','overlapping_period']] as const;

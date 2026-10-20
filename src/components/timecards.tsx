@@ -9,6 +9,7 @@ import {useCallback,useEffect,useRef,useState,type FormEvent} from 'react';
 import {formatRecordedHours,parsePeriod,type Period,type Timecard} from '@/lib/timecards/project';
 import {type TimecardItem,type TimecardsResult} from '@/lib/timecards/read-model';
 import type {TimecardCommand,TimecardMutation} from '@/lib/timecards/service';
+import {stableExportJson} from '@/lib/payroll-export/json';
 import {parseCurrentTimecards,parseTimecardReceipt} from '@/lib/timecards/client';
 import {batchExclusion,reviewTimecards,reviewIsCurrent,runReviewedBatch,type BatchAction,type ReviewedBatch,type BatchOutcome} from '@/lib/timecards/reviewed-batch';
 import styles from './timecards.module.css';
@@ -51,6 +52,10 @@ function commandMessage(result:TimecardMutation):string{
   return result.status==='approved'?'Timecard approved.':result.status==='finalized'?'Timecard finalized.':'Period reopened. Earlier revisions remain preserved.';
 }
 
+function timecardSourceKey(cards:readonly TimecardItem[]){
+  return stableExportJson(cards.map(item=>({...item,card:Object.fromEntries(Object.entries(item.card).filter(([key])=>key!=='observedAt'))})));
+}
+
 export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean}){
   const corporate=employeeCorporate&&!manager;
   const [period,setPeriod]=useState(initialPeriod),[draft,setDraft]=useState(initialPeriod);
@@ -61,44 +66,58 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const [snapshotActor,setSnapshotActor]=useState<string|null>(null);
   const request=useRef<AbortController|null>(null),generation=useRef(0),commandRef=useRef<TimecardCommand|null>(null);
   const source=useRef<{period:Period;actorId:string;cards:TimecardItem[]}|null>(null),validUntil=useRef(0),previousActor=useRef(actorId);
-  const running=useRef(false);
+  const running=useRef(false),reading=useRef(false),readSequence=useRef(0),activeView=useRef(false);
+  const early=useRef<ReturnType<typeof setTimeout>|null>(null),readTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
   const [paused,setPaused]=useState(false);
   const [signInRequired,setSignInRequired]=useState(false);
   const expires=useRef<ReturnType<typeof setTimeout>|null>(null);
   const clearBatch=useCallback(()=>{setSelected([]);setReview(null);setConfirmed(false);setOutcomes(null);},[]);
-  const invalidate=useCallback(()=>{generation.current++;request.current?.abort();if(expires.current)clearTimeout(expires.current);expires.current=null;source.current=null;validUntil.current=0;},[]);
+  const cancelRead=useCallback(()=>{readSequence.current++;request.current?.abort();reading.current=false;if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;},[]);
+  const invalidate=useCallback(()=>{generation.current++;cancelRead();if(expires.current)clearTimeout(expires.current);if(early.current)clearTimeout(early.current);expires.current=early.current=null;source.current=null;validUntil.current=0;},[cancelRead]);
   const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setMessage('Timecards expired. Refresh a current protected snapshot.');},[invalidate,clearBatch]);
-  const refresh=useCallback(async(selected:Period)=>{
-    if(document.visibilityState==='hidden'||!navigator.onLine)return;
+  const refresh=useCallback(async function refreshProjection(selected:Period,background=false):Promise<void>{
+    if(!activeView.current||document.visibilityState==='hidden'||!navigator.onLine)return;
+    if(background&&(reading.current||running.current))return;
     setPaused(false);setSignInRequired(false);
-    invalidate();const own=generation.current,started=performance.now();const abort=new AbortController();request.current=abort;
-    clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(true);setMessage('Checking period timecards…');
+    const current=source.current;
+    const preserve=background&&!!current&&current.actorId===actorId&&current.period.startDate===selected.startDate&&current.period.endDate===selected.endDate&&performance.now()<validUntil.current;
+    if(!preserve){invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(true);setMessage('Checking period timecards…');}
+    const own=generation.current,sequence=++readSequence.current,started=performance.now(),abort=new AbortController();request.current=abort;reading.current=true;
+    const isCurrent=()=>own===generation.current&&sequence===readSequence.current&&activeView.current;
+    // Before metadata arrives, bound the request by the maximum admitted DTO
+    // budget. An existing source's earlier expiry remains armed throughout.
+    readTimeout.current=setTimeout(()=>{if(isCurrent()){expireProtected();setMessage('Timecards unavailable. Try refreshing.');}},45000);
     try{
       const response=await fetch('/api/timecards',{method:'POST',cache:'no-store',credentials:'same-origin',signal:abort.signal,
         headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(selected)});
-      if(own!==generation.current)return;
-      if(response.status===401||response.status===403){commandRef.current=null;setPending(null);setNotes({});setSignInRequired(true);setMessage(response.status===401?'Your session ended. Sign in again to view your timecards.':'Your access changed. Sign in again to check your timecards.');return;}
+      if(!isCurrent())return;
+      if(response.status===401||response.status===403){commandRef.current=null;setPending(null);expireProtected();setSignInRequired(true);setMessage(response.status===401?'Your session ended. Sign in again to view your timecards.':'Your access changed. Sign in again to check your timecards.');return;}
       if(!response.ok)throw new Error('Unavailable');
-      const next=parseCurrentTimecards(await response.json(),selected),remaining=next.validForMs-(performance.now()-started);
-      if(remaining<1)throw Error('Expired snapshot');
-      if(own!==generation.current)return;
+      const next=parseCurrentTimecards(await response.json(),selected);
+      if(!isCurrent())return;
+      const unchanged=preserve&&!!source.current&&timecardSourceKey(source.current.cards)===timecardSourceKey(next.cards);
+      const remaining=started+next.validForMs-performance.now();
+      if(remaining<1||(preserve&&performance.now()>=validUntil.current))throw Error('Expired snapshot');
+      if(!unchanged){clearBatch();setNotes({});}
+      if(expires.current)clearTimeout(expires.current);if(early.current)clearTimeout(early.current);
       validUntil.current=started+next.validForMs;source.current={period:selected,actorId,cards:next.cards};
       expires.current=setTimeout(expireProtected,remaining);
+      early.current=setTimeout(()=>void refreshProjection(selected,true),remaining*.65);
       setSnapshotActor(actorId);setData(next);setMessage(`${next.cards.length} ${next.cards.length===1?'timecard':'timecards'} in this period.`);
-    }catch{if(own===generation.current&&!abort.signal.aborted)setMessage(navigator.onLine?'Couldn’t load timecards. Check your connection, then try again.':'You’re offline. Reconnect to see timecards.');}
-    finally{if(own===generation.current)setBusy(false);}
+    }catch{if(isCurrent()&&!abort.signal.aborted){expireProtected();setMessage(navigator.onLine?'Timecards unavailable. Try refreshing.':'You are offline. Reconnect to check timecards.');}}
+    finally{if(isCurrent()){if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;reading.current=false;setBusy(false);}}
   },[actorId,invalidate,clearBatch,expireProtected]);
   useEffect(()=>{
+    let mounted=true;
     if(previousActor.current!==actorId){commandRef.current=null;setPending(null);}previousActor.current=actorId;
-    let active=false;
-    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
-    const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;clear();active=document.visibilityState!=='hidden'&&navigator.onLine;if(active)void refresh(period);};
+    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;activeView.current=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
+    const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||activeView.current))return;clear();activeView.current=document.visibilityState!=='hidden'&&navigator.onLine;if(activeView.current)void refresh(period);};
     const account=()=>{commandRef.current=null;setPending(null);sync();};
     document.addEventListener('visibilitychange',sync);window.addEventListener('pagehide',clear);window.addEventListener('pageshow',sync);
     window.addEventListener('blur',clear);window.addEventListener('offline',clear);window.addEventListener('online',sync);window.addEventListener('focus',sync);window.addEventListener('storage',account);
-    const poll=setInterval(()=>{if(!commandRef.current&&document.visibilityState==='visible'&&navigator.onLine)sync();},30000);
-    void Promise.resolve().then(()=>sync());
-    return ()=>{clearInterval(poll);window.removeEventListener('blur',clear);invalidate();document.removeEventListener('visibilitychange',sync);window.removeEventListener('pagehide',clear);
+    const poll=setInterval(()=>{if(activeView.current&&document.visibilityState==='visible'&&navigator.onLine)void refresh(period,true);},30000);
+    void Promise.resolve().then(()=>{if(mounted)sync();});
+    return ()=>{mounted=false;activeView.current=false;clearInterval(poll);window.removeEventListener('blur',clear);invalidate();document.removeEventListener('visibilitychange',sync);window.removeEventListener('pagehide',clear);
       window.removeEventListener('pageshow',sync);window.removeEventListener('offline',clear);window.removeEventListener('online',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',account);};
   },[period,refresh,invalidate,clearBatch,actorId]);
   function choose(event:FormEvent){event.preventDefault();if(paused)return;try{const next=parsePeriod(draft.startDate,draft.endDate);setPeriod(next);if(next.startDate===period.startDate&&next.endDate===period.endDate)void refresh(next);}catch(error){setMessage(error instanceof Error?error.message:'Choose a valid period');}}
@@ -109,7 +128,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     if(!commandRef.current&&(!item||!action))return;
     const command=commandRef.current??{...period,operationId:crypto.randomUUID(),employeeId:item!.card.employeeId,
       expectedRevision:item!.revision,expectedSourceHash:item!.sourceHash,action:action!,...(action==='REOPEN'?{note:notes[item!.card.employeeId]?.trim()}: {})};
-    running.current=true;commandRef.current=command;setPending(command);setBusy(true);const own=generation.current;
+    cancelRead();running.current=true;commandRef.current=command;setPending(command);setBusy(true);const own=generation.current;
     setMessage('Saving timecard action…');
     try{
       const response=await fetch('/api/manager/timecards',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(command)});
@@ -140,7 +159,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const own=generation.current;
     const isCurrent=()=>{const current=source.current;return own===generation.current&&performance.now()<validUntil.current&&!!current&&current.actorId===actorId&&reviewIsCurrent(review,period,actorId,current.cards);};
     if(!isCurrent()){if(performance.now()>=validUntil.current)expireProtected();else{clearBatch();setMessage('The source changed or expired. Refresh and review again.');}return;}
-    running.current=true;setBusy(true);setConfirmed(false);setMessage('Saving reviewed timecards one at a time…');
+    cancelRead();running.current=true;setBusy(true);setConfirmed(false);setMessage('Saving reviewed timecards one at a time…');
     const result=await runReviewedBatch(review,isCurrent,async command=>{
       commandRef.current=command;setPending(command);
       const response=await fetch('/api/manager/timecards',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(command)});

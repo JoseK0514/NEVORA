@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it,vi} from 'vitest';
 import {listTemplateShifts} from './schedule-templates';
 import {managementProof} from '../../test/fixtures/management';
 import type {SqlExecutor} from '../notifications/types';
@@ -10,3 +10,7 @@ describe('applying an active schedule template',()=>{
  it('allows an active template with no shifts',async()=>{expect(await listTemplateShifts('empty-template',executor([{id:null}]),managementProof('manager'))).toEqual([]);});
  it('requires server-derived management proof for every selected read',async()=>{await expect(listTemplateShifts('empty-template',executor([{id:null}]))).rejects.toThrow('management_authorization');});
 });
+
+// Unit-only admission I/O; current authority and transactional rollback use real
+// SQL in company-access-global-scheduling.integration.ts.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

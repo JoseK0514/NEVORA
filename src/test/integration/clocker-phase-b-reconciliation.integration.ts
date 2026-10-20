@@ -9,7 +9,7 @@ import type { SessionMutationProof } from '../../lib/shift-changes/types';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
-beforeEach(async()=>{f=await createPunchFixture({breaks:true});});
+beforeEach(async()=>{f=await createPunchFixture({breaks:true,companyAccess:true});});
 afterEach(async()=>{if(f)await f.db.dispose();});
 const proof=():SessionMutationProof=>({employee:{id:f.owner.employeeId,firstName:'Owner',lastName:'QA',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:f.owner.sessionTokenHash});
 const employeeVersion=async()=>(await f.q<{value:string}>("SELECT updated_at::text AS value FROM employees WHERE id='c34-a'"))[0].value;

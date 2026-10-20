@@ -13,7 +13,7 @@
     "setup:company": "node --import tsx scripts/setup-company.mts",
     "test:company:integration": "node scripts/phase-c-clocker-postgres.mjs --company-setup",
     "bootstrap:owner": "node --import tsx scripts/bootstrap-owner.mjs",
-    "notifications:worker": "tsx scripts/fuel-notification-worker.ts",
+    "notifications:worker": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/fuel-notification-worker.ts",
     "test:notifications:qa": "node --test scripts/verify-fuel-phase-3-config.check.mjs",
     "test:notifications:integration": "vitest run --config vitest.notifications-integration.config.mts",
     "test:foundation:integration": "vitest run --config vitest.foundation-integration.config.mts",
@@ -33,7 +33,7 @@
     "test:phase-e:ui": "node scripts/phase-e-owned.mjs browser --suite all",
     "test:phase-e:evidence": "node scripts/phase-e-owned.mjs verify-ci",
     "test:release-engineering": "node --test scripts/release-ci-contract.check.mjs scripts/release-postgres-cleanup.check.mjs scripts/release-browser-diagnostics.check.mjs scripts/release-lint-chain.check.mjs",
-    "payroll:worker": "tsx scripts/payroll-worker.ts",
+    "payroll:worker": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/payroll-worker.ts",
     "test:payroll:owned": "node scripts/payroll-postgres.mjs"
   },
   "dependencies": {

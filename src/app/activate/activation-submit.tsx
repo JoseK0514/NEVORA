@@ -2,8 +2,9 @@
 
 import { useFormStatus } from "react-dom";
 
-export function ActivationSubmit() {
-  const { pending } = useFormStatus();
+export function ActivationSubmit({pending:controlledPending}: {pending?:boolean} = {}) {
+  const status = useFormStatus();
+  const pending = controlledPending ?? status.pending;
   return <>
     <button type="submit" className="button primary full employee-login-submit" disabled={pending} aria-busy={pending}>
       <span>{pending ? "Activating account…" : "Activate account"}</span>

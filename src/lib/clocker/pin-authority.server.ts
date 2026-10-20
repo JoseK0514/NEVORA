@@ -1,4 +1,6 @@
 import 'server-only';
+import type {SessionMutationProof} from '../shift-changes/types';
+import {assertOperationalAccess,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { ClockerOwnerProof } from './devices.server';
 import { pinKeyIdentity } from './pin-crypto.server';
@@ -22,6 +24,7 @@ export async function pinBatch(executor: SqlExecutor, statements: SqlStatement[]
  try { return await executor.transaction(statements); }
  catch(error) {
   if(error instanceof ClockerPinError)throw error;
+  if(isOperationalAuthorizationError(error))throw new ClockerPinError('FORBIDDEN');
   const message=error instanceof Error?error.message:'';
   for(const code of Object.keys(messages) as PinErrorCode[])if(message.includes(`clocker_pin_${code}`))throw new ClockerPinError(code);
   if(error && typeof error==='object' && 'code' in error && error.code==='23505' &&
@@ -50,4 +53,21 @@ export function pinActorAssertion(proof:ClockerOwnerProof,employeeId:string,work
    AND s.token_hash=$2 AND s.expires_at>clock_timestamp() AND l.workspace_id=$4
    AND (actor.role='OWNER' OR target.role<>'OWNER') ${active?'AND target.active':''})`,
    [proof.employeeId,proof.sessionTokenHash,employeeId,workspaceId],'FORBIDDEN');
+}
+
+/** The legacy Clocker actor proof contains no employee role/details. Obtain the
+ * actual current session employee; never fabricate a portal proof from a claimed
+ * role or eligibility. This query reads only the actor, before private PIN data. */
+export async function pinManagementAccess(actor:ClockerOwnerProof,executor:SqlExecutor){
+ if(!actor||typeof actor.employeeId!=='string'||!/^[a-f0-9]{64}$/.test(actor.sessionTokenHash??''))throw new ClockerPinError('FORBIDDEN');
+ try{
+  const [employee]=await executor.query<SessionMutationProof['employee']>(statement(`SELECT e.id,e.first_name AS "firstName",e.last_name AS "lastName",e.role,e.primary_location_id AS "primaryLocationId"
+   FROM employees e JOIN employee_sessions s ON s.employee_id=e.id WHERE e.id=$1 AND e.active AND e.role IN('OWNER','MANAGER') AND s.token_hash=$2 AND s.expires_at>clock_timestamp()`,[actor.employeeId,actor.sessionTokenHash]));
+  if(!employee)throw new ClockerPinError('FORBIDDEN');
+  const proof:SessionMutationProof={employee,sessionTokenHash:actor.sessionTokenHash};
+  return {...await assertOperationalAccess(proof,{kind:'COMPANY'},executor),proof};
+ }catch(error){
+  if(error instanceof ClockerPinError)throw error;
+  throw new ClockerPinError(isOperationalAuthorizationError(error)?'FORBIDDEN':'UNAVAILABLE');
+ }
 }

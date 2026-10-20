@@ -16,9 +16,9 @@ import {payrollNoticeReadSql} from '../payroll/notices';
 import {attentionSourceVersion} from './employee-attention-receipts.server';
 
 const LIMIT=25,MAX_READS=64,MAX_BYTES=1_000_000,BUDGET_MS=8000;
-const supported=['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','SELF_TEST','COMMUNICATION'] as const;
-const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Unable to work update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test',COMMUNICATION:'Team update'};
-const candidateSql=(actor='$1')=>`SELECT id FROM notifications WHERE employee_id=${actor} ORDER BY created_at DESC,id DESC LIMIT 26`;
+const supported=['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','SELF_TEST','COMMUNICATION','PAYROLL_STATEMENT'] as const;
+const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Unable to work update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test',COMMUNICATION:'Team update',PAYROLL_STATEMENT:'Pay statement update'};
+const candidateSql=(actor='$1')=>`SELECT id,read_at::text AS read FROM notifications WHERE employee_id=${actor} ORDER BY created_at DESC,id DESC LIMIT 26`;
 const ownReceiptSql=(p:string[])=>`SELECT source_kind,source_id,source_version FROM employee_attention_receipts WHERE workspace_id=${p[0]} AND employee_id=${p[1]}
  AND (source_kind,source_id,source_version) IN (SELECT * FROM unnest(${p[2]}::text[],${p[3]}::text[],${p[4]}::text[]))`;
 const ownCommunicationStatusSql=(p:string[])=>`SELECT r.id::text AS version,r.acknowledgement AS requirement,
@@ -67,12 +67,13 @@ const templates:Template[]=[
  {name:'locations',args:1,sql:p=>notificationReadSql.locations(p[0])},
  {name:'communication',args:1,sql:p=>notificationReadSql.communication(p[0])},
  {name:'selfTest',args:2,sql:p=>notificationReadSql.selfTest(p[0],p[1])},
+ {name:'payrollNotice',args:2,sql:p=>payrollNoticeReadSql(p[0],p[1])},
 ];
 type Entry={key:string;template:Template;values:readonly unknown[]};
 const managementTemplates:Template[]=[
+ {name:'operationalRecipient',args:1,sql:p=>notificationReadSql.operationalRecipient(p[0])},
  {name:'summarySeeds',args:4,sql:p=>notificationReadSql.summarySeeds(p[0],p[1],p[2],p[3])},
  ...(['coverageLocations','coverageWindows','coverageEmployees','coveragePositions'] as const).map(name=>({name,args:0,sql:()=>notificationReadSql[name]()})),
- {name:'payrollNotice',args:2,sql:p=>payrollNoticeReadSql(p[0],p[1])},
 ];
 export function notificationReadManifest(includeManagement=false){
  const allowed=includeManagement?[...templates,...managementTemplates]:templates;
@@ -137,10 +138,18 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
     if(intent.employeeId!==proof.employee.id||intent.environment!==environment||Date.parse(intent.expiresAt)<=now.getTime()||Date.parse(intent.dueAt)>now.getTime())continue;
     if(!supported.includes(intent.source.kind as typeof supported[number])){partial=true;continue;}
     const check=await state.check(intent,proof.employee.id,now,'open');
-    if(check.reason==='workspace_unavailable')throw Error('Notification source unavailable');
+    if(check.reason==='workspace_unavailable'||check.reason==='payroll_source_unavailable')throw Error('Notification source unavailable');
     if(!check.deliverable||check.effectiveVersion!==intent.effectiveVersion||Date.parse(check.expiresAt)<=now.getTime()||!safeReturnTo(check.destination))continue;
     const href=safeNotificationOpenPath(intent.id);if(!href){partial=true;continue;}
     expires=Math.min(expires,Date.parse(check.expiresAt));
+    if(intent.source.kind==='PAYROLL_STATEMENT'){
+     // Finance's canonical check above owns publication/recipient/role/scope.
+     // Payroll has no generic SourceSnapshot: expose metadata only, and replay
+     // this same check against the final protected Finance observation.
+     if(candidate.read!==null&&(typeof candidate.read!=='string'||!Number.isFinite(Date.parse(candidate.read))))throw Error('Missing notification read metadata');
+     items.push({id:intent.id,label:labels.PAYROLL_STATEMENT,at:intent.dueAt,href,reviewState:candidate.read===null?'unread':'read',actionState:'available'});
+     continue;
+    }
     const source=await state.readSource(intent.source);if(!source){partial=true;continue;}
     visible.push({intent,source,href});
    }

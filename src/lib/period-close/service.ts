@@ -1,10 +1,10 @@
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { createHash, randomUUID } from "node:crypto";
 import type { SessionMutationProof } from "../shift-changes/types";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
-import { getWorkspace, workspaceReadGuard } from "../data/workspaces";
+import { workspaceReadGuard } from "../data/workspaces";
 import {
   assertManagementProof,
-  managementSessionStatements,
 } from "../data/management-session";
 import { neonNotificationExecutor } from "../data/notification-transactions";
 import { timecardReadSql } from "../timecards/service";
@@ -85,18 +85,19 @@ type Source = {
   }[];
   timecards: { cards: unknown[] };
 };
-async function scope(proof: SessionMutationProof, executor: SqlExecutor) {
-  assertManagementProof(proof, proof.employee.id);
-  const workspace = await getWorkspace(executor);
-  return {
-    workspace,
-    guards: [
-      ...workspaceReadGuard(workspace),
-      { text: "SELECT id FROM employees ORDER BY id FOR SHARE", values: [] },
-      ...managementSessionStatements(proof, proof.employee.id),
-    ],
-  };
+type CompanyContext=Pick<Awaited<ReturnType<typeof assertOperationalAccess>>,'workspace'|'authority'>;
+function companyReadGuards(proof:SessionMutationProof,access:CompanyContext):SqlStatement[]{
+ return [...workspaceReadGuard(access.workspace),{text:'SELECT id FROM employees ORDER BY id FOR SHARE',values:[]},...operationalScopeStatements(proof,access.workspace,{kind:'COMPANY'},access.authority)];
 }
+async function currentCompany(proof:SessionMutationProof,access:CompanyContext,executor:SqlExecutor){
+ await executor.transaction([...workspaceReadGuard(access.workspace),{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},...operationalScopeStatements(proof,access.workspace,{kind:'COMPANY'},access.authority)]);
+}
+async function scope(proof: SessionMutationProof, executor: SqlExecutor) {
+ assertManagementProof(proof,proof?.employee?.id);
+ const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
+ return {...access,guards:companyReadGuards(proof,access)};
+}
+
 function periodValues(
   workspaceId: string,
   proof: SessionMutationProof,
@@ -116,7 +117,7 @@ async function read(
   executor: SqlExecutor,
 ) {
   const period = parsePeriod(requested.startDate, requested.endDate),
-    { workspace, guards } = await scope(proof, executor),
+    { workspace, guards, authority } = await scope(proof, executor),
     values = periodValues(workspace.id, proof, period);
   const result = await executor.transaction([
     ...guards,
@@ -132,7 +133,7 @@ async function read(
       text: `SELECT ${exportCustodySql} AS custody`,
       values: [workspace.id, period.startDate, period.endDate],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
   ]);
   const row = result[guards.length]?.[0] as {
     source: Source;
@@ -148,6 +149,7 @@ async function read(
     throw Error("POPULATION_UNAVAILABLE");
   return {
     workspace,
+    authority,
     period,
     source: row.source,
     sourceHash: digest(row.source),
@@ -165,7 +167,7 @@ export async function readPeriodClose(
   executor: SqlExecutor = neonNotificationExecutor(),
 ) {
   const state = await read(proof, period, executor),
-    { guards } = await scope(proof, executor);
+    guards=companyReadGuards(proof,state);
   const results = await executor.transaction([
     ...guards,
     {
@@ -192,7 +194,7 @@ export async function readPeriodClose(
         state.period.endDate,
       ],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,state.workspace,{kind:'COMPANY'},state.authority),
   ]);
   const events = results[guards.length + 2] as {
     manifestId: string;
@@ -218,7 +220,7 @@ export async function readPeriodClose(
       operationId: string;
       payload: PayrollExportPayload;
     }[];
-  return {
+  const view = {
     period: state.period,
     sourceHash: state.sourceHash,
     population: state.population,
@@ -263,6 +265,8 @@ export async function readPeriodClose(
       profileName: e.payload.profile.name,
     })),
   };
+  await currentCompany(proof,state,executor);
+  return view;
 }
 function writeGuards(
   proof: SessionMutationProof,
@@ -282,7 +286,7 @@ function writeGuards(
       text: "LOCK TABLE time_entries,break_entries,time_correction_adjustments,time_correction_requests,time_correction_events,timecard_revisions,payroll_export_receipts,payroll_export_profile_revisions,payroll_period_populations IN SHARE MODE",
       values: [],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,state.workspace,{kind:'COMPANY'},state.authority),
     {
       text: `SELECT (CASE WHEN ${periodSourceSql}=$6::jsonb THEN '1' ELSE 'PERIOD_SOURCE_CONFLICT' END)::integer`,
       values: [
@@ -301,7 +305,7 @@ async function existing(
     | "payroll_period_events",
   executor: SqlExecutor,
 ) {
-  const { workspace, guards } = await scope(proof, executor),
+  const { workspace, guards, authority } = await scope(proof, executor),
     id = table === "payroll_period_populations" ? "operation_id" : "id";
   const result = await executor.transaction([
     ...guards,
@@ -309,8 +313,9 @@ async function existing(
       text: `SELECT command_hash,payload,actor_employee_id FROM ${table} WHERE workspace_id=$1 AND ${id}=$2::uuid`,
       values: [workspace.id, operationId],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
   ]);
+  await currentCompany(proof,{workspace,authority},executor);
   return result[guards.length]?.[0] as
     | { command_hash: string; payload: unknown; actor_employee_id: string }
     | undefined;
@@ -441,8 +446,9 @@ export async function savePeriodPopulation(
           JSON.stringify(payload),
         ],
       },
-      ...managementSessionStatements(proof, proof.employee.id),
+      ...operationalScopeStatements(proof,state.workspace,{kind:'COMPANY'},state.authority),
     ]);
+    await currentCompany(proof,state,executor);
     return payload;
   } catch (error) {
     const recovered = replay<Population>(
@@ -512,14 +518,14 @@ export async function preparePeriodManifest(
     state.population.sourceHash !== state.sourceHash
   )
     throw Error("POPULATION_CONFLICT");
-  const { guards } = await scope(proof, executor);
+  const guards=companyReadGuards(proof,state);
   const receipts = await executor.transaction([
     ...guards,
     ...refs.map((r) => ({
       text: "SELECT payload FROM payroll_export_receipts WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid",
       values: [state.workspace.id, r.actorId, r.operationId],
     })),
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,state.workspace,{kind:'COMPANY'},state.authority),
   ]);
   const exports = refs.map((r, i) => {
     const payload = (
@@ -620,8 +626,9 @@ export async function preparePeriodManifest(
           JSON.stringify(manifest),
         ],
       },
-      ...managementSessionStatements(proof, proof.employee.id),
+      ...operationalScopeStatements(proof,state.workspace,{kind:'COMPANY'},state.authority),
     ]);
+    await currentCompany(proof,state,executor);
     return manifest;
   } catch (error) {
     const recovered = replay<Manifest>(
@@ -647,14 +654,14 @@ export async function readPeriodArtifact(
 ) {
   if (!uuid(id) || !Number.isSafeInteger(index) || index < 0)
     throw Error("INVALID_ARTIFACT");
-  const { workspace, guards } = await scope(proof, executor);
+  const { workspace, guards, authority } = await scope(proof, executor);
   const read = await executor.transaction([
     ...guards,
     {
       text: "SELECT payload,manifest_hash FROM payroll_period_manifests WHERE workspace_id=$1 AND id=$2::uuid",
       values: [workspace.id, id],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
   ]);
   const row = read[guards.length]?.[0] as
     | { payload: Manifest; manifest_hash: string }
@@ -691,8 +698,9 @@ export async function readPeriodArtifact(
         }),
       ],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
   ]);
+  await currentCompany(proof,{workspace,authority},executor);
   return {
     content,
     sha256,
@@ -734,14 +742,14 @@ export async function recordPeriodHandoff(
       hash,
     );
   if (saved) return saved;
-  const { workspace, guards } = await scope(proof, executor);
+  const { workspace, guards, authority } = await scope(proof, executor);
   const result = await executor.transaction([
     ...guards,
     {
       text: "SELECT payload,manifest_hash FROM payroll_period_manifests WHERE workspace_id=$1 AND id=$2::uuid",
       values: [workspace.id, command.manifestId],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
   ]);
   const manifest = result[guards.length]?.[0] as
     | { payload: Manifest; manifest_hash: string }
@@ -793,8 +801,9 @@ export async function recordPeriodHandoff(
           JSON.stringify(payload),
         ],
       },
-      ...managementSessionStatements(proof, proof.employee.id),
+      ...operationalScopeStatements(proof,current.workspace,{kind:'COMPANY'},current.authority),
     ]);
+    await currentCompany(proof,current,executor);
     return payload;
   } catch (error) {
     const recovered = replay<object>(

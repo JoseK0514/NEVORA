@@ -1,3 +1,4 @@
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { getWorkspace, workspaceReadGuard } from './workspaces';
 import { buildNotificationIntents } from '../notifications/recipients';
 import { readNotificationConfig, bindWorkspaceNotificationConfig } from '../notifications/config';
@@ -57,8 +58,14 @@ export async function commitRequestTransition(input: { before?: RequestSnapshot;
   const proof = submission ? input.selfServiceProof : input.managementProof;
   if (input.after.kind === 'TIME_OFF' && input.after.record.status === 'PENDING' && (!proof || input.after.record.employeeId !== input.actorEmployeeId)) throw new Error('management_authorization');
   if (proof) assertManagementProof(proof, input.actorEmployeeId);
-  const authority = () => proof ? managementSessionStatements(proof, input.actorEmployeeId, submission ? ['EMPLOYEE', 'LEAD'] : ['OWNER', 'MANAGER']) : [];
-  const workspace = await getWorkspace(executor);
+  // Global team decisions require Company; own submission and the separate
+  // withdrawal protocol keep their existing identity-only authorization.
+  const operational=input.after.kind==='TIME_OFF'&&!submission&&proof
+    ?await assertOperationalAccess(proof,{kind:'COMPANY'},executor):null;
+  const workspace = operational?.workspace??await getWorkspace(executor);
+  const authority = () => proof ? operational
+    ?operationalScopeStatements(proof,workspace,{kind:'COMPANY'},operational.authority)
+    :managementSessionStatements(proof,input.actorEmployeeId,submission?['EMPLOYEE','LEAD']:['OWNER','MANAGER']) : [];
   const recipients = await executor.query<RecipientAccess>({ text: requestRecipientSql, values: [] });
   try {
     await executor.transaction([

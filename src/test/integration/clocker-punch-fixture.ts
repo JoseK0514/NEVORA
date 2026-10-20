@@ -1,11 +1,13 @@
 import { readFile } from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
+import {hashClockerPin,pinFingerprint,pinKeyIdentity} from '../../lib/clocker/pin-crypto.server';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { registerClockerDevice, redeemClockerEnrollment, authenticateClockerDevice } from '../../lib/clocker/devices.server';
 import { saveBreakType } from '../../lib/clocker/break-types.server';
 import { setEmployeeClockerPin, verifyEmployeeClockerPin, readClockerIdentity } from '../../lib/clocker/pins.server';
 
 /** Fictional employees and owned loopback PostgreSQL only. */
-export async function createPunchFixture(options:{breaks?:boolean;migrationStage?:'current'|'pre-break'|'phase-d2'}={}){
+export async function createPunchFixture(options:{breaks?:boolean;companyAccess?:boolean;migrationStage?:'current'|'pre-break'|'phase-d2'}={}){
  const preBreak=options.migrationStage==='pre-break';
  const db=await createDisposableFoundationDatabase({mode:preBreak?'phase-c-base':options.migrationStage==='phase-d2'?'phase-d2-base':'current-runtime'});
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>db.executor.query<T>({text,values});
@@ -21,8 +23,30 @@ export async function createPunchFixture(options:{breaks?:boolean;migrationStage
    INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'c34-owner',now()+interval '1 day');
    INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT id,'loc-1' FROM employees;
    INSERT INTO employee_location_eligibility VALUES('c34-a','loc-2');`);
-  await setEmployeeClockerPin(owner,{employeeId:'c34-a',pin:'0123',expectedVersion:0},key,db.executor);
-  await setEmployeeClockerPin(owner,{employeeId:'c34-b',pin:'4567',expectedVersion:0},key,db.executor);
+  // Explicit opt-in for current operational consumers. Seed the census above
+  // before adoption; never grant Company to later-created/promoted Managers.
+  if(options.companyAccess){
+   // Historical upgrade tests keep their original Clocker/timecard schemas.
+   // 0032 needs the genuine append-only ledger primitive from copy receipts;
+   // these sidecar tables neither install later time/payroll SQL nor alter facts.
+   const files=options.migrationStage&&options.migrationStage!=='current'
+    ?['0024_schedule_copy_receipts.sql','0032_company_access_invitations.sql']
+    :['0031_native_payroll.sql','0032_company_access_invitations.sql'];
+   for(const file of files)await q(await readFile('db/migrations/'+file,'utf8'));
+   await setEmployeeClockerPin(owner,{employeeId:'c34-a',pin:'0123',expectedVersion:0},key,db.executor);
+   await setEmployeeClockerPin(owner,{employeeId:'c34-b',pin:'4567',expectedVersion:0},key,db.executor);
+  }else{
+   // Legacy device/self/financial fixtures intentionally have no operational
+   // schema. Seed fictional cryptographic state, rather than exercise a current
+   // management command against an unavailable authorization schema.
+   const [workspace]=await q<{id:string}>('SELECT id FROM workspaces WHERE singleton');
+   await q('INSERT INTO clocker_pin_configuration(workspace_id,key_identity) VALUES($1,$2)',[workspace.id,pinKeyIdentity(key)]);
+   for(const [employeeId,pin] of [['c34-a','0123'],['c34-b','4567']]){
+    const hash=await hashClockerPin(pin,workspace.id,employeeId,key);
+    await q('INSERT INTO employee_clocker_pins(employee_id,workspace_id,lookup_hash,pin_hash,updated_by) VALUES($1,$2,$3,$4,$5)',[employeeId,workspace.id,pinFingerprint(pin,workspace.id,key),hash,owner.employeeId]);
+    await q('INSERT INTO clocker_pin_events(id,employee_id,actor_employee_id,pin_version) VALUES($1,$2,$3,1)',[randomUUID(),employeeId,owner.employeeId]);
+   }
+  }
   const devices:(NonNullable<Awaited<ReturnType<typeof authenticateClockerDevice>>>&{credential:string;locationKey:string})[]=[];
   for(const [index,locationId] of ['loc-1','loc-1','loc-2'].entries()){
    const pending=await registerClockerDevice(owner,{name:'C34 tablet '+index,locationId},db.executor);

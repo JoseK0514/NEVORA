@@ -1,5 +1,6 @@
-import { getWorkspace, workspaceReadGuard } from "./workspaces";
-import { assertManagementProof, managementSessionStatements } from "./management-session";
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
+import { workspaceReadGuard } from "./workspaces";
+import { assertManagementProof } from "./management-session";
 import type { SessionMutationProof } from "../shift-changes/types";
 import { neonNotificationExecutor } from "./notification-transactions";
 import { timeMinutes } from "../scheduling/periods";
@@ -147,7 +148,7 @@ export async function saveScheduleHealthSettings(input: {
   if (new Set(hourTargets.map(t => t.employeeId)).size !== hourTargets.length || hourTargets.some(t =>
     !t.employeeId || !Number.isFinite(t.maximumWeeklyHours) || t.maximumWeeklyHours < 0 || t.maximumWeeklyHours > 168 ||
     (t.targetWeeklyHours !== undefined && (!Number.isFinite(t.targetWeeklyHours) || t.targetWeeklyHours < 0 || t.targetWeeklyHours > 168)))) throw new Error('invalid_hours');
-  const workspace = await getWorkspace(executor);
+  const {workspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'},executor);
   const employeeIds = [...new Set([actorId, ...hourTargets.map(t => t.employeeId)])].sort();
   const locationIds = staffingSettings.map(s => s.locationId).sort();
   const targetIds = hourTargets.map(t => t.employeeId).sort();
@@ -164,10 +165,10 @@ export async function saveScheduleHealthSettings(input: {
       THEN '1' ELSE 'settings_employee_invalid' END)::integer`, values: [targetIds, workspace.id] },
     { text: 'SELECT employee_id FROM employee_scheduling_settings WHERE employee_id=ANY($1::text[]) ORDER BY employee_id FOR UPDATE', values: [targetIds] },
     { text: 'SELECT location_id FROM location_staffing_settings WHERE location_id=ANY($1::text[]) ORDER BY location_id FOR UPDATE', values: [locationIds] },
-    ...managementSessionStatements(input.proof, actorId),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
     ...staffingWriteStatements(staffingSettings),
     ...hourTargetWriteStatements(hourTargets),
-    ...managementSessionStatements(input.proof, actorId),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
   ]);
 }
 export async function saveLocationStaffingSettings(settings: readonly StaffingInput[], proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<void> {
@@ -300,9 +301,9 @@ export async function createCoverageWindow(
         input.minimumStaff > 100))
   )
     throw new Error("Enter a valid coverage period and staffing minimum.");
-  const sql = executor ?? neonNotificationExecutor(),
-    workspace = await getWorkspace(sql),
-    id = randomUUID();
+  const sql=executor??neonNotificationExecutor();
+  const {workspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'},sql);
+  const id=randomUUID();
   await sql.transaction([
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
@@ -315,20 +316,20 @@ export async function createCoverageWindow(
       values: [input.locationId, workspace.id],
     },
     ...requirementGuards(id, input.positionRequirements, workspace.id),
-    ...managementSessionStatements(input.proof, input.actorEmployeeId),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
     {
       text: 'INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time,minimum_staff) VALUES($1,$2,$3,$4,$5,$6)',
       values: [id, input.locationId, input.dayOfWeek, input.startTime, input.endTime, input.minimumStaff ?? null],
     },
     ...requirementWrites(id, input.positionRequirements),
-    ...managementSessionStatements(input.proof, input.actorEmployeeId),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
   ]);
   return id;
 }
 export async function deleteCoverageWindow(windowId: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<boolean> {
   const actorId = proof?.employee?.id ?? '';
   assertManagementProof(proof, actorId);
-  const workspace = await getWorkspace(executor);
+  const {workspace}=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
   const statements: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [actorId] },
@@ -337,9 +338,9 @@ export async function deleteCoverageWindow(windowId: string, proof: SessionMutat
     { text: `SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM location_coverage_windows w JOIN locations l ON l.id=w.location_id WHERE w.id=$1 AND l.workspace_id<>$2)
       THEN '1' ELSE 'coverage_window_invalid' END)::integer`, values: [windowId, workspace.id] },
     { text: 'SELECT position_id FROM coverage_window_position_requirements WHERE coverage_window_id=$1 ORDER BY position_id FOR UPDATE', values: [windowId] },
-    ...managementSessionStatements(proof, actorId),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
     { text: 'DELETE FROM location_coverage_windows WHERE id=$1 RETURNING id', values: [windowId] },
-    ...managementSessionStatements(proof, actorId),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
   ];
   const index = statements.findIndex(s => s.text.startsWith('DELETE FROM location_coverage_windows'));
   const result = await executor.transaction(statements);
@@ -357,8 +358,8 @@ export async function replaceCoverageWindowPositionRequirements(
 ): Promise<void> {
   assertManagementProof(input.proof, input.actorEmployeeId);
   validateRequirements(input.requirements);
-  const sql = executor ?? neonNotificationExecutor(),
-    workspace = await getWorkspace(sql);
+  const sql=executor??neonNotificationExecutor();
+  const {workspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'},sql);
   await sql.transaction([
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
@@ -380,8 +381,8 @@ export async function replaceCoverageWindowPositionRequirements(
       workspace.id,
       true,
     ),
-    ...managementSessionStatements(input.proof, input.actorEmployeeId),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
     ...requirementWrites(input.windowId, input.requirements),
-    ...managementSessionStatements(input.proof, input.actorEmployeeId),
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
   ]);
 }

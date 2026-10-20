@@ -69,6 +69,8 @@ export function safeReturnTo(candidate: string | undefined): string | null {
   if (rawPath === '/app/notifications/open' && !seen.has('notificationId')) return null;
   return candidate;
 }
+/** Pure route/candidate derivation; links never grant access. Current source
+ * evaluation and operational SQL persistence independently verify authority. */
 export function destinationForSource(source: SourceSnapshot, recipient: RecipientAccess): string | null {
   if (!recipient.active) return null;
   const encode = encodeURIComponent;

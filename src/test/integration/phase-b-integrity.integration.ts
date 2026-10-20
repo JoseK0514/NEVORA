@@ -1,13 +1,24 @@
-import { createHash } from 'node:crypto';
+import { createHash,randomUUID } from 'node:crypto';
+import {readFile} from 'node:fs/promises';
 import { Client } from 'pg';
 import { describe, expect, it, vi } from 'vitest';
+vi.mock('server-only',()=>({}));
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';
 
 // Adapt only transport and request context. All authorization and business SQL
 // below is the real repository/action implementation on an owned database.
 const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null, cookies: new Map<string, string>(), cookieWrites: 0 }));
-vi.mock('@/lib/db', () => ({ getDb: () => ({ query: (text: string, values: unknown[] = []) => context.executor!.query({ text, values }) }), queryRows: (rows: unknown) => rows }));
+vi.mock('@/lib/db', () => {
+  // Match Neon's lazy statement contract: assembling a transaction starts no
+  // independent queries. Both the extracted default executor and explicit
+  // fixture executor execute the real ordered PostgreSQL batch below.
+  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>context.executor!.query({text,values}).then(yes,no)});
+  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,index)=>text+(index?'$'+index:'')+part,''),values),{
+    query:statement,transaction:(queries:{statement:SqlStatement}[])=>context.executor!.transaction(queries.map(query=>query.statement)),
+  });
+  return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};
+});
 vi.mock('next/headers', () => ({ cookies: async () => ({
   get: (name: string) => context.cookies.has(name) ? { value: context.cookies.get(name)! } : undefined,
   set: (name: string, value: string) => { context.cookieWrites++; context.cookies.set(name, value); },
@@ -45,6 +56,8 @@ async function fixture(status: 'DRAFT' | 'PUBLISHED' = 'DRAFT', credential = tru
     INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('existing','schedule','worker','2030-10-08','08:00','12:00');
     INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) VALUES('request','worker','2030-10-09','2030-10-09','PENDING');`, values: [] });
   if (credential) await db.executor.query({ text: "INSERT INTO employee_credentials(employee_id,password_hash) VALUES('worker','FICTIONAL_WORKER_HASH')", values: [] });
+  // Seed the intended legacy census before atomic operational adoption; later Managers do not inherit Company.
+  await db.executor.query({text:await readFile('db/migrations/0032_company_access_invitations.sql','utf8'),values:[]});
   const owner = await fixtureProof(db.executor, 'owner'), actor = await fixtureProof(db.executor, 'actor');
   return { ...db, owner, actor };
 }
@@ -273,32 +286,30 @@ describe('Phase B account issuance and activation', () => {
       await expect(login.issue()).rejects.toThrow('session_login_changed'); expect(context.cookieWrites).toBe(writes);
     } finally { await db.dispose(); }
   });
-  it.each(['phone', 'inactive', 'combined'])('activation waiting on %s lifecycle change rechecks current identity', async change => {
+  it.each(['phone', 'inactive', 'combined'])('retired knowledge-only activation stays closed during %s lifecycle change', async change => {
     const db = await fixture('DRAFT', false); let pending: Promise<unknown> | undefined;
     try {
       await withWriter(db, async writer => {
         await writer.query("SELECT id FROM employees WHERE id='worker' FOR UPDATE");
         await writer.query(`UPDATE employees SET ${change === 'inactive' ? '' : "phone='5550000099',"}${change === 'phone' ? '' : 'active=false,'}updated_at=clock_timestamp() WHERE id='worker'`);
         pending = activateEmployeeCredential({ employeeId: 'worker', phone: '5550000002', passwordHash: 'FICTIONAL_ACTIVATION_HASH' }).then(value => ({ value }), error => ({ error }));
-        expect(await waitForLock(db, 'employee')).not.toHaveLength(0);
-        await writer.query('COMMIT'); expect(await pending).toEqual({ value: null });
+        // Knowledge alone returns no credential even while the lifecycle writer owns the row.
+        expect(await pending).toEqual({value:null});await writer.query('COMMIT');
       });
       expect(await q(db, "SELECT employee_id FROM employee_credentials WHERE employee_id='worker'")).toEqual([]);
     } finally { await pending; await db.dispose(); }
   });
-  it('valid activation serializes duplicate claims and subsequent lifecycle writes retain credentials', async () => {
-    const db = await fixture('DRAFT', false); let pending: Promise<unknown> | undefined;
+  it('valid ID and phone cannot activate, duplicate legacy attempts stay closed, and existing credentials survive lifecycle writes', async () => {
+    const db=await fixture('DRAFT',false);
     try {
-      await withWriter(db, async writer => {
-        await writer.query("SELECT id FROM employees WHERE id='worker' FOR UPDATE");
-        pending = activateEmployeeCredential({ employeeId: 'WORKER', phone: '(555) 000-0002', passwordHash: 'FICTIONAL_ACTIVATION_HASH' });
-        expect(await waitForLock(db, 'employee')).not.toHaveLength(0); await writer.query('COMMIT'); expect(await pending).toBe('worker');
-      });
-      const duplicates = await Promise.all([1, 2].map(() => activateEmployeeCredential({ employeeId: 'worker', phone: '5550000002', passwordHash: 'FICTIONAL_DUPLICATE_HASH' })));
-      expect(duplicates).toEqual([null, null]);
-      await profileWrite(db, 'worker', { active: false, phone: '5550000099' });
-      expect(await q(db, "SELECT password_hash FROM employee_credentials WHERE employee_id='worker'")).toEqual([{ password_hash: 'FICTIONAL_ACTIVATION_HASH' }]);
-    } finally { await pending; await db.dispose(); }
+      expect(await activateEmployeeCredential({employeeId:'WORKER',phone:'(555) 000-0002',passwordHash:'FICTIONAL_ACTIVATION_HASH'})).toBeNull();
+      expect(await Promise.all([1,2].map(()=>activateEmployeeCredential({employeeId:'worker',phone:'5550000002',passwordHash:'FICTIONAL_DUPLICATE_HASH'})))).toEqual([null,null]);
+      expect(await q(db,"SELECT employee_id FROM employee_credentials WHERE employee_id='worker'")).toEqual([]);
+      // Existing-credential lifecycle preservation is independent of the retired writer. Possession/duplicate claims use the new real SQL suite.
+      await q(db,"INSERT INTO employee_credentials(employee_id,password_hash) VALUES('worker','FICTIONAL_EXISTING_HASH')");
+      await profileWrite(db,'worker',{active:false,phone:'5550000099'});
+      expect(await q(db,"SELECT password_hash FROM employee_credentials WHERE employee_id='worker'")).toEqual([{password_hash:'FICTIONAL_EXISTING_HASH'}]);
+    } finally {await db.dispose();}
   });
 });
 
@@ -336,10 +347,15 @@ describe('Phase B authenticated employee writes and reviewed replacement sets', 
         if (!revoked) { revoked = true; await q(db, 'DELETE FROM employee_sessions WHERE token_hash=$1', [hash]); }
         return db.executor.transaction(statements, signal);
       } };
-      const data = coreForm(employee);
-      data.set('positionIds', 'p1'); data.set('eligibleLocationIds', 'loc-1'); data.set('id', 'new');
-      const result = await (kind === 'core' ? saveEmployeeCoreProfileAction(data) : kind === 'scheduling' ? saveEmployeeSchedulingProfileAction(data) : createEmployeeFormAction(data));
-      expect(revoked).toBe(true); expect(result).toHaveProperty('error');
+      const data=kind==='scheduling'?coreForm(employee):new FormData();
+      if(kind==='scheduling'){data.set('positionIds','p1');data.set('eligibleLocationIds','loc-1');data.set('id','new');}
+      else data.set('command',JSON.stringify(kind==='core'?{
+        operationId:randomUUID(),employeeId:employee.id,expectedEmployeeUpdatedAt:employee.updatedAt,
+        profile:{firstName:'Unauthorized action',lastName:employee.lastName,phone:employee.phone,email:employee.email??null,role:employee.role,primaryLocationId:employee.primaryLocationId,active:true},
+      }:{operationId:randomUUID(),employee:{id:'NEW',firstName:'Fictional',lastName:'New',phone:'5550000004',email:null,role:'EMPLOYEE',primaryLocationId:'loc-1',eligibleLocationIds:['loc-1'],positionIds:['p1']}}));
+      const result=await(kind==='core'?saveEmployeeCoreProfileAction(data):kind==='scheduling'?saveEmployeeSchedulingProfileAction(data):createEmployeeFormAction(data));
+      expect(revoked).toBe(true);
+      if(kind==='scheduling')expect(result).toHaveProperty('error');else expect(result).toEqual({state:'unavailable'});
       expect((await getEmployeeManagementProfile('worker', db.executor))!.firstName).toBe(employee.firstName);
       expect(await q(db, 'SELECT employee_id FROM employee_positions')).toEqual([]);
       expect(await q(db, "SELECT id FROM employees WHERE id='NEW'")).toEqual([]);

@@ -13,7 +13,7 @@ const query = (text: string, values: readonly unknown[] = []) =>
   db.executor.query<Record<string, unknown>>({ text, values });
 beforeAll(async () => {
   db = await createDisposableExchangeDatabase({ mode: 'current-runtime' });
-  await seedShiftChanges(db.executor);
+  await seedShiftChanges(db.executor,{companyAccess:true});
 });
 afterAll(async () => { await db?.dispose(); });
 

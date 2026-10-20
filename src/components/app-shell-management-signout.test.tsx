@@ -7,7 +7,7 @@ vi.mock('next/navigation',()=>({usePathname:()=>'/app',useRouter: () => ({ push:
 vi.mock('@/app/login/actions',()=>({logout:vi.fn()}));
 it.each(['OWNER','MANAGER'] as const)('%s has native sign-out inside the mobile management menu',role=>{
  for(const notificationsEnabled of [false,true]){
-  const html=renderToStaticMarkup(<AppShell workspaceName="QA" user={{firstName:'Test',lastName:'Manager',role}} notificationsEnabled={notificationsEnabled}>QA</AppShell>);
+  const html=renderToStaticMarkup(<AppShell workspaceName="QA" user={{id:"actor",firstName:'Test',lastName:'Manager',role}} notificationsEnabled={notificationsEnabled}>QA</AppShell>);
   const mobileMenu=html.slice(html.indexOf('id="manager-more-navigation"'));
   expect(mobileMenu).toMatch(/<button[^>]*type="submit"[^>]*>Sign out<\/button>/);
  }

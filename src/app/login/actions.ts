@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { findEmployeeCredential, getEmployeeActivationState } from "@/lib/data/employees";
+import { findEmployeeCredential } from "@/lib/data/employees";
 import { verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession } from "@/lib/auth/session";
 import { safeReturnTo } from "@/lib/notifications/destinations";
@@ -17,12 +17,6 @@ export async function login(formData: FormData) {
 
   if (!employeeId || !password) {
     redirect(`/login?error=invalid${returnQuery}`);
-  }
-
-  const activation = await getEmployeeActivationState(employeeId);
-
-  if (activation && activation.active && !activation.has_credential) {
-    redirect(`/activate?employeeId=${encodeURIComponent(employeeId)}${returnQuery}`);
   }
 
   const employee = await findEmployeeCredential(employeeId);

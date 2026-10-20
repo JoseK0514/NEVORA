@@ -1,3 +1,4 @@
+import {notificationOperationalAllowedSql} from './notification-operational-sql';
 import {communicationIntentAllowedSql} from '../communications/sql';
 import type { DeliveryClaim, DeliveryRepository, NotificationIntent, PushEnvironment, SqlExecutor } from '../notifications/types';
 import { neonNotificationExecutor } from './notification-transactions';
@@ -23,7 +24,7 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
       if (!intentIds.length) return;
       await executor.transaction([{text:`WITH intents AS (
         SELECT n.* FROM notifications n WHERE n.id = ANY($1::text[]) AND n.environment = $2 AND n.push_state = 'pending'
-          AND n.cancelled_at IS NULL AND n.due_at <= now() AND n.expires_at > now()
+          AND n.cancelled_at IS NULL AND n.due_at <= now() AND n.expires_at > now() AND ${notificationOperationalAllowedSql()}
           AND (n.purpose <> 'SUMMARY' OR n.source_kind = 'MANAGER_SUMMARY')
           AND (n.source_kind <> 'COMMUNICATION' OR ${communicationIntentAllowedSql()})
         ORDER BY n.id FOR UPDATE
@@ -65,7 +66,7 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
             AND ($5::text[] IS NULL OR n.employee_id = ANY($5::text[]))
             AND (n.purpose <> 'SUMMARY' OR n.source_kind = 'MANAGER_SUMMARY')
             AND (n.source_kind <> 'COMMUNICATION' OR ${communicationIntentAllowedSql()})
-            AND n.environment = $4 AND n.push_state = 'materialized' AND n.cancelled_at IS NULL AND n.expires_at > now()
+            AND n.environment = $4 AND n.push_state = 'materialized' AND n.cancelled_at IS NULL AND n.expires_at > now() AND ${notificationOperationalAllowedSql()}
             AND s.status = 'active' AND s.generation = d.generation AND e.active = true
             AND s.employee_id = n.employee_id AND s.environment = n.environment
             AND (n.purpose <> 'TEST' OR (n.source_kind = 'SELF_TEST' AND s.id = n.source_id AND s.generation = n.source_version))

@@ -1,3 +1,7 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import { TimeOffReviewActions } from "@/components/time-off-review-actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
@@ -106,13 +110,14 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
 }) {
   await requireRoles(MANAGER_ROLES);
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
-  const requests = selected.status === "PENDING"
-    ? await listPendingTimeOffRequests()
-    : await listTeamTimeOffRequests(selected.status);
+  const source=await withOperationalCompany(await requireSessionMutationProof(),()=>selected.status==='PENDING'?listPendingTimeOffRequests():listTeamTimeOffRequests(selected.status));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Team time off unavailable" reason={source.reason}/>;
+  const requests=source.data;
+
   const focused = selected.status === "PENDING" && requestId ? requests.find(request => request.id === requestId) : undefined;
   const origin: Origin = { from: from === "home" ? "home" : "inbox", filter: inboxFilter(filter ?? "requests"), item: inboxItem(item) };
-  if (focused) return <FocusedReview request={focused as PendingRequest} origin={origin} error={error} />;
-  if (selected.status === "PENDING" && requestId && !error) return <DecidedReview origin={origin} />;
+  if (focused) return <ScopedReadFrame observation={source}><FocusedReview request={focused as PendingRequest} origin={origin} error={error} /></ScopedReadFrame>;
+  if (selected.status === "PENDING" && requestId && !error) return <ScopedReadFrame observation={source}><DecidedReview origin={origin} /></ScopedReadFrame>;
 
   const count = requests.length;
   // Codex C1: who decided and when, when the read includes it (optional until tonight's merge).
@@ -127,7 +132,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   const plural = (n: number) => `${n}\u00a0${n === 1 ? "request" : "requests"}`;
   // Phase 3.5 Wave A: the full Time-off list on the kit. Pending requests are cards with the decision on them;
   // approved and declined are one record card each. The single-request review above is unchanged.
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="nv-page wa-page wa-timeoff" data-nv-page="">
       <PageBand title="Time off" overlap={false}
         summary={selected.id === "pending" ? (count ? `${plural(count)} waiting for your review.` : "Nothing is waiting for your review.") : `Your team’s ${selected.label.toLowerCase()} time off, latest dates first.`}
@@ -166,5 +171,5 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
         )}
       </div>
     </div>
-  );
+  </ScopedReadFrame>);
 }

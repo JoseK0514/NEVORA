@@ -28,7 +28,7 @@ export const GENERATION_LIMITS = Object.freeze({
   maxEvaluations: 200_000,
   maxPeriods: 10_000
 });
-function validateRequest(request: GenerationRequest) {
+export function validateGenerationRequest(request: GenerationRequest) {
   if (!request || typeof request.workspaceId !== 'string' || !request.workspaceId.trim() || typeof request.actorEmployeeId !== 'string' || !request.actorEmployeeId.trim() || !['BUILD_WEEK', 'FILL_GAPS_ONLY'].includes(request.mode) || !request.locationScope || !['ALL', 'SELECTED'].includes(request.locationScope.kind)) throw new GenerationScopeError();
   businessDateStart(request.weekStart);
   if (weekStartFor(request.weekStart) !== request.weekStart) throw new GenerationScopeError();
@@ -37,7 +37,7 @@ function validateRequest(request: GenerationRequest) {
 
 /** One complete MVCC statement; mapping never makes additional reads. */
 async function mapGenerationSnapshot(request: GenerationRequest, executor: SqlExecutor): Promise<GenerationSnapshot> {
-  validateRequest(request);
+  validateGenerationRequest(request);
   const {
     source,
     changedAt

@@ -3,7 +3,7 @@ import {createDisposableExchangeDatabase} from './local-postgres';import {seedSh
 import {executeShiftChange} from '../../lib/data/shift-changes';import {listEmployeePublishedShifts} from '../../lib/data/exchanges';
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 vi.mock('../../lib/db',()=>({getDb:()=>({query:(text:string,values:readonly unknown[]=[])=>db.executor.query({text,values})}),queryRows:(r:unknown)=>r}));
-beforeAll(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor);});afterAll(async()=>{await db?.dispose();});
+beforeAll(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor,{companyAccess:true});});afterAll(async()=>{await db?.dispose();});
 it('callout-capable reader preserves current assigned SOURCE and TARGET trades while ordinary trade reader excludes them',async()=>{
  const source=await fixtureShift(db.executor,'view-source','e1','2035-10-03'),target=await fixtureShift(db.executor,'view-target','e2','2035-10-04');
  expect((await executeShiftChange(proof('e1'),{kind:'PROPOSE_SWAP',operationId:randomUUID(),...source,targetShiftId:target.sourceShiftId,targetEpisodeId:target.sourceEpisodeId,targetTermsFingerprint:target.sourceTermsFingerprint},db.executor)).status).toBe('pending');

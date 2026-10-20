@@ -84,7 +84,8 @@ export function failure(error: unknown) {
     );
   const value = String(error);
   const denied = /authorization/.test(value),
-    conflict = /CONFLICT|immutable|duplicate key/.test(value),
+    conflict = /CONFLICT|immutable|duplicate key/.test(value) ||
+      (error instanceof Error && error.message === "OVERLAPPING_NATIVE_PAYROLL"),
     invalid = /invalid_body|JSON/.test(value);
   return json(
     {

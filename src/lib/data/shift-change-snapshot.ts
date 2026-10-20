@@ -1,3 +1,5 @@
+import {admitShiftChangeCompany,shiftChangeCompanyFence,ShiftChangeAuthorizationError,type ShiftChangeCompanyAccess} from './shift-change-authority';
+export {ShiftChangeAuthorizationError} from './shift-change-authority';
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof, ShiftChangeCommand, ShiftChangeSnapshot, ShiftChangeRequest } from '../shift-changes/types';
 import { generationSourceSql, type GenerationSource, type GenerationSourceRow } from './generation-guards';
@@ -5,9 +7,9 @@ import { neonNotificationExecutor, notificationStateSql, type GuardedWeekState }
 import { mapSchedulingSourceFacts } from './scheduling-source-facts';
 import { resolveShiftChangePolicy } from '../shift-changes/policy';
 import { materialShiftTerms, shiftTermsFingerprint, sourceShiftTerms } from '../shift-changes/terms';
-export class ShiftChangeAuthorizationError extends Error {}
-export type CommandSnapshot = ShiftChangeSnapshot & { weekState: GuardedWeekState; requestRow: GenerationSourceRow | null };
+export type CommandSnapshot = ShiftChangeSnapshot & { weekState: GuardedWeekState; requestRow: GenerationSourceRow | null; operational:ShiftChangeCompanyAccess };
 export async function readShiftChangeSnapshot(proof:SessionMutationProof, command:ShiftChangeCommand | {kind:'REVIEW';sourceShiftId:string;targetShiftId?:string}, executor:SqlExecutor):Promise<CommandSnapshot> {
+ const operational=await admitShiftChangeCompany(proof,executor);
  const [row]=await executor.query<{source:GenerationSource;state:GuardedWeekState;observedAt:string;workspaceUpdatedAt:string;authorized:boolean}>({text:`SELECT ${generationSourceSql} AS source, ${notificationStateSql.replaceAll('$1','ARRAY(SELECT DISTINCT week_start FROM schedules)')} AS state, to_jsonb(clock_timestamp()) AS "observedAt", (SELECT updated_at::text FROM workspaces WHERE singleton) AS "workspaceUpdatedAt", EXISTS(SELECT 1 FROM employee_sessions ss JOIN employees e ON e.id=ss.employee_id WHERE ss.token_hash=$1 AND e.id=$2 AND e.active AND e.role=$3 AND ss.expires_at>clock_timestamp()) AS authorized`,values:[proof.sessionTokenHash,proof.employee.id,proof.employee.role]});
  if(!row?.authorized || row.source.workspaces[0]?.active!==true) throw new ShiftChangeAuthorizationError();
  const source=row.source,w=source.workspaces[0];
@@ -19,7 +21,8 @@ export async function readShiftChangeSnapshot(proof:SessionMutationProof, comman
  const requestRow='requestId' in command ? (callout?source.shift_callouts:source.shift_exchanges).find(r=>r.id===command.requestId)??null:null;
  const r=requestRow;
  const request:ShiftChangeRequest|null = r&&!callout ? {id:String(r.id),kind:r.kind as ShiftChangeRequest['kind'],status:r.status as ShiftChangeRequest['status'],revision:Number(r.request_revision),legacyManual:r.legacy_manual===true,requestedByEmployeeId:String(r.requested_by_employee_id),targetEmployeeId:r.target_employee_id==null?null:String(r.target_employee_id),requesterConsent:r.requester_consent as ShiftChangeRequest['requesterConsent'],targetConsent:r.target_consent as ShiftChangeRequest['targetConsent'],recordedApprovalMode:r.recorded_approval_mode as ShiftChangeRequest['recordedApprovalMode'],effectiveApprovalMode:policy?.[r.kind==='SWAP'?'swap':'coverage'].mode??null}:null;
- return {source,facts,observedAt:row.observedAt,actor:proof,request,policy,profiles:facts.employees.map(e=>({employeeId:e.id,profile:e.operationalProfile!})),ledger:source.shifts.flatMap(s=>{const parent=facts.schedules.find(p=>p.id===s.schedule_id);return parent?[sourceShiftTerms(s,parent,String(w.id),String(w.time_zone))]:[];}),publication:facts.schedules.map(s=>({scheduleId:s.id,status:s.status})),weekState:row.state,requestRow};
+ await shiftChangeCompanyFence(proof,operational,executor);
+ return {operational,source,facts,observedAt:row.observedAt,actor:proof,request,policy,profiles:facts.employees.map(e=>({employeeId:e.id,profile:e.operationalProfile!})),ledger:source.shifts.flatMap(s=>{const parent=facts.schedules.find(p=>p.id===s.schedule_id);return parent?[sourceShiftTerms(s,parent,String(w.id),String(w.time_zone))]:[];}),publication:facts.schedules.map(s=>({scheduleId:s.id,status:s.status})),weekState:row.state,requestRow};
 }
 
 /** Safe displayed terms for a new consent-bearing form. The private snapshot and

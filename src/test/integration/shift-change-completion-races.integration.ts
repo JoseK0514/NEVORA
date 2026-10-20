@@ -23,7 +23,7 @@ it.each(['cancel-first', 'accept-first'] as const)('A003 actual two-sided trade 
   let first: ReturnType<typeof executeShiftChange> | undefined;
   let second: ReturnType<typeof executeShiftChange> | undefined;
   try {
-    await seedShiftChanges(db.executor);
+    await seedShiftChanges(db.executor,{companyAccess:true});
     const a = await fixtureShift(db.executor, 'cancel-race-source', 'e1', '2037-06-02');
     const b = await fixtureShift(db.executor, 'cancel-race-target', 'e2', '2037-06-03');
     const request = await executeShiftChange(proof('e1'), { kind: 'PROPOSE_SWAP', operationId: randomUUID(), ...a, targetShiftId:b.sourceShiftId, targetEpisodeId:b.sourceEpisodeId, targetTermsFingerprint:b.sourceTermsFingerprint }, db.executor);
@@ -72,7 +72,7 @@ it.each(['cancel-first', 'accept-first'] as const)('A003 actual two-sided trade 
 it('A013 rejected candidate leaves the offer available for a different eligible volunteer', async () => {
   const db = await createDisposableExchangeDatabase({ mode:'current-runtime' });
   try {
-    await seedShiftChanges(db.executor);
+    await seedShiftChanges(db.executor,{companyAccess:true});
     const terms = await fixtureShift(db.executor,'reject-then-valid','e1','2037-06-02');
     const request = await executeShiftChange(proof('e1'), {kind:'OFFER_COVERAGE',operationId:randomUUID(),...terms}, db.executor);
     if(request.status!=='pending')throw Error('Offer fixture failed');

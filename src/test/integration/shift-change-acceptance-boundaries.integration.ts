@@ -10,7 +10,7 @@ import type { SqlExecutor } from '../../lib/notifications/types';
 let db: Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 let sequence = 0;
 const q = (text: string, values: readonly unknown[] = []) => db.executor.query<Record<string, unknown>>({ text, values });
-beforeAll(async () => { db = await createDisposableExchangeDatabase({ mode: 'current-runtime' }); await seedShiftChanges(db.executor); });
+beforeAll(async () => { db = await createDisposableExchangeDatabase({ mode: 'current-runtime' }); await seedShiftChanges(db.executor,{companyAccess:true}); });
 afterAll(async () => { await db?.dispose(); });
 async function offer() {
   const id = `boundary-${++sequence}`;

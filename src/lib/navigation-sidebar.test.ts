@@ -3,7 +3,8 @@ import { navigationForRole, sidebarActiveHref, sidebarNavigation } from "./navig
 import { ALL_MODULES_ON } from "./workspace-presentation/modules";
 
 const payroll = { enabled: true, canReview: true, canConfigure: true } as never;
-const labels = (role: Parameters<typeof navigationForRole>[0], context = {}) => sidebarNavigation(role, navigationForRole(role, payroll, context)).map(item => item.label);
+const company={state:'ready' as const,employeeId:'M1',role:'MANAGER' as const,source:'LEGACY_ADOPTION' as const,scope:{mode:'COMPANY' as const,locationIds:[] as []},scopeRevision:1,authority:'fictional',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000};
+const labels = (role: Parameters<typeof navigationForRole>[0], context = {}) => sidebarNavigation(role, navigationForRole(role, payroll, {operational:company,...context})).map(item => item.label);
 
 describe("desktop sidebar (D3)", () => {
   it("gives the Owner nine destinations; the rest stay one step away", () => {
@@ -29,7 +30,7 @@ describe("desktop sidebar (D3)", () => {
     expect(sidebarActiveHref("OWNER", "/app/requests?tab=pending&requestId=x", items, payroll)).toBe("/app/inbox");
     expect(sidebarActiveHref("OWNER", "/app/exchange", items, payroll)).toBe("/app/inbox");
     expect(sidebarActiveHref("OWNER", "/app/availability", items, payroll)).toBe("/app/inbox");
-    expect(sidebarActiveHref("MANAGER", "/app/requests", sidebarNavigation("MANAGER", navigationForRole("MANAGER", payroll)), payroll)).toBe("/app/inbox");
+    expect(sidebarActiveHref("MANAGER", "/app/requests", sidebarNavigation("MANAGER", navigationForRole("MANAGER", payroll,company)), payroll,{operational:company})).toBe("/app/inbox");
     expect(sidebarActiveHref("OWNER", "/app/payroll-export", items, payroll)).toBe("/app/timecards");
     expect(sidebarActiveHref("OWNER", "/app/schedule/templates/abc", items, payroll)).toBe("/app/schedule");
     expect(sidebarActiveHref("OWNER", "/app/schedule/settings", items, payroll)).toBe("/app/settings");

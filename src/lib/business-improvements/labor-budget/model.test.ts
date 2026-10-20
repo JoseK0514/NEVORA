@@ -113,3 +113,27 @@ it("validates explicit instant intervals, duplicate IDs and ambiguous rates with
     }).rates,
   ).toHaveLength(2);
 });
+
+for (const unit of ["HOUR", "SHIFT", "SALARY_PERIOD"]) {
+  it.each([
+    ["singleton array", [unit]],
+    ["nested array", [[unit]]],
+    ["coercing object", { toString: () => unit }],
+    ["boxed string", new String(unit)],
+    ["plain object", {}],
+    ["number", 1],
+    ["boolean", true],
+    ["null", null],
+  ])(`rejects ${unit} rateUnit from %s at parse and saved-input use`, (_label, rateUnit) => {
+    const input = { rates: [{ ...rates[0], rateUnit }], budgets, calculationMethod: null };
+    const before = JSON.stringify(input);
+    expect(() => parseLaborPlanningInputs(input)).toThrow("invalid_labor_rate");
+    expect(() => laborBudgetReadiness(input as Parameters<typeof laborBudgetReadiness>[0])).toThrow("invalid_labor_rate");
+    expect(JSON.stringify(input)).toBe(before);
+  });
+}
+it("keeps explicit null planning fields unconfigured without zero/default inputs", () => {
+  const input = { rates: null, budgets: null, calculationMethod: null };
+  expect(parseLaborPlanningInputs(input)).toEqual(input);
+  expect(laborBudgetReadiness(input)).toMatchObject({ estimatedCost: null, variance: null, customerInputs: { rates: "not_configured", budgets: "not_configured" } });
+});

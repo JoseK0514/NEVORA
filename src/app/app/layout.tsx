@@ -25,6 +25,7 @@ import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/se
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import { DEFAULT_TOKENS } from "@/lib/workspace-presentation/derive";
+import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
 
 export const metadata: Metadata = {
   manifest: "/fuel-portal.webmanifest",
@@ -42,9 +43,8 @@ export default async function PlatformLayout({ children }: { children: ReactNode
   preload("/fonts/typeface/inter/variable.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const session = await requireSession();
   const workspace = await getWorkspace();
-  const payrollCapabilities = payrollFeatureEnabled() ? await readPayrollCapabilities(await requireSessionMutationProof()) : undefined;
-
   const proof = await requireSessionMutationProof();
+  const [operationalAuthority,payrollCapabilities]=await Promise.all([readOperationalAuthority(proof),payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined)]);
   const preferenceCookie = "nevora_sidebar_" + createHash("sha256").update(workspace.id + ":" + session.id).digest("hex").slice(0,16);
   const initialCollapsed = (await cookies()).get(preferenceCookie)?.value === "collapsed";
   const brand = await currentBrand();
@@ -59,7 +59,9 @@ export default async function PlatformLayout({ children }: { children: ReactNode
       payrollCapabilities={payrollCapabilities}
       brand={{ style: brand.style, logoUrl: brand.logoUrl }}
       presentation={{ modules: brand.modules, words: wordPreset(brand.words).en }}
+      operationalAuthority={operationalAuthority}
       user={{
+        id: session.id,
         firstName: session.firstName,
         lastName: session.lastName,
         role: session.role,

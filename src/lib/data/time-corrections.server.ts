@@ -1,3 +1,4 @@
+import {readCompanyResult} from '../company-access/company-result.server';
 import {correctionAuthority} from '../time-corrections/authority.server';
 import 'server-only';
 import { parseCorrectionActionCapture, type CorrectionActionCapture } from '../action-center/canonical-source';
@@ -392,7 +393,7 @@ async function readManagerTimeCorrectionsCore(
 
 // Public DTO/parser unchanged; the new internal reader is not a F10 authority boundary.
 export async function readManagerTimeCorrections(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<ManagerTimeCorrections> {
- return readManagerTimeCorrectionsCore(proof,executor);
+ return readCompanyResult(proof,()=>readManagerTimeCorrectionsCore(proof,executor),executor);
 }
 export async function readManagerTimeCorrectionsWithInternalCapture(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
  const retained: {capture: CorrectionActionCapture | null} = {capture:null};

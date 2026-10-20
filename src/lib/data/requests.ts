@@ -1,3 +1,4 @@
+import {assertOperationalAccess} from '../company-access/operational-scope.server';
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 import { neonNotificationExecutor } from "./notification-transactions";
@@ -193,6 +194,8 @@ export async function reviewTimeOffRequest(input: {
   proof: SessionMutationProof;
   status: "APPROVED" | "DENIED";
 }, executor: SqlExecutor = neonNotificationExecutor()) {
+  assertManagementProof(input.proof,input.managerId);
+  await assertOperationalAccess(input.proof,{kind:'COMPANY'},executor);
   const [row] = await executor.query({ text: 'SELECT * FROM time_off_requests WHERE id=$1', values: [input.requestId] });
   if (!row) return false;
   const before = mapRequest(row);

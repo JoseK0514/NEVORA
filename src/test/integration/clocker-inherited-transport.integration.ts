@@ -31,6 +31,8 @@ beforeEach(async()=>{
  ('transport-owner','Test','Owner','555','OWNER','loc-1'),('transport-a','Avery','Test','556','EMPLOYEE','loc-1'),('transport-b','Blair','Test','557','EMPLOYEE','loc-1');
  INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'transport-owner',now()+interval '1 day');
  INSERT INTO employee_location_eligibility VALUES('transport-a','loc-1'),('transport-a','loc-2'),('transport-b','loc-1');`);
+ // Explicit intended Owner/Manager census before current operational adoption.
+ for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
  await setEmployeeClockerPin(owner,{employeeId:'transport-a',pin:'1234',expectedVersion:0},key,db.executor);
  await setEmployeeClockerPin(owner,{employeeId:'transport-b',pin:'5678',expectedVersion:0},key,db.executor);
  const p=await registerClockerDevice(owner,{name:'Test tablet',locationId:'loc-1'},db.executor);

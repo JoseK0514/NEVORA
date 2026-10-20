@@ -1,7 +1,8 @@
+import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import { createHash } from 'node:crypto';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
-import { assertManagementProof, managementSessionStatements } from '../data/management-session';
+import { assertManagementProof, managementSessionStatements, isManagementAuthorizationError } from '../data/management-session';
 import { neonNotificationExecutor } from '../data/notification-transactions';
 import { getWorkspace, workspaceReadGuard } from '../data/workspaces';
 import {
@@ -69,6 +70,7 @@ function message(error: unknown): string {
 }
 
 function knownFailure(error: unknown): CorrectionMutationResult | null {
+  if(isManagementAuthorizationError(error)||isOperationalAuthorizationError(error))return {status:'unavailable'};
   const detail = message(error);
   if (/nevora_correction_(COMMAND_REUSED|PENDING_EXISTS|STALE_STATE)/.test(detail) || errorCode(error) === '23505') {
     return { status: 'conflict' };
@@ -189,8 +191,10 @@ export async function reviewTimeCorrection(
   const command = parseCorrectionReviewCommand(input);
 
   let workspace;
+  let authority:string;
   try {
-    workspace = await getWorkspace(executor);
+    const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
+    workspace=access.workspace;authority=access.authority;
   } catch {
     return { status: 'unavailable' };
   }
@@ -223,9 +227,9 @@ export async function reviewTimeCorrection(
   const statements: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE', values: [employeeIds] },
-    ...managementSessionStatements(proof, actor, ['OWNER', 'MANAGER']),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
     call,
-    ...managementSessionStatements(proof, actor, ['OWNER', 'MANAGER']),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
   ];
   return transactResult(statements, command.operationId, executor);
 }

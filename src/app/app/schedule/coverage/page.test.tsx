@@ -7,11 +7,19 @@ import { deriveCoverageRepair, createCoverageRepairReview, assertCoverageRepairR
 import type { GenerationSource } from '../../../../lib/data/generation-guards';
 import { buildManagerActionItems } from '../../../../lib/assistance/manager-actions';
 import type { CoverageRepairLocator } from '../../../../lib/scheduling/coverage-repair';
-const m = vi.hoisted(() => ({ source: undefined as GenerationSource | undefined, role: 'MANAGER', calls: [] as Record<string, unknown>[] }));
+const m = vi.hoisted(() => ({ source: undefined as GenerationSource | undefined, role: 'MANAGER', calls: [] as Record<string, unknown>[],denied:false,companyLoads:vi.fn() }));
 vi.mock('next/link', () => ({ default: ({ children, ...props }: ComponentProps<'a'>) => createElement('a', props, children), useLinkStatus:()=>({pending:false}) }));
 vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw { destination }; } }));
 vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['MANAGER','OWNER'], requireRoles: async () => { if (m.role !== 'MANAGER') throw { destination: '/app' }; return { id: 'M' }; } }));
 vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
+// Page/coverage composition only. Current authorization is a mocked server
+// boundary; production Frame lifetime is exercised by the mounted browser suite.
+vi.mock('@/lib/company-access/operational-scope.server',()=>({
+ readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2030-10-07T12:00:00Z',validForMs:15000,scope:{mode:'COMPANY'},locations:[]}),
+ withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>{if(m.denied)return {state:'unavailable',reason:'access_denied'};m.companyLoads();return {state:'ready',data:await load(),authority:'fixture',observedAt:'2030-10-07T12:00:00Z',validForMs:15000};},
+}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:()=>{throw Error('Unexpected restricted editor in Company coverage fixture');}}));
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 vi.mock('@/lib/data/coverage-repair.server', async original => {
   const actual = await original<typeof import('../../../../lib/data/coverage-repair.server')>();
   return { ...actual, readCoverageRepair: async (locator: CoverageRepairLocator, proof: ReturnType<typeof managementProof>, refresh: boolean) => {
@@ -40,7 +48,7 @@ const gap = { key: `loc-1|${week}|08:00|12:00`, locationId: 'loc-1', locationNam
 function action(extra = {}) { return buildManagerActionItems({ weekStart: week, coverageGaps: [{ ...gap, ...extra }], availabilityDeadlineSet: true, coverageRulesConfigured: true })[0]; }
 function params(href: string) { return Object.fromEntries(new URL(href, 'http://localhost').searchParams); }
 beforeEach(() => {
-  m.role = 'MANAGER'; m.calls.length = 0;
+  m.role = 'MANAGER'; m.calls.length = 0;m.denied=false;m.companyLoads.mockReset();
   m.source = schedulingSourceFixture({ assignmentFacts: assignmentFacts(), schedules: [], shifts: [], revisions: [], acknowledgements: [], recipients: [{ employeeId: 'E', role: 'LEAD', active: true, allowedLocationIds: ['loc-1'] }, { employeeId: 'U', role: 'EMPLOYEE', active: true, allowedLocationIds: ['loc-1'] }] });
   m.source.locations[0].short_name = 'Fictional South';
   m.source.employees.forEach(e => Object.assign(e, { first_name: 'Fictional', last_name: e.id === 'E' ? 'Qualified' : 'Unqualified' }));
@@ -102,4 +110,13 @@ it('a generic position-specific suggestion also carries the position through can
 
 it('Employee is redirected before repair suggestions are read', async () => {
   m.role = 'EMPLOYEE'; await expect(CoveragePage({ searchParams: Promise.resolve(params(action().href)) })).rejects.toMatchObject({ destination: '/app' });
+});
+
+it('a Company denial withholds both repair and generic suggestions before loading their source',async()=>{
+ m.denied=true;
+ for(const query of [params(action().href),{week,date:week,locationId:'loc-1',start:'08:00',end:'12:00',positionId:'barista'}]){
+  const html=renderToStaticMarkup(await CoveragePage({searchParams:Promise.resolve(query)}));
+  expect(html).toContain('current company-wide management access');expect(html).not.toContain('Fictional Qualified');expect(html).not.toContain('Review replacement');
+ }
+ expect(m.companyLoads).not.toHaveBeenCalled();expect(m.calls).toHaveLength(0);
 });

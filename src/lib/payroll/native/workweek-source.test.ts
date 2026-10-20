@@ -1,0 +1,10 @@
+import { it, expect, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
+import { nativeSourceRequest, nativeDatabaseFactsQuery } from './source.server';
+import { input } from './fixtures.test-support';
+import { fictionalWorkweekPolicy } from './workweek-fixtures.test-support';
+import { newRun } from '../service';
+const run = () => newRun('11111111-1111-4111-8111-111111111111', { startDate: '2026-09-21', endDate: '2026-09-27' }, '2026-09-29');
+it('requests the exact union envelope and includes actual terminal-date finalization for default00:01', () => { const i = input(); i.wages[0].workweekStartTime = '00:01'; i.wages[0].workweekPolicy = fictionalWorkweekPolicy('E1', { weekday: 1, startTime: '00:01', timeZone: 'America/Puerto_Rico' }, true); const coverage = [8, 28].map(d => ({ employeeId: 'E1', startDate: `2026-09-${String(d).padStart(2, '0')}`, endDate: `2026-09-${String(d).padStart(2, '0')}` })); const request = nativeSourceRequest('workspace', run(), 'E1', i.wages, coverage); expect(request.contexts).toEqual([{ startAt: '2026-09-08T04:00:00Z', endAt: '2026-09-28T04:01:00Z' }]); expect(request.coverage).toHaveLength(2); });
+it('refuses to derive context from an unknown legacy midnight profile', () => { const i = input(); delete i.wages[0].workweekPolicy; expect(() => nativeSourceRequest('workspace', run(), 'E1', i.wages, [])).toThrow('WORKWEEK_EVIDENCE_REQUIRED'); });
+it('fetches complete potential dependency dates rather than a narrower legacy date window', () => { const query = nativeDatabaseFactsQuery('workspace', run(), ['E1']); expect(query.text).toContain('start_date<=$5::date+8'); expect(query.text).toContain('end_date>=$4::date-14'); });

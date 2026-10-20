@@ -1,0 +1,2271 @@
+{
+  "provenance": "Independent Python Fraction/Decimal oracle; owner-authorized provisional allocation/collection specification, not universal statutory approval",
+  "scope": "Fictional facts,2026 ordinary PR; actual entitlement/rates/credit/classification/consent remain required",
+  "wages": [
+    {
+      "id": "W1",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "3000000000"
+      },
+      "expectedGrossMinor": "0",
+      "expectedAllocation": [
+        "0"
+      ],
+      "expectedNetMinor": "0"
+    },
+    {
+      "id": "W2",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1499999999"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1499999999",
+        "denominator": "3000000000"
+      },
+      "expectedGrossMinor": "0",
+      "expectedAllocation": [
+        "0"
+      ],
+      "expectedNetMinor": "0"
+    },
+    {
+      "id": "W3",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "2"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W4",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000001"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1500000001",
+        "denominator": "3000000000"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W5",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "2999999999"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "2999999999",
+        "denominator": "3000000000"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W6",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "3000000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "1"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W7",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "3000000001"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "3000000001",
+        "denominator": "3000000000"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W8",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        },
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "1"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1",
+        "0"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W9",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1200000000"
+        },
+        {
+          "rateMinor": "1200",
+          "durationNs": "1200000000"
+        },
+        {
+          "rateMinor": "1200",
+          "durationNs": "1200000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "6",
+        "denominator": "5"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1",
+        "0",
+        "0"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W10",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        },
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        },
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "3",
+        "denominator": "2"
+      },
+      "expectedGrossMinor": "2",
+      "expectedAllocation": [
+        "1",
+        "1",
+        "0"
+      ],
+      "expectedNetMinor": "2"
+    },
+    {
+      "id": "W11",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1499999999"
+        },
+        {
+          "rateMinor": "1200",
+          "durationNs": "1499999999"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1499999999",
+        "denominator": "1500000000"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1",
+        "0"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W12",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        },
+        {
+          "rateMinor": "1250",
+          "durationNs": "1440000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "1"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1",
+        "0"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W13",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        },
+        {
+          "rateMinor": "2400",
+          "durationNs": "750000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "1"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1",
+        "0"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W14",
+      "groups": [
+        {
+          "rateMinor": "27500",
+          "durationNs": "1000000001"
+        },
+        {
+          "rateMinor": "1250",
+          "durationNs": "1999999999"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "2666666669",
+        "denominator": "320000000"
+      },
+      "expectedGrossMinor": "8",
+      "expectedAllocation": [
+        "7",
+        "1"
+      ],
+      "expectedNetMinor": "8"
+    },
+    {
+      "id": "W15",
+      "groups": [
+        {
+          "rateMinor": "1250",
+          "durationNs": "1000000000"
+        },
+        {
+          "rateMinor": "1250",
+          "durationNs": "1000000001"
+        },
+        {
+          "rateMinor": "1250",
+          "durationNs": "1000000002"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1000000001",
+        "denominator": "960000000"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "0",
+        "0",
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W16",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1"
+        },
+        {
+          "rateMinor": "1200",
+          "durationNs": "1"
+        },
+        {
+          "rateMinor": "1200",
+          "durationNs": "1"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "1000000000"
+      },
+      "expectedGrossMinor": "0",
+      "expectedAllocation": [
+        "0",
+        "0",
+        "0"
+      ],
+      "expectedNetMinor": "0"
+    },
+    {
+      "id": "W17",
+      "groups": [
+        {
+          "rateMinor": "3600",
+          "durationNs": "499999999"
+        },
+        {
+          "rateMinor": "3600",
+          "durationNs": "500000001"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "1"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "0",
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W18",
+      "groups": [
+        {
+          "rateMinor": "3600",
+          "durationNs": "500000000"
+        },
+        {
+          "rateMinor": "3600",
+          "durationNs": "500000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1",
+        "denominator": "1"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1",
+        "0"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W19",
+      "groups": [
+        {
+          "rateMinor": "1200",
+          "durationNs": "1500000000"
+        },
+        {
+          "rateMinor": "2400",
+          "durationNs": "750000000"
+        },
+        {
+          "rateMinor": "3600",
+          "durationNs": "500000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "3",
+        "denominator": "2"
+      },
+      "expectedGrossMinor": "2",
+      "expectedAllocation": [
+        "1",
+        "1",
+        "0"
+      ],
+      "expectedNetMinor": "2"
+    },
+    {
+      "id": "W20",
+      "groups": [
+        {
+          "rateMinor": "1250",
+          "durationNs": "1000000000"
+        },
+        {
+          "rateMinor": "1375",
+          "durationNs": "1000000000"
+        },
+        {
+          "rateMinor": "27500",
+          "durationNs": "1000000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "1205",
+        "denominator": "144"
+      },
+      "expectedGrossMinor": "8",
+      "expectedAllocation": [
+        "0",
+        "0",
+        "8"
+      ],
+      "expectedNetMinor": "8"
+    },
+    {
+      "id": "W21",
+      "groups": [
+        {
+          "rateMinor": "1250.0001",
+          "durationNs": "1440000000"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "12500001",
+        "denominator": "25000000"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    },
+    {
+      "id": "W22",
+      "groups": [
+        {
+          "rateMinor": "999999999.9999",
+          "durationNs": "1800"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "9999999999999",
+        "denominator": "20000000000000"
+      },
+      "expectedGrossMinor": "0",
+      "expectedAllocation": [
+        "0"
+      ],
+      "expectedNetMinor": "0"
+    },
+    {
+      "id": "W23",
+      "groups": [
+        {
+          "rateMinor": "999999999.9999",
+          "durationNs": "1801"
+        }
+      ],
+      "exactTotal": {
+        "numerator": "2001111111110911",
+        "denominator": "4000000000000000"
+      },
+      "expectedGrossMinor": "1",
+      "expectedAllocation": [
+        "1"
+      ],
+      "expectedNetMinor": "1"
+    }
+  ],
+  "taxes": [
+    {
+      "id": "T1",
+      "grossMinor": "1",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "2000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "2000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "1000"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "1",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "500"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "400"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "10000"
+        }
+      }
+    },
+    {
+      "id": "T2",
+      "grossMinor": "8",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "250"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "250"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "125"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "8",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "6",
+          "denominator": "125"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "50"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "1250"
+        }
+      }
+    },
+    {
+      "id": "T3",
+      "grossMinor": "49",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "3",
+          "MEDICARE": "1",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "3",
+          "MEDICARE": "1",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "1",
+          "CFSE": "1"
+        },
+        "employerMedicareExact": {
+          "numerator": "1421",
+          "denominator": "2000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "579",
+          "denominator": "2000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "147",
+          "denominator": "1000"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "45",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "147",
+          "denominator": "500"
+        },
+        "PR_UI": {
+          "numerator": "539",
+          "denominator": "400"
+        },
+        "CFSE": {
+          "numerator": "6713",
+          "denominator": "10000"
+        }
+      }
+    },
+    {
+      "id": "T4",
+      "grossMinor": "50",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "3",
+          "MEDICARE": "1",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "3",
+          "MEDICARE": "1",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "1",
+          "CFSE": "1"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "40"
+        },
+        "employerMedicareDifference": {
+          "numerator": "11",
+          "denominator": "40"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "20"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "46",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "10"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "8"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "200"
+        }
+      }
+    },
+    {
+      "id": "T5",
+      "grossMinor": "51",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "3",
+          "MEDICARE": "1",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "3",
+          "MEDICARE": "1",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "1",
+          "CFSE": "1"
+        },
+        "employerMedicareExact": {
+          "numerator": "1479",
+          "denominator": "2000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "521",
+          "denominator": "2000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "153",
+          "denominator": "1000"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "47",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "153",
+          "denominator": "500"
+        },
+        "PR_UI": {
+          "numerator": "561",
+          "denominator": "400"
+        },
+        "CFSE": {
+          "numerator": "6987",
+          "denominator": "10000"
+        }
+      }
+    },
+    {
+      "id": "T6",
+      "grossMinor": "100",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "6",
+          "MEDICARE": "1",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "6",
+          "MEDICARE": "1",
+          "SINOT": "1",
+          "FUTA": "1",
+          "PR_UI": "3",
+          "CFSE": "1"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "20"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-9",
+          "denominator": "20"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "10"
+        },
+        "sinotCombinedCash": "1"
+      },
+      "expectedNetMinor": "93",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "5"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "4"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "100"
+        }
+      }
+    },
+    {
+      "id": "T7",
+      "grossMinor": "167",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "10",
+          "MEDICARE": "2",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "1",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "10",
+          "MEDICARE": "2",
+          "SINOT": "0",
+          "FUTA": "1",
+          "PR_UI": "5",
+          "CFSE": "2"
+        },
+        "employerMedicareExact": {
+          "numerator": "4843",
+          "denominator": "2000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-843",
+          "denominator": "2000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "501",
+          "denominator": "1000"
+        },
+        "sinotCombinedCash": "1"
+      },
+      "expectedNetMinor": "154",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "501",
+          "denominator": "500"
+        },
+        "PR_UI": {
+          "numerator": "1837",
+          "denominator": "400"
+        },
+        "CFSE": {
+          "numerator": "22879",
+          "denominator": "10000"
+        }
+      }
+    },
+    {
+      "id": "T8",
+      "grossMinor": "333",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "21",
+          "MEDICARE": "5",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "1",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "21",
+          "MEDICARE": "5",
+          "SINOT": "1",
+          "FUTA": "2",
+          "PR_UI": "9",
+          "CFSE": "5"
+        },
+        "employerMedicareExact": {
+          "numerator": "9657",
+          "denominator": "2000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "343",
+          "denominator": "2000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "999",
+          "denominator": "1000"
+        },
+        "sinotCombinedCash": "2"
+      },
+      "expectedNetMinor": "306",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "999",
+          "denominator": "500"
+        },
+        "PR_UI": {
+          "numerator": "3663",
+          "denominator": "400"
+        },
+        "CFSE": {
+          "numerator": "45621",
+          "denominator": "10000"
+        }
+      }
+    },
+    {
+      "id": "T9",
+      "grossMinor": "500",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "31",
+          "MEDICARE": "7",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "2",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "31",
+          "MEDICARE": "7",
+          "SINOT": "1",
+          "FUTA": "3",
+          "PR_UI": "14",
+          "CFSE": "7"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "4"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-1",
+          "denominator": "4"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "2"
+        },
+        "sinotCombinedCash": "3"
+      },
+      "expectedNetMinor": "460",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "1"
+        },
+        "PR_UI": {
+          "numerator": "55",
+          "denominator": "4"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "20"
+        }
+      }
+    },
+    {
+      "id": "T10",
+      "grossMinor": "1000",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "62",
+          "MEDICARE": "15",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "3",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "62",
+          "MEDICARE": "15",
+          "SINOT": "3",
+          "FUTA": "6",
+          "PR_UI": "28",
+          "CFSE": "14"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "2"
+        },
+        "employerMedicareDifference": {
+          "numerator": "1",
+          "denominator": "2"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "1"
+        },
+        "sinotCombinedCash": "6"
+      },
+      "expectedNetMinor": "920",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "6",
+          "denominator": "1"
+        },
+        "PR_UI": {
+          "numerator": "55",
+          "denominator": "2"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "10"
+        }
+      }
+    },
+    {
+      "id": "T11",
+      "grossMinor": "12345",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "765",
+          "MEDICARE": "179",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "37",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "765",
+          "MEDICARE": "179",
+          "SINOT": "37",
+          "FUTA": "74",
+          "PR_UI": "339",
+          "CFSE": "169"
+        },
+        "employerMedicareExact": {
+          "numerator": "71601",
+          "denominator": "400"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-1",
+          "denominator": "400"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "7407",
+          "denominator": "200"
+        },
+        "sinotCombinedCash": "74"
+      },
+      "expectedNetMinor": "11364",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "7407",
+          "denominator": "100"
+        },
+        "PR_UI": {
+          "numerator": "27159",
+          "denominator": "80"
+        },
+        "CFSE": {
+          "numerator": "338253",
+          "denominator": "2000"
+        }
+      }
+    },
+    {
+      "id": "T12",
+      "grossMinor": "28799",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "1786",
+          "MEDICARE": "418",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "86",
+          "PR_INCOME_TAX": "337"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "1786",
+          "MEDICARE": "418",
+          "SINOT": "87",
+          "FUTA": "173",
+          "PR_UI": "792",
+          "CFSE": "395"
+        },
+        "employerMedicareExact": {
+          "numerator": "835171",
+          "denominator": "2000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "829",
+          "denominator": "2000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "86397",
+          "denominator": "1000"
+        },
+        "sinotCombinedCash": "173"
+      },
+      "expectedNetMinor": "26172",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "86397",
+          "denominator": "500"
+        },
+        "PR_UI": {
+          "numerator": "316789",
+          "denominator": "400"
+        },
+        "CFSE": {
+          "numerator": "3945463",
+          "denominator": "10000"
+        }
+      }
+    },
+    {
+      "id": "T13",
+      "grossMinor": "4",
+      "before": {
+        "socialSecurity": "18449995",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "500"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "500"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "250"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "4",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "125"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "100"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "2500"
+        }
+      }
+    },
+    {
+      "id": "T14",
+      "grossMinor": "5",
+      "before": {
+        "socialSecurity": "18449995",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "400"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "400"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "200"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "5",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "100"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "80"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "2000"
+        }
+      }
+    },
+    {
+      "id": "T15",
+      "grossMinor": "6",
+      "before": {
+        "socialSecurity": "18449995",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "87",
+          "denominator": "1000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-87",
+          "denominator": "1000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "9",
+          "denominator": "500"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "6",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "9",
+          "denominator": "250"
+        },
+        "PR_UI": {
+          "numerator": "33",
+          "denominator": "200"
+        },
+        "CFSE": {
+          "numerator": "411",
+          "denominator": "5000"
+        }
+      }
+    },
+    {
+      "id": "T16",
+      "grossMinor": "4",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "19999995",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "500"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "500"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "250"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "4",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "125"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "100"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "2500"
+        }
+      }
+    },
+    {
+      "id": "T17",
+      "grossMinor": "5",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "19999995",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "400"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "400"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "200"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "5",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "100"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "80"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "2000"
+        }
+      }
+    },
+    {
+      "id": "T18",
+      "grossMinor": "6",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "19999995",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "87",
+          "denominator": "1000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-87",
+          "denominator": "1000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "9",
+          "denominator": "500"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "6",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "9",
+          "denominator": "250"
+        },
+        "PR_UI": {
+          "numerator": "33",
+          "denominator": "200"
+        },
+        "CFSE": {
+          "numerator": "411",
+          "denominator": "5000"
+        }
+      }
+    },
+    {
+      "id": "T19",
+      "grossMinor": "4",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "899995",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "500"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "500"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "250"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "4",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "125"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "100"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "2500"
+        }
+      }
+    },
+    {
+      "id": "T20",
+      "grossMinor": "5",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "899995",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "400"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "400"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "200"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "5",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "100"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "80"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "2000"
+        }
+      }
+    },
+    {
+      "id": "T21",
+      "grossMinor": "6",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "899995",
+        "employer": {
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "87",
+          "denominator": "1000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-87",
+          "denominator": "1000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "200"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "6",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "9",
+          "denominator": "250"
+        },
+        "PR_UI": {
+          "numerator": "33",
+          "denominator": "200"
+        },
+        "CFSE": {
+          "numerator": "411",
+          "denominator": "5000"
+        }
+      }
+    },
+    {
+      "id": "T22",
+      "grossMinor": "4",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "699995",
+          "PR_UI": "699995",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "500"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "500"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "250"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "4",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "125"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "100"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "2500"
+        }
+      }
+    },
+    {
+      "id": "T23",
+      "grossMinor": "5",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "699995",
+          "PR_UI": "699995",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "29",
+          "denominator": "400"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-29",
+          "denominator": "400"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "3",
+          "denominator": "200"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "5",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "100"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "80"
+        },
+        "CFSE": {
+          "numerator": "137",
+          "denominator": "2000"
+        }
+      }
+    },
+    {
+      "id": "T24",
+      "grossMinor": "6",
+      "before": {
+        "socialSecurity": "0",
+        "medicare": "0",
+        "sinot": "0",
+        "employer": {
+          "FUTA": "699995",
+          "PR_UI": "699995",
+          "CFSE": "0"
+        }
+      },
+      "expected": {
+        "employee": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "ADDITIONAL_MEDICARE": "0",
+          "SINOT": "0",
+          "PR_INCOME_TAX": "0"
+        },
+        "employer": {
+          "SOCIAL_SECURITY": "0",
+          "MEDICARE": "0",
+          "SINOT": "0",
+          "FUTA": "0",
+          "PR_UI": "0",
+          "CFSE": "0"
+        },
+        "employerMedicareExact": {
+          "numerator": "87",
+          "denominator": "1000"
+        },
+        "employerMedicareDifference": {
+          "numerator": "-87",
+          "denominator": "1000"
+        },
+        "sinotEmployeeExact": {
+          "numerator": "9",
+          "denominator": "500"
+        },
+        "sinotCombinedCash": "0"
+      },
+      "expectedNetMinor": "6",
+      "exactPrograms": {
+        "FUTA": {
+          "numerator": "3",
+          "denominator": "100"
+        },
+        "PR_UI": {
+          "numerator": "11",
+          "denominator": "80"
+        },
+        "CFSE": {
+          "numerator": "411",
+          "denominator": "5000"
+        }
+      }
+    }
+  ],
+  "deductions": [
+    {
+      "id": "D1",
+      "basisPoints": 1,
+      "capMinor": null,
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "1",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "1",
+        "denominator": "10"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D2",
+      "basisPoints": 1,
+      "capMinor": "0",
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "1",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D3",
+      "basisPoints": 1,
+      "capMinor": "3",
+      "deductedBeforeMinor": "2",
+      "uncappedExact": {
+        "numerator": "1",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "1",
+        "denominator": "10"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D4",
+      "basisPoints": 1,
+      "capMinor": "3",
+      "deductedBeforeMinor": "5",
+      "uncappedExact": {
+        "numerator": "1",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D5",
+      "basisPoints": 5,
+      "capMinor": null,
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "1",
+        "denominator": "2"
+      },
+      "boundedExact": {
+        "numerator": "1",
+        "denominator": "2"
+      },
+      "expectedMinor": "1",
+      "expectedNetMinor": "919"
+    },
+    {
+      "id": "D6",
+      "basisPoints": 5,
+      "capMinor": "0",
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "1",
+        "denominator": "2"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D7",
+      "basisPoints": 5,
+      "capMinor": "3",
+      "deductedBeforeMinor": "2",
+      "uncappedExact": {
+        "numerator": "1",
+        "denominator": "2"
+      },
+      "boundedExact": {
+        "numerator": "1",
+        "denominator": "2"
+      },
+      "expectedMinor": "1",
+      "expectedNetMinor": "919"
+    },
+    {
+      "id": "D8",
+      "basisPoints": 5,
+      "capMinor": "3",
+      "deductedBeforeMinor": "5",
+      "uncappedExact": {
+        "numerator": "1",
+        "denominator": "2"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D9",
+      "basisPoints": 7,
+      "capMinor": null,
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "7",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "7",
+        "denominator": "10"
+      },
+      "expectedMinor": "1",
+      "expectedNetMinor": "919"
+    },
+    {
+      "id": "D10",
+      "basisPoints": 7,
+      "capMinor": "0",
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "7",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D11",
+      "basisPoints": 7,
+      "capMinor": "3",
+      "deductedBeforeMinor": "2",
+      "uncappedExact": {
+        "numerator": "7",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "7",
+        "denominator": "10"
+      },
+      "expectedMinor": "1",
+      "expectedNetMinor": "919"
+    },
+    {
+      "id": "D12",
+      "basisPoints": 7,
+      "capMinor": "3",
+      "deductedBeforeMinor": "5",
+      "uncappedExact": {
+        "numerator": "7",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D13",
+      "basisPoints": 15,
+      "capMinor": null,
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "3",
+        "denominator": "2"
+      },
+      "boundedExact": {
+        "numerator": "3",
+        "denominator": "2"
+      },
+      "expectedMinor": "2",
+      "expectedNetMinor": "918"
+    },
+    {
+      "id": "D14",
+      "basisPoints": 15,
+      "capMinor": "0",
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "3",
+        "denominator": "2"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D15",
+      "basisPoints": 15,
+      "capMinor": "3",
+      "deductedBeforeMinor": "2",
+      "uncappedExact": {
+        "numerator": "3",
+        "denominator": "2"
+      },
+      "boundedExact": {
+        "numerator": "1",
+        "denominator": "1"
+      },
+      "expectedMinor": "1",
+      "expectedNetMinor": "919"
+    },
+    {
+      "id": "D16",
+      "basisPoints": 15,
+      "capMinor": "3",
+      "deductedBeforeMinor": "5",
+      "uncappedExact": {
+        "numerator": "3",
+        "denominator": "2"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D17",
+      "basisPoints": 99,
+      "capMinor": null,
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "99",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "99",
+        "denominator": "10"
+      },
+      "expectedMinor": "10",
+      "expectedNetMinor": "910"
+    },
+    {
+      "id": "D18",
+      "basisPoints": 99,
+      "capMinor": "0",
+      "deductedBeforeMinor": "0",
+      "uncappedExact": {
+        "numerator": "99",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    },
+    {
+      "id": "D19",
+      "basisPoints": 99,
+      "capMinor": "3",
+      "deductedBeforeMinor": "2",
+      "uncappedExact": {
+        "numerator": "99",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "1",
+        "denominator": "1"
+      },
+      "expectedMinor": "1",
+      "expectedNetMinor": "919"
+    },
+    {
+      "id": "D20",
+      "basisPoints": 99,
+      "capMinor": "3",
+      "deductedBeforeMinor": "5",
+      "uncappedExact": {
+        "numerator": "99",
+        "denominator": "10"
+      },
+      "boundedExact": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "expectedMinor": "0",
+      "expectedNetMinor": "920"
+    }
+  ],
+  "reconciliation": {
+    "three100CentEmployerMedicarePayments": {
+      "exactTotal": {
+        "numerator": "87",
+        "denominator": "20"
+      },
+      "cashTotalMinor": "3",
+      "cashMinusExact": {
+        "numerator": "-27",
+        "denominator": "20"
+      },
+      "nearestCentAccrualMinor": "4",
+      "comparisonAdjustmentMinor": "1",
+      "limit": "Comparison only; no agency return, automatic payment or rewrite of prior cash"
+    }
+  }
+}

@@ -4,7 +4,7 @@ const f=vi.hoisted(()=>({session:vi.fn(),query:vi.fn(),transaction:vi.fn()}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:f.session}));
 vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({query:f.query,transaction:f.transaction})}));
 // Actual HTTP boundary, JSON reader, validator and service. Only session and
-// executor are replaced; the executor never connects to a database.
+// executor and Company admission I/O are replaced; no database is connected.
 import {employeeCalendarHandler,managerCalendarRevokeHandler} from '@/lib/calendar/http.server';
 import {calendarAuthority} from '@/lib/calendar/service.server';
 const employee={employee:{id:'fictional-self',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE' as const,primaryLocationId:'fictional-location'},sessionTokenHash:'a'.repeat(64)};
@@ -24,3 +24,7 @@ for(const route of ['employee','manager'] as const){
 it.each(['ISSUE','ROTATE','REVOKE'])('employee scalar %s reaches the protected service',async kind=>{f.session.mockResolvedValue(employee);const response=await employeeCalendarHandler(request(employee,kind));expect(response.status).toBe(503);expect(f.query).toHaveBeenCalledTimes(1);expect(f.transaction).not.toHaveBeenCalled();expect(await response.json()).toEqual({status:'unavailable',reason:'read_failed'});});
 it.each(['ISSUE','ROTATE'])('manager scalar %s stays invalid without data access',async kind=>{f.session.mockResolvedValue(manager);const response=await managerCalendarRevokeHandler(request(manager,kind),'fictional-target');expect(response.status).toBe(400);expect(f.query).not.toHaveBeenCalled();expect(f.transaction).not.toHaveBeenCalled();});
 it('manager scalar REVOKE reaches the protected service',async()=>{f.session.mockResolvedValue(manager);const response=await managerCalendarRevokeHandler(request(manager,'REVOKE'),'fictional-target');expect(response.status).toBe(503);expect(f.query).toHaveBeenCalledTimes(1);expect(f.transaction).not.toHaveBeenCalled();});
+
+// Only Company admission I/O is replaced for these parser/transport tests.
+// Current role/scope/lifecycle/late-loss/rollback are exercised with real SQL.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace:{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'},authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));

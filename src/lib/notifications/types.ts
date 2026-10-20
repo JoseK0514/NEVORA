@@ -19,7 +19,7 @@ export type NotificationIntent = NotificationEvent & {
   purpose: 'EVENT' | 'REMINDER' | 'SUMMARY' | 'TEST'; urgency: 'normal' | 'high';
   dueAt: string; expiresAt: string; itemKeys?: readonly string[];
 };
-export type RecipientAccess = { employeeId: string; role: UserRole; active: boolean; allowedLocationIds: readonly string[]; alertChoices?: Readonly<Record<string,boolean>> };
+export type RecipientAccess = { employeeId: string; role: UserRole; active: boolean; allowedLocationIds: readonly string[]; alertChoices?: Readonly<Record<string,boolean>>; operationalCompany?:boolean; operationalAuthority?:string };
 /** Per-account projection of the existing publication/acknowledgement records. */
 export type EmployeePublicationProjection = {
   effectiveVersion: string; publishedAt: string;
@@ -115,7 +115,7 @@ export type DeliveryRepository = {
  * business-source and reminder queries; all consumers must fail closed on outage. */
 export type NotificationStateRepository = {
   findIntent(notificationId: string): Promise<NotificationIntent | null>;
-  recipientAccess(employeeId: string): Promise<RecipientAccess | null>;
+  recipientAccess(employeeId: string, domain?:'operational'): Promise<RecipientAccess | null>;
   readSource(source: SourceRef): Promise<SourceSnapshot | null>;
   /** Delivery is the default. Authenticated opens may retain terminal participant history. */
   check(intent: NotificationIntent, recipientId: string, now: Date, use?: 'delivery' | 'open'): Promise<SourceCheck>;

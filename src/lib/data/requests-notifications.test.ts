@@ -32,3 +32,8 @@ it('submission outbox failure rejects the whole transaction and has no separate 
  await expect(createTimeOffRequest({proof:managementProof('E','EMPLOYEE'),employeeId:'E',startDate:'2030-10-11',endDate:'2030-10-11'},r.executor)).rejects.toThrow('outbox failure');
  expect(r.executor.transaction).toHaveBeenCalledTimes(1);expect(vi.mocked(r.executor.query).mock.calls.every(([statement])=>!statement.text.includes('INSERT'))).toBe(true);
 });
+
+// Business-unit admission I/O only. Keep real initial/final operational guard
+// assembly and all decision/outbox/conflict assertions; real current Company,
+// lifecycle, expiry and rollback controls use owned team-review SQL.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace:{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'},authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));

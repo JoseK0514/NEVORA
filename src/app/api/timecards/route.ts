@@ -1,3 +1,5 @@
+import {readCompanyResult} from '@/lib/company-access/company-result.server';
+import {neonNotificationExecutor} from '@/lib/data/sql-executor';
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {readTimecards} from '@/lib/timecards/service';
 import {parsePeriod} from '@/lib/timecards/project';
@@ -18,7 +20,10 @@ export async function POST(request:Request):Promise<Response>{
         !('startDate' in body)||!('endDate' in body)||typeof body.startDate!=='string'||typeof body.endDate!=='string')throw new Error('Invalid period');
       period=parsePeriod(body.startDate,body.endDate);
     }catch{return correctionJson({state:'invalid'},400);}
-    const result=await readTimecards(await requireSessionMutationProof(),period);
+    const proof=await requireSessionMutationProof();
+    const result=['OWNER','MANAGER'].includes(proof.employee.role)
+      ?await readCompanyResult(proof,()=>readTimecards(proof,period),neonNotificationExecutor())
+      :await readTimecards(proof,period);
     return correctionJson(result,result.state==='ready'?200:result.reason==='access_denied'?403:503);
   }catch{return correctionJson({state:'unavailable'},503);}
 }

@@ -27,9 +27,14 @@ it('bounds expanded management sources and rejects arbitrary SQL',()=>{
 it('rejects an oversized source observation without releasing a ready view',async()=>{
  const query=vi.fn(async()=>{throw Error('Unbounded query');});let count=0;
  const executor:SqlExecutor={query,transaction:async statements=>{
-  count++;const last=statements.at(-1)!;
-  const value=last.text===workspaceReadSql()?[{id:'workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',updatedAt:'2030-01-01T00:00:00Z'}]:last.text.startsWith('SELECT id,created_at')?[{id:'intent',at:'2030-01-01T00:00:00Z',read:null}]:[{rows:[{body:'x'.repeat(1_000_001)}]}];
-  return statements.map((_,i)=>i===statements.length-1?value:[]);
+  count++;
+  return statements.map(statement=>{
+   if(statement.text===workspaceReadSql())return [{id:'workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',updatedAt:'2030-01-01T00:00:00Z'}];
+   if(statement.text.startsWith('SELECT id,created_at'))return [{id:'intent',at:'2030-01-01T00:00:00Z',read:null}];
+   if(statement.text.startsWith('SELECT LEAST(15000'))return [{validForMs:15000}];
+   if(statement.text.includes(' AS rows'))return [{rows:[{body:'x'.repeat(1_000_001)}]}];
+   return [];
+  });
  }};
  expect(await readPortalNotificationList(proof,'test',executor)).toEqual({state:'unavailable',reason:'read_failed'});
  expect(query).not.toHaveBeenCalled();expect(count).toBe(3);

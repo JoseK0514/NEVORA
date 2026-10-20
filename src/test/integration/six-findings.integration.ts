@@ -1,4 +1,5 @@
 vi.mock("server-only", () => ({}));
+import {readFile} from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { createDisposableFoundationDatabase } from "./local-postgres";
@@ -32,6 +33,8 @@ beforeAll(async () => {
         values: [hash],
       });
     });
+  // This complete operational fixture explicitly adopts its preexisting Owner.
+  for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await db.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
 });
 afterAll(async () => {
   await db?.dispose();

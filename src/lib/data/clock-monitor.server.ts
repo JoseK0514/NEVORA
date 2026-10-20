@@ -1,5 +1,7 @@
 import 'server-only';
 import type { ClockMonitor } from '../time-clock';
+import type {Workspace} from '../domain';
+import type {SqlStatement} from '../notifications/types';
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
 import { projectClockMonitor } from '../clock-monitor';
@@ -11,8 +13,8 @@ import { managerLocationsSql, managerScopeStatements, readManagerScopeStorage, t
 // All observations, counts and durations share one SQL snapshot and database clock.
 // An inactive employee/location/device never erases an unclosed actual time entry.
 // Entries are limited to the locations the actor manages.
-const monitorSql=(storage:ManagerScopeStorage)=>`WITH observed AS MATERIALIZED (SELECT clock_timestamp() AS at),
-scope AS MATERIALIZED (${managerLocationsSql(storage,'$1','$4')}), rows AS (
+const monitorSql=(bounded:boolean,storage?:ManagerScopeStorage)=>`WITH observed AS MATERIALIZED (SELECT clock_timestamp() AS at),
+${storage?`scope AS MATERIALIZED (${managerLocationsSql(storage,'$1','$4')}),`:''} rows AS (
  SELECT t.id,t.employee_id,e.first_name || ' ' || e.last_name AS employee_name,
   t.location_id,l.short_name AS location_name,t.device_id,t.clock_in_at::text,t.status,
   t.schedule_context,
@@ -24,11 +26,17 @@ scope AS MATERIALIZED (${managerLocationsSql(storage,'$1','$4')}), rows AS (
     WHERE a.time_entry_id=t.id AND a.break_start_at<COALESCE(b.break_end_at,'infinity'::timestamptz)
       AND b.break_start_at<COALESCE(a.break_end_at,'infinity'::timestamptz))) AS history_valid
  FROM time_entries t JOIN employees e ON e.id=t.employee_id JOIN locations l ON l.id=t.location_id CROSS JOIN observed o
- WHERE t.clock_out_at IS NULL AND l.workspace_id=$1 AND t.location_id IN (SELECT id FROM scope)
+ WHERE t.clock_out_at IS NULL AND l.workspace_id=$1 AND ${storage?'t.location_id IN (SELECT id FROM scope)':'($4::text[] IS NULL OR t.location_id=ANY($4::text[]))'}
+ ${bounded?'ORDER BY t.clock_in_at,t.id LIMIT 5001':''}
 )
 SELECT jsonb_build_object('observedAt',o.at,'expiresAt',(SELECT expires_at FROM employee_sessions WHERE token_hash=$2),
  'timeZone',$3::text,'rows',COALESCE((SELECT jsonb_agg(r ORDER BY r.clock_in_at::timestamptz,r.employee_id) FROM rows r),'[]'::jsonb)) AS snapshot
 FROM observed o`;
+
+/** Private SQL projection builder. Callers derive the location set from current server authority. */
+export function clockMonitorSnapshotStatement(workspace:Workspace,sessionHash:string,locationIds:readonly string[]|null=null,bounded=false):SqlStatement{
+ return {text:monitorSql(bounded),values:[workspace.id,sessionHash,workspace.timeZone,locationIds]};
+}
 
 /** Server-derived session proof only. Read data is returned only after the trailing
  * authority assertion, including any expiry during a blocked monitor SELECT. */
@@ -43,7 +51,7 @@ export async function readClockMonitor(proof:SessionMutationProof,executor:SqlEx
    ...managementSessionStatements(proof,proof.employee.id),
   ];
   const result=await executor.transaction([...guards,
-   {text:monitorSql(storage),values:[workspace.id,proof.sessionTokenHash,workspace.timeZone,proof.employee.id]},
+   {text:monitorSql(false,storage),values:[workspace.id,proof.sessionTokenHash,workspace.timeZone,proof.employee.id]},
    ...managementSessionStatements(proof,proof.employee.id),
   ]);
   const row=result[guards.length]?.[0] as {snapshot:unknown}|undefined;

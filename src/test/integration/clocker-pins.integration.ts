@@ -19,6 +19,8 @@ beforeEach(async () => {
  INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'c2-owner',now()+interval '1 day'),(repeat('b',64),'c2-manager',now()+interval '1 day');
  INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT id,'loc-1' FROM employees;
  INSERT INTO employee_credentials(employee_id,password_hash) VALUES('c2-a','portal-password-untouched');`);
+ // Explicit intended Owner/Manager census before current operational adoption.
+ for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
  const pending=await registerClockerDevice(owner,{name:'C2 tablet',locationId:'loc-1'},db.executor);
  const enrolled=await redeemClockerEnrollment({enrollmentToken:pending.enrollmentToken,locationKey:'2'},db.executor);
  device=await authenticateClockerDevice({credential:enrolled.credential,locationKey:'2'},db.executor);

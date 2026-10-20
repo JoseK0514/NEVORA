@@ -9,7 +9,8 @@ const plural = (count: number, one: string, many: string) => `${count} ${count =
 
 /** Where this run is, derived only from its own state: finalized time,
  * imported amounts, blocking exceptions, approval and published statements. */
-export function payrollSteps(run: Pick<PayrollRun, 'status' | 'exceptions' | 'rows' | 'totals' | 'documents'>): PayrollStep[] {
+export function payrollSteps(run: Pick<PayrollRun, 'status' | 'exceptions' | 'rows' | 'totals' | 'documents'> & Partial<Pick<PayrollRun, 'sourceAuthority'>>): PayrollStep[] {
+  const native = run.sourceAuthority === 'NATIVE_RECORDED_TIME';
   const { blocking } = payrollReviewNotes(run.exceptions);
   const openTime = blocking.filter(item => item.startsWith('TIME_NOT_FINALIZED:')).length;
   const otherBlocking = blocking.filter(item => !item.startsWith('TIME_NOT_FINALIZED:') && item !== 'WAITING_FOR_AMOUNTS').length;
@@ -22,10 +23,10 @@ export function payrollSteps(run: Pick<PayrollRun, 'status' | 'exceptions' | 'ro
   const published = approved && statements.length > 0 && unpublished === 0;
   const steps: PayrollStep[] = [
     { id: 'hours', label: 'Hours', state: hoursDone ? 'done' : 'blocked', hint: hoursDone ? 'Timecards finalized' : `${plural(openTime, 'timecard', 'timecards')} to finalize` },
-    { id: 'amounts', label: 'Amounts', state: amounts ? 'done' : 'upcoming', hint: amounts ? 'Imported from your provider' : 'Import provider amounts' },
+    { id: 'amounts', label: 'Amounts', state: amounts ? 'done' : 'upcoming', hint: native ? (amounts ? 'Calculated from recorded time' : 'Recalculate after resolving prerequisites') : amounts ? 'Imported from your provider' : 'Import provider amounts' },
     { id: 'review', label: 'Review', state: reviewDone ? 'done' : otherBlocking ? 'blocked' : 'upcoming', hint: reviewDone ? 'Ready to approve' : otherBlocking ? `${plural(otherBlocking, 'item', 'items')} to resolve` : 'Check every employee' },
     { id: 'approve', label: 'Approve', state: approved ? 'done' : 'upcoming', hint: approved ? 'Approval recorded' : 'Approve this revision' },
-    { id: 'publish', label: 'Publish', state: published ? 'done' : 'upcoming', hint: published ? 'Employees can see their pay' : statements.length ? `${plural(unpublished, 'statement', 'statements')} to publish` : approved ? 'Statements are being prepared' : 'Statements appear after approval' },
+    { id: 'publish', label: 'Publish', state: published ? 'done' : 'upcoming', hint: published ? 'Employees can see their pay' : statements.length ? (native ? 'Statements publish automatically after verification' : `${plural(unpublished, 'statement', 'statements')} to publish`) : approved ? 'Statements are being prepared' : 'Statements appear after approval' },
   ];
   // The first unfinished step is where to work now (unless it is blocked).
   const next = steps.find(step => step.state !== 'done');

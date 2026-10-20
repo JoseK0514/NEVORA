@@ -142,3 +142,7 @@ it('an empty non-Draft identity batch performs no history read or writes',async(
   expect(await listCapturedShiftPositions({weekStart:week,shiftIds:[]},executor)).toEqual([]);
   expect(executor.query).not.toHaveBeenCalled();expect(executor.transaction).not.toHaveBeenCalled();
 });
+
+// These business/unit fixtures do not execute SQL. Current scope admission and
+// rollback are exercised by company-access-schedule-*.integration.ts.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

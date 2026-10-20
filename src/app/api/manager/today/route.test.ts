@@ -2,6 +2,8 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { getSession } from '@/lib/auth/session';
 import { readToday } from '@/lib/data/today.server';
 import { GET } from './route';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:vi.fn(async(_proof,load)=>({state:'ready',data:await load()}))}));
 vi.mock('@/lib/auth/session', () => ({ getSession: vi.fn(), requireSessionMutationProof: vi.fn(async () => ({ employee: { id: 'owner', role: 'OWNER' }, sessionTokenHash: 'a'.repeat(64) })) }));
 vi.mock('@/lib/data/today.server', () => ({ readToday: vi.fn() }));
 const request = (headers: Record<string, string> = { 'X-Nevora-Today': '1' }, url = 'http://localhost/api/manager/today') => new Request(url, { headers });
@@ -50,4 +52,13 @@ it('a manager without a location grant is denied, not shown an empty day', async
   const response = await GET(request());
   expect(response.status).toBe(403);
   expect(await response.json()).toEqual({ state: 'unavailable', reason: 'access_denied' });
+});
+it('refuses the global Today view before reading when current Company authority is absent',async()=>{
+  vi.mocked(withOperationalCompany).mockResolvedValueOnce({state:'unavailable',reason:'access_denied'});
+  expect((await GET(request())).status).toBe(403);expect(readToday).not.toHaveBeenCalled();
+});
+it('does not return Today data after current Company authority changes',async()=>{
+  vi.mocked(withOperationalCompany).mockImplementationOnce(async(_proof,load)=>{await load();return {state:'unavailable',reason:'access_denied'};});
+  const response=await GET(request());expect(response.status).toBe(403);
+  expect(await response.json()).toEqual({state:'unavailable',reason:'access_denied'});
 });
