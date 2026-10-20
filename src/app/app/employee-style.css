@@ -54,52 +54,54 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-nav .mobile
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-nav .mobile-nav-link:is(.active, [aria-current="page"]):not(#e5)::before { display: none; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-nav .mobile-nav-link:is(.active, [aria-current="page"]) span:not(#e5) { font-weight: 600; }
 
-/* ---------- Home: the greeting on the canvas (no band colour, no mark) ---------- */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband:not(#e5):not(#e52) {
-  display: flex; flex-direction: column; align-items: flex-start; min-height: 0; margin: 0; padding: 14px 20px 6px; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--e5-ink);
-}
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband > .nv-masthead__mark:not(#e5) { display: none; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband > .nv-masthead__body:not(#e5):not(#e52) { display: flex; flex-direction: column; margin: 0; padding: 0; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband .nv-masthead__title:not(#e5):not(#e52) {
-  order: 0; min-height: 0; color: var(--e5-ink); font-size: 2.125rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -.025em;
-}
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband .nv-pageband__eyebrow-row:not(#e5):not(#e52) { order: 1; min-height: 0; margin: 4px 0 0; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband .nv-masthead__eyebrow:not(#e5):not(#e52) {
-  min-height: 0; color: var(--e5-ink-2); font-size: 1rem; line-height: 1.375rem; font-weight: 400; letter-spacing: 0; text-transform: none;
-}
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband .nv-masthead__summary:not(#e5):not(#e52) { order: 2; margin-top: 2px; color: var(--e5-ink-2); font-size: 1rem; line-height: 1.375rem; }
-/* Ready and loading: the card says the shift (or "Loading Home…"), so the band's sentence steps back; paused, signed-out
- * and unavailable keep it. */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home:is([data-home-state="ready"], [data-home-state="partial"], [data-home-state="loading"]) > .nv-pageband .nv-masthead__summary:not(#e5):not(#e52) { display: none; }
-/* The review line becomes a soft pill. */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband > .nv-masthead__extra:not(#e5):not(#e52) { margin: 12px 0 0; padding: 0; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband .premium-band-link:not(#e5):not(#e52) {
-  display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border-radius: 999px; background: var(--e5-card); box-shadow: inset 0 0 0 1px var(--e5-rule);
-  color: var(--e5-ink); font-size: .9375rem; line-height: 1.25rem; font-weight: 500; text-decoration: none;
-}
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-pageband .premium-band-note:not(#e5):not(#e52) { display: inline-flex; align-items: center; min-height: 44px; color: var(--e5-ink-2); font-size: .9375rem; }
-
 @media (prefers-reduced-transparency: reduce) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] > .app-main > .mobile-header:not(#e5) { background: var(--e5-bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
-/* Home sections: the shared premium layer frames them as cards over a band; here the content starts under the greeting,
- * the shift card has its own frame, and To do / Recent are titles over rounded rows. */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home > .nv-content:not(#e5):not(#e52) { margin-top: 18px; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home :is([data-pass], aside[aria-label="Own recorded time"], [data-home-group]):not(#e5):not(#e52) { box-shadow: none; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home [data-pass]:not(#e5):not(#e52) { margin: 10px; box-shadow: 0 0 0 10px var(--e5-frame), 0 1px 2px rgba(0, 0, 0, .04); }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home aside[aria-label="Own recorded time"]:not(#e5):not(#e52) { margin-top: 10px; padding: 14px 16px 6px; border: 1px solid var(--e5-rule); border-radius: 18px; background: var(--e5-card); }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home [data-home-group]:not(#e5):not(#e52) { padding: 0; border: 0; border-radius: 0; background: transparent; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame .premium-employee-home #employee-reviewed-next-heading:not(#e5) { color: var(--e5-teal); }
-
-/* Home's loading placeholder takes the new layout: the greeting lines on the canvas, then the framed shift card. */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band:not(#e5):not(#e52) { height: calc(50px + 6rem); margin: 0; padding: 14px 20px 6px; border-radius: 0; background: transparent; gap: 10px; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band i:not(#e5):not(#e52) { height: 1.375rem; width: 52%; border-radius: 8px; background: #E9E9E5; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band i:nth-child(1):not(#e5):not(#e52) { height: 2.25rem; width: 58%; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band i:nth-child(3):not(#e5):not(#e52) { height: 44px; width: 48%; border-radius: 999px; }
+/* ---------- Home's route placeholder: the greeting lines, the teal shift card, then a list (Home v5) ---------- */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band:not(#e5):not(#e52) { height: 84px; margin: 0; padding: 22px 20px 0; border-radius: 0; background: transparent; gap: 6px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band i:not(#e5):not(#e52) { height: 1.25rem; width: 46%; border-radius: 8px; background: #E9E9E5; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band i:nth-child(2):not(#e5):not(#e52) { height: 2.25rem; width: 62%; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band i:nth-child(n+3):not(#e5):not(#e52) { display: none; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-header:not(#e5):not(#e52) { display: none; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band ~ :is(.route-skeleton-cards, .route-skeleton-list, div):not(.route-skeleton-header):not(#e5):not(#e52) { margin-top: 8px; padding-inline: 26px; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] .route-skeleton-cards > i:first-child:not(#e5):not(#e52) { height: calc(13.5rem + 550px); border-radius: 22px; background: linear-gradient(#F4EFE7 min(13.5rem, 46vw), #FFFFFF 0); box-shadow: 0 0 0 10px var(--e5-frame); }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] .route-skeleton-cards > i:not(#e5):not(#e52) { border-radius: 18px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--e5-rule); }
-@media (max-width: 359px) { html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band:not(#e5):not(#e52):not(#e53) { height: calc(50px + 7.375rem); } }  /* the date takes two lines */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band ~ :is(.route-skeleton-cards, .route-skeleton-list, div):not(.route-skeleton-header):not(#e5):not(#e52) { margin-top: 2px; padding-inline: 16px; gap: 12px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] .route-skeleton-cards > i:not(#e5):not(#e52) { height: 204px; border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(17, 21, 20, .04); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] .route-skeleton-cards > i:first-child:not(#e5):not(#e52) { height: 244px; border-radius: 26px; background: #0D3634; box-shadow: none; }
 @media (min-width: 1024px) { html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-account-menu:not(#e5) { order: 9; } }
+
+/* One typeface: the platform's own (as in the approved mockups), on the employee app. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] {
+  --nv-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --design-font-body: var(--nv-font); font-family: var(--nv-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.page-frame, .mobile-header, .mobile-nav, [popover]) :is(h1, h2, h3, p, span, a, button, small, strong, time, li, label, input, select, textarea, summary):not(#e5) { font-family: var(--nv-font); }
+/* The kit's type presets are resolved where they're declared, so they're declared again here with the platform font. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] {
+    --nv-t-title-1: 600 1.875rem/2.25rem var(--nv-font);   /* 30/36 */
+    --nv-t-title-2: 600 1.375rem/1.75rem var(--nv-font);   /* 22/28 */
+    --nv-t-title-3: 600 1.1875rem/1.5625rem var(--nv-font);/* 19/25 */
+    --nv-t-headline: 600 1.0625rem/1.375rem var(--nv-font);/* 17/22 */
+    --nv-t-body: 400 1.0625rem/1.5rem var(--nv-font);      /* 17/24 */
+    --nv-t-row: 500 1.0625rem/1.375rem var(--nv-font);     /* 17/22, row titles */
+    --nv-t-callout: 400 .9375rem/1.25rem var(--nv-font);   /* 15/20, the floor */
+    --nv-t-label: 500 .9375rem/1.25rem var(--nv-font);
+    --nv-t-figure: 600 1.875rem/2.125rem var(--nv-font);   /* 30/34 */
+    --nv-t-tab: 500 .8125rem/1rem var(--nv-font);          /* 13/16, always with an icon */
+    --nv-t-badge: 600 .75rem/1rem var(--nv-font);          /* 12/16, numbers only */
+  --g-t-display: 500 calc(28 * var(--type-unit, 1px))/1.25 var(--design-font-body);
+  --g-t-title: 500 calc(20 * var(--type-unit, 1px))/1.3 var(--design-font-body);
+  --g-t-body: 400 calc(16 * var(--type-unit, 1px))/1.5 var(--design-font-body);
+  --g-t-small: 400 calc(14 * var(--type-unit, 1px))/1.45 var(--design-font-body);
+  --g-t-caption: 400 calc(12 * var(--type-unit, 1px))/1.4 var(--design-font-body);
+}
+@media (min-width: 768px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] {
+    --nv-t-title-1: 600 2rem/2.5rem var(--nv-font);
+    --nv-t-title-3: 600 1.125rem/1.5rem var(--nv-font);
+    --nv-t-headline: 600 1rem/1.375rem var(--nv-font);
+    --nv-t-body: 400 1rem/1.5rem var(--nv-font);
+    --nv-t-row: 500 1rem/1.375rem var(--nv-font);
+    --nv-t-callout: 400 .875rem/1.25rem var(--nv-font);
+    --nv-t-label: 500 .875rem/1.25rem var(--nv-font);
+    --nv-t-figure: 600 1.75rem/2rem var(--nv-font);  }
+}

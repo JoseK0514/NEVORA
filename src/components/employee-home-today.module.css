@@ -1,0 +1,173 @@
+/* Employee Home v5 (option A, approved Oct 20, 2026). Target: docs/product/specs/employee-style/home-v5/h5-a-teal*.png.
+ * Self-contained: its own tokens and class names, so the shared premium layers (which style the old Home by its
+ * class names) don't reach it. The `:not(#h5)` pairs lift the clock rules over the shared clock styles. */
+
+.h5Root:not(#h5) {
+  --h5-bg: #F5F5F2; --h5-card: #FFFFFF; --h5-ink: #111514; --h5-ink-2: #646862; --h5-ink-3: #8A8C87;
+  --h5-rule: #ECECE8; --h5-deep: #0D3634; --h5-teal: #0B6E69; --h5-mint: #A9E2DA; --h5-amber: #8A5208;
+  --h5-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  container: h5-home / inline-size;
+  display: flex; flex-direction: column; min-width: 0; margin: 0 auto; padding: 0 0 32px; background: var(--h5-bg); color: var(--h5-ink);
+  font-family: var(--h5-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+.h5Root :where(h1, h2, h3, p, ul, small, strong):not(#h5) { margin: 0; padding: 0; }
+.h5Root :where(ul):not(#h5) { list-style: none; }
+.h5Root :is(a, button, summary):focus-visible:not(#h5) { outline: 2px solid var(--h5-deep); outline-offset: 2px; }
+
+/* ---------- Greeting ---------- */
+.h5Hello:not(#h5) { padding: 22px 20px 0; }
+.h5Date:not(#h5) { min-height: 20px; font: 500 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-2); }
+.h5Hello h1:not(#h5) { margin-top: 2px; font: 700 2.125rem/2.5rem var(--h5-font); letter-spacing: -.026em; color: var(--h5-ink); overflow-wrap: anywhere; }
+.h5Summary:not(#h5) { margin-top: 6px; font: 400 1rem/1.375rem var(--h5-font); color: var(--h5-ink-2); }
+
+.h5Columns:not(#h5) { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.h5Primary:not(#h5), .h5Secondary:not(#h5) { display: flex; flex-direction: column; min-width: 0; }
+.h5Shifts:not(#h5) { display: flex; flex-direction: column; min-width: 0; }
+
+/* ---------- The shift card: today, then the clock strip ---------- */
+.h5Card:not(#h5) { display: flex; flex-direction: column; margin: 22px 16px 0; border-radius: 26px; background: var(--h5-deep); color: #FFFFFF; overflow: hidden; }
+/* One height in every state (a shift under way, later today, a clear day, loading), so the clock strip never moves
+ * when Home arrives. 188px at 390: the kicker, the hours, the place and the progress line. */
+.h5Today:not(#h5) { display: flex; flex-direction: column; min-width: 0; min-height: calc(5.875rem + 96px); padding: 20px 20px 18px; }
+.h5Calm:not(#h5) { justify-content: center; }
+.h5Spaced:not(#h5) { margin-top: 10px; }
+.h5Next:not(#h5) { margin-top: auto; padding-top: 16px; font: 500 .9375rem/1.25rem var(--h5-font); color: var(--h5-mint); }
+.h5Kicker:not(#h5) { display: flex; align-items: center; gap: 8px; min-height: 20px; font: 600 .9375rem/1.25rem var(--h5-font); color: var(--h5-mint); }
+.h5Kicker i:not(#h5) { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--h5-mint); box-shadow: 0 0 0 4px rgba(169, 226, 218, .18); }
+.h5Hours:not(#h5) { margin-top: 10px; font: 600 max(1.625rem, min(1.9375rem, 7.9cqi))/1.16 var(--h5-font); letter-spacing: -.026em; font-variant-numeric: tabular-nums; }
+.h5Hours time:not(#h5) { white-space: nowrap; }
+.h5Title:not(#h5) { font: 600 1.75rem/2.125rem var(--h5-font); letter-spacing: -.025em; }
+.h5Where:not(#h5) { margin-top: 4px; font: 400 1rem/1.375rem var(--h5-font); color: rgba(255, 255, 255, .72); }
+.h5Extra:not(#h5) { margin-top: 4px; font: 400 .9375rem/1.25rem var(--h5-font); color: rgba(255, 255, 255, .72); }
+.h5Progress:not(#h5) { margin-top: 22px; }
+.h5Track:not(#h5) { position: relative; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .14); }
+.h5Track span:not(#h5) { position: absolute; inset: 0 auto 0 0; min-width: 6px; border-radius: 3px; background: var(--h5-mint); }
+.h5Track span:not(#h5)::after { content: ""; position: absolute; right: -5px; top: -4px; width: 14px; height: 14px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 0 0 4px rgba(255, 255, 255, .16); }
+.h5Left:not(#h5) { margin-top: 10px; text-align: right; font: 400 .9375rem/1.25rem var(--h5-font); color: rgba(255, 255, 255, .9); font-variant-numeric: tabular-nums; }
+
+/* The clock strip: [● Off clock] ............ [refresh] [My time ›]. The heading, the empty sentence, the Clocker note
+ * and "Updated" stay for screen readers. */
+.h5Clock:not(#h5) { display: flex; align-items: center; min-height: 56px; margin: 0; padding: 0 8px 0 20px; border: 0; border-top: 1px solid rgba(255, 255, 255, .1); border-radius: 0; background: none; box-shadow: none; }
+.h5Clock :global(:is(.employee-clock-compact, .employee-time-footer, .employee-time-current-heading)):not(#h5):not(#h5):not(#h5) { display: contents; }
+.h5Clock > :global(div):not(#h5):not(#h5):not(#h5) { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 0 8px; min-height: 56px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.h5Clock :global(:is(.employee-time-current-heading h2, .employee-time-empty, .employee-time-note, .employee-time-footer > small, .employee-time-message > p, .employee-time-hold, .employee-time-current-copy)):not(#h5):not(#h5):not(#h5) {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.h5Clock :global(.employee-time-badge):not(#h5):not(#h5):not(#h5) {
+  display: inline-flex; align-items: center; gap: 8px; max-width: none; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+  color: rgba(255, 255, 255, .88); font: 500 .9375rem/1.25rem var(--h5-font); letter-spacing: 0; text-transform: none;
+}
+.h5Clock :global(.employee-time-badge):not(#h5):not(#h5):not(#h5)::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, .4); }
+.h5Clock :global(.employee-time-badge:is([data-state="CLOCKED_IN"], [data-state="ON_BREAK"])):not(#h5):not(#h5):not(#h5)::before { background: var(--h5-mint); }
+.h5Clock :global(.employee-time-badge[aria-hidden="true"]):not(#h5):not(#h5):not(#h5) { display: none; }
+.h5Clock :global(.employee-time-message):not(#h5):not(#h5):not(#h5) { margin: 0; padding: 0; border: 0; background: none; color: rgba(255, 255, 255, .88); font: 500 .9375rem/1.25rem var(--h5-font); }
+.h5Clock :global(.employee-time-message strong):not(#h5):not(#h5):not(#h5) { font: inherit; color: inherit; }
+.h5Clock :global(.employee-time-controls):not(#h5):not(#h5):not(#h5) { display: flex; flex: 0 0 auto; align-items: center; gap: 0; width: auto; margin: 0 0 0 auto; padding: 0; }
+.h5Clock :global(.employee-time-refresh):not(#h5):not(#h5):not(#h5) {
+  display: inline-flex; flex: none; width: 44px; min-width: 0; height: 44px; min-height: 0; margin: 0; padding: 0; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%; background: none; box-shadow: none; color: rgba(255, 255, 255, .72); font-size: 0; line-height: 0;
+}
+.h5Clock :global(.employee-time-refresh svg):not(#h5):not(#h5) { width: 20px; height: 20px; }
+.h5Clock :global(.employee-time-refresh:disabled):not(#h5):not(#h5):not(#h5) { color: rgba(255, 255, 255, .4); }
+.h5Clock :global(a.employee-time-refresh):not(#h5):not(#h5):not(#h5) { width: auto; padding: 0 10px; font: 600 .9375rem/1.25rem var(--h5-font); color: #FFFFFF; text-decoration: none; }
+.h5Clock :global(.employee-time-link):not(#h5):not(#h5):not(#h5) {
+  display: inline-flex; flex: none; align-items: center; gap: 6px; min-width: 0; min-height: 44px; margin: 0; padding: 0 12px 0 8px; border: 0; border-radius: 12px;
+  background: none; box-shadow: none; color: #FFFFFF; font: 600 .9375rem/1.25rem var(--h5-font); text-decoration: none;
+}
+.h5Clock :global(.employee-time-link svg):not(#h5):not(#h5) { width: 16px; height: 16px; opacity: .6; }
+.h5Clock :global(:is(.employee-time-link, .employee-time-refresh)):focus-visible:not(#h5):not(#h5):not(#h5) { outline: 2px solid #FFFFFF; outline-offset: -2px; }
+.h5Clock :global(:is(.employee-time-link, .employee-time-refresh)):hover:not(:disabled):not(#h5):not(#h5):not(#h5) { background: rgba(255, 255, 255, .08); }
+
+/* ---------- Sections: a title over one white grouped list ---------- */
+.h5Section:not(#h5) { display: flex; flex-direction: column; min-width: 0; margin-top: 34px; }
+.h5Head:not(#h5) { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin: 0 20px 8px; }
+.h5Head :is(h2, h3):not(#h5) { display: flex; align-items: baseline; gap: 8px; font: 700 1.375rem/1.75rem var(--h5-font); letter-spacing: -.02em; color: var(--h5-ink); }
+.h5Count:not(#h5) { font-weight: 500; color: var(--h5-ink-3); }
+.h5Action:not(#h5) { display: inline-flex; align-items: center; min-height: 44px; margin-right: -8px; padding: 0 8px; border-radius: 10px; color: var(--h5-teal); font: 600 .9375rem/1.25rem var(--h5-font); text-decoration: none; white-space: nowrap; }
+.h5Action:hover:not(#h5) { background: rgba(11, 110, 105, .07); }
+.h5Action:active:not(#h5) { background: rgba(11, 110, 105, .12); }
+.h5List:not(#h5) { margin: 0 16px; border-radius: 20px; background: var(--h5-card); box-shadow: 0 1px 2px rgba(17, 21, 20, .04); overflow: hidden; }
+.h5List li:not(#h5), .h5More > ul > li:not(#h5) { position: relative; }
+.h5List li + li:not(#h5)::before, .h5More > ul > li:not(#h5)::before, .h5More:not(#h5)::before { content: ""; position: absolute; top: 0; left: 52px; right: 0; height: 1px; background: var(--h5-rule); pointer-events: none; z-index: 1; }
+.h5More:not(#h5) { position: relative; }
+.h5Row:not(#h5) { display: flex; align-items: center; gap: 14px; min-height: 68px; padding: 12px 16px; color: var(--h5-ink); text-decoration: none; }
+.h5Row:hover:not(#h5) { background: #FAFAF8; }
+.h5Row:active:not(#h5) { background: #F3F3F0; }
+.h5Row:focus-visible:not(#h5) { outline-offset: -3px; border-radius: 20px; }
+.h5Ring:not(#h5) { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1.75px solid #C9CAC5; }
+.h5Copy:not(#h5) { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.h5Copy strong:not(#h5) { font: 500 1rem/1.3125rem var(--h5-font); letter-spacing: -.006em; color: var(--h5-ink); overflow-wrap: anywhere; }
+.h5Copy small:not(#h5) { font: 400 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-2); overflow-wrap: anywhere; }
+.h5Copy .h5Due:not(#h5) { color: var(--h5-amber); }
+.h5Copy .h5Extra:not(#h5) { color: var(--h5-ink-2); }
+.h5End:not(#h5) { position: relative; display: inline-flex; flex: none; align-items: center; }
+.h5Chevron:not(#h5) { flex: none; fill: none; stroke: #C4C5C0; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.h5Day:not(#h5) { flex: none; display: flex; flex-direction: column; align-items: center; width: 46px; }
+.h5Day small:not(#h5) { font: 600 .8125rem/1rem var(--h5-font); letter-spacing: .03em; text-transform: uppercase; color: var(--h5-teal); }
+.h5Day strong:not(#h5) { font: 600 1.5rem/1.75rem var(--h5-font); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--h5-ink); }
+.h5Empty:not(#h5) { padding: 22px 18px; font: 400 .9375rem/1.3125rem var(--h5-font); color: var(--h5-ink-2); }
+.h5List .h5Empty:not(#h5), .h5List.empty:not(#h5) { padding: 22px 18px; }
+.h5Section > .h5Empty:not(#h5) { margin: 0 16px; border-radius: 20px; background: var(--h5-card); }
+.h5Done:not(#h5) { display: flex; align-items: center; gap: 14px; min-height: 68px; padding: 12px 16px; }
+.h5Tick:not(#h5) { flex: none; display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center; background: var(--h5-teal); }
+.h5Tick svg:not(#h5) { fill: none; stroke: #FFFFFF; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.h5Note:not(#h5) { margin: 12px 20px 0; font: 400 .9375rem/1.3125rem var(--h5-font); color: var(--h5-ink-2); }
+.h5Warn:not(#h5) { margin: 34px 20px 0; font: 400 .9375rem/1.3125rem var(--h5-font); color: var(--h5-amber); }
+.h5Warn + .h5Section:not(#h5), .h5Warn ~ [data-home-group="actions"]:not(#h5) { margin-top: 12px; }
+
+/* "View all": a row at the foot of the list. */
+.h5More > summary:not(#h5) { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 8px 16px 8px 52px; list-style: none; cursor: pointer; color: var(--h5-teal); font: 600 .9375rem/1.25rem var(--h5-font); }
+.h5More > summary:not(#h5)::-webkit-details-marker { display: none; }
+.h5More > summary:hover:not(#h5) { background: #FAFAF8; }
+.h5More > summary:focus-visible:not(#h5) { outline-offset: -3px; border-radius: 20px; }
+.h5More > summary .h5Chevron:not(#h5) { transform: rotate(90deg); transition: transform .2s ease; }
+.h5More[open] > summary .h5Chevron:not(#h5) { transform: rotate(-90deg); }
+.h5Collapse:not(#h5), .h5More[open] .h5Expand:not(#h5) { display: none; }
+.h5More[open] .h5Collapse:not(#h5) { display: inline; }
+
+/* Sources that couldn't be fully checked: plain lines with a link each. */
+.h5Sources:not(#h5) { display: flex; flex-direction: column; gap: 4px; margin: 20px 20px 0; }
+.h5Sources li:not(#h5) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 12px; font: 400 .9375rem/1.3125rem var(--h5-font); color: var(--h5-ink-2); }
+.h5Sources a:not(#h5) { display: inline-flex; align-items: center; min-height: 44px; color: var(--h5-teal); font-weight: 600; text-decoration: none; }
+
+/* Refresh: one quiet line at the foot; a real button when Home couldn't load. */
+.h5Refresh:not(#h5) { display: flex; justify-content: center; margin-top: 28px; padding: 0 20px; }
+.h5Refresh[data-waiting]:not(#h5) { visibility: hidden; }
+.h5QuietButton:not(#h5) { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: none; color: var(--h5-teal); font: 600 .9375rem/1.25rem var(--h5-font); cursor: pointer; }
+.h5QuietButton:hover:not(:disabled):not(#h5) { background: rgba(11, 110, 105, .07); }
+.h5QuietButton:disabled:not(#h5) { color: var(--h5-ink-3); cursor: default; }
+.h5PrimaryButton:not(#h5) { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border: 0; border-radius: 14px; background: var(--h5-deep); color: #FFFFFF; font: 600 1rem/1.25rem var(--h5-font); text-decoration: none; cursor: pointer; }
+.h5PrimaryButton:disabled:not(#h5) { opacity: .6; cursor: default; }
+
+/* Phones: the approved order is the shift card, To do, Coming up, then Recent activity. Coming up belongs to the shift
+ * section (its links are the shift's), so the columns open up and the order is set here; desktop keeps two columns. */
+@media (max-width: 1023px) {
+  .h5Columns:not(#h5) { display: flex; flex-direction: column; align-items: stretch; }
+  :is(.h5Primary, .h5Shifts, .h5Secondary):not(#h5) { display: contents; }
+  .h5Card:not(#h5) { order: 1; }
+  .h5Warn:not(#h5) { order: 2; }
+  .h5Columns [data-home-group="actions"]:not(#h5) { order: 3; }
+  .h5Upcoming:not(#h5) { order: 4; }
+  .h5Columns [data-home-group="updates"]:not(#h5) { order: 5; }
+  .h5Sources:not(#h5) { order: 6; }
+}
+
+/* ---------- Wider screens ---------- */
+@media (min-width: 768px) {
+  .h5Root:not(#h5) { width: min(100%, 640px); }
+}
+@media (min-width: 1024px) {
+  .h5Root:not(#h5) { width: min(100%, 1120px); padding: 8px 24px 48px; }
+  .h5Hello:not(#h5) { padding: 24px 4px 0; }
+  .h5Columns:not(#h5) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; }
+  .h5Card:not(#h5) { margin: 24px 0 0; }
+  .h5Head:not(#h5) { margin-inline: 4px; }
+  .h5List:not(#h5), .h5Section > .h5Empty:not(#h5) { margin-inline: 0; }
+  .h5Note:not(#h5), .h5Sources:not(#h5) { margin-inline: 4px; }
+  .h5Warn:not(#h5) { margin: 24px 4px 0; }
+  .h5Secondary > .h5Section:first-child:not(#h5) { margin-top: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .h5More > summary .h5Chevron:not(#h5) { transition: none; }
+}

@@ -20,7 +20,7 @@ Scope: Employee and Lead pages only. Owner and Manager keep the approved clean v
 
 ## Pages
 
-- **Home:** greeting "Hi, {first name}" with the date; the illustration card with today's shift (or the next shift, or a calm "No shift today" card); a "N things to review" pill; a "Today" checklist built from real data (clock in, schedule reviews, team update). Each item ticks itself when done.
+- **Home (replaced by v5, Oct 20):** the illustrated Home was built and then rejected ("AI and cheap and dirty"). Jose approved Home v5 option A "exactly like that": `home-v5/h5-a-teal.png`, `h5-a-teal-long.png`, `h5-c-dayoff.png` (source `home-v5/home5.*`). The date, then "Hi, {first name}"; one deep-teal shift card ("Scheduled now", the hours, the place, a progress bar with the time left, then the clock strip: status, refresh, My time); To do as one grouped list with empty rings; Coming up with a date block and View schedule; the publication note; Recent activity. No illustration, review pill, icon tiles or footer stamp. Built in `src/components/employee-home-reviewed.tsx` with `employee-home-today.module.css`.
 - **Schedule:** "My schedule" with "{n} shifts · {h}h"; My shifts / Open shifts; the week strip with today on deep teal; the confirm card when the manager asks for confirmation; a row per shift with a date tile, today outlined; publication and time-zone note as one quiet line.
 - **Requests:** Time off / Shift swaps / Availability; a "Need time away?" card with the button; the request list with Waiting / Approved / Declined in colour.
 - **Pay:** the latest statement as the feature card with a Download button; earlier statements with a round download button; the privacy line.
@@ -35,4 +35,4 @@ Scope: Employee and Lead pages only. Owner and Manager keep the approved clean v
 - Every state gets the same care: loading placeholders that match the final layout, empty, error, paused, signed out.
 - Phone first: 320, 390 and 430px, landscape, 200% text, both engines, keyboard and 44px targets. Then 768 and 1440.
 - Build one page at a time, Home first, each shown to Jose before the next.
-- The illustration (`home-illo.jpg`, made in Canva, in Jose's account) is on Home only.
+- No illustration on Home (v5). The Canva illustration stays in Jose's Canva account and in `home-illo.jpg` here for reference only.

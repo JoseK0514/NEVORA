@@ -82,7 +82,7 @@ describe('released Home data and navigation', () => {
     const ready = props();
     expect(html(ready)).toContain('Private location');
     expect(html(ready)).toContain('Private own recorded-time slot');
-    expect(html(ready)).toContain('Hi, Alexandra.');
+    expect(html(ready)).toContain('Hi, Alexandra');
     const loading = html({...ready, status: 'loading', refreshing: true});
     for (const secret of ['Private location', 'Private own recorded-time slot', 'Alexandra', '2030-10-08', 'Published']) {
       expect(loading).not.toContain(secret);
@@ -130,28 +130,27 @@ describe('released Home data and navigation', () => {
     expect(markup.indexOf('Next shift')).toBeLessThan(markup.indexOf('data-test-own-time'));
   });
 
-  it('leads with the shift under way, then the next shift, with one zone line and distinct day-link names', () => {
+  it('leads with the shift under way, then Coming up, with one zone line and distinct schedule links', () => {
     const current = {...assignment, shiftId: 'now', date: '2030-10-07', startAt: '2030-10-07T11:00:00Z', endAt: '2030-10-07T19:00:00Z'};
     const markup = html(props(projectEmployeeHome(snapshot({currentShift: current}))));
-    const card = markup.slice(markup.indexOf('aria-labelledby="employee-reviewed-next-heading"'), markup.indexOf('data-test-own-time'));
+    const card = markup.slice(markup.indexOf('aria-labelledby="employee-reviewed-next-heading"'), markup.indexOf('data-home-group="actions"'));
     expect(card).toContain('>Your shifts</h2>');
     expect(card.split('Scheduled now<').length - 1).toBe(1);
-    expect(card.indexOf('Scheduled now')).toBeLessThan(card.indexOf('>Next shift</h3>'));
-    expect(card.indexOf('>Today</strong>')).toBeLessThan(card.indexOf('>Next shift</h3>'));
+    expect(card.indexOf('Scheduled now')).toBeLessThan(card.indexOf('>Coming up</h3>'));
     expect(card.match(/Times in Puerto Rico time/g)).toHaveLength(1);
-    expect(card).toContain('aria-label="View schedule, Mon, Oct 7"');
+    // Home v5: the schedule link is the Coming up action plus one named link per upcoming day.
+    expect(card).toMatch(/href="\/app\/schedule"[^>]*>View schedule/);
     expect(card).toContain('aria-label="View schedule, Tue, Oct 8"');
-    expect(card.indexOf('Starts in') === -1 || card.indexOf('Starts in') > card.indexOf('>Next shift</h3>')).toBe(true);
+    expect(card).not.toContain('Starts in');
     expect(card).not.toMatch(/Clocked [Ii]n/);
     const none = html(props(projectEmployeeHome(snapshot({currentShift: current, nextShift: null}))));
+    expect(none).toContain('Scheduled now');
     expect(none).toContain('No upcoming published shift');
-    expect(none).toMatch(/aria-label="View schedule, Mon, Oct 7"/);
     expect(none).toMatch(/href="\/app\/schedule"[^>]*>View schedule/);
-    // A shift under way keeps the pass, with or without a next shift.
-    expect(markup).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
-    expect(none).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+    expect(none).not.toContain('aria-label="View schedule,');
     const unavailable = html(props(projectEmployeeHome(snapshot({currentShift: current, nextShift: null, publicationState: 'unavailable'}))));
     expect(unavailable).toContain('Schedule unavailable');
+    expect(unavailable).not.toContain('Scheduled now');
   });
 
   it('keeps "Next shift" as the heading and names the day link when no shift is under way', () => {
@@ -289,9 +288,9 @@ describe('original redacted clock recovery preservation',()=>{
   const slot=<EmployeeTimeView compact state={{time,paused:false,refreshing:false}} onRefresh={()=>{}}/>;
   const released=props(projectEmployeeHome(snapshot({attention:[item('privacy-item',{actionable:true})]})),{ownTimeSlot:slot});
   const control=html(released);
-  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra.'])expect(control).toContain(field);
+  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra'])expect(control).toContain(field);
   const lost=html({...released,status});
-  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra.','Clocked in'])expect(lost).not.toContain(field);
+  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra','Clocked in'])expect(lost).not.toContain(field);
   const clock=lost.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/)![1];
   expect(clock).toContain('href="/app/my-time"');
   if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign in');expect(clock).not.toContain('aria-label="Refresh recorded time"');}
@@ -299,33 +298,32 @@ describe('original redacted clock recovery preservation',()=>{
  });
 });
 
-describe('Today Home (U2)', () => {
-  it('shows the next shift as a pass with a relative day, greeting and quick actions', () => {
+describe('Today Home (U2, v5 layout)', () => {
+  it('says the day is clear and lists the next shift under Coming up, with no quick-action tiles', () => {
     const markup = html(props());
-    expect(markup).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
-    expect(markup).toContain('<strong>Tomorrow</strong>\u00a0· <time dateTime="2030-10-08">');
-    expect(markup).toContain('Good morning\u00a0· <time');
-    for (const label of ['Quick actions', 'Request time off', 'Swap a shift', 'Update availability', 'My time']) expect(markup).toContain(label);
-    // Codex F1/W1: time off opens its form directly; Swap a shift opens shift choosing, never the source-less swap route.
-    expect(markup).toMatch(/href="\/app\/requests"[^>]*>(?:<[^>]+>)*<\/span><span>Request time off/);
-    expect(markup).toContain('href="/app/schedule?intent=swap"');
-    expect(markup).not.toContain('href="/app/exchange/swap"');
+    expect(markup).toContain('>Next shift</h2>');
+    expect(markup).toContain('No more shifts today');
+    expect(markup).toContain('>Coming up</h3>');
+    expect(markup).toContain('aria-label="View schedule, Tue, Oct 8"');
     expect(markup).toContain('data-home-updated="true">Updated <time');
-    // The countdown needs a live clock, so it is absent from server markup.
+    for (const gone of ['Quick actions', 'Swap a shift', 'href="/app/exchange/swap"', 'data-pass']) expect(markup).not.toContain(gone);
+    // The countdown and the progress need a live clock, so they are absent from server markup.
     expect(markup).not.toContain('Starts in');
+    expect(markup).not.toContain(' left<');
   });
-  it('keeps the green pass when there is no published shift or the schedule is unavailable (Jose, 2026-10-18)', () => {
+  it('keeps the shift card when there is no published shift or the schedule is unavailable (Jose, 2026-10-18)', () => {
     const none = html(props(projectEmployeeHome(snapshot({nextShift: null}))));
-    expect(none).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+    expect(none).toContain('No more shifts today');
     expect(none).toContain('No upcoming published shift');
     expect(none).not.toContain('>Published<');
     const unavailable = html(props(projectEmployeeHome(snapshot({publicationState: 'unavailable', nextShift: null}))));
-    expect(unavailable).toMatch(/aria-labelledby="employee-reviewed-next-heading"[^>]*data-pass="true"/);
+    expect(unavailable).toContain('aria-labelledby="employee-reviewed-next-heading"');
     expect(unavailable).toContain('Schedule unavailable');
+    expect(unavailable).not.toContain('>Coming up</h3>');
   });
-  it('places quick actions after To do and before recent updates', () => {
+  it('orders the shift card, then To do, then Recent activity', () => {
     const markup = html(props(projectEmployeeHome(snapshot({attention: [item('todo', {actionable: true}), item('news')]}))));
-    const order = ['data-home-group="actions"', 'Quick actions', 'data-home-group="updates"'].map(marker => markup.indexOf(marker));
+    const order = ['aria-labelledby="employee-reviewed-next-heading"', 'data-home-group="actions"', 'data-home-group="updates"'].map(marker => markup.indexOf(marker));
     expect(order.every(index => index > 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
   });
