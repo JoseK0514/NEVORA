@@ -108,6 +108,9 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
   );
   expect(unavailableHtml).toContain('Attendance unavailable');
   expect(unavailableHtml).not.toContain('Nothing to review');
+  // A failed read isn't busy, so the desktop layout keeps its footer and the Refresh button visible.
+  expect(unavailableHtml).not.toContain('aria-busy');
+  expect(unavailableHtml).toContain('aria-label="Refresh attendance review"');
 });
 
 it('shows access denial as a sign-in state and never retains people', () => {

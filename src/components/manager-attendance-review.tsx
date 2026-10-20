@@ -116,8 +116,10 @@ export function AttendanceReviewSurface({
           <h2 id="attendance-review-title">Today’s clock-ins</h2>
           <span>Clock-ins and breaks that may need a look.</span>
         </div>
-        {/* The summary row is there while loading too ("–" for each count), so nothing moves when the numbers arrive. */}
-        <div className="attendance-review-summary" aria-label="Attendance exception summary" aria-busy={ready ? undefined : true}>
+        {/* The summary row is there while loading too ("–" for each count), so nothing moves when the numbers arrive.
+            It is busy only while loading: the desktop layout hides the footer while busy, and a failed, paused or
+            signed-out review needs its footer (Refresh, Sign In). */}
+        <div className="attendance-review-summary" aria-label="Attendance exception summary" aria-busy={ready || unavailable || denied || paused ? undefined : true}>
           <span>
             <strong>{ready ? ready.signalCount : '–'}</strong>
             {' to review'}
