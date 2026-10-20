@@ -59,13 +59,14 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
      const status = mode === 'manager' ? item.acknowledgement === 'REQUIRED' ? 'Acknowledgement required' : 'Optional update' : item.ownAcknowledgedAt ? 'Acknowledged' : item.acknowledgement === 'REQUIRED' ? 'Review needed' : item.ownReadAt ? 'Read' : 'Not read';
      return <li key={item.id}><Link className={`updates-row${reviewed ? ' is-reviewed' : ''}`} href={'/app/updates/' + item.id} prefetch={false}>
       <UpdateKind type={item.type} iconOnly />
-      <div className="updates-row-copy"><div className="updates-row-meta"><UpdateKind type={item.type} /><span className={`updates-status${reviewed ? ' is-reviewed' : ''}`}>{reviewed ? <CheckCircleIcon size={14} aria-hidden="true" /> : <span className="updates-status-dot" aria-hidden="true" />}{status}</span></div><h3>{item.title}</h3><p className="updates-preview">{item.body}</p><time dateTime={item.publishedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt)))}</time></div>
+      <div className="updates-row-copy"><div className="updates-row-meta">{/* Clean Manager (v3): one label per row for managers (the status); employees keep the kind too. */}{mode === 'manager' ? null : <UpdateKind type={item.type} />}<span className={`updates-status${reviewed ? ' is-reviewed' : ''}`}>{reviewed ? <CheckCircleIcon size={14} aria-hidden="true" /> : <span className="updates-status-dot" aria-hidden="true" />}{status}</span></div><h3>{item.title}</h3><p className="updates-preview">{item.body}</p><time dateTime={item.publishedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt)))}</time></div>
       <span className="updates-row-action"><span>Review update</span><NavIcon name="arrowRight" /></span>
      </Link></li>;
     })}</ul>
    </section>)}</div> : <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{emptyTitle}</h2><p>{emptyDescription}</p>{filter !== 'all' ? <button className="button secondary" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
   </section>
-  <p className="updates-footnote">{mode === 'manager' ? 'Open an update to review the message and recipient acknowledgement status.' : 'Opening an update doesn’t confirm it. Read the full message, then confirm.'}</p>
+  {/* Clean Manager (v3): the manager footnote goes; the employee one prevents a mistake and stays. */}
+  {mode === 'manager' ? null : <p className="updates-footnote">Opening an update doesn’t confirm it. Read the full message, then confirm.</p>}
   </div>
   </div>
  </UpdateEntrance>;
