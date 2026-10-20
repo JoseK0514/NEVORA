@@ -235,7 +235,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   // Clean Manager and Owner (v3) state. Hooks stay unconditional; the employee view below never reads them.
   const [tab,setTab]=useState<'all'|'review'|'approved'>('all'),[selecting,setSelecting]=useState(false),[openId,setOpenId]=useState<string|null>(null);
   const [phone,setPhone]=useState(false);
-  const sheet=useRef<HTMLDialogElement|null>(null);
+  const sheet=useRef<HTMLDialogElement|null>(null),userClosedSheet=useRef(false);
   // Final pass P2-8: the period picker closes with Escape (focus returns to its button) or a press outside it.
   const periodRef=useRef<HTMLDetailsElement|null>(null);
   useEffect(()=>{
@@ -261,6 +261,16 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   },[openKey,busy]);
   if(manager){
     const ready=currentActor&&data?.state==='ready';
+    const closeSheet=()=>{
+      const restore=userClosedSheet.current;userClosedSheet.current=false;setOpenId(null);
+      if(!restore||!activeView.current||document.visibilityState==='hidden'||!navigator.onLine||!document.hasFocus())return;
+      const current=source.current;
+      const row=openId&&current?.actorId===actorId&&performance.now()<validUntil.current&&current.cards.some(item=>item.card.employeeId===openId)
+        ?document.getElementById(`timecard-${openId}`)?.querySelector<HTMLButtonElement>('button.cm-tc-person,button.nv-row'):null;
+      const visible=(element:HTMLElement|null|undefined)=>!!element?.isConnected&&element.getClientRects().length>0&&!element.hasAttribute('disabled');
+      const target=visible(row)?row:periodRef.current?.querySelector<HTMLElement>('summary');
+      if(visible(target))target?.focus();
+    };
     const thisWeekStart=weekStartFor(today??initialPeriod.endDate);
     const thisWeek={startDate:thisWeekStart,endDate:addDays(thisWeekStart,6)},lastWeek=shiftPeriod(thisWeek,-1);
     const periodName=samePeriod(period,thisWeek)?'This week':samePeriod(period,lastWeek)?'Last week':null;
@@ -395,11 +405,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           <button type="button" className="cm-refresh" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button>
         </p>
       </div>
-      <dialog ref={sheet} className="cm-tc-sheet" aria-labelledby="cm-tc-sheet-title" onClose={()=>setOpenId(null)}>
+      <dialog ref={sheet} className="cm-tc-sheet" aria-labelledby="cm-tc-sheet-title" onCancel={()=>{userClosedSheet.current=true;}} onClose={closeSheet}>
         <div className="cm-tc-sheet__head">
           {openItem?<Avatar initials={initialsOf(openItem.card.employeeName)}/>:null}
           <div><h2 id="cm-tc-sheet-title">{openItem?openItem.card.employeeName:'Timecard'}</h2>{status?<p className="cm-tc-status" data-tone={status.tone}>{status.text}</p>:null}</div>
-          <button type="button" className="cm-tc-done" onClick={()=>sheet.current?.close()}>Done</button>
+          <button type="button" className="cm-tc-done" onClick={()=>{userClosedSheet.current=true;sheet.current?.close();}}>Done</button>
         </div>
         {openItem?<div className="cm-tc-sheet__body">
           <dl className="cm-tc-figures">

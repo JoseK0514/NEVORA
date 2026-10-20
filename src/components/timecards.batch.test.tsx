@@ -9,6 +9,7 @@ vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('rea
  useCallback:(callback:unknown)=>callback,
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
+vi.mock('./clean/top-bar-slot',()=>({useTopBarSlot:()=>null}));
 import {Timecards} from './timecards';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 function card(id:string){const source={...period,employeeId:id,employeeName:`PRIVATE ${id}`,timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:[],corrections:[]};return {source,state:'DRAFT',revision:0,sourceHash:'a'.repeat(32),history:[]};}
@@ -204,4 +205,88 @@ it('offers recovery after a stalled initial read reaches its finite request dead
  expect(html()).toContain('Try again');
  expect(control(n=>n.type==='button'&&n.props['aria-label']==='Refresh timecards').disabled).toBe(false);
  expect(commands).toHaveLength(0);
+});
+
+// Model the DOM identities across a refresh: native dialog restoration points at
+// a detached old trigger; only a newly queried current row or the chooser is safe.
+function sheetFocusFixture(){
+ const target=()=>({isConnected:true,getClientRects:()=>[{}],hasAttribute:()=>false,focus:vi.fn()});
+ const original=target(),replacement=target(),chooser=target();
+ original.isConnected=false;
+ const lookup=vi.fn(()=>({querySelector:()=>replacement}));
+ Object.assign(document,{hasFocus:()=>true,getElementById:lookup});
+ const picker=control(n=>n.type==='details'&&n.props.className==='cm-tc-period').ref as {current:unknown};
+ picker.current={querySelector:()=>chooser};
+ const dialog=control(n=>n.type==='dialog').ref as {current:unknown};
+ dialog.current={close:()=>closeSheet('done')};
+ return {original,replacement,chooser,lookup};
+}
+function closeSheet(kind:'escape'|'done'|'automatic'='escape'){
+ const dialog=control(n=>n.type==='dialog');
+ if(kind==='escape'&&typeof dialog.onCancel==='function')dialog.onCancel();
+ (dialog.onClose as ()=>void)();
+}
+function openFirstSheet(){
+ (control(n=>n.type==='button'&&n.props.className==='cm-tc-person').onClick as ()=>void)();
+}
+it.each(['escape','done'] as const)('returns focus to the replacement current row on %s after a refresh replaces the original trigger',async kind=>{
+ transport();await mount();openFirstSheet();
+ const focus=sheetFocusFixture();
+ click('Approve timecard');await flush();
+ expect(commands).toHaveLength(1);
+ expect(html()).toContain('PRIVATE E1');
+ if(kind==='done')(control(n=>n.type==='button'&&n.props.className==='cm-tc-done').onClick as ()=>void)();
+ else closeSheet();
+ expect(focus.lookup).toHaveBeenCalledWith('timecard-E1');
+ expect(focus.replacement.focus).toHaveBeenCalledOnce();
+ expect(focus.original.focus).not.toHaveBeenCalled();
+ expect(focus.chooser.focus).not.toHaveBeenCalled();
+});
+it('returns focus to the period chooser when Escape closes a sheet during the post-approval replacement read',async()=>{
+ let reads=0,resolve!:(response:Response)=>void;
+ vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{
+  if(path==='/api/timecards')return ++reads===1?Response.json(ready()):new Promise<Response>(r=>{resolve=r;});
+  const command=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(command);
+  return Response.json({status:'approved',operationId:command.operationId,revision:1});
+ });
+ await mount();openFirstSheet();const focus=sheetFocusFixture();
+ click('Approve timecard');await flush();
+ expect(html()).toContain('Checking period timecards');
+ expect(html()).not.toContain('PRIVATE E1');
+ closeSheet();
+ expect(focus.chooser.focus).toHaveBeenCalledOnce();
+ expect(focus.replacement.focus).not.toHaveBeenCalled();
+ expect(focus.original.focus).not.toHaveBeenCalled();
+ resolve(Response.json(ready()));await flush();
+ expect(html()).not.toContain('Approve timecard');
+ expect(commands).toHaveLength(1);
+ expect(focus.chooser.focus).toHaveBeenCalledOnce();
+});
+it.each(['detached','hidden'])('uses the visible period chooser instead of a %s current row',async state=>{
+ transport();await mount();openFirstSheet();const focus=sheetFocusFixture();
+ if(state==='detached')focus.replacement.isConnected=false;
+ else focus.replacement.getClientRects=()=>[];
+ closeSheet();
+ expect(focus.replacement.focus).not.toHaveBeenCalled();
+ expect(focus.chooser.focus).toHaveBeenCalledOnce();
+});
+it.each(['blur','expiry'])('does not move focus during automatic %s retirement of an open sheet',async reason=>{
+ transport();await mount();openFirstSheet();const focus=sheetFocusFixture();
+ if(reason==='blur')window.dispatchEvent(new Event('blur'));
+ else{vi.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));await vi.advanceTimersByTimeAsync(45001);}
+ expect(html()).not.toContain('PRIVATE');
+ closeSheet('automatic');
+ expect(focus.original.focus).not.toHaveBeenCalled();
+ expect(focus.replacement.focus).not.toHaveBeenCalled();
+ expect(focus.chooser.focus).not.toHaveBeenCalled();
+});
+it('does not restore focus after a user close is followed by window blur',async()=>{
+ transport();await mount();openFirstSheet();const focus=sheetFocusFixture();
+ const dialog=control(n=>n.type==='dialog');
+ if(typeof dialog.onCancel==='function')dialog.onCancel();
+ window.dispatchEvent(new Event('blur'));
+ (control(n=>n.type==='dialog').onClose as ()=>void)();
+ expect(focus.replacement.focus).not.toHaveBeenCalled();
+ expect(focus.chooser.focus).not.toHaveBeenCalled();
+ expect(html()).not.toContain('PRIVATE');
 });
