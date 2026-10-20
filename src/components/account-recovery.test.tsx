@@ -11,7 +11,8 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="request"/>);
   expect(html).toContain('name="employeeId"');expect(html).toContain('name="email"');
   expect(html).toContain('maxLength="200"');expect(html).toContain('maxLength="254"');
-  expect(html).toContain('href="/reset-access"');expect(html).toContain('href="/login"');
+  // The sign-in path is the page shell's Back (AuthShell); the form keeps the proof path.
+  expect(html).toContain('href="/reset-access"');
   expect(html).not.toContain('name="password"');expect(html).toContain('Enable JavaScript');
  });
  it('shows an accepted request without asserting successful email delivery',()=>{
@@ -57,7 +58,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done={false} message="Passwords do not match." onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(html).toContain('aria-invalid="true"');expect(html).toContain('Check your passwords');
   const pending=renderToStaticMarkup(<RecoveryReset hydrated busy done={false} message="" onSubmit={()=>{}} proofRef={()=>{}}/>);
-  expect(pending).toContain('<fieldset disabled=""');expect(pending).toContain('aria-busy="true"');
+  expect(pending).toMatch(/<fieldset[^>]*disabled=""/);expect(pending).toContain('aria-busy="true"');
   expect(pending).toContain('Resetting password. Please wait.');
  });
  it('keeps assisted identity attestation rather than exposing the employee request form',()=>{
@@ -65,5 +66,16 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html).toContain('name="attestation"');expect(html).toContain('type="checkbox"');
   expect(html).toContain('independently confirmed');expect(html).toContain('href="/app"');
   expect(html).not.toContain('name="email"');expect(html).not.toContain('recovery-help');
+ });
+});
+
+describe('Sign-in pages in Spanish',()=>{
+ it('shows the request and reset forms and their known messages in Spanish, keeping the English outcome logic',()=>{
+  const request=renderToStaticMarkup(<AccountRecovery kind="request" lang="es"/>);
+  expect(request).toContain('Recuperar acceso');expect(request).toContain('Correo de recuperación');expect(request).toContain('Solicitar recuperación');
+  const reset=renderToStaticMarkup(<RecoveryReset lang="es" hydrated busy={false} done={false} message="Passwords do not match." onSubmit={()=>{}} proofRef={()=>{}}/>);
+  expect(reset).toContain('aria-invalid="true"');expect(reset).toContain('Revisa tus contraseñas');expect(reset).toContain('Las contraseñas no coinciden.');
+  const unknown=renderToStaticMarkup(<RecoveryReset lang="es" hydrated busy={false} done={false} message="Something new from the server." onSubmit={()=>{}} proofRef={()=>{}}/>);
+  expect(unknown).toContain('Something new from the server.');
  });
 });

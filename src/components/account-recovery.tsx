@@ -3,9 +3,12 @@ import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {RecoveryRequest} from './recovery-request';
 import {AssistedRecovery} from './assisted-recovery';
 import {RecoveryReset} from './recovery-reset';
+import type {AuthLang} from '@/lib/auth-copy';
 const subscribe=()=>()=>{};
 type Issued={proof:string;expiresAt:string;employeeId:string};
-export function AccountRecovery({kind,actorId,employeeId,from,timeZone}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string}){
+export function AccountRecovery({kind,actorId,employeeId,from,timeZone,lang='en'}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string;
+ /** Sign-in pages only: the language the request and reset forms show (the messages stay English here). */
+ lang?:AuthLang}){
  const hydrated=useSyncExternalStore(subscribe,()=>true,()=>false);
  const [message,setMessage]=useState(''),[busy,setBusy]=useState(false),[done,setDone]=useState(false),[issued,setIssued]=useState<Issued|null>(null);
  const proofInput=useRef<HTMLInputElement>(null);
@@ -38,8 +41,8 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone}:{kind:'r
   }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':kind==='assisted'?'The code could not be issued. Check your connection and try again.':'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }
- if(kind==='request')return <RecoveryRequest hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
+ if(kind==='request')return <RecoveryRequest lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
  if(kind==='assisted')return <AssistedRecovery hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} timeZone={timeZone} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');}}/>;
- return <RecoveryReset hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
+ return <RecoveryReset lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
   proofRef={input=>{proofInput.current=input;if(input&&incomingProof.current){input.value=incomingProof.current;incomingProof.current=null;}}}/>;
 }
