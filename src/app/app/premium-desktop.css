@@ -213,9 +213,10 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band] > .route-skeleton-band i:nth-child(2) { height: 32px; width: 30%; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band] > .route-skeleton-band i:nth-child(3) { width: 44%; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band] > .route-skeleton-header { display: none; }
+  /* The first block's margins below take back the placeholder's 20px grid gap (portal-motion.css), so it starts where the page's does. */
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band] > :not(.route-skeleton-band):not(.sr-only) { margin-inline: 16px; }
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band="overlap"] > .route-skeleton-band + .route-skeleton-header + * { margin-top: calc(-1 * var(--nv-overlap)); position: relative; }
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band="flat"] > .route-skeleton-band + .route-skeleton-header + * { margin-top: var(--nv-s-4); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band="overlap"] > .route-skeleton-band + .route-skeleton-header + * { margin-top: calc(-1 * var(--nv-overlap) - 20px); position: relative; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-band="flat"] > .route-skeleton-band + .route-skeleton-header + * { margin-top: calc(var(--nv-s-4) - 20px); }
   /* Each page's measured desktop band (1024 to 1440). */
   .route-skeleton[data-route="home"] { --route-band-desktop: 168px; }
   .route-skeleton[data-route="inbox"] { --route-band-desktop: 192px; }
@@ -238,7 +239,9 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* Schedule's desktop band is flat (WR-09), so its placeholder content starts 16px below the band too. */
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-route="schedule"][data-band] > .route-skeleton-band + .route-skeleton-header + * { margin-top: var(--nv-s-4); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .route-skeleton[data-route="schedule"][data-band] > .route-skeleton-band + .route-skeleton-header + * { margin-top: calc(var(--nv-s-4) - 20px); }
+  /* Employee Time off sits 16px under its band on desktop (its phone placeholder overlaps the band). */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="review"][data-band] > .route-skeleton-band + .route-skeleton-header + * { margin-top: calc(var(--nv-s-4) - 20px); }
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* ST-P4-05: Home's loading rows are as tall as a real desktop "Also needs you" row (104px: one meta line), not
