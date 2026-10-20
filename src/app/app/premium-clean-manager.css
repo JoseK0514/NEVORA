@@ -99,7 +99,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sheet__done { min-height: 44px; padding: 0 10px; border: 0; background: none; color: var(--cm-tint); font: 600 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.43px; cursor: pointer; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sheet .inbox-detail { background: none; border: 0; box-shadow: none; padding: 0 16px; display: flex; flex-direction: column; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sheet .inbox-detail__head { flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sheet .inbox-detail__head .nv-avatar { width: 60px; height: 60px; font-size: 1.5rem; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sheet .inbox-detail__head .nv-avatar { width: 3.75rem; height: 3.75rem; font-size: 1.5rem; border-radius: 50%; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sheet .inbox-detail__title { font: 700 1.5rem/1.875rem var(--cm-sys); letter-spacing: .07px; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sheet .inbox-detail__meta { color: var(--cm-label-2); font: 400 0.9375rem/1.25rem var(--cm-sys); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sheet .inbox-detail__status { align-self: center; margin-top: 4px; }
@@ -174,7 +174,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row__status .nv-status { font: 500 0.9375rem/1.25rem var(--cm-sys); letter-spacing: -.24px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row__trail { font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.43px; color: var(--cm-label-2); font-variant-numeric: tabular-nums; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row__chev { color: var(--cm-label-3); width: 14px; height: 14px; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-avatar { width: 36px; height: 36px; font-size: 0.875rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-avatar { width: 2.25rem; height: 2.25rem; font-size: 0.875rem; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-tile { width: 29px; height: 29px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-tile svg { width: 18px; height: 18px; }
 
@@ -276,7 +276,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-card__foot { padding: 7px 4px 0; font: 400 0.8125rem/1.125rem var(--cm-sys); letter-spacing: -.08px; color: var(--cm-label-2); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-card__foot .nv-fresh { font: inherit; color: inherit; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-card__foot .nv-fresh::before { content: none; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-row .nv-avatar { width: 32px; height: 32px; font-size: 0.8125rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-row .nv-avatar { width: 2rem; height: 2rem; font-size: 0.8125rem; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-rows > li:has(> .nv-row[data-leading]) + li::before, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-rows > li + li:has(> .nv-row[data-leading])::before { left: 60px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #home-needs-you .nv-rows > li + li::before { left: 57px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #home-needs-you .nv-row__meta { display: none; }
@@ -374,7 +374,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row__status .nv-status { font: 500 0.8125rem/1.125rem var(--cm-sys); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row__trail { font: 400 0.8438rem/1.125rem var(--cm-sys); color: #6B6B68; font-variant-numeric: tabular-nums; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row__chev { color: #B5B5B1; width: 14px; height: 14px; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-avatar { width: 28px; height: 28px; font-size: 0.6875rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-avatar { width: 1.75rem; height: 1.75rem; font-size: 0.6875rem; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-tile { width: 26px; height: 26px; border-radius: 6px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-tile svg { width: 15px; height: 15px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-tile[data-tone="urgent"] { background: #FEF0EE; color: #B42318; }
@@ -452,7 +452,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .nv-row__text { display: flex; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .nv-row__title:has(+ .nv-row__meta)::after { content: "\00a0·"; color: #8A8A87; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .nv-row__status { display: none; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-row[data-selected] .nv-row { background: #F6F6F4; box-shadow: inset 2px 0 0 #111; border-left: 0; outline: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-row[data-selected] .nv-row { background: #F6F6F4; box-shadow: inset 2px 0 0 #111; border-left: 0; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-row[data-selected]::before, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-row[data-selected]::after { content: none; display: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .cm-disclosure .nv-rows .nv-row { padding-left: 28px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .cm-more > details > summary { min-height: 44px; padding: 8px 16px; font: 500 0.8438rem/1.125rem var(--cm-sys); display: flex; align-items: center; }
@@ -470,7 +470,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   /* The detail pane: name and condition, label and value columns, plain note, small buttons. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-detail { padding: 0; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-detail__head { gap: 14px; align-items: center; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-detail__head .nv-avatar { width: 44px; height: 44px; font-size: 1rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-detail__head .nv-avatar { width: 2.75rem; height: 2.75rem; font-size: 1rem; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-detail__title { font: 600 1.25rem/1.625rem var(--cm-sys); letter-spacing: -.3px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-detail__status { margin-top: 4px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-detail__status .nv-status { font: 400 0.8438rem/1.125rem var(--cm-sys); }
@@ -562,7 +562,8 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 @media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-filter[aria-pressed="true"] { color: #111; background: none; box-shadow: inset 0 -2px 0 #111; }
   /* Section tabs keep the row the band used to reserve for them, above the title, so nothing overlaps. */
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .page-frame:has(> .section-tabs) [data-nv-page] > .nv-pageband { padding-top: 48px; }
+  /* r4 P2-B: only where the section tabs show (Timecards and the review hide theirs). */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .page-frame:has(> .section-tabs):not(:has(> .cm-timecards, .premium-review)) [data-nv-page] > .nv-pageband { padding-top: 48px; }
   /* Card headers with a description stack title and description, left-aligned, with room above and below. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-card__head:has(> p.nv-card__meta) { flex-direction: column; align-items: flex-start; gap: 4px; min-height: 0; padding: 12px 20px; }
   /* One inset: card headers and bodies at 20px, as the pages' own content (rebuilt pages keep the mockup's 16px). */
@@ -590,8 +591,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 /* P2.15: one card width for every Time off tab (a single pending card spans the row). */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wa-grid:has(> :only-child) { grid-template-columns: minmax(0, 1fr); }
 /* P2.13 / P3: avatars scale with text, so initials never spill at 200%. */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-avatar { width: 2.25rem; height: 2.25rem; min-width: 2.25rem; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-row .nv-avatar { width: 2rem; height: 2rem; min-width: 2rem; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-avatar { width: 2.25rem; height: 2.25rem; flex-shrink: 0; aspect-ratio: 1; }
 /* P2.17: the person page's Details/Scheduling switch is the same control as the other filters. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wa-segments { display: flex; flex-wrap: nowrap; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wa-segment[aria-selected="true"], html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wa-segment[aria-current] { font-weight: 600; }
@@ -630,11 +630,17 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .premium-team .nv-rows > li > .nv-row > .nv-row__text { align-items: center; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .premium-team-find .premium-team-form { padding-top: 16px; }
   /* P2.5: 44px hit areas on desktop controls drawn smaller (no visual change). */
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-tc-kbtn, .cm-tc-btn, .cm-tc-period, .cm-tc-tabs button, .cm-tc-person, .cm-refresh, .cm-insights a, .cm-add-shift) { position: relative; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-tc-kbtn, .cm-tc-btn, .cm-tc-period, .cm-tc-tabs button, .cm-tc-person, .cm-refresh, .cm-insights a, .cm-add-shift)::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; }
+  /* r4 P1-A: the period picker's hit area is on its summary (a .cm-tc-kbtn), so a click toggles it. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-tc-kbtn, .cm-tc-btn, .cm-tc-tabs button, .cm-tc-person, .cm-refresh, .cm-insights a, .cm-add-shift) { position: relative; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-tc-kbtn, .cm-tc-btn, .cm-tc-tabs button, .cm-tc-person, .cm-refresh, .cm-insights a, .cm-add-shift)::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; }
+  /* r4 P2-E: the 30px steppers get a 44px-wide hit area (7px each side, inside the 8px gaps). */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools .cm-tc-step::after { left: -7px; right: -7px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-dates .nv-btn { min-height: 44px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-hit { display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; margin: -12px -8px; cursor: pointer; }
   /* P2.7: at narrow desktop widths the Timecards person names stay on one line. */
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-person { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  /* r4 P2-E: the name ellipsises, not the button, so the button's 44px hit area isn't clipped. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-person { white-space: nowrap; overflow: visible; max-width: 100%; min-width: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-person > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 @media (min-width: 761px) and (max-width: 999px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-table :is(th, td):nth-child(3) { display: none; }
@@ -646,7 +652,8 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 @media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* P2.8: on desktop the decision bar is as wide as the cards and has no grey strip. */
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .page-frame [data-nv-page] .nv-actionbar { margin-inline: 0; padding-inline: 0; background: none; }
+  /* r4 SET P1: only the review's decision bar; Settings save bars keep their own strip. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .page-frame .premium-review .nv-actionbar.premium-review-actions { margin-inline: 0; padding-inline: 0; background: none; }
 }
 /* P2.16: Availability's filter chips are the shared segmented control (phones) and underline tabs (desktop); rows follow the Inbox. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wa-chips { display: flex; flex-wrap: nowrap; }
@@ -817,4 +824,30 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 /* Phones: the placeholder rows say "loading"; the words stay for screen readers so the header doesn't wrap at large text and jump when the data lands (QA h8). */
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-loading-meta { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+
+/* ===== Coordinator QA r4 ===== */
+/* Segmented tracks (TC P2-D, REQ P2-3/P2-4, SET P2.12 and tracks): segments share the width while their labels fit and never
+ * shrink below a label; when they can't fit, the track scrolls and fades on the edge it continues past. The fade is a
+ * scroll-driven animation, so it shows only on a track that really scrolls (no scroll timeline, no fade). */
+@keyframes cm-track-fade {
+  0% { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+  2%, 98% { -webkit-mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 28px), transparent); }
+  100% { -webkit-mask-image: linear-gradient(to right, transparent, #000 24px); mask-image: linear-gradient(to right, transparent, #000 24px); }
+}
+/* Counts inside a segment are plain numbers after the label, as on the Inbox (no grey chips). */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.updates-filter-count, [class*="notification-inbox-module"][class*="__count"]) { display: inline; min-width: 0; height: auto; margin: 0 0 0 5px; padding: 0; border: 0; border-radius: 0; background: none; color: var(--cm-label-2); font: inherit; font-weight: 400; font-variant-numeric: tabular-nums; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wc-pills, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .wa-chips, .wa-segments) { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: none; mask-image: none; animation: cm-track-fade linear both; animation-timeline: scroll(self inline); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wc-pills, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .wa-chips, .wa-segments) > :is(a, button, .nv-filter, .wa-chip, .wa-segment) { flex: 1 1 0; min-width: max-content; padding-inline: 10px; overflow: visible; text-overflow: clip; white-space: nowrap; }
+}
+@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* Desktop underline tabs that can't fit (Availability at 768) scroll with the same fade, so focus never lands on a cut tab. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.wa-chips, .wc-pills, .wa-segments) { overflow-x: auto; scrollbar-width: none; animation: cm-track-fade linear both; animation-timeline: scroll(self inline); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.wa-chips, .wc-pills, .wa-segments) > * { flex-shrink: 0; }
+}
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wc-pills, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .wa-chips, .wa-segments)::-webkit-scrollbar { display: none; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  /* Settings pages at 320: the back link and the page action wrap rather than run past the edge. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-pageband__bar { flex-wrap: wrap; row-gap: 8px; min-width: 0; }
 }

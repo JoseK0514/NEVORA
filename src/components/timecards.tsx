@@ -264,7 +264,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         <form onSubmit={chooseDates} className="cm-tc-dates">
           <label>Period start<input type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
           <label>Period end<input type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
-          <button className="cm-tc-btn" data-kind="primary" disabled={paused||busy||!!pending}>View period</button>
+          <button type="submit" className="nv-btn" data-kind="primary" disabled={paused||busy||!!pending}>View period</button>
         </form>
       </details>
       <button type="button" className="cm-tc-kbtn cm-tc-step" aria-label="Next period" disabled={paused||busy||!!pending} onClick={()=>goTo(shiftPeriod(period,1))}><CaretRightIcon size={13} weight="bold" aria-hidden="true"/></button>

@@ -16,6 +16,8 @@ import "./premium-clean-manager.css";
 import "./clean-manager/schedule.css";
 import "./clean-manager/timecards.css";
 import "./clean-manager/insights.css";
+import "./clean-manager/updates.css";
+import "./clean-manager/notifications.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
