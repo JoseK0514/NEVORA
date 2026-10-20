@@ -69,11 +69,13 @@ function KitRow({ entry }: { entry: InboxEntry }) {
   </li>;
 }
 
-/** Review links remember the Inbox filter, so Back and the decision return to it (IS-14). */
-function withFilter(href: string, filter: InboxFilter) {
+/** Review links remember the Inbox filter, so Back and the decision return to it (IS-14),
+ * and the row they came from, so Back to Inbox reselects it (IS-P4-11; the review reads `item`). */
+function withFilter(href: string, filter: InboxFilter, item?: string) {
   const url = new URL(href, "https://nevora.invalid");
   if (url.pathname !== "/app/requests") return href;
   url.searchParams.set("filter", filter);
+  if (item) url.searchParams.set("item", item);
   url.hash = "";
   return url.pathname + url.search;
 }
@@ -120,7 +122,7 @@ function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZon
   const action = actionCenterNavigation(item);
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
   const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
-  return { key: item.id, href: withFilter(action.href, filter), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
+  return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
     leading: request && shown.person ? <Avatar initials={initials(shown.person)} waiting /> : <Tile tone={urgent ? "urgent" : request ? "review" : "neutral"}><Icon size={20} weight="bold" /></Tile>,
     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
     status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,

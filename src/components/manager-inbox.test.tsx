@@ -22,8 +22,9 @@ it('lists exceptions before requests and sends every decision to its full review
   expect(output).not.toContain('name="decision"');
   expect(output).not.toContain('<form');
   expect(output).not.toContain('swipe');
-  // The review link remembers the Inbox filter (IS-14) and carries no dead fragment (IS-18).
-  expect(output).toContain('href="/app/requests?tab=pending&amp;requestId=r1&amp;filter=all"');
+  // The review link remembers the Inbox filter (IS-14) and its own row (IS-P4-11), and carries no dead fragment (IS-18).
+  expect(output).toContain('href="/app/requests?tab=pending&amp;requestId=r1&amp;filter=all&amp;item=TIME_OFF%3Ar1"');
+  expect(output).not.toContain('requestId=r1&amp;filter=all"');
   expect(output).toContain('class="inbox-row" data-urgent="true"');
   expect(output).toContain('Updated <time dateTime="2026-10-16T14:30:00Z">10:30 AM</time>');
   // F4: the action is a link line; the condition is a pill.
