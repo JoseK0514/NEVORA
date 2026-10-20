@@ -1,0 +1,5074 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "scope": "Supplemental cold-link contract/compact-card geometry observation; no152/72 credit",
+  "cases": [
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "classification": "Cold public-link gate expectation versus source private-read suppression; no automatic product finding from a contract collision",
+      "assertions": [
+        {
+          "message": "Current gate expectation: cold Home public My time link is visible",
+          "passed": false,
+          "detail": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 775,
+              "width": 88,
+              "height": 44,
+              "top": 775,
+              "right": 354,
+              "bottom": 819,
+              "left": 266
+            }
+          }
+        },
+        {
+          "message": "Cold private recorded-time body is suppressed by source loading state",
+          "passed": true,
+          "detail": {
+            "visibility": "hidden",
+            "homeState": "loading"
+          }
+        },
+        {
+          "message": "After genuine Home read the public My time link is visible while own time read stays held",
+          "passed": true,
+          "detail": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 781,
+              "width": 88,
+              "height": 44,
+              "top": 781,
+              "right": 354,
+              "bottom": 825,
+              "left": 266
+            }
+          }
+        },
+        {
+          "message": "Actual compact own-time loading and ready keep footer within1px",
+          "passed": true,
+          "detail": {
+            "before": {
+              "text": "Recorded punches only.\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 757,
+                "width": 318,
+                "height": 68,
+                "top": 757,
+                "right": 354,
+                "bottom": 825,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "after": {
+              "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 757,
+                "width": 318,
+                "height": 68,
+                "top": 757,
+                "right": 354,
+                "bottom": 825,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "delta": 0
+          }
+        },
+        {
+          "message": "Both real actor-owned GETs return200",
+          "passed": true,
+          "detail": [
+            {
+              "path": "/api/employee/home",
+              "method": "GET",
+              "status": 200
+            },
+            {
+              "path": "/api/employee/my-time",
+              "method": "GET",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "http": [
+        {
+          "path": "/api/employee/home",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/employee/my-time",
+          "method": "GET",
+          "status": 200
+        }
+      ],
+      "states": {
+        "home-held-cold": {
+          "at": 5269.700000001118,
+          "homeState": "loading",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 638,
+              "width": 358,
+              "height": 189,
+              "top": 638,
+              "right": 374,
+              "bottom": 827,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "link": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 775,
+              "width": 88,
+              "height": 44,
+              "top": 775,
+              "right": 354,
+              "bottom": 819,
+              "left": 266
+            }
+          },
+          "loadingCopy": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 689,
+              "width": 318,
+              "height": 48,
+              "top": 689,
+              "right": 354,
+              "bottom": 737,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": false
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "",
+            "box": {
+              "x": 330,
+              "y": 659,
+              "width": 24,
+              "height": 28,
+              "top": 659,
+              "right": 354,
+              "bottom": 687,
+              "left": 330
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": false
+          },
+          "footer": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 745,
+              "width": 318,
+              "height": 74,
+              "top": 745,
+              "right": 354,
+              "bottom": 819,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 843,
+              "width": 358,
+              "height": 0,
+              "top": 843,
+              "right": 374,
+              "bottom": 843,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Home\n\nChecking your shifts…\n\n ",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/chromium-AUDIT-E-390-t100-home-held-cold.png"
+        },
+        "home-ready-time-held": {
+          "at": 8332.300000000745,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 650,
+              "width": 358,
+              "height": 183,
+              "top": 650,
+              "right": 374,
+              "bottom": 833,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 781,
+              "width": 88,
+              "height": 44,
+              "top": 781,
+              "right": 354,
+              "bottom": 825,
+              "left": 266
+            }
+          },
+          "loadingCopy": {
+            "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+            "box": {
+              "x": 36,
+              "y": 701,
+              "width": 318,
+              "height": 48,
+              "top": 701,
+              "right": 354,
+              "bottom": 749,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "–",
+            "box": {
+              "x": 330,
+              "y": 671,
+              "width": 24,
+              "height": 28,
+              "top": 671,
+              "right": 354,
+              "bottom": 699,
+              "left": 330
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Recorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 757,
+              "width": 318,
+              "height": 68,
+              "top": 757,
+              "right": 354,
+              "bottom": 825,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n3 items\nSchedule updated\nWeek of Mon, Oct 19\nReview needed\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n6 items\nTime off waiting · Dec 18, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off waiting · Oct 29, 2026 – Oct 30, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off withdrawn · Nov 28, 2026\nRecorded Sat, Oct 17, 7:22 PM\nView all activity (3 more)",
+            "box": {
+              "x": 16,
+              "y": 849,
+              "width": 358,
+              "height": 1137,
+              "top": 849,
+              "right": 374,
+              "bottom": 1986,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/chromium-AUDIT-E-390-t100-home-ready-time-held.png"
+        },
+        "own-time-ready": {
+          "at": 12174.400000000373,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 650,
+              "width": 358,
+              "height": 183,
+              "top": 650,
+              "right": 374,
+              "bottom": 833,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 781,
+              "width": 88,
+              "height": 44,
+              "top": 781,
+              "right": 354,
+              "bottom": 825,
+              "left": 266
+            }
+          },
+          "loadingCopy": null,
+          "readyCopy": {
+            "text": "No open time entry was recorded at the last check.",
+            "box": {
+              "x": 36,
+              "y": 701,
+              "width": 318,
+              "height": 48,
+              "top": 701,
+              "right": 354,
+              "bottom": 749,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "15px",
+            "lineHeight": "24px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "badge": {
+            "text": "Off clock",
+            "box": {
+              "x": 273,
+              "y": 671,
+              "width": 81,
+              "height": 28,
+              "top": 671,
+              "right": 354,
+              "bottom": 699,
+              "left": 273
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 757,
+              "width": 318,
+              "height": 68,
+              "top": 757,
+              "right": 354,
+              "bottom": 825,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n3 items\nSchedule updated\nWeek of Mon, Oct 19\nReview needed\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n6 items\nTime off waiting · Dec 18, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off waiting · Oct 29, 2026 – Oct 30, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off withdrawn · Nov 28, 2026\nRecorded Sat, Oct 17, 7:22 PM\nView all activity (3 more)",
+            "box": {
+              "x": 16,
+              "y": 849,
+              "width": 358,
+              "height": 1137,
+              "top": 849,
+              "right": 374,
+              "bottom": 1986,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [
+            {
+              "at": 11694.700000001118,
+              "value": 0.00046533787858106724,
+              "recent": false,
+              "sources": [
+                {
+                  "node": "SPAN.employee-time-badge",
+                  "previous": {
+                    "x": 330,
+                    "y": 671,
+                    "width": 24,
+                    "height": 28,
+                    "top": 671,
+                    "right": 354,
+                    "bottom": 699,
+                    "left": 330
+                  },
+                  "current": {
+                    "x": 273,
+                    "y": 671,
+                    "width": 81,
+                    "height": 28,
+                    "top": 671,
+                    "right": 354,
+                    "bottom": 699,
+                    "left": 273
+                  }
+                }
+              ]
+            }
+          ],
+          "crop": "cold-recorded-time/chromium-AUDIT-E-390-t100-own-time-ready.png"
+        }
+      },
+      "footerDeltaY": 0,
+      "slotDeltaHeight": 0,
+      "copy": {
+        "before": {
+          "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+          "box": {
+            "x": 36,
+            "y": 701,
+            "width": 318,
+            "height": 48,
+            "top": 701,
+            "right": 354,
+            "bottom": 749,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "14px",
+          "lineHeight": "21px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        },
+        "after": {
+          "text": "No open time entry was recorded at the last check.",
+          "box": {
+            "x": 36,
+            "y": 701,
+            "width": 318,
+            "height": 48,
+            "top": 701,
+            "right": 354,
+            "bottom": 749,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        }
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "classification": "Cold public-link gate expectation versus source private-read suppression; no automatic product finding from a contract collision",
+      "assertions": [
+        {
+          "message": "Current gate expectation: cold Home public My time link is visible",
+          "passed": false,
+          "detail": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 775,
+              "width": 88,
+              "height": 44,
+              "top": 775,
+              "right": 354,
+              "bottom": 819,
+              "left": 266
+            }
+          }
+        },
+        {
+          "message": "Cold private recorded-time body is suppressed by source loading state",
+          "passed": true,
+          "detail": {
+            "visibility": "hidden",
+            "homeState": "loading"
+          }
+        },
+        {
+          "message": "After genuine Home read the public My time link is visible while own time read stays held",
+          "passed": true,
+          "detail": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 811,
+              "width": 88,
+              "height": 44,
+              "top": 811,
+              "right": 354,
+              "bottom": 855,
+              "left": 266
+            }
+          }
+        },
+        {
+          "message": "Actual compact own-time loading and ready keep footer within1px",
+          "passed": true,
+          "detail": {
+            "before": {
+              "text": "Recorded punches only.\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 787,
+                "width": 318,
+                "height": 68,
+                "top": 787,
+                "right": 354,
+                "bottom": 855,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": false
+            },
+            "after": {
+              "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 787,
+                "width": 318,
+                "height": 68,
+                "top": 787,
+                "right": 354,
+                "bottom": 855,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": false
+            },
+            "delta": 0
+          }
+        },
+        {
+          "message": "Both real actor-owned GETs return200",
+          "passed": true,
+          "detail": [
+            {
+              "path": "/api/employee/home",
+              "method": "GET",
+              "status": 200
+            },
+            {
+              "path": "/api/employee/my-time",
+              "method": "GET",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "http": [
+        {
+          "path": "/api/employee/home",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/employee/my-time",
+          "method": "GET",
+          "status": 200
+        }
+      ],
+      "states": {
+        "home-held-cold": {
+          "at": 4463.799999998882,
+          "homeState": "loading",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 638,
+              "width": 358,
+              "height": 189,
+              "top": 638,
+              "right": 374,
+              "bottom": 827,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "link": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 775,
+              "width": 88,
+              "height": 44,
+              "top": 775,
+              "right": 354,
+              "bottom": 819,
+              "left": 266
+            }
+          },
+          "loadingCopy": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 689,
+              "width": 318,
+              "height": 48,
+              "top": 689,
+              "right": 354,
+              "bottom": 737,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": false
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "",
+            "box": {
+              "x": 330,
+              "y": 659,
+              "width": 24,
+              "height": 28,
+              "top": 659,
+              "right": 354,
+              "bottom": 687,
+              "left": 330
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": false
+          },
+          "footer": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 745,
+              "width": 318,
+              "height": 74,
+              "top": 745,
+              "right": 354,
+              "bottom": 819,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 843,
+              "width": 358,
+              "height": 0,
+              "top": 843,
+              "right": 374,
+              "bottom": 843,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Home\n\nChecking your shifts…\n\n ",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [
+            {
+              "at": 1464.199999999255,
+              "value": 0.00019532701076242326,
+              "recent": true,
+              "sources": [
+                {
+                  "node": "SPAN.login-brand-lockup",
+                  "previous": {
+                    "x": 16,
+                    "y": 25.484375,
+                    "width": 136,
+                    "height": 17.015625,
+                    "top": 25.484375,
+                    "right": 152,
+                    "bottom": 42.5,
+                    "left": 16
+                  },
+                  "current": {
+                    "x": 16,
+                    "y": 14.984375,
+                    "width": 136,
+                    "height": 38.015625,
+                    "top": 14.984375,
+                    "right": 152,
+                    "bottom": 53,
+                    "left": 16
+                  }
+                }
+              ]
+            }
+          ],
+          "crop": "cold-recorded-time/chromium-AUDIT-LEAD-390-t100-home-held-cold.png"
+        },
+        "home-ready-time-held": {
+          "at": 7907.299999998882,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 680,
+              "width": 358,
+              "height": 183,
+              "top": 680,
+              "right": 374,
+              "bottom": 863,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 811,
+              "width": 88,
+              "height": 44,
+              "top": 811,
+              "right": 354,
+              "bottom": 855,
+              "left": 266
+            }
+          },
+          "loadingCopy": {
+            "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+            "box": {
+              "x": 36,
+              "y": 731,
+              "width": 318,
+              "height": 48,
+              "top": 731,
+              "right": 354,
+              "bottom": 779,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "–",
+            "box": {
+              "x": 330,
+              "y": 701,
+              "width": 24,
+              "height": 28,
+              "top": 701,
+              "right": 354,
+              "bottom": 729,
+              "left": 330
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Recorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 787,
+              "width": 318,
+              "height": 68,
+              "top": 787,
+              "right": 354,
+              "bottom": 855,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "To do\n3 items\nSchedule updated\nWeek of Mon, Oct 19\nReview needed\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n2 items\nTime off waiting · Dec 20, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off approved · Nov 10, 2026 – Nov 11, 2026\nRecorded Sat, Oct 17, 7:22 PM",
+            "box": {
+              "x": 16,
+              "y": 879,
+              "width": 358,
+              "height": 992,
+              "top": 879,
+              "right": 374,
+              "bottom": 1871,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Taylor.\n\nNext shift tomorrow at 9:00 AM.\n\n3 items need your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [
+            {
+              "at": 1464.199999999255,
+              "value": 0.00019532701076242326,
+              "recent": true,
+              "sources": [
+                {
+                  "node": "SPAN.login-brand-lockup",
+                  "previous": {
+                    "x": 16,
+                    "y": 25.484375,
+                    "width": 136,
+                    "height": 17.015625,
+                    "top": 25.484375,
+                    "right": 152,
+                    "bottom": 42.5,
+                    "left": 16
+                  },
+                  "current": {
+                    "x": 16,
+                    "y": 14.984375,
+                    "width": 136,
+                    "height": 38.015625,
+                    "top": 14.984375,
+                    "right": 152,
+                    "bottom": 53,
+                    "left": 16
+                  }
+                }
+              ]
+            }
+          ],
+          "crop": "cold-recorded-time/chromium-AUDIT-LEAD-390-t100-home-ready-time-held.png"
+        },
+        "own-time-ready": {
+          "at": 9129.099999999627,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 680,
+              "width": 358,
+              "height": 183,
+              "top": 680,
+              "right": 374,
+              "bottom": 863,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 811,
+              "width": 88,
+              "height": 44,
+              "top": 811,
+              "right": 354,
+              "bottom": 855,
+              "left": 266
+            }
+          },
+          "loadingCopy": null,
+          "readyCopy": {
+            "text": "No open time entry was recorded at the last check.",
+            "box": {
+              "x": 36,
+              "y": 731,
+              "width": 318,
+              "height": 48,
+              "top": 731,
+              "right": 354,
+              "bottom": 779,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "15px",
+            "lineHeight": "24px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "badge": {
+            "text": "Off clock",
+            "box": {
+              "x": 273,
+              "y": 701,
+              "width": 81,
+              "height": 28,
+              "top": 701,
+              "right": 354,
+              "bottom": 729,
+              "left": 273
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 787,
+              "width": 318,
+              "height": 68,
+              "top": 787,
+              "right": 354,
+              "bottom": 855,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "To do\n3 items\nSchedule updated\nWeek of Mon, Oct 19\nReview needed\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n2 items\nTime off waiting · Dec 20, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off approved · Nov 10, 2026 – Nov 11, 2026\nRecorded Sat, Oct 17, 7:22 PM",
+            "box": {
+              "x": 16,
+              "y": 879,
+              "width": 358,
+              "height": 992,
+              "top": 879,
+              "right": 374,
+              "bottom": 1871,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Taylor.\n\nNext shift tomorrow at 9:00 AM.\n\n3 items need your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [
+            {
+              "at": 1464.199999999255,
+              "value": 0.00019532701076242326,
+              "recent": true,
+              "sources": [
+                {
+                  "node": "SPAN.login-brand-lockup",
+                  "previous": {
+                    "x": 16,
+                    "y": 25.484375,
+                    "width": 136,
+                    "height": 17.015625,
+                    "top": 25.484375,
+                    "right": 152,
+                    "bottom": 42.5,
+                    "left": 16
+                  },
+                  "current": {
+                    "x": 16,
+                    "y": 14.984375,
+                    "width": 136,
+                    "height": 38.015625,
+                    "top": 14.984375,
+                    "right": 152,
+                    "bottom": 53,
+                    "left": 16
+                  }
+                }
+              ]
+            },
+            {
+              "at": 8519.199999999255,
+              "value": 0.00046533787858106724,
+              "recent": false,
+              "sources": [
+                {
+                  "node": "SPAN.employee-time-badge",
+                  "previous": {
+                    "x": 330,
+                    "y": 701,
+                    "width": 24,
+                    "height": 28,
+                    "top": 701,
+                    "right": 354,
+                    "bottom": 729,
+                    "left": 330
+                  },
+                  "current": {
+                    "x": 273,
+                    "y": 701,
+                    "width": 81,
+                    "height": 28,
+                    "top": 701,
+                    "right": 354,
+                    "bottom": 729,
+                    "left": 273
+                  }
+                }
+              ]
+            }
+          ],
+          "crop": "cold-recorded-time/chromium-AUDIT-LEAD-390-t100-own-time-ready.png"
+        }
+      },
+      "footerDeltaY": 0,
+      "slotDeltaHeight": 0,
+      "copy": {
+        "before": {
+          "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+          "box": {
+            "x": 36,
+            "y": 731,
+            "width": 318,
+            "height": 48,
+            "top": 731,
+            "right": 354,
+            "bottom": 779,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "14px",
+          "lineHeight": "21px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        },
+        "after": {
+          "text": "No open time entry was recorded at the last check.",
+          "box": {
+            "x": 36,
+            "y": 731,
+            "width": 318,
+            "height": 48,
+            "top": 731,
+            "right": 354,
+            "bottom": 779,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        }
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "payroll-qa-a",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "classification": "Cold public-link gate expectation versus source private-read suppression; no automatic product finding from a contract collision",
+      "assertions": [
+        {
+          "message": "Current gate expectation: cold Home public My time link is visible",
+          "passed": false,
+          "detail": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 817,
+              "width": 88,
+              "height": 44,
+              "top": 817,
+              "right": 284,
+              "bottom": 861,
+              "left": 196
+            }
+          }
+        },
+        {
+          "message": "Cold private recorded-time body is suppressed by source loading state",
+          "passed": true,
+          "detail": {
+            "visibility": "hidden",
+            "homeState": "loading"
+          }
+        },
+        {
+          "message": "After genuine Home read the public My time link is visible while own time read stays held",
+          "passed": true,
+          "detail": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 590,
+              "width": 88,
+              "height": 44,
+              "top": 590,
+              "right": 284,
+              "bottom": 634,
+              "left": 196
+            }
+          }
+        },
+        {
+          "message": "Actual compact own-time loading and ready keep footer within1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "text": "Recorded punches only.\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 566,
+                "width": 248,
+                "height": 68,
+                "top": 566,
+                "right": 284,
+                "bottom": 634,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "after": {
+              "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 554,
+                "width": 248,
+                "height": 68,
+                "top": 554,
+                "right": 284,
+                "bottom": 622,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "delta": -12
+          }
+        },
+        {
+          "message": "Both real actor-owned GETs return200",
+          "passed": true,
+          "detail": [
+            {
+              "path": "/api/employee/home",
+              "method": "GET",
+              "status": 200
+            },
+            {
+              "path": "/api/employee/my-time",
+              "method": "GET",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "http": [
+        {
+          "path": "/api/employee/home",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/employee/my-time",
+          "method": "GET",
+          "status": 200
+        }
+      ],
+      "states": {
+        "home-held-cold": {
+          "at": 3250.199999999255,
+          "homeState": "loading",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 662,
+              "width": 288,
+              "height": 207,
+              "top": 662,
+              "right": 304,
+              "bottom": 869,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "link": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 817,
+              "width": 88,
+              "height": 44,
+              "top": 817,
+              "right": 284,
+              "bottom": 861,
+              "left": 196
+            }
+          },
+          "loadingCopy": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 713,
+              "width": 248,
+              "height": 66,
+              "top": 713,
+              "right": 284,
+              "bottom": 779,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": false
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "",
+            "box": {
+              "x": 260,
+              "y": 683,
+              "width": 24,
+              "height": 28,
+              "top": 683,
+              "right": 284,
+              "bottom": 711,
+              "left": 260
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": false
+          },
+          "footer": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 787,
+              "width": 248,
+              "height": 74,
+              "top": 787,
+              "right": 284,
+              "bottom": 861,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 885,
+              "width": 288,
+              "height": 0,
+              "top": 885,
+              "right": 304,
+              "bottom": 885,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Home\n\nChecking your shifts…\n\n ",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/chromium-payroll-qa-a-320-t100-home-held-cold.png"
+        },
+        "home-ready-time-held": {
+          "at": 4758.5999999996275,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 447,
+              "width": 288,
+              "height": 195,
+              "top": 447,
+              "right": 304,
+              "bottom": 642,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 590,
+              "width": 88,
+              "height": 44,
+              "top": 590,
+              "right": 284,
+              "bottom": 634,
+              "left": 196
+            }
+          },
+          "loadingCopy": {
+            "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+            "box": {
+              "x": 36,
+              "y": 498,
+              "width": 248,
+              "height": 60,
+              "top": 498,
+              "right": 284,
+              "bottom": 558,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "–",
+            "box": {
+              "x": 260,
+              "y": 468,
+              "width": 24,
+              "height": 28,
+              "top": 468,
+              "right": 284,
+              "bottom": 496,
+              "left": 260
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Recorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 566,
+              "width": 248,
+              "height": 68,
+              "top": 566,
+              "right": 284,
+              "bottom": 634,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.",
+            "box": {
+              "x": 16,
+              "y": 658,
+              "width": 288,
+              "height": 681,
+              "top": 658,
+              "right": 304,
+              "bottom": 1339,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, María José.\n\nNo published shifts coming up.\n\n1 item needs your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/chromium-payroll-qa-a-320-t100-home-ready-time-held.png"
+        },
+        "own-time-ready": {
+          "at": 5642.0999999996275,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 447,
+              "width": 288,
+              "height": 183,
+              "top": 447,
+              "right": 304,
+              "bottom": 630,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 578,
+              "width": 88,
+              "height": 44,
+              "top": 578,
+              "right": 284,
+              "bottom": 622,
+              "left": 196
+            }
+          },
+          "loadingCopy": null,
+          "readyCopy": {
+            "text": "No open time entry was recorded at the last check.",
+            "box": {
+              "x": 36,
+              "y": 498,
+              "width": 248,
+              "height": 48,
+              "top": 498,
+              "right": 284,
+              "bottom": 546,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "15px",
+            "lineHeight": "24px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "badge": {
+            "text": "Off clock",
+            "box": {
+              "x": 203,
+              "y": 468,
+              "width": 81,
+              "height": 28,
+              "top": 468,
+              "right": 284,
+              "bottom": 496,
+              "left": 203
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 554,
+              "width": 248,
+              "height": 68,
+              "top": 554,
+              "right": 284,
+              "bottom": 622,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.",
+            "box": {
+              "x": 16,
+              "y": 646,
+              "width": 288,
+              "height": 681,
+              "top": 646,
+              "right": 304,
+              "bottom": 1327,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, María José.\n\nNo published shifts coming up.\n\n1 item needs your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [
+            {
+              "at": 5146.799999998882,
+              "value": 0.022620206615978976,
+              "recent": false,
+              "sources": [
+                {
+                  "node": "DIV.employee-home-reviewed-module__k4entG__sideColumn",
+                  "previous": {
+                    "x": 0,
+                    "y": 630,
+                    "width": 320,
+                    "height": 214,
+                    "top": 630,
+                    "right": 320,
+                    "bottom": 844,
+                    "left": 0
+                  },
+                  "current": {
+                    "x": 0,
+                    "y": 618,
+                    "width": 320,
+                    "height": 226,
+                    "top": 618,
+                    "right": 320,
+                    "bottom": 844,
+                    "left": 0
+                  }
+                },
+                {
+                  "node": "FOOTER.employee-time-footer",
+                  "previous": {
+                    "x": 36,
+                    "y": 566,
+                    "width": 248,
+                    "height": 68,
+                    "top": 566,
+                    "right": 284,
+                    "bottom": 634,
+                    "left": 36
+                  },
+                  "current": {
+                    "x": 36,
+                    "y": 554,
+                    "width": 248,
+                    "height": 68,
+                    "top": 554,
+                    "right": 284,
+                    "bottom": 622,
+                    "left": 36
+                  }
+                },
+                {
+                  "node": "SPAN.employee-time-badge",
+                  "previous": {
+                    "x": 260,
+                    "y": 468,
+                    "width": 24,
+                    "height": 28,
+                    "top": 468,
+                    "right": 284,
+                    "bottom": 496,
+                    "left": 260
+                  },
+                  "current": {
+                    "x": 203,
+                    "y": 468,
+                    "width": 81,
+                    "height": 28,
+                    "top": 468,
+                    "right": 284,
+                    "bottom": 496,
+                    "left": 203
+                  }
+                }
+              ]
+            }
+          ],
+          "crop": "cold-recorded-time/chromium-payroll-qa-a-320-t100-own-time-ready.png"
+        }
+      },
+      "footerDeltaY": -12,
+      "slotDeltaHeight": -12,
+      "copy": {
+        "before": {
+          "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+          "box": {
+            "x": 36,
+            "y": 498,
+            "width": 248,
+            "height": 60,
+            "top": 498,
+            "right": 284,
+            "bottom": 558,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "14px",
+          "lineHeight": "21px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        },
+        "after": {
+          "text": "No open time entry was recorded at the last check.",
+          "box": {
+            "x": 36,
+            "y": 498,
+            "width": 248,
+            "height": 48,
+            "top": 498,
+            "right": 284,
+            "bottom": 546,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        }
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "payroll-qa-b",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "classification": "Cold public-link gate expectation versus source private-read suppression; no automatic product finding from a contract collision",
+      "assertions": [
+        {
+          "message": "Current gate expectation: cold Home public My time link is visible",
+          "passed": false,
+          "detail": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 817,
+              "width": 88,
+              "height": 44,
+              "top": 817,
+              "right": 284,
+              "bottom": 861,
+              "left": 196
+            }
+          }
+        },
+        {
+          "message": "Cold private recorded-time body is suppressed by source loading state",
+          "passed": true,
+          "detail": {
+            "visibility": "hidden",
+            "homeState": "loading"
+          }
+        },
+        {
+          "message": "After genuine Home read the public My time link is visible while own time read stays held",
+          "passed": true,
+          "detail": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 590,
+              "width": 88,
+              "height": 44,
+              "top": 590,
+              "right": 284,
+              "bottom": 634,
+              "left": 196
+            }
+          }
+        },
+        {
+          "message": "Actual compact own-time loading and ready keep footer within1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "text": "Recorded punches only.\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 566,
+                "width": 248,
+                "height": 68,
+                "top": 566,
+                "right": 284,
+                "bottom": 634,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "after": {
+              "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 554,
+                "width": 248,
+                "height": 68,
+                "top": 554,
+                "right": 284,
+                "bottom": 622,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "delta": -12
+          }
+        },
+        {
+          "message": "Both real actor-owned GETs return200",
+          "passed": true,
+          "detail": [
+            {
+              "path": "/api/employee/home",
+              "method": "GET",
+              "status": 200
+            },
+            {
+              "path": "/api/employee/my-time",
+              "method": "GET",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "http": [
+        {
+          "path": "/api/employee/home",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/employee/my-time",
+          "method": "GET",
+          "status": 200
+        }
+      ],
+      "states": {
+        "home-held-cold": {
+          "at": 2230.800000000745,
+          "homeState": "loading",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 662,
+              "width": 288,
+              "height": 207,
+              "top": 662,
+              "right": 304,
+              "bottom": 869,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "link": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 817,
+              "width": 88,
+              "height": 44,
+              "top": 817,
+              "right": 284,
+              "bottom": 861,
+              "left": 196
+            }
+          },
+          "loadingCopy": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 713,
+              "width": 248,
+              "height": 66,
+              "top": 713,
+              "right": 284,
+              "bottom": 779,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": false
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "",
+            "box": {
+              "x": 260,
+              "y": 683,
+              "width": 24,
+              "height": 28,
+              "top": 683,
+              "right": 284,
+              "bottom": 711,
+              "left": 260
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": false
+          },
+          "footer": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 787,
+              "width": 248,
+              "height": 74,
+              "top": 787,
+              "right": 284,
+              "bottom": 861,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 885,
+              "width": 288,
+              "height": 0,
+              "top": 885,
+              "right": 304,
+              "bottom": 885,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Home\n\nChecking your shifts…\n\n ",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/chromium-payroll-qa-b-320-t100-home-held-cold.png"
+        },
+        "home-ready-time-held": {
+          "at": 4553.800000000745,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 447,
+              "width": 288,
+              "height": 195,
+              "top": 447,
+              "right": 304,
+              "bottom": 642,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 590,
+              "width": 88,
+              "height": 44,
+              "top": 590,
+              "right": 284,
+              "bottom": 634,
+              "left": 196
+            }
+          },
+          "loadingCopy": {
+            "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+            "box": {
+              "x": 36,
+              "y": 498,
+              "width": 248,
+              "height": 60,
+              "top": 498,
+              "right": 284,
+              "bottom": 558,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "–",
+            "box": {
+              "x": 260,
+              "y": 468,
+              "width": 24,
+              "height": 28,
+              "top": 468,
+              "right": 284,
+              "bottom": 496,
+              "left": 260
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Recorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 566,
+              "width": 248,
+              "height": 68,
+              "top": 566,
+              "right": 284,
+              "bottom": 634,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.",
+            "box": {
+              "x": 16,
+              "y": 658,
+              "width": 288,
+              "height": 681,
+              "top": 658,
+              "right": 304,
+              "bottom": 1339,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Robin.\n\nNo published shifts coming up.\n\n1 item needs your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/chromium-payroll-qa-b-320-t100-home-ready-time-held.png"
+        },
+        "own-time-ready": {
+          "at": 5592.700000001118,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 447,
+              "width": 288,
+              "height": 183,
+              "top": 447,
+              "right": 304,
+              "bottom": 630,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 578,
+              "width": 88,
+              "height": 44,
+              "top": 578,
+              "right": 284,
+              "bottom": 622,
+              "left": 196
+            }
+          },
+          "loadingCopy": null,
+          "readyCopy": {
+            "text": "No open time entry was recorded at the last check.",
+            "box": {
+              "x": 36,
+              "y": 498,
+              "width": 248,
+              "height": 48,
+              "top": 498,
+              "right": 284,
+              "bottom": 546,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "15px",
+            "lineHeight": "24px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "badge": {
+            "text": "Off clock",
+            "box": {
+              "x": 203,
+              "y": 468,
+              "width": 81,
+              "height": 28,
+              "top": 468,
+              "right": 284,
+              "bottom": 496,
+              "left": 203
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 554,
+              "width": 248,
+              "height": 68,
+              "top": 554,
+              "right": 284,
+              "bottom": 622,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.",
+            "box": {
+              "x": 16,
+              "y": 646,
+              "width": 288,
+              "height": 681,
+              "top": 646,
+              "right": 304,
+              "bottom": 1327,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Robin.\n\nNo published shifts coming up.\n\n1 item needs your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [
+            {
+              "at": 5101.5,
+              "value": 0.022620206615978976,
+              "recent": false,
+              "sources": [
+                {
+                  "node": "DIV.employee-home-reviewed-module__k4entG__sideColumn",
+                  "previous": {
+                    "x": 0,
+                    "y": 630,
+                    "width": 320,
+                    "height": 214,
+                    "top": 630,
+                    "right": 320,
+                    "bottom": 844,
+                    "left": 0
+                  },
+                  "current": {
+                    "x": 0,
+                    "y": 618,
+                    "width": 320,
+                    "height": 226,
+                    "top": 618,
+                    "right": 320,
+                    "bottom": 844,
+                    "left": 0
+                  }
+                },
+                {
+                  "node": "FOOTER.employee-time-footer",
+                  "previous": {
+                    "x": 36,
+                    "y": 566,
+                    "width": 248,
+                    "height": 68,
+                    "top": 566,
+                    "right": 284,
+                    "bottom": 634,
+                    "left": 36
+                  },
+                  "current": {
+                    "x": 36,
+                    "y": 554,
+                    "width": 248,
+                    "height": 68,
+                    "top": 554,
+                    "right": 284,
+                    "bottom": 622,
+                    "left": 36
+                  }
+                },
+                {
+                  "node": "SPAN.employee-time-badge",
+                  "previous": {
+                    "x": 260,
+                    "y": 468,
+                    "width": 24,
+                    "height": 28,
+                    "top": 468,
+                    "right": 284,
+                    "bottom": 496,
+                    "left": 260
+                  },
+                  "current": {
+                    "x": 203,
+                    "y": 468,
+                    "width": 81,
+                    "height": 28,
+                    "top": 468,
+                    "right": 284,
+                    "bottom": 496,
+                    "left": 203
+                  }
+                }
+              ]
+            }
+          ],
+          "crop": "cold-recorded-time/chromium-payroll-qa-b-320-t100-own-time-ready.png"
+        }
+      },
+      "footerDeltaY": -12,
+      "slotDeltaHeight": -12,
+      "copy": {
+        "before": {
+          "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+          "box": {
+            "x": 36,
+            "y": 498,
+            "width": 248,
+            "height": 60,
+            "top": 498,
+            "right": 284,
+            "bottom": 558,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "14px",
+          "lineHeight": "21px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        },
+        "after": {
+          "text": "No open time entry was recorded at the last check.",
+          "box": {
+            "x": 36,
+            "y": 498,
+            "width": 248,
+            "height": 48,
+            "top": 498,
+            "right": 284,
+            "bottom": 546,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        }
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "classification": "Cold public-link gate expectation versus source private-read suppression; no automatic product finding from a contract collision",
+      "assertions": [
+        {
+          "message": "Current gate expectation: cold Home public My time link is visible",
+          "passed": false,
+          "detail": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 774.5,
+              "width": 88,
+              "height": 44,
+              "top": 774.5,
+              "right": 354,
+              "bottom": 818.5,
+              "left": 266
+            }
+          }
+        },
+        {
+          "message": "Cold private recorded-time body is suppressed by source loading state",
+          "passed": true,
+          "detail": {
+            "visibility": "hidden",
+            "homeState": "loading"
+          }
+        },
+        {
+          "message": "After genuine Home read the public My time link is visible while own time read stays held",
+          "passed": true,
+          "detail": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 780,
+              "width": 88,
+              "height": 44,
+              "top": 780,
+              "right": 354,
+              "bottom": 824,
+              "left": 266
+            }
+          }
+        },
+        {
+          "message": "Actual compact own-time loading and ready keep footer within1px",
+          "passed": true,
+          "detail": {
+            "before": {
+              "text": "Recorded punches only.\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 756,
+                "width": 318,
+                "height": 68,
+                "top": 756,
+                "right": 354,
+                "bottom": 824,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "after": {
+              "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 756,
+                "width": 318,
+                "height": 68,
+                "top": 756,
+                "right": 354,
+                "bottom": 824,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "delta": 0
+          }
+        },
+        {
+          "message": "Both real actor-owned GETs return200",
+          "passed": true,
+          "detail": [
+            {
+              "path": "/api/employee/home",
+              "method": "GET",
+              "status": 200
+            },
+            {
+              "path": "/api/employee/my-time",
+              "method": "GET",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "http": [
+        {
+          "path": "/api/employee/home",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/employee/my-time",
+          "method": "GET",
+          "status": 200
+        }
+      ],
+      "states": {
+        "home-held-cold": {
+          "at": 2612,
+          "homeState": "loading",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 638,
+              "width": 358,
+              "height": 188.5,
+              "top": 638,
+              "right": 374,
+              "bottom": 826.5,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "link": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 774.5,
+              "width": 88,
+              "height": 44,
+              "top": 774.5,
+              "right": 354,
+              "bottom": 818.5,
+              "left": 266
+            }
+          },
+          "loadingCopy": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 688.5,
+              "width": 318,
+              "height": 48,
+              "top": 688.5,
+              "right": 354,
+              "bottom": 736.5,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": false
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "",
+            "box": {
+              "x": 330.5,
+              "y": 658.5,
+              "width": 23.5,
+              "height": 28,
+              "top": 658.5,
+              "right": 354,
+              "bottom": 686.5,
+              "left": 330.5
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": false
+          },
+          "footer": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 744.5,
+              "width": 318,
+              "height": 74,
+              "top": 744.5,
+              "right": 354,
+              "bottom": 818.5,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 842.5,
+              "width": 358,
+              "height": 0,
+              "top": 842.5,
+              "right": 374,
+              "bottom": 842.5,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Home\n\nChecking your shifts…\n\n ",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-AUDIT-E-390-t100-home-held-cold.png"
+        },
+        "home-ready-time-held": {
+          "at": 5866,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 649.5,
+              "width": 358,
+              "height": 182.5,
+              "top": 649.5,
+              "right": 374,
+              "bottom": 832,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 780,
+              "width": 88,
+              "height": 44,
+              "top": 780,
+              "right": 354,
+              "bottom": 824,
+              "left": 266
+            }
+          },
+          "loadingCopy": {
+            "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+            "box": {
+              "x": 36,
+              "y": 700,
+              "width": 318,
+              "height": 48,
+              "top": 700,
+              "right": 354,
+              "bottom": 748,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "–",
+            "box": {
+              "x": 330.5,
+              "y": 670,
+              "width": 23.5,
+              "height": 28,
+              "top": 670,
+              "right": 354,
+              "bottom": 698,
+              "left": 330.5
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Recorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 756,
+              "width": 318,
+              "height": 68,
+              "top": 756,
+              "right": 354,
+              "bottom": 824,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n3 items\nSchedule updated\nWeek of Mon, Oct 19\nReview needed\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n6 items\nTime off waiting · Dec 18, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off waiting · Oct 29, 2026 – Oct 30, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off withdrawn · Nov 28, 2026\nRecorded Sat, Oct 17, 7:22 PM\nView all activity (3 more)",
+            "box": {
+              "x": 16,
+              "y": 848,
+              "width": 358,
+              "height": 1137,
+              "top": 848,
+              "right": 374,
+              "bottom": 1985,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-AUDIT-E-390-t100-home-ready-time-held.png"
+        },
+        "own-time-ready": {
+          "at": 7445,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 649.5,
+              "width": 358,
+              "height": 182.5,
+              "top": 649.5,
+              "right": 374,
+              "bottom": 832,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 780,
+              "width": 88,
+              "height": 44,
+              "top": 780,
+              "right": 354,
+              "bottom": 824,
+              "left": 266
+            }
+          },
+          "loadingCopy": null,
+          "readyCopy": {
+            "text": "No open time entry was recorded at the last check.",
+            "box": {
+              "x": 36,
+              "y": 700,
+              "width": 318,
+              "height": 48,
+              "top": 700,
+              "right": 354,
+              "bottom": 748,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "15px",
+            "lineHeight": "24px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "badge": {
+            "text": "Off clock",
+            "box": {
+              "x": 273.171875,
+              "y": 670,
+              "width": 80.828125,
+              "height": 28,
+              "top": 670,
+              "right": 354,
+              "bottom": 698,
+              "left": 273.171875
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 756,
+              "width": 318,
+              "height": 68,
+              "top": 756,
+              "right": 354,
+              "bottom": 824,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n3 items\nSchedule updated\nWeek of Mon, Oct 19\nReview needed\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n6 items\nTime off waiting · Dec 18, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off waiting · Oct 29, 2026 – Oct 30, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off withdrawn · Nov 28, 2026\nRecorded Sat, Oct 17, 7:22 PM\nView all activity (3 more)",
+            "box": {
+              "x": 16,
+              "y": 848,
+              "width": 358,
+              "height": 1137,
+              "top": 848,
+              "right": 374,
+              "bottom": 1985,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Alexandra.\n\nNext shift tomorrow at 8:00 AM.\n\n3 items need your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-AUDIT-E-390-t100-own-time-ready.png"
+        }
+      },
+      "footerDeltaY": 0,
+      "slotDeltaHeight": 0,
+      "copy": {
+        "before": {
+          "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+          "box": {
+            "x": 36,
+            "y": 700,
+            "width": 318,
+            "height": 48,
+            "top": 700,
+            "right": 354,
+            "bottom": 748,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "14px",
+          "lineHeight": "21px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        },
+        "after": {
+          "text": "No open time entry was recorded at the last check.",
+          "box": {
+            "x": 36,
+            "y": 700,
+            "width": 318,
+            "height": 48,
+            "top": 700,
+            "right": 354,
+            "bottom": 748,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        }
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "classification": "Cold public-link gate expectation versus source private-read suppression; no automatic product finding from a contract collision",
+      "assertions": [
+        {
+          "message": "Current gate expectation: cold Home public My time link is visible",
+          "passed": false,
+          "detail": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 774.5,
+              "width": 88,
+              "height": 44,
+              "top": 774.5,
+              "right": 354,
+              "bottom": 818.5,
+              "left": 266
+            }
+          }
+        },
+        {
+          "message": "Cold private recorded-time body is suppressed by source loading state",
+          "passed": true,
+          "detail": {
+            "visibility": "hidden",
+            "homeState": "loading"
+          }
+        },
+        {
+          "message": "After genuine Home read the public My time link is visible while own time read stays held",
+          "passed": true,
+          "detail": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 810,
+              "width": 88,
+              "height": 44,
+              "top": 810,
+              "right": 354,
+              "bottom": 854,
+              "left": 266
+            }
+          }
+        },
+        {
+          "message": "Actual compact own-time loading and ready keep footer within1px",
+          "passed": true,
+          "detail": {
+            "before": {
+              "text": "Recorded punches only.\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 786,
+                "width": 318,
+                "height": 68,
+                "top": 786,
+                "right": 354,
+                "bottom": 854,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": false
+            },
+            "after": {
+              "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 786,
+                "width": 318,
+                "height": 68,
+                "top": 786,
+                "right": 354,
+                "bottom": 854,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": false
+            },
+            "delta": 0
+          }
+        },
+        {
+          "message": "Both real actor-owned GETs return200",
+          "passed": true,
+          "detail": [
+            {
+              "path": "/api/employee/home",
+              "method": "GET",
+              "status": 200
+            },
+            {
+              "path": "/api/employee/my-time",
+              "method": "GET",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "http": [
+        {
+          "path": "/api/employee/home",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/employee/my-time",
+          "method": "GET",
+          "status": 200
+        }
+      ],
+      "states": {
+        "home-held-cold": {
+          "at": 3396,
+          "homeState": "loading",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 638,
+              "width": 358,
+              "height": 188.5,
+              "top": 638,
+              "right": 374,
+              "bottom": 826.5,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "link": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 774.5,
+              "width": 88,
+              "height": 44,
+              "top": 774.5,
+              "right": 354,
+              "bottom": 818.5,
+              "left": 266
+            }
+          },
+          "loadingCopy": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 688.5,
+              "width": 318,
+              "height": 48,
+              "top": 688.5,
+              "right": 354,
+              "bottom": 736.5,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": false
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "",
+            "box": {
+              "x": 330.5,
+              "y": 658.5,
+              "width": 23.5,
+              "height": 28,
+              "top": 658.5,
+              "right": 354,
+              "bottom": 686.5,
+              "left": 330.5
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": false
+          },
+          "footer": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 744.5,
+              "width": 318,
+              "height": 74,
+              "top": 744.5,
+              "right": 354,
+              "bottom": 818.5,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 842.5,
+              "width": 358,
+              "height": 0,
+              "top": 842.5,
+              "right": 374,
+              "bottom": 842.5,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Home\n\nChecking your shifts…\n\n ",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-AUDIT-LEAD-390-t100-home-held-cold.png"
+        },
+        "home-ready-time-held": {
+          "at": 6702,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 679.5,
+              "width": 358,
+              "height": 182.5,
+              "top": 679.5,
+              "right": 374,
+              "bottom": 862,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 810,
+              "width": 88,
+              "height": 44,
+              "top": 810,
+              "right": 354,
+              "bottom": 854,
+              "left": 266
+            }
+          },
+          "loadingCopy": {
+            "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+            "box": {
+              "x": 36,
+              "y": 730,
+              "width": 318,
+              "height": 48,
+              "top": 730,
+              "right": 354,
+              "bottom": 778,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "–",
+            "box": {
+              "x": 330.5,
+              "y": 700,
+              "width": 23.5,
+              "height": 28,
+              "top": 700,
+              "right": 354,
+              "bottom": 728,
+              "left": 330.5
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Recorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 786,
+              "width": 318,
+              "height": 68,
+              "top": 786,
+              "right": 354,
+              "bottom": 854,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "To do\n3 items\nSchedule updated\nWeek of Mon, Oct 19\nReview needed\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n2 items\nTime off waiting · Dec 20, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off approved · Nov 10, 2026 – Nov 11, 2026\nRecorded Sat, Oct 17, 7:22 PM",
+            "box": {
+              "x": 16,
+              "y": 878,
+              "width": 358,
+              "height": 992,
+              "top": 878,
+              "right": 374,
+              "bottom": 1870,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Taylor.\n\nNext shift tomorrow at 9:00 AM.\n\n3 items need your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-AUDIT-LEAD-390-t100-home-ready-time-held.png"
+        },
+        "own-time-ready": {
+          "at": 8229,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 679.5,
+              "width": 358,
+              "height": 182.5,
+              "top": 679.5,
+              "right": 374,
+              "bottom": 862,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 266,
+              "y": 810,
+              "width": 88,
+              "height": 44,
+              "top": 810,
+              "right": 354,
+              "bottom": 854,
+              "left": 266
+            }
+          },
+          "loadingCopy": null,
+          "readyCopy": {
+            "text": "No open time entry was recorded at the last check.",
+            "box": {
+              "x": 36,
+              "y": 730,
+              "width": 318,
+              "height": 48,
+              "top": 730,
+              "right": 354,
+              "bottom": 778,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "15px",
+            "lineHeight": "24px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "badge": {
+            "text": "Off clock",
+            "box": {
+              "x": 273.171875,
+              "y": 700,
+              "width": 80.828125,
+              "height": 28,
+              "top": 700,
+              "right": 354,
+              "bottom": 728,
+              "left": 273.171875
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Updated Oct 19, 7:41 PM\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 786,
+              "width": 318,
+              "height": 68,
+              "top": 786,
+              "right": 354,
+              "bottom": 854,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "To do\n3 items\nSchedule updated\nWeek of Mon, Oct 19\nReview needed\nSchedule updated\nWeek of Mon, Oct 26\nReview needed\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n2 items\nTime off waiting · Dec 20, 2026\nRecorded Mon, Oct 19, 7:22 PM\nTime off approved · Nov 10, 2026 – Nov 11, 2026\nRecorded Sat, Oct 17, 7:22 PM",
+            "box": {
+              "x": 16,
+              "y": 878,
+              "width": 358,
+              "height": 992,
+              "top": 878,
+              "right": 374,
+              "bottom": 1870,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Taylor.\n\nNext shift tomorrow at 9:00 AM.\n\n3 items need your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 390,
+              "height": 272,
+              "top": 68,
+              "right": 390,
+              "bottom": 340,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-AUDIT-LEAD-390-t100-own-time-ready.png"
+        }
+      },
+      "footerDeltaY": 0,
+      "slotDeltaHeight": 0,
+      "copy": {
+        "before": {
+          "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+          "box": {
+            "x": 36,
+            "y": 730,
+            "width": 318,
+            "height": 48,
+            "top": 730,
+            "right": 354,
+            "bottom": 778,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "14px",
+          "lineHeight": "21px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        },
+        "after": {
+          "text": "No open time entry was recorded at the last check.",
+          "box": {
+            "x": 36,
+            "y": 730,
+            "width": 318,
+            "height": 48,
+            "top": 730,
+            "right": 354,
+            "bottom": 778,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        }
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "payroll-qa-a",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "classification": "Cold public-link gate expectation versus source private-read suppression; no automatic product finding from a contract collision",
+      "assertions": [
+        {
+          "message": "Current gate expectation: cold Home public My time link is visible",
+          "passed": false,
+          "detail": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 816.5,
+              "width": 88,
+              "height": 44,
+              "top": 816.5,
+              "right": 284,
+              "bottom": 860.5,
+              "left": 196
+            }
+          }
+        },
+        {
+          "message": "Cold private recorded-time body is suppressed by source loading state",
+          "passed": true,
+          "detail": {
+            "visibility": "hidden",
+            "homeState": "loading"
+          }
+        },
+        {
+          "message": "After genuine Home read the public My time link is visible while own time read stays held",
+          "passed": true,
+          "detail": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 589.5,
+              "width": 88,
+              "height": 44,
+              "top": 589.5,
+              "right": 284,
+              "bottom": 633.5,
+              "left": 196
+            }
+          }
+        },
+        {
+          "message": "Actual compact own-time loading and ready keep footer within1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "text": "Recorded punches only.\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 565.5,
+                "width": 248,
+                "height": 68,
+                "top": 565.5,
+                "right": 284,
+                "bottom": 633.5,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "after": {
+              "text": "Updated Oct 19, 7:42 PM\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 553.5,
+                "width": 248,
+                "height": 68,
+                "top": 553.5,
+                "right": 284,
+                "bottom": 621.5,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "delta": -12
+          }
+        },
+        {
+          "message": "Both real actor-owned GETs return200",
+          "passed": true,
+          "detail": [
+            {
+              "path": "/api/employee/home",
+              "method": "GET",
+              "status": 200
+            },
+            {
+              "path": "/api/employee/my-time",
+              "method": "GET",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "http": [
+        {
+          "path": "/api/employee/home",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/employee/my-time",
+          "method": "GET",
+          "status": 200
+        }
+      ],
+      "states": {
+        "home-held-cold": {
+          "at": 3683,
+          "homeState": "loading",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 662,
+              "width": 288,
+              "height": 206.5,
+              "top": 662,
+              "right": 304,
+              "bottom": 868.5,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "link": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 816.5,
+              "width": 88,
+              "height": 44,
+              "top": 816.5,
+              "right": 284,
+              "bottom": 860.5,
+              "left": 196
+            }
+          },
+          "loadingCopy": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 712.5,
+              "width": 248,
+              "height": 66,
+              "top": 712.5,
+              "right": 284,
+              "bottom": 778.5,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": false
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "",
+            "box": {
+              "x": 260.5,
+              "y": 682.5,
+              "width": 23.5,
+              "height": 28,
+              "top": 682.5,
+              "right": 284,
+              "bottom": 710.5,
+              "left": 260.5
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": false
+          },
+          "footer": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 786.5,
+              "width": 248,
+              "height": 74,
+              "top": 786.5,
+              "right": 284,
+              "bottom": 860.5,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 884.5,
+              "width": 288,
+              "height": 0,
+              "top": 884.5,
+              "right": 304,
+              "bottom": 884.5,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Home\n\nChecking your shifts…\n\n ",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-payroll-qa-a-320-t100-home-held-cold.png"
+        },
+        "home-ready-time-held": {
+          "at": 5992,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 447,
+              "width": 288,
+              "height": 194.5,
+              "top": 447,
+              "right": 304,
+              "bottom": 641.5,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 589.5,
+              "width": 88,
+              "height": 44,
+              "top": 589.5,
+              "right": 284,
+              "bottom": 633.5,
+              "left": 196
+            }
+          },
+          "loadingCopy": {
+            "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+            "box": {
+              "x": 36,
+              "y": 497.5,
+              "width": 248,
+              "height": 60,
+              "top": 497.5,
+              "right": 284,
+              "bottom": 557.5,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "–",
+            "box": {
+              "x": 260.5,
+              "y": 467.5,
+              "width": 23.5,
+              "height": 28,
+              "top": 467.5,
+              "right": 284,
+              "bottom": 495.5,
+              "left": 260.5
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Recorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 565.5,
+              "width": 248,
+              "height": 68,
+              "top": 565.5,
+              "right": 284,
+              "bottom": 633.5,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.",
+            "box": {
+              "x": 16,
+              "y": 657.5,
+              "width": 288,
+              "height": 681,
+              "top": 657.5,
+              "right": 304,
+              "bottom": 1338.5,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, María José.\n\nNo published shifts coming up.\n\n1 item needs your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-payroll-qa-a-320-t100-home-ready-time-held.png"
+        },
+        "own-time-ready": {
+          "at": 7591,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 7:42 PM\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 447,
+              "width": 288,
+              "height": 182.5,
+              "top": 447,
+              "right": 304,
+              "bottom": 629.5,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 577.5,
+              "width": 88,
+              "height": 44,
+              "top": 577.5,
+              "right": 284,
+              "bottom": 621.5,
+              "left": 196
+            }
+          },
+          "loadingCopy": null,
+          "readyCopy": {
+            "text": "No open time entry was recorded at the last check.",
+            "box": {
+              "x": 36,
+              "y": 497.5,
+              "width": 248,
+              "height": 48,
+              "top": 497.5,
+              "right": 284,
+              "bottom": 545.5,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "15px",
+            "lineHeight": "24px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "badge": {
+            "text": "Off clock",
+            "box": {
+              "x": 203.171875,
+              "y": 467.5,
+              "width": 80.828125,
+              "height": 28,
+              "top": 467.5,
+              "right": 284,
+              "bottom": 495.5,
+              "left": 203.171875
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Updated Oct 19, 7:42 PM\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 553.5,
+              "width": 248,
+              "height": 68,
+              "top": 553.5,
+              "right": 284,
+              "bottom": 621.5,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.",
+            "box": {
+              "x": 16,
+              "y": 645.5,
+              "width": 288,
+              "height": 681,
+              "top": 645.5,
+              "right": 304,
+              "bottom": 1326.5,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, María José.\n\nNo published shifts coming up.\n\n1 item needs your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-payroll-qa-a-320-t100-own-time-ready.png"
+        }
+      },
+      "footerDeltaY": -12,
+      "slotDeltaHeight": -12,
+      "copy": {
+        "before": {
+          "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+          "box": {
+            "x": 36,
+            "y": 497.5,
+            "width": 248,
+            "height": 60,
+            "top": 497.5,
+            "right": 284,
+            "bottom": 557.5,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "14px",
+          "lineHeight": "21px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        },
+        "after": {
+          "text": "No open time entry was recorded at the last check.",
+          "box": {
+            "x": 36,
+            "y": 497.5,
+            "width": 248,
+            "height": 48,
+            "top": 497.5,
+            "right": 284,
+            "bottom": 545.5,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        }
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "payroll-qa-b",
+      "width": 320,
+      "height": 844,
+      "text": 100,
+      "classification": "Cold public-link gate expectation versus source private-read suppression; no automatic product finding from a contract collision",
+      "assertions": [
+        {
+          "message": "Current gate expectation: cold Home public My time link is visible",
+          "passed": false,
+          "detail": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 816.5,
+              "width": 88,
+              "height": 44,
+              "top": 816.5,
+              "right": 284,
+              "bottom": 860.5,
+              "left": 196
+            }
+          }
+        },
+        {
+          "message": "Cold private recorded-time body is suppressed by source loading state",
+          "passed": true,
+          "detail": {
+            "visibility": "hidden",
+            "homeState": "loading"
+          }
+        },
+        {
+          "message": "After genuine Home read the public My time link is visible while own time read stays held",
+          "passed": true,
+          "detail": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 589.5,
+              "width": 88,
+              "height": 44,
+              "top": 589.5,
+              "right": 284,
+              "bottom": 633.5,
+              "left": 196
+            }
+          }
+        },
+        {
+          "message": "Actual compact own-time loading and ready keep footer within1px",
+          "passed": false,
+          "detail": {
+            "before": {
+              "text": "Recorded punches only.\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 565.5,
+                "width": 248,
+                "height": 68,
+                "top": 565.5,
+                "right": 284,
+                "bottom": 633.5,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "after": {
+              "text": "Updated Oct 19, 7:42 PM\nRefresh\nMy time",
+              "box": {
+                "x": 36,
+                "y": 553.5,
+                "width": 248,
+                "height": 68,
+                "top": 553.5,
+                "right": 284,
+                "bottom": 621.5,
+                "left": 36
+              },
+              "visibility": "visible",
+              "display": "flex",
+              "fontSize": "17px",
+              "lineHeight": "25.5px",
+              "minHeight": "auto",
+              "paintedAtSample": true
+            },
+            "delta": -12
+          }
+        },
+        {
+          "message": "Both real actor-owned GETs return200",
+          "passed": true,
+          "detail": [
+            {
+              "path": "/api/employee/home",
+              "method": "GET",
+              "status": 200
+            },
+            {
+              "path": "/api/employee/my-time",
+              "method": "GET",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "http": [
+        {
+          "path": "/api/employee/home",
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "path": "/api/employee/my-time",
+          "method": "GET",
+          "status": 200
+        }
+      ],
+      "states": {
+        "home-held-cold": {
+          "at": 3319,
+          "homeState": "loading",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 662,
+              "width": 288,
+              "height": 206.5,
+              "top": 662,
+              "right": 304,
+              "bottom": 868.5,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "link": {
+            "exists": true,
+            "visible": false,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 816.5,
+              "width": 88,
+              "height": 44,
+              "top": 816.5,
+              "right": 284,
+              "bottom": 860.5,
+              "left": 196
+            }
+          },
+          "loadingCopy": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 712.5,
+              "width": 248,
+              "height": 66,
+              "top": 712.5,
+              "right": 284,
+              "bottom": 778.5,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": false
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "",
+            "box": {
+              "x": 260.5,
+              "y": 682.5,
+              "width": 23.5,
+              "height": 28,
+              "top": 682.5,
+              "right": 284,
+              "bottom": 710.5,
+              "left": 260.5
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": false
+          },
+          "footer": {
+            "text": "",
+            "box": {
+              "x": 36,
+              "y": 786.5,
+              "width": 248,
+              "height": 74,
+              "top": 786.5,
+              "right": 284,
+              "bottom": 860.5,
+              "left": 36
+            },
+            "visibility": "hidden",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "nextColumn": {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 884.5,
+              "width": 288,
+              "height": 0,
+              "top": 884.5,
+              "right": 304,
+              "bottom": 884.5,
+              "left": 16
+            },
+            "visibility": "hidden",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": false
+          },
+          "band": {
+            "text": "Home\n\nChecking your shifts…\n\n ",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-payroll-qa-b-320-t100-home-held-cold.png"
+        },
+        "home-ready-time-held": {
+          "at": 6977,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\n–\nLoading recorded time\n\nChecking your actual punches and breaks.\n\nRecorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 447,
+              "width": 288,
+              "height": 194.5,
+              "top": 447,
+              "right": 304,
+              "bottom": 641.5,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 589.5,
+              "width": 88,
+              "height": 44,
+              "top": 589.5,
+              "right": 284,
+              "bottom": 633.5,
+              "left": 196
+            }
+          },
+          "loadingCopy": {
+            "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+            "box": {
+              "x": 36,
+              "y": 497.5,
+              "width": 248,
+              "height": 60,
+              "top": 497.5,
+              "right": 284,
+              "bottom": 557.5,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "14px",
+            "lineHeight": "21px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "readyCopy": null,
+          "badge": {
+            "text": "–",
+            "box": {
+              "x": 260.5,
+              "y": 467.5,
+              "width": 23.5,
+              "height": 28,
+              "top": 467.5,
+              "right": 284,
+              "bottom": 495.5,
+              "left": 260.5
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Recorded punches only.\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 565.5,
+              "width": 248,
+              "height": 68,
+              "top": 565.5,
+              "right": 284,
+              "bottom": 633.5,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.",
+            "box": {
+              "x": 16,
+              "y": 657.5,
+              "width": 288,
+              "height": 681,
+              "top": 657.5,
+              "right": 304,
+              "bottom": 1338.5,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Robin.\n\nNo published shifts coming up.\n\n1 item needs your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-payroll-qa-b-320-t100-home-ready-time-held.png"
+        },
+        "own-time-ready": {
+          "at": 9400,
+          "homeState": "ready",
+          "rootFont": "16px",
+          "fontStatus": "loaded",
+          "slot": {
+            "text": "Clock status\nOff clock\n\nNo open time entry was recorded at the last check.\n\nUpdated Oct 19, 7:42 PM\nRefresh\nMy time",
+            "box": {
+              "x": 16,
+              "y": 447,
+              "width": 288,
+              "height": 182.5,
+              "top": 447,
+              "right": 304,
+              "bottom": 629.5,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "link": {
+            "exists": true,
+            "visible": true,
+            "name": "My time",
+            "href": "/app/my-time",
+            "box": {
+              "x": 196,
+              "y": 577.5,
+              "width": 88,
+              "height": 44,
+              "top": 577.5,
+              "right": 284,
+              "bottom": 621.5,
+              "left": 196
+            }
+          },
+          "loadingCopy": null,
+          "readyCopy": {
+            "text": "No open time entry was recorded at the last check.",
+            "box": {
+              "x": 36,
+              "y": 497.5,
+              "width": 248,
+              "height": 48,
+              "top": 497.5,
+              "right": 284,
+              "bottom": 545.5,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "15px",
+            "lineHeight": "24px",
+            "minHeight": "48px",
+            "paintedAtSample": true
+          },
+          "badge": {
+            "text": "Off clock",
+            "box": {
+              "x": 203.171875,
+              "y": 467.5,
+              "width": 80.828125,
+              "height": 28,
+              "top": 467.5,
+              "right": 284,
+              "bottom": 495.5,
+              "left": 203.171875
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "minHeight": "28px",
+            "paintedAtSample": true
+          },
+          "footer": {
+            "text": "Updated Oct 19, 7:42 PM\nRefresh\nMy time",
+            "box": {
+              "x": 36,
+              "y": 553.5,
+              "width": 248,
+              "height": 68,
+              "top": 553.5,
+              "right": 284,
+              "bottom": 621.5,
+              "left": 36
+            },
+            "visibility": "visible",
+            "display": "flex",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "nextColumn": {
+            "text": "To do\n1 item\nReview update: Fictional inspection schedule update\nRecorded Mon, Oct 19, 7:22 PM\nReview needed\nQuick actions\nRequest time off\nSwap a shift\nUpdate availability\nMy time\nRecent activity\n0 items\n\nNo recent activity.",
+            "box": {
+              "x": 16,
+              "y": 645.5,
+              "width": 288,
+              "height": 681,
+              "top": 645.5,
+              "right": 304,
+              "bottom": 1326.5,
+              "left": 16
+            },
+            "visibility": "visible",
+            "display": "grid",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "auto",
+            "paintedAtSample": true
+          },
+          "band": {
+            "text": "Good evening · Monday, October 19\n\nHi, Robin.\n\nNo published shifts coming up.\n\n1 item needs your review",
+            "box": {
+              "x": 0,
+              "y": 68,
+              "width": 320,
+              "height": 296,
+              "top": 68,
+              "right": 320,
+              "bottom": 364,
+              "left": 0
+            },
+            "visibility": "visible",
+            "display": "block",
+            "fontSize": "17px",
+            "lineHeight": "25.5px",
+            "minHeight": "0px",
+            "paintedAtSample": true
+          },
+          "shifts": [],
+          "crop": "cold-recorded-time/webkit-payroll-qa-b-320-t100-own-time-ready.png"
+        }
+      },
+      "footerDeltaY": -12,
+      "slotDeltaHeight": -12,
+      "copy": {
+        "before": {
+          "text": "Loading recorded time\n\nChecking your actual punches and breaks.",
+          "box": {
+            "x": 36,
+            "y": 497.5,
+            "width": 248,
+            "height": 60,
+            "top": 497.5,
+            "right": 284,
+            "bottom": 557.5,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "14px",
+          "lineHeight": "21px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        },
+        "after": {
+          "text": "No open time entry was recorded at the last check.",
+          "box": {
+            "x": 36,
+            "y": 497.5,
+            "width": 248,
+            "height": 48,
+            "top": 497.5,
+            "right": 284,
+            "bottom": 545.5,
+            "left": 36
+          },
+          "visibility": "visible",
+          "display": "block",
+          "fontSize": "15px",
+          "lineHeight": "24px",
+          "minHeight": "48px",
+          "paintedAtSample": true
+        }
+      },
+      "completed": true,
+      "passed": false
+    }
+  ]
+}

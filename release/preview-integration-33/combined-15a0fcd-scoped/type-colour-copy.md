@@ -1,0 +1,7 @@
+Exact source `15a0fcd70d49060bb21738de67f4d8feb9b96d58`, tree `392617eed660df624f13fa30f450bf8116354f1a`. One serial browser worker, fictional initial-only fixtures, held/answered business writes. Owned preview closed with source/mirror verification, PostgreSQL stopped and no ownership errors. This bounded report does not certify a complete source exit or full code gates.
+
+Payroll workflow guidance and strong prefix meet14px at100% and28px at200% in Chromium/WebKit4/4 measured cases (`payroll-focused-fonts.json`). All80 Home configurations qualify actual source text-step and title font sizes30/37.5/45/60px. This scope does not repeat the entire type/contrast matrix.
+
+Timecards503 renders “Couldn’t load timecards. Check your connection, then try again.” while the available recovery control remains “Refresh”; missing Try again is retained TC-P3-25. WebKit Manager Timecards at320/200% has a stable376px band with a wrapped Timecard/s title and three-line summary, while Chromium is256px; cold stability evidence does not imply a complete visual/typographic pass for that different wrapping.
+
+The visible Inbox badge overlap documented elsewhere remains existing IS-P4-18; this15 scope did not perform its four-configuration ink attribution. Pending Payroll contrast and Save label geometry were measured oncd separately and have no new repair credit from these four guidance-font observations.

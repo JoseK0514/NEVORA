@@ -1,0 +1,49 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "scope": "Source-exact bounded Rules/Inbox priority and scoped/cold evidence; no full exit certification",
+  "jobs": [
+    {
+      "stage": "priority",
+      "startedAt": "2026-10-19T23:25:27.163Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/scoped-verify-v2.mjs",
+      "exitCode": 1,
+      "completedAt": "2026-10-19T23:40:56.716Z"
+    },
+    {
+      "stage": "recorded",
+      "startedAt": "2026-10-19T23:40:56.803Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/cold-recorded-time.mjs",
+      "exitCode": 1,
+      "completedAt": "2026-10-19T23:42:12.698Z"
+    },
+    {
+      "stage": "cold",
+      "startedAt": "2026-10-19T23:42:12.744Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/cold-timecards.mjs",
+      "exitCode": 0,
+      "completedAt": "2026-10-19T23:43:21.231Z"
+    },
+    {
+      "stage": "home",
+      "startedAt": "2026-10-19T23:43:21.369Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/home-responsive.mjs",
+      "exitCode": 1,
+      "completedAt": "2026-10-20T00:01:39.131Z"
+    },
+    {
+      "stage": "payroll",
+      "startedAt": "2026-10-20T00:01:39.218Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/guidance-fonts.mjs",
+      "exitCode": 0,
+      "completedAt": "2026-10-20T00:02:32.621Z"
+    },
+    {
+      "stage": "timecards",
+      "startedAt": "2026-10-20T00:02:32.652Z",
+      "script": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/timecards-503.mjs",
+      "exitCode": 1,
+      "completedAt": "2026-10-20T00:03:31.559Z"
+    }
+  ],
+  "closureExitCode": 0
+}

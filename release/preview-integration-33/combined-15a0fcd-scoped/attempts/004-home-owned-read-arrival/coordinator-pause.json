@@ -1,0 +1,14 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "pausedAt": "2026-10-19T23:51:08.496334+00:00",
+  "outerPid": 191592,
+  "verifiedCmdline": "node /workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/scoped-stage.executed.mjs",
+  "cwd": "/workspace/inspect-combined-15a0fcd",
+  "activeChildren": [
+    {
+      "pid": 224870,
+      "cmdline": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --import /workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/checker-guard-v2.mjs /workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/home-responsive.mjs"
+    }
+  ],
+  "why": "Keep sole current Home worker running; block subsequent stages until same-key read-arrival setup gaps are recovered after that worker ends"
+}

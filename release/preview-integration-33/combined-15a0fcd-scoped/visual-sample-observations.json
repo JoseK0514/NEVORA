@@ -1,0 +1,115 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "viewedAt": "2026-10-19T23:46:35.443234+00:00",
+  "scope": "Four actual images visually inspected; independent automated measurements cover the full declared matrix. No claim every screenshot was manually viewed.",
+  "samples": [
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "heldCrop": "home-responsive/chromium-AUDIT-E-320x844-t200-held.png",
+      "readyCrop": "home-responsive/chromium-AUDIT-E-320x844-t200-ready.png",
+      "observations": [
+        "Actual loading title/summary suppress the private greeting and review count",
+        "Ready greeting/title/summary/review link remain readable at requested scale",
+        "Band and first card retain their measured vertical positions; mobile navigation remains visible"
+      ],
+      "bandBefore": {
+        "x": 0,
+        "y": 76.515625,
+        "width": 320,
+        "height": 684,
+        "top": 76.515625,
+        "right": 320,
+        "bottom": 760.515625,
+        "left": 0
+      },
+      "bandAfter": {
+        "x": 0,
+        "y": 76.515625,
+        "width": 320,
+        "height": 684,
+        "top": 76.515625,
+        "right": 320,
+        "bottom": 760.515625,
+        "left": 0
+      },
+      "firstCardBefore": {
+        "x": 16,
+        "y": 688.515625,
+        "width": 288,
+        "height": 554.5,
+        "top": 688.515625,
+        "right": 304,
+        "bottom": 1243.015625,
+        "left": 16
+      },
+      "firstCardAfter": {
+        "x": 16,
+        "y": 688.515625,
+        "width": 288,
+        "height": 1181,
+        "top": 688.515625,
+        "right": 304,
+        "bottom": 1869.515625,
+        "left": 16
+      }
+    },
+    {
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 844,
+      "height": 390,
+      "text": 200,
+      "heldCrop": "home-responsive/chromium-AUDIT-E-844x390-t200-held.png",
+      "readyCrop": "home-responsive/chromium-AUDIT-E-844x390-t200-ready.png",
+      "observations": [
+        "Actual loading title/summary suppress the private greeting and review count",
+        "Ready greeting/title/summary/review link remain readable at requested scale",
+        "Band and first card retain their measured vertical positions; mobile navigation remains visible"
+      ],
+      "bandBefore": {
+        "x": 0,
+        "y": 76.515625,
+        "width": 844,
+        "height": 240,
+        "top": 76.515625,
+        "right": 844,
+        "bottom": 316.515625,
+        "left": 0
+      },
+      "bandAfter": {
+        "x": 0,
+        "y": 76.515625,
+        "width": 844,
+        "height": 240,
+        "top": 76.515625,
+        "right": 844,
+        "bottom": 316.515625,
+        "left": 0
+      },
+      "firstCardBefore": {
+        "x": 16,
+        "y": 284.515625,
+        "width": 812,
+        "height": 554.5,
+        "top": 284.515625,
+        "right": 828,
+        "bottom": 839.015625,
+        "left": 16
+      },
+      "firstCardAfter": {
+        "x": 16,
+        "y": 284.515625,
+        "width": 812,
+        "height": 598,
+        "top": 284.515625,
+        "right": 828,
+        "bottom": 882.515625,
+        "left": 16
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "preparedAt": "2026-10-19T23:58:32.776094+00:00",
+  "requiredDistinct": 80,
+  "originalRecorded": 80,
+  "originalCompleted": 70,
+  "originalPassed": 70,
+  "missingRealReadSetupRows": 10,
+  "replayKeys": [
+    "chromium|AUDIT-LONG|360|844|125",
+    "webkit|AUDIT-E|320|844|100",
+    "webkit|AUDIT-E|390|844|125",
+    "webkit|AUDIT-E|390|844|150",
+    "webkit|AUDIT-E|390|844|200",
+    "webkit|AUDIT-E|430|844|125",
+    "webkit|AUDIT-E|430|844|150",
+    "webkit|AUDIT-LONG|320|844|125",
+    "webkit|AUDIT-LONG|320|844|200",
+    "webkit|AUDIT-LONG|430|844|150"
+  ],
+  "originalHomeChild": 224870,
+  "childEndedState": "zombie; browser closed",
+  "outer191592RemainsPaused": true,
+  "originalLogDrainsAfterOuterResume": true,
+  "extraConfigurationCredit": 0
+}

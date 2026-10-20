@@ -1,0 +1,11 @@
+# Separate integration repair probes: complete
+
+Exact source `15a0fcd70d49060bb21738de67f4d8feb9b96d58`, tree `392617eed660df624f13fa30f450bf8116354f1a`. One serial browser worker, fictional initial-only fixtures, held/answered business writes. Owned preview closed with source/mirror verification, PostgreSQL stopped and no ownership errors. This bounded report does not certify a complete source exit or full code gates.
+
+All **134 distinct required configurations completed**: priority28, Home80, cold recorded-time8, cold Manager Timecards6, Payroll font4 and Timecards503 recovery8. Raw results are118pass/16false. Those16 false rows combine eight cold public-link contract observations and eight instances of one retained recovery-label finding; four of the cold rows also reproduce the existing compact recorded-time12px movement. They are not16 new product findings.
+
+Rules16/16 and Inbox12/12 pass with original native controls, focus/scroll/privacy safeguards and single held requests. Home80/80 pass across five widths, four text scales and two employee fixtures in both engines. Payroll guidance14/28px floors pass4/4. Cold Manager Timecards stability passes6/6 within the measured traces; the old collapse is not reproduced and is not blanket-closed.
+
+Timecards503 recovery retains **TC-P3-25**: all8 valid states offer Refresh instead of Try again. Both same-period held retries, private count clearing and final authorized ready restoration pass. Compact off-clock recorded time retains **P3-ST-01 / ST-RC-HOME-TIME-01**:4rows move the footer and shrink the slot12px, while the reserved Home band remains stable. The initial My time link is deliberately hidden with private loading content in8rows and appears after the genuine Home read; this is the preserved CI/product contract observation.
+
+Canonical raw records, same-key replay mappings and closure are linked in `scoped-completion.json`, `priority-completion.json` and `home-completion.json`. Original locator, text-flow, one-frame sampling and real-read-arrival attempts remain under `attempts/`; no replay creates an extra successful configuration. This source is frozen independently of later rolling integration heads and candidate repairs.

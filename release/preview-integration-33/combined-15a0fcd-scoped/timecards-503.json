@@ -1,0 +1,2544 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "expectedRetry": true,
+  "cases": [
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "expectedRetry": true,
+      "assertions": [
+        {
+          "passed": false,
+          "message": "503 offers visible and accessible Try again",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 189,
+                "bottom": 465,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 201,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 374,
+                "bottom": 465,
+                "left": 201
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        },
+        {
+          "passed": true,
+          "message": "Held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Pending retry keeps its original visible label"
+        },
+        {
+          "passed": true,
+          "message": "Second held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Both retries preserve the exact selected period"
+        },
+        {
+          "passed": true,
+          "message": "Ready state restores Refresh rather than failed-read label"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        }
+      ],
+      "failed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "hasTryAgain": false,
+      "initialRecoveryVisibleText": "Refresh",
+      "pendingFirst": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "secondFailed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "pendingSecond": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "ready": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+        "status": [
+          "1 timecard in this period."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          },
+          {
+            "text": "Review timecard",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 941.5,
+              "width": 358,
+              "height": 52,
+              "top": 941.5,
+              "right": 374,
+              "bottom": 993.5,
+              "left": 16
+            }
+          }
+        ],
+        "width": 390
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "expectedRetry": true,
+      "assertions": [
+        {
+          "passed": false,
+          "message": "503 offers visible and accessible Try again",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 845.515625,
+                "width": 288,
+                "height": 52,
+                "top": 845.515625,
+                "right": 304,
+                "bottom": 897.515625,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 909.515625,
+                "width": 288,
+                "height": 52,
+                "top": 909.515625,
+                "right": 304,
+                "bottom": 961.515625,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        },
+        {
+          "passed": true,
+          "message": "Held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Pending retry keeps its original visible label"
+        },
+        {
+          "passed": true,
+          "message": "Second held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Both retries preserve the exact selected period"
+        },
+        {
+          "passed": true,
+          "message": "Ready state restores Refresh rather than failed-read label"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        }
+      ],
+      "failed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 845.515625,
+              "width": 288,
+              "height": 52,
+              "top": 845.515625,
+              "right": 304,
+              "bottom": 897.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 909.515625,
+              "width": 288,
+              "height": 52,
+              "top": 909.515625,
+              "right": 304,
+              "bottom": 961.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "hasTryAgain": false,
+      "initialRecoveryVisibleText": "Refresh",
+      "pendingFirst": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "secondFailed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 333.515625,
+              "width": 288,
+              "height": 52,
+              "top": 333.515625,
+              "right": 304,
+              "bottom": 385.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 397.515625,
+              "width": 288,
+              "height": 52,
+              "top": 397.515625,
+              "right": 304,
+              "bottom": 449.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "pendingSecond": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "ready": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+        "status": [
+          "1 timecard in this period."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 333.515625,
+              "width": 288,
+              "height": 52,
+              "top": 333.515625,
+              "right": 304,
+              "bottom": 385.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 397.515625,
+              "width": 288,
+              "height": 52,
+              "top": 397.515625,
+              "right": 304,
+              "bottom": 449.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Review timecard",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 1714.515625,
+              "width": 288,
+              "height": 124,
+              "top": 1714.515625,
+              "right": 304,
+              "bottom": 1838.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "expectedRetry": true,
+      "assertions": [
+        {
+          "passed": false,
+          "message": "503 offers visible and accessible Try again",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 189,
+                "bottom": 465,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 201,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 374,
+                "bottom": 465,
+                "left": 201
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        },
+        {
+          "passed": true,
+          "message": "Held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Pending retry keeps its original visible label"
+        },
+        {
+          "passed": true,
+          "message": "Second held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Both retries preserve the exact selected period"
+        },
+        {
+          "passed": true,
+          "message": "Ready state restores Refresh rather than failed-read label"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        }
+      ],
+      "failed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "hasTryAgain": false,
+      "initialRecoveryVisibleText": "Refresh",
+      "pendingFirst": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "secondFailed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "pendingSecond": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "ready": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+        "status": [
+          "1 timecard in this period."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          },
+          {
+            "text": "Review timecard",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 941.5,
+              "width": 358,
+              "height": 52,
+              "top": 941.5,
+              "right": 374,
+              "bottom": 993.5,
+              "left": 16
+            }
+          }
+        ],
+        "width": 390
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "AUDIT-LEAD",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "expectedRetry": true,
+      "assertions": [
+        {
+          "passed": false,
+          "message": "503 offers visible and accessible Try again",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 845.515625,
+                "width": 288,
+                "height": 52,
+                "top": 845.515625,
+                "right": 304,
+                "bottom": 897.515625,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 909.515625,
+                "width": 288,
+                "height": 52,
+                "top": 909.515625,
+                "right": 304,
+                "bottom": 961.515625,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        },
+        {
+          "passed": true,
+          "message": "Held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Pending retry keeps its original visible label"
+        },
+        {
+          "passed": true,
+          "message": "Second held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Both retries preserve the exact selected period"
+        },
+        {
+          "passed": true,
+          "message": "Ready state restores Refresh rather than failed-read label"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        }
+      ],
+      "failed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 845.515625,
+              "width": 288,
+              "height": 52,
+              "top": 845.515625,
+              "right": 304,
+              "bottom": 897.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 909.515625,
+              "width": 288,
+              "height": 52,
+              "top": 909.515625,
+              "right": 304,
+              "bottom": 961.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "hasTryAgain": false,
+      "initialRecoveryVisibleText": "Refresh",
+      "pendingFirst": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "secondFailed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 333.515625,
+              "width": 288,
+              "height": 52,
+              "top": 333.515625,
+              "right": 304,
+              "bottom": 385.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 397.515625,
+              "width": 288,
+              "height": 52,
+              "top": 397.515625,
+              "right": 304,
+              "bottom": 449.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "pendingSecond": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "ready": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+        "status": [
+          "1 timecard in this period."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 333.515625,
+              "width": 288,
+              "height": 52,
+              "top": 333.515625,
+              "right": 304,
+              "bottom": 385.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 397.515625,
+              "width": 288,
+              "height": 52,
+              "top": 397.515625,
+              "right": 304,
+              "bottom": 449.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Review timecard",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 1714.515625,
+              "width": 288,
+              "height": 124,
+              "top": 1714.515625,
+              "right": 304,
+              "bottom": 1838.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "expectedRetry": true,
+      "assertions": [
+        {
+          "passed": false,
+          "message": "503 offers visible and accessible Try again",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 189,
+                "bottom": 465,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 201,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 374,
+                "bottom": 465,
+                "left": 201
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        },
+        {
+          "passed": true,
+          "message": "Held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Pending retry keeps its original visible label"
+        },
+        {
+          "passed": true,
+          "message": "Second held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Both retries preserve the exact selected period"
+        },
+        {
+          "passed": true,
+          "message": "Ready state restores Refresh rather than failed-read label"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        }
+      ],
+      "failed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "hasTryAgain": false,
+      "initialRecoveryVisibleText": "Refresh",
+      "pendingFirst": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "secondFailed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "pendingSecond": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "ready": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+        "status": [
+          "1 timecard in this period."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          },
+          {
+            "text": "Review timecard",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 941.5,
+              "width": 358,
+              "height": 52,
+              "top": 941.5,
+              "right": 374,
+              "bottom": 993.5,
+              "left": 16
+            }
+          }
+        ],
+        "width": 390
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "AUDIT-E",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "expectedRetry": true,
+      "assertions": [
+        {
+          "passed": false,
+          "message": "503 offers visible and accessible Try again",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 967.515625,
+                "width": 288,
+                "height": 52,
+                "top": 967.515625,
+                "right": 304,
+                "bottom": 1019.515625,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 1031.515625,
+                "width": 288,
+                "height": 52,
+                "top": 1031.515625,
+                "right": 304,
+                "bottom": 1083.515625,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        },
+        {
+          "passed": true,
+          "message": "Held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Pending retry keeps its original visible label"
+        },
+        {
+          "passed": true,
+          "message": "Second held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Both retries preserve the exact selected period"
+        },
+        {
+          "passed": true,
+          "message": "Ready state restores Refresh rather than failed-read label"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        }
+      ],
+      "failed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 967.515625,
+              "width": 288,
+              "height": 52,
+              "top": 967.515625,
+              "right": 304,
+              "bottom": 1019.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 1031.515625,
+              "width": 288,
+              "height": 52,
+              "top": 1031.515625,
+              "right": 304,
+              "bottom": 1083.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "hasTryAgain": false,
+      "initialRecoveryVisibleText": "Refresh",
+      "pendingFirst": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "secondFailed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "pendingSecond": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "ready": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+        "status": [
+          "1 timecard in this period."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Review timecard",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 1824.515625,
+              "width": 288,
+              "height": 124,
+              "top": 1824.515625,
+              "right": 304,
+              "bottom": 1948.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "width": 390,
+      "height": 844,
+      "text": 100,
+      "expectedRetry": true,
+      "assertions": [
+        {
+          "passed": false,
+          "message": "503 offers visible and accessible Try again",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 189,
+                "bottom": 465,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 201,
+                "y": 413,
+                "width": 173,
+                "height": 52,
+                "top": 413,
+                "right": 374,
+                "bottom": 465,
+                "left": 201
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        },
+        {
+          "passed": true,
+          "message": "Held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Pending retry keeps its original visible label"
+        },
+        {
+          "passed": true,
+          "message": "Second held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Both retries preserve the exact selected period"
+        },
+        {
+          "passed": true,
+          "message": "Ready state restores Refresh rather than failed-read label"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        }
+      ],
+      "failed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "hasTryAgain": false,
+      "initialRecoveryVisibleText": "Refresh",
+      "pendingFirst": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "secondFailed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "pendingSecond": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          }
+        ],
+        "width": 390
+      },
+      "ready": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+        "status": [
+          "1 timecard in this period."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 189,
+              "bottom": 465,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 201,
+              "y": 413,
+              "width": 173,
+              "height": 52,
+              "top": 413,
+              "right": 374,
+              "bottom": 465,
+              "left": 201
+            }
+          },
+          {
+            "text": "Review timecard",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 941.5,
+              "width": 358,
+              "height": 52,
+              "top": 941.5,
+              "right": 374,
+              "bottom": 993.5,
+              "left": 16
+            }
+          }
+        ],
+        "width": 390
+      },
+      "completed": true,
+      "passed": false
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "AUDIT-LEAD",
+      "width": 320,
+      "height": 844,
+      "text": 200,
+      "expectedRetry": true,
+      "assertions": [
+        {
+          "passed": false,
+          "message": "503 offers visible and accessible Try again",
+          "detail": [
+            {
+              "text": "View period",
+              "ariaLabel": null,
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 967.515625,
+                "width": 288,
+                "height": 52,
+                "top": 967.515625,
+                "right": 304,
+                "bottom": 1019.515625,
+                "left": 16
+              }
+            },
+            {
+              "text": "Refresh",
+              "ariaLabel": "Refresh timecards",
+              "disabled": false,
+              "box": {
+                "x": 16,
+                "y": 1031.515625,
+                "width": 288,
+                "height": 52,
+                "top": 1031.515625,
+                "right": 304,
+                "bottom": 1083.515625,
+                "left": 16
+              }
+            }
+          ]
+        },
+        {
+          "passed": true,
+          "message": "503 does not retain private ready count"
+        },
+        {
+          "passed": true,
+          "message": "503 layout has no horizontal overflow"
+        },
+        {
+          "passed": true,
+          "message": "Held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Pending retry keeps its original visible label"
+        },
+        {
+          "passed": true,
+          "message": "Second held retry stays locked"
+        },
+        {
+          "passed": true,
+          "message": "Both retries preserve the exact selected period"
+        },
+        {
+          "passed": true,
+          "message": "Ready state restores Refresh rather than failed-read label"
+        }
+      ],
+      "reads": [
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "503"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        },
+        {
+          "period": {
+            "startDate": "2026-10-13",
+            "endDate": "2026-10-19"
+          },
+          "mode": "hold"
+        }
+      ],
+      "failed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 967.515625,
+              "width": 288,
+              "height": 52,
+              "top": 967.515625,
+              "right": 304,
+              "bottom": 1019.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 1031.515625,
+              "width": 288,
+              "height": 52,
+              "top": 1031.515625,
+              "right": 304,
+              "bottom": 1083.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "hasTryAgain": false,
+      "initialRecoveryVisibleText": "Refresh",
+      "pendingFirst": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "secondFailed": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nCouldn’t load timecards. Check your connection, then try again.\n\nRequest a correction",
+        "status": [
+          "Couldn’t load timecards. Check your connection, then try again."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "pendingSecond": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\nChecking period timecards…\n\nRequest a correction",
+        "status": [
+          "Checking period timecards…"
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": true,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "ready": {
+        "text": "My pay\nMy time\nTimecards\n\nOct 13 – Oct 19\n\nTimecards\n\nEach day’s clock-ins and clock-outs.\n\nChoose a period\nPeriod start\nPeriod end\nView period\nRefresh\n\n1 timecard in this period.\n\nRequest a correction\nYour timecard\nOct 13, 2026 – Oct 19, 2026\nDraft\nRecorded time\n0h\nBreak time\n0h\nPeriod information\nPeriod is still open\n\nTotals can change until the period closes.\n\nReview timecard",
+        "status": [
+          "1 timecard in this period."
+        ],
+        "buttons": [
+          {
+            "text": "View period",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 395.515625,
+              "width": 288,
+              "height": 52,
+              "top": 395.515625,
+              "right": 304,
+              "bottom": 447.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Refresh",
+            "ariaLabel": "Refresh timecards",
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 459.515625,
+              "width": 288,
+              "height": 52,
+              "top": 459.515625,
+              "right": 304,
+              "bottom": 511.515625,
+              "left": 16
+            }
+          },
+          {
+            "text": "Review timecard",
+            "ariaLabel": null,
+            "disabled": false,
+            "box": {
+              "x": 16,
+              "y": 1824.515625,
+              "width": 288,
+              "height": 124,
+              "top": 1824.515625,
+              "right": 304,
+              "bottom": 1948.515625,
+              "left": 16
+            }
+          }
+        ],
+        "width": 320
+      },
+      "completed": true,
+      "passed": false
+    }
+  ]
+}

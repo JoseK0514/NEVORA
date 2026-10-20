@@ -1,0 +1,5 @@
+Exact source `15a0fcd70d49060bb21738de67f4d8feb9b96d58`, tree `392617eed660df624f13fa30f450bf8116354f1a`. One serial browser worker, fictional initial-only fixtures, held/answered business writes. Owned preview closed with source/mirror verification, PostgreSQL stopped and no ownership errors. This bounded report does not certify a complete source exit or full code gates.
+
+Rules native Enter retains the original read-only field and one command in16 configurations. Inbox first-ready natural groups, native focus ownership, scrolled Enter, recovery and private-state clearing pass12. Source control identities and measured boxes are retained in `targeted-priority-states.json`.
+
+The80 Home held-read configurations retain reserved band, summary, review and first-card positions within the measured bounds, with no horizontal overflow. Compact recorded-time footer/slot movement is separately retained under P3-ST-01; it does not move the reserved Home band. No general alignment pass outside these measured routes is claimed.

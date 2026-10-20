@@ -1,0 +1,21 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "preparedAt": "2026-10-19T23:51:38.840480+00:00",
+  "originalModule": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/home-responsive.mjs",
+  "originalSha256": "1add4ccb34de7cfc65b831a4a5d106e3c1dc26d0adc2bfbce2f26ed0ef0c09d3",
+  "derivedModule": "/workspace/nevora-inspections/release/preview-integration-33/combined-15a0fcd-scoped/executed-scripts/home-responsive.read-arrival-v2.mjs",
+  "derivedSha256": "404dad130e31060cb7d749a9a62f6920dc50a1aff037648a55069039fef70ce1",
+  "changes": [
+    "After the same fonts-ready and1800ms delay, wait bounded10000ms for an actual intercepted Home GET before held measurement; no request fabrication, source/style/fixture/state change",
+    "Resume retains all completed valid rows, including genuine app assertion failures; only incomplete keys rerun. Original attempts archived before replacement."
+  ],
+  "unchanged": [
+    "80distinct account/engine/width/text configurations",
+    "Every geometry/overflow/font/CLS assertion",
+    "Natural font-size emulation and actual source text bridge",
+    "Actual first navigation PerformanceObserver entries",
+    "All business-write guard protections"
+  ],
+  "extraConfigurationCredit": 0,
+  "runtimeExecuted": false
+}

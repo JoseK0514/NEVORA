@@ -1,0 +1,45 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "preparedAt": "2026-10-20T00:05:29.730113+00:00",
+  "scope": "134 distinct bounded15 configurations, explicit retained findings and contract observations; exact source independently closed",
+  "required": 134,
+  "completed": 134,
+  "rawPassed": 118,
+  "rawFalse": 16,
+  "findingClassification": "Two retained product scopes; raw false count is not product finding count",
+  "credentialLiteralScan": {
+    "actualRuntimePasswordChecked": true,
+    "allActualSessionCookiesChecked": true,
+    "sessionStateFilesChecked": 10,
+    "privateFixtureHintFilesChecked": 0,
+    "rawAndEncodedLiteralMatches": [],
+    "secretValuesPrintedOrRecorded": false
+  },
+  "sourceCleanAtPacket": true,
+  "closure": {
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "postgresStopped": true,
+    "errors": [],
+    "closedAt": "2026-10-20T00:03:33.388Z"
+  },
+  "artifactCount": 646,
+  "bytes": 54965347,
+  "allBusinessWritesBrowserLocal": true,
+  "allOriginalSetupAndSamplingAttemptsPreserved": true,
+  "extraReplayConfigurationCredit": 0,
+  "fullExitOrFullGateClaim": false,
+  "publishMetadataSeparately": [
+    "scoped-publication-allowlist.json",
+    "scoped-publication-custody.json"
+  ],
+  "exclusions": [
+    "All unallowlisted workspace artifacts",
+    "Access/session/state/env/database files",
+    "Private fixture hints and actor proof bindings",
+    "All login, preview and runtime logs",
+    "Raw original/replay stdout logs (retained privately; structured attempts are published)",
+    "No physical-phone/hosted/full-CI/full-source-exit credit"
+  ]
+}

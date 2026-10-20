@@ -1,0 +1,113 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "cases": [
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 1440,
+      "height": 900,
+      "text": 100,
+      "measured": {
+        "text": "Next step: Generate and review the approved documents, then publish statements when ready.",
+        "box": {
+          "x": 633.796875,
+          "y": 702,
+          "width": 746.203125,
+          "height": 20,
+          "top": 702,
+          "right": 1380,
+          "bottom": 722,
+          "left": 633.796875
+        },
+        "fontSize": 14,
+        "strongSize": 14,
+        "weight": "400",
+        "strongWeight": "600"
+      },
+      "expectedFloor": 14,
+      "passed": true
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "chromium",
+      "account": "QAOWNER",
+      "width": 1440,
+      "height": 900,
+      "text": 200,
+      "measured": {
+        "text": "Next step: Generate and review the approved documents, then publish statements when ready.",
+        "box": {
+          "x": 633.796875,
+          "y": 450,
+          "width": 746.203125,
+          "height": 80,
+          "top": 450,
+          "right": 1380,
+          "bottom": 530,
+          "left": 633.796875
+        },
+        "fontSize": 28,
+        "strongSize": 28,
+        "weight": "400",
+        "strongWeight": "600"
+      },
+      "expectedFloor": 28,
+      "passed": true
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "width": 1440,
+      "height": 900,
+      "text": 100,
+      "measured": {
+        "text": "Next step: Generate and review the approved documents, then publish statements when ready.",
+        "box": {
+          "x": 633.796875,
+          "y": 702,
+          "width": 746.1875,
+          "height": 20,
+          "top": 702,
+          "right": 1379.984375,
+          "bottom": 722,
+          "left": 633.796875
+        },
+        "fontSize": 14,
+        "strongSize": 14,
+        "weight": "400",
+        "strongWeight": "600"
+      },
+      "expectedFloor": 14,
+      "passed": true
+    },
+    {
+      "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+      "engine": "webkit",
+      "account": "QAOWNER",
+      "width": 1440,
+      "height": 900,
+      "text": 200,
+      "measured": {
+        "text": "Next step: Generate and review the approved documents, then publish statements when ready.",
+        "box": {
+          "x": 633.796875,
+          "y": 450,
+          "width": 746.1875,
+          "height": 80,
+          "top": 450,
+          "right": 1379.984375,
+          "bottom": 530,
+          "left": 633.796875
+        },
+        "fontSize": 28,
+        "strongSize": 28,
+        "weight": "400",
+        "strongWeight": "600"
+      },
+      "expectedFloor": 28,
+      "passed": true
+    }
+  ]
+}

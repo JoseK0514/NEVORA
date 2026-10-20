@@ -1,0 +1,85 @@
+{
+  "checkpoint": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+  "tree": "392617eed660df624f13fa30f450bf8116354f1a",
+  "completedAt": "2026-10-20T00:05:15.138693+00:00",
+  "requiredDistinctConfigurations": 134,
+  "completed": 134,
+  "rawPassed": 118,
+  "rawFalse": 16,
+  "noExtraReplayConfigurationCredit": true,
+  "areas": {
+    "priority": {
+      "required": 28,
+      "completed": 28,
+      "passed": 28
+    },
+    "Home": {
+      "required": 80,
+      "completed": 80,
+      "passed": 80
+    },
+    "PayrollFonts": {
+      "required": 4,
+      "completed": 4,
+      "passed": 4
+    },
+    "ManagerTimecardsCold": {
+      "required": 6,
+      "completed": 6,
+      "passed": 6
+    },
+    "ColdRecordedTime": {
+      "required": 8,
+      "completed": 8,
+      "rawPassed": 0,
+      "coldPublicLinkContractMismatch": 8,
+      "compactOwnTimeFooterAndSlotMinus12px": 4
+    },
+    "Timecards503": {
+      "required": 8,
+      "completed": 8,
+      "passed": 0,
+      "onlyFailedCriterion": "Visible and accessible Try again after503",
+      "remainingRecoveryCriteriaPass": true
+    }
+  },
+  "productFindingCrosswalk": [
+    {
+      "id": "TC-P3-25",
+      "related": "P3-WR-14",
+      "severity": "P2",
+      "cases": 8,
+      "actual": "Refresh remains the only recovery action after503; no visible or accessible Try again",
+      "retainedScope": "Existing source behavior; later56570fd fix not included in this immutable15 source"
+    },
+    {
+      "id": "P3-ST-01",
+      "alias": "ST-RC-HOME-TIME-01",
+      "severity": "P2",
+      "cases": 4,
+      "actual": "Compact empty recorded-time slot and footer shrink/move12px after genuine own read",
+      "HomeBandFinding": "Not attributed to ST-RC-HOME-01; band reservation is stable"
+    }
+  ],
+  "contractObservation": {
+    "coldPublicMyTimeLinkHidden": 8,
+    "sourceDeliberatelySuppressesPrivateRecordedSlot": true,
+    "linkVisibleAfterGenuineHome200BeforeOwnTimeReadReleased": true,
+    "noAutomaticProductFindingFromGateContractCollision": true
+  },
+  "closure": {
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "postgresStopped": true,
+    "errors": [],
+    "closedAt": "2026-10-20T00:03:33.388Z"
+  },
+  "limitations": [
+    "Separate bounded15 source evidence, no inherited full gate or owner exit credit",
+    "WebKit CLS unsupported and retained null",
+    "No hosted deployment or physical phone access evidence",
+    "Only authorized browser text-size emulation; no application source or fixture writes after listen",
+    "Original setup/sampling attempts and coordinator nonzero exits retained"
+  ]
+}
