@@ -52,8 +52,13 @@ try{
     for(const width of [320,375,390,430,768,1024,1440]){
       await ep.setViewportSize({width,height:1000});
       const geometry=await ep.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,
-        controls:[...document.querySelectorAll('section[aria-label="Your period timecard"] button,section[aria-label="Your period timecard"] input')].map(e=>e.getBoundingClientRect().height)}));
-      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);assert(geometry.controls.every(h=>h>=43.5));checked(`${engine}: employee geometry ${width}`);
+        controls:[...document.querySelectorAll('section[aria-label="Your period timecard"] button,section[aria-label="Your period timecard"] input')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,type:e.getAttribute('type'),label:e.getAttribute('aria-label')??(e.tagName==='BUTTON'?e.textContent?.trim():e.closest('label')?.textContent?.trim()),className:e.className,height:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));
+      // A phone-only disclosure stays in the shared tree but is display:none on desktop.
+      // Preserve every raw node; the same target threshold applies to actual rendered controls.
+      (report.employeeControlGeometry??=[]).push({engine,viewport:width,...geometry});
+      await writeFile(join(evidence,'employee-control-geometry-report.json'),JSON.stringify({checkpoint:report.checkpoint,tree:report.tree,measurements:report.employeeControlGeometry},null,2));
+      const rendered=geometry.controls.filter(control=>control.rendered);
+      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);assert(rendered.length>=4,'Both period inputs and both form actions are rendered');assert(rendered.every(control=>control.height>=43.5),`${engine} ${width} rendered period controls keep the existing target floor`);checked(`${engine}: employee geometry ${width}`);
     }
     await ep.getByLabel('Period start').focus();assert(await ep.getByLabel('Period start').evaluate(e=>document.activeElement===e));await ep.keyboard.press('Tab');checked(engine+': period keyboard focus');
     const {context:management,page:mp}=await context(browser,'D3-M');await mp.goto(app.url+url);
