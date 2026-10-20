@@ -1,3 +1,4 @@
+import { databaseDate as dateValue } from './database-date';
 import {assertOperationalAccess} from '../company-access/operational-scope.server';
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
@@ -26,11 +27,6 @@ export type TimeOffListItem = {
   /** The manager who decided it; absent for a withdrawal (the employee reviewed it themself). */
   reviewerName?: string;
 };
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
 
 function timeValue(value: unknown) {
   return value ? String(value).slice(0, 5) : undefined;

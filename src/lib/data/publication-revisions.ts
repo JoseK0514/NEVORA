@@ -1,3 +1,4 @@
+import { databaseDate as dateValue } from './database-date';
 import { getDb, queryRows } from "../db";
 import {
   type PublishedShiftSnapshot,
@@ -23,11 +24,6 @@ export type PublicationRevision = {
 import { commitPublishedWeekChange } from "./notification-transactions";
 import type { SqlExecutor } from "../notifications/types";
 import type { SessionMutationProof } from "../shift-changes/types";
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
 
 function timeValue(value: unknown) {
   return String(value).slice(0, 5);

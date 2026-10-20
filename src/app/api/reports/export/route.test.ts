@@ -19,6 +19,11 @@ describe('private report read transport',()=>{
     expect((await POST(req(body))).status).toBe(400);
   });
   it('refuses non-management roles',async()=>{state.session={id:'E1',role:'LEAD'};expect((await POST(req())).status).toBe(403);});
+  it.each([null,[],false,'2026-10-20',{startDate:20261020,endDate:'2026-10-20'},{startDate:'2026-10-20',endDate:null},{startDate:'2026-10-21',endDate:'2026-10-20'},{startDate:'2026-10-01',endDate:'2026-11-01'}])('preserves invalid-input responses for %j',async body=>{
+    const response=await POST(req(body));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({state:'invalid'});
+  });
   it('reports unavailable data as unavailable rather than zero',async()=>{
     state.read.mockResolvedValue({state:'unavailable',reason:'read_failed'});
     expect((await POST(req())).status).toBe(503);

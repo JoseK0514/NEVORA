@@ -1,3 +1,4 @@
+import { databaseDate as dateValue } from './database-date';
 import {assertOperationalAccess} from '../company-access/operational-scope.server';
 import { currentCalloutReleaseSql } from './shift-change-release';
 import { resolveOperationalRuleProfile } from '../shift-changes/policy';
@@ -42,11 +43,6 @@ export type LocationScheduleStatus = {
   locationId: string;
   status: ScheduleStatus;
 };
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
 
 function timeValue(value: unknown) {
   return String(value).slice(0, 5);
@@ -361,11 +357,6 @@ export async function createCoverageRepairShift(input: {
   if (!result.committed) throw new CoverageRepairConflictError();
   return { id, locator };
 }
-
-export function roleCanManageSchedule(role: UserRole) {
-  return role === "OWNER" || role === "MANAGER";
-}
-
 
 export type ManagementShift = ScheduleShiftRow & {
   weekStart: string;

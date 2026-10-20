@@ -1,3 +1,4 @@
+import { databaseDate as dateValue } from './database-date';
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { getWorkspace, workspaceReadGuard, WorkspaceConcurrencyError } from './workspaces';
 import type { Workspace } from '../domain';
@@ -15,11 +16,6 @@ export type WeekSettings = {
   weekStart: string;
   availabilityDeadline?: string;
 };
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
 
 export async function getWeekSettings(
   weekStart: string,
