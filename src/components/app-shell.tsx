@@ -367,7 +367,8 @@ export function AppShell({
                     aria-current={active ? "page" : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                   >
-                    <NavIcon name={item.icon} size={22} />
+                    {/* v3: filled iOS-style glyphs on the Owner and Manager tab bar. */}
+                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={22} weight="fill" />
                     <span>{item.label}</span>
                     {needsYou !== null ? <span className="mobile-nav-count" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
                   </Link>
@@ -375,7 +376,7 @@ export function AppShell({
               })}
               <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation"
                 triggerClassName={activeTab === "more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
-                triggerContent={<><NavIcon name="more" size={22} /><span>More</span></>}>
+                triggerContent={<><NavIcon name="moreCircle" size={22} weight="fill" /><span>More</span></>}>
                 {/* A tool, not a destination: opens the one finder dialog in the same tap (no timer), so iOS raises the keyboard. */}
                 <button type="button" className="nevora-action-menu-item nevora-more-search" aria-haspopup="dialog"
                   onClick={event => {

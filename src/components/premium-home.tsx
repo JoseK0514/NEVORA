@@ -2,7 +2,7 @@
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import { useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
-import { ArrowsClockwiseIcon, CalendarXIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
+import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { Avatar, Button, Card, CardBody, Freshness, KitLink, KitStack, PageBand, Row, Rows, Tile } from "@/components/kit/kit";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
 import { useToday } from "./manager-today";
@@ -122,7 +122,7 @@ export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems
     if (hold) column.dataset.holding = ""; else delete column.dataset.holding;
   }, [value, holding, actionsConnection, offline]);
 
-  return <div className="nv-page premium-home cm-home" data-nv-page="" data-live-readers={liveReaders}>
+  return <div className="nv-page premium-home cm-page cm-home" data-nv-page="" data-live-readers={liveReaders}>
     <PageBand eyebrow={dateLabel} title="Today" summary={<span role="status" className={value ? "sr-only" : undefined}>{summary}</span>} />
     <KitStack className="cm-home__grid">
       {setup ? <div className="cm-home__setup">{setup}</div> : null}
@@ -156,10 +156,10 @@ function NeedsYouCard({ value, timeZone }: { value: NeedsYou; timeZone: string }
   const oneRequest = requests.length === 1 ? requests[0] : null;
   const requestMeta = oneRequest ? [person(oneRequest), oneRequest.type === "TIME_OFF" ? "time off" : oneRequest.type === "EXCHANGE" ? "shift change" : "can’t work"].filter(Boolean).join(", ") : undefined;
   const gapPlaces = gaps.map(item => ({ locationName: gapLocation(item) }));
-  return <Card id="home-needs-you" title="Needs you" titleLabel={`Needs you, ${value.count}`} meta={<span className="cm-count">{value.count}</span>}
-    foot={<KitLink href="/app/inbox">Open Inbox</KitLink>}>
+  return <Card id="home-needs-you" title={<>Needs you<span className="cm-count">{value.count}</span></>} titleLabel={`Needs you, ${value.count}`}
+    meta={<KitLink href="/app/inbox">Inbox</KitLink>} foot={<span className="cm-desk-only"><KitLink href="/app/inbox">Open Inbox</KitLink></span>}>
     <Rows label="Needs you">
-      {value.noClockIn.length ? <Row href="/app/inbox?filter=now" leading={<Tile tone="urgent"><ClockIcon size={20} weight="fill" /></Tile>}
+      {value.noClockIn.length ? <Row href="/app/inbox?filter=now" leading={<Tile tone="urgent"><UserMinusIcon size={20} weight="fill" /></Tile>}
         title={`Not clocked in`} meta={locationCounts(value.noClockIn) || undefined} trailing={<span className="cm-row-count">{value.noClockIn.length}</span>}
         label={`${plural(value.noClockIn.length, `shift with no ${CLOCK_IN}`, `shifts with no ${CLOCK_IN}`).replace("\u00a0", " ")}, open in Inbox`} /> : null}
       {gaps.length ? <Row href="/app/inbox?filter=now" leading={<Tile tone="review"><CalendarXIcon size={20} weight="fill" /></Tile>}
@@ -168,8 +168,8 @@ function NeedsYouCard({ value, timeZone }: { value: NeedsYou; timeZone: string }
       {otherUrgent.length ? <Row href="/app/inbox?filter=now" leading={<Tile tone="urgent"><WarningCircleIcon size={20} weight="fill" /></Tile>}
         title="Urgent" trailing={<span className="cm-row-count">{otherUrgent.length}</span>}
         label={`${plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")}, open in Inbox`} /> : null}
-      {requests.length ? <Row href="/app/inbox?filter=requests" leading={<Tile tone="done"><UserCheckIcon size={20} weight="fill" /></Tile>}
-        title={requests.length === 1 ? "Request" : "Requests"} meta={requestMeta} trailing={<span className="cm-row-count">{requests.length}</span>}
+      {requests.length ? <Row href="/app/inbox?filter=requests" leading={<span className="cm-tile-tint"><Tile tone="neutral">{oneRequest?.type === "TIME_OFF" ? <AirplaneTiltIcon size={20} weight="fill" /> : <UserCheckIcon size={20} weight="fill" />}</Tile></span>}
+        title={oneRequest ? (oneRequest.type === "TIME_OFF" ? "Time-off request" : oneRequest.type === "EXCHANGE" ? "Shift change request" : "Can’t-work report") : "Requests"} meta={requestMeta} trailing={<span className="cm-row-count">{requests.length}</span>}
         label={`${plural(requests.length, "request", "requests").replace("\u00a0", " ")} waiting, open in Inbox`} /> : null}
     </Rows>
   </Card>;
@@ -180,6 +180,9 @@ function gapLocation(item: ActionItem) {
   const fromTitle = /\bat (.+)$/.exec(item.title)?.[1];
   return fromTitle ?? item.detail.split(" · ")[0] ?? null;
 }
+
+/** "2 PM", "5:30 PM": whole hours lose their ":00", as in the mockups. */
+const short = (iso: string, timeZone: string) => clock(iso, timeZone).replace(":00", "");
 
 const working = (shift: TodayShift) => shift.status === "clocked_in" || shift.status === "on_break";
 const later = (shift: TodayShift) => shift.status === "upcoming" || shift.status === "starting";
@@ -200,21 +203,22 @@ function PeopleCards({ today, refreshing, onRetry, timeZone, offline = false, pa
   const now = today.shifts.filter(working);
   const next = today.shifts.filter(later).sort((a, b) => a.startAt.localeCompare(b.startAt));
   return <>
-    <Card id="home-working" title="Working now" meta={<Freshness>Updated <time dateTime={today.observedAt}>{clock(today.observedAt, timeZone)}</time></Freshness>}>
+    <Card id="home-working" title={<>Working now<span className="cm-count">{now.length || today.counts.clockedIn}</span></>}
+      foot={<Freshness>Updated <time dateTime={today.observedAt}>{clock(today.observedAt, timeZone)}</time></Freshness>}>
       {now.length ? <Rows label="Working now">
-        {now.map(shift => <Row key={shift.id} href={`/app/employees/${encodeURIComponent(shift.employeeId)}`}
+        {now.map(shift => <Row key={shift.id}
           leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName}
           meta={`${shift.locationName}\u00a0· ${shift.status === "on_break" ? "on break" : shift.firstClockInAt ? `in at ${clock(shift.firstClockInAt, timeZone)}` : "clocked in"}`}
-          trailing={`until ${clock(shift.endAt, timeZone)}`} />)}
+          trailing={`until ${short(shift.endAt, timeZone)}`} />)}
       </Rows> : <CardBody><p className="premium-note">{today.counts.clockedIn
         // A snapshot can carry counts without its shift list; the count is still true.
         ? `${plural(today.counts.clockedIn, "person is", "people are")} clocked in.` : "No one is clocked in right now."}</p></CardBody>}
     </Card>
-    {next.length ? <Card id="home-later" title="Later today" meta={<span className="cm-count">{next.length}</span>}>
+    {next.length ? <Card id="home-later" title={<>Later today<span className="cm-count">{next.length}</span></>}>
       <Rows label="Later today">
-        {next.slice(0, 4).map(shift => <Row key={shift.id} href={`/app/employees/${encodeURIComponent(shift.employeeId)}`}
+        {next.slice(0, 4).map(shift => <Row key={shift.id}
           leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName} meta={shift.locationName}
-          trailing={`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}`} />)}
+          trailing={`${short(shift.startAt, timeZone)} – ${short(shift.endAt, timeZone)}`} />)}
       </Rows>
     </Card> : null}
   </>;

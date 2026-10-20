@@ -30,6 +30,8 @@ import { TrayIcon } from "@phosphor-icons/react/dist/ssr/Tray";
 import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
 import { ExportIcon } from "@phosphor-icons/react/dist/ssr/Export";
 import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr/SidebarSimple";
+import { UsersThreeIcon } from "@phosphor-icons/react/dist/ssr/UsersThree";
+import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCircle";
 
 const icons = {
   payroll: WalletIcon,
@@ -65,6 +67,9 @@ const icons = {
   reports: ChartBarIcon,
   export: ExportIcon,
   sidebar: SidebarSimpleIcon,
+  // Clean Manager (v3) phone tab bar: the iOS-style glyphs for Team and More.
+  team: UsersThreeIcon,
+  moreCircle: DotsThreeCircleIcon,
 };
 
 export type NavIconName = keyof typeof icons;
@@ -73,12 +78,15 @@ export function NavIcon({
   name,
   size = 18,
   className,
+  weight = "regular",
 }: {
   name: NavIconName;
   size?: number;
   employee?: boolean;
   className?: string;
+  /** Defaults to regular everywhere; the clean Manager tab bar passes "fill". */
+  weight?: "regular" | "fill";
 }) {
   const Icon = icons[name];
-  return <Icon size={size} weight="regular" color="currentColor" className={className} aria-hidden="true" focusable="false" />;
+  return <Icon size={size} weight={weight} color="currentColor" className={className} aria-hidden="true" focusable="false" />;
 }
