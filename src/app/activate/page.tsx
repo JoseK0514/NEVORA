@@ -9,6 +9,7 @@ import { AuthDisclosureSymbol } from "@/components/auth-disclosure-symbol";
 import { activateAccountAction } from "./actions";
 import { ActivationSubmit } from "./activation-submit";
 import "../login/auth-premium.css";
+import "../login/auth-signature.css";
 
 export default async function ActivatePage({ searchParams }: {
   searchParams: Promise<{ error?: string; employeeId?: string; returnTo?: string | string[] }>;

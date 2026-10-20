@@ -60,12 +60,14 @@ function Device({ d }: { d: AuthCopy["device"] }) {
   );
 }
 
-export function AuthShell({ lang, t, variant, back, children }: {
+export function AuthShell({ lang, t, variant, back, bandTitle, children }: {
   lang: AuthLang; t: AuthCopy;
   /** "signin" has the tall phone band with the brand line; the other three pages have a short band and a Back pill. */
   variant: "signin" | "sub";
   /** Where Back goes on the recovery and activation pages (sign in, keeping a safe returnTo). */
   back?: string;
+  /** Signature (phase 4): the phone band's greeting and workspace on sign in. Decorative; the sheet keeps the h1. */
+  bandTitle?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -77,6 +79,7 @@ export function AuthShell({ lang, t, variant, back, children }: {
           {/* eslint-disable-next-line @next/next/no-img-element -- a small static wordmark; next/image adds nothing here */}
           <img className="ap-band__wordmark" src="/images/nevora-wordmark-white.png" alt="NEVORA" width={907} height={122} />
           <p className="ap-band__line"><TwoLines text={t.bandLine} /></p>
+          {bandTitle ? <div className="ap-band__hero" aria-hidden="true">{bandTitle}</div> : null}
         </> : null}
       </div>
       <div className="ap-main">

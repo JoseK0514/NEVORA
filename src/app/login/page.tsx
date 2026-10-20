@@ -10,6 +10,7 @@ import { PasswordInput } from "@/components/auth-premium/password-input";
 import { PasskeySlot, PasswordSignInMarker } from "@/components/auth-premium/passkey-slot";
 import { LoginSubmit } from "./login-submit";
 import "./auth-premium.css";
+import "./auth-signature.css";
 
 export default async function LoginPage({
   searchParams,
@@ -24,7 +25,7 @@ export default async function LoginPage({
   const errorId = params.error ? "login-error" : undefined;
 
   return (
-    <AuthShell lang={lang} t={t} variant="signin">
+    <AuthShell lang={lang} t={t} variant="signin" bandTitle={<><Greeting words={t.greeting} as="p" className="ap-band__greet" /><span className="ap-band__ws">{workspaceName ?? t.workspaceUnavailable}</span></>}>
       <WorkspaceEyebrow name={workspaceName ?? t.workspaceUnavailable} />
       <Greeting words={t.greeting} />
       <p className="ap-subtitle">{t.signInSubtitle}</p>
@@ -36,6 +37,8 @@ export default async function LoginPage({
         <p className="ap-alert" data-tone="done" role="status">{t.activated}</p>
       ) : null}
 
+      {/* Signature (phase 4): on phones Face ID leads; on wider screens it stays under Sign in. */}
+      <div className="ap-lead-only"><PasskeySlot t={t} lead /></div>
       <form action={login} className="ap-form" data-invalid={params.error ? "" : undefined}>
         {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
         <PasswordSignInMarker />
@@ -55,7 +58,7 @@ export default async function LoginPage({
         </div>
         <LoginSubmit idle={t.signIn} busy={t.signingIn} />
       </form>
-      <PasskeySlot t={t} />
+      <div className="ap-follow-only"><PasskeySlot t={t} /></div>
 
       <div className="ap-links">
         <p className="ap-narrow"><Link className="ap-link" href="/forgot-access">{t.forgotAccess}</Link></p>
