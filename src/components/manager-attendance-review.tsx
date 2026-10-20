@@ -108,7 +108,7 @@ export function AttendanceReviewSurface({
   const rows = ready ? groupRows(ready.groups, ready.labels) : [];
 
   return (
-    <section className="attendance-review" aria-labelledby="attendance-review-title">
+    <section className="attendance-review" aria-labelledby="attendance-review-title" data-attendance-state={paused ? "paused" : denied ? "unauthorized" : ready ? "ready" : unavailable ? "unavailable" : "loading"}>
       <ConfiguredAttendancePolicies />
       <header className="attendance-review-header">
         <div>
