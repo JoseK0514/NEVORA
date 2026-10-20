@@ -3,6 +3,7 @@ import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { PageBand } from "@/components/kit/kit";
+import { FocusClear } from "./wave-c-focus";
 
 /* Wave C (Phase 3.5): the one frame and form pieces every Settings page, Account recovery and
  * Clocker recovery share. Presentation only; each page keeps its own data, actions and checks.
@@ -28,6 +29,7 @@ export function SettingsFrame({ title, summary, eyebrow, back = { href: "/app/se
   return (
     <div className={className ? `nv-page wc-page ${className}` : "nv-page wc-page"} data-nv-page="" data-wc-width={width}>
       <PageBand eyebrow={eyebrow} title={title} summary={summary} back={back ?? undefined} aside={bandAside} />
+      <FocusClear />
       <div className="nv-content wc-content">
         {aside ? <div className="wc-layout"><div className="wc-main">{children}</div><aside className="wc-aside" aria-label="About this page">{aside}</aside></div> : children}
       </div>

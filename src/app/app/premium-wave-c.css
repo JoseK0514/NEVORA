@@ -607,3 +607,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-search-form { flex-wrap: wrap; row-gap: var(--nv-s-2); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-search-form > .wc-search { flex: 1 1 12rem; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-search-form > .nv-btn.nv-btn { margin-left: auto; }
+/* WCAG 2.4.11: a field reached by Tab never ends up behind the save bar. Scrolling keeps the measured tab bar
+ * (0 on desktop) plus the save bar plus 16px clear at the bottom, at every width and text size. */
+html:has(body .app-shell.nevora-portal .page-frame .wc-page .wc-actions.nv-actionbar) { scroll-padding-bottom: calc(var(--wc-tabbar, 68px) + var(--wc-bar, 76px) + 16px + env(safe-area-inset-bottom, 0px)); }

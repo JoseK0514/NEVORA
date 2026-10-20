@@ -178,7 +178,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     {devices.length ? <section className="nv-card" aria-labelledby="clocker-find-title">
       <div className="nv-card__head"><h2 className="nv-card__title" id="clocker-find-title">Find devices</h2></div>
       <div className="wc-find">
-        <span className="wc-search"><MagnifyingGlass size={20} aria-hidden="true" /><input ref={searchField} className="wc-control" type="search" aria-label="Search devices" placeholder="Search device or location" value={query} onChange={event => setQuery(event.target.value)} autoComplete="off" /></span>
+        <span className="wc-search"><MagnifyingGlass size={20} aria-hidden="true" /><input ref={searchField} className="wc-control" type="search" aria-label="Search devices" placeholder="Search devices" value={query} onChange={event => setQuery(event.target.value)} autoComplete="off" /></span>
         <div className="wc-pills" role="group" aria-label="Filter devices">
           {([['ALL', 'All', devices.length], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Revoked', revoked]] as const).map(([value, label, count]) =>
             <button key={value} type="button" className="nv-filter" aria-pressed={filter === value} aria-label={`${label}, ${count}`} onClick={() => setFilter(value)}>{label} <span className="wc-count" aria-hidden="true">{count}</span></button>)}
