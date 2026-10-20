@@ -1,0 +1,306 @@
+[
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-LONG",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.profile-status.active «Active» 12px",
+   "span. «Employee ID» 12px",
+   "strong. «AUDIT-LONG» 13px",
+   "span.nevora-field-label «Access role» 12px",
+   "span.nevora-field-label «Primary location» 12px",
+   "span.nevora-field-label «Employee status» 12px",
+   "span.nevora-field-hint «Deactivation signs this employ» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Employee ID: AUDIT-LONG» 13px",
+   "span.clocker-pin-module__hQ40jq__badge.clocker-pin-module__hQ40jq__con «Active employee» 12px",
+   "span. «4 digits» 12px",
+   "span. «Enter it again» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/employees/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Optional» 12px",
+   "span.nevora-field-label «Access role» 13px",
+   "span.nevora-field-hint «App permissions are separate f» 12px",
+   "span.nevora-field-label «Primary location» 13px",
+   "span.nevora-field-hint «Their primary location is alwa» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/employees/AUDIT-LONG",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Employee ID: AUDIT-LONG» 13px",
+   "span.clocker-pin-module__hQ40jq__badge.clocker-pin-module__hQ40jq__con «Active employee» 12px",
+   "span. «4 digits» 12px",
+   "span. «Enter it again» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/employees/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/employees/AUDIT-LONG",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Employee ID: AUDIT-LONG» 13px",
+   "span.clocker-pin-module__hQ40jq__badge.clocker-pin-module__hQ40jq__con «Active employee» 12px",
+   "span. «4 digits» 12px",
+   "span. «Enter it again» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/employees/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/employees",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/employees/AUDIT-LONG",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Employee ID: AUDIT-LONG» 13px",
+   "span.clocker-pin-module__hQ40jq__badge.clocker-pin-module__hQ40jq__con «Active employee» 12px",
+   "span. «4 digits» 12px",
+   "span. «Enter it again» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/employees/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]
