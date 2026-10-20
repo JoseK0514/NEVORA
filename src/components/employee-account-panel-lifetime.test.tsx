@@ -42,7 +42,7 @@ it('invalidates old notification rows before rechecking a changed operational so
  expect(html()).not.toContain('notificationId=expiring');
  await vi.advanceTimersByTimeAsync(0);expect(request).toHaveBeenCalledTimes(2);
  resolve(Response.json(ready(false)));await vi.advanceTimersByTimeAsync(0);
- expect(html()).toContain('No notifications in this current view.');expect(html()).not.toContain('notificationId=expiring');
+ expect(html()).toContain('No notifications here.');expect(html()).not.toContain('notificationId=expiring');
 });
 
 it('does not apply notification source invalidation to the separate own-profile reader',async()=>{

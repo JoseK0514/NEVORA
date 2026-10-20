@@ -1,7 +1,7 @@
 import { newRun, command } from "../../lib/payroll/service";
 import type { SqlExecutor } from "../../lib/notifications/types";
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { beforeEach, afterEach, it, expect } from "vitest";
 import { createPunchFixture } from "./clocker-punch-fixture";
 import { nativeProfiles, saveNativeProfile } from "../../lib/payroll/native/profiles.server";
@@ -10,7 +10,12 @@ import { fictionalWorkweekPolicy } from "../../lib/payroll/native/workweek-fixtu
 import type { SessionMutationProof } from "../../lib/shift-changes/types";
 const proof: SessionMutationProof = { employee: { id: "c34-owner", role: "OWNER", firstName: "QA", lastName: "Owner", primaryLocationId: "loc-1" }, sessionTokenHash: "a".repeat(64) };
 let f: Awaited<ReturnType<typeof createPunchFixture>>;
-beforeEach(async () => { process.env.NEVORA_PAYROLL_ENABLED = "true"; f = await createPunchFixture(); await f.q(await readFile("db/migrations/0031_native_payroll.sql", "utf8")); });
+beforeEach(async () => {
+    process.env.NEVORA_PAYROLL_ENABLED = "true";
+    // Native payroll finalizes time through current operational authorization.
+    // Adopt Company Access after the fixture's real employee census is seeded.
+    f = await createPunchFixture({ companyAccess: true });
+});
 afterEach(async () => { await f?.db.dispose(); delete process.env.NEVORA_PAYROLL_ENABLED; });
 function configuration() { const i = input(); i.wages[0].locationIds = ["loc-1"]; i.wages[0].workweekPolicy!.employeeId = "c34-a"; return { schema: "NEVORA_NATIVE_CONFIGURATION_V1" as const, employeeId: "c34-a", wages: i.wages, tax: i.tax, deductions: i.deductions }; }
 it("upgrades payroll additively and preserves append-only profile revisions/exact retries", async () => { const c = { action: "SAVE_NATIVE_PROFILE", operationId: randomUUID(), reason: "Actual wage facts reviewed", expectedRevision: 0, configuration: configuration() }; const r = await saveNativeProfile(proof, c, f.db.executor); expect(r.revision).toBe(1); expect(await saveNativeProfile(proof, c, f.db.executor)).toEqual(r); expect((await nativeProfiles(proof, f.db.executor)).configurations[0].wages[0].hourlyRateMinor).toBe("2000"); await expect(saveNativeProfile(proof, { ...c, reason: "Changed retry" }, f.db.executor)).rejects.toThrow("CONFLICT"); await expect(f.q("DELETE FROM native_payroll_profile_revisions")).rejects.toThrow("immutable"); await expect(f.q("TRUNCATE native_payroll_profile_revisions")).rejects.toThrow("immutable"); });

@@ -55,10 +55,10 @@ it('normal actions deny B targets, forged foreign employee and A publication wit
 it('normal scoped create/update/delete A succeeds and preserves every B schedule timestamp',async()=>{
  const f=await setup();try{
   const before=await f.q("SELECT to_jsonb(s) AS row FROM schedules s WHERE id='action-b'");
-  await expect(createShiftAction(form())).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1'});
+  await expect(createShiftAction(form())).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-12#schedule-employee-TARGET'});
   const [shift]=await f.q<{id:string}>("SELECT id FROM shifts WHERE employee_id='TARGET'");expect(shift).toBeDefined();
-  await expect(updateShiftAction(form({shiftId:shift.id,endTime:'11:30'}))).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&updated=1'});
-  await expect(deleteShiftAction(form({shiftId:shift.id}))).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&deleted=1'});
+  await expect(updateShiftAction(form({shiftId:shift.id,endTime:'11:30'}))).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-12&updated=1#schedule-employee-TARGET'});
+  await expect(deleteShiftAction(form({shiftId:shift.id}))).rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-12&deleted=1#schedule-employee-TARGET'});
   expect(await f.q("SELECT to_jsonb(s) AS row FROM schedules s WHERE id='action-b'")).toEqual(before);
  }finally{await close(f);}
 });

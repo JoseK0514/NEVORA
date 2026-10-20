@@ -5,7 +5,7 @@ import {managementAlertTopics,parseManagementAlertChoice,type ManagementProfile}
 import {neonNotificationExecutor} from './notification-transactions';
 import {assertManagementProof,managementSessionStatements,isManagementAuthorizationError} from './management-session';
 import {getWorkspace,workspaceReadGuard} from './workspaces';
-import {managerLocationsSql,managerScopeStatements,readManagerScopeStorage} from './manager-location-scope.server';
+import {readOperationalAuthority} from '../company-access/operational-scope.server';
 
 function assertProfileProof(proof:SessionMutationProof) {
   assertManagementProof(proof,proof?.employee?.id);
@@ -15,28 +15,36 @@ const limits=[{text:"SET LOCAL lock_timeout='1500ms'",values:[]},{text:"SET LOCA
 export async function readManagementProfile(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<ManagementProfile> {
   try{assertProfileProof(proof);}catch{return {state:'unavailable',reason:'access_denied'};}
   try {
-    const signal=AbortSignal.timeout(8000),workspace=await getWorkspace(executor),storage=await readManagerScopeStorage(executor);
+    const signal=AbortSignal.timeout(8000),workspace=await getWorkspace(executor),startedAt=Date.now();
+    const before=await readOperationalAuthority(proof,executor);
+    if(before.state!=='ready')return before;
+    if(before.role!==proof.employee.role||before.employeeId!==proof.employee.id)return {state:'unavailable',reason:'access_denied'};
     const guards=[...limits,...workspaceReadGuard(workspace),
       {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
-      ...managerScopeStatements(storage,workspace.id,proof.employee.id),
       ...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])];
     const query={text:`WITH observed AS MATERIALIZED (SELECT clock_timestamp() AS at)
       SELECT to_jsonb(o.at) AS "observedAt",LEAST(600000,FLOOR(EXTRACT(EPOCH FROM(s.expires_at-o.at))*1000)) AS "validForMs",
         e.email,e.phone,
-        ${storage==='legacy'?"'all'":`CASE WHEN e.role='OWNER' OR EXISTS(SELECT 1 FROM nevora_tenancy.portal_administrative_authority a WHERE a.workspace_id=$3 AND a.employee_id=e.id AND a.scope_kind='ALL_TENANT') THEN 'all' ELSE 'assigned' END`} AS scope,
-        ARRAY(SELECT l.name FROM locations l WHERE l.active AND l.id IN (${managerLocationsSql(storage,'$3','$1')}) ORDER BY l.id) AS names,
         e.management_alert_choices AS choices
       FROM employees e JOIN employee_sessions s ON s.employee_id=e.id CROSS JOIN observed o
-      WHERE e.id=$1 AND s.token_hash=$2 AND e.active AND e.role=$4 AND s.expires_at>o.at`,values:[proof.employee.id,proof.sessionTokenHash,workspace.id,proof.employee.role]};
+      WHERE e.id=$1 AND s.token_hash=$2 AND e.active AND e.role=$3 AND s.expires_at>o.at`,values:[proof.employee.id,proof.sessionTokenHash,proof.employee.role]};
     const results=await executor.transaction([...guards,query,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
-    const row=results[guards.length]?.[0] as {observedAt:string;validForMs:number;email:string|null;phone:string|null;scope:'all'|'assigned';names:string[];choices:Record<string,boolean>}|undefined;
+    const row=results[guards.length]?.[0] as {observedAt:string;validForMs:number;email:string|null;phone:string|null;choices:Record<string,boolean>}|undefined;
     if(!row)return {state:'unavailable',reason:'access_denied'};
-    const validForMs=Number(row.validForMs);
-    if(!Number.isFinite(Date.parse(row.observedAt))||!(validForMs>0&&validForMs<=600000)||
-      !['all','assigned'].includes(row.scope)||!Array.isArray(row.names)||row.names.length>500||row.names.some(n=>typeof n!=='string'||n.length>200)||
+    const after=await readOperationalAuthority(proof,executor);
+    if(after.state!=='ready')return after;
+    if(after.employeeId!==before.employeeId||after.role!==before.role||after.authority!==before.authority||
+      JSON.stringify(after.scope)!==JSON.stringify(before.scope)||JSON.stringify(after.locations)!==JSON.stringify(before.locations))
+      return {state:'unavailable',reason:'access_denied'};
+    const scope=before.scope?.mode==='COMPANY'?'all':'assigned';
+    const names=before.scope?before.locations.filter(location=>before.scope?.mode==='COMPANY'||before.scope?.locationIds.includes(location.id)).map(location=>location.name):[];
+    const sessionValidForMs=Number(row.validForMs);
+    const validForMs=Math.min(sessionValidForMs,before.validForMs-(Date.now()-startedAt),after.validForMs);
+    if(!Number.isFinite(Date.parse(row.observedAt))||!(sessionValidForMs>0&&sessionValidForMs<=600000)||!(validForMs>0&&validForMs<=600000)||
+      names.length>500||names.some(n=>typeof n!=='string'||n.length>200)||
       [row.email,row.phone].some(v=>v!==null&&(typeof v!=='string'||v.length>200))||!row.choices||typeof row.choices!=='object'||Array.isArray(row.choices)||Object.values(row.choices).some(v=>typeof v!=='boolean'))throw Error('invalid_profile_snapshot');
     return {state:'ready',kind:'management-profile',observedAt:new Date(row.observedAt).toISOString(),validForMs,
-      contact:{email:row.email,phone:row.phone},locations:{scope:row.scope,names:row.names},
+      contact:{email:row.email,phone:row.phone},locations:{scope,names},
       alerts:managementAlertTopics.filter(t=>proof.employee.role==='OWNER'||t.id!=='payroll-ready').map(t=>({...t,on:t.id==='payroll-ready'&&process.env.NEVORA_PAYROLL_ENABLED!=='true'?false:row.choices[t.id]??true}))};
   }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }
