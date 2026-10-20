@@ -1103,3 +1103,26 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page-foot .cm-refresh:not(#cm-foot) { margin-right: 0; }
 }
+/* Coordinator QA fixes (final re-pass, desktop and phone). Wave A: merge claude/clean-manager-qa-fixes. */
+/* P1: the selected section tab (Payroll settings, runs, exports) showed a blank white block. The hit-area ::after took the
+ * old dark-band tab's white underline and stretched it over the label. Section tabs get their hit area from ::before, and
+ * their ::after is a 2px ink underline under the current tab. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track > :is(a, button):not(#cm-hit)::after { inset: auto 0 0 0; height: 2px; background: transparent; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track > :is(a, button)[aria-current="page"]:not(#cm-hit)::after { background: var(--cm-label, #111); }
+@media (pointer: coarse), (max-width: 760px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track > :is(a, button):not(#cm-hit)::before { content: ""; position: absolute; inset: -6px 0; }
+  /* P2: pills in a scrolling strip lost their 44px hit area to the strip's clip; the strip keeps 6px of room above and below. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wa-chips, .wa-segments, .section-tabs-track):not(#cm-strip) { padding-block: 6px; margin-block: -6px; }
+}
+/* P1: title-row links (review "‹ Inbox", person "‹ Team", Team "Add employee") couldn't be clicked with a mouse; the
+ * masthead body painted over the absolutely placed bar. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-pageband > .nv-pageband__bar:not(#cm-bar) { z-index: 2; }
+/* P2: the review's Approve/Decline bar is sticky, so it needs a background (rows showed through at 200% and in short windows). */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .page-frame .premium-review .nv-actionbar.premium-review-actions:not(#cm-bar) { background: var(--cm-grouped, #F2F2F7); }
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .page-frame .premium-review .nv-actionbar.premium-review-actions:not(#cm-bar) { background: #FFFFFF; }
+}
+/* P2: the top-bar Search grows with text (its ⌘K chip stuck out of a fixed 30px box at 200%). */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .command-finder-trigger:not(#cm-search):not(#cm-qa) { height: auto; }
+/* P2: a focused row in the More sheet stays clear of its sticky Close bar. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #manager-more-navigation.nevora-action-menu-popover:not(#cm-more) { scroll-padding-bottom: 64px; }

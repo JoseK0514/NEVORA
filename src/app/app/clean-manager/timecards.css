@@ -270,3 +270,8 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stat:nth-child(n+3) { border-top: 1px solid #ECECEA; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-stats .nv-stat:nth-child(3) { border-left: 0; }
 }
+
+/* Coordinator QA fix (P2): below 1300px the period picker opens to the right of its button, never over the sidebar. */
+@media (max-width: 1299px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-dates:not(#cm-qa) { right: auto; left: 0; }
+}
