@@ -1,0 +1,26 @@
+From 8743bb02279fbdd52dd7b0c2055436632b4b79f9 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Tue, 20 Oct 2026 00:06:17 +0000
+Subject: [PATCH] CI-RC-FOLLOWUP-COVERAGE-01: run mandatory gates on
+ verification PRs
+
+---
+ .github/workflows/ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index b7fe6698..34d92af0 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -4,7 +4,7 @@ on:
+   push:
+     branches: [development, main, "phase-c/**", "phase-d/**", "codex/phase-d-**", "phase-e/**", "codex/phase-e-**", "phase-f/**", "codex/phase-f-**", "codex/par-001-**", "fix/**", "release/**"]
+   pull_request:
+-    branches: [development, main, "phase-c/**", "release/**"]
++    branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
+ 
+ concurrency:
+   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+-- 
+2.52.0
+

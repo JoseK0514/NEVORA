@@ -1,0 +1,24 @@
+{
+  "candidateBase": "a21650de50374683d52e32b883d7f419d7344f22",
+  "head": "8743bb02279fbdd52dd7b0c2055436632b4b79f9",
+  "sourceTree": "5451dde42619a1d6c0af2e72ca0f931fd680bb24",
+  "headSourceTree": "5451dde42619a1d6c0af2e72ca0f931fd680bb24",
+  "changedPaths": [
+    ".github/workflows/ci.yml",
+    "scripts/phase-d-attendance-ui-qa.mjs",
+    "scripts/phase-e-home-browser-scenarios.mjs"
+  ],
+  "releaseEngineering": {
+    "tests": 51,
+    "passed": 51,
+    "failed": 0
+  },
+  "scriptSyntax": "pass",
+  "changedFileLint": "pass",
+  "initialDependencyAttempt": {
+    "failedFiles": 2,
+    "reason": "new worktree had no node_modules; no source/test behavior failure",
+    "correction": "ignored node_modules symlink to existing lock-identical installation"
+  },
+  "mandatoryGatesAndAssertionsPreserved": true
+}

@@ -1,0 +1,63 @@
+
+> fuel-scheduler@0.1.0 test:release-engineering
+> node --test scripts/release-ci-contract.check.mjs scripts/release-postgres-cleanup.check.mjs scripts/release-browser-diagnostics.check.mjs scripts/release-lint-chain.check.mjs
+
+✔ retains useful timeout detail, failed cell and scrubbed source stage (15.117081ms)
+✔ retains primitive assertion evidence without serializing arbitrary actual values (0.556409ms)
+✔ redacts absolute URL (0.593034ms)
+✔ redacts relative capability (0.27108ms)
+✔ redacts standalone capability (0.238282ms)
+✔ redacts digest (0.309278ms)
+✔ redacts escaped URL (0.400114ms)
+✔ omits credential-bearing lines while retaining unrelated call-log detail (0.337773ms)
+✔ bounds hostile messages and tolerates unreadable thrown objects (1.989893ms)
+✔ rejects arbitrary error metadata and reads cell identifiers only once (0.890662ms)
+✔ new diagnostic report matches the existing artifact selection (1.509119ms)
+✔ all triggered candidate branches receive mandatory SQL and browser gates (6.781021ms)
+✔ existing aggregate rejects failed, cancelled, skipped, neutral and missing jobs (22.008793ms)
+✔ owner release hold disables Vercel Git deployments for every branch (0.213201ms)
+✔ the installed development graph contains none of the vulnerable glob chain (20.621403ms)
+✔ eslint-config-next retains every published file except the explicit dependency/import seam (1.803127ms)
+✔ eslint-plugin-next retains every published file except the explicit dependency/import seam (21.620852ms)
+✔ all 22 original Next rules and their recommended severities remain enabled (1.268833ms)
+✔ root-directory semantics preserve apps/web (3.489046ms)
+✔ root-directory semantics preserve apps/web/ (1.079104ms)
+✔ root-directory semantics preserve ./apps/web (1.079044ms)
+✔ root-directory semantics preserve . (0.47723ms)
+✔ root-directory semantics preserve ./ (0.715692ms)
+✔ root-directory semantics preserve apps/* (10.385066ms)
+✔ root-directory semantics preserve apps/** (3.855562ms)
+✔ root-directory semantics preserve apps/{web,mobile} (4.676615ms)
+✔ root-directory semantics preserve apps/w?b (0.949237ms)
+✔ root-directory semantics preserve apps/@(web|mobile) (1.436483ms)
+✔ root-directory semantics preserve apps/missing (0.312319ms)
+✔ root-directory semantics preserve apps/linked (0.397997ms)
+✔ root-directory semantics preserve apps/linked/** (1.379221ms)
+✔ root-directory semantics preserve apps/.* (1.175867ms)
+✔ root-directory semantics preserve apps/*/pages (1.615454ms)
+✔ absolute root-directory semantics preserve apps/web (0.407128ms)
+✔ absolute root-directory semantics preserve apps/* (1.414316ms)
+✔ default and mixed array root settings keep their existing behavior (0.834428ms)
+✔ hostile oversize fails closed before glob parsing (0.633902ms)
+✔ hostile deep braces fails closed before glob parsing (0.277869ms)
+✔ hostile deep parentheses fails closed before glob parsing (0.109047ms)
+✔ hostile Cartesian expansion fails closed before glob parsing (0.373917ms)
+✔ hostile huge numeric range fails closed before glob parsing (0.182473ms)
+✔ real no-html-link-for-pages detection remains active for apps/web (39.631671ms)
+✔ real no-html-link-for-pages detection remains active for apps/linked (16.578184ms)
+✔ real no-html-link-for-pages detection remains active for apps/* (11.098766ms)
+✔ real no-html-link-for-pages detection remains active for apps/{web,mobile} (15.871355ms)
+✔ real no-html-link-for-pages detection remains active for apps/*/pages/.. (11.319248ms)
+✔ existing allowed navigation remains allowed: const element = <a href="https://example.test/about">External</a>; (8.599194ms)
+✔ existing allowed navigation remains allowed: const element = <a href="/about" target="_blank">New tab</a>; (2.456633ms)
+✔ existing allowed navigation remains allowed: const element = <a href="/about" download>Download</a>; (6.292986ms)
+✔ existing allowed navigation remains allowed: const element = <Link href="/about">About</Link>; (3.991663ms)
+✔ partial PostgreSQL startup invokes stop before removing owned data (162.906725ms)
+ℹ tests 51
+ℹ suites 0
+ℹ pass 51
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1553.924153

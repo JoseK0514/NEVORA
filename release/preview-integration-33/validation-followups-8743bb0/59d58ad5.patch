@@ -1,0 +1,51 @@
+From 59d58ad5c997773330b9afd427cca6ca8a2c0dee Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Tue, 20 Oct 2026 00:06:17 +0000
+Subject: [PATCH] CI-RC-ATTENDANCE-LABELS-02: verify refreshed labels in
+ attendance rows
+
+---
+ scripts/phase-d-attendance-ui-qa.mjs | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/scripts/phase-d-attendance-ui-qa.mjs b/scripts/phase-d-attendance-ui-qa.mjs
+index df96de9f..4b4315ec 100644
+--- a/scripts/phase-d-attendance-ui-qa.mjs
++++ b/scripts/phase-d-attendance-ui-qa.mjs
+@@ -342,13 +342,13 @@ try {
+       status: 200,
+     };
+     await page.getByRole('button', { name: 'Refresh attendance review' }).click();
+-    await page.getByText('Renamed Main Office', { exact: true }).waitFor();
+-    assert.equal(await page.getByText('Main Office', { exact: true }).count(), 0);
++    await page.locator('.attendance-review-list').getByText('Renamed Main Office', { exact: true }).waitFor();
++    assert.equal(await page.locator('.attendance-review-list').getByText('Main Office', { exact: true }).count(), 0);
+     checked(engine + ': refreshed server labels replace stale page-load labels');
+ 
+     fixture = { payload: fixtureReady(), status: 200 };
+     await page.getByRole('button', { name: 'Refresh attendance review' }).click();
+-    await page.getByText('Main Office', { exact: true }).waitFor();
++    await page.locator('.attendance-review-list').getByText('Main Office', { exact: true }).waitFor();
+ 
+     for (const width of WIDTHS) {
+       await page.setViewportSize({ width, height: width <= 430 ? 844 : 1000 });
+@@ -373,14 +373,14 @@ try {
+ 
+     fixture = { status: 503, payload: { state: 'unavailable', reason: 'read_failed' } };
+     await refresh.click();
+-    await page.getByText('Attendance review unavailable', { exact: true }).waitFor();
++    await page.getByText('Attendance unavailable', { exact: true }).waitFor();
+     assert.equal(await page.getByText('Nothing to review', { exact: true }).count(), 0);
+     checked(engine + ': unavailable clears healthy empty state');
+ 
+     fixture = { status: 200, payload: { ...fixtureReady(), validForMs: 120 } };
+     await refresh.click();
+     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+-    await page.getByText('Attendance review unavailable', { exact: true }).waitFor({ timeout: 3000 });
++    await page.getByText('Attendance unavailable', { exact: true }).waitFor({ timeout: 3000 });
+     assert.equal(await page.getByText('Sign in again', { exact: true }).count(), 0);
+     checked(engine + ': expired source freshness is not mislabeled as sign-in failure');
+ 
+-- 
+2.52.0
+

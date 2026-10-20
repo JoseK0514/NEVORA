@@ -1,0 +1,36 @@
+diff --git a/src/lib/keep-whole.ts b/src/lib/keep-whole.ts
+--- a/src/lib/keep-whole.ts
++++ b/src/lib/keep-whole.ts
+@@ -5,8 +5,7 @@
+   return text
+     .replace(/(\d) at (\d{1,2}:\d{2})/g, '$1, $2')
+     .replace(/(\d{1,2}:\d{2}(?::\d{2})?) ([AP]M)/g, '$1 $2')
+-    // WR-B-11: a short weekday stays with a short date ("Mon, Oct 19"); a long one ("Monday, October 19, 2026") may wrap.
+-    .replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d)/g, '$1, ')
++    // TC-P3-09/32: leave a break after the weekday; only month and day form an atom.
+     .replace(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*) (\d{1,2})(, (\d{4}))?/g, (_, month, day, _y, year) => `${month} ${day}${year ? `, ${year}` : ''}`)
+     .replace(/\b(\d+h) (\d+m)\b/g, '$1 $2')
+     .replace(/ – /g, ' – ')
+diff --git a/src/lib/keep-whole.test.ts b/src/lib/keep-whole.test.ts
+--- a/src/lib/keep-whole.test.ts
++++ b/src/lib/keep-whole.test.ts
+@@ -7,10 +7,11 @@
+   expect(keepWhole("Next shift today at 8:00 AM.")).toBe(`Next shift today at 8:00${N}AM.`);
+   expect(keepWhole("Time off pending · Oct 28, 2026 – Oct 29, 2026")).toBe(`Time off pending${N}· Oct${N}28, 2026${N}– Oct${N}29, 2026`);
+   expect(keepWhole("Oct 26 – Nov 1")).toBe(`Oct${N}26${N}– Nov${N}1`);
+-  expect(keepWhole("Sun, Oct 18, 9:10 PM")).toBe(`Sun,${N}Oct${N}18, 9:10${N}PM`);
++  expect(keepWhole("Sun, Oct 18, 9:10 PM")).toBe(`Sun, Oct${N}18, 9:10${N}PM`);
+ });
+ 
+ it("keeps month and day, durations and separators with what they belong to", () => {
++  expect(keepWhole("Mon, Oct 19")).toBe(`Mon, Oct${N}19`);
+   expect(keepWhole("Monday, October 19, 2026")).toBe(`Monday, October${N}19, 2026`);
+   expect(keepWhole("4h 42m since clock-in · 1h 52m on break")).toBe(`4h${N}42m since clock-in${N}· 1h${N}52m on break`);
+   expect(keepWhole("Declined by Morgan Rivera · Oct 17")).toBe(`Declined by Morgan Rivera${N}· Oct${N}17`);
+@@ -18,5 +19,5 @@
+ 
+ it("writes Safari's date-and-time the same way as Chrome's (TC-P3-26)", () => {
+   expect(keepWhole("Oct 19 at 12:37 PM")).toBe(`Oct${N}19, 12:37${N}PM`);
+-  expect(keepWhole("Mon, Oct 19 at 9:11:52 AM")).toBe(`Mon,${N}Oct${N}19, 9:11:52${N}AM`);
++  expect(keepWhole("Mon, Oct 19 at 9:11:52 AM")).toBe(`Mon, Oct${N}19, 9:11:52${N}AM`);
+ });

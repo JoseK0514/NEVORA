@@ -4,7 +4,7 @@
   "baseSource": "a21650de50374683d52e32b883d7f419d7344f22",
   "baseTree": "2e16c3d2d1bcb498ccd3ea7e6660a4314fc0c70f",
   "measuredFrozenSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
-  "sourceNote": "The two edited source files are byte-identical between measured cd and proposal base a216. Full cd sweep continues untouched.",
+  "sourceNote": "Every edited source/test file is byte-identical between measured cd and proposal base a216. Full cd sweep continues untouched.",
   "proposals": {
     "TC-P3-09": {
       "file": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/proposals/TC-P3-09-availability-date-atoms.patch",
@@ -27,10 +27,47 @@
           "afterSha256": "8943a34366c0c25e0fb755eb0590e61601dbeec0338f7c25843d1cba1a73170c"
         }
       ]
+    },
+    "TC-B-25 MyPay affected-surface expansion": {
+      "file": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/proposals/TC-B-25-my-pay-date-atoms.patch",
+      "sha256": "c05f43f71e4b4be77e69cfc3df9f0e6787d4a74b612b4176df98a9f3164f818d",
+      "files": [
+        {
+          "path": "src/components/payroll/my-pay.tsx",
+          "beforeSha256": "69348ea316ec9d7de356cd7e0e312c90589caecc92ab1430a5aa86b31b076697",
+          "afterSha256": "507ab27b3885a6b3d9f1ee0e312f44cac4a83d3765b1cd973a41c8efa1863125",
+          "measuredCdByteIdentical": true
+        },
+        {
+          "path": "src/components/payroll/my-pay.test.tsx",
+          "beforeSha256": "4487d3291e473b9f5d93087765a30a51786040df8d542f129a20b403f81d61fb",
+          "afterSha256": "8fe191c7a9bab2be50ede81e174857f322b89fdd6a8c68e11419e2a12b3f46b2",
+          "measuredCdByteIdentical": true
+        }
+      ]
+    },
+    "TC-P3-32 shared cause, also TC-P3-09 MyTime": {
+      "file": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/proposals/TC-P3-32-shared-short-weekday-break.patch",
+      "sha256": "fe2fe64849fcdc1be489e318fc2bc07a12ea4f91887fb63574fe323d33271888",
+      "files": [
+        {
+          "path": "src/lib/keep-whole.ts",
+          "beforeSha256": "5537d075085b9fe44e38c5288fb07d547d3703c7c553e21ff903484f78b13355",
+          "afterSha256": "797a486ab61c0fa52c1c17ef241ad9a984f5f82e5649d1ff313ecaa10d0a4a2b",
+          "measuredCdByteIdentical": true
+        },
+        {
+          "path": "src/lib/keep-whole.test.ts",
+          "beforeSha256": "2dd2207f09bd17e8e5db7c29e310b41665ea59a00b5e898230a0d45d00c0ccbb",
+          "afterSha256": "4afca0ba64b909654781e21895c28c745ef6d093731082d8dd4942402c0f64d8",
+          "measuredCdByteIdentical": true
+        }
+      ]
     }
   },
   "appFilesWritten": false,
   "previewLaunched": false,
   "testsRun": false,
-  "approvalOrClosureClaimed": false
+  "approvalOrClosureClaimed": false,
+  "updatedAt": "2026-10-19T23:55:02.753224+00:00"
 }
