@@ -29,7 +29,7 @@ All browser commands used the existing PostgreSQL16.15 runtime via `NEVORA_TEST_
 
 Clocker actual keyboard-focus paint in both engines: white `rgb(255,255,255)` over solid `rgb(7,117,114)`, background-image:none, ratio5.531365207934279, outline3px, opacity1.
 
-The select focused harness retains real native controls, taps the visible select, dismisses the picker, and uses native `r` typeahead to select the recorded-break option in every fresh cell; programmatic restore to entry is used only for the selected-label screenshot.200% means root font size32px and existing `--type-unit:2px`, not a claim about physical browser zoom. The source copies and exact helper invocations are retained under focused-checks.
+The select focused harness retains real native controls, taps the visible select, dismisses the picker, and uses native `r` typeahead to select the recorded-break option in every fresh cell; programmatic restore to entry is used only for the selected-label screenshot.200% means root font size32px and existing `--type-unit:2px`, not a claim about physical browser zoom. The final focused helper source copies and invocations are retained under focused-checks. Exploratory ignored-helper iterations retain outputs/screenshots, but not every transient helper source revision; they are diagnostic failure history, not independent pass receipts.
 
 ## Preserved failed history and corrections
 
