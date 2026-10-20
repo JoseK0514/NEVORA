@@ -14,6 +14,7 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
-  return <ReportsEntrance><PageBand title="Insights" summary="Hours, attendance and schedule changes for any period."/>
-    <div className="nv-content"><Reports key={session.id} initialPeriod={period}/></div></ReportsEntrance>;
+  // v3: Reports renders the navigation bar (More, period, Export), the segmented periods and the content after the title.
+  return <ReportsEntrance><PageBand title="Insights" summary="Recorded hours, time off and approvals for the period"/>
+    <Reports key={session.id} initialPeriod={period} today={today.toString()}/></ReportsEntrance>;
 }
