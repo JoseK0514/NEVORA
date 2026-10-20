@@ -102,7 +102,7 @@
 .av-time-range label > span { font-size: calc(11 * var(--type-unit, 1px)); color: var(--av-muted); }
 .availability-page .av-time-range input { width: 100%; min-width: 0; height: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--av-border); border-radius: var(--av-control-radius); background: var(--av-canvas); color: var(--av-ink); font-size: calc(16 * var(--type-unit, 1px)); font-variant-numeric: tabular-nums; box-shadow: none; }
 .availability-page .av-time-range input:focus { border-color: var(--av-accent-ink); }
-.av-time-separator { display: flex; align-items: center; justify-content: center; height: 44px; color: var(--av-muted); }
+.av-time-separator { display: flex; align-items: center; justify-content: center; height: 44px; color: var(--av-muted); font-size: .9375rem; /* 15px, the phone floor; decorative (aria-hidden) */ }
 .av-no-hours { color: var(--av-muted); font-size: calc(13 * var(--type-unit, 1px)); }
 .availability-page .av-input-hint { margin-top: 16px; color: var(--av-muted); font-size: calc(12 * var(--type-unit, 1px)); }
 .availability-page .av-zero-note { margin-top: 12px; padding: 12px 16px; background: var(--av-inset); border-radius: 12px; color: var(--av-muted); font-size: calc(13 * var(--type-unit, 1px)); }
@@ -211,3 +211,20 @@ html body .app-shell.nevora-portal .availability-page .av-upcoming-banner a.av-b
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-availability .av-time-range label > span { font: var(--nv-t-label); }
 }
+
+/* AV-L1 (layout QA 2026-10-19): From and Until never clip their value ("06:00 AM" plus the clock needs about 7em + 26px).
+ * Both checks are container queries in rem, so they follow the real width and the reader's text size (100-200%):
+ * 1. a day row too narrow for a 21rem time column puts the times on their own full-width line (761-1000px, large text);
+ * 2. a time range under 21rem stacks From over Until in one column and drops the "–" (phones under ~400px, large text). */
+.availability-page .av-editor { container: av-editor / inline-size; }
+.availability-page .av-time-range { container: av-time / inline-size; }
+@container av-editor (max-width: calc(21rem + 362px)) {
+  .availability-page .av-day-row > .av-time-range { grid-column: 1 / -1; }
+}
+@container av-time (max-width: 21rem) {
+  .availability-page .av-time-range > label { grid-column: 1 / -1; }
+  .availability-page .av-time-range > .av-time-separator { display: none; }
+}
+/* AV-L3: the submit label sits in a label-swap span, so the button's gap never reached its arrow or lock; give the
+ * label the same 8px gap Reset changes uses. */
+.availability-page .av-form-actions .av-button .nv-label-swap > span { display: inline-flex; align-items: center; justify-content: center; gap: var(--nv-s-2, 8px); }

@@ -165,7 +165,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       <label>Period start<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
       <label>Period end<input className={corporate?employeeInputClass():undefined} type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
       <button className={corporate?employeeButtonClass('primary','button primary'):'button primary'} disabled={paused||busy||!!pending}>View period</button>
-      <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>{corporate?<><span className="employee-corporate-desktop-copy">Refresh timecards</span><span className="employee-corporate-mobile-copy">Refresh</span></>:<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>
+      <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>{corporate?'Refresh timecards':<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>
     </form>
     <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}{signInRequired?<> <Link href="/login">Sign in</Link></>:null}</p>
     </div>

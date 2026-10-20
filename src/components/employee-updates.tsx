@@ -25,6 +25,8 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  unavailableReason?: string;
  onRefresh: () => void;
 }) {
+  // H4 QA: a 401 (session_ended) and a 403 (access_denied) both mean signing in again; a 401 showed "Couldn’t load" with a Try again that kept failing.
+  const signedOut = unavailableReason === 'access_denied' || unavailableReason === 'session_ended';
  const [filter, setFilter] = useState<Filter>('all');
  const current = paused ? null : list;
  const items = current?.items.filter((item): item is ReadyUpdate => item.state === 'ready') ?? [];
@@ -50,10 +52,10 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
    <div className="updates-toolbar">
     {/* P3-ST-05: the filters are there from the first frame (disabled, counts "–" until read), so the list never jumps down. */}
     <fieldset className="updates-filters" disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
-    <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason && unavailableReason !== 'access_denied' ? 'Try again' : 'Refresh'}</span></button>
+    <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason && !signedOut ? 'Try again' : 'Refresh'}</span></button>
    </div>
    {current?.state === 'partial' ? <p className="updates-partial" role="status"><NavIcon name="alert" />Some updates couldn’t load. Try again to check for the rest.</p> : null}
-   {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : unavailableReason === 'access_denied' ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : unavailableReason === 'access_denied' ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.'}</p>{unavailableReason === 'access_denied' ? <Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link> : null}</div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
+   {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : signedOut ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : signedOut ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.'}</p>{signedOut ? <Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link> : null}</div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
     <h2>{keepWhole(date)}</h2><ul className="updates-list">{rows.map(item => {
      const reviewed = isReviewed(item);
      const status = mode === 'manager' ? item.acknowledgement === 'REQUIRED' ? 'Acknowledgement required' : 'Optional update' : item.ownAcknowledgedAt ? 'Acknowledged' : item.acknowledgement === 'REQUIRED' ? 'Review needed' : item.ownReadAt ? 'Read' : 'Not read';

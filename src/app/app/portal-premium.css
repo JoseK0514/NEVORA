@@ -1034,6 +1034,15 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-t
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-form-footer .nto-button { min-height: 52px; border-radius: var(--nv-r-control); font: var(--nv-t-headline); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-form-footer .nto-primary { border: 0; background: var(--nv-accent); color: #FFFFFF; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-form-footer .nto-secondary { border: 0; background: var(--nv-canvas); color: var(--nv-ink); box-shadow: inset 0 0 0 1px var(--nv-border); }
+/* QA Oct 19: the request summary lines up with the fields (it was inset 20px on phones and 32px short on desktop), and the
+ * two buttons share one width: stacked full width on phones, one right-aligned row on wider screens. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-summary:not(#nv-kit) { margin: 0 0 var(--nv-s-5); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-form-footer:not(#nv-kit) { align-items: stretch; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-form-footer .nto-button:not(#nv-kit) { width: 100%; }
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-form-footer:not(#nv-kit) { flex-direction: row; justify-content: flex-end; align-items: center; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-timeoff .nv-card .nto-form-footer .nto-button:not(#nv-kit) { width: auto; min-width: 12rem; }
+}
 /* Phase 3: Shift requests. Each shift is a kit card; its actions open from "Shift options". */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .employee-view-surface { margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; display: flex; flex-direction: column; gap: var(--nv-s-4); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .employee-view-surface section { display: flex; flex-direction: column; gap: var(--nv-s-3); margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
@@ -2065,7 +2074,16 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] .emp
 /* Phase 3 round 4, stability */
 /* P3-ST-14: My time's panel is a real box (it was display: contents, so the height hold had nothing to hold). The flex
  * column with no gap lays its cards out exactly as before. */
-html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-corporate="true"] .page-frame .employee-my-time-view .employee-time-panel:not(#nv-kit) { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-corporate="true"] .page-frame .employee-my-time-view .employee-time-panel:not(#nv-kit) { display: flex; flex-direction: column; gap: var(--nv-s-4); align-items: stretch; min-width: 0; }
+/* QA Oct 19: My time's cards are separate surfaces, one width and 16px apart (they touched, and Recent entries shrank to
+ * its content because the panel inherited align-items: start). */
+html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-corporate="true"] .page-frame .employee-my-time-view .employee-time-panel > :is(section, .employee-time-overview):not(#nv-kit) { width: 100%; min-width: 0; }
+/* QA Oct 19: at 150 and 200% text on phones, the clock card's Refresh and My time drop under the "Updated" line instead of
+ * sitting beside it (they were pushed past the card edge, out of reach). */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame .employee-time-footer:not(#nv-kit) { grid-template-columns: minmax(0, 1fr); flex-wrap: nowrap; height: auto; max-height: none; }
+  html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame :is(.employee-time-controls, .my-time-period-link):not(#nv-kit) { grid-column: 1; grid-row: auto; flex-wrap: wrap; justify-content: flex-start; }
+}
 /* P3-ST-17: at 320 and 200% text, "Hi, Alexandra." takes two lines; Home's title keeps two lines' room from the first frame. */
 @media (max-width: 359px) {
   html[data-text-step="200"] body .app-shell.nevora-portal .page-frame .premium-employee-home .nv-masthead__title:not(#nv-kit) { min-height: 2lh; }
@@ -2090,3 +2108,15 @@ html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-c
 html body .app-shell.nevora-portal.nevora-portal .page-frame > .section-tabs .section-tab:focus-visible:not(#nv-kit),
 html body .app-shell.nevora-portal.nevora-portal .page-frame [class*="notification-inbox-module"] :is(a, button):focus-visible:not(#nv-kit),
 html body .app-shell.nevora-portal.nevora-portal .page-frame .updates-list :is(a, button):focus-visible:not(#nv-kit) { outline-offset: -3px; }
+/* QA Oct 19: at 761px and up, My schedule's review card puts its action on its own full-width row ("Confirm schedule"
+ * was squeezed into the 40px icon column at 768 and wrapped to two lines). */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-schedule-review .my-review-action:not(#nv-kit) { grid-column: 1 / -1; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-schedule-review .my-review-action :is(button, .button):not(#nv-kit) { width: 100%; }
+}
+/* QA Oct 19: "Shift options" looks the same on Shift requests as on My schedule: an outlined 44px control, not a teal link. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .premium-shift-options > summary:not(#nv-kit) { padding: var(--nv-s-2) var(--nv-s-3); border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background: var(--nv-canvas); color: var(--nv-ink); font-weight: 500; width: fit-content; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .premium-shift-options:not(#nv-kit) { border-top: 0; padding-top: var(--nv-s-2); }
+/* H4 QA: once Home's read has failed, been refused or paused, the Next shift card drops its loading bars, so
+ * "Couldn’t load your shift." doesn't look like it is still loading. The lines keep their height. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame [data-home-state]:not([data-home-state="loading"]) .premium-pass-placeholder > :is(p:nth-child(2), p:nth-child(4)):not(#nv-kit) { background: none; }
