@@ -42,6 +42,16 @@ export function SigSection({ id, title, action, children }: { id?: string; title
   </section>;
 }
 
+/** Phase 3 section head: a tracked-caps title with its count in a small pill, and an optional note on the right. */
+export function SigHead({ id, title, count, aside }: { id?: string; title: ReactNode; count?: number; aside?: ReactNode }) {
+  return <div className="sg-h"><h2 id={id}>{title}{count !== undefined ? <em>{count}</em> : null}</h2>{aside ? <span>{aside}</span> : null}</div>;
+}
+
+/** "OCT / 12": a date set as a small caps label over a light figure. */
+export function SigDay({ top, day }: { top: string; day: string | number }) {
+  return <span className="sg-day" aria-hidden="true"><small>{top}</small><strong>{day}</strong></span>;
+}
+
 export function SigChevron() {
   return <svg className={styles.sgChevron} width="7" height="12" viewBox="0 0 7 12" aria-hidden="true" focusable="false"><path d="m1 1 5 5-5 5"/></svg>;
 }

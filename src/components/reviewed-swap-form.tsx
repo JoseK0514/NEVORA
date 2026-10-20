@@ -1,21 +1,24 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import Link from 'next/link';
+import { ArrowsLeftRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
+import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info';
 import { useSwapSent } from './wave-a/swap-sent';
 import { timeZoneLabel } from '@/lib/time-zone-label';
-import Link from 'next/link';
 import { ShiftChangeForm } from './shift-change-form';
-import { SwapSourcePanel } from './swap-source-panel';
-import { SwapShiftSummary, swapDateLabel, swapTimeLabel, swapPositionLabel } from './swap-shift-summary';
-import { Card, MetaParts } from './kit/kit';
+import { SwapHalf, swapDateLabel, swapTimeLabel, swapPositionLabel } from './swap-shift-summary';
 import { FormActions } from './wave-a/parts';
 import { PendingButton } from './wave-a/pending-button';
+import { SigDay, SigHead } from './signature/signature';
 import { formatDayLabel, formatWeekRange } from '@/lib/date-utils';
 import { keepWhole } from '@/lib/keep-whole';
+import sr from './shift-requests-signature.module.css';
 import type { ExchangeShift } from '@/lib/data/exchanges';
 import type { ReviewedSource, ReviewedTarget } from '@/lib/shift-changes/types';
 
-/** Phase 3.5 Wave A: the swap form. Your shift, the shifts you could take (one choice), both side by side, then Send. */
+/** The swap form in the Signature style (phase 3): the shifts you could take (one choice), both side by side as a ticket,
+ * then Send. Same fields, single explicit choice, sent boundary and actions as the Wave A form. */
 export function ReviewedSwapForm({ source, sourceFields, targets }: {
   source: ExchangeShift;
   sourceFields: ReviewedSource;
@@ -41,51 +44,52 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
     return () => { form.removeEventListener('submit', onSubmit, true); observer.disconnect(); };
   }, [selected, targets, source, markSent]);
   const sorted = [...targets].sort((a, b) => a.shift.date.localeCompare(b.shift.date) || a.shift.startTime.localeCompare(b.shift.startTime) || a.shift.employeeName.localeCompare(b.shift.employeeName));
+  const first = target?.shift.employeeName.split(/\s+/)[0];
 
-  return <ShiftChangeForm fields={{ kind: 'PROPOSE_SWAP', ...sourceFields }} className="wa-form shift-change-form" resolvedHref="/app/exchange?tab=requests" actions={<>
-    <FormActions>
+  return <ShiftChangeForm fields={{ kind: 'PROPOSE_SWAP', ...sourceFields }} className={`wa-form shift-change-form ${sr.srSwapForm}`} resolvedHref="/app/exchange?tab=requests" actions={<>
+    <FormActions note={target ? `Nothing changes until ${first} agrees and any review is done.` : undefined}>
       <PendingButton pending="Sending…" disabled={!target} block>Send swap request</PendingButton>
-      <Link className="nv-btn" data-kind="secondary" data-block="true" href="/app/exchange?tab=requests">Cancel</Link>
+      <Link className="sg-link" href="/app/exchange?tab=requests">Cancel</Link>
     </FormActions>
     </>}>
-    <div ref={body} className="wa-swap-body">
-    <SwapSourcePanel source={source} />
+    <div ref={body} className={sr.srSwapBody}>
+    <SigHead id={`${id}-choices`} title="Choose a shift to take" count={targets.length} />
+    <fieldset className={`sg-card ${sr.srChoices}`} aria-describedby={`${id}-hint`}>
+      <legend className="nv-sr">Shifts you can take this week</legend>
+      <p className="nv-sr" id={`${id}-hint`}>{keepWhole(formatWeekRange(source.weekStart))}. Choose one to compare.</p>
+      {sorted.map(({ shift }) => {
+        const day = formatDayLabel(shift.date);
+        const details = [shift.employeeName, shift.locationName, swapPositionLabel(shift), shift.isDesignatedLead ? 'Shift lead' : null].filter(Boolean) as string[];
+        return <label className="sg-r" key={shift.id} data-selected={selected === shift.id ? 'true' : undefined}>
+          <SigDay top={day.weekday} day={Number(shift.date.slice(8))} />
+          <span className="sg-copy">
+            <span className="sg-time">{keepWhole(swapTimeLabel(shift))}</span>
+            <span>{details.join(' · ')}</span>
+            {shift.timeZone ? <span>{timeZoneLabel(shift.timeZone)}</span> : null}
+          </span>
+          <input type="radio" name="targetShiftId" value={shift.id} required checked={selected === shift.id} onChange={() => setSelected(shift.id)}
+            aria-label={`${swapDateLabel(shift.date)} · ${swapTimeLabel(shift)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? 'Shift lead' : 'Not the shift lead'}${shift.timeZone ? ` · Times in ${shift.timeZone.replaceAll('_', ' ')}` : ''}`} />
+          <span className={sr.srRadio} aria-hidden="true" />
+        </label>;
+      })}
+    </fieldset>
 
-    <Card title="Shifts you can take" id="swap-choices" meta={`${targets.length} ${targets.length === 1 ? 'shift' : 'shifts'}`}>
-      <fieldset className="wa-options" aria-describedby={`${id}-hint`}>
-        <legend className="nv-sr">Shifts you can take this week</legend>
-        <p className="wa-card-lead" id={`${id}-hint`}>{keepWhole(formatWeekRange(source.weekStart))}. Choose one to compare.</p>
-        <div className="wa-options__list">
-          {sorted.map(({ shift }) => {
-            const day = formatDayLabel(shift.date);
-            const details = [shift.locationName, swapPositionLabel(shift), shift.isDesignatedLead ? 'Shift lead' : null].filter(Boolean) as string[];
-            return <label className="wa-option" key={shift.id} data-selected={selected === shift.id ? 'true' : undefined}>
-              <input type="radio" name="targetShiftId" value={shift.id} required checked={selected === shift.id} onChange={() => setSelected(shift.id)}
-                aria-label={`${swapDateLabel(shift.date)} · ${swapTimeLabel(shift)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? 'Shift lead' : 'Not the shift lead'}${shift.timeZone ? ` · Times in ${shift.timeZone.replaceAll('_', ' ')}` : ''}`} />
-              <span className="wa-option__text">
-                <span className="wa-option__title">{keepWhole(`${day.weekday},\u00a0${day.day}`)}{"\u00a0· "}<span className="nv-keep">{keepWhole(swapTimeLabel(shift))}</span></span>
-                <span className="wa-option__meta">{shift.employeeName}</span>
-                <span className="wa-option__meta"><MetaParts text={details.join(' · ')} /></span>
-                {shift.timeZone ? <span className="wa-option__meta">{timeZoneLabel(shift.timeZone)}</span> : null}
-              </span>
-            </label>;
-          })}
-        </div>
-      </fieldset>
-    </Card>
-
-    <Card title="Review your swap" id="swap-review">
+    <SigHead title="Review your swap" />
+    <div className="sg-card">
       <p className="nv-sr" role="status">{target ? `Selected ${swapDateLabel(target.shift.date)}, ${swapTimeLabel(target.shift)}, with ${target.shift.employeeName}. Review both shifts below.` : ''}</p>
       {target ? <>
-        <div className="wa-shifts wa-shifts--pair"><SwapShiftSummary shift={source} label="You give" /><SwapShiftSummary shift={target.shift} label="You receive" employee /></div>
-        <p className="wa-card-note">Sending means you agree to this swap. Your schedule changes only after the other person agrees and any review is done.</p>
+        <div className="sg-ticket"><SwapHalf shift={source} label="You give" /><i aria-hidden="true"><ArrowsLeftRightIcon size={18} /></i><SwapHalf shift={target.shift} label="You receive" employee /></div>
+        <p className="sg-card-foot"><InfoIcon size={18} aria-hidden="true" />Sending means you agree to this swap.</p>
         <input type="hidden" name="targetEpisodeId" value={target.fields.targetEpisodeId} />
         <input type="hidden" name="targetTermsFingerprint" value={target.fields.targetTermsFingerprint} />
-      </> : <p className="wa-card-note wa-card-note--top">Choose a shift above to see both side by side.</p>}
-    </Card>
+      </> : <p className={sr.srPick}>Choose a shift above to see both side by side.</p>}
+      <details className={sr.srHow}>
+        <summary>How a swap works</summary>
+        <p>Sending the request means you agree to it. The other person has to agree too. Swaps that fit the rules finish on their own; anything else waits for a manager.</p>
+      </details>
+    </div>
 
-
-    <noscript><p className="wa-card-note">Turn on JavaScript to compare and send a swap. Cancel goes back to Shift requests.</p></noscript>
+    <noscript><p className={sr.srMuted}>Turn on JavaScript to compare and send a swap. Cancel goes back to Shift requests.</p></noscript>
     </div>
   </ShiftChangeForm>;
 }
