@@ -59,3 +59,34 @@ it('a signed-out read (401, session_ended) asks to sign in, like a 403, and offe
   expect(html).not.toContain('Try again');
  }
 });
+
+// Clean Manager (v3, QA): the manager rows follow the Inbox. These pin the approved markup: one row per update with its title and
+// one grey line (status · time), no preview or "Review update" text, Refresh in the page foot, and the same frame in every state.
+it('gives managers one kit row per update: the title, one status and the time, and a chevron', async () => {
+ const html = await render({mode: 'manager', list: {...list, items: [update, {...update, id: '32345678-1234-4234-8234-123456789abc', title: 'Optional note', acknowledgement: 'OPTIONAL'} as typeof update]}});
+ expect(html).toContain('cm-page cm-updates');
+ expect(html).toContain('<span class="nv-row__title">Current message</span>');
+ expect(html).toMatch(/nv-row__meta"><span class="nv-keep">Acknowledgement required\u00a0·<\/span> <time dateTime="2026-10-12T02:00:00Z">Oct.11,.2026,.10:00.PM<\/time>/u);
+ expect(html).toContain('Optional update\u00a0·');
+ expect(html).toContain('nv-row__chev');
+ expect(html).not.toContain('plain text');
+ expect(html).not.toContain('Review update');
+ expect(html).not.toContain('update-kind-icon');
+ expect(html).not.toContain('updates-footnote');
+ expect(html).toMatch(/<p class="cm-page-foot">.*Refresh.*<\/p>/);
+});
+
+it('keeps the manager filters, list area and foot in every state, with Sign in in the foot when signed out', async () => {
+ for (const props of [{paused: true}, {list: null, unavailableReason: 'read_failed'}, {list: null, unavailableReason: 'session_ended'}, {list: null, refreshing: true}]) {
+  const html = await render({mode: 'manager', ...props});
+  expect(html).toContain('updates-filters');
+  expect(html).toContain('cm-updates-hold');
+  expect(html).toContain('<p class="cm-page-foot">');
+  expect(html).not.toContain(update.title);
+ }
+ const signedOut = await render({mode: 'manager', list: null, unavailableReason: 'session_ended'});
+ expect(signedOut).toMatch(/<p class="cm-page-foot">.*<a class="nv-band-control cm-refresh" href="\/login">Sign in<\/a><\/p>/);
+ expect(signedOut).not.toContain('Refresh');
+ expect(await render({mode: 'manager', paused: true})).toContain('Paused');
+ expect(await render({mode: 'manager', list: null, unavailableReason: 'read_failed'})).toContain('Not available');
+});
