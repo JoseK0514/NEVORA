@@ -113,3 +113,23 @@ it.each([{status:'blocked',reason:'unresolved_time',http:409},{status:'conflict'
  await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();expect(html()).toContain('PRIVATE E1 · outcome unknown');click('Retry original attempted action');await flush();
  expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);expect(html()).toContain(`PRIVATE E1 · ${result.status}`);expect(html()).not.toContain('PRIVATE E1 · outcome unknown');expect(html()).toContain('PRIVATE E2 · not submitted');expect(html()).not.toContain('Retry original attempted action');
 });
+// Clean Manager v3: one table with a four-figure overview. "Need review" uses the Inbox's rule (not finalized, with
+// recorded time or history), each row says why in a few words, and the batch wording stays for the confirm step only.
+it('counts Need review as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
+ const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:'p1',positionName:'Front desk',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:null,rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:null,breaks:[]};
+ const timed=card('E1');
+ vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]});commands.push(JSON.parse(String(init?.body)));return Response.json({status:'approved'});});
+ await mount();const rendered=html();
+ expect(rendered).toContain('aria-label="Period overview"');
+ expect(rendered).toContain('aria-label="Need review, 1"');
+ expect(rendered).toContain('aria-label="Approved, 0"');
+ expect(rendered).toContain('Missing clock-out');
+ expect(rendered).toContain('Front desk');
+ expect(rendered).not.toMatch(/Approve timecard|Finalize period/);
+ expect(rendered).not.toContain('Each card commits separately');
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);
+ check('Select PRIVATE E2');click('Review selected timecards');
+ expect(html()).toContain('Each card commits separately; a stopped set leaves remaining cards unsubmitted. Approval never automatically finalizes time.');
+ expect(html()).toContain('I reviewed this exact selected set and its recorded time for approval.');
+ expect(commands).toHaveLength(0);
+});
