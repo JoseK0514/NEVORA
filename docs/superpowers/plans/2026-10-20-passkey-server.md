@@ -22,8 +22,10 @@
 
 ## Tasks
 
-- [ ] Add failing config/validation, JSON route and real signed registration/assertion tests, using owned PostgreSQL.
-- [ ] Add migration 0035 for passkey users/credentials/challenges, login limits and audit events; revocation triggers cover disablement and credential replacement.
-- [ ] Implement WebAuthn service/storage, strict HTTP boundaries and all six route paths. Extract shared session construction without changing password behavior; share enabled login limits.
-- [ ] Verify required cases plus challenge expiry/binding, wrong RP/signature/userHandle, missing user verification, concurrent replay, counter rollback, scope isolation, audit and reset/remove races. Run password/session regressions, full unit suite, typecheck, lint and build.
-- [ ] Update the production migration plan and UI handoff with browser API/version, request examples, flag/domain prerequisites, limits and exact evidence. Commit/push only the feature branch; leave integration and iPhone acceptance to Jose.
+- [x] Add failing config/validation, JSON route and real signed registration/assertion tests, using owned PostgreSQL.
+- [x] Add migration 0035 for passkey users/credentials/challenges, login limits and audit events; revocation triggers cover disablement and credential replacement.
+- [x] Implement WebAuthn service/storage, strict HTTP boundaries and all six route paths. Extract shared session construction without changing password behavior; share enabled login limits.
+- [x] Verify required cases plus challenge expiry/binding, wrong RP/signature/userHandle, missing user verification, concurrent replay, counter rollback, scope isolation, audit and reset/remove races. Run password/session regressions, full unit suite, typecheck, lint and build.
+- [x] Update the production migration plan and UI handoff with browser API/version, request examples, flag/domain prerequisites, limits and exact evidence. Commit the implementation and prepare the authorized own-branch delivery; leave integration and iPhone acceptance to Jose.
+
+Implementation: `df5796d5`; owned HTTP runner correction: `1d1494fc`. [Handoff and evidence](../../product/specs/codex-joint/PASSKEY-SERVER-HANDOFF.md). The final owned SQL/route rerun passed all 31 tests after the runner correction; real Next HTTP, full unit suite, typecheck, lint and production build passed. Delivery must push only `codex/passkey-server-20261020` and compare its remote SHA with local HEAD before reporting completion. No production migration, deployment, UI merge or other-branch push belongs to this delivery.
