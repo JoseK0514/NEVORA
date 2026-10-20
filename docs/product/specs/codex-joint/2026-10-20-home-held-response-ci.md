@@ -2,7 +2,8 @@
 
 Implementation owner: `/root/browser_e_home_ci`. Branch: `codex/verify-preview-33`.
 Base: `351b3a9dd11639574131f1bcfd31de4a4bcee99b`.
-Verified implementation: `a300bfdb9a0274cf6810415a0c9f063594af068c`.
+Verified Home matrix implementation: `a300bfdb9a0274cf6810415a0c9f063594af068c`.
+CI regression registration/checkpoint: `f276c41be069c82bea1570a5fa223ef15dbb8a54`.
 
 Evidence root (`E` below): `/Users/josek0514/.codex/visualizations/2026/10/20/01a15962-cdee-7dd0-8a92-023551b076fb/ci-e-home`.
 Local evidence index/copies: `.omo/evidence/ci-e-home/`.
@@ -15,7 +16,8 @@ The final real Next/PostgreSQL Home matrix passed all 14 cells: Chromium and Web
 - `scripts/phase-e-home-browser-scenarios.mjs`: H06 waits for the actual fresh location in a visible, settled ready/partial Home, within the existing 15-second bound. A newer Home request must finish before releasing the real old response. The old response must contain the former fixture name. After the held handler settles, a browser rendering turn and all recorded DOM observations must still exclude the former rows. The receipt contains only request ordinals/events, state, focus/visibility, and explicit fictional old/fresh booleans.
 - H07 keeps the actual old MyTime response held while pagehide invalidates the private controller. It waits for the paused DOM commit before testing row removal, proves no new read was required, then settles the old handler and checks the paused/no-clocked-in state before pageshow. Native lifecycle/controller behavior is unchanged.
 - The existing gate now turns unexpected fetch/parse/fulfillment failures into sanitized failing diagnostics instead of an unhandled Playwright error that can print request headers. Fulfillment cancellation is recognized only for an actually failed request or an explicit navigation release whose document URL changed. Navigation releases in H08/H11 now await their handler and retain their outcome. Fetch failures are not ignored or retried.
-- `scripts/phase-e-home-held-response.check.mjs`: controlled real-browser scheduling regression exercises the actual H06 readiness helper in both engines. It is a harness regression, not a substitute for actual Next/PostgreSQL evidence.
+- `scripts/phase-e-home-held-response.check.mjs`: controlled real-browser scheduling regression exercises the actual H06 readiness helper in both engines. It requires the expected exact commit and clean source, restricts evidence outside the worktree, rechecks every tracked source hash after execution, and writes a custody receipt. It is a harness regression, not a substitute for actual Next/PostgreSQL evidence.
+- `.github/workflows/ci.yml`: runs this regression unconditionally in the existing Phase E UI job after Chromium/WebKit installation; supplies an explicit external evidence path and inherits the exact candidate SHA. Uploads its receipts/screenshots and H06/H07 safe held-response JSON. The required 70-cell matrix, job budgets, and aggregate dependencies are unchanged.
 
 ## Cause and limits of the diagnosis
 
@@ -39,15 +41,17 @@ env NEVORA_TEST_PG_BIN='/Users/josek0514/Documents/Codex/2026-10-11/coo-2/work/c
 | Criterion/scenario | Invocation | Binary observable | Captured artifact |
 |---|---|---|---|
 | H06 old-ready scheduling RED | `HOME_READINESS_EVIDENCE_DIR=<E>/readiness-red node --import tsx scripts/phase-e-home-held-response.check.mjs` before helper fix | Exit 1; both engines resolved old ready/busy DOM and failed assertion | `E/readiness-red/readiness-report.json`, both prior-ready/fresh PNGs, `E/readiness-red.log` |
-| H06 scheduling regression GREEN | Same command with `readiness-final`, verified checkpoint | Exit 0; both engines remain pending through old ready/loading and resolve fresh ready/not busy/no old text | `E/readiness-final/readiness-report.json`, PNGs; `E/gates.json` |
+| H06 scheduling regression GREEN and exact-source CI command | `PHASE_E_EXPECTED_SHA=f276c41be069c82bea1570a5fa223ef15dbb8a54 HOME_READINESS_EVIDENCE_DIR=<E>/readiness-ci node --import tsx scripts/phase-e-home-held-response.check.mjs` | Exit 0; both engines remain pending through old ready/loading and resolve fresh ready/not busy/no old text; clean source unchanged | `E/readiness-ci/readiness-report.json`, `readiness-custody.json`, `source-manifest.json`, PNGs; `E/ci-registration-gates.json` |
 | Actual Home H06/H07 and complete affected matrix | Owned command above, checkpoint `a300bfdb9a0274cf6810415a0c9f063594af068c`, `verified-home14` | Exit 0; 14/14 passed, zero report errors, fresh before old release/no overwrite, paused clearing without new read | `E/verified-home14/browser-report.json`, `owned-browser-report.json`, `home-held-<engine>-<width>.json`, `home-held-time-<engine>-<width>.json`, `E/h06-h07-summary.json` |
 | Types | `npm run typecheck` | Exit 0 | `E/gates.json`, `E/typecheck.log` |
-| Full lint | `npm run lint` | Exit 0 | `E/gates.json`, `E/lint.log` |
+| Full lint | `npm run lint` at both verified checkpoints | Exit 0 | `E/gates.json`, `E/lint.log`, `E/ci-registration-gates.json`, `E/lint-ci.log` |
+| Existing release-engineering checks and CI registration | `npm run test:release-engineering`; parse actual workflow with installed js-yaml and assert install < regression < matrix, exact SHA/env, unconditional step and artifact globs | 61 passed, 0 failed/skipped; contract assertions pass; 50-minute job unchanged | `E/release-engineering-ci.log`, `E/ci-registration-gates.json`, `E/ci-registration-contract.json` |
+| Application/Home source equivalence after CI integration | Compare every captured matrix source hash with current files | Only CI workflow and regression check script changed; all application and actual Home scenario/helper bytes identical | `E/ci-source-equivalence.json` |
 | Default unit suite, including existing Home/controller tests | `npm test -- --reporter=default --reporter=json --outputFile=<E>/default-tests.json` | Exit 0; 7,401 passed, 0 failed, 801 existing pending/skipped | `E/default-tests.json`, `E/default-tests.log`, `E/gates.json` |
 | Source custody | Rehash every captured tracked source file after browser and default gates | `sourceUnchanged=true`, no changed hashes, clean git status before handoff docs | `E/post-gate-custody.json`; `E/verified-home14/source-manifest.json`; mirror manifest path in browser report |
 | Runtime closure | `python3 <E>/check-closure.py <E>/verified-home14` plus process observation in `run-gates.py` | All 54 owned matrix PIDs absent; ports 49401/49362 refused; both ownership receipts closed; all observed gate descendants absent | `E/verified-home14/closure-check.json`, `E/gates.json` |
 
-The RED helper extraction was an uncommitted diagnostic working state reproducing the original wait semantics; it is not represented as clean-checkpoint application acceptance. The final GREEN and full matrix are tied to the verified clean checkpoint. No skipped test is counted as executed acceptance. No production build or hosted CI was run by this worker.
+The RED helper extraction was an uncommitted diagnostic working state reproducing the original wait semantics; it is not represented as clean-checkpoint application acceptance. The final GREEN is tied to the clean CI-registration checkpoint and the full matrix to the separate clean Home implementation checkpoint. The exact source-equivalence receipt proves that the later regression custody/CI integration changed neither application bytes nor the actual Home scenario/helper; the unchanged 14-cell matrix was not repeated just for this registration. No skipped test is counted as executed acceptance. No production build or hosted CI was run by this worker.
 
 ## Preserved attempt history
 
@@ -70,4 +74,4 @@ CTO: keep the fix at the test synchronization boundary; no product defect was es
 
 Release impact: CONDITION. Root owns fresh scoped review, final production build, subsequent bounded Navigation diagnosis, and exact-final-source hosted full 70-cell E plus required root CI. Local macOS evidence is not hosted Linux acceptance. Existing seven independent exit findings and migration/performance gates remain open; this worker does not close them. Intermittent local transport resets remain unexplained, not fixed by a retry. No deployment, push, merge, production access, real notification, legal, or payroll change occurred. No Jose decision is required for this authorized handoff.
 
-All implementation and gate work is finished. The final handoff commit adds documentation only; root must use the final commit identity it observes for its next gates. No tracked source edits are authorized by this worker after declaring handoff freeze.
+All implementation and gate work is finished. The final handoff commit updates documentation only after CI registration and its local checks; root must use the final commit identity it observes for its next gates. No tracked source edits are authorized by this worker after declaring handoff freeze.
