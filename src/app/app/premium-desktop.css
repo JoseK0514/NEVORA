@@ -450,8 +450,14 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   }
 }
 @media (min-width: 1024px) {
-  /* AL4-24: Profile's two panels start on one line (the settings column's label sits in the space above the work card). */
-  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-layout > .employee-account-panel { margin-top: 2.375rem; }
+  /* AL4-24, final Employee pass: both panels start 16px under the band. "App settings" is the right card's own header
+   * (as "Work details" heads the left card), not a label above it, so neither card is pushed down. */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-layout > .employee-account-panel { margin-top: 0; }
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-settings { overflow: hidden; border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e1); }
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-settings > h2 { display: flex; align-items: center; box-sizing: content-box; min-height: 40px; margin: 0; padding: 28px var(--nv-s-5) var(--nv-s-3); font: var(--nv-t-title-3); color: var(--nv-ink); }
+  /* The title shares a line with "Work details", which is centred on its 40px tile 28px down. */
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-settings > .profile-settings-list { border-radius: 0; background: transparent; box-shadow: none; }
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame .premium-employee-profile .profile-settings > .profile-settings-list > :first-child { border-top: 1px solid var(--nv-hairline); }
 }
 @media (min-width: 1024px) {
   /* AL4-25: sibling pages under one tab row keep one band height and title line: a band with no eyebrow keeps the eyebrow line's 20px. */
