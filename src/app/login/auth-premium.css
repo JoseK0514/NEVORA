@@ -178,7 +178,8 @@
   .ap { grid-template-columns: minmax(0, 1fr) minmax(0, 40%); }
   .ap-main { padding-left: 40px; padding-right: 32px; }
   .ap-panel__copy { padding: 48px 36px 0; }
-  .ap-device { margin-left: 36px; transform: scale(.82); transform-origin: top left; }
+  /* `scale`, not transform: the entrance animation owns transform. 0.78 keeps the device inside a 287px panel at 768. */
+  .ap-device { margin-left: 32px; scale: .78; transform-origin: top left; }
 }
 
 /* ---------- Phones: the brand becomes a band, the form a cream sheet rising over it ---------- */
