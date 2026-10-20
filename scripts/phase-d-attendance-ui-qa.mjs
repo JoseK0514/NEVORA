@@ -63,6 +63,7 @@ const report = {
   ],
 };
 let app;
+let activePage;
 const browsers = [];
 const checked = (name) => {
   report.checks.push(name);
@@ -267,6 +268,12 @@ try {
       const headers = route.request().headers();
       assert.equal(headers['x-nevora-attendance'], '1');
       if (fixture.delayMs) await new Promise((resolve) => setTimeout(resolve, fixture.delayMs));
+      (report.fixtureResponses ??= []).push({
+        status: fixture.status,
+        state: fixture.payload.state,
+        reason: fixture.payload.reason ?? null,
+        validForMs: fixture.payload.validForMs ?? null,
+      });
       await route.fulfill({
         status: fixture.status,
         contentType: 'application/json',
@@ -276,6 +283,7 @@ try {
     });
 
     const page = await owner.newPage();
+    activePage = page;
     page.setDefaultTimeout(15000);
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
@@ -407,6 +415,30 @@ try {
   assert.deepEqual(report.errors, []);
 } catch (error) {
   report.errors.push(String(error?.stack ?? error));
+  if (activePage && !activePage.isClosed()) {
+    try {
+      report.failureSurface = await activePage.evaluate(() => ({
+        path: location.pathname,
+        visibility: document.visibilityState,
+        online: navigator.onLine,
+        attendanceSurfaces: document.querySelectorAll('.attendance-review').length,
+        status: document.querySelector('.attendance-review-empty')?.textContent?.slice(0, 500) ?? null,
+        headings: [...document.querySelectorAll('h1, h2')].map(element => element.textContent?.slice(0, 160)),
+        controls: [...document.querySelectorAll('.attendance-review button, .attendance-review a')].map(element => ({
+          tag: element.tagName,
+          label: element.getAttribute('aria-label'),
+          text: element.textContent?.slice(0, 160),
+          disabled: element.hasAttribute('disabled'),
+          ariaDisabled: element.getAttribute('aria-disabled'),
+        })),
+      }));
+      const shot = join(evidence, 'attendance-failure.png');
+      await activePage.screenshot({ path: shot, fullPage: true });
+      report.screenshots.push(shot);
+    } catch (diagnosticError) {
+      report.diagnosticFailure = diagnosticError?.name ?? 'UnknownError';
+    }
+  }
   process.exitCode = 1;
 } finally {
   for (const browser of browsers) await browser.close().catch(() => {});
