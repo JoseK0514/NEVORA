@@ -131,3 +131,9 @@ html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-
 /* Its loading placeholder is sized in portal-premium.css (the placeholder shows before this file loads). */
 /* Phones: the switch labels meet the 15px phone floor. */
 @media (max-width: 767px) { html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .ap-lang button:not(#pfx):not(#pfx2) { font-size: .9375rem; line-height: 1.25rem; } }
+/* Phones: a smaller mark set low, so its triangle rises from the band's bottom edge, clear of the name and company
+ * (as the triangle peeks above the form on the sign-in phone). */
+@media (max-width: 767px) {
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx > .nv-pageband > .nv-masthead__mark:not(#pfx),
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-spark:not(#pfx):not(#pfx2):not(#pfx3) { right: -50px; bottom: -56px; width: 160px; height: 160px; }
+}
