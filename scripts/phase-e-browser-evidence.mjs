@@ -152,5 +152,5 @@ function main() {
   else aggregate(source, custody, evidence);
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
+  try { main(); } catch { console.error('PHASE_E_BROWSER_EVIDENCE_INVALID'); process.exitCode = 1; }
 }

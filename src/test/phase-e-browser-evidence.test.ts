@@ -178,3 +178,16 @@ it.each(['mirror', 'command', 'resource', 'error', 'next-owner', 'missing-cell']
   expect(result.status).not.toBe(0);
   expect(existsSync(join(root, 'suite-verification-report.json'))).toBe(false);
 });
+
+it.each(['leaf', 'aggregate'])('rejects %s without echoing untrusted artifact text', mode => {
+  const f = fixture();
+  if (mode === 'aggregate') f.leaves();
+  const root = mode === 'leaf' ? f.roots[0] : f.relocate()[0];
+  const path = join(root, 'owned-browser-report.json'), value = read(path);
+  const privateArtifactText = 'fictional-private-artifact-marker.example.invalid';
+  value.errors.push(privateArtifactText); put(path, value);
+  const result = mode === 'leaf' ? f.invoke(['leaf', '--suite', 'home'], { PHASE_E_EVIDENCE_DIR: root }) : f.invoke(['aggregate']);
+  expect(result.status).not.toBe(0);
+  expect(result.stdout + result.stderr).not.toContain(privateArtifactText);
+  expect(result.stderr).toBe('PHASE_E_BROWSER_EVIDENCE_INVALID\n');
+});
