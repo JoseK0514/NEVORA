@@ -61,7 +61,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }finally{await blocker.query('ROLLBACK');await blocker.end();}
  }
  // Empty week is a true source state, not a false success.
- const empty=new Date(scenario.week+'T12:00:00Z');empty.setUTCDate(empty.getUTCDate()+7);await page.goto(app.url+'/app/schedule?week='+empty.toISOString().slice(0,10));await page.waitForLoadState('networkidle');assert.equal(await confirm().count(),0);assert(await page.getByRole('status').filter({hasText:'Schedule not published yet'}).count());await screenshot('empty');checks.push('Unpublished empty week has no confirmation and no fabricated off/success state');
+ const empty=new Date(scenario.week+'T12:00:00Z');empty.setUTCDate(empty.getUTCDate()+7);await page.goto(app.url+'/app/schedule?week='+empty.toISOString().slice(0,10));await page.waitForLoadState('networkidle');assert.equal(await confirm().count(),0);assert.equal(await page.getByText('Schedule not published yet',{exact:true}).count(),7);assert.equal(await page.getByText('Off — no assignment',{exact:true}).count(),0);assert(await page.getByRole('status').filter({hasText:'published this week yet'}).count());await screenshot('empty');checks.push('Unpublished empty week has no confirmation and no fabricated off/success state');
  // Return to real schedule for driver's WCAG scan.
  await schedule();details.checks=checks;details.runtimeErrors=runtimeErrors;details.responseCaptured=!!captured;await writeFile(join(evidenceDirectory,`attention-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));
  return {checks};
