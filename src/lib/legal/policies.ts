@@ -6,19 +6,22 @@
 export const SUPPORT_EMAIL = "support@thevelani.com";
 export const POLICY_OPERATOR = "VELANI LLC";
 /** Bump when the published wording changes; deletion requests record the version they were accepted under. */
-export const POLICY_VERSION = "2026-10-20-draft";
+export const POLICY_VERSION = "2026-10-20";
 
+/* Confirmed by Jose on October 20, 2026 (Neon and Vercel verified in the connected accounts). Still open: VELANI
+ * LLC's mailing address (BUSINESS_CONTACT_DETAILS) and the complete backup expiry (BACKUP_EXPIRY). Change the
+ * effective date if the policies take effect on a later day. */
 export const POLICY_FACTS: Record<string, string | null> = {
-  EFFECTIVE_DATE: null,
-  SUPPORT_RESPONSE_TIME: null,
-  DELETION_COMPLETION_PERIOD: null,
-  RETENTION_SCHEDULE: null,
+  EFFECTIVE_DATE: "October 20, 2026",
+  SUPPORT_RESPONSE_TIME: "We aim to respond to support and privacy inquiries within two business days. Business days are Monday through Friday, excluding public holidays observed in Puerto Rico. Requests that need investigation may take longer to resolve.",
+  DELETION_COMPLETION_PERIOD: "30 calendar days after we receive the request",
+  RETENTION_SCHEDULE: "attendance, approved timecards, payroll calculations, published pay statements and their corrections and approvals for three years from the record’s final entry, and records supporting employment taxes for at least four years after the tax is due or paid, whichever is later; security and access logs for up to 90 days; records of privacy requests for 24 months after the request is closed; and records under a legal hold or unresolved dispute until the hold is released and the applicable period has passed. The longest applicable period applies, and a deletion request doesn’t restart it.",
   BACKUP_EXPIRY: null,
-  PROCESSORS_AND_PURPOSES: null,
-  HOSTING_TRANSFER_DETAILS: null,
-  SALE_SHARING_AND_TRACKING_STATEMENT: null,
-  EMPLOYER_DATA_RESPONSIBILITIES: null,
-  REGIONAL_PRIVACY_DETAILS: null,
+  PROCESSORS_AND_PURPOSES: "Vercel hosts the application and runs its servers; Neon stores the database; a transactional email provider delivers recovery codes and other account email; and your browser’s push service, run by its maker (such as Apple, Google or Mozilla), delivers the notifications you turn on.",
+  HOSTING_TRANSFER_DETAILS: "Our database and application servers are in the United States, in Northern Virginia. Email delivery, push notification services and our providers’ logs and support may process information in other locations.",
+  SALE_SHARING_AND_TRACKING_STATEMENT: "NEVORA does not display advertisements, sell personal information, or share personal information for cross-context behavioral advertising. We do not track users across other companies’ applications or websites for advertising purposes. We disclose information to your employer and our service providers as necessary to operate NEVORA and for the purposes described in this policy.",
+  EMPLOYER_DATA_RESPONSIBILITIES: "Your employer decides how NEVORA is used for workplace activities, including scheduling, attendance, timekeeping, payroll records and employee administration. VELANI LLC operates NEVORA and processes these workplace records on your employer’s documented instructions. Requests about workplace records your employer controls are coordinated with your employer, and VELANI LLC helps locate, correct, export or delete information where appropriate. VELANI LLC handles requests about information it controls for its own business purposes, such as direct support communications and service administration. Your employer remains responsible for employment decisions, payroll accuracy, required workplace notices and its own recordkeeping obligations.",
+  REGIONAL_PRIVACY_DETAILS: "NEVORA currently serves the participating employer and its authorized workforce in Puerto Rico. Applicable United States federal and Puerto Rico requirements govern the handling of relevant workplace records.",
   BUSINESS_CONTACT_DETAILS: null,
 };
 
@@ -37,7 +40,7 @@ export const PRIVACY: PolicyDocument = {
   summary: "How NEVORA handles information when you use it on the web or in its apps.",
   sections: [
     { heading: "Who we are", blocks: [{ p: ["NEVORA is a workforce scheduling and operations service provided by VELANI LLC. This policy explains how information is handled when you use NEVORA through its website or mobile applications. Contact us at ", mail, " or ", f("BUSINESS_CONTACT_DETAILS"), "."] }] },
-    { heading: "Your workplace", blocks: [{ p: ["Your employer or organization supplies and manages the information used to run its workspace. Authorized people in your workplace can see information according to their roles. How responsibility is shared between your organization and VELANI LLC: ", f("EMPLOYER_DATA_RESPONSIBILITIES"), " Contact your workplace administrator about schedules, pay records or corrections. You can also contact us about privacy, or use the account deletion process below."] }] },
+    { heading: "Your workplace", blocks: [{ p: ["Your employer or organization supplies and manages the information used to run its workspace. Authorized people in your workplace can see information according to their roles."] }, { p: [f("EMPLOYER_DATA_RESPONSIBILITIES")] }, { p: ["Contact your workplace administrator about schedules, pay records or corrections. You can also contact us about privacy, or use the account deletion process below."] }] },
     { heading: "Information NEVORA uses", blocks: [
       { p: ["Depending on the features your organization turns on and your role, NEVORA handles:"] },
       { list: [
@@ -51,12 +54,23 @@ export const PRIVACY: PolicyDocument = {
       { p: ["Information comes from you, your organization and its authorized users, your use of NEVORA, and the service providers that perform these functions. If a feature needs a device permission, it explains why when it asks."] },
     ] },
     { heading: "Why we use information", blocks: [{ p: ["To give you access to your account, show authorized work information, run scheduling and attendance features, process permitted requests, deliver workplace communications, provide payroll-related features your organization turns on, answer support requests, investigate misuse, protect accounts and meet applicable obligations."] }] },
-    { heading: "Who receives information", blocks: [{ p: ["Your organization and its authorized users receive the information their roles need. Service providers process information for hosting, storage, delivery and other service functions: ", f("PROCESSORS_AND_PURPOSES"), " We may disclose information when the law requires it, or when it’s necessary to address fraud, security incidents or threats to anyone’s rights or safety, as the law allows."] }] },
+    { heading: "Who receives information", blocks: [{ p: ["Your organization and its authorized users receive the information their roles need. Service providers process information for us: ", f("PROCESSORS_AND_PURPOSES"), " We may disclose information when the law requires it, or when it’s necessary to address fraud, security incidents or threats to anyone’s rights or safety, as the law allows."] }] },
     { heading: "Advertising and tracking", blocks: [{ p: [f("SALE_SHARING_AND_TRACKING_STATEMENT")] }] },
     { heading: "Where information is processed", blocks: [{ p: [f("HOSTING_TRANSFER_DETAILS")] }] },
-    { heading: "How long we keep information", blocks: [{ p: ["We keep information for the periods and purposes described here: ", f("RETENTION_SCHEDULE"), " Account information, workplace employment and payroll records, security records and backups can have different periods. When a record has to be kept, we limit its use and access to that purpose. Backups expire as follows: ", f("BACKUP_EXPIRY")] }] },
-    { heading: "Your choices and requests", blocks: [{ p: ["You can manage notifications in NEVORA and in your device settings. Use your profile, or ask your workplace administrator, to correct workplace information. Email ", mail, " about access, correction, deletion or other privacy requests. We confirm your identity in a way that fits the request. Regional rights and how to use them: ", f("REGIONAL_PRIVACY_DETAILS")] }] },
-    { heading: "Deleting your account", blocks: [{ p: ["Open Profile, choose Delete my account, re-enter your password and confirm. If you no longer have the app, sign in to NEVORA on the web and do the same; see ", { href: "/account-deletion", text: "Account deletion" }, ". Before you confirm, we show what is removed, what may be kept for a specific obligation, and when deletion is complete: ", f("DELETION_COMPLETION_PERIOD"), " Deleting your NEVORA account doesn’t change your employment."] }] },
+    { heading: "How long we keep information", blocks: [
+      { p: ["We keep information only as long as we need it. Each period follows the age of the record; a deletion request doesn’t restart it. Where a record fits more than one category, the longest period applies."] },
+      { list: [
+        [{ strong: "Attendance, approved timecards, payroll calculations, published pay statements" }, " and their corrections and approvals: three years from the record’s final entry, or longer when the employment-tax rule below or another requirement applies. They preserve wage calculations, payment history and evidence for payroll questions or disputes."],
+        [{ strong: "Records supporting employment taxes:" }, " at least four years after the tax is due or paid, whichever is later."],
+        [{ strong: "Security and access logs NEVORA manages:" }, " up to 90 days from the logged event, to investigate unauthorized access and keep the service secure."],
+        [{ strong: "Records of privacy requests:" }, " 24 months after the request is closed, to show what was asked, how it was handled and any record kept."],
+        [{ strong: "Optional profile information and account data" }, " with no continuing lawful purpose: removed within the deletion timetable below."],
+        [{ strong: "Records under a legal hold or unresolved dispute:" }, " until the hold is released and the period that otherwise applies has passed."],
+      ] },
+      { p: ["When a record has to be kept, we limit its use and access to that purpose. Backups: ", f("BACKUP_EXPIRY")] },
+    ] },
+    { heading: "Your choices and requests", blocks: [{ p: ["You can manage notifications in NEVORA and in your device settings. Use your profile, or ask your workplace administrator, to correct workplace information. Email ", mail, " about access, correction, deletion or other privacy requests. We confirm your identity in a way that fits the request. ", f("REGIONAL_PRIVACY_DETAILS")] }] },
+    { heading: "Deleting your account", blocks: [{ p: ["Open Profile, choose Delete my account, re-enter your password and confirm. If you no longer have the app, sign in to NEVORA on the web and do the same; see ", { href: "/account-deletion", text: "Account deletion" }, ". Before you confirm, we show what is removed and what may be kept for a specific obligation. We aim to complete eligible deletion requests within ", f("DELETION_COMPLETION_PERIOD"), ". We confirm it’s you before deleting anything; if some information must be kept, or the law allows more time, we explain why and for how long. Deleting your NEVORA account doesn’t change your employment."] }] },
     { heading: "Security", blocks: [{ p: ["We protect information with measures that fit it, including role-based access and encrypted connections. No way of storing or sending information removes every risk. Email ", mail, " if you think someone else has used your account. Never send passwords, verification codes or payroll documents by email."] }] },
     { heading: "Changes", blocks: [{ p: ["NEVORA is meant for authorized workplace use. We post changes to this policy with a new effective date and give additional notice where required. Questions go to ", mail, "."] }] },
   ],
@@ -84,7 +98,7 @@ export const SUPPORT: PolicyDocument = {
   summary: "Get help with NEVORA, a workforce scheduling and operations product of VELANI LLC.",
   sections: [
     { heading: "Contact support", blocks: [
-      { p: ["Email ", mail, " about sign-in problems, technical issues, feedback, privacy questions or content concerns. We reply within ", f("SUPPORT_RESPONSE_TIME"), ". Other business contact details: ", f("BUSINESS_CONTACT_DETAILS")] },
+      { p: ["Email ", mail, " about sign-in problems, technical issues, feedback, privacy questions or content concerns. ", f("SUPPORT_RESPONSE_TIME"), " Other business contact details: ", f("BUSINESS_CONTACT_DETAILS")] },
       { p: ["Include the app version, your device and its operating system version, and what happened. Add your workspace name if we need it to find the problem. Remove personal information from screenshots. ", { strong: "Never email your password, a verification code, bank details or payroll documents." }] },
     ] },
     { heading: "Questions about your work", blocks: [{ p: ["Ask your manager or workplace administrator about shifts, time-off decisions, pay or corrections to your work records. Contact NEVORA support if a problem in the app stops you from reaching them."] }] },
@@ -102,9 +116,9 @@ export const ACCOUNT_DELETION: PolicyDocument = {
       { p: ["Open Profile, choose ", { strong: "Delete my account" }, ", read what happens, re-enter your password and confirm. If you’ve uninstalled the app, ", { href: "/login", text: "sign in to NEVORA on the web" }, " and do the same; the page opens after you sign in."] },
       { p: ["If you can’t sign in, use ", { href: "/forgot-access", text: "Forgot access" }, " first, or email ", mail, " and we’ll help you confirm it’s you."] },
     ] },
-    { heading: "What happens next", blocks: [{ p: ["When you confirm, we save your request and show you a reference such as DEL-7KQ2M9XA. You’re signed out on every device and can’t sign in again. We delete your account within ", f("DELETION_COMPLETION_PERIOD"), " and email you when it’s done if we have your email address. Quote your reference to ", mail, " to ask about it."] }] },
+    { heading: "What happens next", blocks: [{ p: ["When you confirm, we save your request and show you a reference such as DEL-7KQ2M9XA. You’re signed out on every device and can’t sign in again. We aim to delete your account within ", f("DELETION_COMPLETION_PERIOD"), ", and we email you when it’s done if we have your email address. Quote your reference to ", mail, " to ask about it."] }] },
     { heading: "What is removed", blocks: [{ p: ["Your account and the information linked to it that can be deleted: your profile, sign-in details, sessions, notification subscriptions, calendar feed links and the content you contributed, including copies held by our service providers."] }] },
-    { heading: "What may be kept", blocks: [{ p: ["Some attendance, payroll, security or dispute records may have to be kept for a recorded obligation. Which ones, why and for how long: ", f("RETENTION_SCHEDULE"), " Backups expire as follows: ", f("BACKUP_EXPIRY"), " Kept records are restricted and never used to restore your account."] }] },
+    { heading: "What may be kept", blocks: [{ p: ["Some attendance, payroll, security or dispute records may have to be kept for a recorded obligation. We keep ", f("RETENTION_SCHEDULE"), " Backups: ", f("BACKUP_EXPIRY"), " Kept records are restricted and never used to restore your account."] }] },
     { heading: "Your job and your workplace", blocks: [{ p: ["Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep. If you’re the Owner, your company’s workspace stays open for the rest of your team; closing a workspace is separate, so email ", mail, " to arrange it."] }] },
   ],
 };

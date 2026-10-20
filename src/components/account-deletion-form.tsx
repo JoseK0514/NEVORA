@@ -41,7 +41,7 @@ export function AccountDeletionForm({ account, period, retention, existing }: {
           </div>
         </div>
         <div className="nv-card__body wc-fields">
-          <p>You’ve been signed out on every device and can’t sign in again. Your account is deleted within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</p>
+          <p>You’ve been signed out on every device and can’t sign in again. We aim to delete your account within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</p>
           <p>To ask about your request, email <a className="wc-inline-link" href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`Account deletion ${state.reference}`)}`}>{SUPPORT_EMAIL}</a> with your reference. Keep it somewhere safe; we won’t ask for your password.</p>
           <form action={logout}><FormActions><button type="submit" className="nv-btn" data-kind="secondary">Done</button></FormActions></form>
         </div>

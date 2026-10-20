@@ -34,21 +34,26 @@ To publish: fill every fact (one place), bump `POLICY_VERSION`, and apply migrat
 (separately authorized; build and start never apply migrations). Until 0034 exists, sign-in keeps working and a
 deletion request reports "isn’t available right now" instead of failing silently.
 
-### Facts Jose needs to fill
+### Facts
 
-| Fact | Used in |
+Filled on October 20, 2026 from Jose’s answers (Neon and Vercel confirmed in the connected accounts):
+`EFFECTIVE_DATE` (October 20, 2026; change it if the policies take effect later), `SUPPORT_RESPONSE_TIME` (two
+business days, Puerto Rico holidays excluded), `DELETION_COMPLETION_PERIOD` (30 calendar days after receipt),
+`RETENTION_SCHEDULE` (3 years for attendance and payroll records, at least 4 years for employment-tax records,
+90 days for security logs, 24 months for privacy-request records, legal holds until released),
+`PROCESSORS_AND_PURPOSES` (Vercel, Neon, a transactional email provider, browser push services),
+`HOSTING_TRANSFER_DETAILS` (United States, Northern Virginia: Neon us-east-1, Vercel iad1),
+`SALE_SHARING_AND_TRACKING_STATEMENT`, `EMPLOYER_DATA_RESPONSIBILITIES`, `REGIONAL_PRIVACY_DETAILS` (Puerto Rico).
+
+**Still open, so production keeps the pages hidden:**
+
+| Fact | Needed |
 |---|---|
-| `EFFECTIVE_DATE` | Privacy, Terms |
-| `SUPPORT_RESPONSE_TIME` | Support |
-| `DELETION_COMPLETION_PERIOD` | Privacy, Account deletion, Delete my account |
-| `RETENTION_SCHEDULE` | Privacy, Account deletion, Delete my account |
-| `BACKUP_EXPIRY` | Privacy, Account deletion |
-| `PROCESSORS_AND_PURPOSES` | Privacy (hosting, database, email, push providers) |
-| `HOSTING_TRANSFER_DETAILS` | Privacy |
-| `SALE_SHARING_AND_TRACKING_STATEMENT` | Privacy |
-| `EMPLOYER_DATA_RESPONSIBILITIES` | Privacy |
-| `REGIONAL_PRIVACY_DETAILS` | Privacy |
-| `BUSINESS_CONTACT_DETAILS` | Privacy, Terms, Support |
+| `BUSINESS_CONTACT_DETAILS` | VELANI LLC’s mailing address for publication (or Jose’s decision to list email only). |
+| `BACKUP_EXPIRY` | The complete backup expiry. Neon’s restore history is six hours; branches, exports and other provider copies are not yet verified. |
+
+Before publishing, also confirm with the employer that the retention schedule covers any longer Puerto Rico tax,
+benefits or dispute requirements, and name the email provider internally (the policy describes it by category).
 
 `MODERATION_RESPONSE_TIME` comes back with Report content. Payroll and legal wording needs Jose’s approval before
 publishing, as with every payroll copy change.
