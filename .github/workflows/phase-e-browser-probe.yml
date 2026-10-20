@@ -15,15 +15,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [communications]
+        suite: [navigation]
     env:
-      PHASE_E_EXPECTED_SHA: b86d2db3595b08f5e920b0f01fe1f2820422b743
+      PHASE_E_EXPECTED_SHA: 5f403f09888df535953746554efcc6e3285445f0
     steps:
       - name: Select owned evidence directory
         run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-browser-probe" >> "$GITHUB_ENV"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: b86d2db3595b08f5e920b0f01fe1f2820422b743
+          ref: 5f403f09888df535953746554efcc6e3285445f0
           persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
