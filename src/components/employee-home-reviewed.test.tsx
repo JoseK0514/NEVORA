@@ -82,7 +82,8 @@ describe('released Home data and navigation', () => {
     const ready = props();
     expect(html(ready)).toContain('Private location');
     expect(html(ready)).toContain('Private own recorded-time slot');
-    expect(html(ready)).toContain('Hi, Alexandra');
+    // Signature: the band greets by the time of day and the released first name.
+    expect(html(ready)).toMatch(/<h1>Good (?:morning|afternoon|evening),<span[^>]*>(?:<!-- -->)? (?:<!-- -->)?Alexandra<\/span><\/h1>/);
     const loading = html({...ready, status: 'loading', refreshing: true});
     for (const secret of ['Private location', 'Private own recorded-time slot', 'Alexandra', '2030-10-08', 'Published']) {
       expect(loading).not.toContain(secret);
@@ -288,9 +289,9 @@ describe('original redacted clock recovery preservation',()=>{
   const slot=<EmployeeTimeView compact state={{time,paused:false,refreshing:false}} onRefresh={()=>{}}/>;
   const released=props(projectEmployeeHome(snapshot({attention:[item('privacy-item',{actionable:true})]})),{ownTimeSlot:slot});
   const control=html(released);
-  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra'])expect(control).toContain(field);
+  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Alexandra'])expect(control).toContain(field);
   const lost=html({...released,status});
-  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Hi, Alexandra','Clocked in'])expect(lost).not.toContain(field);
+  for(const field of ['PRIVATE_CLOCK_LOCATION','Private location','Private item privacy-item','1 item','data-home-updated',at,'Alexandra','Clocked in'])expect(lost).not.toContain(field);
   const clock=lost.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/)![1];
   expect(clock).toContain('href="/app/my-time"');
   if(status==='unauthorized'){expect(clock).toContain('href="/login"');expect(clock).toContain('Sign in');expect(clock).not.toContain('aria-label="Refresh recorded time"');}

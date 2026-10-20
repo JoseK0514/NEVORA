@@ -1,4 +1,10 @@
-# Employee app: new style (Withings-inspired), approved
+# Employee app style
+
+**Current target (Oct 20, 2026): Signature.** After v5 and v6, Jose asked for "way way way more upscaling" and picked direction A, Signature: the approved sign-in (E4) carried into the app. He approved all eight Signature pages ("Approved all"). Targets: `signature/sig-*.png` (board: `signature/sig-board.png`). Tokens: cream `#F4EFE7`, paper `#FFFDF9`, ink `#161C1B`, ink-2 `#5F625E`, ink-3 `#6F6C66` (text; 4.6:1 on cream), faint `#B9B2A6` (decoration only), rule `#E2DACD`, deep `#0D3634`, mark `#164B48`, teal `#0B6E69`, sky `#35B6EC`. A deep-teal band with grain and the large Λ under the phone header, a cream sheet with 28px top corners, paper lists with 1px rules, light (300) figures, tracked-caps labels (12px, the only text under 15px besides date-block weekdays), underlined text links. Home is built (`employee-home-today.module.css`); the other pages follow one at a time.
+
+The sections below describe the earlier Withings-inspired pass and stay for history.
+
+## Earlier pass: new style (Withings-inspired), approved
 
 Jose approved this on October 20, 2026 ("Approved"), after picking reference 8 (Withings Health Mate) from a board of nine real Home screens. Earlier attempts he rejected: a dense card layout ("dirty, overwhelming, looks like an AI app") and a sparse text-only one ("horrible").
 

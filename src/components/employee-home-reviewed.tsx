@@ -13,9 +13,9 @@ import {unpublishedNote} from '../lib/publication-note';
 import {HoldHeight} from './kit/hold-height';
 import {keepWhole} from '../lib/keep-whole';
 
-/* Employee Home, v5 (Jose approved option A on Oct 20, 2026, "exactly like that"; the target is
- * docs/product/specs/employee-style/home-v5). One teal card for today's shift with the clock under it, then To do,
- * Coming up and Recent activity as plain grouped lists. Look only: the reads, states, links and private-data clearing
+/* Employee Home in the Signature style (Jose approved all eight Signature pages on Oct 20, 2026; the target is
+ * docs/product/specs/employee-style/signature/sig-home.png). A deep-teal band with the greeting, then on a cream sheet
+ * a paper card for today's shift with the clock under it, To do, Coming up and Recent activity. Look only: the reads, states, links and private-data clearing
  * are the same as before. */
 
 export type EmployeeHomeReviewedViewProps = {
@@ -75,6 +75,11 @@ export function untilLabel(ms: number) {
   return `${days} ${days === 1 ? 'day' : 'days'}`;
 }
 
+function greeting(at: string, zone: string) {
+  const hour = Number(new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', hourCycle: 'h23'}).format(new Date(at)));
+  return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+}
+
 /** The time now, from mount and then each minute: null on the server and the first render, so markup matches. */
 function useMinute() {
   const [now, setNow] = useState<number | null>(null);
@@ -88,14 +93,14 @@ function useMinute() {
 }
 
 /** The shift under way as a bar with the time left. Decorative: the hours above it are the accessible fact. */
-function Progress({shift}: {shift: PublishedAssignment}) {
+function Progress({shift, zone}: {shift: PublishedAssignment; zone: string}) {
   const now = useMinute();
   const start = Date.parse(shift.startAt), end = Date.parse(shift.endAt);
   const done = now === null ? 0 : Math.min(1, Math.max(0, (now - start) / Math.max(1, end - start)));
   return <div className={styles.h5Progress} aria-hidden="true">
     <div className={styles.h5Track}><span style={{width: `${(done * 100).toFixed(2)}%`}}/></div>
     {/* The line's space is held from the first frame, so the card doesn't grow when the clock starts. */}
-    <p className={styles.h5Left}>{now !== null && end > now ? `${untilLabel(end - now)} left` : ' '}</p>
+    <p className={styles.h5Ends}><span>{new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(shift.startAt))}</span><span>{now !== null && end > now ? `${untilLabel(end - now)} left` : ' '}</span></p>
   </div>;
 }
 
@@ -183,7 +188,7 @@ function Group({kind, items, partial, allSet, zone}: {kind: 'actions' | 'updates
   const row = (item: AttentionItem) => <Row key={`${item.ref.kind}:${item.ref.id}`} item={item} zone={zone} kind={kind} celebrate={item === firstApproval}/>;
   return <section data-home-group={kind} aria-labelledby={headingId} className={styles.h5Section}>
     <header className={styles.h5Head}>
-      <h2 id={headingId}>{actions ? 'To do' : 'Recent activity'}<span className={styles.h5Count}>{items.length ? <span aria-hidden="true">{items.length}</span> : null}<span className="nv-sr">{`${items.length}${partial ? ' known' : ''} ${items.length === 1 ? 'item' : 'items'}`}</span></span></h2>
+      <h2 id={headingId}>{actions ? 'To do' : 'Recent activity'}<span className={styles.h5Count}>{items.length ? <span aria-hidden="true">· {items.length}</span> : null}<span className="nv-sr">{`${items.length}${partial ? ' known' : ''} ${items.length === 1 ? 'item' : 'items'}`}</span></span></h2>
     </header>
     <div className={styles.h5List}>
       {items.length ? <>
@@ -271,13 +276,16 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   </HoldHeight>;
 
   return <div className={styles.h5Root} data-home-state={viewState} aria-busy={refreshing || loading}>
-    <header className={styles.h5Hello}>
+    <header className={styles.h5Band}>
+      <svg className={styles.h5Mark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path className={styles.h5MarkL} d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/><path className={styles.h5MarkT} d="M146 330 L180 266 L214 330 Z"/></svg>
       <p className={styles.h5Date}>{snapshot
         ? <time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time>
         // Before Home is read, the workspace's public date, so the line is there from the first frame.
         : <time suppressHydrationWarning>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time>}</p>
-      <h1>{name ? `Hi, ${name}` : 'Home'}</h1>
-      {summary ? <p className={styles.h5Summary}>{summary}</p> : null}
+      <div className={styles.h5Greet}>
+        <h1>{name && snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)},<span className={styles.h5Name}> {name}</span></> : 'Home'}</h1>
+        {summary ? <p className={styles.h5Summary}>{summary}</p> : null}
+      </div>
     </header>
     <div className={styles.h5Columns}>
       {/* P3-ST-02/12: the shift card and clock hold their last ready height while Home is a placeholder. */}
@@ -294,7 +302,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
               <p className={styles.h5Hours}><Hours shift={underWay} zone={snapshot.timeZone}/></p>
               <p className={styles.h5Where}><Place shift={underWay}/></p>
               <Extras shift={underWay} zone={snapshot.timeZone}/>
-              <Progress shift={underWay}/>
+              <Progress shift={underWay} zone={snapshot.timeZone}/>
             </section> : laterToday ? <div className={styles.h5Today}>
               <StartsIn startAt={laterToday.startAt}/>
               <p className="nv-sr">Later today</p>
