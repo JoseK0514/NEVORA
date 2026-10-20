@@ -216,3 +216,8 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 @media (min-width: 761px) and (max-width: 999px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-insights__main { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* QA P3: the chart is decoration (aria-hidden; a list gives every value), so its axis labels keep a fixed 11px and never
+ * collide at 200% text. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights :is(.cm-chart__tick, .cm-chart__days > span) { font-size: 11px; line-height: 13px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-insights .cm-chart__days > span { overflow: hidden; text-overflow: clip; }
