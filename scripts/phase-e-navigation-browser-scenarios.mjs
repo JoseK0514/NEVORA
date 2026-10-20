@@ -12,19 +12,29 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/')||path==='/api/notifications')headers[path]=request.headers()['x-nevora-employee-view'];});
  async function login(id){await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);await page.waitForLoadState('networkidle');}
  async function settle(){await page.waitForLoadState('networkidle');}
- async function nav(href){
+ async function nav(href,keyboard=false){
   const mobile=await page.locator('.mobile-nav').isVisible();
-  // Phone tabs: Home, Schedule, Requests, Hours (payroll off), More. Availability
-  // is a Requests section tab on phones; it stays a sidebar link on desktop.
   const primary=['/app','/app/schedule','/app/requests/hub','/app/my-time'].includes(href);
+  // Availability belongs to Requests on both layouts; desktop Profile is an account action.
   const sectionOwner={'/app/availability':'/app/requests/hub'}[href];
-  if(mobile&&sectionOwner){await nav(sectionOwner);const tab=page.locator(`.section-tabs a[href="${href}"]`);await tab.tap();await page.waitForURL(u=>u.pathname===href);await settle();
-   await page.waitForFunction(({href,sectionOwner})=>document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===sectionOwner&&document.querySelector('.section-tabs a[aria-current="page"]')?.getAttribute('href')===href,{href,sectionOwner});return;}
+  if(sectionOwner){
+   await nav(sectionOwner);const tab=page.locator('.section-tabs a[href="'+href+'"]');if(mobile)await tab.tap();else await tab.click();await page.waitForURL(u=>u.pathname===href);await settle();
+   await page.waitForFunction(({mobile,href,sectionOwner})=>document.querySelector('.section-tabs a[aria-current="page"]')?.getAttribute('href')===href&&(mobile?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===sectionOwner:document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="true"]')?.getAttribute('href')===sectionOwner),{mobile,href,sectionOwner});return;
+  }
+  if(!mobile&&href==='/app/profile'){
+   const trigger=page.getByRole('button',{name:/, account menu$/}),menu=page.locator('#portal-account-menu');
+   if(keyboard){await page.bringToFront();await trigger.focus();await page.keyboard.press('Enter');}else await trigger.click();await menu.waitFor();
+   const profile=menu.getByRole('link',{name:'Your profile',exact:true});
+   if(keyboard){await page.waitForFunction(()=>document.querySelector('#portal-account-menu a[href="/app/profile"]')===document.activeElement);await page.keyboard.press('Enter');}else await profile.click();
+   await page.waitForURL(u=>u.pathname===href);await settle();await menu.waitFor({state:'hidden'});
+   assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[href="/app/profile"]').count(),0,'Profile is reached from the account menu');
+   assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').count(),0,'Account pages do not select an unrelated sidebar section');return;
+  }
   if(mobile&&!primary){await page.getByRole('button',{name:'More',exact:true}).click();await page.locator('#employee-more-navigation').waitFor({state:'visible'});}
   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('#employee-more-navigation')):page.locator('nav[aria-label="Primary navigation"]');
-  const destination=root.locator(`a[href="${href}"]`);if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
+  const destination=root.locator('a[href="'+href+'"]');if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
   await page.waitForFunction(({mobile,primary,href})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:document.querySelector('.employee-more-trigger')?.classList.contains('active')&&document.querySelector('#employee-more-navigation a[aria-current="page"]')?.getAttribute('href')===href):document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href,{mobile,primary,href});
-  await page.locator('#employee-more-navigation').waitFor({state:'hidden'});assert.equal(await page.locator('#employee-more-navigation').isVisible(),false,`More must close after ${href}`);
+  await page.locator('#employee-more-navigation').waitFor({state:'hidden'});assert.equal(await page.locator('#employee-more-navigation').isVisible(),false,'More must close after '+href);
  }
  // Profile keeps aria-hidden placeholder rows; inbox controls exist even in a ready empty view.
  async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?e.querySelector('.employee-profile-details:not([aria-hidden="true"]) dd')&&e.querySelector('footer button')?.disabled===false:e.querySelector('[aria-label="Filter notifications"]')&&e.querySelector('header button')?.disabled===false);},kind);}
@@ -78,7 +88,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    assert.equal(new URL(page.url()).searchParams.get('tab'),path==='/app/requests'?'my':'requests');
    assert.equal(await page.locator('.section-tabs a[aria-current="page"]').getAttribute('href'),path);
    if(await page.locator('.mobile-nav').isVisible()){assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');assert.equal(await page.getByRole('button',{name:'More',exact:true}).evaluate(e=>e.classList.contains('active')),false);}
-   else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');
+   else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current="true"]').getAttribute('href'),'/app/requests/hub');
    await page.goBack();await settle();
   }
   checks.push('Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership');
@@ -86,7 +96,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(await page.locator('.mobile-nav').isVisible()){
    const trigger=page.getByRole('button',{name:'More',exact:true}),menu=page.locator('#employee-more-navigation');await trigger.focus();await page.keyboard.press('Enter');await menu.waitFor({state:'visible'});await page.waitForFunction(()=>document.querySelector('#employee-more-navigation')?.contains(document.activeElement));assert(await menu.evaluate(e=>e.contains(document.activeElement)),'Keyboard open moves focus into More');assert.deepEqual(await menu.locator('.employee-more-link').allTextContents(),['Updates','Notifications','Profile']);await page.keyboard.press('Escape');await menu.waitFor({state:'hidden'});await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='More');assert(await trigger.evaluate(e=>document.activeElement===e),'Escape restores trigger focus');
    checks.push('More_Escape_restores_focus with native Enter/Escape and explicit link order');
-  }else{const link=page.locator('nav[aria-label="Primary navigation"] a[href="/app/profile"]');await link.focus();await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/profile');checks.push('Native keyboard desktop destination navigation');}
+  }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
   await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.getByText('Alerts on this device aren’t turned on for your workplace yet.',{exact:true}).isVisible());await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator('[data-inbox-row] > a').count(),1);assert.equal(await page.locator('[data-inbox-row] > a').getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);assert(!await page.locator('[data-private-view]').innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
   const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator('[data-inbox-row] > a').click();await page.waitForURL(u=>u.pathname==='/app/requests');const opened=new URL(page.url());assert.equal(opened.searchParams.get('requestId'),requestId);assert.equal(opened.searchParams.get('tab'),'my');assert.equal(opened.hash,'#request-'+requestId);assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);await page.goBack();await ready('notifications');
