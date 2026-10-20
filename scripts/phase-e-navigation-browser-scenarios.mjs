@@ -107,7 +107,62 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   checks.push('push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation');
   for(const event of ['blur','pagehide']){await page.evaluate(e=>window.dispatchEvent(new Event(e)),event);assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');}
   await context.setOffline(true);await page.waitForFunction(()=>!document.querySelector('[data-inbox-row]'));await context.setOffline(false);await ready('notifications');
-  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});await ready('notifications');
+  // Observe the real abort boundary and React commit separately. Keep an actual
+  // authorized old response held: clearing cannot depend on another successful read.
+  const visibilityEvidence={engine,width,requests:[],observations:[]};
+  await page.evaluate(()=>{
+   const observations=[],signals=[],originalFetch=window.fetch;
+   const observe=event=>{const root=document.querySelector('[data-private-view="notifications"]');const entry={event,at:performance.now(),hidden:document.visibilityState==='hidden',paused:root?.textContent.includes('Updates paused')??false,rows:root?.querySelectorAll('[data-inbox-row]').length??0,requests:signals.length,aborted:signals.filter(signal=>signal.aborted).length};observations.push(entry);return entry;};
+   window.fetch=function(input,options){if(new URL(typeof input==='string'?input:input.url??String(input),location.href).pathname==='/api/notifications'&&options?.signal){signals.push(options.signal);options.signal.addEventListener('abort',()=>observe('abort'),{once:true});observe('request');}return originalFetch.apply(this,arguments);};
+   const observer=new MutationObserver(()=>observe('commit'));observer.observe(document.querySelector('[data-private-view="notifications"]'),{childList:true,subtree:true,attributes:true,characterData:true});
+   window.__navigationVisibility={observe,observations,stop:()=>{observer.disconnect();window.fetch=originalFetch;}};observe('initial');
+  });
+  let release,started,finished,used=false,heldFailure,heldOutcome,operation='fetch';
+  const gate=new Promise(resolve=>{release=resolve;}),seen=new Promise(resolve=>{started=resolve;}),done=new Promise(resolve=>{finished=resolve;});
+  const heldHandler=async route=>{
+   if(used)return route.continue();used=true;
+   try{
+    const response=await route.fetch();operation='parse';const payload=await response.json();
+    visibilityEvidence.heldResponse={status:response.status(),state:payload.state,ownOldRow:payload.items?.length===1&&payload.items[0].id===noticeId};
+    started();await gate;operation='fulfill';
+    try{await route.fulfill({response});heldOutcome='fulfilled';}
+    catch{if(route.request().failure())heldOutcome='request-aborted';else throw Error('Held response fulfillment failed');}
+   }catch(error){heldFailure={operation,name:'RouteError',transportReset:error.message.includes('ECONNRESET'),requestFailed:!!route.request().failure()};started();await route.abort().catch(()=>{});}
+   finally{finished();}
+  };
+  const observedRequest=(event,request)=>{if(new URL(request.url()).pathname==='/api/notifications')visibilityEvidence.requests.push({event,at:Date.now()});};
+  const onStarted=request=>observedRequest('request',request),onFailed=request=>observedRequest('failed',request),onFinished=request=>observedRequest('finished',request);
+  page.on('request',onStarted);page.on('requestfailed',onFailed);page.on('requestfinished',onFinished);
+  await page.route('**/api/notifications',heldHandler);
+  try{
+   await refreshNotifications().click();await seen;assert.equal(heldFailure,undefined);assert.deepEqual(visibilityEvidence.heldResponse,{status:200,state:'ready',ownOldRow:true});
+   visibilityEvidence.afterDispatch=await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));return window.__navigationVisibility.observe('after-dispatch');});
+   visibilityEvidence.legacyImmediateRowCount=await page.locator('[data-inbox-row]').count();
+   assert.equal(visibilityEvidence.afterDispatch.requests,1);assert.equal(visibilityEvidence.afterDispatch.aborted,1,'Hidden invalidation aborts the protected request before dispatch returns');
+   await page.getByRole('heading',{name:'Updates paused',exact:true}).waitFor({timeout:15000});assert.equal(await page.locator('[data-inbox-row]').count(),0);
+   visibilityEvidence.pausedCommit=await page.evaluate(()=>window.__navigationVisibility.observe('paused-observed'));
+   assert.equal(visibilityEvidence.pausedCommit.requests,1,'Private rows clear with the old response held and no new read');assert.equal(visibilityEvidence.requests.filter(item=>item.event==='request').length,1);
+   await screenshot('visibility-paused-held');
+   await q("UPDATE time_off_requests SET status='DENIED' WHERE id=$1",[requestId]);
+   release();await done;assert.equal(heldFailure,undefined);visibilityEvidence.heldOutcome=heldOutcome;
+   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
+   visibilityEvidence.afterHeldSettled=await page.evaluate(()=>window.__navigationVisibility.observe('held-settled'));
+   assert.equal(visibilityEvidence.afterHeldSettled.hidden,true);assert.equal(visibilityEvidence.afterHeldSettled.paused,true);assert.equal(visibilityEvidence.afterHeldSettled.rows,0);assert.equal(visibilityEvidence.afterHeldSettled.requests,1);
+   const observations=await page.evaluate(()=>window.__navigationVisibility.observations);
+   assert(observations.slice(observations.findIndex(item=>item.paused)).every(item=>item.paused&&item.rows===0),'No observed commit after pausing may restore private rows');
+   await page.unroute('**/api/notifications',heldHandler);
+   const currentRead=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/notifications'&&response.request().method()==='GET');
+   await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});
+   const currentResponse=await currentRead,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.deepEqual(currentView.items,[]);await ready('notifications');await page.getByRole('heading',{name:'No notifications here.',exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);
+   visibilityEvidence.reentry={status:currentResponse.status(),currentItems:currentView.items.length,rows:0};assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);
+   assert.equal(visibilityEvidence.afterDispatch.rows,0,'Diagnostic: does hidden dispatch synchronously commit row removal?');
+   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications().click();await ready('notifications');assert.equal(await page.locator('[data-inbox-row]').count(),1);
+  }finally{
+   release();if(used)await done;await page.unroute('**/api/notifications',heldHandler);
+   visibilityEvidence.failure=heldFailure;visibilityEvidence.observations=await page.evaluate(()=>{const evidence=window.__navigationVisibility;evidence.stop();delete window.__navigationVisibility;return evidence.observations;});
+   page.off('request',onStarted);page.off('requestfailed',onFailed);page.off('requestfinished',onFinished);
+   await writeFile(join(evidenceDirectory,`navigation-visibility-${engine}-${width}-report.json`),JSON.stringify(visibilityEvidence,null,2));
+  }
   checks.push('Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization');
   if(width===390){
    const session=await q("SELECT count(*)::integer AS count,bool_and(expires_at>clock_timestamp()+interval '1 day') AS long_lived FROM employee_sessions WHERE employee_id=$1",[actor]);assert.equal(session[0].count,1);assert.equal(session[0].long_lived,true);
