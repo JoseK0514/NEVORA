@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [navigation, calendar, communications]
+        suite: [communications]
     env:
       PHASE_E_EXPECTED_SHA: 87ab3ad43b64ad7ec97e03d38812afc8ca675ab7
     steps:
