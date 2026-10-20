@@ -56,7 +56,10 @@ it("tints shifts by position name, stably and within six tints", async () => {
   expect(positionTint("Barista")).toBe(positionTint("  barista "));
   for (const name of ["Barista", "Cashier", "Shift lead", "Cook", "Host", "Support"]) expect(positionTint(name)).toBeGreaterThanOrEqual(0), expect(positionTint(name)).toBeLessThan(6);
   expect(positionTint(undefined)).toBe(0);
-  expect(html()).toMatch(/class="mws-shift lead" data-tint="\d"/);
+  // Clean Manager v3: the approved roster draws every shift in one light tint (the mockup), so blocks no longer carry a
+  // position tint; the position is read out with the shift instead, and the lead keeps its own marker.
+  expect(html()).toMatch(/class="cm-block lead"/);
+  expect(html()).toContain('<span class="sr-only schedule-assigned-position">, Captured support</span>');
 });
 it("shows weekly hours against target and flags hours over the limit", () => {
   const withHours = (hours: RosterEmployee["hours"]) => html(undefined, [{ ...employees[0], hours }]);
