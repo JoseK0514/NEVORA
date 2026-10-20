@@ -437,7 +437,8 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
       </>}
       {/* The read's time and the manual refresh sit under the list (v3). IS-P4-17: a Refresh the user asks for says so. */}
-      <p className="cm-page-foot">
+      {/* The read's time appears once the list has shown, so it never sits under a placeholder and jumps (QA h8). */}
+      {ready || hasShown ? <p className="cm-page-foot">
         {updated ? <Freshness>Updated <time dateTime={ready!.observedAt}>{updated}</time></Freshness>
           : connection === "offline" ? <Freshness state="offline">Offline</Freshness> : connection === "paused" ? <Freshness state="stale">Paused</Freshness>
           : connection === "loading" || connection === "reconnecting" ? "Checking…" : <Freshness state="stale">Not available</Freshness>}
@@ -446,7 +447,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
           <ArrowsClockwiseIcon size={16} aria-hidden="true" />{userRefreshing ? "Refreshing…" : "Refresh"}
           <span className="nv-sr" role="status">{userRefreshing ? "Refreshing the Inbox…" : ""}</span>
         </button>
-      </p>
+      </p> : null}
       </div>
       {!wide && sheetOpen && ready && current ? <ItemSheet entry={current} onClose={() => setSheetOpen(false)} /> : null}
       <div className="inbox-side-column">

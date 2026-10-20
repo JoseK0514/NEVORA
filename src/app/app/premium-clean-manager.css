@@ -793,3 +793,28 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-row__text { gap: 0; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page .nv-row__meta { margin-top: 0; }
 }
+
+/* Data placeholders the size of the loaded lists (coordinator QA h8, APIs held 3s on a hard load). Two rows by default: a
+ * longer list then grows downward, below what was already in view, instead of pulling content up. */
+/* Placeholder rows take the loaded rows' heights at 100% and 200% text (phone 51/110 and 64/146, desktop 48/90 and 54/90). */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(#home-needs-you, #home-working) .premium-skeleton__row { box-sizing: border-box; min-height: 0; padding: 0 16px; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #home-needs-you .premium-skeleton__row { height: calc(3.6875rem - 8px); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #home-working .premium-skeleton__row { height: calc(5.125rem - 18px); }
+}
+@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #home-needs-you .premium-skeleton__row { height: calc(2.625rem + 6px); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #home-working .premium-skeleton__row { height: calc(2.25rem + 18px); }
+}
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(#home-needs-you, #home-working, .cm-inbox .inbox-status) .premium-skeleton__row:nth-child(n+3) { display: none; }
+/* Inbox while loading: the first section's header keeps its room, the list block is two 64pt rows, and the loading sentence
+ * is read to screen readers without taking space (failed states keep it visible). */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-status:has(.premium-skeleton) { padding: 27px 0 0; background: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-status:has(.premium-skeleton) .inbox-status-message { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-status .premium-skeleton { background: #fff; border-radius: 10px; overflow: hidden; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-status .premium-skeleton__row { box-sizing: border-box; height: 64px; min-height: 0; padding: 0 16px; margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #home-working .cm-working-hold .premium-skeleton__row:nth-child(n+3) { display: flex; }
+/* Phones: the placeholder rows say "loading"; the words stay for screen readers so the header doesn't wrap at large text and jump when the data lands (QA h8). */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-loading-meta { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
