@@ -204,10 +204,23 @@ export function AppShell({
     {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
     <img src={brand.logoUrl} alt={`${workspaceName} logo`} decoding="async" />
   </span> : null;
+  const accountMenu = (
+    <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
+      {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
+      {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
+      {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
+      <div className="nevora-action-menu-divider" />
+      <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
+    </PortalAccountMenu>
+  );
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
       // Clean Manager and Owner app (v3): premium-clean-manager.css applies only under this attribute, so Employee and Lead pages never change.
       data-nv-clean={employee ? undefined : ""}
+      // Employee app, new style (Jose approved Oct 20, docs/product/specs/employee-style): employee-style.css applies only under this attribute.
+      data-nv-e5={employee ? "" : undefined}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
       // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
       data-mobile-workforce={pathname ? "true" : undefined}
@@ -297,16 +310,13 @@ export function AppShell({
           {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
           {!employee ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
           {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
+          {/* Employee app (new style): the avatar comes first, so focus order matches the phone header (avatar left; "+" and the
+            bell right). On desktop its CSS order puts it back at the end of the top bar. */}
+          {employee ? accountMenu : null}
+          {/* Employee app (new style): a round "+" for a new request, next to the bell. */}
+          {employee ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}
           {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
-          <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
-            {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
-              onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
-            {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
-              onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
-            {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
-            <div className="nevora-action-menu-divider" />
-            <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
-          </PortalAccountMenu>
+          {!employee ? accountMenu : null}
           </div>
         </header>
 

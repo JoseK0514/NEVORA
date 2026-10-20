@@ -325,3 +325,61 @@
  * so the cards under it keep their space but stay invisible until it resolves; nothing visible moves. After a pause
  * the pass holds its exact height (data-held), so the cards stay visible. */
 .root[data-home-state="loading"]:has([data-pass]:not([data-held])) :is(.recordedSlot, .sideColumn, .freshness) { visibility: hidden; }
+
+/* ===== New style (Withings-inspired, Jose approved Oct 20; docs/product/specs/employee-style). Applies only under the
+ * shell's data-nv-e5 (Employee and Lead). Soft off-white canvas; the shift sits in a framed white card that opens with
+ * the workday illustration; To do and Recent are rounded white rows. Look only: every state, read and control stays. */
+.art { display: none; }
+:global(.app-shell[data-nv-e5]) .root.root { --e5-ink: #121615; --e5-ink-2: #6B6E6A; --e5-rule: #E6E6E2; --e5-frame: #EFEFEC; --e5-deep: #0D3634; --e5-teal: #0B6E69; background: #F6F6F4; color: var(--e5-ink); }
+:global(.app-shell[data-nv-e5]) .root.root .content { margin-top: 0; padding-inline: 16px; gap: 28px; }
+:global(.app-shell[data-nv-e5]) .root.root .mainColumn { gap: 12px; }
+/* The shift card: a soft frame around a white card; the illustration on top; light text. */
+:global(.app-shell[data-nv-e5]) .root.root .assignment.assignment { overflow: hidden; padding: 0 0 6px; border-radius: 22px; background: #FFFFFF; color: var(--e5-ink); box-shadow: 0 0 0 10px var(--e5-frame), 0 1px 2px rgba(0,0,0,.04); margin: 10px; }
+:global(.app-shell[data-nv-e5]) .root.root .art { display: block; height: 13.5rem; max-height: 46vw; margin-bottom: 16px; background: #F4EFE7 url("/assets/illustrations/home-today.jpg") center 40% / cover no-repeat; }
+:global(.app-shell[data-nv-e5]) .root.root .assignment > :not(.art) { padding-inline: 18px; }
+:global(.app-shell[data-nv-e5]) .root.root .assignment :is(h2, h3, p, span, small, time, strong) { color: inherit; }
+:global(.app-shell[data-nv-e5]) .root.root .assignmentHeader { margin-bottom: 4px; }
+:global(.app-shell[data-nv-e5]) .root.root .assignmentHeader h2 { color: var(--e5-teal); font-size: .875rem; font-weight: 600; letter-spacing: 0; }
+:global(.app-shell[data-nv-e5]) .root.root .published { padding: 3px 9px; background: #EEF3F2; color: var(--e5-deep); }
+:global(.app-shell[data-nv-e5]) .root.root .published::before { background: var(--e5-teal); }
+:global(.app-shell[data-nv-e5]) .root.root .assignmentDate,
+:global(.app-shell[data-nv-e5]) .root.root .assignmentDate * { color: var(--e5-ink-2); font-size: .9375rem; }
+:global(.app-shell[data-nv-e5]) .root.root .assignmentDate strong { color: var(--e5-ink); font-weight: 600; }
+:global(.app-shell[data-nv-e5]) .root.root .interval { margin-bottom: 4px !important; color: var(--e5-ink); font-size: 1.625rem; font-weight: 600; letter-spacing: -.03em; }
+:global(.app-shell[data-nv-e5]) .root.root .intervalDash { color: var(--e5-ink-2); }
+:global(.app-shell[data-nv-e5]) .root.root :is(.location, .position, .currentNote, .zone, .notice, .assignmentDetail) { color: var(--e5-ink-2); }
+:global(.app-shell[data-nv-e5]) .root.root .location { font-size: .9375rem; }
+:global(.app-shell[data-nv-e5]) .root.root .assignmentFooter { margin-top: 12px; padding-top: 2px; border-top: 1px solid var(--e5-rule); }
+:global(.app-shell[data-nv-e5]) .root.root :is(.scheduleLink, .textLink) { color: var(--e5-deep); font-weight: 600; }
+:global(.app-shell[data-nv-e5]) .root.root :is(.current, .upcoming) h3 { color: var(--e5-ink); font-size: 1rem; }
+:global(.app-shell[data-nv-e5]) .root.root .upcoming { border-top-color: var(--e5-rule); }
+:global(.app-shell[data-nv-e5]) .root.root .assignmentMessage { color: var(--e5-ink); }
+:global(.app-shell[data-nv-e5]) .root.root .recovery :is(p, span) { color: var(--e5-ink-2); }
+/* Clock status: one rounded white row under the card. */
+:global(.app-shell[data-nv-e5]) .root.root .recordedSlot { margin-top: 10px; padding: 14px 16px 6px; border-radius: 18px; border: 1px solid var(--e5-rule); box-shadow: none; }
+/* To do and Recent: a section title, then rounded white rows with a soft icon tile. */
+:global(.app-shell[data-nv-e5]) .root.root :is(.actions, .updates) { padding: 0; background: transparent; box-shadow: none; border-radius: 0; }
+:global(.app-shell[data-nv-e5]) .root.root .groupHeader { margin-bottom: 12px; padding-inline: 4px; }
+:global(.app-shell[data-nv-e5]) .root.root .groupHeader h2 { font-size: 1.375rem; line-height: 1.75rem; font-weight: 700; letter-spacing: -.02em; }
+:global(.app-shell[data-nv-e5]) .root.root .count { color: var(--e5-ink-2); font-size: .875rem; }
+:global(.app-shell[data-nv-e5]) .root.root .itemList { display: grid; gap: 10px; }
+:global(.app-shell[data-nv-e5]) .root.root .overflow .itemList { margin-top: 10px; }
+:global(.app-shell[data-nv-e5]) .root.root .itemLink { min-height: 68px; padding: 12px 14px 12px 12px; border: 1px solid var(--e5-rule); border-radius: 18px; background: #FFFFFF; color: var(--e5-ink); }
+:global(.app-shell[data-nv-e5]) .root.root .itemList li:last-child .itemLink { border-bottom: 1px solid var(--e5-rule); }
+:global(.app-shell[data-nv-e5]) .root.root .itemIcon { display: inline-flex; flex: none; width: 44px; height: 44px; border-radius: 12px; align-items: center; justify-content: center; background: #E6F3F8; color: #19708F; }
+:global(.app-shell[data-nv-e5]) .root.root .updates .itemIcon { background: #F4EFE7; color: var(--e5-deep); }
+:global(.app-shell[data-nv-e5]) .root.root .itemCopy { flex: 1; }
+:global(.app-shell[data-nv-e5]) .root.root .itemCopy strong { font-size: 1rem; font-weight: 500; }
+:global(.app-shell[data-nv-e5]) .root.root .itemCopy small { margin-top: 2px; color: var(--e5-ink-2); font-size: .875rem; }
+:global(.app-shell[data-nv-e5]) .root.root .itemCopy .required { display: inline-block; margin-top: 6px; padding: 2px 9px; border-radius: 999px; background: #FFF4E0; color: #8A5300; font-size: .8125rem; font-weight: 500; }
+:global(.app-shell[data-nv-e5]) .root.root .actions .itemLink > .arrow { width: 26px; height: 26px; padding: 0; border: 1.5px solid #CFCFCA; border-radius: 50%; stroke: transparent; }
+:global(.app-shell[data-nv-e5]) .root.root .overflow summary { color: var(--e5-deep); }
+:global(.app-shell[data-nv-e5]) .root.root .groupEmpty { padding: 16px 18px; border: 1px dashed #D8D8D3; border-radius: 18px; text-align: center; color: var(--e5-ink-2); }
+/* Quick actions move to the header's "+" and the Requests and More pages; Home keeps one job. */
+:global(.app-shell[data-nv-e5]) .root.root .quick { display: none; }
+:global(.app-shell[data-nv-e5]) .root.root .freshness small { color: #9C9E99; }
+:global(.app-shell[data-nv-e5]) .root.root .refreshButton { color: var(--e5-deep); }
+@media (min-width: 1024px) {
+  :global(.app-shell[data-nv-e5]) .root.root .art { height: 18rem; max-height: none; }
+}
+:global(.app-shell[data-nv-e5]) .root.root .currentNote { display: none; }

@@ -18,6 +18,8 @@ import "./clean-manager/timecards.css";
 import "./clean-manager/insights.css";
 import "./clean-manager/updates.css";
 import "./clean-manager/notifications.css";
+// Employee app, new style (Withings-inspired, Jose approved Oct 20): scoped to the shell's data-nv-e5.
+import "./employee-style.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";

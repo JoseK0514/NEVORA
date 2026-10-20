@@ -319,6 +319,8 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
         {/* P3-ST-02: the pass itself keeps its last ready height while paused or offline, so the clock card under it stays put. */}
         <HoldHeight as="section" holding={!snapshot} memory="employee-home-pass" className={styles.assignment} aria-labelledby="employee-reviewed-next-heading"
           data-pass="true">
+          {/* New style (Jose, Oct 20): the Home card opens with the workday illustration; decorative. */}
+          <div className={styles.art} aria-hidden="true"/>
           <header className={styles.assignmentHeader}>
             <h2 id="employee-reviewed-next-heading">{underWay ? 'Your shifts' : 'Next shift'}</h2>
             {snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? <span className={styles.published}>Published</span> : null}
