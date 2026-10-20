@@ -128,7 +128,8 @@ export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems
   }, [value, holding, actionsConnection, offline]);
 
   return <div className="nv-page premium-home cm-page cm-home" data-nv-page="" data-live-readers={liveReaders}>
-    <PageBand eyebrow={dateLabel} title="Today" summary={<span role="status" className={value ? "sr-only" : undefined}>{summary}</span>} />
+    {/* The one live line is for screen readers in every state; each card says its own state, so the header never changes height. */}
+    <PageBand eyebrow={dateLabel} title="Today" summary={<span role="status" className="sr-only">{summary}</span>} />
     <KitStack className="cm-home__grid">
       {setup ? <div className="cm-home__setup">{setup}</div> : null}
       <div className="cm-home__now" ref={nowColumn}>
