@@ -29,7 +29,7 @@ it("brands login as NEVORA Workforce with the configured workspace and Velani ow
   const html = renderToStaticMarkup(await LoginPage({ searchParams: Promise.resolve({}) }));
   expect(html).toContain('alt="NEVORA"');
   expect(html).toContain("NEVORA Workforce");
-  expect(html).toContain("Your week, in one place.");
+  expect(html).toContain("Your week,<br/>in one place.");
   expect(html).toContain("Northside Services");
   expect(html).not.toContain("Fuel Coffee Drive");
   expect(html).toContain("© 2026 VELANI LLC. All rights reserved.");

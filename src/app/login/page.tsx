@@ -45,13 +45,12 @@ export default async function LoginPage({
               autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={errorId} required />
           </div>
         </div>
-        <div className="ap-field">
-          <div className="ap-label-row">
-            <label className="ap-label" htmlFor="login-password">{t.password}</label>
-            <Link className="ap-aside-link ap-wide" href="/forgot-access">{t.forgotAccess}</Link>
-          </div>
+        {/* Forgot access? shows in the label row but follows the password field, so Tab goes ID, password, Forgot. */}
+        <div className="ap-field ap-field--aside">
+          <label className="ap-label" htmlFor="login-password">{t.password}</label>
           <PasswordInput id="login-password" name="password" placeholder={t.passwordPlaceholder} autoComplete="current-password"
             aria-describedby={errorId} required showLabel={t.showPassword} hideLabel={t.hidePassword} />
+          <Link className="ap-aside-link ap-wide" href="/forgot-access">{t.forgotAccess}</Link>
         </div>
         <LoginSubmit idle={t.signIn} busy={t.signingIn} />
       </form>

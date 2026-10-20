@@ -16,6 +16,12 @@ const Mark = ({ className }: { className: string }) => (
   </svg>
 );
 
+/** "Your week, / in one place.": the brand line breaks after its first comma, as in the approved design. */
+function TwoLines({ text }: { text: string }) {
+  const at = text.indexOf(", ");
+  return at < 0 ? <>{text}</> : <>{text.slice(0, at + 1)}<br />{text.slice(at + 2)}</>;
+}
+
 /** A static, fictional employee Today screen in an iPhone frame. Decorative only. */
 function Device() {
   return (
@@ -71,7 +77,7 @@ export function AuthShell({ lang, t, variant, back, children }: {
         {variant === "signin" ? <>
           {/* eslint-disable-next-line @next/next/no-img-element -- a small static wordmark; next/image adds nothing here */}
           <img className="ap-band__wordmark" src="/images/nevora-wordmark-white.png" alt="NEVORA" width={907} height={122} />
-          <p className="ap-band__line">{t.bandLine}</p>
+          <p className="ap-band__line"><TwoLines text={t.bandLine} /></p>
         </> : null}
       </div>
       <div className="ap-main">
@@ -94,7 +100,7 @@ export function AuthShell({ lang, t, variant, back, children }: {
         <span className="ap-grain" aria-hidden="true" />
         <div className="ap-panel__copy">
           <p className="ap-panel__eyebrow">{t.panelEyebrow}</p>
-          <p className="ap-panel__line">{t.bandLine}</p>
+          <p className="ap-panel__line"><TwoLines text={t.bandLine} /></p>
           <p className="ap-panel__support">{t.panelSupport}</p>
         </div>
         <Device />
