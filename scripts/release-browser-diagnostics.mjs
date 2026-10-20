@@ -10,8 +10,10 @@ function property(value, key) {
 
 /** Keep bounded failure detail without copying URLs, capabilities or credentials. */
 export function safeBrowserFailure(error, execution, scenario) {
-  const message = property(error, 'message');
-  const summary = typeof message === 'string'
+  const name = property(error, 'name');
+  const assertion = name === 'AssertionError' || property(error, 'code') === 'ERR_ASSERTION';
+  const message = assertion ? undefined : property(error, 'message');
+  const summary = assertion ? 'Browser assertion failed' : typeof message === 'string'
     ? message.slice(0, 8000).split(/\r?\n/).slice(0, 8).map(line => {
       if (/authorization|cookie|password|secret|session|token|digest|database_url/i.test(line)) return '[sensitive diagnostic omitted]';
       return line.replace(/https?:[^\s"'<>]+/gi, '[URL]')
@@ -20,7 +22,6 @@ export function safeBrowserFailure(error, execution, scenario) {
         .replace(/[A-Za-z0-9_-]{32,}/g, '[OPAQUE]');
     }).join('\n').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').slice(0, 1000)
     : 'Browser execution failed without a readable error message';
-  const name = property(error, 'name');
   const stack = property(error, 'stack'), location = property(scenario, 'location');
   const match = (typeof location === 'string' ? location : typeof stack === 'string' ? stack : '').slice(0, 8000).match(sourceLocation);
   const stage = property(scenario, 'stage');

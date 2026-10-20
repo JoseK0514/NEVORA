@@ -23,10 +23,12 @@ function originalRuntimeDiagnostic(name, message, page) {
   const canonical = name === 'Unhandled Promise Rejection' && message.startsWith('Error: ') ? message.slice(7) : message;
   const split = typeof name === 'string' ? name.match(/^Minified React error #([1-9]\d{0,2}); visit https$/) : null;
   const invariant = canonical.match(/^Minified React error #([1-9]\d{0,2});/) ?? (split?.[0] === name ? split : null);
+  const nativeFetch = name === 'Fetch API cannot load http' && message.length <= 8000
+    && message.match(/^\/[^/\s][^\s]* due to access control checks\.$/)?.[0] === message;
   const route = readable(() => new URL(page.url()).pathname);
   return {
     nativeName: nativeErrorNames.has(name) ? name : 'Unknown',
-    canonicalMessage: canonicalRuntimeMessages.has(canonical) ? canonical : invariant ? `Minified React error #${invariant[1]}` : null,
+    canonicalMessage: nativeFetch ? 'Fetch API cannot load resource due to access control checks.' : canonicalRuntimeMessages.has(canonical) ? canonical : invariant ? `Minified React error #${invariant[1]}` : null,
     reactInvariant: invariant ? Number(invariant[1]) : null,
     route: runtimeRoutes.has(route) ? route : null,
   };
@@ -36,7 +38,7 @@ function originalRuntimeDiagnostic(name, message, page) {
 export function observeBrowserCell(execution, errors) {
   const start = errors.length;
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
-  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty']);
+  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty', 'loading', 'canonical-communications', 'actions-overflow', 'keyboard', 'api', 'offline', 'late-home', 'late-time', 'route-leave', 'sql-source-failure', 'replaced-session', 'early-my-time-route', 'removal-review', 'last-shift-removal', 'complete-zero', 'communication-source-failure', 'axe-diagnostic']);
   return {
     setStageReader(reader) { readStage = reader; },
     setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },
@@ -48,7 +50,7 @@ export function observeBrowserCell(execution, errors) {
           const originalMessage = readable(() => error?.message), name = readable(() => error?.name);
           const message = typeof originalMessage === 'string' ? originalMessage : '';
           const diagnostic = originalRuntimeDiagnostic(name, message, page);
-          const summary = /load failed|failed to fetch|networkerror|network request failed/i.test(message) ? 'Network load failure'
+          const summary = diagnostic.canonicalMessage === 'Fetch API cannot load resource due to access control checks.' || /load failed|failed to fetch|networkerror|network request failed/i.test(message) ? 'Network load failure'
             : /abort|cancelled|canceled/i.test(message) ? 'Operation aborted'
               : /chunkloaderror|loading chunk/i.test(message) ? 'Module load failure'
                 : 'Unclassified page runtime error';

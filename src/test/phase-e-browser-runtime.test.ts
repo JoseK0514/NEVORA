@@ -1,11 +1,66 @@
 import {chmodSync,mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {afterEach,expect,it} from 'vitest';
+import {afterEach,expect,it,vi} from 'vitest';
 import {EventEmitter} from 'node:events';
 const runtimeModule=resolve('scripts/phase-e-browser-qa.mjs');
 const {darwinWebKitLaunch}=await import(runtimeModule);
 const {observeBrowserCell}=await import(runtimeModule);
+it('retains only the observed native HTTP fetch format as fatal network detail in both contexts',()=>{
+ const errors:unknown[]=[],cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+ cell.setStageReader(()=> 'early-my-time-route');
+ for(const role of ['primary','manager']){
+  const context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://localhost/app/schedule?ref=Violet7'});
+  cell.observeContext(context,role);context.emit('page',page);if(role==='manager')cell.setPhase('context-close');
+  page.emit('pageerror',{name:'Fetch API cannot load http',message:'/127.0.0.1:43210/api/notifications?ref=Violet7#private due to access control checks.'});
+  expect(errors.at(-1)).toMatchObject({role,phase:role==='primary'?'scenario':'context-close',diagnostic:{nativeName:'Unknown',canonicalMessage:'Fetch API cannot load resource due to access control checks.',reactInvariant:null,route:'/app/schedule'},failure:{stage:'early-my-time-route',summary:'Network load failure'}});
+  expect(()=>cell.assertClean()).toThrow();
+ }
+ expect(errors).toHaveLength(2);expect(JSON.stringify(errors)).not.toMatch(/Violet7|127\.0\.0\.1|43210|notifications|private|https?:/);
+});
+it.each([
+ ['Fetch API cannot load https','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http\n','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http Violet7','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Violet7 Fetch API cannot load http','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Error','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http','/fictional.invalid/api/notifications due to access control checks. Violet7'],
+ ['Fetch API cannot load http','/fictional.invalid/api/notifications due to access control checks.\n'],
+ ['Fetch API cannot load http','/fictional.invalid/api/notifications\n due to access control checks.'],
+ ['Fetch API cannot load http','/fictional.invalid/api/notifications due to access control checks'],
+ ['Fetch API cannot load http','//fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http','fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http','/ due to access control checks.'],
+ ['Fetch API cannot load http','/Violet7'.repeat(2000)+' due to access control checks.'],
+])('keeps unsupported native fetch format unknown and fatal (%s)',(name,message)=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);page.emit('pageerror',{name,message});
+ expect(errors).toHaveLength(1);expect(errors[0]).toMatchObject({diagnostic:{nativeName:name==='Error'?'Error':'Unknown',canonicalMessage:null,reactInvariant:null},failure:{summary:'Unclassified page runtime error'}});
+ expect(JSON.stringify(errors)).not.toMatch(/Violet7|fictional|notifications|https?:/);expect(()=>cell.assertClean()).toThrow();
+});
+it.each(['seed','loading','canonical-communications','actions-overflow','keyboard','api','offline','late-home','late-time','route-leave','sql-source-failure','replaced-session','early-my-time-route','removal-review','empty','last-shift-removal','complete-zero','communication-source-failure','axe-diagnostic'])('retains the Home stage %s and keeps its event fatal',stage=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');cell.setStageReader(()=>stage);context.emit('page',page);page.emit('pageerror',new Error('Violet7'));
+ expect(errors[0]).toMatchObject({failure:{stage}});expect(()=>cell.assertClean()).toThrow();expect(JSON.stringify(errors)).not.toContain('Violet7');
+});
+it.each(['early-my-time-route\n','early-my-time-route-Violet7','Violet7','loading-private'])('omits an unsupported Home stage %s',stage=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');cell.setStageReader(()=>stage);context.emit('page',page);page.emit('pageerror',new Error('Violet7'));
+ expect(errors[0]).toMatchObject({failure:{stage:null}});expect(()=>cell.assertClean()).toThrow();
+});
+it('connects the actual Home stage reader before registering scenario page listeners',async()=>{
+ const fixture=resolve('src/test/integration/owned-app-fixture.ts');
+ vi.doMock(fixture,()=>({seedOwnedScenario:async()=>({actors:['fictional']}),TEST_PASSWORD:'fictional'}));
+ try{
+  const {runScenario}=await import(resolve('scripts/phase-e-home-browser-scenarios.mjs'));
+  const errors:unknown[]=[],context=new EventEmitter(),observedPage=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+  cell.observeContext(context,'primary');context.emit('page',observedPage);
+  const stop=new Error('Stop before scenario listeners');
+  await expect(runScenario({app:{database:{executor:{}}},engine:'webkit',width:320,page:{on(){throw stop;}},runtimeErrors:cell})).rejects.toBe(stop);
+  observedPage.emit('pageerror',new Error('Violet7'));
+  expect(errors[0]).toMatchObject({failure:{stage:'seed'}});expect(()=>cell.assertClean()).toThrow();
+ }finally{vi.doUnmock(fixture);}
+});
 it.each([
  ['Minified React error #418; visit https', '/react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN', 'Minified React error #418', 418],
  ['Minified React error #1; visit https', '/fictional.invalid/PRIVATE_ACTOR_TOKEN', 'Minified React error #1', 1],
