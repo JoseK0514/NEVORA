@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-19T23:42:50.306187+00:00",
+  "updatedAt": "2026-10-20T00:16:41.426030+00:00",
   "inspectedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "newerBoundedProbeSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
   "fullExitZeroCount": 0,
@@ -71,7 +71,13 @@
       "owner": "Coordinator",
       "status": "retainedbroaderP1 ownerfinding; currentboundedP2observationdoesnotdowngradeit",
       "measurement": "bothPayrollfixturesChrome320/100Recordedtimecard12px/CLS0.0226202; band296\u2192296, noST-RC-HOME01charge",
-      "report": "combined-cd764f6/candidate-findings.md"
+      "report": "combined-cd764f6/candidate-findings.md",
+      "newerBoundedEvidence": {
+        "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
+        "cases": 4,
+        "scope": "two Payrollfixtures320/100/bothengines; compactfooter/slots shrink12px; Homebandstable; no broadP1 downgrade",
+        "report": "combined-15a0fcd-scoped/candidate-findings.md"
+      }
     },
     {
       "id": "AL-WA-10",
@@ -93,6 +99,45 @@
       "report": "../../p35-wave-a/combined-cd764f6-cloud-full/findings/TC-WA-3/measurement.json",
       "candidateCommit": "081595204b219868fb1cd2899af84a16a21193e7",
       "candidateFixStatus": "committed/published onRC; fresha21650de four-site browser proof pending; no independent closure"
+    },
+    {
+      "id": "TC-P3-25",
+      "owner": "Coordinator",
+      "severity": "P2 retained",
+      "status": "measured on immutable15 source; eight real503recoveries offerRefresh ratherthanTryagain; exactperiod/heldretry/privacy/finalreadyrestorationpass; no newer-source closure",
+      "report": "combined-15a0fcd-scoped/candidate-findings.md"
+    },
+    {
+      "id": "TC-P3-28",
+      "owner": "Coordinator/sharedPayroll withWaveB",
+      "severity": "P2 retained; newly affected Payroll/MyPay surfaces explicit",
+      "status": "actual100percent headingrole measurements/crops; no bodystrong inclusion, no prior Payroll/MyPay closure inherited",
+      "measurement": "ScheduleToday17/25.5/600 vs17/22/600; MyPayPayday20/28/550; earlierstatement/Payrollrunheadings17/25.5/550; sourcelegacyheadingcascade",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md",
+      "additionalReport": "../../p35-wave-b/full-exit-cd764f6/shared-TC-P3-28.json"
+    },
+    {
+      "id": "TC-B-25",
+      "owner": "WaveB; Phase3MyPay affectedsurface",
+      "severity": "P2 retained",
+      "status": "newly measuredMyPaydate surface, no inheritancefromoldPayrollrunsclosure; separatefromsharedshortweekdaycause",
+      "measurement": "MyPaySep27 month/day51pxapart at320/390200",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md",
+      "unappliedProposal": "../../premium-phase-3/round-5-cd764f6-full/proposals/TC-B-25-my-pay-date-atoms.patch"
+    },
+    {
+      "id": "AL-P3-13",
+      "owner": "Coordinator",
+      "status": "existingconfirmationicon/firstlinealignment measured; targetedbottomcrop reviewed; current40pxiconcolumn alreadycorrect, do notrestoreold32pxcolumn",
+      "measurement": "iconcenter1951.58 vsfirstcopyline1913.08",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md"
+    },
+    {
+      "id": "IS-P4-18",
+      "owner": "Desktop/sharednav",
+      "severity": "P2 retained",
+      "status": "existingInboxcount overlap visually confirmed on currentcdHome/WaveBTemplates and15Rules; actualbadgeink/carrierbounds pending sourcea216diagnosticfour; no newduplicate ID",
+      "report": "../../p4-desktop/exit-cd764f6/interaction-states.md"
     }
   ],
   "additionalUnderInvestigation": [
@@ -100,6 +145,12 @@
       "id": "WR-WA-3P2",
       "owner": "WaveA",
       "observation": "WebKit native Add Location select truncation390/200; original ID retained, final disposition pending"
+    },
+    {
+      "id": null,
+      "owner": "WaveB",
+      "observation": "three raw contrast-only axe rows TemplatesOwner320200/applied and RulesOwner360100,430125/windowSaved; fullpaint/opacity/animation attribution pending ordinarymotiondiagnostic, no waiver/productcauseyet",
+      "report": "../../p35-wave-b/full-exit-cd764f6/type-colour-copy.md"
     }
   ],
   "repairCandidate": "a21650de50374683d52e32b883d7f419d7344f22",
@@ -112,5 +163,14 @@
     "inbox": 12,
     "fullExitZero": false,
     "report": "combined-15a0fcd-scoped/priority-results.md"
+  },
+  "completeBounded15": {
+    "required": 134,
+    "completed": 134,
+    "rawPassed": 118,
+    "rawFalse": 16,
+    "closureVerified": true,
+    "report": "combined-15a0fcd-scoped/scoped-completion.json",
+    "classification": "eightintentionalcoldlinkcontractobservations + eightTC-P3-25; fourcoldrowsalsoP3-ST-01; not16newfindings"
   }
 }

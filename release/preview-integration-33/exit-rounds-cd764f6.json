@@ -1,7 +1,7 @@
 {
   "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "status": "Frozen combinedcd boundedcheck complete/verifiedclosed; Desktop,Phase3,WaveA andWaveB fullcd reviews active. WaveC fullscope rebounda216 with no inheritedcredit, resourcequeued. Exact15priorityRules/Inbox28/28pass; remaining106boundedcells/currentRCfullgates/repairproofinprogress. No full exit zero.",
+  "status": "Allfivefull exitsopen, zero completed. Fourcd ownersbrieflyclean-pausedafterbatches for currenta216fullgates and repairpreviewbootstrap. C960preparedonclean a216/noinheritedruntimecredit. Independent15bounded134complete/verifiedclosed; priority28pass; findingsretained. No sourcezero merge.",
   "zeroExits": [],
   "reviews": [
     {
@@ -10,21 +10,39 @@
       "manualJobs": 1562,
       "priorIDs": 135,
       "path": "premium-phase-3/complete-exit-preparation/",
-      "pendingManualJobs": 1546,
-      "sourceContractNotApplicable": 16
+      "pendingManualJobs": 1541,
+      "sourceContractNotApplicable": 16,
+      "progressAtCleanResourcePause": {
+        "checkpointed": 664,
+        "rawAwaitingParentReap": 4,
+        "resume": "python3 premium-phase-3/round-5-cd764f6-full/analysis/resume-paused-checker-136882.py --root-released"
+      },
+      "partialMeasuredFindingRows": 5
     },
     {
       "owner": "WaveA",
       "automatedCells": 1792,
       "judgmentJobs": 1244,
       "priorIDs": 51,
-      "path": "p35-wave-a/complete-exit-cd764f6-preparation/"
+      "path": "p35-wave-a/complete-exit-cd764f6-preparation/",
+      "progressAtCleanResourcePause": {
+        "checkpointed": 528,
+        "rawPass": 527,
+        "oneEarlier503RequiresExplicitReplay": true,
+        "resume": "own guarded run-serial.mjs --execute --mode matrix after exact release and removal of own PAUSE"
+      }
     },
     {
       "owner": "WaveB",
       "automatedCells": 3008,
       "priorIDs": 137,
-      "path": "p35-wave-b/full-exit-cd764f6/"
+      "path": "p35-wave-b/full-exit-cd764f6/",
+      "progressAtCleanResourcePause": {
+        "checkpointed": 327,
+        "rawAwaitingParentReap": 3,
+        "rawContrastFailures": 3,
+        "resume": "WAVE_B_MATRIX_RESUME_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7 python3 preparation/scripts/resume-matrix.py --execute"
+      }
     },
     {
       "owner": "WaveC",
@@ -48,21 +66,36 @@
       "largeSupplementCells": 192,
       "scopeProvenance": "../../p4-desktop/exit-cd764f6/execution-tools/scope-v3-nine-widths/derivation.json",
       "exactInputContinuation": "../../p4-desktop/exit-cd764f6/evidence/full-exit-cd764f6-scope-v3/baseline/continuation.json",
-      "importedCompleteCells": 138
+      "importedCompleteCells": 138,
+      "progressAtCleanResourcePause": {
+        "checkpointed": 579,
+        "rawFailures": 2,
+        "canonicalFailure": "ST-P4-13",
+        "resume": "DESKTOP_RESUME_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7 bash p4-desktop/exit-cd764f6/execution-tools/resume-normal-sweep.sh"
+      }
     }
   ],
   "criteria": "Full unchanged checker with axe, all five areas, all prior IDs, required state/large-data/manual judgments. Genuine product failures retained; setup gaps separate. No prior pass counts inherited.",
-  "publication": "Candidate33 and four ready branches pushed; combined branch includes only33 findings and two named integration corrections, no later34\u201345 fixes.",
+  "publication": "Exact33/fourreadyrefsunchanged. CurrentRCa216containsfour separatelycommittedrepairs overrollingc875; PR14validationhead348 addsCI/testonlychanges/allappsourcebyteexacta216. No main/deploy.",
   "pinnedPublishedRef": "codex/checkpoint-preview33-cd764f6",
   "completedFullExits": 0,
   "additionalCurrentRepairProbe": {
     "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
     "checkpointRef": "codex/checkpoint-preview33-15a0fcd7",
-    "scope": "next separate bounded Rules16/Inbox12 then other scoped/cold; no full code/exit credit inherited fromcd",
+    "scope": "separate bounded134complete/verifiedclosed; no fullsource/codegate/owner-exitcredit",
     "priority": {
       "completed": 28,
       "passed": 28,
       "report": "combined-15a0fcd-scoped/priority-results.md"
+    },
+    "complete134": {
+      "required": 134,
+      "completed": 134,
+      "rawPassed": 118,
+      "rawFalse": 16,
+      "closureVerified": true,
+      "report": "combined-15a0fcd-scoped/scoped-completion.json",
+      "classification": "eightintentionalcoldlinkcontractobservations + eightTC-P3-25; fourcoldrowsalsoP3-ST-01; not16newfindings"
     }
   },
   "combinedTargeted": {
@@ -89,5 +122,21 @@
     "sourceAndMirrorVerified": true,
     "closureErrors": []
   },
-  "currentRepairCandidate": "a21650de50374683d52e32b883d7f419d7344f22"
+  "currentRepairCandidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "currentValidationPR": {
+    "number": 14,
+    "head": "348db21a604d6844ae2836676c7c5eb232d96cbd",
+    "run": 39346366951,
+    "status": "queuedbehindoriginalrun; priorbrowserfailuresretained"
+  },
+  "temporaryResourceHold": {
+    "requestedAt": "2026-10-20T00:15:00Z",
+    "purpose": "Finish current candidate full tests/build/markers and fifth preview fixture/login bootstrap",
+    "onlyBetweenCompleteBatches": true,
+    "noCellAbortOrCriterionChange": true,
+    "previewsRetained": true,
+    "allFourOwnersAcknowledgedNoActiveBrowserCells": true,
+    "resumeAfter": "root gates finish and runtime_setup confirms new candidate fixture/login ready; root explicitly releases existing owners",
+    "notAFullExitStopOrClosure": true
+  }
 }
