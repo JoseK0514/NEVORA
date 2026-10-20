@@ -54,6 +54,19 @@ verified). Update it once the full lifecycle is confirmed.
 Until migration 0034 is applied to production, Delete my account answers “isn’t available right now” and points to
 support email instead of saving a request; sign-in is unaffected.
 
+### Production database check (October 20, 2026)
+
+Jose authorized applying 0034 with today’s push, after a backup. Read-only inspection of the production database
+(Neon project **NEVORA** `rough-fire-63258908`, branch `main` `br-green-night-b87vx3ud`, flagged as the Vercel
+production branch, database `fuel_scheduler`) found it at roughly migration **0002**: `employees`, `locations`,
+`employee_sessions` and `location_staffing_settings` exist; `workspaces`, `locations.workspace_id` (0008),
+`time_entries` (0005), `push_subscriptions` (0007) and everything later do not. It holds 3 employee rows and no
+live sessions.
+
+0034 references `workspaces` and `locations.workspace_id`, so it **cannot be applied on its own**; it has to follow
+0003–0033 as part of the release migration. Nothing was written and no backup branch was created. The web release
+itself needs that full chain (0003–0034) applied and reviewed as one authorized step.
+
 Before publishing, also confirm with the employer that the retention schedule covers any longer Puerto Rico tax,
 benefits or dispute requirements, and name the email provider internally (the policy describes it by category).
 
