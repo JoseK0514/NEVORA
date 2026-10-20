@@ -26,7 +26,9 @@ describe("public policy pages", () => {
     expect(html).toContain('href="mailto:support@thevelani.com"');
     expect(html).toContain("Provided by VELANI LLC");
     for (const href of ["/privacy", "/terms", "/support", "/account-deletion"]) expect(html).toMatch(new RegExp(`href="${href}"|aria-current="page"`));
-    expect(html).toContain('class="legal-unresolved"');
+    // Only the mailing address is still open; it appears on Privacy, Terms and Support.
+    if (title === "Delete your NEVORA account") expect(html).not.toContain("legal-unresolved");
+    else expect(html).toContain("[CONFIRM_BUSINESS_CONTACT_DETAILS]");
   });
 
   it("starts deletion by signing in, never by typing an email address", () => {

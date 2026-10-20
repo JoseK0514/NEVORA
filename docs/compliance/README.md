@@ -45,12 +45,14 @@ business days, Puerto Rico holidays excluded), `DELETION_COMPLETION_PERIOD` (30 
 `HOSTING_TRANSFER_DETAILS` (United States, Northern Virginia: Neon us-east-1, Vercel iad1),
 `SALE_SHARING_AND_TRACKING_STATEMENT`, `EMPLOYER_DATA_RESPONSIBILITIES`, `REGIONAL_PRIVACY_DETAILS` (Puerto Rico).
 
+`BACKUP_EXPIRY` uses Jose’s approved interim wording (six-hour restore history; the maximum across all copies is being
+verified). Update it once the full lifecycle is confirmed.
+
 **Still open, so production keeps the pages hidden:**
 
 | Fact | Needed |
 |---|---|
 | `BUSINESS_CONTACT_DETAILS` | VELANI LLC’s mailing address for publication (or Jose’s decision to list email only). |
-| `BACKUP_EXPIRY` | The complete backup expiry. Neon’s restore history is six hours; branches, exports and other provider copies are not yet verified. |
 
 Before publishing, also confirm with the employer that the retention schedule covers any longer Puerto Rico tax,
 benefits or dispute requirements, and name the email provider internally (the policy describes it by category).

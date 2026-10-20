@@ -8,8 +8,8 @@ describe("NEVORA public policies", () => {
   it("lists every fact the documents still need, effective date included", () => {
     const empty = Object.fromEntries(Object.keys(POLICY_FACTS).map(key => [key, null]));
     expect(unresolvedFacts(empty)).toEqual(expect.arrayContaining(["EFFECTIVE_DATE", "DELETION_COMPLETION_PERIOD", "RETENTION_SCHEDULE", "SUPPORT_RESPONSE_TIME", "PROCESSORS_AND_PURPOSES"]));
-    // Confirmed October 20; still open: the mailing address and the complete backup expiry.
-    expect(unresolvedFacts().sort()).toEqual(["BACKUP_EXPIRY", "BUSINESS_CONTACT_DETAILS"]);
+    // Confirmed October 20; still open: the mailing address.
+    expect(unresolvedFacts()).toEqual(["BUSINESS_CONTACT_DETAILS"]);
     expect(unresolvedFacts(filled)).toEqual([]);
   });
 
