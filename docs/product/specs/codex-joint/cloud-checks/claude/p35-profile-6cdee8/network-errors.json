@@ -523,5 +523,26 @@
   "page": "/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
   "path": "/api/notifications",
   "status": 503
+ },
+ {
+  "at": "2026-10-20T02:40:57.187Z",
+  "account": "QAOWNER",
+  "page": "/app/profile",
+  "path": "/api/management/profile",
+  "status": 404
+ },
+ {
+  "at": "2026-10-20T02:41:04.554Z",
+  "account": "QAOWNER",
+  "page": "/app/profile",
+  "path": "/api/management/profile",
+  "status": 404
+ },
+ {
+  "at": "2026-10-20T02:42:08.022Z",
+  "account": "AUDIT-M",
+  "page": "/app/profile",
+  "path": "/api/management/profile",
+  "status": 404
  }
 ]

@@ -1,0 +1,31 @@
+[
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/employees/AUDIT-LONG/clocker-pin",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Employee ID: AUDIT-LONG» 13px",
+   "span.clocker-pin-module__hQ40jq__badge.clocker-pin-module__hQ40jq__con «Active employee» 12px",
+   "span. «4 digits» 12px",
+   "span. «Enter it again» 12px",
+   "p.clocker-pin-module__hQ40jq__fieldHelp «Use the same four digits in bo» 13px",
+   "p. «This PIN is separate from thei» 13px",
+   "p. «Existing PINs cannot be viewed» 13px",
+   "p. «Changing a PIN keeps portal ac» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]

@@ -1,0 +1,20 @@
+[
+ {
+  "engine": "webkit",
+  "account": "AUDIT-LONG",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Could not connect to 127.0.0.1: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f\", waiting until \"load\"\u001b[22m\n",
+   "console: Failed to load resource: Could not connect to 127.0.0.1: Connection refused"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

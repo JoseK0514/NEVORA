@@ -1,0 +1,30 @@
+[
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/account-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "p.assisted-hint «Use the exact ID in your workp» 13px",
+   "p.assisted-hint «Use an established in-person o» 13px",
+   "p. «Use a trusted workplace proces» 13px",
+   "p. «The code can be used once and » 13px",
+   "p. «They choose a new password and» 13px",
+   "p. «Password reset ends all of the» 13px",
+   "p. «Issuing another code retires u» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]
