@@ -21,7 +21,7 @@ body { background: #E6E3DD; font-family: var(--sys); -webkit-font-smoothing: ant
 .mk .l { fill: var(--mark); } .mk .t { fill: #35B6EC; }
 
 /* ===================== U1 Signature ===================== */
-.u1 { --cream: #F4EFE7; --paper: #FFFDF9; --ink: #161C1B; --ink2: #5F625E; --ink3: #8C8A84; --rule: #E2DACD; --deep: #0D3634; --mark: #164B48; --teal: #0B6E69; background: var(--cream); color: var(--ink); }
+.u1 { --cream: #F7F6F3; --paper: #FFFFFF; --ink: #161C1B; --ink2: #5F625E; --ink3: #8C8A84; --rule: #E8E5DF; --deep: #0D3634; --mark: #164B48; --teal: #0B6E69; background: var(--cream); color: var(--ink); }
 .u1 .band { position: absolute; z-index: 0; inset: 0 0 auto 0; background: var(--deep); overflow: hidden; }
 .u1 .band::after { content: ""; position: absolute; inset: 0; background: var(--grain); opacity: .07; mix-blend-mode: overlay; }
 .u1 .sb, .u1 .top { color: #fff; }
@@ -49,9 +49,9 @@ body { background: #E6E3DD; font-family: var(--sys); -webkit-font-smoothing: ant
 .u1 .li .tx span { display: block; margin-top: 2px; font: 400 15px/20px var(--sys); color: var(--ink2); }
 .u1 .li .tag { flex: none; font: 600 11px/14px var(--sys); letter-spacing: 1.2px; text-transform: uppercase; color: var(--teal); }
 .u1 .chev { flex: none; color: #B9B2A6; }
-.u1 .ring { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #C9C0B2; }
+.u1 .ring { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #C9C6BF; }
 .u1 .btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 18px; border-radius: 10px; background: var(--deep); color: #fff; font: 500 15px/1 var(--sys); }
-.u1 .seg { display: flex; margin: 0 16px; padding: 3px; border-radius: 12px; background: #EAE3D7; }
+.u1 .seg { display: flex; margin: 0 16px; padding: 3px; border-radius: 12px; background: #EEECE7; }
 .u1 .seg span { flex: 1; display: flex; align-items: center; justify-content: center; height: 36px; border-radius: 9px; font: 500 15px/1 var(--sys); color: var(--ink2); }
 .u1 .seg span.on { background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgba(22,28,27,.08); }
 .u1 .strip { display: grid; grid-template-columns: repeat(7, 1fr); margin: 22px 14px 0; }
@@ -78,7 +78,7 @@ body { background: #E6E3DD; font-family: var(--sys); -webkit-font-smoothing: ant
 .u1 .shift .foot { color: var(--ink2); } .u1 .shift .clk { display: flex; align-items: center; gap: 8px; font: 500 15px/20px var(--sys); color: var(--ink2); }
 .u1 .shift .clk i { width: 7px; height: 7px; border-radius: 50%; background: #B9B2A6; }
 .u1 .shift .lk { display: flex; align-items: center; gap: 6px; padding: 0 10px; height: 44px; font: 500 15px/1 var(--sys); color: var(--ink); }
-.u1 .tabs { background: rgba(244,239,231,.94); backdrop-filter: blur(20px); border-top: 1px solid var(--rule); }
+.u1 .tabs { background: rgba(247,246,243,.94); backdrop-filter: blur(20px); border-top: 1px solid var(--rule); }
 .u1 .tabs span { color: var(--ink3); } .u1 .tabs span.on { color: var(--deep); font-weight: 600; }
 
 /* ===================== U2 Midnight ===================== */

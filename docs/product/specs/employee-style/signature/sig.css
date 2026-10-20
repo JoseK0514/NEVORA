@@ -45,7 +45,7 @@
 .u1 .who h1 { margin-top: 14px; font: 400 32px/36px var(--disp); letter-spacing: -1px; }
 .u1 .who p { margin-top: 6px; font: 400 15px/20px var(--sys); color: rgba(255,255,255,.7); }
 .u1 .val { flex: none; font: 400 15px/20px var(--sys); color: var(--ink2); }
-.u1 .mini { flex: none; display: flex; padding: 3px; border-radius: 9px; background: #EAE3D7; }
+.u1 .mini { flex: none; display: flex; padding: 3px; border-radius: 9px; background: #EEECE7; }
 .u1 .mini span { padding: 6px 11px; border-radius: 7px; font: 500 15px/17px var(--sys); color: var(--ink2); }
 .u1 .mini span.on { background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgba(22,28,27,.08); }
 .u1 .kv { position: relative; display: flex; justify-content: space-between; gap: 16px; padding: 16px 18px; font: 400 16px/22px var(--sys); }
