@@ -49,6 +49,12 @@ The first external diagnostic launcher was reconfigured between the first two at
 
 ## Handoff and gates
 
+The controller's final docs-inclusive candidate and both hosted workflow outcomes
+are recorded in the external [verification receipt](/Users/josek0514/.codex/visualizations/2026/10/20/01a15962-cdee-7dd0-8a92-023551b076fb/pr13-followup-ci/verification.json)
+and [result report](/Users/josek0514/.codex/visualizations/2026/10/20/01a15962-cdee-7dd0-8a92-023551b076fb/pr13-followup-ci/RESULT.md). These files retain exact candidate and
+artifact identity without a post-CI source commit. The executable task review is
+preserved in [PR13-BROWSER-TASK-REVIEW-2026-10-20.md](PR13-BROWSER-TASK-REVIEW-2026-10-20.md).
+
 Engineering supports this bounded harness correction; security keeps the server authority checks and runtime-error gate intact. Governance remains **NO-GO for release** while hosted and independent gates remain open. No policy exception or production authorization was requested or inferred.
 
 The controller's scoped read-only review approved the executable diff with no blockers and two low-priority test coverage/typing notes. It does not certify QA/UI or close independent findings. The controller owns final broader review, exact reviewed-candidate build/push and actual hosted CI artifact inspection. Independent UI findings, performance HOLD and migration gates remain open with their respective owners. No Jose decision is needed for this bounded local handoff; production and material risk acceptance remain Jose's authority.
