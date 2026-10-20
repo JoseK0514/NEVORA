@@ -9,7 +9,7 @@ export const POLICY_OPERATOR = "VELANI LLC";
 export const POLICY_VERSION = "2026-10-20";
 
 /* Confirmed by Jose on October 20, 2026 (Neon and Vercel verified in the connected accounts). Backup expiry uses
- * the interim wording Jose approved. Still open: VELANI LLC's mailing address (BUSINESS_CONTACT_DETAILS). Change the
+ * the interim wording Jose approved; update it once every copy's lifetime is confirmed. Change the
  * effective date if the policies take effect on a later day. */
 export const POLICY_FACTS: Record<string, string | null> = {
   EFFECTIVE_DATE: "October 20, 2026",
@@ -22,7 +22,7 @@ export const POLICY_FACTS: Record<string, string | null> = {
   SALE_SHARING_AND_TRACKING_STATEMENT: "NEVORA does not display advertisements, sell personal information, or share personal information for cross-context behavioral advertising. We do not track users across other companies’ applications or websites for advertising purposes. We disclose information to your employer and our service providers as necessary to operate NEVORA and for the purposes described in this policy.",
   EMPLOYER_DATA_RESPONSIBILITIES: "Your employer decides how NEVORA is used for workplace activities, including scheduling, attendance, timekeeping, payroll records and employee administration. VELANI LLC operates NEVORA and processes these workplace records on your employer’s documented instructions. Requests about workplace records your employer controls are coordinated with your employer, and VELANI LLC helps locate, correct, export or delete information where appropriate. VELANI LLC handles requests about information it controls for its own business purposes, such as direct support communications and service administration. Your employer remains responsible for employment decisions, payroll accuracy, required workplace notices and its own recordkeeping obligations.",
   REGIONAL_PRIVACY_DETAILS: "NEVORA currently serves the participating employer and its authorized workforce in Puerto Rico. Applicable United States federal and Puerto Rico requirements govern the handling of relevant workplace records.",
-  BUSINESS_CONTACT_DETAILS: null,
+  BUSINESS_CONTACT_DETAILS: "VELANI LLC, 1654 Calle Tulipan, Suite 100, San Juan, PR 00927",
 };
 
 export type PolicyFact = keyof typeof POLICY_FACTS;
@@ -39,7 +39,7 @@ export const PRIVACY: PolicyDocument = {
   slug: "privacy", title: "Privacy Policy", effective: true,
   summary: "How NEVORA handles information when you use it on the web or in its apps.",
   sections: [
-    { heading: "Who we are", blocks: [{ p: ["NEVORA is a workforce scheduling and operations service provided by VELANI LLC. This policy explains how information is handled when you use NEVORA through its website or mobile applications. Contact us at ", mail, " or ", f("BUSINESS_CONTACT_DETAILS"), "."] }] },
+    { heading: "Who we are", blocks: [{ p: ["NEVORA is a workforce scheduling and operations service provided by VELANI LLC. This policy explains how information is handled when you use NEVORA through its website or mobile applications. Contact us at ", mail, " or by mail at ", f("BUSINESS_CONTACT_DETAILS"), "."] }] },
     { heading: "Your workplace", blocks: [{ p: ["Your employer or organization supplies and manages the information used to run its workspace. Authorized people in your workplace can see information according to their roles."] }, { p: [f("EMPLOYER_DATA_RESPONSIBILITIES")] }, { p: ["Contact your workplace administrator about schedules, pay records or corrections. You can also contact us about privacy, or use the account deletion process below."] }] },
     { heading: "Information NEVORA uses", blocks: [
       { p: ["Depending on the features your organization turns on and your role, NEVORA handles:"] },
@@ -89,7 +89,7 @@ export const TERMS: PolicyDocument = {
     { heading: "Privacy and deletion", blocks: [{ p: ["Our ", { href: "/privacy", text: "Privacy Policy" }, " explains how information is handled and your choices. You can request account deletion from Profile; see ", { href: "/account-deletion", text: "Account deletion" }, ". Some workplace records may be kept for the specific purposes and periods explained there."] }] },
     { heading: "Access to the service", blocks: [{ p: ["Features depend on your role and your organization’s settings. We may restrict access to address security incidents, misuse or loss of authorization. Email ", mail, " about a restriction or a service problem. These terms don’t create any charge for you."] }] },
     { heading: "App license", blocks: [{ p: ["For the iOS app, Apple’s standard end-user license agreement applies unless VELANI LLC provides its own through the App Store. These terms apply alongside that license as the law allows."] }] },
-    { heading: "Changes and contact", blocks: [{ p: ["We post updated terms with their effective date and give additional notice, or ask you to accept them, where required. Contact VELANI LLC at ", mail, " or ", f("BUSINESS_CONTACT_DETAILS"), "."] }] },
+    { heading: "Changes and contact", blocks: [{ p: ["We post updated terms with their effective date and give additional notice, or ask you to accept them, where required. Contact VELANI LLC at ", mail, " or by mail at ", f("BUSINESS_CONTACT_DETAILS"), "."] }] },
   ],
 };
 
@@ -98,7 +98,7 @@ export const SUPPORT: PolicyDocument = {
   summary: "Get help with NEVORA, a workforce scheduling and operations product of VELANI LLC.",
   sections: [
     { heading: "Contact support", blocks: [
-      { p: ["Email ", mail, " about sign-in problems, technical issues, feedback, privacy questions or content concerns. ", f("SUPPORT_RESPONSE_TIME"), " Other business contact details: ", f("BUSINESS_CONTACT_DETAILS")] },
+      { p: ["Email ", mail, " about sign-in problems, technical issues, feedback, privacy questions or content concerns. ", f("SUPPORT_RESPONSE_TIME"), " Our mailing address: ", f("BUSINESS_CONTACT_DETAILS"), "."] },
       { p: ["Include the app version, your device and its operating system version, and what happened. Add your workspace name if we need it to find the problem. Remove personal information from screenshots. ", { strong: "Never email your password, a verification code, bank details or payroll documents." }] },
     ] },
     { heading: "Questions about your work", blocks: [{ p: ["Ask your manager or workplace administrator about shifts, time-off decisions, pay or corrections to your work records. Contact NEVORA support if a problem in the app stops you from reaching them."] }] },

@@ -8,18 +8,21 @@ describe("NEVORA public policies", () => {
   it("lists every fact the documents still need, effective date included", () => {
     const empty = Object.fromEntries(Object.keys(POLICY_FACTS).map(key => [key, null]));
     expect(unresolvedFacts(empty)).toEqual(expect.arrayContaining(["EFFECTIVE_DATE", "DELETION_COMPLETION_PERIOD", "RETENTION_SCHEDULE", "SUPPORT_RESPONSE_TIME", "PROCESSORS_AND_PURPOSES"]));
-    // Confirmed October 20; still open: the mailing address.
-    expect(unresolvedFacts()).toEqual(["BUSINESS_CONTACT_DETAILS"]);
+    // Every fact was confirmed by Jose on October 20, 2026.
+    expect(unresolvedFacts()).toEqual([]);
     expect(unresolvedFacts(filled)).toEqual([]);
   });
 
   it("keeps unresolved drafts out of production and shows them in development and previews", () => {
-    expect(policiesVisible({ VERCEL_ENV: "production", NODE_ENV: "production" })).toBe(false);
-    expect(policiesVisible({ VERCEL_ENV: "production", NODE_ENV: "production", NEVORA_SHOW_DRAFT_POLICIES: "1" })).toBe(false);
-    expect(policiesVisible({ NODE_ENV: "production" })).toBe(false);
-    expect(policiesVisible({ VERCEL_ENV: "preview", NODE_ENV: "production" })).toBe(true);
-    expect(policiesVisible({ NODE_ENV: "development" })).toBe(true);
+    const draft = { ...POLICY_FACTS, BACKUP_EXPIRY: null };
+    expect(policiesVisible({ VERCEL_ENV: "production", NODE_ENV: "production" }, draft)).toBe(false);
+    expect(policiesVisible({ VERCEL_ENV: "production", NODE_ENV: "production", NEVORA_SHOW_DRAFT_POLICIES: "1" }, draft)).toBe(false);
+    expect(policiesVisible({ NODE_ENV: "production" }, draft)).toBe(false);
+    expect(policiesVisible({ VERCEL_ENV: "preview", NODE_ENV: "production" }, draft)).toBe(true);
+    expect(policiesVisible({ NODE_ENV: "development" }, draft)).toBe(true);
     expect(policiesVisible({ VERCEL_ENV: "production", NODE_ENV: "production" }, filled)).toBe(true);
+    // Today's confirmed facts publish in production.
+    expect(policiesVisible({ VERCEL_ENV: "production", NODE_ENV: "production" })).toBe(true);
   });
 
   it("names VELANI LLC and the confirmed support address, and promises only what ships", () => {

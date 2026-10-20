@@ -26,9 +26,9 @@ describe("public policy pages", () => {
     expect(html).toContain('href="mailto:support@thevelani.com"');
     expect(html).toContain("Provided by VELANI LLC");
     for (const href of ["/privacy", "/terms", "/support", "/account-deletion"]) expect(html).toMatch(new RegExp(`href="${href}"|aria-current="page"`));
-    // Only the mailing address is still open; it appears on Privacy, Terms and Support.
-    if (title === "Delete your NEVORA account") expect(html).not.toContain("legal-unresolved");
-    else expect(html).toContain("[CONFIRM_BUSINESS_CONTACT_DETAILS]");
+    // Every fact is confirmed, so no draft marker is left.
+    expect(html).not.toContain("legal-unresolved");
+    expect(html).not.toContain("CONFIRM_");
   });
 
   it("starts deletion by signing in, never by typing an email address", () => {
@@ -37,17 +37,15 @@ describe("public policy pages", () => {
     expect(html).not.toMatch(/<input[^>]*type="email"/);
   });
 
-  it.each(pages)("%s is hidden in production while facts are unconfirmed", (_title, Page) => {
+  it.each(pages)("%s is published in production now that every fact is confirmed", (title, Page) => {
     vi.stubEnv("VERCEL_ENV", "production");
-    expect(() => renderToStaticMarkup(createElement(Page))).toThrow("NEXT_NOT_FOUND");
+    expect(renderToStaticMarkup(createElement(Page))).toContain(`<h1 id="legal-title">${title}</h1>`);
   });
 
-  it("the sign-in footer and Profile show the links only when the policies are visible", () => {
+  it("the sign-in footer and Profile link the policies and Delete my account in production", () => {
+    vi.stubEnv("VERCEL_ENV", "production");
     expect(renderToStaticMarkup(createElement(BrandLegal))).toContain('href="/privacy"');
     expect(renderToStaticMarkup(createElement(AccountPrivacyLinks))).toContain('href="/app/account/delete"');
-    vi.stubEnv("VERCEL_ENV", "production");
-    expect(renderToStaticMarkup(createElement(BrandLegal))).not.toContain("/privacy");
-    expect(renderToStaticMarkup(createElement(AccountPrivacyLinks))).toBe("");
   });
 });
 

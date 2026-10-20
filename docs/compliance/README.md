@@ -48,11 +48,11 @@ business days, Puerto Rico holidays excluded), `DELETION_COMPLETION_PERIOD` (30 
 `BACKUP_EXPIRY` uses Jose’s approved interim wording (six-hour restore history; the maximum across all copies is being
 verified). Update it once the full lifecycle is confirmed.
 
-**Still open, so production keeps the pages hidden:**
+`BUSINESS_CONTACT_DETAILS`: VELANI LLC, 1654 Calle Tulipan, Suite 100, San Juan, PR 00927 (Jose, October 20).
 
-| Fact | Needed |
-|---|---|
-| `BUSINESS_CONTACT_DETAILS` | VELANI LLC’s mailing address for publication (or Jose’s decision to list email only). |
+**Every fact is filled, so production shows the four pages, the footer and Profile links, and Delete my account.**
+Until migration 0034 is applied to production, Delete my account answers “isn’t available right now” and points to
+support email instead of saving a request; sign-in is unaffected.
 
 Before publishing, also confirm with the employer that the retention schedule covers any longer Puerto Rico tax,
 benefits or dispute requirements, and name the email provider internally (the policy describes it by category).
