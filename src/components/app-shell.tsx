@@ -182,6 +182,8 @@ export function AppShell({
   </span> : null;
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
+      // Clean Manager and Owner app (v3): premium-clean-manager.css applies only under this attribute, so Employee and Lead pages never change.
+      data-nv-clean={employee ? undefined : ""}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
       // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
       data-mobile-workforce={pathname ? "true" : undefined}
