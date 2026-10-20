@@ -1,0 +1,10 @@
+/* Root 404: the auth shell with one narrow card. */
+html body .employee-login-page.not-found-page .employee-login-shell { width: min(560px, 100%); }
+html body .employee-login-page.not-found-page .employee-login-card { padding: 40px; border: 1px solid var(--login-divider); border-radius: var(--login-frame-radius); }
+.employee-login-page.not-found-page .employee-login-heading { margin-bottom: 16px; }
+.employee-login-page.not-found-page :is(.not-found-text, .not-found-hint) { margin: 0 0 20px; color: var(--design-text-secondary); font-size: 15px; line-height: 1.6; }
+.employee-login-page.not-found-page .not-found-hint { padding: 16px; border-radius: var(--login-control-radius); background: var(--login-ice); color: var(--design-text-primary); }
+.employee-login-page.not-found-page .not-found-hint strong { display: block; margin-bottom: 4px; font-weight: 600; }
+@media (max-width: 799px) {
+  html body .employee-login-page.not-found-page .employee-login-card { padding: 28px 24px; border-radius: 20px; }
+}

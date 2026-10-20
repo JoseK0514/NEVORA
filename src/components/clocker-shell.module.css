@@ -72,7 +72,7 @@
 .page button:focus-visible, .page a:focus-visible { outline: 3px solid var(--clocker-focus); outline-offset: 3px; }
 .page button:disabled { cursor: not-allowed; }
 .page button:disabled:active { transform: none; }
-.footer { color: var(--clocker-muted); font-size: 12px; line-height: 1.6; padding-top: 22px; }
+.footer { color: var(--clocker-muted); font-size: 13px; line-height: 1.6; padding-top: 22px; }
 .skip { position: absolute; top: 12px; left: 12px; z-index: 2; padding: 14px 20px; border-radius: 12px; background: #fff; transform: translateY(-160%); }
 .skip:focus { transform: none; }
 @media (max-width: 950px) { .context { padding: 36px 28px; } .task { padding: 32px; } .clock time { font-size: 64px; } }
@@ -81,22 +81,24 @@
   .page { padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
   .header { margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
   .brand { gap: 12px; } .brand img { width: 112px; } .brand > span { padding-left: 12px; font-size: 13px; }
-  .deviceStatus { font-size: 12px; }
+  .deviceStatus { font-size: 13px; }
   .frame { grid-template-columns: 1fr; border-radius: 20px; margin: 0; }
-  .context { padding: 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; align-items: center; }
-  .location { font-size: 12px; } .location svg { width: 16px; height: 16px; }
-  .context h2 { grid-column: 1; margin: 8px 0 0; font-size: 21px; }
-  .clock { grid-column: 2; grid-row: 1 / span 2; margin: 0; text-align: right; }
-  .clock time { justify-content: flex-end; font-size: 32px; gap: 5px; letter-spacing: -.045em; }
-  .clock time > span { font-size: 12px; }
-  .clock p { font-size: 12px; margin: 6px 0 0; max-width: 130px; }
+  .context { padding: 24px; display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+  .location { font-size: 13px; } .location svg { width: 16px; height: 16px; }
+  .context h2 { margin: 8px 0 0; font-size: 21px; }
+  /* The location name gets the full width; the time and date share the next line and the date
+   * drops below the time, whole, when the line is too narrow. */
+  .clock { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 12px; margin: 12px 0 0; }
+  .clock time { font-size: 32px; gap: 5px; letter-spacing: -.045em; }
+  .clock time > span { font-size: 13px; }
+  .clock p { margin: 0; font-size: 13px; white-space: nowrap; }
   .clock small, .guidance, .deviceName { display: none; }
   .task { padding: 24px 24px 20px; }
   .task h1 { font-size: 28px; }
   .footer { flex-wrap: wrap; justify-content: center; gap: 4px 20px; padding-top: 16px; text-align: center; }
   .footer > span:first-child { display: none; }
 }
-@media (max-width: 380px) { .context { padding: 20px; column-gap: 12px; } .context h2 { font-size: 18px; } .clock time { font-size: 28px; } .task { padding: 28px 20px 20px; } .deviceStatus { margin-left: auto; } }
+@media (max-width: 380px) { .context { padding: 20px; } .context h2 { font-size: 18px; } .clock time { font-size: 28px; } .task { padding: 28px 20px 20px; } .deviceStatus { margin-left: auto; } }
 @media (prefers-reduced-motion: reduce) { .page *, .page *::before, .page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } .page button:active { transform: none; } }
 
 /* U9: the phone kiosk uses the portal's teal ladder, not the legacy blue

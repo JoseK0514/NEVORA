@@ -136,7 +136,7 @@ try {
     await page.goto(`${app.url}/login`);
     await page.getByLabel('Employee ID', { exact: true }).fill(id);
     await page.getByLabel('Password', { exact: true }).fill(password);
-    await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await page.waitForURL('**/app');
   };
   for (const width of [390, 1440]) {
@@ -152,12 +152,12 @@ try {
     assert(await page.getByText(config.COMPANY_NAME, { exact: true }).first().isVisible());
     await page.getByLabel('Employee ID', { exact: true }).fill(config.BOOTSTRAP_EMPLOYEE_ID);
     await page.getByLabel('Password', { exact: true }).fill('wrong-fictional-password');
-    await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await page.waitForURL('**/login?error=invalid');
     assert(await page.getByText('Employee ID or password is incorrect.').isVisible());
     await page.getByLabel('Employee ID', { exact: true }).fill(config.BOOTSTRAP_EMPLOYEE_ID);
     await page.getByLabel('Password', { exact: true }).fill(config.BOOTSTRAP_PASSWORD);
-    await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await page.waitForURL('**/app');
     await page.goto(`${app.url}/app/settings/workspace`);
     assert.equal(await page.getByLabel('Workspace name', { exact: true }).inputValue(), config.COMPANY_NAME);

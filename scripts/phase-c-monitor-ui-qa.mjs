@@ -20,7 +20,7 @@ async function context(browser){const c=await browser.newContext({viewport:{widt
 async function login(c,id='QAOWNER'){
  const p=await c.newPage();p.setDefaultTimeout(15000);p.on('pageerror',e=>report.errors.push(e.message));
  await p.goto(app.url+'/login');await p.getByLabel('Employee ID',{exact:true}).fill(id);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
- await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign In',exact:true}).click()]);return p;
+ await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);return p;
 }
 const card=p=>p.locator('.manager-live-card');
 async function refresh(p){await Promise.all([p.waitForResponse(r=>r.url()===app.url+endpoint),card(p).getByRole('button',{name:'Refresh live activity'}).click()]);await p.waitForFunction(()=>{const b=document.querySelector('.manager-live-refresh');return b&&!b.disabled;});}

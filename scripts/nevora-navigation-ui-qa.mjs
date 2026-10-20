@@ -25,7 +25,7 @@ try{
    const page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));page.setDefaultTimeout(12000);
    try{
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(employeeId);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-    await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);
+    await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
     await page.waitForLoadState('networkidle');await page.goto(app.url+path);await page.waitForLoadState('networkidle');
     // A background or busy document may defer animation callbacks. Popover
     // keyboard focus is an interaction effect and must not depend on a paint.

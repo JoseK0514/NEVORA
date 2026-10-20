@@ -24,7 +24,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
 
  return <section className="auth-card employee-login-card reset-card">
   <div className="employee-login-heading">
-   <h1>{done ? 'Password updated' : 'Set a New Password'}</h1>
+   <h1>{done ? 'Password updated' : 'Set a new password'}</h1>
   </div>
   {done ? <>
    <div className="reset-receipt" ref={feedback} role="status" tabIndex={-1}>

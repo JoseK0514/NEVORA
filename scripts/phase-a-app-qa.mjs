@@ -60,7 +60,7 @@ async function login(id, width = 390) {
   await goto(page, '/login');
   await page.getByLabel('Employee ID', { exact: true }).fill(id);
   await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
-  await Promise.all([page.waitForURL(url => url.pathname === '/app'), page.getByRole('button', { name: 'Sign In', exact: true }).click()]);
+  await Promise.all([page.waitForURL(url => url.pathname === '/app'), page.getByRole('button', { name: 'Sign in', exact: true }).click()]);
   await page.waitForLoadState('networkidle');
   // A quiet network can precede client hydration. These nominal workflow
   // scenarios must enter through a completed, real private snapshot.

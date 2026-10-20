@@ -55,7 +55,7 @@ try {
     await target.getByLabel("Password", { exact: true }).fill(TEST_PASSWORD);
     await Promise.all([
       target.waitForURL((u) => u.pathname === "/app"),
-      target.getByRole("button", { name: "Sign In", exact: true }).click(),
+      target.getByRole("button", { name: "Sign in", exact: true }).click(),
     ]);
   }
   await login(page, "QAOWNER");

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { NUVORA_BRAND } from '@/lib/brand';
 import { ClockerIcon } from './clocker-icon';
-import { AuthBrand } from './auth-brand';
+import { BrandWordmark } from './brand-mark';
 import styles from './clocker-shell.module.css';
 
 export function ClockerShell({ locationLabel, timeZone, deviceName, status, children, brand }: {
@@ -29,7 +29,7 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
     <a href="#clocker-task" className={styles.skip}>Skip to time clock</a>
     <header className={styles.header}>
       <div className={`${styles.brand} clocker-desktop-brand`}><Image src="/images/nevora-wordmark.png" alt="NEVORA" width={132} height={18} priority/><span>Time clock</span></div>
-      <div className="clocker-mobile-brand"><AuthBrand/></div>
+      <div className="clocker-mobile-brand"><span className="login-brand-lockup"><BrandWordmark/><span className="login-brand-module">Time clock</span></span></div>
       {brand?.logoUrl ? <span className={styles.companyLogo}>
         {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
         <img src={brand.logoUrl} alt="Company logo" decoding="async"/>
