@@ -38,18 +38,22 @@ const sourceDestinations: Record<HomeSource, string> = {
   timeOff: '/app/requests?tab=my', ownTime: '/app/my-time', communications: '/app/updates',
 };
 
+/** TC-P3-32: Home's To do lines are narrow (about 150px at 200% text on a 320px phone), too narrow for
+ * "Mon, Oct 19" in one piece, so here the weekday may wrap on its own; "Oct 19" and "7:49 PM" still never break. */
+const weekdayMayWrap = (text: string) => text.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\u00a0/, '$1, ');
+
 function stamp(at: string, zone: string) {
-  return keepWhole(new Intl.DateTimeFormat('en-US', {
+  return weekdayMayWrap(keepWhole(new Intl.DateTimeFormat('en-US', {
     timeZone: zone, weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
-  }).format(new Date(at)));
+  }).format(new Date(at))));
 }
 
 /** TC-P3-32: "Mon, Oct 19", with the year only when it isn't this year, so dates fit narrow rows whole. */
 function dateLabel(date: string) {
   const at = new Date(`${date}T12:00:00Z`);
-  return keepWhole(new Intl.DateTimeFormat('en-US', {
+  return weekdayMayWrap(keepWhole(new Intl.DateTimeFormat('en-US', {
     timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', ...(at.getUTCFullYear() === new Date().getUTCFullYear() ? {} : {year: 'numeric' as const}),
-  }).format(at));
+  }).format(at)));
 }
 
 function businessDate(at: string, zone: string) {
