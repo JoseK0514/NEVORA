@@ -65,7 +65,7 @@ try{
     await q("UPDATE employees SET first_name='Renamed' WHERE id='D3-E'");await q("UPDATE locations SET name='Renamed historical location',short_name='Renamed' WHERE id='loc-1'");
     await mp.getByRole('button',{name:'Refresh timecards',exact:true}).click();await card.getByText('Finalized',{exact:true}).waitFor();
     // The premium Timecards row keeps Reopen inside its Details disclosure; open it as a manager would.
-    const details=card.locator('details').filter({has:card.getByLabel('Reopen reason')}).first();if(await details.count()&&!(await details.evaluate(e=>e.open)))await details.locator(':scope > summary').click();
+    const details=card.locator('details').filter({has:mp.getByText('Reopen reason',{exact:true})}).first();if(await details.count()&&!(await details.evaluate(e=>e.open)))await details.locator(':scope > summary').click();
     await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await mp.getByRole('article').filter({has:mp.getByRole('heading',{name:'Renamed Period QA',exact:true})}).getByText('Reopened',{exact:true}).waitFor();
     assert.deepEqual(await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' AND revision<=(SELECT max(revision)-1 FROM timecard_revisions WHERE employee_id='D3-E') ORDER BY revision"),frozenRevisions);
     await q("UPDATE employees SET first_name='Avery' WHERE id='D3-E'");await q("UPDATE locations SET name=$1,short_name=$2 WHERE id='loc-1'",[labels[0].name,labels[0].short_name]);
