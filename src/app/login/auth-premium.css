@@ -162,9 +162,10 @@
 .ap-scr-req { display: flex; align-items: center; gap: 12px; margin: 18px 12px 0; padding: 12px 16px; border-radius: 12px; background: #FFFFFF; }
 .ap-scr-dot { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: #E9F6EE; color: #248A3D; }
 .ap-scr-req__text { flex: 1; min-width: 0; }
+.ap-scr-req__row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .ap-scr-req b { display: block; overflow: hidden; font: 500 14px/18px var(--sys); white-space: nowrap; text-overflow: ellipsis; }
 .ap-scr-s { display: block; font: 400 12px/16px var(--sys); color: rgba(60, 60, 67, .6); }
-.ap-scr-st { flex: none; margin-left: auto; font: 500 12px/16px var(--sys); color: #248A3D; }
+.ap-scr-st { flex: none; font: 500 12px/16px var(--sys); color: #248A3D; }
 .ap-scr-tabs { position: absolute; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(4, 1fr); height: 74px; padding-top: 8px; background: rgba(249, 249, 249, .96); box-shadow: 0 -.5px 0 rgba(0, 0, 0, .18); }
 .ap-scr-tabs span { display: flex; flex-direction: column; align-items: center; gap: 3px; font: 500 10px/12px var(--sys); color: #8E8E93; }
 .ap-scr-tabs span.on { color: #087571; }
@@ -191,8 +192,10 @@
   .ap-panel { display: none; }
   .ap-band { position: absolute; top: 0; right: 0; left: 0; display: block; height: var(--band); overflow: hidden; background: var(--deep); isolation: isolate; }
   .ap-band__mark { position: absolute; z-index: -1; top: calc(var(--top) - 41px); right: -58px; width: 290px; height: 274px; }
-  /* Short band: the mark starts under the Back pill and the EN/ES switch (which grow with text), so both sit on plain teal. */
-  .ap--sub .ap-band__mark { top: calc(var(--top) + 14px + 3.25rem); right: -40px; width: 210px; height: 198px; }
+  /* Short band: Back and the EN/ES switch must sit on plain teal. The mark sits centred between them with its sky
+   * triangle showing above the sheet; when the band is too narrow for that (small phones, large text) it is hidden. */
+  .ap--sub .ap-band { container-type: inline-size; }
+  .ap--sub .ap-band__mark { display: none; }
   .ap-band__wordmark { position: absolute; z-index: 1; top: calc(var(--top) + 29px); left: 24px; width: auto; height: 14px; }
   .ap-band__line { position: absolute; z-index: 1; top: calc(var(--top) + 57px); left: 24px; right: 140px; color: #FFFFFF; font: 500 1.375rem/1.6875rem var(--sys); letter-spacing: -.5px; }
   .ap-main { min-height: 100svh; padding: 0; }
@@ -218,6 +221,14 @@
   .ap-secondary { min-height: 3.125rem; margin-top: 10px; }
   .ap-links { justify-items: center; gap: 2px; margin-top: 16px; text-align: center; }
   .ap-legal .brand-legal { justify-content: center; text-align: center; }
+}
+/* The mark's right arm ends 8px before the EN/ES switch (which grows with text, hence rem); it shows only when its left
+ * arm also clears the Back pill, which is wider in Spanish. */
+@container (min-width: calc(180px + 11rem)) {
+  .ap--sub:not([lang="es"]) .ap-band__mark { display: block; top: calc(var(--top) - 85px); right: 6rem; left: auto; width: 180px; height: 170px; }
+}
+@container (min-width: calc(180px + 15.5rem)) {
+  .ap--sub[lang="es"] .ap-band__mark { display: block; top: calc(var(--top) - 85px); right: 6rem; left: auto; width: 180px; height: 170px; }
 }
 @media (max-width: 359px) {
   .ap-sheet { padding-right: 20px; padding-left: 20px; }

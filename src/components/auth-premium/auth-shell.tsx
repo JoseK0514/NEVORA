@@ -52,8 +52,7 @@ function Device({ d }: { d: AuthCopy["device"] }) {
         </div>
         <div className="ap-scr-req">
           <span className="ap-scr-dot"><svg width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M173.7 98.3a8 8 0 0 1 0 11.4l-56 56a8 8 0 0 1-11.4 0l-24-24a8 8 0 0 1 11.4-11.4l18.3 18.4 50.3-50.4a8 8 0 0 1 11.4 0Z" /></svg></span>
-          <span className="ap-scr-req__text"><b>{d.timeOff}</b><span className="ap-scr-s">{d.approvedBy}</span></span>
-          <span className="ap-scr-st">{d.approved}</span>
+          <span className="ap-scr-req__text"><b>{d.timeOff}</b><span className="ap-scr-req__row"><span className="ap-scr-s">{d.approvedBy}</span><span className="ap-scr-st">{d.approved}</span></span></span>
         </div>
         <div className="ap-scr-tabs">{d.tabs.map((tab, index) => <span key={tab} className={index === 0 ? "on" : undefined}><i />{tab}</span>)}</div>
       </div>
