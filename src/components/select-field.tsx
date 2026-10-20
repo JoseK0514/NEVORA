@@ -39,6 +39,7 @@ export function SelectField({
 }) {
   const generatedId = useId().replaceAll(":", "");
   const selectId = id ?? `nevora-select-${generatedId}`;
+  const labelId = `${selectId}-label`;
   const hintId = hint ? `${selectId}-hint` : undefined;
 
   return (
@@ -46,7 +47,8 @@ export function SelectField({
       className={className ? `nevora-field ${className}` : "nevora-field"}
       htmlFor={selectId}
     >
-      <span className="nevora-field-label">{label}</span>
+      {/* IS-WA-12: the hint sits inside the <label>, so name the select by its label text alone; the hint is its description. */}
+      <span id={labelId} className="nevora-field-label">{label}</span>
       <span className="nevora-select-shell">
         <select
           id={selectId}
@@ -55,6 +57,7 @@ export function SelectField({
           {...(value === undefined ? { defaultValue } : { value })}
           required={required}
           disabled={disabled}
+          aria-labelledby={labelId}
           aria-describedby={hintId}
           onChange={onChange}
         >
