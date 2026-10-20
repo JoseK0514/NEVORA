@@ -1,0 +1,39 @@
+{
+  "run": 39348618711,
+  "head": "971f815da47f176d7c6781dd92a1a2bce294661b",
+  "testedMerge": "45cdfe442447d42ddc2698e3daf1ad05d1f8d61b",
+  "tree": "275e595b9566c31c24fbd6dd9831e5ae3741b3b5",
+  "allTrackedDifferencesFrom4cad": [
+    ".github/workflows/ci.yml",
+    "scripts/phase-d-attendance-ui-qa.mjs",
+    "scripts/phase-e-calendar-browser-scenarios.mjs",
+    "scripts/phase-e-communications-browser-scenarios.mjs",
+    "scripts/phase-e-home-browser-scenarios.mjs",
+    "scripts/phase-e-navigation-browser-scenarios.mjs",
+    "src/test/phase-c-release-ci.test.ts"
+  ],
+  "runtimeAppAndFixturesMatch4cad": true,
+  "attendance": {
+    "passed": 46,
+    "errors": [],
+    "sourceRepair": "32c9e1ce",
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "scope": "seven widths, keyboard Refresh, empty/unavailable/expiry/access denial/offline privacy; raw report retained"
+  },
+  "home": {
+    "status": "failed",
+    "stage": "keyboard",
+    "cause": "Original contrast model ignores gradient backgroundImage and rgba alpha; actual painted pixel recheck prepared, no product cause or pass inferred"
+  },
+  "wholeD": {
+    "status": "failed",
+    "cause": "Old expected8h0m/0h30m while actual visible8h/30m, canonical durationText tests already require those values",
+    "change": "f0bb813e exact visible8h and30m, no source change"
+  },
+  "aggregate": "not green; remaining jobs running at this snapshot",
+  "nextCIHead": "8a26a2c05435c84b6428b108f73d6d7a4c0ab1b8",
+  "noInheritedWholeCandidatePass": true
+}

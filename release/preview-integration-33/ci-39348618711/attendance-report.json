@@ -1,0 +1,248 @@
+{
+  "generatedAt": "2026-10-20T00:39:24.169Z",
+  "checkpoint": "45cdfe442447d42ddc2698e3daf1ad05d1f8d61b",
+  "tree": "275e595b9566c31c24fbd6dd9831e5ae3741b3b5",
+  "sourceClean": true,
+  "expectedSha": "45cdfe442447d42ddc2698e3daf1ad05d1f8d61b",
+  "checks": [
+    "chromium: real Owner protected attendance read",
+    "chromium: real Manager protected attendance read",
+    "chromium: Employee cannot enter Manager attendance surface",
+    "chromium: populated factual attendance exception state",
+    "chromium: limited source state is explicitly disclosed",
+    "chromium: lifecycle reauthorization clears protected snapshot before the response",
+    "chromium: visibility revalidation clears protected snapshot before refresh",
+    "chromium: pagehide/pageshow requires a fresh protected snapshot",
+    "chromium: historical inactive location keeps its recorded label",
+    "chromium: refreshed server labels replace stale page-load labels",
+    "chromium: attendance geometry 320",
+    "chromium: attendance geometry 375",
+    "chromium: attendance geometry 390",
+    "chromium: attendance geometry 430",
+    "chromium: attendance geometry 768",
+    "chromium: attendance geometry 1024",
+    "chromium: attendance geometry 1440",
+    "chromium: keyboard focus on attendance Refresh",
+    "chromium: empty is distinct from unavailable",
+    "chromium: unavailable clears healthy empty state",
+    "chromium: expired source freshness is not mislabeled as sign-in failure",
+    "chromium: access denial clears protected people",
+    "chromium: offline pause removes stale protected attendance data",
+    "webkit: real Owner protected attendance read",
+    "webkit: real Manager protected attendance read",
+    "webkit: Employee cannot enter Manager attendance surface",
+    "webkit: populated factual attendance exception state",
+    "webkit: limited source state is explicitly disclosed",
+    "webkit: lifecycle reauthorization clears protected snapshot before the response",
+    "webkit: visibility revalidation clears protected snapshot before refresh",
+    "webkit: pagehide/pageshow requires a fresh protected snapshot",
+    "webkit: historical inactive location keeps its recorded label",
+    "webkit: refreshed server labels replace stale page-load labels",
+    "webkit: attendance geometry 320",
+    "webkit: attendance geometry 375",
+    "webkit: attendance geometry 390",
+    "webkit: attendance geometry 430",
+    "webkit: attendance geometry 768",
+    "webkit: attendance geometry 1024",
+    "webkit: attendance geometry 1440",
+    "webkit: keyboard focus on attendance Refresh",
+    "webkit: empty is distinct from unavailable",
+    "webkit: unavailable clears healthy empty state",
+    "webkit: expired source freshness is not mislabeled as sign-in failure",
+    "webkit: access denial clears protected people",
+    "webkit: offline pause removes stale protected attendance data"
+  ],
+  "errors": [],
+  "screenshots": [
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-320.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-375.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-390.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-430.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-768.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-1024.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-1440.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/webkit-attendance-320.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/webkit-attendance-375.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/webkit-attendance-390.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/webkit-attendance-430.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/webkit-attendance-768.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/webkit-attendance-1024.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/webkit-attendance-1440.png"
+  ],
+  "limitations": [
+    "Owned local Next application and fictional PostgreSQL are not hosted Vercel/Neon acceptance.",
+    "Populated exception states use browser transport fixtures; D1.2 PostgreSQL and route suites separately verify the protected reader.",
+    "Local Chromium/WebKit automation does not replace physical-device or screen-reader acceptance."
+  ],
+  "fixtureResponses": [
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 403,
+      "state": "unavailable",
+      "reason": "access_denied",
+      "validForMs": null
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 503,
+      "state": "unavailable",
+      "reason": "read_failed",
+      "validForMs": null
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 120
+    },
+    {
+      "status": 403,
+      "state": "unavailable",
+      "reason": "access_denied",
+      "validForMs": null
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 403,
+      "state": "unavailable",
+      "reason": "access_denied",
+      "validForMs": null
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 503,
+      "state": "unavailable",
+      "reason": "read_failed",
+      "validForMs": null
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 120
+    },
+    {
+      "status": 403,
+      "state": "unavailable",
+      "reason": "access_denied",
+      "validForMs": null
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    }
+  ],
+  "finishedAt": "2026-10-20T00:40:50.600Z"
+}

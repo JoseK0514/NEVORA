@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-20T00:37:33.956453+00:00",
+  "updatedAt": "2026-10-20T00:45:55.474083+00:00",
   "inspectedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "newerBoundedProbeSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
   "fullExitZeroCount": 0,
@@ -30,7 +30,9 @@
       "owner": "Coordinator",
       "status": "retained measured open",
       "measurement": "Employee320/200 next-weekAvailability LastupdatedOct19 splits over40px",
-      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/72d6196951ff88173583.json"
+      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/72d6196951ff88173583.json",
+      "candidateCommit": "560f2e8e",
+      "candidateFixStatus": "Availability two date wrappers committed/pushed; type/lint pass; affected browser pending; My time date scope stays open"
     },
     {
       "id": "TC-P3-34",
@@ -98,7 +100,11 @@
       "status": "current DOM time/dot split measured; original ID retained; middlecrop pending",
       "report": "../../p35-wave-a/combined-cd764f6-cloud-full/findings/TC-WA-3/measurement.json",
       "candidateCommit": "081595204b219868fb1cd2899af84a16a21193e7",
-      "candidateFixStatus": "committed/published onRC; fresha21650de four-site browser proof pending; no independent closure"
+      "candidateFixStatus": "Frozen a216 confirms fourth-site separator orphan; other3sites pass so far. Current0f nests separator within preceding atomic carrier; whole type/lint pass; fresh16/64 proof pending.",
+      "candidateCommits": [
+        "08159520",
+        "0f0cd372"
+      ]
     },
     {
       "id": "TC-P3-25",
@@ -123,7 +129,9 @@
       "status": "newly measuredMyPaydate surface, no inheritancefromoldPayrollrunsclosure; separatefromsharedshortweekdaycause",
       "measurement": "MyPaySep27 month/day51pxapart at320/390200",
       "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md",
-      "unappliedProposal": "../../premium-phase-3/round-5-cd764f6-full/proposals/TC-B-25-my-pay-date-atoms.patch"
+      "unappliedProposal": "../../premium-phase-3/round-5-cd764f6-full/proposals/TC-B-25-my-pay-date-atoms.patch",
+      "candidateCommit": "378e67b9",
+      "candidateFixStatus": "My pay four date wrappers committed/pushed; existing semantic test/type/lint pass; actual own-statement browser pending"
     },
     {
       "id": "AL-P3-13",
@@ -143,9 +151,10 @@
       "id": "IS-RC-ATTENDANCE-RECOVERY-01",
       "owner": "Desktop/sharedAttendance",
       "severity": "P2",
-      "status": "Actual503 recovery hidden by desktop CSS after20 browser checks; no matching111prior ID. Committed32c9e1ce;3existing tests/type/lint pass, fresh browser proof pending; no independent closure",
+      "status": "Candidate32c9e1ce passes fresh46/46 Attendance browser checks in both engines, actual45cdfe44 matching4cad app/fixtures; newer0f has unchanged Attendance inputs; owning independent closure pending",
       "report": "findings/IS-RC-ATTENDANCE-RECOVERY-01/README.md",
-      "candidateCommit": "32c9e1cef450ab10574555c76b0c2a9bab2ce78e"
+      "candidateCommit": "32c9e1cef450ab10574555c76b0c2a9bab2ce78e",
+      "newerBoundedEvidence": "ci-39348618711/README.md"
     },
     {
       "id": "TC-WA-17",
@@ -167,6 +176,15 @@
       "owner": "Coordinator",
       "severity": "P2 retained",
       "status": "Notifications footer nested flex link row clips Schedule at320/200. Existing row-action Review schedule repaired sub-scope preserved; no new duplicate ID",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md",
+      "candidateCommit": "5c2dee0d",
+      "candidateFixStatus": "Nested Notifications footer wrapping committed/pushed; typecheck pass; fixed-source browser pending"
+    },
+    {
+      "id": "P3-WR-07",
+      "owner": "Coordinator",
+      "severity": "P2 retained",
+      "status": "Actual E390/200 Availability has mixed day/time layout: four inline rows and three55px stacked rows; actual cascade/root data-step attribution pending, no speculative repair",
       "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md"
     }
   ],
@@ -179,12 +197,12 @@
     {
       "id": null,
       "owner": "WaveB",
-      "observation": "Four raw contrast-only axe rows: Templates Owner320/200 applied and Rules Owner360/100,430/125,768/150 windowSaved. Actual axe-time paint/opacity/animation attribution pending; no waiver, finding ID or product cause inferred.",
+      "observation": "At least seven raw success-query contrast-only axe negatives now span Templates/Rules320\u20131024 and100\u2013200 text. Exact frozen diagnostic cases remain preserved; actual paint/opacity attribution pending. No timing waiver or product ID assigned.",
       "report": "../../p35-wave-b/full-exit-cd764f6/type-colour-copy.md"
     }
   ],
-  "repairCandidate": "4cadf00f3e8494377dea1c99c9757207d57ee321",
-  "repairCandidateReport": "candidate-a21650d/README.md",
+  "repairCandidate": "0f0cd37226955c36e2bb67e482989e554c91810f",
+  "repairCandidateReport": "candidate-0f0cd37/README.md",
   "currentRepairProbePriority": {
     "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
     "completed": 28,

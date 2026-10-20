@@ -10,15 +10,15 @@
       "manualJobs": 1562,
       "priorIDs": 135,
       "path": "premium-phase-3/complete-exit-preparation/",
-      "pendingManualJobs": 1540,
+      "pendingManualJobs": 1538,
       "sourceContractNotApplicable": 16,
       "progressAtCleanResourcePause": {
         "checkpointed": 664,
         "rawAwaitingParentReap": 4,
         "resume": "python3 premium-phase-3/round-5-cd764f6-full/analysis/resume-paused-checker-136882.py --root-released"
       },
-      "partialMeasuredFindingRows": 6,
-      "currentCheckpointLowerBound": 696,
+      "partialMeasuredFindingRows": 8,
+      "currentCheckpointLowerBound": 784,
       "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
     },
     {
@@ -47,19 +47,20 @@
         "rawContrastFailures": 3,
         "resume": "WAVE_B_MATRIX_RESUME_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7 python3 preparation/scripts/resume-matrix.py --execute"
       },
-      "currentCheckpointLowerBound": 349,
-      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
+      "currentCheckpointLowerBound": 417,
+      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained",
+      "rawContrastNegativeLowerBound": 7
     },
     {
       "owner": "WaveC",
       "automatedCells": 960,
       "totalSerialCheckpoints": 1253,
       "priorIDs": 104,
-      "path": "p35-wave-c/candidate-a21650d-exit/",
-      "source": "a21650de50374683d52e32b883d7f419d7344f22",
-      "previousPreparation": "p35-wave-c/combined-cd764f6-exit/",
+      "path": "p35-wave-c/candidate-0f0cd37-exit/",
+      "source": "0f0cd37226955c36e2bb67e482989e554c91810f",
+      "previousPreparation": "p35-wave-c/candidate-4cadf00-exit/",
       "runtimeCreditInherited": 0,
-      "status": "prepared; awaitruntimecapacityrelease"
+      "status": "repreparing current frozen source; zero runtime credit; serial bounded rootTC3phase then unchanged fullCscope, shared closure under C; no DB/listen before explicit resource release"
     },
     {
       "owner": "Desktop",
@@ -84,7 +85,7 @@
     }
   ],
   "criteria": "Full unchanged checker with axe, all five areas, all prior IDs, required state/large-data/manual judgments. Genuine product failures retained; setup gaps separate. No prior pass counts inherited.",
-  "publication": "Exact33 and four ready refs unchanged. CurrentRC4cadf00f includes six separately committed follow-up findings. PR14head971f815d includes candidate plus CI/browser-test corrections; mandatory CI pending. No main/deploy.",
+  "publication": "Exact33 and four ready refs unchanged; current RC0f0cd372 pushed with ten separate follow-up commits. PR14head8a26a2c0 includes current candidate and coordinator CI drivers. No main/deploy.",
   "pinnedPublishedRef": "codex/checkpoint-preview33-cd764f6",
   "completedFullExits": 0,
   "additionalCurrentRepairProbe": {
@@ -130,12 +131,12 @@
     "sourceAndMirrorVerified": true,
     "closureErrors": []
   },
-  "currentRepairCandidate": "4cadf00f3e8494377dea1c99c9757207d57ee321",
+  "currentRepairCandidate": "0f0cd37226955c36e2bb67e482989e554c91810f",
   "currentValidationPR": {
     "number": 14,
-    "head": "971f815da47f176d7c6781dd92a1a2bce294661b",
-    "run": 39348618711,
-    "status": "fresh current run pending; completed prior validate+all3Postgres green, original2browser failures preserved"
+    "head": "8a26a2c05435c84b6428b108f73d6d7a4c0ab1b8",
+    "run": 39349447263,
+    "status": "queued; previous current Attendance46/46pass, wholeD/Home stale/model expectations corrected"
   },
   "temporaryResourceHold": {
     "requestedAt": "2026-10-20T00:15:00Z",
@@ -149,7 +150,7 @@
     "active": false,
     "releasedAt": "2026-10-20T00:29:00Z"
   },
-  "updatedAt": "2026-10-20T00:37:33.956453+00:00",
+  "updatedAt": "2026-10-20T00:45:55.474083+00:00",
   "currentCandidateGates": {
     "source": "a21650de50374683d52e32b883d7f419d7344f22",
     "qualifiedTests": 7363,

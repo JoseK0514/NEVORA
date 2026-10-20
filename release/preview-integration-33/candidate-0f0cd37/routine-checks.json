@@ -1,0 +1,39 @@
+{
+  "source": "0f0cd37226955c36e2bb67e482989e554c91810f",
+  "findingCommits": [
+    "560f2e8e",
+    "378e67b9",
+    "5c2dee0d"
+  ],
+  "runs": [
+    {
+      "name": "component",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/components/payroll/my-pay.test.tsx",
+        "src/lib/keep-whole.test.ts",
+        "src/lib/notification-inbox-view.test.ts",
+        "--maxWorkers",
+        "1",
+        "--reporter=json",
+        "--outputFile=/workspace/paused-evidence/phase3-routine-repairs/component.json"
+      ],
+      "exitCode": 0,
+      "seconds": 10.446
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npx",
+        "eslint",
+        "src/app/app/availability/page.tsx",
+        "src/components/payroll/my-pay.tsx",
+        "src/components/payroll/my-pay.test.tsx"
+      ],
+      "exitCode": 0,
+      "seconds": 8.467
+    }
+  ]
+}

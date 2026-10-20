@@ -1,0 +1,21 @@
+{
+  "id": "TC-WA-3",
+  "severity": "P2",
+  "recommendation": "Apply the single-line markup reparenting; do not close until fresh fixed-source browser proof",
+  "reviewedAt": "2026-10-20T00:40:36.529354+00:00",
+  "actualCandidateHead": "5c2dee0d40915c748a9c92879877cd2c5ad4238f",
+  "checkedCandidateSource": "a21650de50374683d52e32b883d7f419d7344f22",
+  "file": "src/components/wave-a/shift-block.tsx",
+  "sameBlobOnA216AndCurrent": "de4c43d2876cc4dc2377d3e3dde1ed0d7d4e6d41",
+  "beforeSha256": "58de8dd616e51618bfc062232dd933cc4bc79bd84b46cb6745a6cee7eb1e91e5",
+  "afterSha256": "1d8484601219ca1d91cbabb837a882a5bcf9420405dd625decd63ad988c3c1af",
+  "patchSha256": "7d84f132ba656b48a9e1788a31682adbe746cba35fe8f9548d6dff4ceeff4b81",
+  "originalCitation": "docs/product/specs/p35-wave-a/inspection/type-colour-copy.md:27",
+  "freshCandidateProof": "release/preview-integration-33/candidate-a21650d-repairs/targeted-tc3-states.json",
+  "observedFourthSite": "Owner Chromium320/150 Manager pending-callout ShiftBlock; precedingM top677.516, dot710.516, delta33px",
+  "cssCause": "kit .nv-keep is inline-block max-width100%; separate NBSPdot span sits outside atomic time carrier, so that boundary permits the orphan. premium-wave-a.css wa-shift__length only changes color/weight.",
+  "preserved": "Identical visible text, dates/times, existing class/color/weight, duration nv-keep and allowed normal-space break before duration. No command/control/proof/state/CSS changes.",
+  "ariaDetail": "Actual a216/current dot span has NO aria-hidden attribute. Proposal preserves actual attributes exactly; do not add an unrelated accessibility change.",
+  "appEdits": false,
+  "browserOrTestsRunByReviewer": false
+}

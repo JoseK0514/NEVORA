@@ -1,0 +1,115 @@
+{
+  "createdAt": "2026-10-20T00:39:18.318694+00:00",
+  "baseSource": "971f815da47f176d7c6781dd92a1a2bce294661b",
+  "currentReportHEAD": "4cadf00f3e8494377dea1c99c9757207d57ee321",
+  "originalProposalBase": "a21650de50374683d52e32b883d7f419d7344f22",
+  "patches": [
+    {
+      "patch": "TC-P3-09-availability-date-atoms.patch",
+      "sha256": "7fbeb6bb61fdb7ad6b608527c4683e8193241cb3a301351d2a92e4a633f4e18d",
+      "fileApplicability": [
+        {
+          "path": "src/app/app/availability/page.tsx",
+          "a216Sha256": "41fda3cc837897587748984d0b2fbddc3779be7b053d52b42cf77e80a8117971",
+          "971Sha256": "41fda3cc837897587748984d0b2fbddc3779be7b053d52b42cf77e80a8117971",
+          "currentSha256": "41fda3cc837897587748984d0b2fbddc3779be7b053d52b42cf77e80a8117971",
+          "unchangedAcrossRefs": true
+        }
+      ]
+    },
+    {
+      "patch": "TC-P3-34-notifications-title-break.patch",
+      "sha256": "fa92c9b2740ae0ce3f9552098cb9f0e2ebbbca7d583c93ee916bbd1c11769601",
+      "fileApplicability": [
+        {
+          "path": "src/app/app/notifications/page.tsx",
+          "a216Sha256": "dc7b5ba1285b448ceadd1edad2a9eead0295cdee81c4da2a137c6431780204ef",
+          "971Sha256": "dc7b5ba1285b448ceadd1edad2a9eead0295cdee81c4da2a137c6431780204ef",
+          "currentSha256": "dc7b5ba1285b448ceadd1edad2a9eead0295cdee81c4da2a137c6431780204ef",
+          "unchangedAcrossRefs": true
+        }
+      ]
+    },
+    {
+      "patch": "TC-B-25-my-pay-date-atoms.patch",
+      "sha256": "c05f43f71e4b4be77e69cfc3df9f0e6787d4a74b612b4176df98a9f3164f818d",
+      "fileApplicability": [
+        {
+          "path": "src/components/payroll/my-pay.tsx",
+          "a216Sha256": "69348ea316ec9d7de356cd7e0e312c90589caecc92ab1430a5aa86b31b076697",
+          "971Sha256": "69348ea316ec9d7de356cd7e0e312c90589caecc92ab1430a5aa86b31b076697",
+          "currentSha256": "69348ea316ec9d7de356cd7e0e312c90589caecc92ab1430a5aa86b31b076697",
+          "unchangedAcrossRefs": true
+        },
+        {
+          "path": "src/components/payroll/my-pay.test.tsx",
+          "a216Sha256": "4487d3291e473b9f5d93087765a30a51786040df8d542f129a20b403f81d61fb",
+          "971Sha256": "4487d3291e473b9f5d93087765a30a51786040df8d542f129a20b403f81d61fb",
+          "currentSha256": "4487d3291e473b9f5d93087765a30a51786040df8d542f129a20b403f81d61fb",
+          "unchangedAcrossRefs": true
+        }
+      ]
+    },
+    {
+      "patch": "TC-P3-32-shared-short-weekday-break.patch",
+      "sha256": "fe2fe64849fcdc1be489e318fc2bc07a12ea4f91887fb63574fe323d33271888",
+      "fileApplicability": [
+        {
+          "path": "src/lib/keep-whole.ts",
+          "a216Sha256": "5537d075085b9fe44e38c5288fb07d547d3703c7c553e21ff903484f78b13355",
+          "971Sha256": "5537d075085b9fe44e38c5288fb07d547d3703c7c553e21ff903484f78b13355",
+          "currentSha256": "5537d075085b9fe44e38c5288fb07d547d3703c7c553e21ff903484f78b13355",
+          "unchangedAcrossRefs": true
+        },
+        {
+          "path": "src/lib/keep-whole.test.ts",
+          "a216Sha256": "2dd2207f09bd17e8e5db7c29e310b41665ea59a00b5e898230a0d45d00c0ccbb",
+          "971Sha256": "2dd2207f09bd17e8e5db7c29e310b41665ea59a00b5e898230a0d45d00c0ccbb",
+          "currentSha256": "2dd2207f09bd17e8e5db7c29e310b41665ea59a00b5e898230a0d45d00c0ccbb",
+          "unchangedAcrossRefs": true
+        }
+      ]
+    },
+    {
+      "patch": "TC-P3-28-heading-roles-v1.patch",
+      "sha256": "a5470db5b3c94f9bb0f00c4caba0fdcd3ceff00bff9717d065fab510250f9e13",
+      "fileApplicability": [
+        {
+          "path": "src/app/app/schedule/employee-schedule.css",
+          "a216Sha256": "36e605602d4107d9cc6315784517ea4e51582810691e7840bc95c2cd66e49d93",
+          "971Sha256": "36e605602d4107d9cc6315784517ea4e51582810691e7840bc95c2cd66e49d93",
+          "currentSha256": "36e605602d4107d9cc6315784517ea4e51582810691e7840bc95c2cd66e49d93",
+          "unchangedAcrossRefs": true
+        },
+        {
+          "path": "src/app/app/payroll/payroll-workflow.css",
+          "a216Sha256": "7f11e245ebb7bec1006268e79ed38f2dec5f7a117eba334edd1a176887308a35",
+          "971Sha256": "7f11e245ebb7bec1006268e79ed38f2dec5f7a117eba334edd1a176887308a35",
+          "currentSha256": "7f11e245ebb7bec1006268e79ed38f2dec5f7a117eba334edd1a176887308a35",
+          "unchangedAcrossRefs": true
+        }
+      ]
+    },
+    {
+      "patch": "P3-WR-11-notifications-footer-row-v1.patch",
+      "sha256": "1c305784a3109817ee13dbe440efed783be7ca4e535223510cfb09f570125079",
+      "fileApplicability": [
+        {
+          "path": "src/components/notification-inbox.module.css",
+          "a216Sha256": "6690ac55cf4ac7a85b76333a6968fb57db0f30661d680a008718ee25ad15ddcb",
+          "971Sha256": "6690ac55cf4ac7a85b76333a6968fb57db0f30661d680a008718ee25ad15ddcb",
+          "currentSha256": "6690ac55cf4ac7a85b76333a6968fb57db0f30661d680a008718ee25ad15ddcb",
+          "unchangedAcrossRefs": true
+        }
+      ]
+    }
+  ],
+  "combinedNonmutatingApplyCheckPassed": true,
+  "review": "/workspace/nevora-inspections/premium-phase-3/round-5-cd764f6-full/proposals/PROPOSAL-APPLICABILITY-971f815d.md",
+  "reviewSha256": "059d5ea786865567a8de17d7439c24a9ecf7df82b4aa8adcbd03930a84c86148",
+  "appEdits": false,
+  "testsRun": false,
+  "browserRun": false,
+  "ciChanged": false,
+  "closure": false
+}

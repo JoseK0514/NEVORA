@@ -1,0 +1,44 @@
+{
+  "candidate": "0f0cd37226955c36e2bb67e482989e554c91810f",
+  "branch": "codex/release-candidate",
+  "published": true,
+  "base": "4cadf00f3e8494377dea1c99c9757207d57ee321",
+  "commits": [
+    {
+      "sha": "560f2e8eb3b5ec8ce1bcc777d433a17e36b48952",
+      "finding": "TC-P3-09",
+      "scope": "Availability specific-week/date-time wrappers; other My time date scope remains open"
+    },
+    {
+      "sha": "378e67b911a95840035396362faafa5e07df4886",
+      "finding": "TC-B-25",
+      "scope": "My pay four date renderings; original words, own documents and no invented amounts retained"
+    },
+    {
+      "sha": "5c2dee0d40915c748a9c92879877cd2c5ad4238f",
+      "finding": "P3-WR-11",
+      "scope": "Nested Notifications footer link row wraps; existing Review schedule repair untouched"
+    },
+    {
+      "sha": "0f0cd37226955c36e2bb67e482989e554c91810f",
+      "finding": "TC-WA-3",
+      "scope": "Fourth-site continuation: existing separator span nests inside its preceding nv-keep carrier; duration keeps ordinary break"
+    }
+  ],
+  "focusedExistingTests": {
+    "passed": 7,
+    "failed": 0,
+    "files": [
+      "src/components/payroll/my-pay.test.tsx",
+      "src/lib/keep-whole.test.ts",
+      "src/lib/notification-inbox-view.test.ts"
+    ]
+  },
+  "wholeTypecheck": "pass on0f0cd372",
+  "changedFileLint": "pass",
+  "testOracleRefinement": "My pay retains both original visible wording assertions after normalizing NBSP, original own-document link and no invented amounts; no implementation-literal atom test added",
+  "fixedBrowserStatus": "pending fresh current-source TC3first phase in future C-owned preview; bounded Phase3 affected-fix registry preparing; no selfclosure",
+  "portalPremiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+  "currentCIHead": "8a26a2c05435c84b6428b108f73d6d7a4c0ab1b8",
+  "fullCodeBuildGatesForNewHead": "pending"
+}

@@ -1,0 +1,26 @@
+{
+  "source": "0f0cd37226955c36e2bb67e482989e554c91810f",
+  "finding": "TC-WA-3 fourth-site continuation",
+  "runs": [
+    {
+      "name": "lint",
+      "command": [
+        "npx",
+        "eslint",
+        "src/components/wave-a/shift-block.tsx"
+      ],
+      "exitCode": 0,
+      "seconds": 8.497
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 27.026
+    }
+  ]
+}
