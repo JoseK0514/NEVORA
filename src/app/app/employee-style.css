@@ -54,6 +54,11 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-nav .mobile
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-nav .mobile-nav-link:is(.active, [aria-current="page"]):not(#e5)::before { display: none; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-nav .mobile-nav-link:is(.active, [aria-current="page"]) span:not(#e5) { font-weight: 600; }
 
+/* ---------- Signature pages draw their own band from the top edge: no frame padding on phones ---------- */
+@media (max-width: 767px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame:is(:has([class*="__s6Root"]), :has(> .route-skeleton[data-route="schedule"])):not(#e5):not(#e52) { padding: 0; }
+}
+
 /* ---------- Home's route placeholder: the teal band with two light lines, then the paper shift card on the sheet ---------- */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band:not(#e5):not(#e52) { height: 188px; margin: 0; padding: 18px 24px 0; border-radius: 0; background: var(--e5-deep); gap: 12px; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="home"] > .route-skeleton-band i:not(#e5):not(#e52) { height: 1rem; width: 46%; border-radius: 6px; background: rgba(255, 255, 255, .12); }
@@ -101,3 +106,20 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] {
     --nv-t-label: 500 .875rem/1.25rem var(--nv-font);
     --nv-t-figure: 600 1.75rem/2rem var(--nv-font);  }
 }
+
+/* ---------- Schedule's route placeholder: the band, then on the sheet the views, the day strip, the review and the list ---------- */
+@media (max-width: 767px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-band:not(#e5):not(#e52) { height: 176px; margin: 0; padding: 18px 24px 0; border-radius: 0; background: var(--e5-deep); gap: 12px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-band i:not(#e5):not(#e52) { height: 1rem; width: 52%; border-radius: 6px; background: rgba(255, 255, 255, .12); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-band i:nth-child(2):not(#e5):not(#e52) { height: 2.5rem; width: 60%; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-band i:nth-child(3):not(#e5):not(#e52) { height: 1.125rem; width: 44%; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-header:not(#e5):not(#e52), html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .nevora-skeleton:not(#e5):not(#e52) { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-grid:not(#e5):not(#e52) { position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; margin: -30px 0 0; padding: 26px 16px 0; border-radius: 28px 28px 0 0; background: var(--e5-bg); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-grid > i:not(#e5):not(#e52) { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-grid > i:nth-child(1):not(#e5):not(#e52) { display: block; grid-column: 1 / -1; height: 46px; border-radius: 12px; background: var(--e5-frame); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-grid > i:nth-child(n+2):nth-child(-n+8):not(#e5):not(#e52) { display: block; justify-self: center; width: 40px; height: 40px; margin-top: 78px; border-radius: 50%; background: var(--e5-frame); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-grid > i:nth-child(9):not(#e5):not(#e52) { display: block; grid-column: 1 / -1; height: 128px; margin-top: 64px; border-radius: 18px; background: var(--e5-card); box-shadow: inset 0 0 0 1px var(--e5-rule); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"] > .route-skeleton-grid > i:nth-child(10):not(#e5):not(#e52) { display: block; grid-column: 1 / -1; height: 520px; margin-top: 58px; border-radius: 18px; background: var(--e5-card); box-shadow: inset 0 0 0 1px var(--e5-rule); }
+}
+
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .route-skeleton.route-skeleton[data-route="schedule"]:not(#e5):not(#e52) { gap: 0; }

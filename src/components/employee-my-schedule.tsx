@@ -1,38 +1,29 @@
 import Link from 'next/link';
-import { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import { keepWhole } from '@/lib/keep-whole';
 import { KeepSelectedVisible } from './kit/keep-selected-visible';
-import { FilterPills, PageBand } from './kit/kit';
 import { ALL_MODULES_ON, type EnabledModules } from '@/lib/workspace-presentation/modules';
 import type { ReactNode } from 'react';
-import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
-import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import { CalendarCheckIcon } from '@phosphor-icons/react/dist/ssr/CalendarCheck';
-import { CalendarDotsIcon } from '@phosphor-icons/react/dist/ssr/CalendarDots';
-import { CalendarXIcon } from '@phosphor-icons/react/dist/ssr/CalendarX';
 import { ArrowsLeftRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
+import { CalendarXIcon } from '@phosphor-icons/react/dist/ssr/CalendarX';
 import { DotsThreeIcon } from '@phosphor-icons/react/dist/ssr/DotsThree';
-import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
-import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import { HourglassMediumIcon } from '@phosphor-icons/react/dist/ssr/HourglassMedium';
-import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
-import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info';
 import { unpublishedNote } from '../lib/publication-note';
-import { UserCheckIcon } from '@phosphor-icons/react/dist/ssr/UserCheck';
-import { CalendarMinusIcon } from '@phosphor-icons/react/dist/ssr/CalendarMinus';
-import { CalendarPlusIcon } from '@phosphor-icons/react/dist/ssr/CalendarPlus';
-import { EmptyState } from './empty-state';
 import { BlockedOpenShifts } from './blocked-open-shifts';
 import { Celebration } from './celebration';
 import { EmployeeScheduleMotion } from './employee-schedule-motion';
-import { addDays, formatDayLabel, formatTime, formatWeekRange, weekDates, weekStartFor } from '../lib/date-utils';
+import { addDays, formatDayLabel, formatTime, weekDates, weekStartFor } from '../lib/date-utils';
 import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel, type EmployeeScheduleRead } from '../lib/data/employee-schedule';
 import type { ScheduleShiftRow } from '../lib/data/schedules';
+import styles from './employee-my-schedule.module.css';
+
+/* My schedule in the Signature style (Jose approved the eight Signature pages on Oct 20, 2026; the target is
+ * docs/product/specs/employee-style/signature/sig-schedule.png). A deep-teal band with the week and its totals; on the
+ * soft-white sheet the views, the week's days, the confirmation, the shifts and Planning ahead. Look only: the same
+ * reads, links, states, confirmation and privacy rules as before. */
 
 type Shift = ScheduleShiftRow & { positionName?: string | null };
 /** TCD-21 / WR4-14: a short place name ("Main Office") never breaks inside itself; a long one may. */
-const placeName=(name:string)=>name.length<=24?name.replace(/ /g,'\u00a0'):name;
+const placeName=(name:string)=>name.length<=24?name.replace(/ /g,' '):name;
 
 export type OpenShift = { id: string; date: string; startTime: string; endTime: string; location: string; position: string | null; href: string; reasons?: string[] };
 export type EmployeeMyScheduleProps = {
@@ -72,42 +63,59 @@ function swappable(shift: Shift, today: string, observedAt: string, timeZone: st
   return !shift.isCalloutApproved && shift.date >= today && hasNotEnded(shift, observedAt, timeZone);
 }
 
+function Chevron() {
+  return <svg className={styles.s6Chevron} width="7" height="12" viewBox="0 0 7 12" aria-hidden="true" focusable="false"><path d="m1 1 5 5-5 5"/></svg>;
+}
+
+function Arrow({ back = false }: { back?: boolean }) {
+  return <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" className={styles.s6Arrow}><path d={back ? 'm14.5 6-6 6 6 6' : 'm9.5 6 6 6-6 6'}/></svg>;
+}
+
+function Mark() {
+  return <svg className={styles.s6Mark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path className={styles.s6MarkL} d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/><path className={styles.s6MarkT} d="M146 330 L180 266 L214 330 Z"/></svg>;
+}
+
+function DayBlock({ date, today }: { date: string; today?: boolean }) {
+  const label = formatDayLabel(date);
+  return <time className={`${styles.s6Day}${today ? ` ${styles.s6DayToday}` : ''}`} dateTime={date}><small>{label.weekday}</small><strong>{Number(date.slice(8))}</strong></time>;
+}
+
 function ShiftOptions({ shift, today, observedAt, timeZone, open = false }: { shift: Shift; today: string; observedAt: string; timeZone: string; open?: boolean }) {
   if (shift.isCalloutApproved || !hasNotEnded(shift, observedAt, timeZone)) return null;
   const id = encodeURIComponent(shift.id);
-  return <details className="my-shift-options" open={open}>
-    <summary><DotsThreeIcon size={20} weight="bold" aria-hidden="true" /><span>Shift options</span><span className="sr-only"> for {formatDayLabel(shift.date).day}, {formatTime(shift.startTime)}</span></summary>
-    <div className="my-shift-options-body">
-      {shift.date >= today ? <Link href={`/app/exchange/swap?sourceShiftId=${id}`} className="my-schedule-link" aria-label={`Request a swap, ${formatDayLabel(shift.date).day}, ${formatTime(shift.startTime)}`}><ArrowsLeftRightIcon size={18} aria-hidden="true" />Request a swap</Link> : null}
-      <Link href={`/app/exchange/callout?shiftId=${id}`} className="my-schedule-link" aria-label={`Unable to work, ${formatDayLabel(shift.date).day}, ${formatTime(shift.startTime)}`}><CalendarXIcon size={18} aria-hidden="true" />Unable to work</Link>
+  return <details className={styles.s6Options} open={open}>
+    <summary><DotsThreeIcon size={20} weight="bold" aria-hidden="true" /><span className="nv-sr">Shift options for {formatDayLabel(shift.date).day}, {formatTime(shift.startTime)}</span></summary>
+    <div className={styles.s6OptionsBody}>
+      {shift.date >= today ? <Link href={`/app/exchange/swap?sourceShiftId=${id}`} aria-label={`Request a swap, ${formatDayLabel(shift.date).day}, ${formatTime(shift.startTime)}`}><ArrowsLeftRightIcon size={18} aria-hidden="true" />Request a swap</Link> : null}
+      <Link href={`/app/exchange/callout?shiftId=${id}`} aria-label={`Unable to work, ${formatDayLabel(shift.date).day}, ${formatTime(shift.startTime)}`}><CalendarXIcon size={18} aria-hidden="true" />Unable to work</Link>
       <p>Your shift stays yours until a swap completes or your manager approves Unable to work.</p>
     </div>
   </details>;
 }
 
-function OpenShiftCard({ shift, requested = false }: { shift: OpenShift; requested?: boolean }) {
+function OpenShiftRow({ shift, requested = false }: { shift: OpenShift; requested?: boolean }) {
   const label = formatDayLabel(shift.date);
-  return <li className={`my-open-shift${requested ? ' is-requested' : ''}`}>
-    <time className="my-open-date" dateTime={shift.date}><span>{label.weekday}</span><strong>{Number(shift.date.slice(8))}</strong></time>
-    <div className="my-open-copy">
+  return <li className={styles.s6Row}>
+    <DayBlock date={shift.date} />
+    <div className={styles.s6Copy}>
       <strong>{keepWhole(formatTime(shift.startTime))} <span aria-hidden="true">–</span> {keepWhole(formatTime(shift.endTime))}</strong>
-      <span className="my-shift-location"><MapPinIcon size={16} aria-hidden="true" />{keepWhole(`${placeName(shift.location)}${shift.position ? ` · ${shift.position}` : ''}`)}</span>
-      {requested ? <span className="my-open-status"><HourglassMediumIcon size={14} weight="bold" aria-hidden="true" />Requested · waiting for approval</span> : null}
+      <span>{keepWhole(`${placeName(shift.location)}${shift.position ? ` · ${shift.position}` : ''}`)}</span>
+      {requested ? <span className={styles.s6Wait}>Requested · waiting for approval</span> : null}
     </div>
-    <Link href={shift.href} className="my-open-action">{requested ? 'View request' : 'View and claim'}<span className="sr-only"> for {label.weekday}, {label.day}, {formatTime(shift.startTime)}</span> <ArrowRightIcon size={16} aria-hidden="true" /></Link>
+    <Link href={shift.href} className={styles.s6RowAction}>{requested ? 'View request' : 'View and claim'}<span className="nv-sr"> for {label.weekday}, {label.day}, {formatTime(shift.startTime)}</span></Link>
   </li>;
 }
 
 function OpenShifts({ open }: { open: EmployeeMyScheduleProps['openShifts'] }) {
-  if (!open) return <div className="my-schedule-feedback" role="status"><strong>Open shifts unavailable</strong><p>We couldn’t check open shifts right now.</p><Link href="/app/exchange?tab=available" className="my-schedule-link">Open shift requests</Link></div>;
-  return <section className="employee-view-surface my-open-shifts" aria-labelledby="my-open-title">
-    <div className="my-agenda-heading"><h2 id="my-open-title">Open shifts</h2><span>Shifts you can claim</span></div>
-    {open.requested.length ? <><h3 className="my-open-group">Waiting for approval</h3><ul className="my-open-list">{open.requested.map(shift => <OpenShiftCard key={shift.id} shift={shift} requested />)}</ul></> : null}
-    {open.available.length ? <>{open.requested.length ? <h3 className="my-open-group">Available</h3> : null}<ul className="my-open-list">{open.available.map(shift => <OpenShiftCard key={shift.id} shift={shift} />)}</ul></>
-      : open.unavailable?.length ? <p className="my-open-none">No open shifts fit your schedule right now.</p>
-      : <EmptyState illustration="open-shift" title="No open shifts right now">When a teammate offers a shift you can work, it shows up here.</EmptyState>}
-    <BlockedOpenShifts shifts={open.unavailable ?? []} />
-    <p className="my-open-note">Claiming sends a request to your manager. The shift is yours once it’s approved.</p>
+  if (!open) return <div className={styles.s6Notice} role="status"><div className={styles.s6NoticeCopy}><strong>Open shifts unavailable</strong><span>We couldn’t check open shifts right now.</span></div><Link href="/app/exchange?tab=available" className={styles.s6Link}>Open shift requests</Link></div>;
+  return <section className={styles.s6Section} aria-labelledby="my-open-title">
+    <header className={styles.s6Head}><h2 id="my-open-title">Open shifts</h2><span className="nv-sr">Shifts you can claim</span></header>
+    {open.requested.length ? <><h3 className={styles.s6Sub}>Waiting for approval</h3><ul className={styles.s6List}>{open.requested.map(shift => <OpenShiftRow key={shift.id} shift={shift} requested />)}</ul></> : null}
+    {open.available.length ? <>{open.requested.length ? <h3 className={styles.s6Sub}>Available</h3> : null}<ul className={styles.s6List}>{open.available.map(shift => <OpenShiftRow key={shift.id} shift={shift} />)}</ul></>
+      : open.unavailable?.length ? <p className={styles.s6Empty}>No open shifts fit your schedule right now.</p>
+      : <div className={styles.s6Empty}><strong>No open shifts right now</strong><span>When a teammate offers a shift you can work, it shows up here.</span></div>}
+    <div className={styles.s6Blocked}><BlockedOpenShifts shifts={open.unavailable ?? []} /></div>
+    <p className={styles.s6Fine}>Claiming sends a request to your manager. The shift is yours once it’s approved.</p>
   </section>;
 }
 
@@ -120,6 +128,18 @@ function scheduledHours(shifts: readonly {startTime: string; endTime: string}[])
   }, 0);
   const hours = Math.floor(minutes / 60), rest = minutes % 60;
   return rest ? `${hours}h ${rest}m` : `${hours}h`;
+}
+
+/** "Week of October 19" for the band's eyebrow. */
+function weekOf(weekStart: string) {
+  return `Week of ${new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric' }).format(new Date(`${weekStart}T12:00:00Z`))}`;
+}
+
+/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
+function weekRange(weekStart: string) {
+  const fmt = (date: string, withMonth: boolean) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', ...(withMonth ? { month: 'short' } : {}), day: 'numeric' }).format(new Date(`${date}T12:00:00Z`));
+  const end = addDays(weekStart, 6);
+  return `${fmt(weekStart, true)} – ${fmt(end, end.slice(5, 7) !== weekStart.slice(5, 7))}`;
 }
 
 export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
@@ -139,94 +159,93 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
   const nameOf = (id: string) => locations.find(location => location.id === id)?.shortName ?? '';
   const unpublishedNames = (props.unpublishedLocationIds ?? []).map(nameOf).filter(Boolean);
   const publishedNames = [...new Set(shifts.map(shift => nameOf(shift.locationId)).filter(Boolean))];
+  const summary = view === 'open'
+    ? (openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up.` : 'Shifts your team offers.')
+    : state === 'unavailable' ? 'Your schedule couldn’t be checked.'
+    : shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${scheduledHours(shifts)} scheduled.`
+    : 'No published shifts this week.';
+  const review = confirmation && state !== 'unavailable' && view === 'mine';
   return <EmployeeScheduleMotion weekStart={weekStart}>
-    <div className="nv-page employee-view employee-schedule-view my-schedule premium-employee-schedule" data-nv-page="">
-      {/* Phase 3: the kit band. Its line says what this week holds, from the published shifts already listed. */}
-      <PageBand title="My schedule" overlap={false}
-        summary={view === 'open'
-          ? (openCount ? `${openCount}\u00a0open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up.` : 'Shifts your team offers.')
-          : state === 'unavailable' ? 'Your schedule couldn’t be checked.'
-          : shifts.length ? `${shifts.length}\u00a0${shifts.length === 1 ? 'shift' : 'shifts'} · ${scheduledHours(shifts)} scheduled.`
-          : 'No published shifts this week.'}
-        extra={modules.marketplace ? <FilterPills label="Schedule views" items={[
-          { href: `/app/schedule?week=${weekStart}`, label: 'My shifts', current: view === 'mine' },
-          { href: `/app/schedule?week=${weekStart}&view=open`, label: openCount ? `Open shifts (${openCount})` : 'Open shifts', current: view === 'open' },
-        ]} /> : undefined} />
-      <div className="premium-employee-content">
-      {view === 'open' ? <OpenShifts open={props.openShifts} /> : <>
+    <div className={styles.s6Root}>
+      <header className={styles.s6Band}>
+        <Mark />
+        <p className={styles.s6Eyebrow}>{weekOf(weekStart)}</p>
+        <h1>My schedule</h1>
+        <p className={styles.s6Summary}>{summary}</p>
+      </header>
+      <div className={styles.s6Sheet}>
+        {modules.marketplace ? <nav className={styles.s6Seg} aria-label="Schedule views">
+          <Link href={`/app/schedule?week=${weekStart}`} aria-current={view === 'mine' ? 'page' : undefined}>My shifts</Link>
+          <Link href={`/app/schedule?week=${weekStart}&view=open`} aria-current={view === 'open' ? 'page' : undefined}>{openCount ? `Open shifts (${openCount})` : 'Open shifts'}</Link>
+        </nav> : null}
 
-      <section className="my-week-overview my-schedule-enter" aria-labelledby="my-week-title">
-        <div className="my-week-topline">
-          <div className="my-week-title"><CalendarDotsIcon size={26} weight="duotone" aria-hidden="true" /><div><h2 id="my-week-title">{formatWeekRange(weekStart)}</h2><p>{weekStart.slice(0,4)} <span aria-hidden="true">·</span> {zoneName} time</p></div></div>
-          <nav className="my-week-navigation" aria-label="Schedule week">
-            <Link href={`/app/schedule?week=${addDays(weekStart,-7)}${keep}`} aria-label="Previous week" className="my-week-arrow"><ArrowLeftIcon size={19} aria-hidden="true" /></Link>
-            <Link href={`/app/schedule?week=${currentWeek}&day=${today}#schedule-${today}`} className="my-week-today">Today</Link>
-            <Link href={`/app/schedule?week=${addDays(weekStart,7)}${keep}`} aria-label="Next week" className="my-week-arrow"><ArrowRightIcon size={19} aria-hidden="true" /></Link>
-          </nav>
-        </div>
-        <nav className="my-week-days" aria-label="Days in this week"><KeepSelectedVisible />
-          {dates.map(date => { const label=formatDayLabel(date); const assigned=shifts.some(shift=>shift.date===date); return <a key={date} href={`#schedule-${date}`} className={`my-week-day${date===today?' is-today':''}${date===selectedDay?' is-selected':''}`} aria-current={date===today?'date':undefined} aria-label={`${label.weekday}, ${label.day}${date===today?', today':''}${assigned?', assigned shift':''}`}><span>{label.weekday}</span><strong>{Number(date.slice(8))}</strong><i className={assigned?'has-shift':''} aria-hidden="true" /></a>; })}
-        </nav>
-        {/* A partly published week says what is final and who hasn't published yet, beside the week itself (Jose, 2026-10-18). */}
-        {state === 'unpublished' ? <p className="my-week-note" role="status"><InfoIcon size={18} aria-hidden="true" /><span>{shifts.length
-          ? unpublishedNote(unpublishedNames, publishedNames)
-          : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`}</span></p> : null}
-      </section>
+        {view === 'open' ? <OpenShifts open={props.openShifts} /> : <>
+          <section className={styles.s6Week} data-s6-enter="" aria-labelledby="my-week-title">
+            <div className={styles.s6WeekTop}>
+              <h2 id="my-week-title">{weekRange(weekStart)}<span className="nv-sr">, {weekStart.slice(0, 4)}, {zoneName} time</span></h2>
+              <nav className={styles.s6WeekNav} aria-label="Schedule week">
+                <Link href={`/app/schedule?week=${currentWeek}&day=${today}#schedule-${today}`} className={styles.s6Link}>Today</Link>
+                <Link href={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} aria-label="Previous week" className={styles.s6Round}><Arrow back /></Link>
+                <Link href={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`} aria-label="Next week" className={styles.s6Round}><Arrow /></Link>
+              </nav>
+            </div>
+            <nav className={styles.s6Strip} aria-label="Days in this week"><KeepSelectedVisible />
+              {dates.map(date => { const label = formatDayLabel(date); const assigned = shifts.some(shift => shift.date === date); return <a key={date} href={`#schedule-${date}`} className={`${date === today ? styles.s6StripToday : ''} ${date === selectedDay ? styles.s6StripSelected : ''}`.trim() || undefined} aria-current={date === today ? 'date' : undefined} aria-label={`${label.weekday}, ${label.day}${date === today ? ', today' : ''}${assigned ? ', assigned shift' : ''}`}><span>{label.weekday.slice(0, 1)}</span><b>{Number(date.slice(8))}</b><i className={assigned ? styles.s6HasShift : undefined} aria-hidden="true" /></a>; })}
+            </nav>
+            {/* A partly published week says what is final and who hasn't published yet, beside the week itself (Jose, 2026-10-18). */}
+            {state === 'unpublished' ? <p className={styles.s6Fine} data-week-note="" role="status">{shifts.length
+              ? unpublishedNote(unpublishedNames, publishedNames)
+              : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`}</p> : null}
+          </section>
 
-      {swapIntent ? <div className="my-schedule-feedback my-swap-intent" role="status">
-        <strong>{swapCount ? 'Choose the shift you want to swap' : 'No shifts to swap this week'}</strong>
-        <p>{swapCount ? 'Its options are open below. Select Request a swap on that shift.' : 'Only upcoming shifts can be swapped. Try next week, or check Open shifts.'}</p>
-        <Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Done choosing</Link>
-      </div> : null}
+          {swapIntent ? <div className={styles.s6Notice} role="status">
+            <div className={styles.s6NoticeCopy}><strong>{swapCount ? 'Choose the shift you want to swap' : 'No shifts to swap this week'}</strong><span>{swapCount ? 'Its options are open below. Select Request a swap on that shift.' : 'Only upcoming shifts can be swapped. Try next week, or check Open shifts.'}</span></div>
+            <Link href={`/app/schedule?week=${weekStart}`} className={styles.s6Link}>Done choosing</Link>
+          </div> : null}
 
-      {/* D5: on desktop the week leads and its status sits beside it; one column on phones, same order. */}
-      <div className="my-schedule-body">
-      {/* Phones read the week first; this short link reaches the review below it (Codex U2). */}
-      {confirmationNeeded && !acknowledged && confirmation && state !== 'unavailable' ? <a className="my-review-jump" href="#my-review-title">Your manager asks you to confirm this week</a> : null}
-      <section className="employee-view-surface employee-schedule-agenda my-schedule-agenda" aria-labelledby="my-agenda-title">
-        <div className="my-agenda-heading"><h2 id="my-agenda-title">Your week at a glance</h2><span>{state==='published'?'Published schedule':'Published assignments only'}</span></div>
-        {/* P3-WR-14: a failed read replaces the week list (no "–" days that read as days off) and offers the primary Try again. */}
-        {state === 'unavailable' ? <div className="my-schedule-failure" role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule.</p><Link href={`/app/schedule?week=${weekStart}`} className="nv-btn" data-kind="primary"><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again<span className="nv-sr"> to load your schedule</span></Link></div> : null}
-        {state === 'unavailable' ? null : dates.map(date => { const label=formatDayLabel(date); const dayShifts=shifts.filter(shift=>shift.date===date); return <article className={`employee-schedule-day${date===today?' today':''}${date===selectedDay?' selected':''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
-          <time className="employee-agenda-date" dateTime={date}><span>{label.weekday}</span><strong>{Number(date.slice(8))}</strong>{date===today?<small>Today</small>:null}{date===selectedDay?<span className="sr-only">Selected day</span>:null}</time>
-          <div className="employee-schedule-day-copy">
-            {dayShifts.length ? dayShifts.map(shift=><div className="employee-schedule-shift my-shift" key={shift.id}>
-              <div className="my-shift-copy"><strong>{keepWhole(formatTime(shift.startTime))} <span aria-hidden="true">–</span> {keepWhole(formatTime(shift.endTime))}</strong>
-                {shift.endTime<shift.startTime || shift.endTime==='24:00'?<span className="my-shift-overnight">Ends {formatDayLabel(addDays(shift.date,1)).weekday}, {formatDayLabel(addDays(shift.date,1)).day}</span>:null}
-                <span className="my-shift-location"><MapPinIcon size={16} aria-hidden="true" />{locations.find(location=>location.id===shift.locationId)?.shortName?.trim() || 'Location unavailable'}</span>
-                {shift.positionName?<span className="my-shift-position">{shift.positionName}</span>:null}
-                {shift.isDesignatedLead || shift.isCalloutApproved?<div className="employee-schedule-tags">{shift.isDesignatedLead?<small className="employee-designated-lead">Designated lead</small>:null}{shift.isCalloutApproved?<small className="employee-approved-callout">Call-out approved</small>:null}</div>:null}
-              </div>
-              {modules.marketplace ? <ShiftOptions shift={shift} today={today} observedAt={observedAt} timeZone={timeZone} open={swapIntent && swappable(shift, today, observedAt, timeZone)} /> : null}
-            </div>) : <p className="employee-schedule-off">{emptyScheduleLabel(state)}</p>}
-          </div>
-        </article>; })}
-      </section>
-      <div className="my-schedule-side">
-      {error ? <div className="my-schedule-feedback error" role="alert"><strong>Confirmation could not be completed.</strong><p>{typeof error === 'string' ? error : 'Review the current schedule and try again.'}</p><Link href={`/app/schedule?week=${weekStart}`} className="my-schedule-link">Review current week</Link></div> : null}
-      {safeReceipt ? <p className="my-schedule-feedback success" role="status">Schedule confirmed.</p> : null}
+          {error ? <div className={`${styles.s6Notice} ${styles.s6NoticeError}`} role="alert"><div className={styles.s6NoticeCopy}><strong>Confirmation could not be completed.</strong><span>{typeof error === 'string' ? error : 'Review the current schedule and try again.'}</span></div><Link href={`/app/schedule?week=${weekStart}`} className={styles.s6Link}>Review current week</Link></div> : null}
+          {safeReceipt ? <p className={styles.s6Receipt} role="status">Schedule confirmed.</p> : null}
 
+          {review ? <section className={`${styles.s6Notice} ${styles.s6Review}${acknowledged ? ` ${styles.s6Confirmed}` : ''}`} aria-labelledby="my-review-title">
+            {acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}
+            <div className={styles.s6NoticeCopy}><h2 id="my-review-title">{acknowledged ? 'You’re up to date' : confirmationNeeded ? 'Confirm you’ve seen your schedule' : 'Schedule review'}</h2><span>{acknowledged ? 'You’ve confirmed the current schedule.' : confirmationNeeded ? (shifts.length ? 'Check your shifts for this week, then confirm.' : 'No assignments remain for this published week. Review the changes, then confirm this schedule.') : 'Confirmation is not available. Review the current week again.'}</span></div>
+            <div className={styles.s6ReviewAction}>{confirmation}</div>
+          </section> : null}
 
-      {confirmation && state !== 'unavailable' ? <section className={`my-schedule-review${acknowledged?' is-confirmed':''}`} aria-labelledby="my-review-title">
-        <div className="my-review-icon">{acknowledged?<CheckCircleIcon size={24} aria-hidden="true" />:<CalendarCheckIcon size={24} aria-hidden="true" />}{acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}</div>
-        <div className="my-review-copy"><h2 id="my-review-title">{acknowledged?'You’re up to date':confirmationNeeded?'Confirm you’ve seen your schedule':'Schedule review'}</h2><p>{acknowledged?'You’ve confirmed the current schedule.':confirmationNeeded?(shifts.length?'Check your shifts for this week, then confirm.':'No assignments remain for this published week. Review the changes, then confirm this schedule.'):'Confirmation is not available. Review the current week again.'}</p></div>
-        <div className="my-review-action">{confirmation}</div>
-      </section> : null}
+          <section className={styles.s6Section} data-s6-agenda="" aria-labelledby="my-agenda-title">
+            <header className={styles.s6Head} data-s6-heading=""><h2 id="my-agenda-title">Shifts</h2><span className="nv-sr">{state === 'published' ? 'Published schedule' : 'Published assignments only'}</span></header>
+            {/* P3-WR-14: a failed read replaces the week list (no "–" days that read as days off) and offers the primary Try again. */}
+            {state === 'unavailable' ? <div className={styles.s6Failure} role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule.</p><Link href={`/app/schedule?week=${weekStart}`} className={styles.s6Primary}>Try again<span className="nv-sr"> to load your schedule</span></Link></div>
+              : <div className={styles.s6List}>{dates.map(date => { const label = formatDayLabel(date); const dayShifts = shifts.filter(shift => shift.date === date); return <article className={`${styles.s6Row}${dayShifts.length ? '' : ` ${styles.s6RowOff}`}${date === selectedDay ? ` ${styles.s6RowSelected}` : ''}`} id={`schedule-${date}`} key={date} aria-label={`${label.weekday}, ${label.day}`}>
+                <DayBlock date={date} today={date === today} />
+                {date === selectedDay ? <span className="nv-sr">Selected day</span> : null}
+                <div className={styles.s6DayShifts}>
+                  {dayShifts.length ? dayShifts.map(shift => <div className={styles.s6Shift} key={shift.id}>
+                    <div className={styles.s6Copy}>
+                      <strong>{keepWhole(formatTime(shift.startTime))} <span aria-hidden="true">–</span> {keepWhole(formatTime(shift.endTime))}</strong>
+                      {shift.endTime < shift.startTime || shift.endTime === '24:00' ? <span>Ends {formatDayLabel(addDays(shift.date, 1)).weekday}, {formatDayLabel(addDays(shift.date, 1)).day}</span> : null}
+                      <span>{locations.find(location => location.id === shift.locationId)?.shortName?.trim() || 'Location unavailable'}{shift.positionName ? <> · {shift.positionName}</> : null}</span>
+                      {shift.isDesignatedLead || shift.isCalloutApproved ? <span className={styles.s6Tags}>{shift.isDesignatedLead ? <small>Designated lead</small> : null}{shift.isCalloutApproved ? <small>Call-out approved</small> : null}</span> : null}
+                    </div>
+                    {modules.marketplace ? <ShiftOptions shift={shift} today={today} observedAt={observedAt} timeZone={timeZone} open={swapIntent && swappable(shift, today, observedAt, timeZone)} /> : null}
+                  </div>) : <p className={styles.s6Off}>{emptyScheduleLabel(state)}</p>}
+                </div>
+              </article>; })}</div>}
+          </section>
 
-      <div className="my-schedule-changes">{state==='unavailable'?null:changes}</div>
-      </div>
-      </div>
-      </>}
-      {/* One grouped list of rows, iOS-settings style (Jose's phone notes, 2026-10-18), instead of loose links. */}
-      <footer className="my-schedule-footer" aria-labelledby="my-schedule-more-title">
-        <h2 id="my-schedule-more-title">Planning ahead</h2>
-        <ul>
-          {modules.marketplace ? <li><Link href="/app/exchange?tab=my" className="my-schedule-row"><ArrowsLeftRightIcon size={20} aria-hidden="true" /><span>Shift requests</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li> : null}
-          <li><Link href="/app/availability" className="my-schedule-row"><UserCheckIcon size={20} aria-hidden="true" /><span>Update availability</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li>
-          {modules.timeOff ? <li><Link href="/app/requests" className="my-schedule-row"><CalendarMinusIcon size={20} aria-hidden="true" /><span>Request time off</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li> : null}
-          <li><Link href="/app/profile#employee-calendar-title" className="my-schedule-row"><CalendarPlusIcon size={20} aria-hidden="true" /><span>Add shifts to your calendar</span><CaretRightIcon className="my-schedule-row-caret" size={18} aria-hidden="true" /></Link></li>
-        </ul>
-      </footer>
+          {state === 'unavailable' ? null : <div className={styles.s6Changes}>{changes}</div>}
+        </>}
+
+        {/* One grouped list of rows, iOS-settings style (Jose's phone notes, 2026-10-18), instead of loose links. */}
+        <footer className={styles.s6Section} aria-labelledby="my-schedule-more-title">
+          <header className={styles.s6Head}><h2 id="my-schedule-more-title">Planning ahead</h2></header>
+          <ul className={styles.s6List}>
+            {modules.marketplace ? <li><Link href="/app/exchange?tab=my" className={styles.s6LinkRow}><span>Shift requests</span><Chevron /></Link></li> : null}
+            <li><Link href="/app/availability" className={styles.s6LinkRow}><span>Update availability</span><Chevron /></Link></li>
+            {modules.timeOff ? <li><Link href="/app/requests" className={styles.s6LinkRow}><span>Request time off</span><Chevron /></Link></li> : null}
+            <li><Link href="/app/profile#employee-calendar-title" className={styles.s6LinkRow}><span>Add shifts to your calendar</span><Chevron /></Link></li>
+          </ul>
+        </footer>
       </div>
     </div>
   </EmployeeScheduleMotion>;

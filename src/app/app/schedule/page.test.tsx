@@ -66,7 +66,7 @@ it('keeps all seven dates, multiple assignments and directly bound future shift 
  {id:'second',employeeId:'self',locationId:'2',date:'2099-10-06',startTime:'14:00',endTime:'18:00',scheduleStatus:'PUBLISHED'}];
  f.locations=[{id:'2',shortName:'Main Office'}];
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2099-10-05'})}));
- expect(output.match(/class="employee-schedule-day[\s"]/g)).toHaveLength(7);
+ expect(output.match(/<article[^>]*id="schedule-/g)).toHaveLength(7);
  expect(output).toContain('/app/exchange/swap?sourceShiftId=shift%20a%26b');
  expect(output).toContain('/app/exchange/callout?shiftId=shift%20a%26b');
  expect(output).toContain('8:00 AM'); expect(output).toContain('2:00 PM');

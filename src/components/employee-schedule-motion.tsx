@@ -11,8 +11,8 @@ export function EmployeeScheduleMotion({ children, weekStart }: { children: Reac
   useGSAP(()=>{
     const media=gsap.matchMedia();
     media.add('(prefers-reduced-motion: no-preference)',()=>{
-      gsap.fromTo('.my-schedule-enter',{y:6,opacity:.9},{y:0,opacity:1,duration:.32,stagger:.06,ease:'power2.out',clearProps:'transform,opacity'});
-      gsap.fromTo('.my-agenda-heading',{opacity:.9},{opacity:1,duration:.3,clearProps:'opacity',scrollTrigger:{trigger:'.my-schedule-agenda',start:'top 95%',once:true}});
+      gsap.fromTo('[data-s6-enter]',{y:6,opacity:.9},{y:0,opacity:1,duration:.32,stagger:.06,ease:'power2.out',clearProps:'transform,opacity'});
+      gsap.fromTo('[data-s6-heading]',{opacity:.9},{opacity:1,duration:.3,clearProps:'opacity',scrollTrigger:{trigger:'[data-s6-agenda]',start:'top 95%',once:true}});
     });
     return ()=>media.revert();
   },{scope,dependencies:[weekStart],revertOnUpdate:true});
