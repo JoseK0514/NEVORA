@@ -9,7 +9,7 @@ import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 
 const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
-const canonicalRuntimeMessages = new Set(['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop limit exceeded']);
+const canonicalRuntimeMessages = new Set(['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop limit exceeded', 'Connection closed.']);
 const runtimeRoutes = new Set(['/login', '/app', '/app/schedule', '/app/communications', '/app/calendar', '/app/settings']);
 function readable(read) {
   try { return read(); } catch { return undefined; }
@@ -18,11 +18,15 @@ function readable(read) {
 /** Only exact static messages or a bounded React invariant prefix survive;
  * arbitrary suffixes, URLs, arguments and stacks must never be persisted. */
 function originalRuntimeDiagnostic(name, message, page) {
-  const invariant = message.match(/^Minified React error #([1-9]\d{0,2});/);
+  // Playwright splits bare strings at their first colon (including https:).
+  // WebKit wraps rejected Errors once. These shapes are observations, not origin proof.
+  const canonical = name === 'Unhandled Promise Rejection' && message.startsWith('Error: ') ? message.slice(7) : message;
+  const split = typeof name === 'string' ? name.match(/^Minified React error #([1-9]\d{0,2}); visit https$/) : null;
+  const invariant = canonical.match(/^Minified React error #([1-9]\d{0,2});/) ?? (split?.[0] === name ? split : null);
   const route = readable(() => new URL(page.url()).pathname);
   return {
     nativeName: nativeErrorNames.has(name) ? name : 'Unknown',
-    canonicalMessage: canonicalRuntimeMessages.has(message) ? message : invariant ? `Minified React error #${invariant[1]}` : null,
+    canonicalMessage: canonicalRuntimeMessages.has(canonical) ? canonical : invariant ? `Minified React error #${invariant[1]}` : null,
     reactInvariant: invariant ? Number(invariant[1]) : null,
     route: runtimeRoutes.has(route) ? route : null,
   };

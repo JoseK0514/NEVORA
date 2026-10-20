@@ -7,9 +7,79 @@ const runtimeModule=resolve('scripts/phase-e-browser-qa.mjs');
 const {darwinWebKitLaunch}=await import(runtimeModule);
 const {observeBrowserCell}=await import(runtimeModule);
 it.each([
+ ['Minified React error #418; visit https', '/react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN', 'Minified React error #418', 418],
+ ['Minified React error #1; visit https', '/fictional.invalid/PRIVATE_ACTOR_TOKEN', 'Minified React error #1', 1],
+ ['Minified React error #999; visit https', '/fictional.invalid/PRIVATE_ACTOR_TOKEN', 'Minified React error #999', 999],
+ ['Unhandled Promise Rejection', 'Error: Minified React error #418; visit https://react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN', 'Minified React error #418', 418],
+ ['Unhandled Promise Rejection', 'Error: ResizeObserver loop limit exceeded', 'ResizeObserver loop limit exceeded', null],
+ ['Unhandled Promise Rejection', 'Error: ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop completed with undelivered notifications.', null],
+ ['Unhandled Promise Rejection', 'Error: Connection closed.', 'Connection closed.', null],
+ ['', 'Connection closed.', 'Connection closed.', null],
+ ['Unhandled Promise Rejection', 'Connection closed.', 'Connection closed.', null],
+])('retains only canonical detail through observed transport format %s / %s', (name,message,canonicalMessage,reactInvariant)=>{
+ const errors:unknown[]=[],cell=observeBrowserCell({suite:'communications',engine:'webkit',width:375,status:'failed'},errors);
+ for(const role of ['primary','manager']){
+  const context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://localhost/app?token=PRIVATE_ACTOR_TOKEN'});
+  cell.observeContext(context,role);context.emit('page',page);
+  if(role==='manager')cell.setPhase('context-close');
+  page.emit('pageerror',{name,message,stack:'PRIVATE_ACTOR_TOKEN'});
+  expect(errors.at(-1)).toMatchObject({role,phase:role==='primary'?'scenario':'context-close',diagnostic:{nativeName:'Unknown',canonicalMessage,reactInvariant,route:'/app'}});
+  expect(()=>cell.assertClean()).toThrow();
+ }
+ expect(errors).toHaveLength(2);expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|https?:|args|fictional|react\.dev/);
+});
+it.each([
+ ['Minified React error #0; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #0418; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #1000; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #-1; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418PRIVATE_ACTOR_TOKEN; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418; visit https PRIVATE_ACTOR_TOKEN','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418; visit https\n','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418; visit http','/PRIVATE_ACTOR_TOKEN'],
+ ['PRIVATE_ACTOR_TOKEN Minified React error #418; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418; visit https://private.invalid','PRIVATE_ACTOR_TOKEN'],
+ ['ResizeObserver loop limit exceeded','PRIVATE_ACTOR_TOKEN'],
+ ['Connection closed.','PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection PRIVATE_ACTOR_TOKEN','Error: Connection closed.'],
+ ['Unhandled Promise Rejection\n','Error: Connection closed.'],
+ ['Error','Error: Connection closed.'],
+ ['', 'Error: Connection closed.'],
+ ['Unhandled Promise Rejection','Error: Error: Connection closed.'],
+ ['Unhandled Promise Rejection','TypeError: Connection closed.'],
+ ['Unhandled Promise Rejection','Error: Connection closed. PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: Connection closed.\nPRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: ResizeObserver loop limit exceeded PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: ResizeObserver loop completed with undelivered notifications.\nPRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: Minified React error #1000; PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: Minified React error #0418; PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: PRIVATE_ACTOR_TOKEN Minified React error #418;'],
+ ['Error','Connection closed'],
+ ['Error','Connection closed.\n'],
+ ['Error','Connection closed. https://private.invalid/?token=PRIVATE_ACTOR_TOKEN'],
+ ['Error','PRIVATE_ACTOR_TOKEN Connection closed.'],
+])('keeps unsupported format %s / %s unknown and fatal', (name,message)=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter();
+ const cell=observeBrowserCell({suite:'communications',engine:'webkit',width:375,status:'failed'},errors);
+ cell.observeContext(context,'manager');context.emit('page',page);cell.setPhase('context-close');
+ page.emit('pageerror',{name,message,stack:'PRIVATE_ACTOR_TOKEN'});
+ expect(errors).toHaveLength(1);expect(errors[0]).toMatchObject({diagnostic:{canonicalMessage:null,reactInvariant:null},phase:'context-close'});
+ expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|https?:|args|private\.invalid/);expect(()=>cell.assertClean()).toThrow();
+});
+it('does not coerce hostile name or message objects while keeping the event fatal',()=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter();
+ const cell=observeBrowserCell({suite:'communications',engine:'webkit',width:375,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);
+ const hostile={toString(){throw Error('PRIVATE_ACTOR_TOKEN');},match(){throw Error('PRIVATE_ACTOR_TOKEN');}};
+ expect(()=>page.emit('pageerror',{name:hostile,message:hostile})).not.toThrow();
+ expect(errors[0]).toMatchObject({diagnostic:{nativeName:'Unknown',canonicalMessage:null,reactInvariant:null}});
+ expect(JSON.stringify(errors)).not.toContain('PRIVATE');expect(()=>cell.assertClean()).toThrow();
+});
+it.each([
  ['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop completed with undelivered notifications.', null],
  ['ResizeObserver loop limit exceeded', 'ResizeObserver loop limit exceeded', null],
  ['Minified React error #418; visit https://react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN for the full message.', 'Minified React error #418', 418],
+ ['Connection closed.', 'Connection closed.', null],
 ])('retains only canonical diagnostic detail and rejects %s', (message,canonicalMessage,reactInvariant)=>{
  const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://127.0.0.1:1234/app/schedule?authority=PRIVATE_ACTOR_TOKEN#PRIVATE_ACTOR_TOKEN'});
  const cell=observeBrowserCell({suite:'attention',engine:'webkit',width:320,status:'failed'},errors);
