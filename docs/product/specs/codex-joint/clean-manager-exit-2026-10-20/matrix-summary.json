@@ -1,0 +1,31 @@
+{
+  "checkpoint": "06e85d7af995969b17ac0118897ce7e79ddf4614",
+  "startedAt": "2026-10-20T13:16:20.293Z",
+  "completedAt": "2026-10-20T13:25:57.767Z",
+  "cells": 6160,
+  "navigations": 308,
+  "failedNavigation": 0,
+  "pageOverflowCells": 0,
+  "clippedCandidates": 296,
+  "shortTargetCandidates": 1037,
+  "engines": [
+    "chromium",
+    "webkit"
+  ],
+  "widths": [
+    320,
+    360,
+    390,
+    430,
+    768,
+    844,
+    1024,
+    1440
+  ],
+  "text": [
+    100,
+    125,
+    150,
+    200
+  ]
+}

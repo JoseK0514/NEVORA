@@ -253,6 +253,55 @@ No ulw-loop plan exists (ULW_LOOP_PLAN_MISSING); caller task evidence directory 
         "artifactRefs": [
           "coverage-gaps.txt"
         ]
+      },
+      {
+        "scenarioId": "IS-14",
+        "criterionRef": "v3 handoff \u00a75:44px touch targets;IS correct target",
+        "surface": "browser: fresh pinned Playwright touch contexts; real touchscreen.tap plus elementFromPoint",
+        "exactInvocation": "node /tmp/nevora-verify-33-manual/targets.cjs: both engines AUDIT-M768x900125%,hasTouch true,isMobile false and true; target-overlap.cjs tap(115.5,258),2px inside visible Inbox bottom",
+        "verdict": "FAIL IS-MAN-02:neighbor Schedule receives tap; effective non-overlapped sampled vertical span34px",
+        "artifactRefs": [
+          "target-results.json",
+          "target-overlap-results.json",
+          "target-overlap-chromium-sidebar-desktop.png",
+          "target-overlap-webkit-sidebar-desktop.png"
+        ]
+      },
+      {
+        "scenarioId": "WR-03",
+        "criterionRef": "WR landscape responsive layout",
+        "surface": "browser: fresh pinned Playwright touch contexts; real touchscreen.tap plus elementFromPoint",
+        "exactInvocation": "node /tmp/nevora-verify-33-manual/targets.cjs: both engines AUDIT-M844x390100%,hasTouch true,isMobile false and true; fresh contexts verify pointer/landscape media and sidebar visibility",
+        "verdict": "PASS:landscape sidebar candidate dismissed; sidebar hidden in all4 fresh contexts",
+        "artifactRefs": [
+          "target-results.json",
+          "target-chromium-landscape-mobile.png",
+          "target-webkit-landscape-mobile.png"
+        ]
+      },
+      {
+        "scenarioId": "IS-15",
+        "criterionRef": "v3 handoff \u00a75:44px touch width",
+        "surface": "browser: fresh pinned Playwright touch contexts; real touchscreen.tap plus elementFromPoint",
+        "exactInvocation": "node /tmp/nevora-verify-33-manual/targets.cjs: both engines AUDIT-M320x844125%;Inbox All point tests and taps right+2px / top-4px",
+        "verdict": "FAIL IS-MAN-03:39.453125px width,vertical44px expansion only",
+        "artifactRefs": [
+          "target-results.json",
+          "target-chromium-inbox-mobile.png",
+          "target-webkit-inbox-mobile.png"
+        ]
+      },
+      {
+        "scenarioId": "IS-16",
+        "criterionRef": "v3 handoff \u00a75:44px touch width;numeric tolerance43.5",
+        "surface": "browser: fresh pinned Playwright touch contexts; real touchscreen.tap plus elementFromPoint",
+        "exactInvocation": "node /tmp/nevora-verify-33-manual/targets.cjs: both engines AUDIT-M320x844100%;Schedule Monday point scan and taps at right boundary\u00b10.25px",
+        "verdict": "FAIL IS-MAN-04:P2 precision discrepancy43.421875px width,not a severe usability orWCAG-AA minimum-size claim",
+        "artifactRefs": [
+          "target-results.json",
+          "target-chromium-days-mobile.png",
+          "target-webkit-days-mobile.png"
+        ]
       }
     ],
     "adversarialCases": [
@@ -338,6 +387,29 @@ No ulw-loop plan exists (ULW_LOOP_PLAN_MISSING); caller task evidence directory 
         "expectedBehavior": "not_applicable: this read-only UI candidate review invokes no webhook or payment-provider integration",
         "verdict": "not_applicable",
         "artifactRefs": []
+      },
+      {
+        "scenarioId": "ADV-09",
+        "criterionRef": "IS correct target",
+        "adversarialClass": "adjacent invisible hit areas",
+        "expectedBehavior": "Tapping inside Inbox must activate Inbox,not its neighbor",
+        "verdict": "FAIL IS-MAN-02",
+        "artifactRefs": [
+          "target-overlap-results.json",
+          "target-overlap-chromium-sidebar-desktop.png"
+        ]
+      },
+      {
+        "scenarioId": "ADV-10",
+        "criterionRef": "WR native viewport",
+        "adversarialClass": "fresh landscape context versus resized matrix context",
+        "expectedBehavior": "Phone landscape hides desktop sidebar consistently in both mobile-emulation modes",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "target-results.json",
+          "target-chromium-landscape-mobile.png",
+          "target-webkit-landscape-mobile.png"
+        ]
       }
     ],
     "artifactRefs": [
@@ -860,6 +932,102 @@ No ulw-loop plan exists (ULW_LOOP_PLAN_MISSING); caller task evidence directory 
         "path": "/tmp/nevora-verify-33-manual/webkit-menu-keyboard-schedule-close.png",
         "bytes": 150722,
         "sha256": "0aed6f9b949541feb100737fe89727f102fa81bcf20f78f9205252fed6330c6e"
+      },
+      {
+        "id": "target-chromium-days-mobile.png",
+        "kind": "screenshot",
+        "description": "Independent touch candidate triage: target-chromium-days-mobile.png",
+        "path": "/tmp/nevora-verify-33-manual/target-chromium-days-mobile.png",
+        "bytes": 57349,
+        "sha256": "0632940b7ab7d894b7f2a598d8c6d0da058edde3d715fc192cbce2a6be3808e5"
+      },
+      {
+        "id": "target-chromium-inbox-mobile.png",
+        "kind": "screenshot",
+        "description": "Independent touch candidate triage: target-chromium-inbox-mobile.png",
+        "path": "/tmp/nevora-verify-33-manual/target-chromium-inbox-mobile.png",
+        "bytes": 60071,
+        "sha256": "c6cf681528d800bcb76b983e86c5378d7a4a67490ce2def36f1c32fe65e716c8"
+      },
+      {
+        "id": "target-chromium-landscape-mobile.png",
+        "kind": "screenshot",
+        "description": "Independent touch candidate triage: target-chromium-landscape-mobile.png",
+        "path": "/tmp/nevora-verify-33-manual/target-chromium-landscape-mobile.png",
+        "bytes": 26030,
+        "sha256": "b41e315d52ea9d55cc15adaf173d34a08b7b92b08c8f7b2cda9d58f228a966f1"
+      },
+      {
+        "id": "target-overlap-chromium-sidebar-desktop.png",
+        "kind": "screenshot",
+        "description": "Independent touch candidate triage: target-overlap-chromium-sidebar-desktop.png",
+        "path": "/tmp/nevora-verify-33-manual/target-overlap-chromium-sidebar-desktop.png",
+        "bytes": 110190,
+        "sha256": "11d42205b201ab45de3938dedbd58eef822c4747afb1253fb2a1afe5142105d5"
+      },
+      {
+        "id": "target-overlap-results.json",
+        "kind": "measurement/action-log",
+        "description": "Independent touch candidate triage: target-overlap-results.json",
+        "path": "/tmp/nevora-verify-33-manual/target-overlap-results.json",
+        "bytes": 8556,
+        "sha256": "d94bbbe8d31dda7bed097fa96110a60b2e1608b2b345cc1d88cc6cb41da61ea8"
+      },
+      {
+        "id": "target-overlap-webkit-sidebar-desktop.png",
+        "kind": "screenshot",
+        "description": "Independent touch candidate triage: target-overlap-webkit-sidebar-desktop.png",
+        "path": "/tmp/nevora-verify-33-manual/target-overlap-webkit-sidebar-desktop.png",
+        "bytes": 132916,
+        "sha256": "365f3711af748f28698ae02fa42cd4c6b99a1af7329e8f45fa49ca5f82031bb1"
+      },
+      {
+        "id": "target-overlap.cjs",
+        "kind": "script",
+        "description": "Independent touch candidate triage: target-overlap.cjs",
+        "path": "/tmp/nevora-verify-33-manual/target-overlap.cjs",
+        "bytes": 5797,
+        "sha256": "3feb7341333c1acd0e85b22d7c4a452c6474704b62800ce55a83d2c04befae16"
+      },
+      {
+        "id": "target-results.json",
+        "kind": "measurement/action-log",
+        "description": "Independent touch candidate triage: target-results.json",
+        "path": "/tmp/nevora-verify-33-manual/target-results.json",
+        "bytes": 37763,
+        "sha256": "ea3aebf68453b917e114adf710703997f6e5a1f301c5c61d3eb7bbfda5297cc3"
+      },
+      {
+        "id": "target-webkit-days-mobile.png",
+        "kind": "screenshot",
+        "description": "Independent touch candidate triage: target-webkit-days-mobile.png",
+        "path": "/tmp/nevora-verify-33-manual/target-webkit-days-mobile.png",
+        "bytes": 69898,
+        "sha256": "1972d567acd4f5632d3b8835312c7ceb91f92a49b252f14c0495e688d69451ab"
+      },
+      {
+        "id": "target-webkit-inbox-mobile.png",
+        "kind": "screenshot",
+        "description": "Independent touch candidate triage: target-webkit-inbox-mobile.png",
+        "path": "/tmp/nevora-verify-33-manual/target-webkit-inbox-mobile.png",
+        "bytes": 73880,
+        "sha256": "6506ab9915db7a7b67b0f07feda4fe92b82a5b2246dd539be210cd4f72e3aef3"
+      },
+      {
+        "id": "target-webkit-landscape-mobile.png",
+        "kind": "screenshot",
+        "description": "Independent touch candidate triage: target-webkit-landscape-mobile.png",
+        "path": "/tmp/nevora-verify-33-manual/target-webkit-landscape-mobile.png",
+        "bytes": 35124,
+        "sha256": "2bfa95b858ce724765009c0fca09b3b85c0a5b11e6c54693f03af3e9a0dec9c3"
+      },
+      {
+        "id": "targets.cjs",
+        "kind": "script",
+        "description": "Independent touch candidate triage: targets.cjs",
+        "path": "/tmp/nevora-verify-33-manual/targets.cjs",
+        "bytes": 5880,
+        "sha256": "c00a80c485aad949b877b7541aa2d1c538f64277e41d72858ed0b66013080bd4"
       }
     ]
   }
