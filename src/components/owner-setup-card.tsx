@@ -62,3 +62,27 @@ export function OwnerSetupCard({steps, locationCount}: {steps: SetupSteps | null
 export function OwnerSetupCardLive({locationCount}: {locationCount: number}) {
   return <OwnerSetupCard steps={useHomeSetupSteps()} locationCount={locationCount}/>;
 }
+
+/** Clean Manager (v3): the same two checks as one slim row on Home, linking to the next open step.
+ * It disappears when setup is complete. The full card above stays for its other callers. */
+export function OwnerSetupRow({steps, locationCount}: {steps: SetupSteps | null; locationCount: number}) {
+  if (!steps || !hasSetupGaps(steps)) return null;
+  const done = setupDoneCount(steps);
+  const next = steps.coverageOpen
+    ? locationCount === 0 ? {href: '/app/settings/locations', label: 'add a location'} : {href: '/app/schedule/settings#coverage-staffing', label: 'set coverage periods'}
+    : {href: '/app/schedule/settings#target-hours', label: 'set weekly hour targets'};
+  return <section className="nv-card cm-setup" aria-label="Finish setting up">
+    <ul className="nv-rows">
+      <li><Link className="nv-row" href={next.href} data-leading="true">
+        <span className="cm-setup__ring" style={{['--done' as string]: `${done * 50}%`}} aria-hidden="true">{done}/2</span>
+        <span className="nv-row__text"><span className="nv-row__title">Finish setting up</span><span className="nv-row__meta">{`Next: ${next.label}`}</span></span>
+        <span className="nv-row__trail">{`${done} of 2`}</span>
+        <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true"/>
+      </Link></li>
+    </ul>
+  </section>;
+}
+
+export function OwnerSetupRowLive({locationCount}: {locationCount: number}) {
+  return <OwnerSetupRow steps={useHomeSetupSteps()} locationCount={locationCount}/>;
+}

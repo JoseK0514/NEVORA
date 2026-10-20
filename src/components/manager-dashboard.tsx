@@ -2,7 +2,7 @@ import { ManagerClockMonitor } from "./manager-clock-monitor";
 import { ManagerAttendanceReview } from "./manager-attendance-review";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider, ManagerActionCenter} from './manager-action-center';
-import {OwnerSetupCardLive} from './owner-setup-card';
+import {OwnerSetupCardLive, OwnerSetupRowLive} from './owner-setup-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
 import { NavIcon } from "@/components/nav-icon";
@@ -191,7 +191,7 @@ function SharedHomeRead({live, children, ...read}: {live: boolean; weekStart: st
 }
 
 /** The week facts Home shows, from the dashboard's existing read. */
-function homeWeek(props: Props): PremiumHomeWeek {
+export function homeWeek(props: Props): PremiumHomeWeek {
   return {
     weekStart: props.weekStart, weekLabel: props.weekLabel,
     plannedShifts: props.days.reduce((total, day) => total + day.shiftCount, 0),
@@ -214,7 +214,7 @@ function PremiumOverview(props: Props) {
     today={slots.snapshots.today} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} setup={props.role === 'OWNER' ? <OwnerSetupCardLive locationCount={props.totalLocations}/> : null} />
+    <PremiumHomeLive {...common} setup={props.role === 'OWNER' ? <OwnerSetupRowLive locationCount={props.totalLocations}/> : null} />
   </SharedHomeRead>;
 }
 

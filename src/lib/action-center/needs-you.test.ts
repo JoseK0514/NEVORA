@@ -26,6 +26,16 @@ describe('needs you (F1)', () => {
     expect(value.past.map(entry => entry.id)).toEqual(['gap-earlier']);
   });
 
+  it('counts coverage gaps for today only; later gaps are planning (clean Manager v3)', () => {
+    const later = item('gap-later', 'COVERAGE_GAP', 'scheduling', 'URGENT', '2026-10-21T17:00:00');
+    const value = needsYou([...items, later], '2026-10-18', [shift('a')]);
+    expect(value.now.map(entry => entry.id)).toEqual(['gap-today']);
+    expect(value.planning.map(entry => entry.id)).toContain('gap-later');
+    expect(value.count).toBe(3);
+    // Without a workspace day nothing can be called "later", so nothing moves.
+    expect(needsYou([later], undefined).now.map(entry => entry.id)).toEqual(['gap-later']);
+  });
+
   it('never counts planning or earlier work, and drops nothing', () => {
     const value = needsYou(items, '2026-10-18');
     expect(value.count).toBe(2);
