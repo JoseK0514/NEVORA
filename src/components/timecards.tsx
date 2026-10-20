@@ -4,6 +4,7 @@ import {keepWhole} from '@/lib/keep-whole';
 import Link from 'next/link';
 import { timeZoneLabel } from '@/lib/time-zone-label';
 import {NavIcon} from './nav-icon';
+import {HoldHeight} from './kit/hold-height';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
 import {useCallback,useEffect,useRef,useState,type FormEvent} from 'react';
 import {formatRecordedHours,parsePeriod,type Period,type Timecard} from '@/lib/timecards/project';
@@ -87,6 +88,15 @@ const samePeriod=(a:Period,b:Period)=>a.startDate===b.startDate&&a.endDate===b.e
 const PHONE_QUERY='(max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse)';
 const PHONE_ROWS=4;
 
+/** While there is no current snapshot (paused, offline, expired, failed or signed out), say so where the cards were, with the
+ * one way forward: a primary Try again after a failed read, a 44px Sign in when signed out. */
+function TimecardsState({title,message,failed,signIn,onRetry,className}:{title:string;message:string;failed:boolean;signIn:boolean;onRetry:()=>void;className:string}){
+  return <div className={className} data-timecards-state="">
+    <NavIcon name={failed?'alert':'clock'} size={32}/><h2>{title}</h2><p>{message}</p>
+    {signIn?<Link className="button primary" href="/login">Sign in</Link>:failed?<button type="button" className="button primary" onClick={onRetry}><NavIcon name="refresh" size={18}/>Try again</button>:null}
+  </div>;
+}
+
 export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
   /** The workspace's date (manager view): sets This week and Last week and whether approvals are open yet. */
   today?:string}){
@@ -102,13 +112,15 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const running=useRef(false);
   const [paused,setPaused]=useState(false);
   const [signInRequired,setSignInRequired]=useState(false);
+  // A read that failed while online offers Try again in place (coordinator QA h4).
+  const [failed,setFailed]=useState(false);
   const expires=useRef<ReturnType<typeof setTimeout>|null>(null);
   const clearBatch=useCallback(()=>{setSelected([]);setReview(null);setConfirmed(false);setOutcomes(null);},[]);
   const invalidate=useCallback(()=>{generation.current++;request.current?.abort();if(expires.current)clearTimeout(expires.current);expires.current=null;source.current=null;validUntil.current=0;},[]);
   const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setMessage('Timecards expired. Refresh a current protected snapshot.');},[invalidate,clearBatch]);
   const refresh=useCallback(async(selected:Period)=>{
     if(document.visibilityState==='hidden'||!navigator.onLine)return;
-    setPaused(false);setSignInRequired(false);
+    setPaused(false);setSignInRequired(false);setFailed(false);
     invalidate();const own=generation.current,started=performance.now();const abort=new AbortController();request.current=abort;
     clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(true);setMessage('Checking period timecards…');
     try{
@@ -123,7 +135,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       validUntil.current=started+next.validForMs;source.current={period:selected,actorId,cards:next.cards};
       expires.current=setTimeout(expireProtected,remaining);
       setSnapshotActor(actorId);setData(next);setMessage(`${next.cards.length} ${next.cards.length===1?'timecard':'timecards'} in this period.`);
-    }catch{if(own===generation.current&&!abort.signal.aborted)setMessage(navigator.onLine?'Couldn’t load timecards. Check your connection, then try again.':'You’re offline. Reconnect to see timecards.');}
+    }catch{if(own===generation.current&&!abort.signal.aborted)setFailed(navigator.onLine);if(own===generation.current&&!abort.signal.aborted)setMessage(navigator.onLine?'Couldn’t load timecards. Check your connection, then try again.':'You’re offline. Reconnect to see timecards.');}
     finally{if(own===generation.current)setBusy(false);}
   },[actorId,invalidate,clearBatch,expireProtected]);
   useEffect(()=>{
@@ -193,6 +205,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     setReview(null);setOutcomes(result);setBusy(false);setMessage('Each card has its own result. Refresh timecards before reviewing another set.');
   }
   const currentActor=snapshotActor===actorId;
+  // The state card's heading; its sentence is the live status message.
+  const stateTitle=signInRequired?'Sign in to see timecards':failed?(manager?'Couldn’t load timecards':'Couldn’t load your timecard')
+    :paused?(typeof navigator!=='undefined'&&!navigator.onLine?'You’re offline':'Timecards paused'):'Timecards aren’t showing';
   usePrivateFragmentFocus('timecard-',currentActor&&data?.state==='ready');
   const cards=currentActor&&data?.state==='ready'?[...data.cards].sort((a,b)=>Number(needsAttention(b.card))-Number(needsAttention(a.card))||a.card.employeeName.localeCompare(b.card.employeeName)):[];
   const eligible=cards.filter(item=>!batchExclusion(item,actorId,batchAction));
@@ -291,6 +306,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       <div className="nv-content premium-legacy-content cm-tc-content">
         {!phone&&bar?createPortal(tools,bar):null}
         {!phone&&bar===null?tools:null}
+        <HoldHeight holding={!ready} memory="timecards-manager">
+        {!data&&!busy?<TimecardsState className="cm-tc-state" title={stateTitle} message={message} failed={failed} signIn={signInRequired} onRetry={()=>void refresh(period)}/>:null}
         {ready&&cards.length?<div className="cm-tc-stats" role="group" aria-label="Period overview"><StatGrid stats={[
           {label:'Timecards',value:cards.length},
           {label:'Need review',value:<span className="cm-tc-review" data-zero={reviewItems.length?undefined:''}>{reviewItems.length}</span>},
@@ -352,9 +369,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             </ul>
           </Card>
         </>:null}
+        </HoldHeight>
         {phone?tools:null}
         <p className="cm-page-foot cm-tc-foot">
-          <span role="status" aria-live="polite">{message}{signInRequired?<> <Link href="/login">Sign in</Link></>:null}</span>
+          <span role="status" aria-live="polite">{message}</span>
           <button type="button" className="cm-refresh" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>
         </p>
       </div>
@@ -402,7 +420,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       <button className={corporate?employeeButtonClass('primary','button primary'):'button primary'} disabled={paused||busy||!!pending}>View period</button>
       <button type="button" className={corporate?employeeButtonClass('secondary','button secondary'):'button secondary'} aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>{corporate?'Refresh timecards':<><span className={styles.desktopCopy}>Refresh timecards</span><span className={styles.phoneCopy}>Refresh</span></>}</button>
     </form>
-    <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}{signInRequired?<> <Link href="/login">Sign in</Link></>:null}</p>
+    <p role="status" aria-live="polite" className={styles.status}><NavIcon name={busy?'refresh':'clock'} size={16}/>{message}</p>
     </div>
     {manager&&currentActor&&data?.state==='ready'&&cards.length?<dl className={styles.overview} aria-label="Period overview"><div><dt>Timecards</dt><dd>{cards.length}</dd></div><div><dt>Need attention</dt><dd>{cards.filter(item=>needsAttention(item.card)).length}</dd></div><div><dt>Finalized</dt><dd>{cards.filter(item=>item.state==='FINALIZED').length}</dd></div></dl>:null}
     {!manager?<Link href="/app/my-time" className={corporate?employeeRowClass('employee-corporate-correction-link '+styles.link):styles.link}><NavIcon name="clock" size={18}/>{corporate?<><span className="employee-corporate-desktop-copy">Request a correction in My time →</span><span className="employee-corporate-mobile-copy">Request a correction<small>Continue in My time</small></span><CaretRightIcon className="employee-corporate-caret" size={20} aria-hidden="true"/></>:'Request a correction in My time →'}</Link>:null}
@@ -466,7 +484,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </details>
       </article>;
     })}</div>:null}
-    {manager?null:cards.map(item=>{
+    {manager?null:<HoldHeight holding={!data} memory="timecards-employee">
+    {!data&&!busy?<TimecardsState className={styles.empty} title={stateTitle} message={message} failed={failed} signIn={signInRequired} onRetry={()=>void refresh(period)}/>:null}
+    {cards.map(item=>{
       const presentation=corporate?employeeTimecardPresentation(item.card.issues):null;
       return <article key={item.card.employeeId} className={(corporate?'employee-corporate-timecard ':'')+styles.card} tabIndex={-1} id={`timecard-${item.card.employeeId}`}>
       <header><div className={styles.identity}><span className={styles.avatar} aria-hidden="true"><NavIcon name={manager?'employee':'clock'} size={24}/></span><div><h2>{manager?item.card.employeeName:'Your timecard'}</h2><small>{keepWhole(`${periodDate(period.startDate)} – ${periodDate(period.endDate)}`)}</small></div></div><strong className={styles.state} data-state={item.state}>{stateLabel(item.state)}</strong></header>
@@ -491,5 +511,6 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </div>)}</details>:null}
       </MobileHomeDisclosure>
     </article>;})}
+    </HoldHeight>}
   </section>;
 }

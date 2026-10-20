@@ -232,3 +232,9 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 @media (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-tools .cm-tc-kbtn, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards button.nv-row { transition: none; }
 }
+
+/* No current snapshot (paused, offline, expired, failed, signed out): the state sits where the lists were. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-state { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px 20px; border-radius: 10px; background: #fff; text-align: center; color: var(--cm-label-2); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-state h2 { margin: 0; font: 600 1.0625rem/1.375rem var(--cm-sys); color: var(--cm-label); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-state p { margin: 0; font: 400 0.9375rem/1.25rem var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-state .button { min-height: 44px; margin-top: 8px; }

@@ -1,5 +1,6 @@
 'use client';
 
+import {HoldHeight} from './kit/hold-height';
 import {keepWhole} from '@/lib/keep-whole';
 import Link from 'next/link';
 import {useRef,useState} from 'react';
@@ -61,6 +62,8 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
    {denied?<Link className={styles.refresh} href="/login">Sign in</Link>:<button className={styles.refresh} type="button" data-retry={unavailable?'true':undefined} disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Try again':'Refresh'}</span></button>}
   </header>
   {readNotice?<p className={styles.notice} role="status">{readNotice}</p>:null}
+  {/* A pause, an offline spell or a failed read keeps the list's height and shows the state in its place (coordinator QA h4). */}
+  <HoldHeight holding={!ready} memory="notifications">
   {ready?<>
    {ready.coverage==='partial'?<div className={styles.notice} role="status"><WarningCircleIcon size={20} aria-hidden="true"/><p><strong>Some updates could not be checked.</strong> Some notifications are unavailable or outside this bounded view. Retry to check current access.</p></div>:null}
    <div className={styles.controls}>
@@ -89,5 +92,6 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
    </div>}
    <footer className={styles.footer}><p>Updates about your requests and schedule. Opening one doesn’t complete its action.</p><div><Link href={onMarkRead?"/app/inbox?filter=requests":"/app/requests/hub"}>Requests<CaretRightIcon size={16} aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<CaretRightIcon size={16} aria-hidden="true"/></Link></div></footer>
   </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load notifications':'Loading notifications…'}</h3><p>{state.paused?'Return to this window while online to check current information.':denied?'Sign in again to see notifications.':unavailable?'Check your connection, then try again.':'Checking your current access.'}</p></div>}
+  </HoldHeight>
  </section>;
 }
