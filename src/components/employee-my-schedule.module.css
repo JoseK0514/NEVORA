@@ -61,7 +61,7 @@
 
 /* ---------- Notices: confirmation, swap choosing, errors — one white card, title, line, action ---------- */
 .s6Notice:not(#s6) { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; margin: 20px 16px 0; padding: 16px 16px 16px 18px; border: 1px solid var(--s6-rule); border-radius: 18px; background: var(--s6-card); }
-.s6NoticeCopy:not(#s6) { display: flex; flex: 1 1 12rem; flex-direction: column; gap: 2px; min-width: 0; }
+.s6NoticeCopy:not(#s6) { display: flex; flex: 1 1 9rem; flex-direction: column; gap: 2px; min-width: 0; }
 .s6NoticeCopy :is(strong, h2):not(#s6) { font: 500 1rem/1.3125rem var(--s6-font); color: var(--s6-ink); }
 .s6NoticeCopy span:not(#s6) { font: 400 .9375rem/1.25rem var(--s6-font); color: var(--s6-ink-2); }
 .s6NoticeError:not(#s6) { border-color: rgba(163, 39, 26, .3); }
@@ -86,7 +86,9 @@
 .s6Row:not(#s6) { position: relative; display: flex; align-items: flex-start; gap: 16px; min-height: 72px; padding: 14px 14px 14px 18px; scroll-margin-top: 80px; }
 .s6Row + .s6Row:not(#s6)::before, .s6List > li + li:not(#s6)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--s6-rule); }
 .s6List > li:not(#s6) { position: relative; }
-.s6RowOff:not(#s6) { align-items: center; min-height: 60px; }
+.s6RowOff:not(#s6) { align-items: center; min-height: 54px; padding-block: 8px; }
+.s6RowOff .s6Day:not(#s6) { flex-direction: row; align-items: baseline; gap: 8px; width: auto; min-width: 2.5rem; }
+.s6RowOff .s6Day strong:not(#s6) { margin: 0; font-size: 1.125rem; line-height: 1.375rem; }
 .s6RowSelected:not(#s6) { background: #FBFAF8; }
 .s6Day:not(#s6) { flex: none; display: flex; flex-direction: column; width: 2.5rem; padding-top: 1px; }
 .s6Day small:not(#s6) { font: 600 .6875rem/.875rem var(--s6-font); letter-spacing: .12em; text-transform: uppercase; color: var(--s6-ink-3); }
@@ -111,34 +113,14 @@
 .s6Failure p:not(#s6) { font: 400 .9375rem/1.3125rem var(--s6-font); color: var(--s6-ink-2); }
 .s6Primary:not(#s6) { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 12px; padding: 0 22px; border-radius: 10px; background: var(--s6-deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--s6-font); text-decoration: none; }
 
-/* Shift options: a quiet round "···" at the shift's right; open, its two links sit under the shift. */
-.s6Shift:not(#s6) { position: relative; }
-.s6Shift:has(> .s6Options):not(#s6) { padding-right: 40px; }
-.s6Options:not(#s6) { flex: 0 0 100%; margin: 0; }
-.s6Options > summary:not(#s6) { position: absolute; top: -10px; right: -8px; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; color: var(--s6-ink-2); list-style: none; cursor: pointer; }
-.s6Options > summary:not(#s6)::-webkit-details-marker { display: none; }
-.s6Options > summary:hover:not(#s6) { background: rgba(22, 28, 27, .05); }
-.s6Options[open] > summary:not(#s6) { background: var(--s6-track); color: var(--s6-ink); }
-.s6Shift:has(> .s6Options[open]):not(#s6) { padding-right: 0; }
-.s6Shift:has(> .s6Options[open]) > .s6Copy:not(#s6) { padding-right: 40px; }
-.s6OptionsBody:not(#s6) { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; padding: 6px 0 2px; border-top: 1px solid var(--s6-rule); }
-.s6OptionsBody a:not(#s6) { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--s6-ink); font: 500 .9375rem/1.25rem var(--s6-font); text-decoration: none; }
-.s6OptionsBody a:hover:not(#s6) { text-decoration: underline; text-decoration-color: var(--s6-rule); text-underline-offset: 5px; }
-.s6OptionsBody p:not(#s6) { font: 400 .9375rem/1.3125rem var(--s6-font); color: var(--s6-ink-3); }
-
-/* What changed: the shared disclosure as one white row. */
-.s6Changes:not(#s6):empty { display: none; }
-.s6Changes :global(.schedule-publication-change):not(#s6):not(#s6) { margin: 20px 16px 0; padding: 0; border: 1px solid var(--s6-rule); border-radius: 18px; background: var(--s6-card); box-shadow: none; overflow: hidden; }
-.s6Changes :global(.schedule-publication-change > summary):not(#s6):not(#s6) { display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 18px; color: var(--s6-ink); font: 500 1rem/1.3125rem var(--s6-font); cursor: pointer; }
-.s6Changes :global(.schedule-publication-change ul):not(#s6):not(#s6) { margin: 0; padding: 4px 18px 16px; border-top: 1px solid var(--s6-rule); }
-.s6Changes :global(.schedule-publication-change li):not(#s6):not(#s6) { display: flex; flex-direction: column; gap: 2px; padding: 12px 0; font: 400 .9375rem/1.3125rem var(--s6-font); color: var(--s6-ink-2); }
-.s6Changes :global(.schedule-publication-change li + li):not(#s6):not(#s6) { border-top: 1px solid var(--s6-rule); }
-.s6Changes :global(.schedule-publication-change li strong):not(#s6):not(#s6) { color: var(--s6-ink); font-weight: 500; }
 .s6Blocked:not(#s6):empty { display: none; }
 .s6Blocked:not(#s6) { margin: 14px 16px 0; }
 
 /* Planning ahead: plain rows with a chevron. */
-.s6LinkRow:not(#s6) { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 58px; padding: 0 16px 0 18px; color: var(--s6-ink); font: 500 1.0625rem/1.375rem var(--s6-font); letter-spacing: -.012em; text-decoration: none; }
+.s6LinkRow:not(#s6) { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 68px; padding: 12px 16px 12px 18px; color: var(--s6-ink); text-decoration: none; }
+.s6LinkRow > span:not(#s6) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.s6LinkRow b:not(#s6) { font: 500 1.0625rem/1.375rem var(--s6-font); letter-spacing: -.012em; }
+.s6LinkRow small:not(#s6) { font: 400 .9375rem/1.25rem var(--s6-font); color: var(--s6-ink-2); }
 .s6LinkRow:hover:not(#s6) { background: #FAFAF8; }
 .s6LinkRow:focus-visible:not(#s6) { outline-offset: -3px; border-radius: 18px; }
 .s6Chevron:not(#s6) { flex: none; fill: none; stroke: var(--s6-faint); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
@@ -149,14 +131,57 @@
   .s6Band:not(#s6) { padding: 28px 32px 34px; border-radius: 24px; }
   .s6Sheet:not(#s6) { margin-top: 0; padding-top: 24px; border-radius: 0; background: none; }
   .s6Seg:not(#s6), .s6List:not(#s6), .s6Notice:not(#s6), .s6Empty:not(#s6), .s6Failure:not(#s6), .s6Blocked:not(#s6) { margin-inline: 0; }
-  .s6Changes :global(.schedule-publication-change):not(#s6):not(#s6) { margin-inline: 0; }
   .s6WeekTop:not(#s6) { margin-inline: 4px 0; }
   .s6Strip:not(#s6) { margin-inline: 0; }
   .s6Head:not(#s6), .s6Sub:not(#s6), .s6Fine:not(#s6), .s6Receipt:not(#s6) { margin-inline: 4px; }
   .s6Band h1:not(#s6) { font-size: 2.75rem; line-height: 3rem; }
 }
-.s6Changes :global(.schedule-publication-change > summary):not(#s6):not(#s6) { list-style: none; }
-.s6Changes :global(.schedule-publication-change > summary)::-webkit-details-marker { display: none; }
-.s6Changes :global(.schedule-publication-change > summary):not(#s6):not(#s6)::after { content: ""; width: 7px; height: 7px; margin: 0 4px 3px 12px; border-right: 1.5px solid var(--s6-faint); border-bottom: 1.5px solid var(--s6-faint); transform: rotate(45deg); transition: transform .2s ease; }
-.s6Changes :global(.schedule-publication-change[open] > summary):not(#s6):not(#s6)::after { margin-bottom: -3px; transform: rotate(-135deg); }
-@media (prefers-reduced-motion: reduce) { .s6Changes :global(.schedule-publication-change > summary):not(#s6):not(#s6)::after { transition: none; } }
+/* ---------- Organized list ---------- */
+.s6Count:not(#s6) { font-weight: 500; color: var(--s6-ink-3); }
+.s6NextTag:not(#s6) { margin-bottom: 4px; font: 600 .6875rem/.875rem var(--s6-font); letter-spacing: .13em; text-transform: uppercase; color: var(--s6-teal); }
+.s6Copy .s6NextTag:not(#s6) { color: var(--s6-teal); }
+.s6Copy strong.s6NextHours:not(#s6) { font: 300 1.625rem/2rem var(--s6-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.s6RowNext:not(#s6) { padding-block: 18px; }
+.s6Off:not(#s6) { color: var(--s6-ink-3); }
+
+/* A shift that can still change is one button: the shift itself, with a chevron; open, its two links sit under it. */
+.s6Shift:not(#s6) { display: block; }
+.s6Options:not(#s6) { margin: 0; }
+.s6Options > summary:not(#s6) { display: flex; align-items: center; gap: 10px; margin: -6px -6px -6px -4px; padding: 6px 6px 6px 4px; border-radius: 12px; list-style: none; cursor: pointer; }
+.s6Options > summary:not(#s6)::-webkit-details-marker { display: none; }
+.s6Options > summary:hover:not(#s6) { background: #FAFAF8; }
+.s6Options > summary .s6Chevron:not(#s6) { margin-left: auto; transition: transform .2s ease; }
+.s6Options[open] > summary .s6Chevron:not(#s6) { transform: rotate(90deg); }
+.s6Options > summary:focus-visible:not(#s6) { outline-offset: 0; }
+.s6OptionsBody:not(#s6) { display: flex; flex-direction: column; gap: 2px; margin-top: 10px; padding: 6px 0 2px; border-top: 1px solid var(--s6-rule); }
+.s6OptionsBody a:not(#s6) { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--s6-ink); font: 500 .9375rem/1.25rem var(--s6-font); text-decoration: none; }
+.s6OptionsBody a:hover:not(#s6) { text-decoration: underline; text-decoration-color: var(--s6-rule); text-underline-offset: 5px; }
+.s6OptionsBody p:not(#s6) { font: 400 .9375rem/1.3125rem var(--s6-font); color: var(--s6-ink-3); }
+
+/* Earlier this week: one quiet row that opens the finished days. */
+.s6Earlier:not(#s6) { margin: 12px 16px 0; }
+.s6Earlier > summary:not(#s6) { display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 16px 0 18px; border: 1px solid var(--s6-rule); border-radius: 18px; background: var(--s6-card); color: var(--s6-ink); font: 500 1rem/1.3125rem var(--s6-font); list-style: none; cursor: pointer; }
+.s6Earlier > summary:not(#s6)::-webkit-details-marker { display: none; }
+.s6Earlier > summary small:not(#s6) { color: var(--s6-ink-3); font: 400 .9375rem/1.25rem var(--s6-font); }
+.s6Earlier > summary .s6Chevron:not(#s6) { margin-left: auto; transition: transform .2s ease; }
+.s6Earlier[open] > summary .s6Chevron:not(#s6) { transform: rotate(90deg); }
+.s6Earlier > .s6List:not(#s6) { margin: 10px 0 0; }
+
+/* The confirm request: one compact row, the button on the right. */
+.s6Review:not(#s6) { flex-wrap: nowrap; }
+.s6Review .s6ReviewAction:not(#s6) { align-self: center; }
+
+/* What changed: a row in Planning ahead. */
+.s6ChangesRow:not(#s6):empty { display: none; }
+.s6ChangesRow :global(.schedule-publication-change):not(#s6):not(#s6) { margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.s6ChangesRow :global(.schedule-publication-change > summary):not(#s6):not(#s6) { display: flex; align-items: center; justify-content: space-between; min-height: 58px; padding: 0 16px 0 18px; color: var(--s6-ink); font: 500 1.0625rem/1.375rem var(--s6-font); letter-spacing: -.012em; list-style: none; cursor: pointer; }
+.s6ChangesRow :global(.schedule-publication-change > summary)::-webkit-details-marker { display: none; }
+.s6ChangesRow :global(.schedule-publication-change > summary):not(#s6):not(#s6)::after { content: ""; flex: none; width: 7px; height: 7px; margin-right: 3px; border-right: 1.5px solid var(--s6-faint); border-bottom: 1.5px solid var(--s6-faint); transform: rotate(-45deg); transition: transform .2s ease; }
+.s6ChangesRow :global(.schedule-publication-change[open] > summary):not(#s6):not(#s6)::after { transform: rotate(45deg); }
+.s6ChangesRow :global(.schedule-publication-change ul):not(#s6):not(#s6) { margin: 0; padding: 0 18px 14px; }
+.s6ChangesRow :global(.schedule-publication-change li):not(#s6):not(#s6) { display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid var(--s6-rule); font: 400 .9375rem/1.3125rem var(--s6-font); color: var(--s6-ink-2); }
+.s6ChangesRow :global(.schedule-publication-change li strong):not(#s6):not(#s6) { color: var(--s6-ink); font-weight: 500; }
+@media (min-width: 768px) { .s6Earlier:not(#s6) { margin-inline: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .s6Options > summary .s6Chevron:not(#s6), .s6Earlier > summary .s6Chevron:not(#s6), .s6ChangesRow :global(.schedule-publication-change > summary):not(#s6):not(#s6)::after { transition: none; }
+}

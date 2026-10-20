@@ -43,7 +43,9 @@ it('midnight end, real position names, lead and approved-callout labels remain e
 it('selected day, today, current-week return and planning destinations retain native URLs',()=>{
  const output=html({selectedDay:'2026-10-14'});
  expect(output).toContain('aria-current="date"');expect(output).toContain('Selected day');
- expect(output).toContain('/app/schedule?week=2026-10-12&amp;day=2026-10-12#schedule-2026-10-12');
+ // Signature: on the current week the arrows are enough; another week offers Today back to the current one.
+ expect(output).not.toContain('>Today</a>');
+ expect(html({weekStart:'2026-10-19'})).toContain('/app/schedule?week=2026-10-12&amp;day=2026-10-12#schedule-2026-10-12');
  expect(output).toContain('/app/availability');expect(output).toContain('/app/requests');
 });
 
@@ -102,8 +104,8 @@ it('says plainly what the review asks: confirm you have seen your own schedule (
   // Signature: the review sits right under the week, before the shifts, so no jump link is needed.
   expect(markup.indexOf('id="my-review-title"')).toBeLessThan(markup.indexOf('data-s6-agenda'));
   expect(markup).not.toContain('>Your manager asks you to confirm this week</a>');
-  expect(markup).toContain('Confirm you’ve seen your schedule');
-  expect(markup).toContain('Check your shifts for this week, then confirm.');
+  expect(markup).toContain('Confirm this week');
+  expect(markup).toContain('Your manager asked you to check it.');
   expect(markup).not.toContain('below');
 });
 
@@ -113,4 +115,16 @@ it('names the location that has not published, inside the week card (Jose, 2026-
   expect(markup).toContain('Your North Office shifts are published. Harbor hasn’t published this week yet.');
   const none = html({state: 'unpublished', shifts: [], locations: [{id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
   expect(none).toContain('Harbor hasn’t published this week yet. Shifts shown are published. An empty day isn’t a day off yet.');
+});
+
+it('organizes the week: days still ahead first with the next shift marked, finished days folded under Earlier this week', () => {
+  const markup = html({today: '2026-10-14', observedAt: '2026-10-14T12:00:00Z', shifts: [{...shift, id: 'past', date: '2026-10-12'}, {...shift, id: 'next', date: '2026-10-15'}]});
+  const next = markup.indexOf('Next up'), earlier = markup.indexOf('Earlier this week');
+  expect(next).toBeGreaterThan(0);
+  expect(earlier).toBeGreaterThan(next);
+  // Every day keeps its own anchor; finished days live inside the closed disclosure.
+  expect(markup.match(/<article[^>]*id="schedule-/g)).toHaveLength(7);
+  expect(markup.indexOf('id="schedule-2026-10-12"')).toBeGreaterThan(earlier);
+  expect(markup.indexOf('id="schedule-2026-10-15"')).toBeLessThan(earlier);
+  expect(markup).toContain('Coming up');
 });

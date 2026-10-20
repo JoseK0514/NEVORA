@@ -7,7 +7,9 @@ import type {CommandResult} from '@/lib/employee-attention/types';
 
 /** Keep the exact original operation while outcome is unknown. Only a refreshed
  * canonical weekly read may display confirmation success. */
-export function EmployeeWeeklyConfirmation({weekStart,expectedRevisionId,intent}:{weekStart:string;expectedRevisionId:string;intent:AttentionIntent}){
+export function EmployeeWeeklyConfirmation({weekStart,expectedRevisionId,intent,compact=false}:{weekStart:string;expectedRevisionId:string;intent:AttentionIntent;
+ /** Signature schedule: the card already says what to confirm, so the idle button reads "Confirm" (its name stays "Confirm schedule"). */
+ compact?:boolean}){
  const router=useRouter(),[pending,start]=useTransition(),[result,setResult]=useState<CommandResult|null>(null);
  const generation=useRef(0);
  useEffect(()=>{
@@ -27,7 +29,7 @@ export function EmployeeWeeklyConfirmation({weekStart,expectedRevisionId,intent}
   {result?.status==='blocked'?null:<form action={submit}>
    <input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="expectedRevisionId" value={expectedRevisionId}/>
    <input type="hidden" name="operationId" value={intent.operationId}/><input type="hidden" name="authority" value={intent.authority}/>
-   <button className="employee-action primary" disabled={pending||!retryable}>{pending?'Confirming…':result?'Retry confirmation':'Confirm schedule'}</button>
+   <button className="employee-action primary" disabled={pending||!retryable} aria-label={compact&&!pending&&!result?'Confirm schedule':undefined}>{pending?'Confirming…':result?'Retry confirmation':compact?'Confirm':'Confirm schedule'}</button>
   </form>}
   {result&&result.status!=='committed'?<p role="alert">{result.status==='conflict'?'The schedule changed. Review the current week before confirming.':result.status==='blocked'?'This review is no longer authorized. Sign in and review the schedule again.':result.status==='outcome_unknown'?'Confirmation outcome unknown. Retry to check the original confirmation.':'Confirmation unavailable. Retry the original confirmation.'}</p>:null}
   {result?.status==='committed'?<p role="status">Checking the current schedule confirmation…</p>:null}
