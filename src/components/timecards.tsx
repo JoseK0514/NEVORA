@@ -217,13 +217,22 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const [tab,setTab]=useState<'all'|'review'|'approved'>('all'),[selecting,setSelecting]=useState(false),[openId,setOpenId]=useState<string|null>(null);
   const [phone,setPhone]=useState(false);
   const sheet=useRef<HTMLDialogElement|null>(null);
+  // Final pass P2-8: the period picker closes with Escape (focus returns to its button) or a press outside it.
+  const periodRef=useRef<HTMLDetailsElement|null>(null);
+  useEffect(()=>{
+    if(!manager)return;
+    const key=(event:KeyboardEvent)=>{const picker=periodRef.current;if(event.key==='Escape'&&picker?.open){picker.open=false;picker.querySelector('summary')?.focus();}};
+    const press=(event:PointerEvent)=>{const picker=periodRef.current;if(picker?.open&&!picker.contains(event.target as Node))picker.open=false;};
+    document.addEventListener('keydown',key);document.addEventListener('pointerdown',press);
+    return ()=>{document.removeEventListener('keydown',key);document.removeEventListener('pointerdown',press);};
+  },[manager]);
   const openItem=openId?cards.find(item=>item.card.employeeId===openId)??null:null,openKey=openItem?openItem.card.employeeId:null;
   useEffect(()=>{
     if(!manager||typeof window.matchMedia!=='function')return;
     const query=window.matchMedia(PHONE_QUERY),sync=()=>setPhone(query.matches);
     sync();query.addEventListener('change',sync);return ()=>query.removeEventListener('change',sync);
   },[manager]);
-  // Desktop at 1180px and wider: the period stepper and Export sit in the shell's top bar (v3 mockup); narrower, in the page.
+  // Desktop at 1300px and wider: the period stepper and Export sit in the shell's top bar (v3 mockup); narrower, in the page.
   const bar=useTopBarSlot(manager,'cm-tc-bar-tools');
   useEffect(()=>{
     // The detail is a modal sheet. It stays open while its card refreshes and closes when the protected read is cleared.
@@ -260,7 +269,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const exclusionText=(item:TimecardItem)=>{const exclusion=batchExclusion(item,actorId,batchAction);return exclusion?`Not selectable for ${batchAction==='APPROVE'?'approval':'finalization'}: ${{self:'a different manager must review',issues:'resolve timecard issues first',state:'incompatible current state'}[exclusion]}.`:undefined;};
     const tools=<div className="cm-tc-tools" role="group" aria-label="Period and export">
       <button type="button" className="cm-tc-kbtn cm-tc-step" aria-label="Previous period" disabled={paused||busy||!!pending} onClick={()=>goTo(shiftPeriod(period,-1))}><CaretLeftIcon size={13} weight="bold" aria-hidden="true"/></button>
-      <details className="cm-tc-period">
+      <details className="cm-tc-period" ref={periodRef}>
         <summary className="cm-tc-kbtn"><span className="cm-tc-desk">{periodText}</span><span className="cm-tc-phone">Choose dates</span></summary>
         <form onSubmit={chooseDates} className="cm-tc-dates">
           <label>Period start<input type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>

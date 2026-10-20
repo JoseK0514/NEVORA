@@ -5,7 +5,7 @@
  * Phones: navigation row, large title, week strip, location segments, planning rows, the chosen day as a grouped list.
  * Desktop: title row with the week stepper, More and Add shift; underline location tabs; the people × days roster.
  * Both layouts are in the markup (manager-weekly-roster.tsx); the width shows one. Sizes in rem so 200% text scales.
- * Secondary text uses #6C6C70 on phones and #6B6B68/#737370 on desktop: the mockup's lighter greys fall under 4.5:1. */
+ * Secondary text uses #6C6C70 on phones and #6B6B68/#6B6B68 on desktop: the mockup's lighter greys fall under 4.5:1. */
 
 /* ---------- Both widths ---------- */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) { --cm-sched-2: #6C6C70; }
@@ -215,7 +215,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-person .nv-avatar { display: inline-flex; width: 26px; height: 26px; margin-right: 10px; font-size: .65625rem; vertical-align: middle; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-person__text { display: inline-flex; flex-direction: column; max-width: calc(100% - 36px); vertical-align: middle; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-person__name { font: 500 .8125rem/1rem var(--cm-sys); color: #111; overflow-wrap: anywhere; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-person__sub { font: 400 .75rem/.9375rem var(--cm-sys); color: #737370; font-variant-numeric: tabular-nums; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-person__sub { font: 400 .75rem/.9375rem var(--cm-sys); color: #6B6B68; font-variant-numeric: tabular-nums; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-person__sub em { font-style: normal; color: #B42318; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-open-icon { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 10px; border-radius: 13px; background: #FEF0EE; color: #B42318; vertical-align: middle; }
 
@@ -264,10 +264,9 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) :is(.cm-block, .cm-grid thead th) { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 
-/* At 1180px and wider the week stepper, More and Add shift sit in the top bar (the mockup); the band's copy is hidden so
+/* At 1300px and wider the week stepper, More and Add shift sit in the top bar (the mockup); the band's copy is hidden so
  * nothing moves on the first frame, and the shell's own Add shift steps aside for the page's primary one. */
-@media (min-width: 1180px) {
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule > .nv-pageband .cm-sched-bar { display: none; }
+@media (min-width: 1300px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header > .cm-sched-slot { display: flex; align-items: center; margin-left: auto; margin-right: 8px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header:has(> .cm-sched-slot) > .mobile-header-actions { margin-left: 0; }
 }
@@ -284,4 +283,8 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   /* The top-bar buttons keep a 30px box at large text, as the Timecards tools do. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-kbtn { min-height: 30px; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-schedule, .cm-sched-slot) .cm-kbtn--icon { width: 30px; }
+}
+/* The band's copy hides at 1300px+ until the top bar says it has no room (large text keeps the tools in the page). */
+@media (min-width: 1300px) {
+  html:not([data-cm-topbar="0"]) body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule > .nv-pageband .cm-sched-bar { display: none; }
 }

@@ -292,7 +292,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
   if(!presets)return;
   setCustom(false);setNotice('');setDraft(presets[next]);if(!samePeriod(period,presets[next]))setPeriod(presets[next]);
  };
- // At 1180px and wider the period picker and Export sit in the top bar (v3 mockup); narrower, in the page's own bar.
+ // At 1300px and wider the period picker and Export sit in the top bar (v3 mockup); narrower, in the page's own bar.
  const slot=useTopBarSlot(true,'cm-tc-bar-tools cm-insights-bar');
  const tools=<>
    <div className="cm-insights__tools">

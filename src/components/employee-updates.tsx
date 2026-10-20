@@ -49,7 +49,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  const emptyTitle = current?.state === 'partial' ? 'No updates available in this view' : filter === 'all' ? 'No current updates' : mode === 'manager' ? filter === 'to-review' ? 'No updates requiring acknowledgement' : 'No optional updates' : filter === 'to-review' ? 'No updates waiting for review' : 'No reviewed updates yet';
  const emptyDescription = current?.state === 'partial' ? 'Some updates could not be checked. Refresh to try again.' : filter === 'all' ? 'New workplace updates will appear here.' : mode === 'manager' ? 'View all updates to check other review requirements.' : filter === 'reviewed' ? 'Updates you mark read or acknowledge will appear here.' : 'You can still find your reviewed updates in All.';
 
- // Phase 3: the kit band; the compose action leads the content column. Clean Manager (v3): for managers at 1180px and wider
+ // Phase 3: the kit band; the compose action leads the content column. Clean Manager (v3): for managers at 1300px and wider
  // it sits in the top bar, as the mockups place page actions.
  const compose = <Link className="nv-btn updates-compose" data-kind="secondary" href="/app/updates/compose"><NavIcon name={mode === 'manager' ? 'updates' : 'employees'} />{mode === 'manager' ? 'Create update' : "Message today’s team"}</Link>;
  // A Refresh the reader asked for says so until a newer read lands (as on the Inbox); background polls stay quiet.
