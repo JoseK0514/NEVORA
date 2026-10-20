@@ -19,15 +19,17 @@ export type SettingsFrameProps = {
   bandAside?: ReactNode;
   /** Guidance beside the form on wide screens, after it on phones. */
   aside?: ReactNode;
+  /** The desktop top bar already links to Settings here, so a Back to Settings is left out there (recovery pages: false). */
+  settingsCrumb?: boolean;
   /** "narrow" keeps a single form column readable on wide screens. */
   width?: "narrow" | "wide";
   className?: string;
   children: ReactNode;
 };
 
-export function SettingsFrame({ title, summary, eyebrow, back = { href: "/app/settings", label: "Settings" }, bandAside, aside, width = "wide", className, children }: SettingsFrameProps) {
+export function SettingsFrame({ title, summary, eyebrow, back = { href: "/app/settings", label: "Settings" }, bandAside, aside, width = "wide", settingsCrumb = true, className, children }: SettingsFrameProps) {
   return (
-    <div className={className ? `nv-page wc-page ${className}` : "nv-page wc-page"} data-nv-page="" data-wc-width={width}>
+    <div className={className ? `nv-page wc-page ${className}` : "nv-page wc-page"} data-nv-page="" data-wc-width={width} data-wc-crumb={settingsCrumb ? "settings" : undefined}>
       <PageBand eyebrow={eyebrow} title={title} summary={summary} back={back ?? undefined} aside={bandAside} />
       <FocusClear />
       <div className="nv-content wc-content">

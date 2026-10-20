@@ -109,7 +109,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: strin
   }
 
   const errorId = `${inputId}-error`;
-  return <SettingsFrame back={back} title="Clocker recovery" summary="Check a saved Clocker action and help the employee finish recovery."
+  return <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Check a saved Clocker action and help the employee finish recovery."
     aside={<GuideCard title="A clear path to recovery">
       <ol className="wc-steps">
         <li><strong>Find the saved reference</strong>It’s on the recovery screen of the registered tablet.</li>

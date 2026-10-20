@@ -230,10 +230,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .n
 /* ---------- Settings hub ---------- */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--wc-gap); align-items: start; }
 @media (min-width: 1024px) {
-  /* Two balanced columns read top to bottom, then across; every gap stays 16px. */
-  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub { display: block; columns: 2; column-gap: var(--wc-gap); }
-  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub > .nv-card { display: block; margin-bottom: var(--wc-gap); break-inside: avoid; }
+  /* Two fixed columns (company and work rules left, the rest right); every gap stays 16px and no group moves between engines. */
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub__column { display: flex; flex-direction: column; gap: var(--wc-gap); min-width: 0; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-card__head { flex-direction: column; align-items: flex-start; gap: 2px; padding-bottom: var(--nv-s-1); }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-rows { padding-bottom: var(--nv-s-2); }
 
@@ -610,3 +610,28 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv
 /* WCAG 2.4.11: a field reached by Tab never ends up behind the save bar. Scrolling keeps the measured tab bar
  * (0 on desktop) plus the save bar plus 16px clear at the bottom, at every width and text size. */
 html:has(body .app-shell.nevora-portal .page-frame .wc-page .wc-actions.nv-actionbar) { scroll-padding-bottom: calc(var(--wc-tabbar, 68px) + var(--wc-bar, 76px) + 16px + env(safe-area-inset-bottom, 0px)); }
+
+/* Desktop page heading (final desktop pass): every title at the same place as Inbox, Timecards and Profile.
+ * Nothing sits above the title. A Back that repeats the top bar's Settings crumb is left out; any other Back and
+ * the Add actions sit at the right of the title row. A count line goes under the title, then the summary. */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "body bar" "extra extra"; column-gap: var(--nv-s-5); align-items: start;
+  }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband > .nv-masthead__mark { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband > .nv-masthead__body { grid-area: body; display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 0; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband > .nv-masthead__extra { grid-area: extra; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband .nv-masthead__title { order: 0; margin: 4px 0 0; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband .nv-pageband__eyebrow-row { order: 1; min-height: 0; margin: 0; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband .nv-masthead__summary { order: 2; margin: 0; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband > .nv-pageband__bar {
+    grid-area: bar; display: flex; align-items: center; justify-content: flex-end; gap: var(--nv-s-4); min-height: 1.875rem; margin: 0; padding: 0;
+  }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page[data-wc-crumb="settings"] > .nv-pageband.nv-pageband .nv-masthead__back[href="/app/settings"] { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page[data-wc-crumb="settings"] > .nv-pageband.nv-pageband > .nv-pageband__bar:not(:has(> :not(.nv-masthead__back[href="/app/settings"]))) { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page > .nv-pageband.nv-pageband .nv-pageband__bar > :is(a, button, span) { margin: -7px 0; }
+
+  /* Save bars sit on the column's edges, not 16px past them. */
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-actions.nv-actionbar { margin-inline: 0; padding-inline: 0; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page][data-nv-page].wc-page.wc-page.wc-page .wc-actions.nv-actionbar::before { left: 0; right: 0; }
+}
