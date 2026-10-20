@@ -81,7 +81,7 @@ try{
     await employee.setOffline(true);await ep.evaluate(()=>window.dispatchEvent(new Event('offline')));assert.equal(await ep.getByRole('article').count(),0);checked(engine+': offline clears private period data');
     await employee.setOffline(false);await ep.evaluate(()=>window.dispatchEvent(new Event('online')));await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
     await ep.route('**/api/timecards',route=>route.fulfill({status:503,contentType:'application/json',body:'{"state":"unavailable","reason":"read_failed"}'}));
-    await ep.getByRole('button',{name:'Refresh timecards',exact:true}).click();await ep.getByRole('status').filter({hasText:'Timecards unavailable'}).waitFor();assert.equal(await ep.getByRole('article').count(),0);checked(engine+': read error clears stale totals');
+    await ep.getByRole('button',{name:'Refresh timecards',exact:true}).click();await ep.getByRole('status').filter({hasText:'Couldn’t load timecards'}).waitFor();assert.equal(await ep.getByRole('article').count(),0);checked(engine+': read error clears stale totals');
     await ep.unroute('**/api/timecards');
     const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
     assert.equal(await lp.getByRole('button',{name:'Approve timecard',exact:true}).count(),0);checked(engine+': Lead self-service without management controls');
