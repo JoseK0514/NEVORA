@@ -34,16 +34,16 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  assert.equal(await operation(),original);assert.equal((await q('SELECT * FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,scenario.week])).length,0);await screenshot('conflict');
  checks.push('Actual delayed server command shows pending/disabled state; unseen republish returns conflict and no canonical acknowledgement');
  await page.getByRole('button',{name:'Review current schedule',exact:true}).click();await confirm().waitFor();await page.waitForFunction(old=>document.querySelector('input[name="operationId"]')?.value!==old,original);
- const current=await operation();assert.notEqual(current,original);await confirm().click();await page.getByText('Schedule confirmed',{exact:true}).waitFor();
+ const current=await operation();assert.notEqual(current,original);await confirm().click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
  const canonical=await q('SELECT publication_revision_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,scenario.week]);const latest=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);assert.equal(canonical[0].publication_revision_id,latest[0].id);await screenshot('success');
  checks.push('Review current schedule issues a new displayed intent; explicit confirmation is proven against current canonical revision');
- await publish();await schedule();assert.equal(await confirm().count(),0);assert.equal(await page.getByText('Schedule confirmed',{exact:true}).count(),1);checks.push('Equivalent own-shift republish preserves canonical confirmation');
+ await publish();await schedule();assert.equal(await confirm().count(),0);assert.equal(await page.getByRole('heading',{name:'You’re up to date',exact:true}).count(),1);checks.push('Equivalent own-shift republish preserves canonical confirmation');
  await publish('10:00');await schedule();assert(await confirm().isEnabled());
  stage='response-loss';
  // Abort one action response in the browser after the actual server commit.
  let lost=false;await page.route('**/app/schedule?*',async route=>{if(!lost&&route.request().method()==='POST'&&route.request().headers()['next-action']){lost=true;await route.fetch();await route.abort('failed');}else await route.continue();});
  const recoveryOp=await operation();await confirm().click();await page.getByRole('alert').filter({hasText:'Confirmation outcome unknown.'}).waitFor();assert.equal(await operation(),recoveryOp);await screenshot('unknown');
- await page.unroute('**/app/schedule?*');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByText('Schedule confirmed',{exact:true}).waitFor();
+ await page.unroute('**/app/schedule?*');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
  assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,recoveryOp])).length,1);checks.push('Actual committed action response loss renders outcome_unknown; original operation retry recovers one canonical result');
  stage='leave-and-revoke';await publish('11:00');await schedule();await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));assert.equal(await page.locator('input[name="authority"]').count(),0);checks.push('Leaving the view clears obsolete private intent and prevents late-response reuse');
  await schedule();await q('DELETE FROM employee_sessions WHERE employee_id=$1',[actor]);await confirm().click();await page.waitForURL(u=>u.pathname==='/login');checks.push('Actual session revocation is denied by server action and routes to login');
@@ -53,7 +53,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   try{
    const unavailableOperation=await operation();await blocker.query('BEGIN');await blocker.query('LOCK TABLE employee_attention_operations IN ACCESS EXCLUSIVE MODE');
    await confirm().click();await page.getByRole('alert').filter({hasText:'Confirmation unavailable.'}).waitFor();assert.equal(await operation(),unavailableOperation);await screenshot('unavailable');
-   await blocker.query('COMMIT');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByText('Schedule confirmed',{exact:true}).waitFor();
+   await blocker.query('COMMIT');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
    assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,unavailableOperation])).length,1);
    await blocker.query('BEGIN');await blocker.query('LOCK TABLE schedule_publication_revisions IN ACCESS EXCLUSIVE MODE');
    await schedule();assert.equal(await confirm().count(),0);assert.equal(await page.locator('.employee-schedule-shift').count(),0);assert(await page.getByRole('status').filter({hasText:'Schedule unavailable'}).count());await screenshot('source-unavailable');

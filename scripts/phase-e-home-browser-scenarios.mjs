@@ -1,3 +1,4 @@
+import {measureRenderedContrast} from './browser-contrast.mjs';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
@@ -161,7 +162,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='keyboard';await page.locator('h1').click();const link=next().getByRole('link',{name:'View schedule',exact:false}).first(),tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));const rect=await link.boundingBox();assert(rect&&rect.height>=44&&rect.width>=44);
- const measureContrast=()=>link.evaluate(e=>{const rgb=s=>s.match(/[\d.]+/g).slice(0,3).map(Number);const lum=c=>c.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((v,n,i)=>v+n*[.2126,.7152,.0722][i],0);let bg=e;while(bg&&getComputedStyle(bg).backgroundColor==='rgba(0, 0, 0, 0)')bg=bg.parentElement;return (Math.max(lum(rgb(getComputedStyle(e).color)),lum(rgb(getComputedStyle(bg).backgroundColor)))+.05)/(Math.min(lum(rgb(getComputedStyle(e).color)),lum(rgb(getComputedStyle(bg).backgroundColor)))+.05);});details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value>=4.5);await link.focus();
+ const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
  const myTime=recorded().getByRole('link',{name:'My Time',exact:false});await page.locator('h1').click();let clockFocus=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await myTime.evaluate(e=>e===document.activeElement)){clockFocus=true;break;}}
  assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(e=>({outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth}));assert.notEqual(details.clockRecoveryFocus.outlineStyle,'none');assert(parseFloat(details.clockRecoveryFocus.outlineWidth)>=2);await link.focus();
@@ -182,7 +183,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='removal-review';
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
  await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();
- await page.getByText('Schedule confirmed',{exact:true}).waitFor();
+ await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
  const [ack]=await q('SELECT publication_revision_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,scenario.week]);
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
