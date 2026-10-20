@@ -100,7 +100,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   const details=ep.locator('.employee-time-entry').first();
   await details.locator('summary').focus();await details.locator('summary').press('Enter');
-  const trigger=details.getByRole('button',{name:'Request correction',exact:true});
+  const trigger=details.getByRole('button',{name:'Request a correction',exact:true});
   await trigger.focus();await trigger.press('Enter');
   const form=details.locator('.employee-time-correction-form');await form.waitFor();
   await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);

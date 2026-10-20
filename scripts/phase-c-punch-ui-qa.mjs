@@ -14,7 +14,7 @@ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(
 const pw=await import(pathToFileURL(runtime.resolve('playwright')).href),playwright=pw.default??pw;
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim()==='';
 if(process.env.PHASE_C_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_C_EXPECTED_SHA);assert(sourceClean,'Clocker regression requires a clean exact candidate');}
-const report={checkpoint,tree,sourceClean,checks:[],errors:[],screenshots:[],limits:['Owned loopback PostgreSQL and scratch Next runtime; no hosted or physical-device verification.','Browser plugin not listed; existing Playwright used.']};
+const report={checkpoint,tree,sourceClean,checks:[],errors:[],screenshots:[],contrast:[],limits:['Owned loopback PostgreSQL and scratch Next runtime; no hosted or physical-device verification.','Browser plugin not listed; existing Playwright used.']};
 const browsers=[];let app,currentPage;
 function checked(name){report.checks.push(name);console.log('[C3/C4 browser] PASS '+name);}
 const q=(text,values=[])=>app.database.executor.query({text,values});
@@ -200,8 +200,8 @@ try{
   await t.setViewportSize({width:320,height:740});await verify(t);await t.getByRole('heading',{name:'Hi, '+longName+'.',exact:true}).waitFor();await geometry(t,engine+': complete long name at 320px');await shot(t,engine+'-long-name-320');
   await t.getByRole('heading',{name:'Hi, '+longName+'.',exact:true}).focus();await t.keyboard.press('Tab');
   const button=t.getByRole('button',{name:'Clock In',exact:true});console.log('[Keyboard diagnostic]',engine,await t.evaluate(()=>({activeTag:document.activeElement?.tagName,activeLabel:document.activeElement?.textContent?.trim().slice(0,100)})));await t.waitForFunction(()=>document.activeElement?.textContent?.trim()==='Clock In',null,{timeout:1500});assert(await button.evaluate(e=>document.activeElement===e));
-  const measured=await button.evaluate(e=>{const c=getComputedStyle(e);const luminance=value=>{const rgb=value.match(/[\d.]+/g).slice(0,3).map(Number).map(n=>{const s=n/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;});return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];};const a=luminance(c.color),b=luminance(c.backgroundColor);return {ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),outline:parseFloat(c.outlineWidth),opacity:c.opacity};});
-  assert(measured.ratio>=4.5);assert(measured.outline>=2);assert.equal(measured.opacity,'1');checked(engine+': keyboard focus and measured primary-button contrast');
+  const measured=await button.evaluate(e=>{const c=getComputedStyle(e);const luminance=value=>{const rgb=value.match(/[\d.]+/g).slice(0,3).map(Number).map(n=>{const s=n/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;});return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];};const a=luminance(c.color),b=luminance(c.backgroundColor);return {foreground:c.color,background:c.backgroundColor,backgroundImage:c.backgroundImage,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),outline:parseFloat(c.outlineWidth),opacity:c.opacity};});
+  report.contrast.push({engine,state:'keyboard-focus',...measured});assert.equal(measured.backgroundImage,'none','Contrast measurement requires the actual solid Clocker paint');assert(measured.ratio>=4.5);assert(measured.outline>=2);assert.equal(measured.opacity,'1');checked(engine+': keyboard focus and measured primary-button contrast');
   await done(t);await q("UPDATE employees SET first_name='Avery',updated_at=clock_timestamp() WHERE id='PUNCH-A'");
   assert.deepEqual(errors,[]);checked(engine+': no runtime or hydration errors');await tablet.close();await owner.close();await browser.close();
  }
