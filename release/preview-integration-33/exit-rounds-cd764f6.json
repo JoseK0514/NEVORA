@@ -1,7 +1,7 @@
 {
   "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "status": "All five full exits remain open; zero completed. Four cd764f6 owners resumed exact checkpoints after the safe resource pause. Wave C prepared on a21650de waits for the bounded repair preview to close. No source-zero merge is ready.",
+  "status": "All five full exits open, zero completed. Four exactcd owners safely paused at completed batches for current6fece gates/C bootstrap; previews retained. C static rebind6fece, zero inherited runtime credit.",
   "zeroExits": [],
   "reviews": [
     {
@@ -13,13 +13,12 @@
       "pendingManualJobs": 1538,
       "sourceContractNotApplicable": 16,
       "progressAtCleanResourcePause": {
-        "checkpointed": 664,
-        "rawAwaitingParentReap": 4,
-        "resume": "python3 premium-phase-3/round-5-cd764f6-full/analysis/resume-paused-checker-136882.py --root-released"
+        "checkpointed": 948,
+        "rawAwaitingParentReap": 4
       },
       "partialMeasuredFindingRows": 8,
-      "currentCheckpointLowerBound": 784,
-      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
+      "currentCheckpointLowerBound": 948,
+      "runtimeStatus": "safely paused at complete batch; source/checker/raws preserved; explicit resume after current source C bootstrap"
     },
     {
       "owner": "WaveA",
@@ -28,13 +27,12 @@
       "priorIDs": 51,
       "path": "p35-wave-a/complete-exit-cd764f6-preparation/",
       "progressAtCleanResourcePause": {
-        "checkpointed": 528,
-        "rawPass": 527,
-        "oneEarlier503RequiresExplicitReplay": true,
-        "resume": "own guarded run-serial.mjs --execute --mode matrix after exact release and removal of own PAUSE"
+        "checkpointed": 776,
+        "rawPass": 775,
+        "retained503Gap": 1
       },
-      "currentCheckpointLowerBound": 536,
-      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
+      "currentCheckpointLowerBound": 776,
+      "runtimeStatus": "safely paused at complete batch; source/checker/raws preserved; explicit resume after current source C bootstrap"
     },
     {
       "owner": "WaveB",
@@ -42,25 +40,24 @@
       "priorIDs": 137,
       "path": "p35-wave-b/full-exit-cd764f6/",
       "progressAtCleanResourcePause": {
-        "checkpointed": 327,
-        "rawAwaitingParentReap": 3,
-        "rawContrastFailures": 3,
-        "resume": "WAVE_B_MATRIX_RESUME_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7 python3 preparation/scripts/resume-matrix.py --execute"
+        "checkpointed": 579,
+        "rawAwaitingParentReap": 4,
+        "rawContrastNegatives": 12
       },
-      "currentCheckpointLowerBound": 417,
-      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained",
-      "rawContrastNegativeLowerBound": 7
+      "currentCheckpointLowerBound": 579,
+      "runtimeStatus": "safely paused at complete batch; source/checker/raws preserved; explicit resume after current source C bootstrap",
+      "rawContrastNegativeLowerBound": 12
     },
     {
       "owner": "WaveC",
       "automatedCells": 960,
       "totalSerialCheckpoints": 1253,
       "priorIDs": 104,
-      "path": "p35-wave-c/candidate-0f0cd37-exit/",
-      "source": "0f0cd37226955c36e2bb67e482989e554c91810f",
-      "previousPreparation": "p35-wave-c/candidate-4cadf00-exit/",
+      "path": "p35-wave-c/candidate-6fece29-exit/",
+      "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+      "previousPreparation": "p35-wave-c/candidate-0f0cd37-exit/",
       "runtimeCreditInherited": 0,
-      "status": "repreparing current frozen source; zero runtime credit; serial bounded rootTC3phase then unchanged fullCscope, shared closure under C; no DB/listen before explicit resource release"
+      "status": "source-bound static rebind; zero runtime credit; root16/24/2 serial before unchanged full960/1253; same owned preview/worker and shared final closure"
     },
     {
       "owner": "Desktop",
@@ -75,17 +72,16 @@
       "exactInputContinuation": "../../p4-desktop/exit-cd764f6/evidence/full-exit-cd764f6-scope-v3/baseline/continuation.json",
       "importedCompleteCells": 138,
       "progressAtCleanResourcePause": {
-        "checkpointed": 579,
-        "rawFailures": 2,
-        "canonicalFailure": "ST-P4-13",
-        "resume": "DESKTOP_RESUME_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7 bash p4-desktop/exit-cd764f6/execution-tools/resume-normal-sweep.sh"
+        "checkpointed": 840,
+        "rawFailures": 3,
+        "canonicalFailure": "ST-P4-13"
       },
-      "currentCheckpointLowerBound": 588,
-      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
+      "currentCheckpointLowerBound": 840,
+      "runtimeStatus": "safely paused at complete batch; source/checker/raws preserved; explicit resume after current source C bootstrap"
     }
   ],
   "criteria": "Full unchanged checker with axe, all five areas, all prior IDs, required state/large-data/manual judgments. Genuine product failures retained; setup gaps separate. No prior pass counts inherited.",
-  "publication": "Exact33 and four ready refs unchanged; current RC0f0cd372 pushed with ten separate follow-up commits. PR14head8a26a2c0 includes current candidate and coordinator CI drivers. No main/deploy.",
+  "publication": "Exact33/four ready refs unchanged and pushed; currentRC6fece293 and PR14head985c8a7a pushed. No main/deploy.",
   "pinnedPublishedRef": "codex/checkpoint-preview33-cd764f6",
   "completedFullExits": 0,
   "additionalCurrentRepairProbe": {
@@ -131,26 +127,25 @@
     "sourceAndMirrorVerified": true,
     "closureErrors": []
   },
-  "currentRepairCandidate": "0f0cd37226955c36e2bb67e482989e554c91810f",
+  "currentRepairCandidate": "6fece2934b42f0176a473047ed13ac588eb1ce82",
   "currentValidationPR": {
     "number": 14,
-    "head": "8a26a2c05435c84b6428b108f73d6d7a4c0ab1b8",
-    "run": 39349447263,
-    "status": "queued; previous current Attendance46/46pass, wholeD/Home stale/model expectations corrected"
+    "head": "985c8a7a6bd31fe65d392a93556a36971eb00d7b",
+    "run": 39351585693,
+    "status": "pending; same-tree be95 run in progress; no inherited pass"
   },
   "temporaryResourceHold": {
-    "requestedAt": "2026-10-20T00:15:00Z",
-    "purpose": "Finish current candidate full tests/build/markers and fifth preview fixture/login bootstrap",
+    "active": true,
+    "requestedAt": "2026-10-20T01:02:00Z",
+    "purpose": "exact6fece production/type/lint then C fixture/login bootstrap",
     "onlyBetweenCompleteBatches": true,
     "noCellAbortOrCriterionChange": true,
     "previewsRetained": true,
     "allFourOwnersAcknowledgedNoActiveBrowserCells": true,
-    "resumeAfter": "root gates finish and runtime_setup confirms new candidate fixture/login ready; root explicitly releases existing owners",
-    "notAFullExitStopOrClosure": true,
-    "active": false,
-    "releasedAt": "2026-10-20T00:29:00Z"
+    "resumeAfter": "root explicit release after source-bound build and C bootstrap readiness",
+    "notAFullExitStopOrClosure": true
   },
-  "updatedAt": "2026-10-20T00:45:55.474083+00:00",
+  "updatedAt": "2026-10-20T01:10:02.089198+00:00",
   "currentCandidateGates": {
     "source": "a21650de50374683d52e32b883d7f419d7344f22",
     "qualifiedTests": 7363,
@@ -166,5 +161,12 @@
     "typeLintBuildFiveMarkers": "passed",
     "newerTwoRepairs": "focused checks pass; fresh full proof pending",
     "report": "gates-a21650d/README.md"
+  },
+  "currentProductionMarkers": {
+    "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+    "pass": true,
+    "artifacts": 2322,
+    "fiveMarkersAbsent": true,
+    "report": "candidate-6fece29/README.md"
   }
 }

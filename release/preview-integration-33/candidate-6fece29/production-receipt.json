@@ -1,0 +1,21 @@
+{
+  "candidate": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+  "tree": "27567d0c646e19a8043f9084418b077a53cc3f41",
+  "startedAt": "2026-10-20T01:06:43.421294+00:00",
+  "sourceClean": true,
+  "checkerSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "portalPremiumCssBlob": "01b1b8ec6fdbd2af994ddb869892a68f949c0982",
+  "command": [
+    "nice",
+    "-n",
+    "10",
+    "npm",
+    "run",
+    "test:dev:production"
+  ],
+  "exitCode": 0,
+  "seconds": 70.145,
+  "completedAt": "2026-10-20T01:07:53.568918+00:00",
+  "endCandidate": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+  "endClean": true
+}

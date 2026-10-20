@@ -1,0 +1,580 @@
+diff --git a/scripts/phase-e-calendar-browser-scenarios.mjs b/scripts/phase-e-calendar-browser-scenarios.mjs
+index 5182a078..5337e526 100644
+--- a/scripts/phase-e-calendar-browser-scenarios.mjs
++++ b/scripts/phase-e-calendar-browser-scenarios.mjs
+@@ -2,10 +2,14 @@ import assert from 'node:assert/strict';
+ import {join} from 'node:path';
+ import {readFile,writeFile} from 'node:fs/promises';
+ import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
++import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
+ export async function runScenario({app,page,context,engine,width,evidenceDirectory}){
+  const checks=[],receipt=join(evidenceDirectory,`calendar-case-${engine}-${width}.json`);
+- const step=async(name,run)=>{await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks}));}catch{await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks}));throw Error('Calendar case failed: '+name);}};
++ const step=async(name,run)=>{await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks}));}catch(error){await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));throw Error('Calendar case failed: '+name);}};
+  const panel=page.locator('[data-calendar-setting]');
++ const retry=()=>panel.getByRole('button',{name:'Try again to load the calendar link',exact:true});
++ const management=()=>panel.locator('details.employee-calendar-management');
++ const openManagement=async()=>{if(await management().getAttribute('open')===null)await management().locator('summary').click();await management().locator('p').waitFor({state:'visible'});};
+  const state=async(text)=>{await panel.getByText(text,{exact:true}).waitFor();};
+  const noUrl=async()=>assert.equal(await panel.locator('textarea').count(),0);
+  let firstUrl,secondUrl,firstBody;
+@@ -50,16 +54,19 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
+  });
+  await step('Lost issuance response retries the same committed operation without recovering the raw URL',async()=>{
+   let intercepted=false;await page.route('**/api/employee/calendar-subscriptions',async route=>{if(route.request().method()==='POST'&&!intercepted){intercepted=true;const response=await route.fetch(),result=await response.json();assert.equal(result.status,'created');await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({status:'outcome_unknown',operationId:result.operationId}),headers:{'Cache-Control':'no-store, private'}});}else await route.continue();});
+-  await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByText('The result is unknown. Retry the same operation to check it.',{exact:true}).waitFor();await noUrl();assert(await panel.getByRole('button',{name:'Replace link',exact:true}).isDisabled());assert(await panel.getByRole('button',{name:'Revoke link',exact:true}).isDisabled());await panel.getByRole('button',{name:'Retry',exact:true}).click();await panel.getByText('The link is active. Its URL cannot be retrieved; replace the link to create a new one.',{exact:true}).waitFor();await state('Link active');await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');assert.equal((await page.request.get(secondUrl)).status(),404);assert.equal(Number((await q('SELECT count(*)::integer n FROM calendar_subscriptions WHERE employee_id=$1 AND revoked_at IS NULL',[fixture.actors[0]]))[0].n),1);
++  await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByText('The result is unknown. Retry the same operation to check it.',{exact:true}).waitFor();await noUrl();assert(await panel.getByRole('button',{name:'Replace link',exact:true}).isDisabled());await openManagement();assert(await panel.getByRole('button',{name:'Revoke link',exact:true}).isDisabled());await retry().click();await panel.getByText('The link is active. Its URL cannot be retrieved; replace the link to create a new one.',{exact:true}).waitFor();await state('Link active');await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');assert.equal((await page.request.get(secondUrl)).status(),404);assert.equal(Number((await q('SELECT count(*)::integer n FROM calendar_subscriptions WHERE employee_id=$1 AND revoked_at IS NULL',[fixture.actors[0]]))[0].n),1);
+  });
+  await step('Late creation response after hide remains suppressed and replay has no URL',async()=>{
+-  let intercepted=false;await page.route('**/api/employee/calendar-subscriptions',async route=>{if(route.request().method()==='POST'&&!intercepted){intercepted=true;const response=await route.fetch();assert.equal(response.status(),200);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await route.fulfill({response});}else await route.continue();});await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByText('Calendar settings paused. Return to this window to check the link.',{exact:true}).waitFor();await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await state('Link active');await noUrl();await panel.getByRole('button',{name:'Retry',exact:true}).click();await panel.getByText('The link is active. Its URL cannot be retrieved; replace the link to create a new one.',{exact:true}).waitFor();await noUrl();
++  let intercepted=false;await page.route('**/api/employee/calendar-subscriptions',async route=>{if(route.request().method()==='POST'&&!intercepted){intercepted=true;const response=await route.fetch();assert.equal(response.status(),200);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await route.fulfill({response});}else await route.continue();});await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByText('Calendar settings paused. Return to this window to check the link.',{exact:true}).waitFor();await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await state('Link active');await noUrl();await retry().click();await panel.getByText('The link is active. Its URL cannot be retrieved; replace the link to create a new one.',{exact:true}).waitFor();await noUrl();
+  });
+  await step('Unavailable settings offer retry and real current status recovers',async()=>{
+-  await page.route('**/api/employee/calendar-subscriptions',route=>route.request().method()==='GET'?route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'fictional_failure'})}):route.continue());await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await panel.getByText('Calendar settings unavailable.',{exact:false}).waitFor();await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');await panel.getByRole('button',{name:'Retry',exact:true}).click();await state('Link active');
++  await page.route('**/api/employee/calendar-subscriptions',route=>route.request().method()==='GET'?route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'fictional_failure'})}):route.continue());await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await panel.getByText('Calendar settings unavailable.',{exact:false}).waitFor();await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');await retry().click();await state('Link active');
+  });
+  await step('Revocation status, client caveats, responsive keyboard controls and token-free capture',async()=>{
+-  await panel.getByRole('button',{name:'Revoke link',exact:true}).focus();await page.keyboard.press('Enter');await state('Link revoked');await noUrl();await panel.getByText('Subscribe in your calendar app',{exact:true}).click();assert.equal(await panel.getByText('Calendar apps refresh on their own schedule. Check NEVORA for the latest schedule. Revoking this link stops future access; it cannot remove information already copied by a calendar app.',{exact:true}).count(),1);assert.equal(await panel.getByText('Calendar connected',{exact:true}).count(),0);
++  await openManagement();await management().getByText('Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.',{exact:true}).waitFor();
++  await page.bringToFront();const revoke=panel.getByRole('button',{name:'Revoke link',exact:true});await revoke.scrollIntoViewIfNeeded();await revoke.focus();assert(await revoke.evaluate(e=>e===document.activeElement),'Revoke has native keyboard focus before Enter');await page.keyboard.press('Enter');await state('Link revoked');await noUrl();assert.equal(await management().count(),0);
++  for(const [provider,guide] of [['Apple Calendar','Apple subscription guide'],['Google Calendar','Google subscription guide'],['Outlook','Outlook subscription guide']]){const instructions=panel.locator('.employee-calendar-providers details').filter({hasText:provider});assert.equal(await instructions.getAttribute('open'),null);await instructions.locator('summary').click();await instructions.getByRole('link',{name:guide,exact:true}).waitFor();await instructions.locator('summary').click();}
++  assert(await panel.getByText('Calendar apps refresh on their own schedule.',{exact:false}).isVisible());assert(await panel.getByText('Creating or copying a link does not confirm a calendar connection.',{exact:false}).isVisible());assert.equal(await panel.getByText('Calendar connected',{exact:true}).count(),0);
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),true);const persisted=await page.evaluate(async()=>({text:JSON.stringify({...localStorage,...sessionStorage}),cached:(await Promise.all((await caches.keys()).map(async key=>(await (await caches.open(key)).keys()).map(r=>r.url)))).flat()}));assert.equal(persisted.text.includes(new URL(firstUrl).pathname.split('/')[3]),false);assert.equal(persisted.cached.some(url=>url.includes('/api/calendar/')),false);
+   await page.screenshot({path:join(evidenceDirectory,`calendar-profile-${engine}-${width}.png`),fullPage:true});assert.equal((await readFile(join(app.root,'next.log'),'utf8')).includes(new URL(firstUrl).pathname.split('/')[3]),false);assert.equal((await readFile(join(app.root,'next.log'),'utf8')).includes(new URL(secondUrl).pathname.split('/')[3]),false);
+  });
+diff --git a/scripts/phase-e-communications-browser-scenarios.mjs b/scripts/phase-e-communications-browser-scenarios.mjs
+index 33130d24..35842f89 100644
+--- a/scripts/phase-e-communications-browser-scenarios.mjs
++++ b/scripts/phase-e-communications-browser-scenarios.mjs
+@@ -5,34 +5,36 @@ import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app
+ import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
+ import {businessDate} from '../src/lib/business-time.ts';
+ import {weekStartFor} from '../src/lib/date-utils.ts';
++import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
+ export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile}){
+  const label=`U${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
+  const scenario=await seedOwnedScenario(app.database.executor,label,index+28),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values}),checks=[],screenshots=[],managerErrors=[];let stage='seed';
+  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
+- const details={engine,width,checks,screenshots},shot=async name=>{const path=join(evidenceDirectory,`updates-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
++ const details={engine,width,checks,screenshots,managerErrors,managerNetworkFailures:[]},shot=async name=>{const path=join(evidenceDirectory,`updates-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
+  const login=async(target,id)=>{await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign In',exact:true}).click()]);await target.waitForLoadState('networkidle');};
++ const measureActions=async name=>{const heights=await page.locator('.wb-update').getByRole('button').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));assert(heights.length>0,'Current update actions were measured');assert(heights.every(h=>h>=44),'Current update actions keep 44px targets');(details.actionTargetHeights??=[]).push({stage:name,heights});};
+  let managerContext,manager;
+  try{
+-  managerContext=await browser.newContext({viewport:{width,height:900},hasTouch:width<768,isMobile:width<768,serviceWorkers:'block'});await managerContext.route('**/*',route=>{const target=new URL(route.request().url());if(['http:','https:'].includes(target.protocol)&&target.origin!==app.url){managerErrors.push('External request refused');return route.abort();}return route.continue();});manager=await managerContext.newPage();manager.on('pageerror',error=>managerErrors.push(error.name));await login(manager,'QAOWNER');
++  managerContext=await browser.newContext({viewport:{width,height:900},hasTouch:width<768,isMobile:width<768,serviceWorkers:'block'});await managerContext.route('**/*',route=>{const target=new URL(route.request().url());if(['http:','https:'].includes(target.protocol)&&target.origin!==app.url){managerErrors.push('External request refused');return route.abort();}return route.continue();});manager=await managerContext.newPage();manager.on('pageerror',error=>managerErrors.push({stage,...safeBrowserFailure({name:error.name,message:error.name+': '+error.message,stack:error.stack},{suite:'communications',engine,width,status:'failed'},{stage})}));manager.on('requestfailed',request=>{if(details.managerNetworkFailures.length<64)details.managerNetworkFailures.push({stage,method:request.method(),resourceType:request.resourceType(),path:new URL(request.url()).pathname.replace(/\/api\/calendar\/[^/]+/g,'/api/calendar/[REDACTED]').replace(/[A-Za-z0-9_-]{32,}/g,'[OPAQUE]'),failure:safeBrowserFailure({message:request.failure()?.errorText??'Request failed'}).summary});});manager.setDefaultTimeout(15_000);const bootstrap=['/api/manager/inbox-count','/api/manager/today','/api/manager/action-center','/api/notifications'].map(path=>manager.waitForResponse(response=>new URL(response.url()).pathname===path));await Promise.all([login(manager,'QAOWNER'),...bootstrap]);await manager.waitForLoadState('networkidle');
+   stage='compose';await manager.goto(app.url+'/app/updates/compose');await manager.getByLabel('Title',{exact:true}).waitFor();
+-  await manager.getByLabel('Title',{exact:true}).fill('A'.repeat(121));await manager.getByLabel('Message',{exact:true}).fill('Fictional content');await manager.getByRole('button',{name:'Preview audience',exact:true}).click();await manager.getByText('Title must contain 1–120 characters.',{exact:true}).waitFor();
++  await manager.getByLabel('Title',{exact:true}).fill('A'.repeat(121));await manager.getByLabel('Message',{exact:true}).fill('Fictional content');await manager.getByRole('button',{name:'Preview audience',exact:true}).click();await manager.locator('#communication-title-error').getByText('Title must contain 1–120 characters.',{exact:true}).waitFor();assert.equal(await manager.getByLabel('Title',{exact:true}).getAttribute('aria-invalid'),'true');
+   const title=`${label} Accents á and emoji 👩🏽‍💻 `+'T'.repeat(60),body='First line <script>plain text</script>\n'+'á'.repeat(1300)+'\nLast line before acknowledgement';
+-  await manager.getByLabel('Title',{exact:true}).fill(title);await manager.getByLabel('Message',{exact:true}).fill('A'.repeat(2001));await manager.getByRole('button',{name:'Preview audience',exact:true}).click();await manager.getByText('Message must contain 1–2000 characters.',{exact:true}).waitFor();
+-  await manager.getByLabel('Message',{exact:true}).fill(body);await manager.getByLabel('Review requirement',{exact:true}).selectOption('REQUIRED');await manager.getByRole('button',{name:'Preview audience',exact:true}).click();details.compose=await manager.evaluate(()=>({titleLength:[...document.querySelector('#communication-title').value].length,bodyLength:[...document.querySelector('#communication-body').value].length,feedback:document.querySelector('#communication-form-error').textContent,selects:[...document.querySelectorAll('.communication-compose select')].map(s=>s.value)}));await manager.getByRole('heading',{name:'Audience preview',exact:true}).waitFor();
++  await manager.getByLabel('Title',{exact:true}).fill(title);await manager.getByLabel('Message',{exact:true}).fill('A'.repeat(2001));await manager.getByRole('button',{name:'Preview audience',exact:true}).click();await manager.locator('#communication-body-error').getByText('Message must contain 1–2000 characters.',{exact:true}).waitFor();assert.equal(await manager.getByLabel('Message',{exact:true}).getAttribute('aria-invalid'),'true');
++  await manager.getByLabel('Message',{exact:true}).fill(body);await manager.getByLabel('Review requirement',{exact:true}).selectOption('REQUIRED');await manager.getByRole('button',{name:'Preview audience',exact:true}).click();details.compose=await manager.evaluate(()=>({titleLength:[...document.querySelector('#communication-title').value].length,bodyLength:[...document.querySelector('#communication-body').value].length,feedback:document.querySelector('#communication-form-error').textContent,selects:[...document.querySelectorAll('.wb-compose select')].map(s=>s.value)}));await manager.getByRole('heading',{name:'Audience preview',exact:true}).waitFor();
+   if(width===390){stage='audience-change';await q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,'loc-1') ON CONFLICT DO NOTHING",[scenario.actors[2]]);await q("UPDATE employees SET primary_location_id='loc-2' WHERE id=$1",[scenario.actors[2]]);await q("DELETE FROM employee_location_eligibility WHERE employee_id=$1 AND location_id='loc-1'",[scenario.actors[2]]);await manager.getByRole('button',{name:'Publish update',exact:true}).click();await manager.getByText('This update or its audience changed. Review the latest context and preview again.',{exact:true}).waitFor();await manager.getByRole('button',{name:'Preview audience',exact:true}).click();await manager.getByRole('heading',{name:'Audience preview',exact:true}).waitFor();checks.push('U02 actual audience change after preview conflicts; refreshed preview required before publication');}
+   await manager.getByRole('button',{name:'Publish update',exact:true}).click();await manager.waitForURL(u=>/^\/app\/updates\/[a-f0-9-]{36}$/.test(u.pathname));const id=new URL(manager.url()).pathname.split('/').at(-1);await manager.getByRole('heading',{name:title,exact:true}).waitFor();
+   assert.equal((await q('SELECT * FROM communications WHERE id=$1',[id])).length,1);assert.equal((await q('SELECT * FROM communication_receipts WHERE communication_id=$1',[id])).length,0);checks.push('U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement');
+-  stage='full-review';await login(page,actor);await page.goto(app.url+'/app/updates/'+id);await page.getByRole('heading',{name:title,exact:true}).waitFor();assert.equal(await page.locator('.communication-body').innerText(),body);assert.equal(await page.locator('.communication-body script').count(),0);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.locator('.communication-management').count(),0);await shot('required');
+-  stage='native-focus';await page.bringToFront();const review=page.getByRole('checkbox',{name:'I have reviewed this update',exact:true});await review.focus();await page.keyboard.press('Space');await page.keyboard.press(tabKey);const focused=await page.getByRole('button',{name:'Acknowledge update',exact:true}).evaluate(e=>{const r=e.getBoundingClientRect(),header=document.querySelector('.mobile-header')?.getBoundingClientRect(),nav=document.querySelector('.mobile-nav')?.getBoundingClientRect();return {active:e===document.activeElement,documentFocused:document.hasFocus(),top:r.top,bottom:r.bottom,minimum:header?.height?header.bottom:0,maximum:nav?.height?nav.top:innerHeight};});details.focusedAcknowledgement=focused;assert(focused.active&&focused.top>=focused.minimum&&focused.bottom<=focused.maximum,'Focused acknowledgement is unobscured by fixed navigation');await page.keyboard.press(backTabKey);await page.keyboard.press('Space');assert.equal(await review.isChecked(),false);checks.push('U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus');
+-  stage='revision-conflict';await manager.goto(app.url+'/app/updates/compose?update='+id);await manager.getByLabel('Message',{exact:true}).waitFor();const changedBody=body+'\nLatest version';await manager.getByLabel('Message',{exact:true}).fill(changedBody);await manager.getByRole('button',{name:'Preview audience',exact:true}).click();await manager.getByRole('button',{name:'Publish new version',exact:true}).click();await manager.waitForURL(u=>u.pathname==='/app/updates/'+id);await manager.getByText('Latest version',{exact:false}).waitFor();
+-  await review.focus();await page.keyboard.press('Space');await page.getByRole('button',{name:'Acknowledge update',exact:true}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'Review latest',exact:true}).waitFor();assert.equal((await q('SELECT * FROM communication_receipts WHERE communication_id=$1',[id])).length,0);assert.equal(await page.locator('.communication-body').count(),0);await page.getByRole('button',{name:'Review latest',exact:true}).click();await page.getByRole('heading',{name:title,exact:true}).waitFor();assert.equal(await page.locator('.communication-body').innerText(),changedBody);assert.equal(await page.getByRole('checkbox',{name:'I have reviewed this update',exact:true}).isChecked(),false);checks.push('U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review');
+-  stage='unknown';let lost=false;const path='**/api/employee/communications';const drop=async route=>{if(route.request().method()==='POST'&&!lost){lost=true;await route.fetch();await route.abort('failed');}else await route.continue();};await page.route(path,drop);await page.getByRole('checkbox',{name:'I have reviewed this update',exact:true}).check();await page.getByRole('button',{name:'Acknowledge update',exact:true}).click();await page.getByRole('button',{name:'Check status',exact:true}).waitFor();await page.unroute(path,drop);const before=await q('SELECT id,acknowledged_at::text AS at FROM communication_receipts WHERE communication_id=$1 AND employee_id=$2',[id,actor]);assert.equal(before.length,1);await page.getByRole('button',{name:'Check status',exact:true}).click();await page.getByText('Acknowledged',{exact:false}).waitFor();assert.deepEqual(await q('SELECT id,acknowledged_at::text AS at FROM communication_receipts WHERE communication_id=$1 AND employee_id=$2',[id,actor]),before);checks.push('U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement');
+-  stage='layout';assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));const targets=await page.locator('.communication-detail .button').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));assert(targets.every(h=>h>=44));await page.addScriptTag({path:axeFile});const axe=await page.evaluate(async()=>{const r=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return r.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}));});assert.deepEqual(axe,[]);await shot('acknowledged');checks.push('U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations');
+-  stage='private-lifetime';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.getByText('Updates paused',{exact:true}).waitFor();assert.equal(await page.locator('.communication-body').count(),0);await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await page.getByRole('heading',{name:title,exact:true}).waitFor();checks.push('U06 actual offline clears private content; fresh online read restores current authorized version');
+-  stage='withdraw';await manager.goto(app.url+'/app/updates/'+id);await manager.getByRole('button',{name:'Withdraw update',exact:true}).click();await manager.getByText('This update is no longer available.',{exact:true}).waitFor();await page.getByRole('button',{name:'Retry',exact:true}).count().then(async count=>{if(count)await page.getByRole('button',{name:'Retry',exact:true}).click();else await page.goto(app.url+'/app/updates/'+id);});await page.getByText('This update is no longer available.',{exact:true}).waitFor();assert.equal(await page.locator('.communication-body').count(),0);assert.equal((await q('SELECT * FROM communication_receipts WHERE communication_id=$1',[id])).length,1);checks.push('U07 withdrawal stops current detail reads while preserving exact-version receipt history');
++  stage='full-review';await login(page,actor);await page.goto(app.url+'/app/updates/'+id);await page.getByRole('heading',{name:title,exact:true}).waitFor();assert.equal(await page.locator('.wb-update-body').innerText(),body);assert.equal(await page.locator('.wb-update-body script').count(),0);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.locator('[aria-label="Acknowledgement status"]').count(),0);await shot('required');
++  stage='native-focus';await measureActions('required-review');await page.bringToFront();const review=page.getByRole('checkbox',{name:'I have reviewed this update',exact:true});await review.focus();await page.keyboard.press('Space');await page.keyboard.press(tabKey);const focused=await page.getByRole('button',{name:'Acknowledge update',exact:true}).evaluate(e=>{const r=e.getBoundingClientRect(),header=document.querySelector('.mobile-header')?.getBoundingClientRect(),nav=document.querySelector('.mobile-nav')?.getBoundingClientRect();return {active:e===document.activeElement,documentFocused:document.hasFocus(),top:r.top,bottom:r.bottom,minimum:header?.height?header.bottom:0,maximum:nav?.height?nav.top:innerHeight};});details.focusedAcknowledgement=focused;assert(focused.active&&focused.top>=focused.minimum&&focused.bottom<=focused.maximum,'Focused acknowledgement is unobscured by fixed navigation');await page.keyboard.press(backTabKey);await page.keyboard.press('Space');assert.equal(await review.isChecked(),false);checks.push('U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus');
++  stage='revision-conflict';await manager.goto(app.url+'/app/updates/compose?update='+id);await manager.getByLabel('Message',{exact:true}).waitFor();const changedBody=body+'\nLatest version';await manager.getByLabel('Message',{exact:true}).fill(changedBody);await manager.getByRole('button',{name:'Preview audience',exact:true}).click();await manager.getByRole('button',{name:'Publish new version',exact:true}).click();await manager.waitForURL(u=>u.pathname==='/app/updates/'+id);await manager.locator('.wb-update-body').filter({hasText:'Latest version'}).waitFor();
++  await review.focus();await page.keyboard.press('Space');await page.getByRole('button',{name:'Acknowledge update',exact:true}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'Review latest',exact:true}).waitFor();assert.equal((await q('SELECT * FROM communication_receipts WHERE communication_id=$1',[id])).length,0);assert.equal(await page.locator('.wb-update-body').count(),0);await page.getByRole('button',{name:'Review latest',exact:true}).click();await page.getByRole('heading',{name:title,exact:true}).waitFor();assert.equal(await page.locator('.wb-update-body').innerText(),changedBody);assert.equal(await page.getByRole('checkbox',{name:'I have reviewed this update',exact:true}).isChecked(),false);checks.push('U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review');
++  stage='unknown';let lost=false;const path='**/api/employee/communications';const drop=async route=>{if(route.request().method()==='POST'&&!lost){lost=true;await route.fetch();await route.abort('failed');}else await route.continue();};await page.route(path,drop);await page.getByRole('checkbox',{name:'I have reviewed this update',exact:true}).check();await page.getByRole('button',{name:'Acknowledge update',exact:true}).click();await page.getByRole('button',{name:'Check status',exact:true}).waitFor();await measureActions('unknown-result');await page.unroute(path,drop);const before=await q('SELECT id,acknowledged_at::text AS at FROM communication_receipts WHERE communication_id=$1 AND employee_id=$2',[id,actor]);assert.equal(before.length,1);await page.getByRole('button',{name:'Check status',exact:true}).click();await page.getByRole('heading',{name:'Acknowledged',exact:true}).waitFor();assert.deepEqual(await q('SELECT id,acknowledged_at::text AS at FROM communication_receipts WHERE communication_id=$1 AND employee_id=$2',[id,actor]),before);checks.push('U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement');
++  stage='layout';assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));assert.equal(await page.getByRole('button',{name:'Acknowledge update',exact:true}).count(),0);assert.equal(await page.getByRole('checkbox',{name:'I have reviewed this update',exact:true}).count(),0);await page.addScriptTag({path:axeFile});const axe=await page.evaluate(async()=>{const r=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return r.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}));});assert.deepEqual(axe,[]);await shot('acknowledged');checks.push('U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations');
++  stage='private-lifetime';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.getByRole('heading',{name:'You’re offline',exact:true}).waitFor();assert.equal(await page.locator('.wb-update-body').count(),0);await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await page.getByRole('heading',{name:title,exact:true}).waitFor();checks.push('U06 actual offline clears private content; fresh online read restores current authorized version');
++  stage='withdraw';await manager.goto(app.url+'/app/updates/'+id);await manager.getByRole('button',{name:'Withdraw update',exact:true}).click();const confirmation=manager.getByRole('group',{name:/^Withdraw this update/});await confirmation.waitFor();assert.deepEqual(await q('SELECT state FROM communications WHERE id=$1',[id]),[{state:'PUBLISHED'}]);await confirmation.getByRole('button',{name:'Withdraw update',exact:true}).click();await manager.getByRole('heading',{name:'Update withdrawn',exact:true}).waitFor();await page.getByRole('button',{name:'Try again',exact:true}).count().then(async count=>{if(count)await page.getByRole('button',{name:'Try again',exact:true}).click();else await page.goto(app.url+'/app/updates/'+id);});await page.getByRole('heading',{name:'Update withdrawn',exact:true}).waitFor();assert.equal(await page.locator('.wb-update-body').count(),0);assert.equal((await q('SELECT * FROM communication_receipts WHERE communication_id=$1',[id])).length,1);checks.push('U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history');
+   stage='employee-team';const today=businessDate(new Date(),'America/Puerto_Rico'),week=weekStartFor(today);let [schedule]=await q("SELECT id FROM schedules WHERE location_id='loc-1' AND week_start=$1 ORDER BY id LIMIT 1",[week]);if(!schedule){const sid='qa-'+label+'-current';await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,'loc-1',$2,'DRAFT','QAOWNER')",[sid,week]);schedule={id:sid};}await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,$2,$3,$4,'08:00','16:00','qa-pos',true)",['qa-'+label+'-current-shift',schedule.id,actor,today]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
+-  await page.goto(app.url+'/app/updates/compose');await page.getByLabel('Title',{exact:true}).waitFor();assert.equal(await page.getByLabel('Review requirement',{exact:true}).count(),0);assert.equal(await page.getByLabel('Update type',{exact:true}).count(),0);await page.getByLabel('Title',{exact:true}).fill(label+' team note');await page.getByLabel('Message',{exact:true}).fill('Fictional operational team message');await page.getByRole('button',{name:'Preview audience',exact:true}).click();await page.getByRole('button',{name:'Publish update',exact:true}).click();await page.waitForURL(u=>/^\/app\/updates\/[a-f0-9-]{36}$/.test(u.pathname));await page.getByText('Delivery does not confirm reading.',{exact:false}).waitFor();assert.equal(await page.locator('.communication-management').count(),0);await page.getByRole('button',{name:'Mark read',exact:true}).click();await page.getByText('Marked read',{exact:false}).waitFor();checks.push('U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate');
+-  stage='replacement';const other=await context.newPage();await login(other,scenario.actors[1]);await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.getByText('Sign in again',{exact:true}).waitFor();assert.equal(await page.locator('.communication-body').count(),0);checks.push('U09 real account-cookie replacement refuses old presentation authority and clears private update');
++  await page.goto(app.url+'/app/updates/compose');await page.getByLabel('Title',{exact:true}).waitFor();assert.equal(await page.getByLabel('Review requirement',{exact:true}).count(),0);assert.equal(await page.getByLabel('Update type',{exact:true}).count(),0);await page.getByLabel('Title',{exact:true}).fill(label+' team note');await page.getByLabel('Message',{exact:true}).fill('Fictional operational team message');await page.getByRole('button',{name:'Preview audience',exact:true}).click();await page.getByRole('button',{name:'Publish update',exact:true}).click();await page.waitForURL(u=>/^\/app\/updates\/[a-f0-9-]{36}$/.test(u.pathname));await page.getByText('Delivery does not confirm reading.',{exact:false}).waitFor();assert.equal(await page.locator('[aria-label="Acknowledgement status"]').count(),0);await measureActions('optional-review');await page.getByRole('button',{name:'Mark read',exact:true}).click();await page.getByRole('heading',{name:'Marked read',exact:true}).waitFor();checks.push('U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate');
++  stage='replacement';const other=await context.newPage();await login(other,scenario.actors[1]);await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.getByRole('heading',{name:'Access changed',exact:true}).waitFor();assert.equal(await page.getByRole('link',{name:'Sign in',exact:true}).getAttribute('href'),'/login');assert.equal(await page.locator('.wb-update-body').count(),0);checks.push('U09 real account-cookie replacement refuses old presentation authority and clears private update');
+   assert.deepEqual(managerErrors,[]);checks.push('U10 manager browser has no uncaught application errors');await writeFile(join(evidenceDirectory,`updates-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
+  }catch(error){details.failedStage=stage;details.failure={name:error.name,message:'Browser step failed; inspect named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-communications-browser-scenarios.mjs'))};if(manager)await manager.screenshot({path:join(evidenceDirectory,`updates-${engine}-${width}-manager-failure.png`),fullPage:true}).catch(()=>{});await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`updates-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{await managerContext?.close();}
+ }
+diff --git a/scripts/phase-e-navigation-browser-scenarios.mjs b/scripts/phase-e-navigation-browser-scenarios.mjs
+index 6a258962..4fc6c8e3 100644
+--- a/scripts/phase-e-navigation-browser-scenarios.mjs
++++ b/scripts/phase-e-navigation-browser-scenarios.mjs
+@@ -9,24 +9,37 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
+  const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],prefix=`navigation-${engine}-${width}`,headers={};
+  const q=(text,values=[])=>app.database.executor.query({text,values});
+  page.on('pageerror',error=>runtimeErrors.push({name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]'),path:new URL(page.url()).pathname.replace(/\/api\/calendar\/[^/]+/g,'/api/calendar/[redacted]'),lastCompleted:checks.at(-1),stack:error.stack?.replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]')}));
+- page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/'))headers[path]=request.headers()['x-nevora-employee-view'];});
++ page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/')||path==='/api/notifications')headers[path]=request.headers()['x-nevora-employee-view'];});
+  async function login(id){await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign In',exact:true}).click()]);await page.waitForLoadState('networkidle');}
+  async function settle(){await page.waitForLoadState('networkidle');}
+- async function nav(href){
++ async function nav(href,keyboard=false){
+   const mobile=await page.locator('.mobile-nav').isVisible();
+-  // Phone tabs: Home, Schedule, Requests, Hours (payroll off), More. Availability
+-  // is a Requests section tab on phones; it stays a sidebar link on desktop.
+   const primary=['/app','/app/schedule','/app/requests/hub','/app/my-time'].includes(href);
++  // Availability belongs to Requests on both layouts; desktop Profile is an account action.
+   const sectionOwner={'/app/availability':'/app/requests/hub'}[href];
+-  if(mobile&&sectionOwner){await nav(sectionOwner);const tab=page.locator(`.section-tabs a[href="${href}"]`);await tab.tap();await page.waitForURL(u=>u.pathname===href);await settle();
+-   await page.waitForFunction(({href,sectionOwner})=>document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===sectionOwner&&document.querySelector('.section-tabs a[aria-current="page"]')?.getAttribute('href')===href,{href,sectionOwner});return;}
++  if(sectionOwner){
++   await nav(sectionOwner);const tab=page.locator('.section-tabs a[href="'+href+'"]');if(mobile)await tab.tap();else await tab.click();await page.waitForURL(u=>u.pathname===href);await settle();
++   await page.waitForFunction(({mobile,href,sectionOwner})=>document.querySelector('.section-tabs a[aria-current="page"]')?.getAttribute('href')===href&&(mobile?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===sectionOwner:document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="true"]')?.getAttribute('href')===sectionOwner),{mobile,href,sectionOwner});return;
++  }
++  if(!mobile&&href==='/app/profile'){
++   const trigger=page.getByRole('button',{name:/, account menu$/}),menu=page.locator('#portal-account-menu');
++   if(keyboard){await page.bringToFront();await trigger.focus();await page.keyboard.press('Enter');}else await trigger.click();await menu.waitFor();
++   const profile=menu.getByRole('link',{name:'Your profile',exact:true});
++   if(keyboard){await page.waitForFunction(()=>document.querySelector('#portal-account-menu a[href="/app/profile"]')===document.activeElement);await page.keyboard.press('Enter');}else await profile.click();
++   await page.waitForURL(u=>u.pathname===href);await settle();await menu.waitFor({state:'hidden'});
++   assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[href="/app/profile"]').count(),0,'Profile is reached from the account menu');
++   assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').count(),0,'Account pages do not select an unrelated sidebar section');return;
++  }
+   if(mobile&&!primary){await page.getByRole('button',{name:'More',exact:true}).click();await page.locator('#employee-more-navigation').waitFor({state:'visible'});}
+   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('#employee-more-navigation')):page.locator('nav[aria-label="Primary navigation"]');
+-  const destination=root.locator(`a[href="${href}"]`);if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
++  const destination=root.locator('a[href="'+href+'"]');if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
+   await page.waitForFunction(({mobile,primary,href})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:document.querySelector('.employee-more-trigger')?.classList.contains('active')&&document.querySelector('#employee-more-navigation a[aria-current="page"]')?.getAttribute('href')===href):document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href,{mobile,primary,href});
+-  await page.locator('#employee-more-navigation').waitFor({state:'hidden'});assert.equal(await page.locator('#employee-more-navigation').isVisible(),false,`More must close after ${href}`);
++  await page.locator('#employee-more-navigation').waitFor({state:'hidden'});assert.equal(await page.locator('#employee-more-navigation').isVisible(),false,'More must close after '+href);
+  }
+- async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?e.querySelector('dd'):e.querySelector('.employee-notification-list'));},kind);}
++ // Profile keeps aria-hidden placeholder rows; inbox controls exist even in a ready empty view.
++ async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?e.querySelector('.employee-profile-details:not([aria-hidden="true"]) dd')&&e.querySelector('footer button')?.disabled===false:e.querySelector('[aria-label="Filter notifications"]')&&e.querySelector('header button')?.disabled===false);},kind);}
++ const notifications=()=>page.locator('[data-private-view="notifications"]');
++ const refreshNotifications=()=>notifications().locator('header').getByRole('button');
+  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
+  async function accessibility(name){await page.addScriptTag({path:axeFile});const violations=await page.evaluate(async()=> (await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}})).violations.map(v=>v.id));assert.deepEqual(violations,[],name+' accessibility');checks.push(name+' axe WCAG A/AA');}
+  async function contrastStates(){
+@@ -36,7 +49,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
+    if(state==='normal')await page.mouse.move(0,0);
+    if(state==='hover')await target.hover();
+    if(state==='pressed')await page.mouse.down();
+-   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();focusTrace.push(await target.evaluate(e=>({stage:'after pointer release',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')})));await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.disabled===false&&!!document.querySelector('.employee-profile-details'));await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<30;n++){await page.keyboard.press(tabKey);if(await page.evaluate(()=>document.hasFocus()))await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.disabled===false&&!!document.querySelector('.employee-profile-details'));focusTrace.push(await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible'),activeTag:document.activeElement?.tagName,activeClass:document.activeElement?.className})));if(await target.evaluate(e=>e===document.activeElement)){reached=true;break;}}assert(reached,'Native Tab reaches Refresh');await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.matches(':focus-visible'));}
++   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();focusTrace.push(await target.evaluate(e=>({stage:'after pointer release',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')})));await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.disabled===false&&!!document.querySelector('.employee-profile-details:not([aria-hidden="true"])'));await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<30;n++){await page.keyboard.press(tabKey);if(await page.evaluate(()=>document.hasFocus()))await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.disabled===false&&!!document.querySelector('.employee-profile-details:not([aria-hidden="true"])'));focusTrace.push(await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible'),activeTag:document.activeElement?.tagName,activeClass:document.activeElement?.className})));if(await target.evaluate(e=>e===document.activeElement)){reached=true;break;}}assert(reached,'Native Tab reaches Refresh');await page.waitForFunction(()=>document.querySelector('.employee-account-footer button')?.matches(':focus-visible'));}
+    const sample=await target.evaluate(element=>{
+     const rgba=value=>{const parts=value.match(/[\d.]+/g).map(Number);return [parts[0],parts[1],parts[2],parts[3]??1];};
+     const blend=(front,back)=>front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
+@@ -51,10 +64,10 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
+    if(state==='focus'){assert(sample.active&&sample.focusVisible&&!sample.disabled,'Actual native keyboard focus is visible');assert.notEqual(sample.outline,'none');assert(sample.outlineRatio>=3,'focus outline contrast');}
+   }
+   const clear=async(control,name)=>{const sample=await control.evaluate(e=>{const r=e.getBoundingClientRect(),nav=document.querySelector('.mobile-nav')?.getBoundingClientRect(),header=document.querySelector('.mobile-header')?.getBoundingClientRect();return {top:r.top,bottom:r.bottom,minimum:header?.height?header.bottom:0,maximum:nav?.height?nav.top:innerHeight,active:e===document.activeElement,focusVisible:e.matches(':focus-visible')};});focusTrace.push({stage:name,...sample});assert(sample.active&&sample.focusVisible,name+' has native visible focus');assert(sample.top>=sample.minimum&&sample.bottom<=sample.maximum,name+' is unobscured above fixed navigation');};
+-  await clear(target,'Refresh');const signout=page.locator('.employee-account-view > form button');let reachedSignout=false;for(let n=0;n<12;n++){await page.keyboard.press(tabKey);if(await signout.evaluate(e=>e===document.activeElement)){reachedSignout=true;break;}const current=page.locator(':focus');assert.equal(await current.count(),1);await clear(current,'Calendar setting control');}assert(reachedSignout,'Native keyboard reaches Sign out through secondary calendar settings');await clear(signout,'Sign out');let returned=false;for(let n=0;n<12;n++){await page.keyboard.press(backTabKey);if(await target.evaluate(e=>e===document.activeElement)){returned=true;break;}}assert(returned,'Native reverse keyboard traversal returns to Refresh');await clear(target,'Refresh return');
++  await clear(target,'Refresh');const signout=page.getByRole('region',{name:'Session',exact:true}).getByRole('button',{name:'Sign out',exact:true});let reachedSignout=false;for(let n=0;n<12;n++){await page.keyboard.press(tabKey);if(await signout.evaluate(e=>e===document.activeElement)){reachedSignout=true;break;}const current=page.locator(':focus');assert.equal(await current.count(),1);await clear(current,'Calendar setting control');}assert(reachedSignout,'Native keyboard reaches Sign out through secondary calendar settings');await clear(signout,'Sign out');let returned=false;for(let n=0;n<12;n++){await page.keyboard.press(backTabKey);if(await target.evaluate(e=>e===document.activeElement)){returned=true;break;}}assert(returned,'Native reverse keyboard traversal returns to Refresh');await clear(target,'Refresh return');
+   await page.mouse.move(0,0);await page.mouse.up();checks.push('Native '+tabKey+' traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation');checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
+  }
+- async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('.employee-account-panel a,.employee-account-panel button,.employee-destination-list a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
++ async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('.employee-account-panel a,.employee-account-panel button,.profile-settings .profile-setting-row,.profile-signout button,.request-hub a.nv-row,[data-private-view="notifications"] header button,[data-inbox-row] > a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
+  try{
+   const label='E'+(engine==='chromium'?'C':'W')+width,scenario=await seedOwnedScenario(app.database.executor,label,[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0)+42),actor=scenario.actors[0],requestId='e41-'+label,noticeId='notice-'+label;
+   await q('DELETE FROM notifications WHERE employee_id=$1',[actor]);
+@@ -62,16 +75,20 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
+   await q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state) VALUES($1,$2,'TIME_OFF_DECIDED','STORED PRIVATE TITLE','STORED PRIVATE BODY',$1,'test','TIME_OFF',$3,'APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high','pending')",[noticeId,actor,requestId]);
+   const actualRole=[320,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);
+   await login(actor);await settle();
++  // Move the owned dev runtime's badge away from Home using its own preferences;
++  // keep developer errors visible and retain normal native navigation hit testing.
++  const devTools=page.locator('nextjs-portal');await devTools.getByRole('button',{name:'Open Next.js Dev Tools',exact:true}).click();await devTools.locator('[data-preferences]').click();await devTools.getByLabel('Position',{exact:true}).selectOption('top-left');await devTools.getByRole('button',{name:'Close devtools panel',exact:true}).click();await devTools.locator('[data-preferences]').waitFor();await devTools.getByRole('button',{name:'Close Next.js Dev Tools',exact:true}).click();await devTools.locator('[data-preferences]').waitFor({state:'hidden'});await settle();
+   assert.equal(await page.evaluate(()=>matchMedia('(pointer: coarse)').matches),width<768,'Emulated touch pointer matches required context');assert.equal(await page.evaluate(()=>innerWidth),width);checks.push(`Actual authenticated ${actualRole} role`);checks.push('Required CSS width and mobile touch emulation verified; native taps used on mobile navigation');
+   for(const href of ['/app/schedule','/app/my-time','/app']){await nav(href);const current=await page.locator('.mobile-nav').isVisible()?page.locator('.mobile-nav a[aria-current="page"]'):page.locator('nav[aria-label="Primary navigation"] a[aria-current="page"]');assert.equal(await current.getAttribute('href'),href);}
+   checks.push('Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation');
+   await nav('/app/requests/hub');await bounds();await screenshot('requests');await accessibility('Requests hub');
+-  const timeOff=page.locator('a.request-hub-history'),shifts=page.locator('a.request-hub-action-secondary');assert.equal(await timeOff.getAttribute('href'),'/app/requests?tab=my');assert.equal(await shifts.getAttribute('href'),'/app/exchange?tab=requests');
++  const timeOff=page.getByRole('link',{name:'My time-off requests',exact:false}),shifts=page.getByRole('link',{name:'My shift requests',exact:false});assert.equal(await timeOff.getAttribute('href'),'/app/requests?tab=my');assert.equal(await shifts.getAttribute('href'),'/app/exchange?tab=requests');
+   for(const [link,path] of [[timeOff,'/app/requests'],[shifts,'/app/exchange']]){
+    await link.click();await page.waitForURL(u=>u.pathname===path);await settle();
++   assert.equal(new URL(page.url()).searchParams.get('tab'),path==='/app/requests'?'my':'requests');
+    assert.equal(await page.locator('.section-tabs a[aria-current="page"]').getAttribute('href'),path);
+    if(await page.locator('.mobile-nav').isVisible()){assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');assert.equal(await page.getByRole('button',{name:'More',exact:true}).evaluate(e=>e.classList.contains('active')),false);}
+-   else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');
++   else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current="true"]').getAttribute('href'),'/app/requests/hub');
+    await page.goBack();await settle();
+   }
+   checks.push('Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership');
+@@ -79,62 +96,70 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
+   if(await page.locator('.mobile-nav').isVisible()){
+    const trigger=page.getByRole('button',{name:'More',exact:true}),menu=page.locator('#employee-more-navigation');await trigger.focus();await page.keyboard.press('Enter');await menu.waitFor({state:'visible'});await page.waitForFunction(()=>document.querySelector('#employee-more-navigation')?.contains(document.activeElement));assert(await menu.evaluate(e=>e.contains(document.activeElement)),'Keyboard open moves focus into More');assert.deepEqual(await menu.locator('.employee-more-link').allTextContents(),['Updates','Notifications','Profile']);await page.keyboard.press('Escape');await menu.waitFor({state:'hidden'});await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='More');assert(await trigger.evaluate(e=>document.activeElement===e),'Escape restores trigger focus');
+    checks.push('More_Escape_restores_focus with native Enter/Escape and explicit link order');
+-  }else{const link=page.locator('nav[aria-label="Primary navigation"] a[href="/app/profile"]');await link.focus();await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/profile');checks.push('Native keyboard desktop destination navigation');}
+-  await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.locator('[data-private-view="profile"]').innerText().then(t=>t.includes('Device notification setup is unavailable')));await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
+-  await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator('.employee-notification-list a').count(),1);assert.equal(await page.locator('.employee-notification-list a').getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);assert(!await page.locator('[data-private-view]').innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
+-  const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator('.employee-notification-list a').click();await page.waitForURL(u=>u.pathname==='/app/requests');const opened=new URL(page.url());assert.equal(opened.searchParams.get('requestId'),requestId);assert.equal(opened.searchParams.get('tab'),'my');assert.equal(opened.hash,'#request-'+requestId);assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);await page.goBack();await ready('notifications');
++  }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
++  await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.getByText('Alerts on this device aren’t turned on for your workplace yet.',{exact:true}).isVisible());await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
++  await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator('[data-inbox-row] > a').count(),1);assert.equal(await page.locator('[data-inbox-row] > a').getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);assert(!await page.locator('[data-private-view]').innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
++  const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator('[data-inbox-row] > a').click();await page.waitForURL(u=>u.pathname==='/app/requests');
++  // The guarded open loads a new document. Wait for its current bell read before Back;
++  // a URL alone does not mean the destination's async reads have completed.
++  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');await settle();
++  const opened=new URL(page.url());assert.equal(opened.searchParams.get('requestId'),requestId);assert.equal(opened.searchParams.get('tab'),'my');assert.equal(opened.hash,'#request-'+requestId);assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);await page.goBack();await ready('notifications');await settle();
+   checks.push('push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation');
+-  for(const event of ['blur','pagehide']){await page.evaluate(e=>window.dispatchEvent(new Event(e)),event);assert.equal(await page.locator('.employee-notification-list').count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');}
+-  await context.setOffline(true);await page.waitForFunction(()=>!document.querySelector('.employee-notification-list'));await context.setOffline(false);await ready('notifications');
+-  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});assert.equal(await page.locator('.employee-notification-list').count(),0);await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});await ready('notifications');
++  for(const event of ['blur','pagehide']){await page.evaluate(e=>window.dispatchEvent(new Event(e)),event);assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');}
++  await context.setOffline(true);await page.waitForFunction(()=>!document.querySelector('[data-inbox-row]'));await context.setOffline(false);await ready('notifications');
++  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});await ready('notifications');
+   checks.push('Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization');
+   if(width===390){
+    const session=await q("SELECT count(*)::integer AS count,bool_and(expires_at>clock_timestamp()+interval '1 day') AS long_lived FROM employee_sessions WHERE employee_id=$1",[actor]);assert.equal(session[0].count,1);assert.equal(session[0].long_lived,true);
+-   const nextInbox=()=>page.waitForResponse(response=>new URL(response.url()).pathname==='/api/employee/notifications'&&response.request().method()==='GET');
++   const nextInbox=()=>page.waitForResponse(response=>new URL(response.url()).pathname==='/api/notifications'&&response.request().method()==='GET');
+    await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '3 seconds' WHERE id=$1",[noticeId]);
+-   const expiring=nextInbox();await page.locator('[data-private-view] button').click();const shortResponse=await expiring,shortView=await shortResponse.json();assert.equal(shortResponse.status(),200);assert.equal(shortView.state,'ready');assert(shortView.validForMs>0&&shortView.validForMs<=3000);assert.equal(shortView.items.length,1);await ready('notifications');
+-   await page.getByRole('heading',{name:'Notifications unavailable',exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list').count(),0);assert.equal(await page.getByRole('heading',{name:'Sign in again',exact:true}).count(),0);assert(await page.getByRole('button',{name:'Retry',exact:true}).isEnabled());await screenshot('source-expired-retry');
+-   const refreshed=nextInbox();await page.getByRole('button',{name:'Retry',exact:true}).click();const currentResponse=await refreshed,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.equal(currentView.state,'ready');assert.deepEqual(currentView.items,[]);await page.getByText('No notifications in this current view.',{exact:true}).waitFor();assert.equal(await page.getByRole('heading',{name:'Sign in again',exact:true}).count(),0);
++   const expiring=nextInbox();await refreshNotifications().click();const shortResponse=await expiring,shortView=await shortResponse.json();assert.equal(shortResponse.status(),200);assert.equal(shortView.state,'ready');assert(shortView.validForMs>0&&shortView.validForMs<=3000);assert.equal(shortView.items.length,1);await ready('notifications');
++   await page.getByRole('heading',{name:'Couldn’t load notifications',exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);assert.equal(await page.getByRole('heading',{name:'Your session ended',exact:true}).count(),0);assert(await page.getByRole('button',{name:'Try again',exact:true}).isEnabled());await screenshot('source-expired-retry');
++   const refreshed=nextInbox();await page.getByRole('button',{name:'Try again',exact:true}).click();const currentResponse=await refreshed,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.equal(currentView.state,'ready');assert.deepEqual(currentView.items,[]);await page.getByRole('heading',{name:'No notifications here.',exact:true}).waitFor();assert.equal(await page.getByRole('heading',{name:'Your session ended',exact:true}).count(),0);
+    expiryRecovery.push({sessionLongLived:session[0].long_lived,sourceLifetimeMs:shortView.validForMs,expiredRowsCleared:true,retryEnabled:true,falseSignIn:false,revalidationStatus:currentResponse.status(),currentItems:currentView.items.length});
+-   await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '1 day' WHERE id=$1",[noticeId]);await page.locator('[data-private-view] button').click();await ready('notifications');
++   await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '1 day' WHERE id=$1",[noticeId]);await refreshNotifications().click();await ready('notifications');
++   // The shared notification endpoint now supports management roles too, for the same actor.
++   await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[actor]);const managementView=await context.request.get(app.url+'/api/notifications',{headers:{'X-Nevora-Employee-View':headers['/api/notifications']}});assert.equal(managementView.status(),200);const ownManagementItems=(await managementView.json()).items;assert.deepEqual(ownManagementItems.map(item=>item.id),[noticeId]);await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);
++   const refuseBinding=route=>route.continue({headers:{...route.request().headers(),'x-nevora-employee-view':headers['/api/employee/profile']}});
+    for(const status of [401,403]){
+-    const cookies=await context.cookies();if(status===401)await context.clearCookies();else await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[actor]);
+-    const refused=nextInbox();await page.locator('[data-private-view] button').click();assert.equal((await refused).status(),status);await page.getByRole('heading',{name:'Sign in again',exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list').count(),0);assert.equal(await page.getByRole('button',{name:'Retry',exact:true}).count(),0);expiryRecovery.push({actualRefusalStatus:status,privateRowsCleared:true,signInRequired:true});
+-    if(status===401)await context.addCookies(cookies);else await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');
++    const cookies=await context.cookies();if(status===401)await context.clearCookies();else await page.route('**/api/notifications',refuseBinding);
++    const refused=nextInbox();await refreshNotifications().click();assert.equal((await refused).status(),status);await page.getByRole('heading',{name:'Your session ended',exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);assert.equal(await page.getByRole('button',{name:'Try again',exact:true}).count(),0);expiryRecovery.push({actualRefusalStatus:status,privateRowsCleared:true,signInRequired:true});
++    if(status===401)await context.addCookies(cookies);else await page.unroute('**/api/notifications',refuseBinding);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');
+    }
+-   checks.push('Long-lived actual session plus near-expiry persisted source clears stale rows without false Sign in; Retry reauthorizes current empty state; actual 401/403 still clears and denies');
++   checks.push('Long-lived actual session plus near-expiry persisted source clears stale rows without false Sign in; Retry reauthorizes current empty state; allowed management role retains only own items; actual missing-cookie 401 and cross-view-binding 403 still clear and deny');
+    const lock=new Client({connectionString:app.database.connectionString});await lock.connect();
+-   try{await lock.query('BEGIN');await lock.query('LOCK TABLE notifications IN ACCESS EXCLUSIVE MODE');await page.locator('[data-private-view] button').click();await page.getByRole('heading',{name:'Notifications unavailable',exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list').count(),0);}
++   try{await lock.query('BEGIN');await lock.query('LOCK TABLE notifications IN ACCESS EXCLUSIVE MODE');await refreshNotifications().click();await page.getByRole('heading',{name:'Couldn’t load notifications',exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);}
+    finally{await lock.query('ROLLBACK');await lock.end();}
+-   await page.getByRole('button',{name:'Retry',exact:true}).click();await ready('notifications');
+-   await q("INSERT INTO notifications(id,employee_id,type,title,body) VALUES($1,$2,'LEGACY','PRIVATE','PRIVATE')",['legacy-'+label,actor]);await page.locator('[data-private-view] button').click();await page.getByText('Some notifications are unavailable or outside this bounded view. Retry to check current access.',{exact:true}).waitFor();assert.equal(await page.locator('.employee-notification-list a').count(),1);
+-   await q('DELETE FROM notifications WHERE id=$1',['legacy-'+label]);await q("UPDATE time_off_requests SET status='DENIED' WHERE id=$1",[requestId]);await page.locator('[data-private-view] button').click();await page.getByText('No notifications in this current view.',{exact:true}).waitFor();
+-   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await page.locator('[data-private-view] button').click();await ready('notifications');
++   await page.getByRole('button',{name:'Try again',exact:true}).click();await ready('notifications');
++   await q("INSERT INTO notifications(id,employee_id,type,title,body) VALUES($1,$2,'LEGACY','PRIVATE','PRIVATE')",['legacy-'+label,actor]);await refreshNotifications().click();await page.getByText('Some updates could not be checked.',{exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row] > a').count(),1);
++   await q('DELETE FROM notifications WHERE id=$1',['legacy-'+label]);await q("UPDATE time_off_requests SET status='DENIED' WHERE id=$1",[requestId]);await refreshNotifications().click();await page.getByRole('heading',{name:'No notifications here.',exact:true}).waitFor();
++   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications().click();await ready('notifications');
+    checks.push('Actual PostgreSQL lock timeout renders unavailable+Retry; legacy source renders partial; authorized source exclusion renders empty; recovery reauthorizes');
+   }
+   await nav('/app/profile');await ready('profile');
+   if(width===390){
+    const endpoint='/api/employee/profile',binding=headers[endpoint];assert(binding);const get=(path=endpoint,b=binding)=>context.request.get(app.url+path,{headers:{'X-Nevora-Employee-View':b}});
+-   assert.equal((await get(endpoint+'?employeeId='+scenario.actors[1])).status(),400);assert.equal((await get(endpoint,headers['/api/employee/notifications'])).status(),403);
++   assert.equal((await get(endpoint+'?employeeId='+scenario.actors[1])).status(),400);assert.equal((await get(endpoint,headers['/api/notifications'])).status(),403);
+    const cookies=await context.cookies();await context.clearCookies();assert.equal((await get()).status(),401);await context.addCookies(cookies);
+    await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[actor]);assert.equal((await get()).status(),403);await q("UPDATE employees SET role='LEAD' WHERE id=$1",[actor]);
+    checks.push('Actual cookie API rejects missing session, cross-view binding, other-employee query and changed management role');
+    let release,reached;const gate=new Promise(r=>release=r),seen=new Promise(r=>reached=r);let held=false;
+    await context.route('**/api/employee/profile',async route=>{if(held)return route.continue();held=true;const response=await route.fetch();assert.equal(response.status(),200);reached();await gate;await route.fulfill({response});});
+-   await page.locator('[data-private-view] button').click();await seen;await page.evaluate(()=>window.dispatchEvent(new Event('blur')));release();await page.waitForTimeout(100);assert.equal(await page.locator('.employee-profile-details').count(),0);await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
++   await page.getByRole('button',{name:'Refresh details',exact:true}).click();await seen;await page.evaluate(()=>window.dispatchEvent(new Event('blur')));release();await page.waitForTimeout(100);assert.equal(await page.locator('.employee-profile-details:not([aria-hidden="true"])').count(),0);assert.deepEqual(await page.locator('.employee-profile-details dd').allTextContents(),['–','–','–','–','–'],'Paused profile retains only static placeholders, including hidden DOM');await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
+    checks.push('Delayed real authenticated GET cannot repaint after blur (transport held; no fixture response content)');
+    // Actual session replacement through login binds the old mounted view out.
+    await login(scenario.actors[1]);assert.equal((await get(endpoint,binding)).status(),403);await login(actor);await nav('/app/profile');await ready('profile');checks.push('Actual account/session replacement rejects former mounted-view binding');
+   }
+   if(width===390){
+-   const timeOffForm=()=>page.locator('.employee-timeoff-form');
+-   await page.goto(app.url+'/app/requests?tab=new');await settle();await timeOffForm().locator('[name="startDate"]').fill(scenario.targetDate);await timeOffForm().locator('[name="endDate"]').fill(scenario.sourceDate);const invalidId=await timeOffForm().locator('[name="requestId"]').inputValue();await timeOffForm().getByRole('button',{name:'Submit Request',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('error')==='invalid');assert.deepEqual(await q('SELECT id FROM time_off_requests WHERE id=$1',[invalidId]),[]);
+-   const submitTimeOff=async(replay)=>{await page.goto(app.url+'/app/requests?tab=new');await settle();await timeOffForm().locator('[name="startDate"]').fill(scenario.sourceDate);await timeOffForm().locator('[name="endDate"]').fill(scenario.sourceDate);if(replay)await timeOffForm().locator('[name="requestId"]').evaluate((field,id)=>{field.value=id;},replay);const id=await timeOffForm().locator('[name="requestId"]').inputValue();await timeOffForm().getByRole('button',{name:'Submit Request',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('submitted')==='1');await settle();return id;};
++   const timeOffForm=()=>page.locator('form.nto-form');
++   const openTimeOffForm=async()=>{await page.goto(app.url+'/app/requests?tab=new');await settle();await timeOffForm().getByRole('button',{name:'Partial day',exact:true}).click();await timeOffForm().getByLabel('Start time',{exact:true}).waitFor();await timeOffForm().getByRole('button',{name:'Full day',exact:true}).click();await timeOffForm().getByLabel('End date',{exact:true}).waitFor();assert.equal(await timeOffForm().getByRole('button',{name:'Full day',exact:true}).getAttribute('aria-pressed'),'true');};
++   await openTimeOffForm();await timeOffForm().locator('[name="startDate"]').fill(scenario.targetDate);await timeOffForm().locator('[name="endDate"]').fill(scenario.sourceDate);const invalidId=await timeOffForm().locator('[name="requestId"]').inputValue();assert.equal(await timeOffForm().getByLabel('End date',{exact:true}).evaluate(field=>field.validity.rangeUnderflow),true);let invalidPosts=0;const observeInvalid=request=>{if(request.method()==='POST'&&new URL(request.url()).pathname==='/app/requests')invalidPosts++;};page.on('request',observeInvalid);await timeOffForm().getByRole('button',{name:'Submit request',exact:true}).click();await settle();page.off('request',observeInvalid);assert.equal(invalidPosts,0,'Native invalid-date constraint blocks submission');assert.equal(new URL(page.url()).searchParams.get('tab'),'new');assert.deepEqual(await q('SELECT id FROM time_off_requests WHERE id=$1',[invalidId]),[]);
++   const submitTimeOff=async(replay)=>{await openTimeOffForm();await timeOffForm().locator('[name="startDate"]').fill(scenario.sourceDate);await timeOffForm().locator('[name="endDate"]').fill(scenario.sourceDate);await timeOffForm().getByRole('complementary',{name:'Request summary',exact:true}).getByText('1 day away',{exact:true}).waitFor();if(replay)await timeOffForm().locator('[name="requestId"]').evaluate((field,id)=>{field.value=id;},replay);const id=await timeOffForm().locator('[name="requestId"]').inputValue();await timeOffForm().getByRole('button',{name:'Submit request',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('submitted')==='1');await settle();return id;};
+    const created=await submitTimeOff();const pending=await q('SELECT id,employee_id,status FROM time_off_requests WHERE id=$1',[created]);assert.deepEqual(pending,[{id:created,employee_id:actor,status:'PENDING'}]);const intents=await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[created]);assert(intents.length>0,'Actual canonical notifications outbox exists before replay');assert.equal(await submitTimeOff(created),created);assert.deepEqual(await q('SELECT id,employee_id,status FROM time_off_requests WHERE id=$1',[created]),pending);assert.deepEqual(await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[created]),intents);
+-   await login('QAOWNER');await page.goto(app.url+'/app/requests?tab=pending');await settle();await page.locator('[id="request-'+created+'"]').getByRole('button',{name:'Approve',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('reviewed')==='1');assert.deepEqual(await q('SELECT status FROM time_off_requests WHERE id=$1',[created]),[{status:'APPROVED'}]);await login(actor);await page.goto(app.url+'/app/requests?tab=my&requestId='+created);await settle();assert(await page.locator('[id="request-'+created+'"]').innerText().then(t=>t.includes('Approved')));checks.push('Actual existing time-off invalid dates do not persist; native submit and explicit stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback');
+-   await page.goto(app.url+'/app/availability');await settle();await page.getByLabel('Monday availability',{exact:true}).check();await page.getByLabel('Monday start time',{exact:true}).fill('08:00');await page.getByLabel('Monday end time',{exact:true}).fill('13:00');await page.getByRole('button',{name:'Save Preferences',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('saved')==='1');await settle();assert.deepEqual(await q("SELECT left(start_time::text,5) start,left(end_time::text,5) end FROM availability_windows WHERE employee_id=$1 AND day_of_week=1",[actor]),[{start:'08:00',end:'13:00'}]);
+-   await q("INSERT INTO schedule_week_settings(week_start,availability_deadline,updated_by) VALUES($1,clock_timestamp()+interval '1 day','QAOWNER') ON CONFLICT(week_start) DO UPDATE SET availability_deadline=excluded.availability_deadline",[scenario.week]);await page.goto(app.url+'/app/availability?week='+scenario.week);await settle();await page.getByLabel('Monday availability',{exact:true}).check();await page.getByLabel('Monday start time',{exact:true}).fill('09:00');await page.getByLabel('Monday end time',{exact:true}).fill('14:00');await page.getByRole('button',{name:'Save Preferences',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('saved')==='1');await settle();assert.deepEqual(await q("SELECT left(start_time::text,5) start,left(end_time::text,5) end FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 AND day_of_week=1",[actor,scenario.week]),[{start:'09:00',end:'14:00'}]);const submitted=await q('SELECT * FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 ORDER BY day_of_week,start_time',[actor,scenario.week]);
+-   await q("UPDATE schedule_week_settings SET availability_deadline=clock_timestamp()-interval '1 second' WHERE week_start=$1",[scenario.week]);await page.reload();await settle();await page.getByText('Weekly availability is locked',{exact:true}).waitFor();assert(await page.getByRole('button',{name:'Save Preferences',exact:true}).isDisabled());assert(await page.getByLabel('Monday availability',{exact:true}).isDisabled());assert.deepEqual(await q('SELECT * FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 ORDER BY day_of_week,start_time',[actor,scenario.week]),submitted);checks.push('Actual normal/weekly availability save persists reviewed hours; past canonical deadline disables native controls and retains submitted records');
++   await login('QAOWNER');await page.goto(app.url+'/app/requests?tab=pending');await settle();await page.locator('[id="request-'+created+'"]').getByRole('button',{name:/^Approve time off for /}).click();await page.waitForURL(u=>u.searchParams.get('reviewed')==='1');assert.deepEqual(await q('SELECT status FROM time_off_requests WHERE id=$1',[created]),[{status:'APPROVED'}]);await login(actor);await page.goto(app.url+'/app/requests?tab=my&requestId='+created);await settle();assert(await page.locator('[id="request-'+created+'"]').innerText().then(t=>t.includes('Approved')));checks.push('Native time-off date constraint blocks invalid submissions without persistence; native submit and explicit stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback');
++   await page.goto(app.url+'/app/availability');await settle();await page.getByLabel('Monday availability',{exact:true}).check();await page.getByLabel('Monday start time',{exact:true}).fill('08:00');await page.getByLabel('Monday end time',{exact:true}).fill('13:00');await page.getByRole('button',{name:'Save usual week',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('saved')==='1');await settle();assert.deepEqual(await q("SELECT left(start_time::text,5) start,left(end_time::text,5) end FROM availability_windows WHERE employee_id=$1 AND day_of_week=1",[actor]),[{start:'08:00',end:'13:00'}]);
++   await q("INSERT INTO schedule_week_settings(week_start,availability_deadline,updated_by) VALUES($1,clock_timestamp()+interval '1 day','QAOWNER') ON CONFLICT(week_start) DO UPDATE SET availability_deadline=excluded.availability_deadline",[scenario.week]);await page.goto(app.url+'/app/availability?week='+scenario.week);await settle();await page.getByLabel('Monday availability',{exact:true}).check();await page.getByLabel('Monday start time',{exact:true}).fill('09:00');await page.getByLabel('Monday end time',{exact:true}).fill('14:00');await page.getByRole('button',{name:'Submit weekly availability',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('saved')==='1');await settle();assert.deepEqual(await q("SELECT left(start_time::text,5) start,left(end_time::text,5) end FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 AND day_of_week=1",[actor,scenario.week]),[{start:'09:00',end:'14:00'}]);const submitted=await q('SELECT * FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 ORDER BY day_of_week,start_time',[actor,scenario.week]);
++   await q("UPDATE schedule_week_settings SET availability_deadline=clock_timestamp()-interval '1 second' WHERE week_start=$1",[scenario.week]);await page.reload();await settle();await page.getByText('Submissions closed',{exact:true}).waitFor();assert(await page.getByRole('button',{name:'Submit weekly availability',exact:true}).isDisabled());assert(await page.getByLabel('Monday availability',{exact:true}).isDisabled());assert.deepEqual(await q('SELECT * FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 ORDER BY day_of_week,start_time',[actor,scenario.week]),submitted);checks.push('Actual normal/weekly availability save persists reviewed hours; past canonical deadline disables native controls and retains submitted records');
+    await page.goto(app.url+'/app/profile');await ready('profile');
+   }
+   if(width<768){
+@@ -143,9 +168,15 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
+   }
+   assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
+   await q("UPDATE employees SET first_name=$1,last_name=$2 WHERE id=$3",['Avery With A Very Long Fictional Display Name','Long Employee Name For Reflow Verification',actor]);await page.reload();await ready('profile');await bounds();
+-  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.zoom='2';});await bounds();await screenshot('zoom-long-content');await page.evaluate(()=>{document.documentElement.style.zoom='';});await page.emulateMedia({reducedMotion:'no-preference'});
+-  if(width<768){const clearance=await page.locator('.employee-shell .page-frame').evaluate(e=>parseFloat(getComputedStyle(e).paddingBottom));assert(clearance>=100);}
+-  checks.push('long_content_safe_area_keyboard: real long identity, 200% CSS zoom/reflow, bounds, reduced-motion and mobile bottom clearance');
++  // Match scripts/ui-checks/checks.mjs: text zoom scales the rem-based kit, not the whole page box.
++  await page.emulateMedia({reducedMotion:'reduce'});const normalFont=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});await page.waitForTimeout(600);assert.equal(await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize)),normalFont*2,'200% root-font text scale is applied');await bounds();await screenshot('text-200-long-content');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.emulateMedia({reducedMotion:'no-preference'});
++  if(width<768){
++   // The kit reserves tab-bar space on the page, rather than the old outer frame.
++   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
++   const clearance=await page.locator('.premium-employee-profile').evaluate(e=>{const nav=document.querySelector('.mobile-nav').getBoundingClientRect(),signout=e.querySelector('.profile-signout button').getBoundingClientRect();return {padding:parseFloat(getComputedStyle(e).paddingBottom),navigationHeight:nav.height,signoutBottom:signout.bottom,navigationTop:nav.top};});
++   assert(clearance.navigationHeight>0);assert(clearance.padding>=clearance.navigationHeight,'Page reserves the actual fixed navigation height');assert(clearance.signoutBottom<=clearance.navigationTop,'Final Sign out control clears fixed navigation at the document end');
++  }
++  checks.push('long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance');
+   await screenshot('final');
+   await writeFile(join(evidenceDirectory,prefix+'.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+   return {checks};
+diff --git a/src/app/app/notifications/page.tsx b/src/app/app/notifications/page.tsx
+index 63142473..2dde5e11 100644
+--- a/src/app/app/notifications/page.tsx
++++ b/src/app/app/notifications/page.tsx
+@@ -9,6 +9,7 @@ export default async function NotificationsPage(){
+  const proof=await requireSessionMutationProof();if(!['EMPLOYEE','LEAD','MANAGER','OWNER'].includes(proof.employee.role))redirect('/app');
+  const authority=employeeViewAuthority(proof,'notifications'),manager=['OWNER','MANAGER'].includes(proof.employee.role);
+  // Phase 3: the kit band; managers get one line pointing decisions to the Inbox.
+- return <div className={`nv-page employee-view premium-notifications ${styles.page}`} data-nv-page=""><PageBand title="Notifications" summary="Schedule changes, requests and team updates in one place." overlap={false}/>
++ // TC-P3-34: soft hyphens, because browsers don't hyphenate a capitalised word; at 200% text on a phone the title breaks "Notifica-tions", not mid-letter.
++ return <div className={`nv-page employee-view premium-notifications ${styles.page}`} data-nv-page=""><PageBand title={"Notifi\u00adca\u00adtions"} summary="Schedule changes, requests and team updates in one place." overlap={false}/>
+   <div className="premium-employee-content">{manager?<p className="premium-card-lead">Alerts and messages for you. Work that needs your decision is in <Link href="/app/inbox">Inbox</Link>.</p>:null}<EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed={manager}/></div></div>;
+ }
+diff --git a/src/app/app/portal-premium.css b/src/app/app/portal-premium.css
+index c72c855e..01b1b8ec 100644
+--- a/src/app/app/portal-premium.css
++++ b/src/app/app/portal-premium.css
+@@ -1303,6 +1303,10 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv
+ /* P3-ST-12: Home's clock card keeps one middle height while it loads, when it's read and when the read fails. */
+ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-clock-compact > :is(.employee-time-message, .employee-time-empty) { min-height: 48px; margin-block: 0; }
+ html body .app-shell.nevora-portal .employee-time-footer-placeholder { visibility: hidden; }
++/* P3-ST-01: the compact clock card's loading line holds the ready line's height. */
++html body .app-shell.nevora-portal .employee-time-hold { display: grid; }
++html body .app-shell.nevora-portal .employee-time-hold > span { grid-area: 1 / 1; }
++html body .app-shell.nevora-portal .employee-time-hold__sizer { visibility: hidden; }
+ @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+   /* P3-ST-06: on phones My time's footer stacks (stamp lines, then controls), so "Checking…" and "Refresh" can't rewrap it. */
+   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] .employee-time-panel .employee-time-footer:not(#nv-kit) { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; gap: var(--nv-s-2); }
+@@ -2025,11 +2029,12 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] :is(
+   html body .app-shell.nevora-portal.nevora-portal .page-frame [data-nv-page] .nto-type-picker > button:not(#nv-kit) { font: var(--nv-t-label); }
+ }
+ /* TC-P3-34: at 150 and 200% text, a word that can't fit a narrow column is hyphenated instead of cut mid-letter, and
+- * label/value pairs stack. */
++ * label/value pairs stack. Only long words (10+ letters, 4 each side) hyphenate, so "tomorrow" and "requests" move
++ * to the next line whole. Browsers don't hyphenate capitalised words; long titles carry soft hyphens instead. */
+ html[data-text-step="150"] body .app-shell.nevora-portal .page-frame [data-nv-page],
+ html[data-text-step="200"] body .app-shell.nevora-portal .page-frame [data-nv-page],
+ html[data-text-step="150"] body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation),
+-html[data-text-step="200"] body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation) { hyphens: auto; -webkit-hyphens: auto; }
++html[data-text-step="200"] body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation) { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 10 4 4; -webkit-hyphenate-limit-before: 4; -webkit-hyphenate-limit-after: 4; }
+ @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+   html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame .premium-employee-profile .employee-profile-details > div:not(#nv-kit) { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+   html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame [data-nv-page] .employee-time-footer:not(#nv-kit) { flex-direction: column; align-items: stretch; }
+diff --git a/src/components/employee-home-reviewed.tsx b/src/components/employee-home-reviewed.tsx
+index 38b1af69..8c94a59f 100644
+--- a/src/components/employee-home-reviewed.tsx
++++ b/src/components/employee-home-reviewed.tsx
+@@ -38,18 +38,22 @@ const sourceDestinations: Record<HomeSource, string> = {
+   timeOff: '/app/requests?tab=my', ownTime: '/app/my-time', communications: '/app/updates',
+ };
+ 
++/** TC-P3-32: Home's To do lines are narrow (about 150px at 200% text on a 320px phone), too narrow for
++ * "Mon, Oct 19" in one piece, so here the weekday may wrap on its own; "Oct 19" and "7:49 PM" still never break. */
++const weekdayMayWrap = (text: string) => text.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\u00a0/, '$1, ');
++
+ function stamp(at: string, zone: string) {
+-  return keepWhole(new Intl.DateTimeFormat('en-US', {
++  return weekdayMayWrap(keepWhole(new Intl.DateTimeFormat('en-US', {
+     timeZone: zone, weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+-  }).format(new Date(at)));
++  }).format(new Date(at))));
+ }
+ 
+ /** TC-P3-32: "Mon, Oct 19", with the year only when it isn't this year, so dates fit narrow rows whole. */
+ function dateLabel(date: string) {
+   const at = new Date(`${date}T12:00:00Z`);
+-  return keepWhole(new Intl.DateTimeFormat('en-US', {
++  return weekdayMayWrap(keepWhole(new Intl.DateTimeFormat('en-US', {
+     timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', ...(at.getUTCFullYear() === new Date().getUTCFullYear() ? {} : {year: 'numeric' as const}),
+-  }).format(at));
++  }).format(at)));
+ }
+ 
+ function businessDate(at: string, zone: string) {
+diff --git a/src/components/employee-time-panel.tsx b/src/components/employee-time-panel.tsx
+index 1be7a370..e8ff031c 100644
+--- a/src/components/employee-time-panel.tsx
++++ b/src/components/employee-time-panel.tsx
+@@ -67,7 +67,8 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
+   <div className="employee-time-current-heading"><h2>{compact?<NavIcon name="clock" size={18}/>:<span className="my-time-section-icon"><ClockIcon size={20} weight="duotone" aria-hidden="true"/></span>}{compact?'Clock status':'Current status'}</h2>{ready?<span data-state={current?.state??'OFF_CLOCK'} className={'employee-time-badge'+(current?.state==='ON_BREAK'?' on-break':'')}>{status(current)}</span>:<span className="employee-time-badge" aria-hidden="true">–</span>}</div>
+   {ready?<>
+    {current?<div className="employee-time-current-copy"><strong>{current.locationName}</strong><p>Clocked in at <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></p><p><b>{duration(current.elapsedSeconds)}</b> since clock-in{current.state==='ON_BREAK'?<>{'\u00a0· '}<b>{duration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</p></div>:<p className="employee-time-empty">No open time entry was recorded at the last check.</p>}
+-  </>:<div className="employee-time-message" role="status"><strong>{title}</strong>{/* P3-ST-02: on Home the band already says updates are paused, so the clock card keeps its ready height. */}{compact&&paused?null:<p>{paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</p>}</div>}
++  </>:compact&&!paused&&!denied&&!unavailable?<p className="employee-time-empty employee-time-hold" role="status">{/* P3-ST-01: Home's card loads at the height of its usual ready line (an invisible stand-in), so it doesn't shrink 12px when the punches arrive. */}<span className="employee-time-hold__sizer" aria-hidden="true">No open time entry was recorded at the last check.</span><span>{title}</span></p>
++  :<div className="employee-time-message" role="status"><strong>{title}</strong>{/* P3-ST-02: on Home the band already says updates are paused, so the clock card keeps its ready height. */}{compact&&paused?null:<p>{paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</p>}</div>}
+   <p className="employee-time-note">Use your location’s Clocker to record punches.</p>
+   {/* P3-ST-06: while loading, the full footer has the ready footer's lines (an invisible stand-in for the zone line), so it doesn't change height. */}
+   <footer className="employee-time-footer"><small className={corporate&&(ready||placeholder)?'employee-corporate-desktop-copy':undefined}>{ready?<><span>Updated <time dateTime={ready.observedAt}>{checked(ready.observedAt,ready.timeZone)}</time></span>{!compact?<><span>{timeZoneLabel(ready.timeZone)}</span><span>Updates every 30s while active.</span></>:null}</>:placeholder?<><span className="employee-time-footer-placeholder" aria-hidden="true">Updated <time>Oct 00, 0:00 AM</time></span><span className="employee-time-footer-placeholder" aria-hidden="true">Local area time</span><span className="employee-time-footer-placeholder" aria-hidden="true">Updates every 30s while active.</span></>:'Recorded punches only.'}</small>
+diff --git a/src/components/kit/keep-selected-visible.tsx b/src/components/kit/keep-selected-visible.tsx
+index 5159c534..31c4adc9 100644
+--- a/src/components/kit/keep-selected-visible.tsx
++++ b/src/components/kit/keep-selected-visible.tsx
+@@ -14,6 +14,17 @@ function overflows(row: HTMLElement, marker: HTMLElement | null) {
+   return lastEnd > box.left + row.clientLeft + row.clientWidth - padEnd + 1;
+ }
+ 
++/** Scrolls only when the selected pill is cut off. */
++function reveal(row: HTMLElement, marker: HTMLElement | null) {
++  const selected = row.querySelector<HTMLElement>('[aria-current="page"], [aria-pressed="true"]');
++  if (!selected || !overflows(row, marker)) return;
++  const start = selected.offsetLeft - row.offsetLeft, end = start + selected.offsetWidth;
++  const fade = 28;
++  if (start < row.scrollLeft) row.scrollTo({ left: Math.max(0, start - 16) });
++  else if (end > row.scrollLeft + row.clientWidth - fade) row.scrollTo({ left: end - row.clientWidth + fade });
++  row.setAttribute("data-start", String(row.scrollLeft > 1));
++}
++
+ export function KeepSelectedVisible() {
+   const marker = useRef<HTMLSpanElement>(null);
+   // IS-42: only a row that really overflows gets the edge fade (data-overflow), so a row that fits shows every pill whole.
+@@ -22,21 +33,19 @@ export function KeepSelectedVisible() {
+     if (!row) return;
+     // WR-52: data-start marks a row scrolled away from its start, so it fades on the left too.
+     const mark = () => { row.dataset.overflow = String(overflows(row, marker.current)); row.dataset.start = String(row.scrollLeft > 1); };
++    // AL-47: a size change (larger text, turning the phone) brings a selection that is now cut off back into view.
++    const resized = () => { reveal(row, marker.current); mark(); };
+     mark();
+-    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(mark);
++    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(resized);
+     observer?.observe(row);
++    // The row can keep its own size while its pills grow with the text, so watch them too.
++    for (const pill of row.children) if (pill !== marker.current) observer?.observe(pill);
+     row.addEventListener("scroll", mark, { passive: true });
+     return () => { observer?.disconnect(); row.removeEventListener("scroll", mark); };
+   }, []);
+   useLayoutEffect(() => {
+     const row = marker.current?.parentElement;
+-    const selected = row?.querySelector<HTMLElement>('[aria-current="page"], [aria-pressed="true"]');
+-    if (!row || !selected || !overflows(row, marker.current)) return;
+-    const start = selected.offsetLeft - row.offsetLeft, end = start + selected.offsetWidth;
+-    const fade = 28;
+-    if (start < row.scrollLeft) row.scrollTo({ left: Math.max(0, start - 16) });
+-    else if (end > row.scrollLeft + row.clientWidth - fade) row.scrollTo({ left: end - row.clientWidth + fade });
+-    row.setAttribute("data-start", String(row.scrollLeft > 1));
++    if (row) reveal(row, marker.current);
+   });
+   return <span ref={marker} hidden />;
+ }
+diff --git a/src/components/manager-inbox.test.tsx b/src/components/manager-inbox.test.tsx
+index 31a70111..7392df87 100644
+--- a/src/components/manager-inbox.test.tsx
++++ b/src/components/manager-inbox.test.tsx
+@@ -22,8 +22,9 @@ it('lists exceptions before requests and sends every decision to its full review
+   expect(output).not.toContain('name="decision"');
+   expect(output).not.toContain('<form');
+   expect(output).not.toContain('swipe');
+-  // The review link remembers the Inbox filter (IS-14) and carries no dead fragment (IS-18).
+-  expect(output).toContain('href="/app/requests?tab=pending&amp;requestId=r1&amp;filter=all"');
++  // The review link remembers the Inbox filter (IS-14) and its own row (IS-P4-11), and carries no dead fragment (IS-18).
++  expect(output).toContain('href="/app/requests?tab=pending&amp;requestId=r1&amp;filter=all&amp;item=TIME_OFF%3Ar1"');
++  expect(output).not.toContain('requestId=r1&amp;filter=all"');
+   expect(output).toContain('class="inbox-row" data-urgent="true"');
+   expect(output).toContain('Updated <time dateTime="2026-10-16T14:30:00Z">10:30 AM</time>');
+   // F4: the action is a link line; the condition is a pill.
+diff --git a/src/components/manager-inbox.tsx b/src/components/manager-inbox.tsx
+index 0f2a7bbb..f6864d88 100644
+--- a/src/components/manager-inbox.tsx
++++ b/src/components/manager-inbox.tsx
+@@ -69,11 +69,13 @@ function KitRow({ entry }: { entry: InboxEntry }) {
+   </li>;
+ }
+ 
+-/** Review links remember the Inbox filter, so Back and the decision return to it (IS-14). */
+-function withFilter(href: string, filter: InboxFilter) {
++/** Review links remember the Inbox filter, so Back and the decision return to it (IS-14),
++ * and the row they came from, so Back to Inbox reselects it (IS-P4-11; the review reads `item`). */
++function withFilter(href: string, filter: InboxFilter, item?: string) {
+   const url = new URL(href, "https://nevora.invalid");
+   if (url.pathname !== "/app/requests") return href;
+   url.searchParams.set("filter", filter);
++  if (item) url.searchParams.set("item", item);
+   url.hash = "";
+   return url.pathname + url.search;
+ }
+@@ -120,7 +122,7 @@ function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZon
+   const action = actionCenterNavigation(item);
+   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
+   const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
+-  return { key: item.id, href: withFilter(action.href, filter), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
++  return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
+     leading: request && shown.person ? <Avatar initials={initials(shown.person)} waiting /> : <Tile tone={urgent ? "urgent" : request ? "review" : "neutral"}><Icon size={20} weight="bold" /></Tile>,
+     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
+     status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
+diff --git a/src/components/section-tabs.tsx b/src/components/section-tabs.tsx
+index a79d0be4..e47d2fe5 100644
+--- a/src/components/section-tabs.tsx
++++ b/src/components/section-tabs.tsx
+@@ -19,10 +19,20 @@ export function SectionTabs({ group, pathname }: { group: SectionTabGroup; pathn
+       row.toggleAttribute("data-more-start", row.scrollLeft > 1);
+       row.toggleAttribute("data-more-end", row.scrollLeft + row.clientWidth < row.scrollWidth - 1);
+     };
++    // AL-47: when the tabs change size (a larger text size, turning the phone), a current tab that is now
++    // cut off comes back to the middle. A tab still fully in view stays where the reader left it.
++    const resized = () => {
++      const tab = current?.getBoundingClientRect(), box = row.getBoundingClientRect();
++      if (current && tab && (tab.left < box.left - 1 || tab.right > box.right + 1)) row.scrollLeft = current.offsetLeft - (row.clientWidth - current.offsetWidth) / 2;
++      edges();
++    };
+     edges();
++    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(resized);
++    observer?.observe(row);
++    if (current) observer?.observe(current);
+     row.addEventListener("scroll", edges, { passive: true });
+     window.addEventListener("resize", edges);
+-    return () => { row.removeEventListener("scroll", edges); window.removeEventListener("resize", edges); };
++    return () => { observer?.disconnect(); row.removeEventListener("scroll", edges); window.removeEventListener("resize", edges); };
+   }, [pathname]);
+   return <nav className="section-tabs" aria-label={`${group.label} pages`}>
+     <div className="section-tabs-track" ref={track}>
+diff --git a/src/components/select-field.test.tsx b/src/components/select-field.test.tsx
+index bee95137..511c167d 100644
+--- a/src/components/select-field.test.tsx
++++ b/src/components/select-field.test.tsx
+@@ -46,3 +46,20 @@ it("renders an explicit visible label and a 44px shared field contract", async (
+   expect(html).toContain('required=""');
+   expect(html).toContain('class="nevora-select"');
+ });
++
++it("names the select by its label alone and describes it with the hint (IS-WA-12)", async () => {
++  const { SelectField } = await import("./select-field");
++  const html = renderToStaticMarkup(
++    createElement(SelectField, {
++      id: "position",
++      name: "positionId",
++      label: "Position",
++      hint: "Existing inactive values may be retained.",
++      options: [{ value: "active", label: "Active position" }],
++    }),
++  );
++
++  expect(html).toContain('<span id="position-label" class="nevora-field-label">Position</span>');
++  expect(html).toMatch(/<select[^>]*aria-labelledby="position-label"[^>]*aria-describedby="position-hint"/);
++  expect(html).toContain('<span id="position-hint" class="nevora-field-hint">');
++});
+diff --git a/src/components/select-field.tsx b/src/components/select-field.tsx
+index 1d883ca5..31121588 100644
+--- a/src/components/select-field.tsx
++++ b/src/components/select-field.tsx
+@@ -39,6 +39,7 @@ export function SelectField({
+ }) {
+   const generatedId = useId().replaceAll(":", "");
+   const selectId = id ?? `nevora-select-${generatedId}`;
++  const labelId = `${selectId}-label`;
+   const hintId = hint ? `${selectId}-hint` : undefined;
+ 
+   return (
+@@ -46,7 +47,8 @@ export function SelectField({
+       className={className ? `nevora-field ${className}` : "nevora-field"}
+       htmlFor={selectId}
+     >
+-      <span className="nevora-field-label">{label}</span>
++      {/* IS-WA-12: the hint sits inside the <label>, so name the select by its label text alone; the hint is its description. */}
++      <span id={labelId} className="nevora-field-label">{label}</span>
+       <span className="nevora-select-shell">
+         <select
+           id={selectId}
+@@ -55,6 +57,7 @@ export function SelectField({
+           {...(value === undefined ? { defaultValue } : { value })}
+           required={required}
+           disabled={disabled}
++          aria-labelledby={labelId}
+           aria-describedby={hintId}
+           onChange={onChange}
+         >

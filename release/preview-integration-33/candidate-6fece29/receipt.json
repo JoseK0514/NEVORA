@@ -1,0 +1,57 @@
+{
+  "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+  "startedAt": "2026-10-20T01:08:11.586615+00:00",
+  "commands": [
+    {
+      "name": "focused-tests",
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers=1",
+        "src/components/select-field.test.tsx",
+        "src/components/manager-inbox.test.tsx",
+        "src/components/employee-home-clock.test.tsx",
+        "src/components/employee-time-panel.test.tsx",
+        "src/components/employee-home-reviewed-wiring.test.tsx",
+        "src/components/employee-home-reviewed.test.tsx",
+        "src/components/employee-home-actions.test.tsx",
+        "src/components/app-shell.test.tsx"
+      ],
+      "exitCode": 0,
+      "seconds": 18.265
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 8.568
+    },
+    {
+      "name": "lint",
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "npm",
+        "run",
+        "lint"
+      ],
+      "exitCode": 0,
+      "seconds": 55.36
+    }
+  ],
+  "endSource": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+  "endClean": true,
+  "completedAt": "2026-10-20T01:09:33.808824+00:00"
+}

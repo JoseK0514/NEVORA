@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-20T00:45:55.474083+00:00",
+  "updatedAt": "2026-10-20T01:10:02.089198+00:00",
   "inspectedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "newerBoundedProbeSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
   "fullExitZeroCount": 0,
@@ -14,8 +14,9 @@
       "proposal": "review-proposals/ST-RC-PAYROLL-SAVE-01.patch",
       "proposalStatus": "applied as e7ee28a2 onRC; fresh dynamic proof pending",
       "candidateCommit": "e7ee28a23347f20c54bb7dafa5c2cb6ee271884b",
-      "candidateFixStatus": "committed/published onRC; fresha21650de browser proof pending; no independent closure",
-      "candidateFixReceipt": "candidate-a21650d/source-and-findings.json"
+      "candidateFixStatus": "a216 held4/4+paint6/6PASS; no independent closure",
+      "candidateFixReceipt": "candidate-a21650d/source-and-findings.json",
+      "newerBoundedEvidence": "candidate-a21650d-repairs/README.md"
     },
     {
       "id": "ST-P4-13",
@@ -39,7 +40,12 @@
       "owner": "Coordinator",
       "status": "retained measured open",
       "measurement": "Employee320/200 Notifications title splits Notificatio/ns across72px",
-      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/112274885136645ebdcb.json"
+      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/112274885136645ebdcb.json",
+      "newerSourceRepair": {
+        "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+        "coordinatorCommit": "4f666237",
+        "status": "adopted owner source repair; fresh browser proof pending, no independent closure"
+      }
     },
     {
       "id": "AL-47",
@@ -47,14 +53,24 @@
       "owner": "Coordinator",
       "status": "passive current selected Availability offscreen after text-step; interactive timing proof pending; no duplicate count",
       "measurement": "selected textx418\u2013584 vsvisibletrackx16\u2013304 at320/200",
-      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/72d6196951ff88173583.json"
+      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/72d6196951ff88173583.json",
+      "newerSourceRepair": {
+        "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+        "coordinatorCommit": "4f666237",
+        "status": "adopted owner source repair; fresh browser proof pending, no independent closure"
+      }
     },
     {
       "id": "TC-P3-32",
       "owner": "Coordinator",
       "status": "passive numeric date-fragment split measured; midpage crop confirmation pending; retain historical ID/severity without new count",
       "measurement": "Employee Chromium320/200 Home To do Mon, Oct19 breaks final9 onto next40px line in5date ranges",
-      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/52f8931d41b37e0f4dbb.json"
+      "report": "../../premium-phase-3/round-5-cd764f6-full/core/passive-geometry/cells/52f8931d41b37e0f4dbb.json",
+      "newerSourceRepair": {
+        "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+        "coordinatorCommit": "4f666237",
+        "status": "adopted owner source repair; fresh browser proof pending, no independent closure"
+      }
     },
     {
       "id": "TC-WA-16",
@@ -64,8 +80,9 @@
       "measurement": "foregroundswitchimmediate/background160msCSSTransition; visiblemin1.05599:1Chrome5frames and1.67711:1WebKit1frame; settled5.13895:1",
       "report": "combined-cd764f6/candidate-findings.md",
       "candidateCommit": "2ddb833f7fa34d4aa4ff62403aca51cbeaced287",
-      "candidateFixStatus": "committed/published onRC; fresha21650de browser proof pending; no independent closure",
-      "candidateFixReceipt": "candidate-a21650d/source-and-findings.json"
+      "candidateFixStatus": "a216 all native pending painted frames>=5.1389/opacity1/no active color transition PASS; no independent closure",
+      "candidateFixReceipt": "candidate-a21650d/source-and-findings.json",
+      "newerBoundedEvidence": "candidate-a21650d-repairs/README.md"
     },
     {
       "id": "P3-ST-01",
@@ -79,6 +96,11 @@
         "cases": 4,
         "scope": "two Payrollfixtures320/100/bothengines; compactfooter/slots shrink12px; Homebandstable; no broadP1 downgrade",
         "report": "combined-15a0fcd-scoped/candidate-findings.md"
+      },
+      "newerSourceRepair": {
+        "source": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+        "coordinatorCommit": "4f666237",
+        "status": "adopted owner source repair; fresh browser proof pending, no independent closure"
       }
     },
     {
@@ -91,7 +113,7 @@
       "candidateFixReceipt": "candidate-a21650d/source-and-findings.json",
       "patch": "later-unpublished-patches/46-AL-WA-10.patch",
       "candidateCommit": "0caadb3505342ef331e2adeb141c02eafcc13f96",
-      "candidateFixStatus": "committed/published0caadb35; unchanged fresh a216 checker24/24 passes; canonical geometry24 running; no independent closure"
+      "candidateFixStatus": "a216 unchangedchecker24/24+canonicalgeometry24/24PASS, zero loading gaps; no independent closure"
     },
     {
       "id": "TC-WA-3",
@@ -144,7 +166,7 @@
       "id": "IS-P4-18",
       "owner": "Desktop/sharednav",
       "severity": "P2 retained",
-      "status": "existingInboxcount overlap visually confirmed on currentcdHome/WaveBTemplates and15Rules; actualbadgeink/carrierbounds pending sourcea216diagnosticfour; no newduplicate ID",
+      "status": "a216 four valid diagnostics retain count29 font24 in20pxpill; phone pill intersects neighboring TeamSVG, actual digitRange ink intersection0 and no clipping ancestor failure; separate current-source owning review required",
       "report": "../../p4-desktop/exit-cd764f6/interaction-states.md"
     },
     {
@@ -186,6 +208,39 @@
       "severity": "P2 retained",
       "status": "Actual E390/200 Availability has mixed day/time layout: four inline rows and three55px stacked rows; actual cascade/root data-step attribution pending, no speculative repair",
       "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md"
+    },
+    {
+      "id": "IS-RC-MARK-READ-01",
+      "owner": "Coordinator/Notifications",
+      "severity": "P1",
+      "status": "measured open; unfixed; independent canonical crosswalk found no prior135ID overlap",
+      "measurement": "All12 valid Chromium contexts lose native initiating Mark read button focus while first and retry commands held; activeElementMAIN",
+      "source": "a21650de50374683d52e32b883d7f419d7344f22",
+      "report": "candidate-a21650d-repairs/README.md",
+      "commandSafety": "one held command/same body and item retry all12PASS; no forwarded mutations",
+      "notAFinding": "stronger exact status-paragraph assertion excluded from independent criterion"
+    },
+    {
+      "id": "IS-RC-MARK-READ-02",
+      "owner": "Coordinator/Notifications",
+      "severity": "P2",
+      "status": "measured open; unfixed; independent canonical crosswalk found no prior135ID overlap",
+      "measurement": "Outcome wholly above viewport9/12 first and below8/12 retry, with normal scroll; action result not brought into view",
+      "source": "a21650de50374683d52e32b883d7f419d7344f22",
+      "report": "candidate-a21650d-repairs/README.md",
+      "commandSafety": "one held command/same body and item retry all12PASS; no forwarded mutations",
+      "notAFinding": "stronger exact status-paragraph assertion excluded from independent criterion"
+    },
+    {
+      "id": "ST-RC-MARK-READ-01",
+      "owner": "Coordinator/Notifications",
+      "severity": "P2",
+      "status": "measured open; unfixed; independent canonical crosswalk found no prior135ID overlap",
+      "measurement": "Button grows38px@100percent or67px@200percent in all12contexts; y unchanged; two retry vertical shifts on feedback unmount",
+      "source": "a21650de50374683d52e32b883d7f419d7344f22",
+      "report": "candidate-a21650d-repairs/README.md",
+      "commandSafety": "one held command/same body and item retry all12PASS; no forwarded mutations",
+      "notAFinding": "stronger exact status-paragraph assertion excluded from independent criterion"
     }
   ],
   "additionalUnderInvestigation": [
@@ -197,12 +252,12 @@
     {
       "id": null,
       "owner": "WaveB",
-      "observation": "At least seven raw success-query contrast-only axe negatives now span Templates/Rules320\u20131024 and100\u2013200 text. Exact frozen diagnostic cases remain preserved; actual paint/opacity attribution pending. No timing waiver or product ID assigned.",
+      "observation": "Twelve retained raw cd-source success-query contrast-only axe negatives, Owner7/Manager5. Three new a216 diagnostic cases produce zero axe findings; that does not clear sourcecd failures or waive timing/opacity requirements.",
       "report": "../../p35-wave-b/full-exit-cd764f6/type-colour-copy.md"
     }
   ],
-  "repairCandidate": "0f0cd37226955c36e2bb67e482989e554c91810f",
-  "repairCandidateReport": "candidate-0f0cd37/README.md",
+  "repairCandidate": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+  "repairCandidateReport": "candidate-6fece29/README.md",
   "currentRepairProbePriority": {
     "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
     "completed": 28,
