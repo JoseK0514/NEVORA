@@ -29,7 +29,7 @@ export function ShiftBlock({ shift, label, showPerson = false }: { shift: ShiftB
     {label ? <p className="wa-shift__label">{label}</p> : null}
     <p className="wa-shift__when">
       <span className="nv-keep">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</span>{" "}
-      <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span><span className="wa-shift__length">{"\u00a0·"}</span>{" "}
+      <span className="nv-keep">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}<span className="wa-shift__length">{"\u00a0·"}</span></span>{" "}
       <span className="wa-shift__length nv-keep">{keepDuration(durationMinutes(shift.startTime, shift.endTime))}</span>
     </p>
     <p className="wa-shift__where"><MetaParts text={where.join(" · ")} /></p>
