@@ -6,6 +6,7 @@ import { employeeInitials, employeeRoleLabel } from "@/lib/employee-display";
 import { formatPhoneNumber } from "@/lib/phone";
 import { DIRECTORY_ROLES, filterDirectoryEmployees, hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-directory";
 import { PageBand, Status } from "./kit/kit";
+import { KeepSelectedVisible } from "./kit/keep-selected-visible";
 import { EmployeeDirectoryFilters } from "./employee-directory-filters";
 
 export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, words = DEFAULT_WORDS.en }: {
@@ -59,6 +60,8 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
               {segments.map(segment => <button key={segment.value} type="submit" name="status" value={segment.value} aria-pressed={segment.value === filters.status} aria-label={`${segment.label}, ${segment.count}`} className="nv-filter premium-filter-light">
                 {segment.label} <span className="premium-filter-count" aria-hidden="true">{segment.count}</span>
               </button>)}
+              {/* Final phone pass: marks overflow (edge fades in every engine) and keeps the chosen status in view. */}
+              <KeepSelectedVisible />
             </div>
             <div className="premium-team-actions">
               {filtered ? <Link href="/app/employees" className="nv-link"><X size={16} aria-hidden="true" /> Clear filters</Link> : null}

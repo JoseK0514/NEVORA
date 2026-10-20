@@ -5,6 +5,7 @@ import { formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { Avatar, Card, Status } from "@/components/kit/kit";
 import { HoldHeight } from "@/components/kit/hold-height";
+import { KeepSelectedVisible } from "@/components/kit/keep-selected-visible";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
 
@@ -54,6 +55,7 @@ export function AvailabilityTeamList({ employees, employeeId }: {
           {item.label}<span className="wa-chip__count" aria-label={`, ${count}`}>{count}</span>
         </button>;
       })}
+      <KeepSelectedVisible />
     </div>
     <p className="nv-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
     {/* ST-WA-3: a filter keeps the list at the full team's height, so the chips never jump under the finger.

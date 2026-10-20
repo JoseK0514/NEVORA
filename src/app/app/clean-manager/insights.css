@@ -213,7 +213,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .cm-insights__button::after { content: ""; position: absolute; inset: -8px 0; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .cm-insights__export-text { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
 /* QA r3: below 1000px the chart and Hours by person stack. */
-@media (min-width: 761px) and (max-width: 999px) {
+@media (min-width: 761px) and (max-width: 999px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__main { grid-template-columns: minmax(0, 1fr); }
 }
 
