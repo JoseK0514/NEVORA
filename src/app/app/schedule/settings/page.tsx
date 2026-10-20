@@ -109,7 +109,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
         <div className="wb-rules-content">
           <section className="nv-card" aria-labelledby="rules-deadline">
             <RuleHeading title="Availability deadline" id="rules-deadline" meta={formatWeekRange(weekStart)} />
-            <ActionForm action={setAvailabilityDeadlineAction} className="wb-form wb-config" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "nv-btn", kind: "primary"}}>
+            <ActionForm action={setAvailabilityDeadlineAction} className="wb-body wb-form wb-config" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "nv-btn", kind: "primary"}}>
               <input type="hidden" name="returnTo" value="/app/schedule/settings" />
               <input type="hidden" name="weekStart" value={weekStart} />
               <label className="wb-field"><span>Availability deadline</span><input type="datetime-local" name="availabilityDeadline" aria-describedby="deadline-help" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></label>
