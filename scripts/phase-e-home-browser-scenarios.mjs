@@ -198,7 +198,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='removal-review';
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
  await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();
- await page.getByText('Schedule confirmed',{exact:true}).waitFor();
+ await page.locator('.employee-quiet-status.success').getByText('Confirmed',{exact:true}).waitFor();
  const [ack]=await q('SELECT publication_revision_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,scenario.week]);
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
