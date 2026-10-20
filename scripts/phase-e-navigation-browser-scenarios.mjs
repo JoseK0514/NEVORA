@@ -41,7 +41,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const notifications=()=>page.locator('[data-private-view="notifications"]');
  const refreshNotifications=()=>notifications().locator('header').getByRole('button');
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
- async function accessibility(name){await page.addScriptTag({path:axeFile});const violations=await page.evaluate(async()=> (await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}})).violations.map(v=>v.id));assert.deepEqual(violations,[],name+' accessibility');checks.push(name+' axe WCAG A/AA');}
+ async function accessibility(name){await page.waitForFunction(()=>document.title==='NEVORA Workforce');await page.addScriptTag({path:axeFile});const violations=await page.evaluate(async()=> (await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}})).violations.map(v=>v.id));assert.deepEqual(violations,[],name+' accessibility');checks.push(name+' axe WCAG A/AA');}
  async function contrastStates(){
   const target=page.locator('.employee-account-footer button');
   for(const state of ['normal','hover','pressed','focus']){
