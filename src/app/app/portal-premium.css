@@ -2117,3 +2117,16 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .updates-list :is(a
 /* QA Oct 19: "Shift options" looks the same on Shift requests as on My schedule: an outlined 44px control, not a teal link. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .premium-shift-options > summary:not(#nv-kit) { padding: var(--nv-s-2) var(--nv-s-3); border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background: var(--nv-canvas); color: var(--nv-ink); font-weight: 500; width: fit-content; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .premium-shift-options:not(#nv-kit) { border-top: 0; padding-top: var(--nv-s-2); }
+/* H4 QA: once Home's read has failed, been refused or paused, the Next shift card drops its loading bars, so
+ * "Couldn’t load your shift." doesn't look like it is still loading. The lines keep their height. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame [data-home-state]:not([data-home-state="loading"]) .premium-pass-placeholder > :is(p:nth-child(2), p:nth-child(4)):not(#nv-kit) { background: none; }
+/* QA Oct 19: Safari drew the Team Role and Location selects as 25px native controls (it ignores min-height on a native
+ * select). Without the native box they are 48px like the search field beside them; a chevron replaces the native arrow. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-field select:not(#nv-kit) {
+  -webkit-appearance: none; appearance: none; padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%235F666A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem;
+}
+/* H5 QA: a pill row scrolled to its end loses its right-edge fade (data-end from KeepSelectedVisible). */
+html body .app-shell.nevora-portal .page-frame [data-nv-page] :is(.nv-filters, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .my-week-days)[data-overflow="true"][data-end="true"]:not([data-start="true"]):not(#nv-kit) { -webkit-mask-image: none; mask-image: none; }
+html body .app-shell.nevora-portal .page-frame [data-nv-page] :is(.nv-filters, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .my-week-days)[data-overflow="true"][data-end="true"][data-start="true"]:not(#nv-kit) { -webkit-mask-image: linear-gradient(to right, transparent, #000 24px); mask-image: linear-gradient(to right, transparent, #000 24px); }
