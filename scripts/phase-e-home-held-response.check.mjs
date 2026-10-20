@@ -1,14 +1,15 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import {waitForFreshHome} from './phase-e-home-browser-scenarios.mjs';
+import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 // A scheduling fixture for the actual H06 helper, not product/SQL evidence.
 // A prior ready snapshot may remain committed until the new generation renders.
-const evidence=process.env.HOME_READINESS_EVIDENCE_DIR;
-assert(evidence&&resolve(evidence)===evidence,'Explicit absolute evidence directory required');
-await mkdir(evidence,{recursive:true});
+const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA);
+const evidence=externalEvidence(source,process.env.HOME_READINESS_EVIDENCE_DIR);
+await writeFile(join(evidence,'source-manifest.json'),JSON.stringify(custody,null,2));
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'));
 const playwright=runtime('playwright');assert.equal(runtime('playwright/package.json').version,'1.62.1');
 const results=[];
@@ -37,4 +38,9 @@ for(const engine of ['chromium','webkit']){
  }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled readiness fixture failed'};process.exitCode=1;}
  finally{await context?.close();await browser.close();result.browserClosed=!browser.isConnected();await writeFile(join(evidence,'readiness-report.json'),JSON.stringify(results,null,2));}
 }
+let sourceUnchanged=false;
+try{assertSourceUnchanged(source,custody);sourceUnchanged=true;}catch{process.exitCode=1;}
+const passed=sourceUnchanged&&results.length===2&&results.every(result=>result.status==='passed'&&result.browserClosed);
+if(!passed)process.exitCode=1;
+await writeFile(join(evidence,'readiness-custody.json'),JSON.stringify({checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:custody.sourceClean,sourceUnchanged,status:passed?'passed':'failed',engines:results.map(({engine,status,browserClosed})=>({engine,status,browserClosed})),limitations:['Controlled scheduling fixture; actual Next/PostgreSQL Home and hosted 70-cell gates remain separate.']},null,2));
 console.log(JSON.stringify(results));

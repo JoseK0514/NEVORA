@@ -366,6 +366,10 @@ jobs:
       - name: Install Chromium and WebKit
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Home fresh-generation scheduling regression
+        env:
+          HOME_READINESS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence
+        run: node --import tsx scripts/phase-e-home-held-response.check.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |
@@ -387,6 +391,9 @@ jobs:
         with:
           name: phase-e-browser-${{ github.sha }}
           path: |
+            ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.json
+            ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/home-held-*.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/source-manifest.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*.png
