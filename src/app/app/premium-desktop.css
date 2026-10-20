@@ -365,7 +365,7 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :is(.premium-employee-home, .premium-employee-schedule, .premium-employee-timeoff, .premium-employee-exchange, .premium-employee-availability) > .nv-pageband > .nv-masthead__extra { grid-column: 2; justify-self: end; margin-block: -2px; min-width: 0; max-width: 100%; }
   /* Their view chips scroll sideways if the title row is short of room, never wrapping the title. */
-  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :is(.premium-employee-schedule, .premium-employee-timeoff, .premium-employee-exchange, .premium-employee-availability) > .nv-pageband > .nv-masthead__extra > * { margin: 0; padding: 0; flex-wrap: nowrap; overflow-x: auto; }
+  html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame :is(.premium-employee-schedule, .premium-employee-timeoff, .premium-employee-exchange, .premium-employee-availability) > .nv-pageband > .nv-masthead__extra > * { margin: -5px; padding: 5px; flex-wrap: nowrap; overflow-x: auto; } /* room for the 2px ring and its 2px offset inside the scrolling row; net zero, so nothing moves */
 }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* My schedule: the week runs the full width (it was 689px with an empty right side). */
@@ -576,3 +576,8 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
   /* TC-DESKTOP-KBD-01 / TC-P4-24: the visible shortcut uses the desktop callout floor and scales with text. */
   html body .app-shell.nevora-portal.nevora-portal .mobile-header .command-finder-trigger kbd { font: var(--nv-t-callout); }
 }
+
+/* Focus rings inside scrolling rows (keyboard QA, Oct 19): the rows clip what overflows them, so each keeps 5px of room
+ * for the 2px ring and its offset, with an equal negative margin so nothing moves. Every width. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] :is(.updates-filters, [class*="notification-inbox-module"][class*="__filters"]) { padding-block: 5px; margin-block: -5px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame > .section-tabs .section-tabs-track { padding: 4px; margin: -4px; }
