@@ -1,0 +1,342 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0007,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0005,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 100,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0081,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 100,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "button.notification-inbox-module__UUvGRa__markRead «Mark read» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0007,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 125,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0122,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 125,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1409,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 125,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0346,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 125,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "button.notification-inbox-module__UUvGRa__markRead «Mark read» 13px"
+  ],
+  "targets": [],
+  "cls": 0.0745,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 150,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0261,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 150,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1425,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 150,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0806,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 150,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "button.notification-inbox-module__UUvGRa__markRead «Mark read» 13px"
+  ],
+  "targets": [],
+  "cls": 0.2201,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 200,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0634,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 200,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.4106,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 200,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.2457,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "768",
+  "text": 200,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px",
+   "button.notification-inbox-module__UUvGRa__markRead «Mark read» 13px"
+  ],
+  "targets": [],
+  "cls": 0.4794,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]

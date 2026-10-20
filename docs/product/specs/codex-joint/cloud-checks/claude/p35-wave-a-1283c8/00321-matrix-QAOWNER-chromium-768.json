@@ -1,0 +1,338 @@
+[
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0009,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 100,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0006,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 100,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0081,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 100,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.001,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 125,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0123,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 125,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1412,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 125,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0347,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 125,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0748,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 150,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0262,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 150,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1427,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 150,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0731,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 150,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.1224,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 200,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.0635,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 200,
+  "route": "/app/inbox",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.4104,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 200,
+  "route": "/app/my-pay",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.2534,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "QAOWNER",
+  "size": "768",
+  "text": 200,
+  "route": "/app/notifications",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "h2.sidebar-group-label «Plan» 12px",
+   "h2.sidebar-group-label «Team» 12px",
+   "h2.sidebar-group-label «Time & Pay» 12px",
+   "h2.sidebar-group-label «Workspace» 12px",
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0.2508,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]
