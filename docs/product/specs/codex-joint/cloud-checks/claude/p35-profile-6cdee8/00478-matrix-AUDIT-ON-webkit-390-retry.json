@@ -1,0 +1,17 @@
+[
+ {
+  "engine": "webkit",
+  "account": "AUDIT-ON",
+  "size": "390",
+  "text": 150,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ }
+]

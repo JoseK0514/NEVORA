@@ -1,0 +1,278 @@
+[
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/account-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "summary. «What changes after a reset?» 14px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «All8» 12px",
+   "span. «Missing8» 12px",
+   "span. «Submitted0» 12px",
+   "span. «Unavailable0» 12px",
+   "span.status-pill.neutral «Not submitted» 11px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/clocker-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "summary. «Can others still use the table» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 125,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 125,
+  "route": "/app/account-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 125,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.status-pill.neutral «Not submitted» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 125,
+  "route": "/app/clocker-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 150,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 150,
+  "route": "/app/account-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 150,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 150,
+  "route": "/app/clocker-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 200,
+  "route": "/app",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 200,
+  "route": "/app/account-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 200,
+  "route": "/app/availability",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 200,
+  "route": "/app/clocker-recovery",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]
