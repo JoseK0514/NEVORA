@@ -82,8 +82,14 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
       const shot=join(evidence,`${engine}-employee-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
      }
     }
-    await retry.focus();await page.keyboard.press('Enter');
-    await page.getByText('Correction request sent for manager review.',{exact:true}).waitFor();
+    // WebKit can expose animated disclosure content before it accepts focus.
+    await retry.evaluate(async e=>{await new Promise(requestAnimationFrame);await Promise.all((e.closest('details')?.getAnimations({subtree:true})??[]).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
+    await retry.focus();
+    const native=await retry.evaluate(e=>({documentFocused:document.hasFocus(),buttonFocused:document.activeElement===e,enabled:!e.disabled&&e.getAttribute('aria-disabled')!=='true',disclosureOpen:e.closest('details')?.open??null,runningAnimations:(e.closest('details')?.getAnimations({subtree:true})??[]).filter(a=>a.playState==='running').length}));
+    observations.nativeRetries??=[];const receipt={engine,kind,loss,...native,postCallsBefore:commands.length};observations.nativeRetries.push(receipt);
+    assert(native.documentFocused&&native.buttonFocused&&native.enabled,'Native retry must have foreground focus and be enabled');
+    await page.keyboard.press('Enter');
+    await page.getByText('Correction request sent for manager review.',{exact:true}).waitFor();receipt.postCallsAfter=commands.length;
     assert.equal(commands.length,2);assert.deepEqual(commands[1],commands[0]);
     assert.deepEqual(await q('SELECT count(*)::int AS count FROM time_correction_requests WHERE id=$1',[commands[0].operationId]),[{count:1}]);
     await decide(owner,commands[0].operationId);
