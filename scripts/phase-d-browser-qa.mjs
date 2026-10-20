@@ -131,7 +131,38 @@ try{
     for(const width of [320,375,390,430,768,1024,1440]){await mp.setViewportSize({width,height:1000});assert(await mp.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2));assert(await center.locator('[data-inbox-key]').first().evaluate(e=>e.getBoundingClientRect().height>=43.5));checked(engine+': D7 action geometry '+width);}
     await center.getByRole('button',{name:'Refresh',exact:true}).focus();assert(await center.getByRole('button',{name:'Refresh',exact:true}).evaluate(e=>document.activeElement===e));await center.locator('[data-inbox-key]').first().focus();await mp.keyboard.press(process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab');assert(await center.evaluate(e=>e.contains(document.activeElement)&&document.hasFocus()),'Native Inbox traversal keeps focus within the foreground surface');checked(engine+': D7 keyboard focus');
     await center.locator('[data-inbox-key="TIME_OFF:'+timeOffId+'"]').click();await center.locator('.inbox-detail [data-fact="note"]').getByText('PRIVATE D7 ABSENCE REASON',{exact:true}).waitFor();assert(!(await center.locator('.inbox-list-column').innerText()).includes('PRIVATE D7 ABSENCE REASON'));checked(engine+': D7 authorized selected request note appears only in detail');await mp.screenshot({path:join(evidence,engine+'-inbox-authorized-note-1440.png'),fullPage:true});
-    const correctionLink=center.locator('[data-inbox-key="TIME_CORRECTION:'+submittedBody.requestId+'"]');await correctionLink.click({delay:100});await center.locator('.inbox-detail__actions a').first().click();const targetedCorrection=mp.locator('main [id="correction-'+submittedBody.requestId+'"]');await targetedCorrection.waitFor();await waitUntilAsync(()=>targetedCorrection.evaluate(e=>document.activeElement===e));checked(engine+': D7 pointer Inbox correction detail opens and focuses the protected request');await mp.screenshot({path:join(evidence,engine+'-correction-focus-1440.png'),fullPage:true});
+    // The independent corrections read may win while Attendance still hides its
+    // section. Hold that real read to exercise the native focus/reveal ordering.
+    let releaseAttendance;
+    const attendancePattern='**/api/manager/attendance';
+    await mp.route(attendancePattern,route=>new Promise(resolve=>{releaseAttendance=()=>route.continue().then(resolve);}));
+    const focusEvidence={states:[],reads:[]};
+    const recordRead=response=>{const path=new URL(response.url()).pathname;if(['/api/manager/attendance','/api/manager/time-corrections'].includes(path))focusEvidence.reads.push({path,status:response.status()});};
+    mp.on('response',recordRead);
+    const recordFocus=async stage=>{focusEvidence.states.push({stage,...await mp.evaluate(id=>{
+      const target=document.getElementById(id),active=document.activeElement;
+      return {path:location.pathname,hashMatches:location.hash==='#'+id,view:new URL(location.href).searchParams.get('view'),documentFocused:document.hasFocus(),visibility:document.visibilityState,readyState:document.readyState,
+        activeTag:active?.tagName??null,targetFocused:active===target,targetConnected:!!target?.isConnected,targetTabIndex:target?.tabIndex??null,targetRects:target?.getClientRects().length??0,
+        sectionDisplay:target?.closest('.manager-corrections')?getComputedStyle(target.closest('.manager-corrections')).display:null,
+        attendanceBusy:document.querySelector('.attendance-review-summary')?.getAttribute('aria-busy'),
+        animations:target?.getAnimations().map(animation=>animation.playState)??[]};
+    },'correction-'+submittedBody.requestId)});};
+    try{
+      const correctionLink=center.locator('[data-inbox-key="TIME_CORRECTION:'+submittedBody.requestId+'"]');await correctionLink.click({delay:100});await center.locator('.inbox-detail__actions a').first().click();
+      const targetedCorrection=mp.locator('main [id="correction-'+submittedBody.requestId+'"]');
+      await waitUntil(()=>releaseAttendance);await targetedCorrection.waitFor({state:'attached'});
+      await mp.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+      await recordFocus('protected-row-ready-attendance-held');
+      assert.equal(focusEvidence.states.at(-1).sectionDisplay,'none');assert.equal(focusEvidence.states.at(-1).targetFocused,false);
+      await releaseAttendance();releaseAttendance=null;await mp.unroute(attendancePattern);
+      await targetedCorrection.waitFor();await waitUntilAsync(()=>targetedCorrection.evaluate(e=>document.activeElement===e));
+      await recordFocus('revealed-and-focused');checked(engine+': D7 pointer Inbox correction detail opens and focuses the protected request');
+      await mp.screenshot({path:join(evidence,engine+'-correction-focus-1440.png'),fullPage:true});
+    }finally{
+      await recordFocus('final');mp.off('response',recordRead);
+      await writeFile(join(evidence,engine+'-correction-focus.json'),JSON.stringify(focusEvidence,null,2));
+      if(releaseAttendance)await releaseAttendance();await mp.unroute(attendancePattern);
+    }
     await mp.goto(centerUrl);await readyInbox();await openGroups();const currentTimecard=inboxActions.items.find(item=>item.type==='TIMECARD'&&item.employeeId==='D3-E');assert(currentTimecard);const timecardDestination=new URL(currentTimecard.href,app.url),timecardLink=center.locator('[data-inbox-key="'+currentTimecard.id+'"]');await timecardLink.focus();await timecardLink.press('Enter');const detailLink=center.locator('.inbox-detail__actions a').first();await detailLink.focus();await detailLink.press('Enter');await mp.locator('#timecard-D3-E').waitFor();assert.equal(new URL(mp.url()).searchParams.get('start'),timecardDestination.searchParams.get('start'));assert.equal(new URL(mp.url()).searchParams.get('end'),timecardDestination.searchParams.get('end'));await waitUntilAsync(()=>mp.locator('#timecard-D3-E').evaluate(e=>document.activeElement===e));checked(engine+': D7 keyboard Inbox timecard detail preserves canonical employee/period context and focus');
     await mp.goto(centerUrl);await readyInbox();await openGroups();await center.locator('[data-inbox-key="TIME_OFF:'+timeOffId+'"]').click();await center.locator('.inbox-detail [data-fact="note"]').getByText('PRIVATE D7 ABSENCE REASON',{exact:true}).waitFor();await management.setOffline(true);await mp.evaluate(()=>window.dispatchEvent(new Event('offline')));await center.getByText('You’re offline. This updates when you reconnect.',{exact:true}).waitFor();assert.equal(await center.locator('[data-inbox-key],.cm-filter-count,[data-fact="note"]').count(),0);assert(!(await center.innerText()).includes('PRIVATE D7 ABSENCE REASON'));checked(engine+': D7 offline clears current private Inbox snapshot and counts');
     releaseActions=null;await mp.route('**/api/manager/action-center',route=>new Promise(resolve=>{releaseActions=()=>route.continue().then(resolve);}));await management.setOffline(false);await mp.evaluate(()=>window.dispatchEvent(new Event('online')));await center.getByText('Reconnecting…',{exact:true}).waitFor();assert.equal(await center.locator('[data-inbox-key],.cm-filter-count,[data-fact="note"]').count(),0);assert(!(await center.innerText()).includes('PRIVATE D7 ABSENCE REASON'));await waitUntil(()=>releaseActions);await releaseActions();await mp.unroute('**/api/manager/action-center');await readyInbox();checked(engine+': D7 reconnect waits for new current protected sources');
