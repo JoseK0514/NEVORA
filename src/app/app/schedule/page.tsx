@@ -18,6 +18,7 @@ import { FocusOnArrival } from "@/components/kit/focus-on-arrival";
 import { ManagerWeeklyRoster, type RosterOpenShift } from "@/components/manager-weekly-roster";
 import { scheduleWeekFacts } from "@/components/clean/week-summary";
 import { TopBarTools } from "@/components/clean/top-bar-tools";
+import { DayAwareLink } from "@/components/clean/day-aware-link";
 import { loadManagerDashboardData } from "@/lib/data/manager-dashboard";
 import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-roster-presentation";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
@@ -297,6 +298,9 @@ export default async function SchedulePage({
     }) : [],
     availability: weekRead ? { submitted: weekRead.availabilitySubmissionSummary.submittedEmployees, eligible: weekRead.availabilitySubmissionSummary.eligibleEmployees } : null,
   });
+  // Phones: with one location chosen, the line says that location's state ("West Office not planned").
+  const phonePublished = selectedLocation === "all" ? facts.published : facts.locations.find(part => part.location.id === selectedLocation)?.location.name
+    ? `${facts.locations.find(part => part.location.id === selectedLocation)!.location.name} ${({ published: "published", draft: "draft", not_started: "not planned" } as const)[facts.locations.find(part => part.location.id === selectedLocation)!.location.state]}` : facts.published;
   const planHref = (locationId: string) => `/app/schedule?week=${weekStart}&location=${encodeURIComponent(locationId)}${statusFor(locationId) === "DRAFT" ? `&publishCheck=${encodeURIComponent(locationId)}` : "&plan=1"}#schedule-planning`;
   const deskFacts: ReactNode[] = [
     ...(facts.locations.length > 3
@@ -314,12 +318,12 @@ export default async function SchedulePage({
     <div className="manager-schedule-page premium-legacy-page nv-page cm-page cm-schedule" data-nv-page="">
       <PageBand title="Schedule"
         summary={<>
-          <span className="cm-sched-phone-inline">{`${compactWeekRange(weekStart)}${facts.published ? ` · ${facts.published}` : ""}`}</span>
+          <span className="cm-sched-phone-inline">{`${compactWeekRange(weekStart)}${phonePublished ? ` · ${phonePublished}` : ""}`}</span>
           <span className="cm-sched-desk-inline">{deskFacts.length
             ? deskFacts.map((part, index) => <Fragment key={index}>{index ? " · " : ""}{part}</Fragment>)
             : `${rosterShifts.length} ${rosterShifts.length === 1 ? "shift" : "shifts"} this week`}</span>
         </>}
-        aside={<TopBarTools className="cm-sched-slot"><div className="cm-sched-bar">
+        aside={<TopBarTools className="cm-sched-slot" phone><div className="cm-sched-bar">
           <Link className="cm-sched-back" href={`/app/schedule?week=${previousWeek}${locationQuery}`} aria-label={`Previous week, ${formatWeekRange(previousWeek)}`}>
             <CaretLeftIcon size={20} weight="bold" aria-hidden="true" /><span aria-hidden="true">{formatDayLabel(previousWeek).day}</span>
           </Link>
@@ -345,10 +349,10 @@ export default async function SchedulePage({
               <button className="button secondary" type="submit">{weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}</button>
             </form>
           </ActionMenu>
-          <Link className="cm-kbtn cm-kbtn--primary schedule-add-shift" href={addShiftHref} aria-label="Add shift">
+          <DayAwareLink className="cm-kbtn cm-kbtn--primary schedule-add-shift" href={addShiftHref} aria-label="Add shift">
             <PlusIcon className="cm-sched-desk-inline" size={13} weight="bold" aria-hidden="true" /><PlusIcon className="cm-sched-phone-inline" size={25} aria-hidden="true" />
             <span className="cm-sched-desk-inline" aria-hidden="true">Add shift</span>
-          </Link>
+          </DayAwareLink>
         </div></TopBarTools>} />
       <div className="nv-content premium-legacy-content">
       {params.error ? (

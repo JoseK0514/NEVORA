@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { KeepSelectedVisible } from "./kit/keep-selected-visible";
 import { MedalIcon } from "@phosphor-icons/react/dist/ssr/Medal";
 import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
 import { CalendarXIcon } from "@phosphor-icons/react/dist/ssr/CalendarX";
@@ -65,7 +66,7 @@ function OpenBlock({ open }: { open: RosterOpenShift }) {
   const day = formatDayLabel(open.date);
   return <Link className="cm-block open" href={open.href} title={`${formatTime(open.startTime)} – ${formatTime(open.endTime)} · ${open.location} · No one assigned`}
     aria-label={`Find cover for an open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>
-    {range(open.startTime, open.endTime)}
+    <span aria-hidden="true">{range(open.startTime, open.endTime)}</span>
   </Link>;
 }
 
@@ -96,6 +97,9 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   // Desktop: the full week, or one day when an Action Center link opened it (kept, with Full week to go back).
   const [focus, setFocus] = useState(reviewDay ?? "all");
   const [showUnscheduled, setShowUnscheduled] = useState(false);
+  const [moreDay, setMoreDay] = useState<string | null>(null);
+  // The navigation row's Add shift opens on the chosen day (it listens for this).
+  useEffect(() => { window.dispatchEvent(new CustomEvent("cm-schedule-day", { detail: phoneDay })); }, [phoneDay]);
   const visibleDates = focus === "all" ? dates : dates.filter(date => date === focus);
   const newShift = (date?: string, employeeId?: string) => `/app/schedule/new?week=${encodeURIComponent(dates[0])}${date ? `&date=${encodeURIComponent(date)}` : ""}${employeeId ? `&employeeId=${encodeURIComponent(employeeId)}` : ""}${locationId ? `&locationId=${encodeURIComponent(locationId)}` : ""}`;
   const allShifts = employees.flatMap(employee => employee.shifts.map(shift => ({ shift, employee })));
@@ -122,21 +126,24 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       </button>;
     })}
   </div>;
-  const dayList = <Card id="schedule-day" title={<>{longWeekday(phoneDay)}<span className="cm-count">{plural(dayShifts.length, "shift", "shifts")}</span></>}
-    titleLabel={`${longWeekday(phoneDay)}, ${plural(dayShifts.length, "shift", "shifts")}`} foot={footnote}>
+  // One list for the day: assigned and open shifts together, in time order (QA: the count, the strip and the rows agree).
+  const dayRows = [
+    ...dayShifts.map(entry => ({ start: entry.shift.startTime, node: shiftRow(entry) })),
+    ...dayOpen.map(open => ({ start: open.startTime, node: <Row key={open.id}
+      leading={<span className="cm-time" aria-hidden="true"><span>{clock(open.startTime)}</span><span>{clock(open.endTime)}</span></span>}
+      title={<span className="cm-open-title">Open shift</span>}
+      meta={!locationId && open.location ? open.location : "No one assigned"}
+      trailing={<Link className="cm-pill" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find Cover</Link>} /> })),
+  ].sort((a, b) => a.start.localeCompare(b.start));
+  // "Show N more" opens the rest of this day only; a new day starts collapsed. Focus moves to the first row it revealed.
+  const showAll = moreDay === phoneDay;
+  const showMore = () => { setMoreDay(phoneDay); requestAnimationFrame(() => document.querySelector<HTMLElement>(`#schedule-day .nv-rows > li:nth-child(${SHOWN + 1}) :is(a, button)`)?.focus()); };
+  const dayList = <Card id="schedule-day" title={<>{longWeekday(phoneDay)}<span className="cm-count">{plural(dayRows.length, "shift", "shifts")}</span></>}
+    titleLabel={`${longWeekday(phoneDay)}, ${plural(dayRows.length, "shift", "shifts")}`} foot={footnote}>
     <Rows label={`Shifts on ${longWeekday(phoneDay)}`}>
-      {dayShifts.slice(0, SHOWN).map(shiftRow)}
-      {dayOpen.map(open => <Row key={open.id}
-        leading={<span className="cm-time" aria-hidden="true"><span>{clock(open.startTime)}</span><span>{clock(open.endTime)}</span></span>}
-        title={<span className="cm-open-title">Open shift</span>}
-        meta={locationId || !open.location ? "No one assigned" : `No one assigned · ${open.location}`}
-        trailing={<Link className="cm-pill" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find Cover</Link>} />)}
-      {dayShifts.length > SHOWN ? <li className="cm-more"><details>
-        <summary className="nv-row">{`Show ${dayShifts.length - SHOWN} more`}</summary>
-        <ul className="nv-rows">{dayShifts.slice(SHOWN).map(shiftRow)}</ul>
-      </details></li> : null}
-      {!dayShifts.length && !dayOpen.length ? <Row title="No shifts" meta={`Nothing is scheduled on ${longWeekday(phoneDay)}.`} /> : null}
-      {!dayShifts.length ? <li className="cm-add-row"><Link className="nv-row" href={newShift(phoneDay)}>Add shift</Link></li> : null}
+      {(showAll ? dayRows : dayRows.slice(0, SHOWN)).map(row => row.node)}
+      {!showAll && dayRows.length > SHOWN ? <li className="cm-more"><button type="button" className="nv-row cm-more__button" onClick={showMore}>{`Show ${dayRows.length - SHOWN} more`}</button></li> : null}
+      {!dayRows.length ? <Row title="No shifts" meta={`Nothing is scheduled on ${longWeekday(phoneDay)}.`} /> : null}
     </Rows>
   </Card>;
 
@@ -205,6 +212,8 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
           {unscheduled.map(employee => personRow(employee, !showUnscheduled))}
         </tbody> : null}
       </table>
+      {/* Narrow desktop: marks the scrolling grid so its edges fade (every engine). */}
+      <KeepSelectedVisible />
     </div>
   </div>;
 

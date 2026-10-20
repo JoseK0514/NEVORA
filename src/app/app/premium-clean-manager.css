@@ -1090,3 +1090,16 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   /* Narrow desktop: Payroll's summary takes two lines. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .page-frame:has(.wb-payroll-settings) > .section-tabs:not(#cm-title) { top: calc(28px + 4px + 1.875rem + 8px + 2.5rem + 16px); }
 }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  /* Final phone pass P3: one page foot inset on phones (text with the cards' text, Refresh ending with it). */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page-foot:not(#cm-foot), html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timecards .cm-tc-foot:not(#cm-foot) { padding: 6px 16px 0; }
+  /* The header's Search and bell rings sit inside them (y=0 no longer clips them); back links too. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header :is(a, button):focus-visible:not(#cm-ring), html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-tc-back, .cm-sched-back, .nv-masthead__back):focus-visible:not(#cm-ring) { outline: 2px solid var(--cm-tint); outline-offset: -2px; border-radius: 8px; }
+}
+/* Final phone pass P3: Inbox section counts sit on the text baseline. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-inbox .inbox-section-count:not(#cm-base) { vertical-align: baseline; position: static; top: auto; }
+/* Final phone pass P3: the timecard sheet's entries have no rule under the last one. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet [class*="timecards-module"][class*="__entry"]:last-of-type:not(#cm-line) { border-bottom: 0; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page-foot .cm-refresh:not(#cm-foot) { margin-right: 0; }
+}

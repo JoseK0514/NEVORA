@@ -288,3 +288,53 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 @media (min-width: 1300px) {
   html:not([data-cm-topbar="0"]) body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule > .nv-pageband .cm-sched-bar { display: none; }
 }
+
+/* ===== Schedule QA pass (final) ===== */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  /* P2-3: short pages start at the top; rows don't stretch to fill the screen. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule:not(#cm-s) { align-content: start; }
+  /* P2-5: the week strip's date circles fit their column at large text. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-week__day > b:not(#cm-s) { min-width: 0; width: min(2.125rem, 100%); height: auto; aspect-ratio: 1; }
+  /* P2-4: "Show N more" is a plain row button; it goes away once pressed. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule #schedule-day .cm-more__button.nv-row { width: 100%; justify-content: flex-start; min-height: 44px; padding: 11px 16px; border: 0; background: none; box-shadow: none; color: var(--cm-tint); font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.43px; text-align: left; cursor: pointer; }
+  /* P3: the "has shifts" dot is 3:1 against the page. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-week__day > i[data-on]:not(#cm-s) { background: #8A8A87; }
+}
+/* P1-1: at large text (the list under ~20em) a day row stacks: the time on one line, the name, then Find Cover. */
+@container (max-width: 20em) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #schedule-day .nv-row:not(#cm-stack) { display: grid; grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; align-items: center; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #schedule-day .nv-row > .cm-time:not(#cm-stack) { grid-column: 1; grid-row: 1; width: auto; flex-direction: row; flex-wrap: wrap; gap: 0 6px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #schedule-day .nv-row > .cm-time > span + span:not(#cm-stack)::before { content: "– "; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #schedule-day .nv-row > .nv-row__text:not(#cm-stack) { grid-column: 1; grid-row: 2; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #schedule-day .nv-row > .nv-row__trail:not(#cm-stack) { grid-column: 1; grid-row: 3; justify-self: start; margin: 4px 0 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #schedule-day .nv-row > .nv-row__chev:not(#cm-stack) { grid-column: 2; grid-row: 1 / span 3; }
+}
+@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* P1-2: the title keeps at least 12rem; when the tools don't fit beside it they wrap under the title. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule > .nv-pageband:not(#cm-s) { display: flex; flex-wrap: wrap; align-items: center; column-gap: 16px; row-gap: 8px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule > .nv-pageband .nv-masthead__title:not(#cm-s) { flex: 1 1 12rem; order: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule > .nv-pageband .nv-pageband__eyebrow-row:not(#cm-s) { flex: 0 0 auto; order: 1; margin-left: auto; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule > .nv-pageband .nv-masthead__summary:not(#cm-s) { flex: 0 0 100%; order: 2; }
+  /* P2-6: the grid fades at the edge it continues past, and a focused block scrolls fully clear of the sticky names. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-grid__scroll:not(#cm-s) { scroll-padding-inline: 236px 28px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-grid__scroll[data-overflow="true"]:not([data-start="true"]):not(#cm-s) { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-grid__scroll[data-overflow="true"][data-start="true"]:not([data-end="true"]):not(#cm-s) { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+  /* P3: open blocks end with an ellipsis; initials scale; "over limit" is amber (red is for lateness and open shifts);
+   * the open block's dashed border is 3:1. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-block.open > span:not(#cm-s) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-person .nv-avatar:not(#cm-s) { width: 1.625rem; height: 1.625rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-person__sub em:not(#cm-s) { color: #93500A; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-block.open:not(#cm-s) { border-color: #D0453A; }
+}
+/* P2-8: on phones Schedule has the mockup's one navigation row: the shell row holds the previous week, More and Add shift
+ * beside Search and the bell. The band's copy is hidden from the first frame, so the page doesn't move when it lands. */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html:not([data-cm-phonebar="0"]) body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-page.cm-schedule > .nv-pageband .nv-pageband__eyebrow-row:not(#cm-s) { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header > .cm-sched-slot:not(#cm-s) { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; order: -1; margin: 0 0 0 -8px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header > .cm-sched-slot .cm-sched-bar:not(#cm-s) { flex: 1 1 auto; margin-right: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header:has(> .cm-sched-slot) > .mobile-header-actions:not(#cm-s) { margin-left: 0; }
+}
+@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* P3: a location that isn't planned reads as a link (it opens Plan). */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-schedule .cm-sched-fact:not(#cm-s) { color: var(--cm-tint); }
+}

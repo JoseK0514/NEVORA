@@ -280,12 +280,12 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
   // Final phone pass P2-7: a pause (the window lost focus) closes the item sheet for good; coming back shows the list, not a
   // sheet that reopens by itself.
+  if (connection === "paused" && sheetOpen) setSheetOpen(false);
   useEffect(() => {
-    if (connection !== "paused" || !sheetOpen) return;
-    setSheetOpen(false);
+    if (connection !== "paused" || wide) return;
     const url = new URL(window.location.href);
     if (url.searchParams.has("item")) { url.searchParams.delete("item"); window.history.replaceState(window.history.state, "", url); }
-  }, [connection, sheetOpen]);
+  }, [connection, wide]);
   // The workspace's date at the time of this observation, so server and browser agree.
   const day = ready ? new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ready.observedAt)) : undefined;
   const shifts = today?.state === "ready" ? today.missed : [];
