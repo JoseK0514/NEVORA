@@ -137,7 +137,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   let observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,false);
   for(const link of await overflowGroup('actions').locator('li a').all())assert(await link.isVisible());
   observation=await overflowToggle('actions','Space');assert.equal(observation.actionsOpen,false);assert.equal(observation.updatesOpen,false);
-  for(const link of await overflowGroup('actions').locator('details li a').all())assert.equal(await link.isVisible(),false);
+  for(const link of await overflowGroup('actions').locator('details li a').all()){await link.waitFor({state:'hidden'});assert.equal(await link.isVisible(),false);}
   observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,false);
   observation=await overflowToggle('updates','Enter');assert.equal(observation.updatesOpen,true);assert.equal(observation.actionsOpen,true);
   for(const link of await overflowGroup('updates').locator('li a').all())assert(await link.isVisible());
