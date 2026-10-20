@@ -1,0 +1,57 @@
+{
+  "candidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "startedAt": "2026-10-20T00:22:36.279592+00:00",
+  "rawPassed": 7337,
+  "rawFailed": 26,
+  "rawFailureCount": 26,
+  "policy": "Each original file alone, one worker, original 300s planner and 5s backfill limits; no source edits",
+  "runs": [
+    {
+      "file": "src/lib/scheduling/generation/planner.test.ts",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/lib/scheduling/generation/planner.test.ts",
+        "--maxWorkers",
+        "1",
+        "--reporter=json",
+        "--outputFile=/workspace/paused-evidence/final-a21650d/isolated-planner.json"
+      ],
+      "startedAt": "2026-10-20T00:22:36.279686+00:00",
+      "exitCode": 0,
+      "seconds": 216.265,
+      "completedAt": "2026-10-20T00:26:12.545123+00:00",
+      "passed": 56,
+      "failed": 0
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+        "--maxWorkers",
+        "1",
+        "--reporter=json",
+        "--outputFile=/workspace/paused-evidence/final-a21650d/isolated-backfill.json"
+      ],
+      "startedAt": "2026-10-20T00:26:12.549958+00:00",
+      "exitCode": 0,
+      "seconds": 88.039,
+      "completedAt": "2026-10-20T00:27:40.589650+00:00",
+      "passed": 68,
+      "failed": 0
+    }
+  ],
+  "completedAt": "2026-10-20T00:27:40.594483+00:00",
+  "recoveredOriginalTimeouts": 26,
+  "remainingOriginalFailures": 0,
+  "allIsolatedCommandsPassed": true,
+  "endCandidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "endClean": true,
+  "qualifiedPassed": 7363,
+  "rawFailuresPreserved": true,
+  "freshFullRawZeroClaim": false
+}

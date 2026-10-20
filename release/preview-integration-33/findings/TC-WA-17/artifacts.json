@@ -1,0 +1,32 @@
+[
+  {
+    "path": "4cadf00f.patch",
+    "sha256": "48b1287ab9fc0d04647b66aef123c1b2a15962be5d9e9125d6257b333108e229",
+    "bytes": 1584
+  },
+  {
+    "path": "README.md",
+    "sha256": "45f9928c985b084147b746714d94fb0e5cf370ba8a145510bad6c5511137f66d",
+    "bytes": 939
+  },
+  {
+    "path": "checks.json",
+    "sha256": "02efcb857cf4ebf82d59a6ebe70ec6aee08b3b3dac568d429a8460bf9366786a",
+    "bytes": 664
+  },
+  {
+    "path": "component.json",
+    "sha256": "580f594bdca7b250e5208295383e671637247b189da5bcb658e8a2e446163cc1",
+    "bytes": 990
+  },
+  {
+    "path": "component.log",
+    "sha256": "9de825260443d2c71213f03f5228bd7802a7ec2d9d69724b851678c9e3c08ee8",
+    "bytes": 86
+  },
+  {
+    "path": "lint.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+]

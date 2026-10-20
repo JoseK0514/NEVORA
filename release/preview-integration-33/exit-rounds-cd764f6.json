@@ -1,7 +1,7 @@
 {
   "source": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
-  "status": "Allfivefull exitsopen, zero completed. Fourcd ownersbrieflyclean-pausedafterbatches for currenta216fullgates and repairpreviewbootstrap. C960preparedonclean a216/noinheritedruntimecredit. Independent15bounded134complete/verifiedclosed; priority28pass; findingsretained. No sourcezero merge.",
+  "status": "All five full exits remain open; zero completed. Four cd764f6 owners resumed exact checkpoints after the safe resource pause. Wave C prepared on a21650de waits for the bounded repair preview to close. No source-zero merge is ready.",
   "zeroExits": [],
   "reviews": [
     {
@@ -10,14 +10,16 @@
       "manualJobs": 1562,
       "priorIDs": 135,
       "path": "premium-phase-3/complete-exit-preparation/",
-      "pendingManualJobs": 1541,
+      "pendingManualJobs": 1540,
       "sourceContractNotApplicable": 16,
       "progressAtCleanResourcePause": {
         "checkpointed": 664,
         "rawAwaitingParentReap": 4,
         "resume": "python3 premium-phase-3/round-5-cd764f6-full/analysis/resume-paused-checker-136882.py --root-released"
       },
-      "partialMeasuredFindingRows": 5
+      "partialMeasuredFindingRows": 6,
+      "currentCheckpointLowerBound": 696,
+      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
     },
     {
       "owner": "WaveA",
@@ -30,7 +32,9 @@
         "rawPass": 527,
         "oneEarlier503RequiresExplicitReplay": true,
         "resume": "own guarded run-serial.mjs --execute --mode matrix after exact release and removal of own PAUSE"
-      }
+      },
+      "currentCheckpointLowerBound": 536,
+      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
     },
     {
       "owner": "WaveB",
@@ -42,7 +46,9 @@
         "rawAwaitingParentReap": 3,
         "rawContrastFailures": 3,
         "resume": "WAVE_B_MATRIX_RESUME_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7 python3 preparation/scripts/resume-matrix.py --execute"
-      }
+      },
+      "currentCheckpointLowerBound": 349,
+      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
     },
     {
       "owner": "WaveC",
@@ -72,11 +78,13 @@
         "rawFailures": 2,
         "canonicalFailure": "ST-P4-13",
         "resume": "DESKTOP_RESUME_RELEASED_SHA=cd764f614be8ca5b5215be19d46e07cf968638d7 bash p4-desktop/exit-cd764f6/execution-tools/resume-normal-sweep.sh"
-      }
+      },
+      "currentCheckpointLowerBound": 588,
+      "runtimeStatus": "resumed/running; complete keys only, source-specific failures retained"
     }
   ],
   "criteria": "Full unchanged checker with axe, all five areas, all prior IDs, required state/large-data/manual judgments. Genuine product failures retained; setup gaps separate. No prior pass counts inherited.",
-  "publication": "Exact33/fourreadyrefsunchanged. CurrentRCa216containsfour separatelycommittedrepairs overrollingc875; PR14validationhead348 addsCI/testonlychanges/allappsourcebyteexacta216. No main/deploy.",
+  "publication": "Exact33 and four ready refs unchanged. CurrentRC4cadf00f includes six separately committed follow-up findings. PR14head971f815d includes candidate plus CI/browser-test corrections; mandatory CI pending. No main/deploy.",
   "pinnedPublishedRef": "codex/checkpoint-preview33-cd764f6",
   "completedFullExits": 0,
   "additionalCurrentRepairProbe": {
@@ -122,12 +130,12 @@
     "sourceAndMirrorVerified": true,
     "closureErrors": []
   },
-  "currentRepairCandidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "currentRepairCandidate": "4cadf00f3e8494377dea1c99c9757207d57ee321",
   "currentValidationPR": {
     "number": 14,
-    "head": "348db21a604d6844ae2836676c7c5eb232d96cbd",
-    "run": 39346366951,
-    "status": "queuedbehindoriginalrun; priorbrowserfailuresretained"
+    "head": "971f815da47f176d7c6781dd92a1a2bce294661b",
+    "run": 39348618711,
+    "status": "fresh current run pending; completed prior validate+all3Postgres green, original2browser failures preserved"
   },
   "temporaryResourceHold": {
     "requestedAt": "2026-10-20T00:15:00Z",
@@ -137,6 +145,25 @@
     "previewsRetained": true,
     "allFourOwnersAcknowledgedNoActiveBrowserCells": true,
     "resumeAfter": "root gates finish and runtime_setup confirms new candidate fixture/login ready; root explicitly releases existing owners",
-    "notAFullExitStopOrClosure": true
+    "notAFullExitStopOrClosure": true,
+    "active": false,
+    "releasedAt": "2026-10-20T00:29:00Z"
+  },
+  "updatedAt": "2026-10-20T00:37:33.956453+00:00",
+  "currentCandidateGates": {
+    "source": "a21650de50374683d52e32b883d7f419d7344f22",
+    "qualifiedTests": 7363,
+    "rawTests": {
+      "passed": 7337,
+      "loadTimeouts": 26
+    },
+    "isolatedReruns": {
+      "passed": 124,
+      "recoveredExactTimeouts": 26,
+      "limitsUnchanged": true
+    },
+    "typeLintBuildFiveMarkers": "passed",
+    "newerTwoRepairs": "focused checks pass; fresh full proof pending",
+    "report": "gates-a21650d/README.md"
   }
 }

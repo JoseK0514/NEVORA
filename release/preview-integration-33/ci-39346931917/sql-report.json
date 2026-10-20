@@ -1,0 +1,507 @@
+{
+  "checkpoint": "6b154351847ca5ffe67130b22ec0697b655b20bc",
+  "tree": "0eb7f2535e15cebff7db4c3935af86e374cad53b",
+  "sourceClean": true,
+  "ownerId": "89b1a7ed7dd4dc02f5931d4529390bd5",
+  "ownershipFile": "/home/runner/work/_temp/nevora-phase-e-sql-evidence/owned-postgres-RRBvS7/ownership.json",
+  "ownershipClosed": true,
+  "suites": [
+    "assignments",
+    "attention",
+    "communications-schema",
+    "communications",
+    "communication-ack",
+    "communication-notifications",
+    "home",
+    "calendar-tokens",
+    "calendar-feed",
+    "employee-navigation"
+  ],
+  "mode": "sql",
+  "status": "passed",
+  "results": [
+    {
+      "suite": "assignments",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-published-assignments.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-assignments.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "next_shift_crosses_multiple_weeks and year_rollover with actual source/date/episode/revision",
+        "partial_locations_keep_known_shift while draft_coworker_released_ineligible_excluded",
+        "complete current-week coverage with no shift is distinct from unavailable and does not invent future publication",
+        "unpublished current week and no future row stays partial with no invented off state",
+        "missing publication identity closes a known assignment without exposing its data",
+        "a fresh read reflects changed live ownership, time and position rather than stale capture",
+        "session lost before protected source read exposes no private rows",
+        "final session check suppresses rows after source observation",
+        "next final read loses loc-2 eligibility after its source observation while loc-1 remains authorized",
+        "window final read loses loc-2 eligibility after its source observation while loc-1 remains authorized",
+        "next final read loses loc-2 active status after its source observation while loc-1 remains authorized",
+        "window final read loses loc-2 active status after its source observation while loc-1 remains authorized",
+        "next final guard rechecks loc-2 active loss after a blocked wait",
+        "window final guard rechecks loc-2 active loss after a blocked wait",
+        "role change during a blocked source guard is rechecked after the wait",
+        "fictional small and large future sets retain bounded query count and expose local EXPLAIN plans"
+      ],
+      "resources": [
+        {
+          "pid": 2753,
+          "ppid": 2736,
+          "pgid": 2736,
+          "started": "Tue Oct 20 00:21:25 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "attention",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-attention.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-attention.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "unseen_republish_conflicts",
+        "expired_after_week_lock_denied",
+        "replaced_cookie_cannot_ack_old_tab",
+        "same_operation_same_receipt under concurrent real SQL and no duplicate history",
+        "changed_operation_conflict immutable payload despite a valid server intent",
+        "required_action_cannot_mark_read_to_complete",
+        "new_version_resurfaces for same-status reason and optional time-term edits",
+        "equivalent_own_shifts_keep_ack but changed own terms require review",
+        "authorized detail plus explicit Mark read only; duplicate source receipts harmless; another actor/session denied",
+        "outcome_unknown recovers original operation after committed response loss",
+        "write fault rolls back canonical ack, operation and reminder cancellation together",
+        "weekly source changes or location authority lost after observation expose no stale rows or intent",
+        "COMMUNICATION producer unavailable and live EXCHANGE cannot gain Mark read authority",
+        "additive migration rollback leaves canonical acknowledgement and history intact",
+        "informational schedule receipt follows equivalent canonical acknowledgement and never replaces it",
+        "weekly source delayed after final session check must not release rows after expiry",
+        "live EXCHANGE has no read intent; terminal participant version can be read and changed revision resurfaces",
+        "own TIME_CORRECTION detail uses append-only event revision; new decision resurfaces and foreign source is denied",
+        "a relevant removal-to-empty week confirms the displayed current revision and replays one receipt",
+        "an unrelated empty published week grants neither confirmation nor informational read authority",
+        "removal-to-empty review still conflicts after a newer empty publication",
+        "removal-to-empty review denies a revoked session and commits no acknowledgement",
+        "weekly employee detail retains the captured position after the catalog name changes"
+      ],
+      "resources": [
+        {
+          "pid": 4075,
+          "ppid": 4058,
+          "pgid": 4058,
+          "started": "Tue Oct 20 00:21:45 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "communications-schema",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-communications-schema.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-communications-schema.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "schema_cross_workspace_revision_grant_denied",
+        "published content grants receipts operations and lifecycle are immutable with no cascade",
+        "draft privacy and new revisions preserve old acknowledgement without carrying it forward",
+        "operation actor session payload and receipt identity cannot be substituted",
+        "revision content hash normalized text role and scope constraints reject forged persistence",
+        "complete chain retains communication and payroll sources and rejects unknown kinds",
+        "fresh chain installs empty communication foundation without operational seeds",
+        "E21-QA-D001 current management withdraws after historical author deactivation while retaining evidence",
+        "E21-QA-D001 current management advances a revision after historical author deactivation without carrying receipts forward",
+        "E21-QA-D001 creation eligibility immutable root identity and current actor guards stay enforced",
+        "0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes"
+      ],
+      "resources": [
+        {
+          "pid": 6152,
+          "ppid": 6134,
+          "pgid": 6134,
+          "started": "Tue Oct 20 00:22:11 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "communications",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-communications.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-communications.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "location immutable grants do not backfill transfers; deactivation denies reads",
+        "concurrent_publish_same_command_once and changed replay conflict",
+        "audience fingerprint rejects a phantom eligibility change after preview",
+        "withdraw cancels current intents and deliveries; author deactivation preserves management control",
+        "outbox fault rolls back all publication and grants",
+        "session replaced proof cannot execute a prior tab command",
+        "expiry after communication root wait cannot publish a revision or disclose content",
+        "source changed between protected observations is rejected after locks",
+        "yesterday overnight is today team; approved exact callout denies sender and recipient",
+        "shift episode change denies old note and current location loss denies announcement",
+        "arbitrary recipient IDs are rejected on full otherwise valid command",
+        "expiry during final operation wait rejects publication without source rows",
+        "list final eligibility change discards an earlier private body",
+        "list final withdrawal change discards an earlier private body",
+        "another eligible team assignment does not replace an immutable existing read grant",
+        "publication after empty list discovery cannot report complete all-clear",
+        "protected management status names recipients; employee receives only own status and short lifetime"
+      ],
+      "resources": [
+        {
+          "pid": 6921,
+          "ppid": 6903,
+          "pgid": 6903,
+          "started": "Tue Oct 20 00:22:22 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "communication-ack",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-communication-ack.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-communication-ack.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "ack revision hash employee exact; duplicates retain original timestamp",
+        "ack versus REVISE has one order and old receipt never completes latest",
+        "ack versus WITHDRAW has one order and old receipt never completes latest",
+        "explicit optional read never creates acknowledgement and required review cannot be dismissed",
+        "lost acknowledgement result recovers original operation without repeating receipt",
+        "replaced session and revoked location cannot acknowledge old displayed content"
+      ],
+      "resources": [
+        {
+          "pid": 8035,
+          "ppid": 8018,
+          "pgid": 8018,
+          "started": "Tue Oct 20 00:22:39 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "communication-notifications",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-communication-notifications.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-communication-notifications.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "duplicate intent one event per version recipient; inbox and safe open work without push",
+        "quiet hours retain the exact-version intent and Updates content while deferring routine transport",
+        "revocation before materialize send and open denies recipient",
+        "revocation before materialize send and open denies location",
+        "revocation before materialize send and open denies withdraw",
+        "superseded version cancels after lease and last source check prevents transport",
+        "provider ambiguous retry may repeat generic payload but never creates acknowledgement",
+        "outbox fault leaves no partial publication and unmarked database activation is held",
+        "upgrade retains historical communication notifications through payroll and forward repair",
+        "management inbox preserves recipient authority, idempotent read status and separate acknowledgement",
+        "management inbox suppresses a source revoked before its final observation"
+      ],
+      "resources": [
+        {
+          "pid": 8544,
+          "ppid": 8527,
+          "pgid": 8527,
+          "started": "Tue Oct 20 00:22:46 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "home",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-home.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-home.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "actual six-source PARTIAL Home retains distant published Next Shift and current-week publication notice",
+        "canonical confirmation removes required weekly update; equivalent own terms do not fabricate a new update",
+        "Home impression never marks read; explicit current detail receipt removes info and edited same-status content resurfaces",
+        "cap sentinel discloses partial time-off without silently truncating to complete",
+        "actual blocked time-off SQL preserves independently authorized Next Shift and names unavailable source",
+        "actual source adapter schedule failure cannot produce empty-complete or expose raw errors",
+        "actual source adapter acknowledgements failure cannot produce empty-complete or expose raw errors",
+        "actual source adapter exchanges failure cannot produce empty-complete or expose raw errors",
+        "actual source adapter ownTime failure cannot produce empty-complete or expose raw errors",
+        "final session change after source observations discards all private sections",
+        "final role change after source observations discards all private sections",
+        "final eligibility change after source observations discards all private sections",
+        "expiry while final authority source waits is denied by the post-wait SQL session assertion",
+        "source changed between index and final index observation is unavailable with no stale item",
+        "actual eligible coverage uses canonical availability and deadline; expiry removes the offer",
+        "own correction event revision resurfaces without private decision notes or another employee content",
+        "multiple persisted future weeks remain in the acknowledgement source; no convenient current-week cut-off",
+        "unknown current coverage policy is partial rather than an empty complete eligible source",
+        "terminal exchange changedAt uses actual latest resolution rather than old request creation time",
+        "own same-status time-off rows identify distinct canonical dates and ranges without private reasons",
+        "acknowledged last own shift removal has exact current review and preserves another authorized week",
+        "actual actionable coverage expiring between source reads and final SQL observation requires source revalidation",
+        "foreign and formerly authorized own historical weeks cannot broaden current weekly relevance",
+        "announcement_required_ack_keeps_attention and push_disabled_still_required_in_app",
+        "edit_new_version_resurfaces after full-content current acknowledgement",
+        "withdrawal_removes_requirement and optional seen receipt removes only its own version",
+        "communications_failure_never_clear and retained known schedule remains available",
+        "empty communication insertion while final Home observation waits never produces complete empty",
+        "expiration and current grant loss during final Home wait discard former communication rows",
+        "all_sources_complete_zero_items_exact_copy producer has a real complete authorized fixture",
+        "complete-zero fixture single schedule failure never becomes all-clear",
+        "complete-zero fixture single acknowledgements failure never becomes all-clear",
+        "complete-zero fixture single exchanges failure never becomes all-clear",
+        "complete-zero fixture single timeOff failure never becomes all-clear",
+        "complete-zero fixture single ownTime failure never becomes all-clear",
+        "complete-zero fixture single communications failure never becomes all-clear",
+        "optional expiration bounds lifetime then expiration during final wait cannot retain its row",
+        "current acknowledgement inserted during final Home wait cannot return the buffered required row",
+        "communication cap sentinel retains known rows and never claims complete",
+        "shift reassignment during final Home wait revokes current grant without backfilling the replacement"
+      ],
+      "resources": [
+        {
+          "pid": 9458,
+          "ppid": 9441,
+          "pgid": 9441,
+          "started": "Tue Oct 20 00:22:59 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "calendar-tokens",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-calendar-tokens.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-calendar-tokens.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "calendar capability persistence and operation recovery exist without a raw token column",
+        "own issue digest only and response loss lookup cannot recover URL",
+        "manager cannot issue own feed or retrieve employee URL but can revoke in same workspace",
+        "concurrent rotate has one winner one active digest and revoke denies new reads",
+        "logout applies the permanent capability lifecycle",
+        "reset applies the permanent capability lifecycle",
+        "deactivate applies the permanent capability lifecycle",
+        "role applies the permanent capability lifecycle",
+        "location applies the permanent capability lifecycle",
+        "eligibility applies the permanent capability lifecycle",
+        "workspace applies the permanent capability lifecycle",
+        "location addition never expands existing capability scope",
+        "concurrent rotation and revocation cannot leave an unrevoked former credential",
+        "lost commit response is recovered without issuing or revealing a second raw credential",
+        "rejects malformed ISSUE array without rotating or revoking an active calendar link",
+        "rejects malformed ROTATE array without rotating or revoking an active calendar link",
+        "rejects malformed REVOKE array without rotating or revoking an active calendar link",
+        "rejects malformed object with shadowed toString without rotating or revoking an active calendar link",
+        "fresh calendar guard rejects the stale loser: REVOKE first, self revoker",
+        "fresh calendar guard rejects the stale loser: ROTATE first, self revoker",
+        "fresh calendar guard rejects the stale loser: REVOKE first, manager revoker",
+        "a rotation captured before completed revocation cannot create a replacement afterwards",
+        "fresh issue after revocation and immutable operation replay preserve their lifecycle"
+      ],
+      "resources": [
+        {
+          "pid": 17478,
+          "ppid": 17461,
+          "pgid": 17461,
+          "started": "Tue Oct 20 00:24:30 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "calendar-feed",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-calendar-feed.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-calendar-feed.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "publication and label sources share committed calendar serial metadata",
+        "removal projection has canonical source references without copied schedule body",
+        "own published events carry opaque stable identity committed serial and no private fields",
+        "label rename and republish increase sequence while preserving UID and original history",
+        "reassignment cancellation references former own boundaries without recipient or location disclosure and own return suppresses it",
+        "callout release produces canonical cancellation in the same published batch",
+        "revocation between observation and final authority check suppresses every event",
+        "missing canonical publication metadata fails closed instead of borrowing label metadata",
+        "30 past through 180 future workspace dates retain full overlapping overnight boundaries",
+        "resource overflow returns unavailable with no truncated success",
+        "own cross-week moves both directions retain UID and increase global sequence",
+        "failed publication rolls back serial allocation snapshots and cancellation references atomically",
+        "0022 upgrade backfills a deterministic shared serial without rewriting original publication or location values",
+        "disjoint source writers serialize their commits through the shared clock and rolled-back stamps are invisible",
+        "removal metadata is omitted after 60 days while canonical history is retained",
+        "workspace daylight saving overnight conversion emits full absolute boundaries without payroll inference",
+        "move into newly added location cancels original scoped event until deliberate rotation includes the new scope",
+        "workspace changes after feed observation classify authority loss separately from configuration failure: UPDATE workspaces SET active=false,updated_at=clock_timestamp()",
+        "workspace changes after feed observation classify authority loss separately from configuration failure: UPDATE workspaces SET name='Fictional updated workspace',updated_at=clock_timestamp()"
+      ],
+      "resources": [
+        {
+          "pid": 18953,
+          "ppid": 18936,
+          "pgid": 18936,
+          "started": "Tue Oct 20 00:24:51 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    },
+    {
+      "suite": "employee-navigation",
+      "command": [
+        "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.phase-e-integration.config.mts",
+        "src/test/integration/phase-e-employee-navigation.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile",
+        "/home/runner/work/_temp/nevora-phase-e-sql-evidence/sql-employee-navigation.json"
+      ],
+      "exitCode": 0,
+      "checks": [
+        "current own Profile and inbox work without push; DTO excludes copied body, reason, URL, tokens and coworker records",
+        "actual EMPLOYEE role authority and a replaced role/session cannot return private rows",
+        "actual LEAD role authority and a replaced role/session cannot return private rows",
+        "foreign recipient/source, stale version, cancelled, expired and environment-mismatched rows expose no stale content",
+        "unsupported legacy and row cap remain partial; infrastructure failure remains unavailable",
+        "new candidate during discovery cannot manufacture a complete empty view",
+        "cancellation/source revocation after discovery removes the row in fresh canonical replay",
+        "final session revocation and workspace change return no DTO",
+        "time-only persisted expiry across the final wait excludes an unchanged notification",
+        "future due row cannot become silently missing when time crosses due during the final wait",
+        "real final actor-lock wait followed by role replacement is denied",
+        "unchanged Exchange succeeds and exact terminal participant history survives lost operational eligibility",
+        "malformed final observation/result index and oversized source cannot leak a partial private DTO",
+        "pending Exchange is current before its clock-only deadline and becomes permitted terminal history after the final wait",
+        "same-version operational location eligibility revoked after discovery blocks an active Exchange",
+        "terminal Callout preserves exact own history after operational location loss; foreign participants cannot open it",
+        "active singleton workspace and configured profile locations are required; a second workspace is structurally rejected",
+        "microsecond/null/set ordering and legacy empty query facts replay without changing authorized outcomes",
+        "owned PostgreSQL bootstrap statement timeout yields unavailable instead of a completed inbox",
+        "owned PostgreSQL final statement timeout yields unavailable instead of a completed inbox",
+        "clock-only session expiry across the final wait returns no private DTO",
+        "64 distinct canonical observations cap is unavailable rather than a partial or empty success",
+        "8-second total read budget expires across individually bounded actual PostgreSQL waits"
+      ],
+      "resources": [
+        {
+          "pid": 20336,
+          "ppid": 20319,
+          "pgid": 20319,
+          "started": "Tue Oct 20 00:25:12 2026",
+          "commandHash": "1408179d0c3fb517c84c373ba9ad3838f0df7946cc2bac331526ea88b14c3bb2",
+          "kind": "owned-descendant",
+          "stopped": true
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Owned local foundation verification is not hosted, client or independent phase acceptance."
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "id": "TC-WA-17",
+  "severity": "P2",
+  "sourceSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "sourceTree": "64bc4c24afac005ce5270b3d65112a797b59b511",
+  "observedAt": "2026-10-20T00:14:14.306Z",
+  "reportedAt": "2026-10-20T00:19:13.306942+00:00",
+  "route": "/app/schedule/copy-receipt?operation=11111111-1111-4111-8111-111111111111",
+  "state": "No stored original command/receipt; valid explicit ROUND canonical unconfirmed link",
+  "account": "QAOWNER",
+  "engine": "chromium",
+  "width": 320,
+  "height": 844,
+  "text": 200,
+  "rootFontSize": "32px",
+  "instruction": "Look at the schedule. If the shifts aren\u2019t there, retry this same copy; it won\u2019t copy anything twice.",
+  "offeredRetryControls": 0,
+  "offeredBackToScheduleControls": 1,
+  "offeredCommandButtons": 0,
+  "controls": [
+    {
+      "selector": "a.nv-masthead__back",
+      "text": "Schedule",
+      "box": {
+        "x": 8,
+        "y": 76.515625,
+        "width": 182,
+        "height": 44,
+        "top": 76.515625,
+        "right": 190,
+        "bottom": 120.515625,
+        "left": 8
+      }
+    },
+    {
+      "selector": "a.nv-btn",
+      "text": "Back to schedule",
+      "box": {
+        "x": 36,
+        "y": 1470.515625,
+        "width": 248,
+        "height": 88,
+        "top": 1470.515625,
+        "right": 284,
+        "bottom": 1558.515625,
+        "left": 36
+      }
+    },
+    {
+      "selector": "summary.wa-disclosure__summary",
+      "text": "Reference",
+      "box": {
+        "x": 16,
+        "y": 1578.515625,
+        "width": 288,
+        "height": 52,
+        "top": 1578.515625,
+        "right": 304,
+        "bottom": 1630.515625,
+        "left": 16
+      }
+    }
+  ],
+  "evidenceCell": "serial-evidence/attempts/00065/passive-geometry/cells/0deaab12490305e316f7.json",
+  "crops": [
+    "chromium-QAOWNER-320-200-top.png",
+    "chromium-QAOWNER-320-200-actions.png"
+  ],
+  "cause": "src/app/app/schedule/copy-receipt/page.tsx:71 always instructs retry; line73 only renders Retry this copy when command exists.",
+  "uniqueness": "No prior TC-WA1\u201316 or other51 IDs cover this conditional instruction mismatch. Historical fixture-contracts.md41 describes why no command means no retry button; that fixture fact is not closure of the contradictory instruction.",
+  "judgment": "P2 content precision: actual text names an unavailable action. Do not add a retry command or fabricate the original command. Keep existing command-present copy and behavior; condition only the instruction.",
+  "candidateAtProposal": "a21650de50374683d52e32b883d7f419d7344f22",
+  "candidateAndSourceFileBlob": "aafea14349afb4ada97fb2f45e6ead67c41b66e6",
+  "proposalOnly": true,
+  "appCodeEdited": false,
+  "testsOrFixedBrowserExecuted": false,
+  "sourceFindingStatus": "Open on cd764f6",
+  "cropHashes": {
+    "chromium-QAOWNER-320-200-top.png": "cdfd5fb43fe8e76612b4778625350cbbbfa24f0817ae3ba4c7fbafca052afcf0",
+    "chromium-QAOWNER-320-200-actions.png": "e0539f79cc311ef8bd77eb666adba159e8cf30805728c38f0f374e03d7d42595"
+  },
+  "initialStoragePendingCopyKeyCount": 0,
+  "browserContextProvenance": "Unchanged checks.mjs creates a fresh context from owned QAOWNER storage state; that state contains zero nevora-copy-pending keys. GET-only receipt never mounts ScheduleCopyForm when server command is null and cannot retain a new original command.",
+  "scopeLimit": "A different browser that retained an original command locally may recover it from Schedule. This finding is only the measured fresh no-server-command/no-local-command condition, not a claim that alternate client-held recovery must be removed."
+}

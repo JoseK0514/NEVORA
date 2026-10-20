@@ -1,0 +1,135 @@
+{
+  "generatedAt": "2026-10-20T00:22:20.628Z",
+  "checkpoint": "6b154351847ca5ffe67130b22ec0697b655b20bc",
+  "tree": "0eb7f2535e15cebff7db4c3935af86e374cad53b",
+  "sourceClean": true,
+  "expectedSha": "6b154351847ca5ffe67130b22ec0697b655b20bc",
+  "checks": [
+    "chromium: real Owner protected attendance read",
+    "chromium: real Manager protected attendance read",
+    "chromium: Employee cannot enter Manager attendance surface",
+    "chromium: populated factual attendance exception state",
+    "chromium: limited source state is explicitly disclosed",
+    "chromium: lifecycle reauthorization clears protected snapshot before the response",
+    "chromium: visibility revalidation clears protected snapshot before refresh",
+    "chromium: pagehide/pageshow requires a fresh protected snapshot",
+    "chromium: historical inactive location keeps its recorded label",
+    "chromium: refreshed server labels replace stale page-load labels",
+    "chromium: attendance geometry 320",
+    "chromium: attendance geometry 375",
+    "chromium: attendance geometry 390",
+    "chromium: attendance geometry 430",
+    "chromium: attendance geometry 768",
+    "chromium: attendance geometry 1024",
+    "chromium: attendance geometry 1440",
+    "chromium: keyboard focus on attendance Refresh",
+    "chromium: empty is distinct from unavailable",
+    "chromium: unavailable clears healthy empty state"
+  ],
+  "errors": [
+    "locator.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Refresh attendance review' })\n\n    at /home/runner/work/NEVORA/NEVORA/scripts/phase-d-attendance-ui-qa.mjs:389:19"
+  ],
+  "screenshots": [
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-320.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-375.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-390.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-430.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-768.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-1024.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-1440.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/attendance-failure.png"
+  ],
+  "limitations": [
+    "Owned local Next application and fictional PostgreSQL are not hosted Vercel/Neon acceptance.",
+    "Populated exception states use browser transport fixtures; D1.2 PostgreSQL and route suites separately verify the protected reader.",
+    "Local Chromium/WebKit automation does not replace physical-device or screen-reader acceptance."
+  ],
+  "fixtureResponses": [
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 403,
+      "state": "unavailable",
+      "reason": "access_denied",
+      "validForMs": null
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 200,
+      "state": "ready",
+      "reason": null,
+      "validForMs": 30000
+    },
+    {
+      "status": 503,
+      "state": "unavailable",
+      "reason": "read_failed",
+      "validForMs": null
+    }
+  ],
+  "failureSurface": {
+    "path": "/app",
+    "visibility": "visible",
+    "online": true,
+    "attendanceSurfaces": 1,
+    "status": "Attendance unavailableThe latest records didn’t load.",
+    "headings": [
+      "Plan",
+      "People",
+      "Time and pay",
+      "Workspace",
+      "Attendance",
+      "Today’s clock-ins",
+      "Correction requests"
+    ],
+    "controls": [
+      {
+        "tag": "BUTTON",
+        "label": "Refresh attendance review",
+        "text": "Refresh",
+        "disabled": false,
+        "ariaDisabled": null
+      }
+    ]
+  },
+  "finishedAt": "2026-10-20T00:23:11.533Z"
+}

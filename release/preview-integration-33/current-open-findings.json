@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-20T00:16:41.426030+00:00",
+  "updatedAt": "2026-10-20T00:37:33.956453+00:00",
   "inspectedSource": "cd764f614be8ca5b5215be19d46e07cf968638d7",
   "newerBoundedProbeSource": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",
   "fullExitZeroCount": 0,
@@ -89,7 +89,7 @@
       "candidateFixReceipt": "candidate-a21650d/source-and-findings.json",
       "patch": "later-unpublished-patches/46-AL-WA-10.patch",
       "candidateCommit": "0caadb3505342ef331e2adeb141c02eafcc13f96",
-      "candidateFixStatus": "committed/published onRC; fresha21650de browser proof pending; no independent closure"
+      "candidateFixStatus": "committed/published0caadb35; unchanged fresh a216 checker24/24 passes; canonical geometry24 running; no independent closure"
     },
     {
       "id": "TC-WA-3",
@@ -112,7 +112,7 @@
       "owner": "Coordinator/sharedPayroll withWaveB",
       "severity": "P2 retained; newly affected Payroll/MyPay surfaces explicit",
       "status": "actual100percent headingrole measurements/crops; no bodystrong inclusion, no prior Payroll/MyPay closure inherited",
-      "measurement": "ScheduleToday17/25.5/600 vs17/22/600; MyPayPayday20/28/550; earlierstatement/Payrollrunheadings17/25.5/550; sourcelegacyheadingcascade",
+      "measurement": "ScheduleToday17/25.5/600 vs17/22/600; MyPayPayday20/28/550; earlierstatement/Payrollrunheadings17/25.5/550; sourcelegacyheadingcascade; Profile App settings/Schedule week/Updates date20/28/550; Updates row17/25.5/550; Timecards Your timecard20/27/600 and Period information17/24/500 remain explicit role-review observations",
       "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md",
       "additionalReport": "../../p35-wave-b/full-exit-cd764f6/shared-TC-P3-28.json"
     },
@@ -138,6 +138,36 @@
       "severity": "P2 retained",
       "status": "existingInboxcount overlap visually confirmed on currentcdHome/WaveBTemplates and15Rules; actualbadgeink/carrierbounds pending sourcea216diagnosticfour; no newduplicate ID",
       "report": "../../p4-desktop/exit-cd764f6/interaction-states.md"
+    },
+    {
+      "id": "IS-RC-ATTENDANCE-RECOVERY-01",
+      "owner": "Desktop/sharedAttendance",
+      "severity": "P2",
+      "status": "Actual503 recovery hidden by desktop CSS after20 browser checks; no matching111prior ID. Committed32c9e1ce;3existing tests/type/lint pass, fresh browser proof pending; no independent closure",
+      "report": "findings/IS-RC-ATTENDANCE-RECOVERY-01/README.md",
+      "candidateCommit": "32c9e1cef450ab10574555c76b0c2a9bab2ce78e"
+    },
+    {
+      "id": "TC-WA-17",
+      "owner": "WaveA",
+      "severity": "P2",
+      "status": "Fresh QA Owner null-command unconfirmed receipt promises unavailable same-command retry. Committed4cadf00f conditional guidance; existing page test/lint pass; fresh fixed-source browser pending",
+      "report": "../../p35-wave-a/combined-cd764f6-cloud-full/findings/TC-WA-17/README.md",
+      "candidateCommit": "4cadf00f3e8494377dea1c99c9757207d57ee321"
+    },
+    {
+      "id": "P3-WR-17",
+      "owner": "Coordinator",
+      "severity": "P1 retained",
+      "status": "My time320/200 actual Completed glyph clips25.77px past cardright304; existing current CSS repair not yet attributed; no newer-source closure",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md"
+    },
+    {
+      "id": "P3-WR-11",
+      "owner": "Coordinator",
+      "severity": "P2 retained",
+      "status": "Notifications footer nested flex link row clips Schedule at320/200. Existing row-action Review schedule repaired sub-scope preserved; no new duplicate ID",
+      "report": "../../premium-phase-3/round-5-cd764f6-full/current-findings.md"
     }
   ],
   "additionalUnderInvestigation": [
@@ -149,11 +179,11 @@
     {
       "id": null,
       "owner": "WaveB",
-      "observation": "three raw contrast-only axe rows TemplatesOwner320200/applied and RulesOwner360100,430125/windowSaved; fullpaint/opacity/animation attribution pending ordinarymotiondiagnostic, no waiver/productcauseyet",
+      "observation": "Four raw contrast-only axe rows: Templates Owner320/200 applied and Rules Owner360/100,430/125,768/150 windowSaved. Actual axe-time paint/opacity/animation attribution pending; no waiver, finding ID or product cause inferred.",
       "report": "../../p35-wave-b/full-exit-cd764f6/type-colour-copy.md"
     }
   ],
-  "repairCandidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "repairCandidate": "4cadf00f3e8494377dea1c99c9757207d57ee321",
   "repairCandidateReport": "candidate-a21650d/README.md",
   "currentRepairProbePriority": {
     "source": "15a0fcd70d49060bb21738de67f4d8feb9b96d58",

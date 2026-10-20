@@ -1,0 +1,52 @@
+[
+  {
+    "path": "README.md",
+    "sha256": "bb8f0efce2e0b56eabb3a2dafa621b76d2b08cf9a39e125fcc74472382dd3741",
+    "bytes": 1537
+  },
+  {
+    "path": "attendance-failure.png",
+    "sha256": "eeac5c11b693c559b60cb006a36fa5f8d9e9e317d72576ddc5c5c14c7582c422",
+    "bytes": 77963
+  },
+  {
+    "path": "attendance-report.json",
+    "sha256": "28205ac52d41e8076559806b78aa3a49d290830d4e93bfa5a8d4a40e439639b6",
+    "bytes": 4445
+  },
+  {
+    "path": "build-source.json",
+    "sha256": "d4b9431d989572ed489e735c970810e44bbf2428d8559ae4b71f6e3547170037",
+    "bytes": 686435
+  },
+  {
+    "path": "custody.json",
+    "sha256": "72ef5dee3387c211900912baf453b41bc37f856ceffdf77b08f098fd79f46911",
+    "bytes": 2052
+  },
+  {
+    "path": "home-browser-report.json",
+    "sha256": "7a73fce3faf8956e827bc78744474891bffd8154012600e3a2ecb637e6bfc177",
+    "bytes": 1253
+  },
+  {
+    "path": "source-manifest.json",
+    "sha256": "260d974c9f7a93ae1360ac98569b79e96eeb7abca2336081cce7108997db5c49",
+    "bytes": 375143
+  },
+  {
+    "path": "sql-home.json",
+    "sha256": "14b6b7e7af1e3837a7e7ae2c5f9d96ce7b63d2ec2446c4c20050f98349b78bb2",
+    "bytes": 13789
+  },
+  {
+    "path": "sql-report.json",
+    "sha256": "bea0605a8dfb413d11256b06aac3a7e9abd34b5388782d5c6a66e51584751514",
+    "bytes": 27595
+  },
+  {
+    "path": "validate.log",
+    "sha256": "3b5a4b6448ae08db332336a27925fdcfbac4adf74eb843ba445a9a8766cffb54",
+    "bytes": 162007
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "id": "TC-WA-17",
+  "sourceSha": "cd764f614be8ca5b5215be19d46e07cf968638d7",
+  "preparedAt": "2026-10-20T00:27:40.314490+00:00",
+  "scope": "One exact current-source measured null-command condition,2 actual viewport crops; proposal only",
+  "files": {
+    "README.md": "4d0f0080687ddb416563137692b6d0fadb1613f60d54e3e02ead5a6f835ad946",
+    "measurement.json": "d9d0a8aa396cf67106156590064954e82505536624e0e4be64ff3f8f055a743a",
+    "REDACTION-CUSTODY.md": "2ad716b233329593018c657542874ad30a0d1ff96d844a78978a548dc3fbe3bf",
+    "TC-WA-17.patch": "8e36f8e92cd98a97327ff208fbc50e064217befbc39eddf6a243a6acc78c9773",
+    "chromium-QAOWNER-320-200-top.png": "cdfd5fb43fe8e76612b4778625350cbbbfa24f0817ae3ba4c7fbafca052afcf0",
+    "chromium-QAOWNER-320-200-actions.png": "e0539f79cc311ef8bd77eb666adba159e8cf30805728c38f0f374e03d7d42595"
+  },
+  "excluded": "All active whole-matrix logs, original passive full DOM JSON, private preview bindings, storage/cookies/credentials. This manifest is publication metadata only.",
+  "sourceStatus": "Open",
+  "fixedBrowserStatus": "Not executed"
+}

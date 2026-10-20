@@ -1,0 +1,67 @@
+[
+  {
+    "path": "32c9e1ce.patch",
+    "sha256": "34f938c9ed7faf1ae5b5d4f1fd76af32f4af68e6ad054cc960f19d6465969afa",
+    "bytes": 3480
+  },
+  {
+    "path": "IS-RC-ATTENDANCE-RECOVERY-01-v2.patch",
+    "sha256": "38b8f2f3782449e1fbd354cf37090f7191798020a8fa0b7bb4fee067ac29663b",
+    "bytes": 2756
+  },
+  {
+    "path": "IS-RC-ATTENDANCE-RECOVERY-01.patch",
+    "sha256": "87fb9172ab1f9d22c51d4f76fa2640073d0368bffdcdf423eb117b65d9cb8bf2",
+    "bytes": 2082
+  },
+  {
+    "path": "README.md",
+    "sha256": "7f1e0decd0a2dcb4b9c61d9cb46596c9c43bdb7fd22fc688836937f79225f010",
+    "bytes": 2377
+  },
+  {
+    "path": "attendance-failure.png",
+    "sha256": "eeac5c11b693c559b60cb006a36fa5f8d9e9e317d72576ddc5c5c14c7582c422",
+    "bytes": 77963
+  },
+  {
+    "path": "candidate-repair.json",
+    "sha256": "206eae40484edc5d56d4a78f10da3a5a8acb8c501d9674652c976b4749ae0f3f",
+    "bytes": 982
+  },
+  {
+    "path": "checks.json",
+    "sha256": "d33b359d5bb37d346d9078e53b6468490ad2ba1cfe15853eb60025b9de7fa28a",
+    "bytes": 938
+  },
+  {
+    "path": "component.json",
+    "sha256": "8e740d4eed2dc4e6df7482f1f6aa941a8f43c985f49af33ee6934525f856b901",
+    "bytes": 1535
+  },
+  {
+    "path": "component.log",
+    "sha256": "3f16cd189c401547347ef08e37baa7a67d484ac25fbe98fa3c4ec930eafec409",
+    "bytes": 84
+  },
+  {
+    "path": "lint.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "measurement.json",
+    "sha256": "671ad6e483d39f2343e320931e6a99d72e9b4feaec74fb82d40ba08ffa2110c8",
+    "bytes": 1563
+  },
+  {
+    "path": "report.json",
+    "sha256": "28205ac52d41e8076559806b78aa3a49d290830d4e93bfa5a8d4a40e439639b6",
+    "bytes": 4445
+  },
+  {
+    "path": "typecheck.log",
+    "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+    "bytes": 50
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "candidate": "4cadf00f3e8494377dea1c99c9757207d57ee321",
+  "finding": "TC-WA-17",
+  "runs": [
+    {
+      "name": "component",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/app/app/schedule/copy-receipt/page.test.tsx",
+        "--maxWorkers",
+        "1",
+        "--reporter=json",
+        "--outputFile=/workspace/paused-evidence/copy-guidance-repair/component.json"
+      ],
+      "exitCode": 0,
+      "seconds": 2.635
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npx",
+        "eslint",
+        "src/app/app/schedule/copy-receipt/page.tsx"
+      ],
+      "exitCode": 0,
+      "seconds": 7.01
+    }
+  ]
+}

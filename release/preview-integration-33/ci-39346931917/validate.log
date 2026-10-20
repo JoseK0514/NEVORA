@@ -1,0 +1,1341 @@
+﻿2026-10-20T00:20:44.3148192Z Current runner version: '2.337.0'
+2026-10-20T00:20:44.3181621Z ##[group]Runner Image Provisioner
+2026-10-20T00:20:44.3182964Z Hosted Compute Agent
+2026-10-20T00:20:44.3184308Z Version: 20261012.601
+2026-10-20T00:20:44.3185695Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-20T00:20:44.3186941Z Build Date: 2026-10-12T17:48:21Z
+2026-10-20T00:20:44.3188230Z Worker ID: {5bddda8b-bbfe-4465-ad0c-6025c7bb7c29}
+2026-10-20T00:20:44.3189528Z Region: westus2
+2026-10-20T00:20:44.3190456Z Cloud: Azure
+2026-10-20T00:20:44.3191566Z ##[endgroup]
+2026-10-20T00:20:44.3194302Z ##[group]Operating System
+2026-10-20T00:20:44.3195459Z Ubuntu
+2026-10-20T00:20:44.3196379Z 24.04.5
+2026-10-20T00:20:44.3197249Z LTS
+2026-10-20T00:20:44.3198254Z ##[endgroup]
+2026-10-20T00:20:44.3199227Z ##[group]Runner Image
+2026-10-20T00:20:44.3200283Z Image: ubuntu-24.04
+2026-10-20T00:20:44.3201313Z Version: 20261012.334.1
+2026-10-20T00:20:44.3203598Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-20T00:20:44.3206869Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-20T00:20:44.3208659Z ##[endgroup]
+2026-10-20T00:20:44.3210593Z ##[group]GITHUB_TOKEN Permissions
+2026-10-20T00:20:44.3213554Z Contents: read
+2026-10-20T00:20:44.3214909Z Metadata: read
+2026-10-20T00:20:44.3215883Z ##[endgroup]
+2026-10-20T00:20:44.3218886Z Secret source: Actions
+2026-10-20T00:20:44.3220452Z Cache mode: write
+2026-10-20T00:20:44.3221819Z Prepare workflow directory
+2026-10-20T00:20:44.3850449Z Prepare all required actions
+2026-10-20T00:20:44.3920676Z Getting action download info
+2026-10-20T00:20:44.8227874Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-20T00:20:44.9331864Z Download action repository 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-20T00:20:45.0368087Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-20T00:20:45.2486288Z Complete job name: validate
+2026-10-20T00:20:45.3265885Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-10-20T00:20:45.3267035Z with:
+2026-10-20T00:20:45.3267556Z   ref: 6b154351847ca5ffe67130b22ec0697b655b20bc
+2026-10-20T00:20:45.3268165Z   persist-credentials: false
+2026-10-20T00:20:45.3268655Z   fetch-depth: 0
+2026-10-20T00:20:45.3269097Z   repository: JoseK0514/NEVORA
+2026-10-20T00:20:45.3272746Z   token: ***
+2026-10-20T00:20:45.3273165Z   ssh-strict: true
+2026-10-20T00:20:45.3273601Z   ssh-user: git
+2026-10-20T00:20:45.3274207Z   clean: true
+2026-10-20T00:20:45.3274665Z   sparse-checkout-cone-mode: true
+2026-10-20T00:20:45.3275194Z   fetch-tags: false
+2026-10-20T00:20:45.3275633Z   show-progress: true
+2026-10-20T00:20:45.3276083Z   lfs: false
+2026-10-20T00:20:45.3276492Z   submodules: false
+2026-10-20T00:20:45.3276957Z   set-safe-directory: true
+2026-10-20T00:20:45.3277460Z   allow-unsafe-pr-checkout: false
+2026-10-20T00:20:45.3278240Z ##[endgroup]
+2026-10-20T00:20:45.4520042Z Syncing repository: JoseK0514/NEVORA
+2026-10-20T00:20:45.4526629Z ##[group]Getting Git version info
+2026-10-20T00:20:45.4529031Z Working directory is '/home/runner/work/NEVORA/NEVORA'
+2026-10-20T00:20:45.4554754Z [command]/usr/bin/git version
+2026-10-20T00:20:45.4583204Z git version 2.55.0
+2026-10-20T00:20:45.4588428Z ##[endgroup]
+2026-10-20T00:20:45.4608979Z Temporarily overriding HOME='/home/runner/work/_temp/fa2c33ea-7172-4c2c-940f-b0322429c1d9' before making global git config changes
+2026-10-20T00:20:45.4611944Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-20T00:20:45.4656677Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/NEVORA/NEVORA
+2026-10-20T00:20:45.4717231Z Deleting the contents of '/home/runner/work/NEVORA/NEVORA'
+2026-10-20T00:20:45.4719448Z ##[group]Initializing the repository
+2026-10-20T00:20:45.4721650Z [command]/usr/bin/git init /home/runner/work/NEVORA/NEVORA
+2026-10-20T00:20:45.4873435Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-20T00:20:45.4875822Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-20T00:20:45.4878548Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-20T00:20:45.4880073Z hint: call:
+2026-10-20T00:20:45.4881566Z hint:
+2026-10-20T00:20:45.4882698Z hint: 	git config --global init.defaultBranch <name>
+2026-10-20T00:20:45.4884808Z hint:
+2026-10-20T00:20:45.4886132Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-20T00:20:45.4913624Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-20T00:20:45.4915525Z hint:
+2026-10-20T00:20:45.4917223Z hint: 	git branch -m <name>
+2026-10-20T00:20:45.4918317Z hint:
+2026-10-20T00:20:45.4920204Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-20T00:20:45.4922242Z Initialized empty Git repository in /home/runner/work/NEVORA/NEVORA/.git/
+2026-10-20T00:20:45.4927201Z [command]/usr/bin/git remote add origin https://github.com/JoseK0514/NEVORA
+2026-10-20T00:20:45.4960597Z ##[endgroup]
+2026-10-20T00:20:45.4962220Z ##[group]Disabling automatic garbage collection
+2026-10-20T00:20:45.4964271Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-20T00:20:45.5052541Z ##[endgroup]
+2026-10-20T00:20:45.5075397Z ##[group]Setting up auth
+2026-10-20T00:20:45.5098018Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-20T00:20:45.5102831Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-20T00:20:45.5667247Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-20T00:20:45.5673192Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-20T00:20:45.5977293Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-20T00:20:45.6007532Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-20T00:20:45.6246076Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-20T00:20:45.6285777Z ##[endgroup]
+2026-10-20T00:20:45.6287588Z ##[group]Fetching the repository
+2026-10-20T00:20:45.6297586Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-10-20T00:20:51.0685013Z From https://github.com/JoseK0514/NEVORA
+2026-10-20T00:20:51.0695720Z  * [new branch]        NEVORA-UI-READINESS     -> origin/NEVORA-UI-READINESS
+2026-10-20T00:20:51.0697305Z  * [new branch]        claude/ci-fixes-preview-33 -> origin/claude/ci-fixes-preview-33
+2026-10-20T00:20:51.0700589Z  * [new branch]        claude/p35-profile-6cdee8 -> origin/claude/p35-profile-6cdee8
+2026-10-20T00:20:51.0702399Z  * [new branch]        claude/p35-wave-a-1283c8 -> origin/claude/p35-wave-a-1283c8
+2026-10-20T00:20:51.0704425Z  * [new branch]        claude/p35-wave-b-808dfd -> origin/claude/p35-wave-b-808dfd
+2026-10-20T00:20:51.0705958Z  * [new branch]        claude/p35-wave-c-93e13c -> origin/claude/p35-wave-c-93e13c
+2026-10-20T00:20:51.0707230Z  * [new branch]        claude/p4-desktop-240fe0 -> origin/claude/p4-desktop-240fe0
+2026-10-20T00:20:51.0708461Z  * [new branch]        claude/premium-phase-1  -> origin/claude/premium-phase-1
+2026-10-20T00:20:51.0709713Z  * [new branch]        claude/preview-integration -> origin/claude/preview-integration
+2026-10-20T00:20:51.0711044Z  * [new branch]        codex/browser-probe-20261019 -> origin/codex/browser-probe-20261019
+2026-10-20T00:20:51.0712760Z  * [new branch]        codex/candidate-33-fixes -> origin/codex/candidate-33-fixes
+2026-10-20T00:20:51.0714610Z  * [new branch]        codex/checkpoint-preview33-15a0fcd7 -> origin/codex/checkpoint-preview33-15a0fcd7
+2026-10-20T00:20:51.0716265Z  * [new branch]        codex/checkpoint-preview33-cd764f6 -> origin/codex/checkpoint-preview33-cd764f6
+2026-10-20T00:20:51.0718057Z  * [new branch]        codex/f10-original-owner-bootstrap-20261011 -> origin/codex/f10-original-owner-bootstrap-20261011
+2026-10-20T00:20:51.0719524Z  * [new branch]        codex/inspections       -> origin/codex/inspections
+2026-10-20T00:20:51.0720676Z  * [new branch]        codex/nevora-mobile-launch -> origin/codex/nevora-mobile-launch
+2026-10-20T00:20:51.0839113Z  * [new branch]        codex/par-001-remediation-20261008 -> origin/codex/par-001-remediation-20261008
+2026-10-20T00:20:51.0840990Z  * [new branch]        codex/phase-d-d3-d8-execution-20261007 -> origin/codex/phase-d-d3-d8-execution-20261007
+2026-10-20T00:20:51.0842646Z  * [new branch]        codex/premium-backend   -> origin/codex/premium-backend
+2026-10-20T00:20:51.0844273Z  * [new branch]        codex/ready-desktop     -> origin/codex/ready-desktop
+2026-10-20T00:20:51.0845640Z  * [new branch]        codex/ready-wave-a      -> origin/codex/ready-wave-a
+2026-10-20T00:20:51.0846847Z  * [new branch]        codex/ready-wave-b      -> origin/codex/ready-wave-b
+2026-10-20T00:20:51.0848033Z  * [new branch]        codex/ready-wave-c      -> origin/codex/ready-wave-c
+2026-10-20T00:20:51.0849297Z  * [new branch]        codex/release-candidate -> origin/codex/release-candidate
+2026-10-20T00:20:51.0850904Z  * [new branch]        codex/validate-preview-followups -> origin/codex/validate-preview-followups
+2026-10-20T00:20:51.0852323Z  * [new branch]        codex/verify-preview-33 -> origin/codex/verify-preview-33
+2026-10-20T00:20:51.0853639Z  * [new branch]        dashboard-refinement    -> origin/dashboard-refinement
+2026-10-20T00:20:51.0855216Z  * [new branch]        development             -> origin/development
+2026-10-20T00:20:51.0856859Z  * [new branch]        fix/ci-preview-33       -> origin/fix/ci-preview-33
+2026-10-20T00:20:51.0858270Z  * [new branch]        fix/d1-2-cdr-d12-001-20261006 -> origin/fix/d1-2-cdr-d12-001-20261006
+2026-10-20T00:20:51.0859802Z  * [new branch]        fix/nevora-phase-d-readiness-20261006 -> origin/fix/nevora-phase-d-readiness-20261006
+2026-10-20T00:20:51.0861547Z  * [new branch]        fix/nevora-visible-brand-cleanup-20261006 -> origin/fix/nevora-visible-brand-cleanup-20261006
+2026-10-20T00:20:51.0863300Z  * [new branch]        governance/nevora-risk-advisory -> origin/governance/nevora-risk-advisory
+2026-10-20T00:20:51.0865345Z  * [new branch]        governance/streamlined-phase-review-20261007 -> origin/governance/streamlined-phase-review-20261007
+2026-10-20T00:20:51.0866915Z  * [new branch]        main                    -> origin/main
+2026-10-20T00:20:51.0868309Z  * [new branch]        phase-d/d1-3-attendance-ui-20261006 -> origin/phase-d/d1-3-attendance-ui-20261006
+2026-10-20T00:20:51.0870053Z  * [new branch]        phase-d/d1-exception-engine-exec -> origin/phase-d/d1-exception-engine-exec
+2026-10-20T00:20:51.0871828Z  * [new branch]        phase-d/d2-d7-controlled-execution-20261006 -> origin/phase-d/d2-d7-controlled-execution-20261006
+2026-10-20T00:20:51.0873761Z  * [new branch]        release/consolidate-development-20261005 -> origin/release/consolidate-development-20261005
+2026-10-20T00:20:51.0875926Z  * [new branch]        release/nevora-d11-approved-20261006 -> origin/release/nevora-d11-approved-20261006
+2026-10-20T00:20:51.0880676Z  * [new branch]        release/nevora-visible-brand-verification-20261006 -> origin/release/nevora-visible-brand-verification-20261006
+2026-10-20T00:20:51.0883835Z  * [new branch]        v0/replicating-gusto-ui-62ce164a -> origin/v0/replicating-gusto-ui-62ce164a
+2026-10-20T00:20:51.0885430Z  * [new branch]        v0/resolve-login-runtime-errors-01fd3e6c -> origin/v0/resolve-login-runtime-errors-01fd3e6c
+2026-10-20T00:20:51.0887127Z  * [new tag]           nevora-workforce-rc-2026-10-05.1 -> nevora-workforce-rc-2026-10-05.1
+2026-10-20T00:20:51.0889645Z [command]/usr/bin/git rev-parse --verify --quiet 6b154351847ca5ffe67130b22ec0697b655b20bc^{object}
+2026-10-20T00:20:51.0891913Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin 6b154351847ca5ffe67130b22ec0697b655b20bc
+2026-10-20T00:20:51.3178339Z From https://github.com/JoseK0514/NEVORA
+2026-10-20T00:20:51.3179758Z  * branch              6b154351847ca5ffe67130b22ec0697b655b20bc -> FETCH_HEAD
+2026-10-20T00:20:51.3183261Z ##[endgroup]
+2026-10-20T00:20:51.3184680Z ##[group]Determining the checkout info
+2026-10-20T00:20:51.3186166Z ##[endgroup]
+2026-10-20T00:20:51.3193703Z [command]/usr/bin/git sparse-checkout disable
+2026-10-20T00:20:51.3261897Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-20T00:20:51.3296933Z ##[group]Checking out the ref
+2026-10-20T00:20:51.3300676Z [command]/usr/bin/git checkout --progress --force 6b154351847ca5ffe67130b22ec0697b655b20bc
+2026-10-20T00:20:51.8851489Z Note: switching to '6b154351847ca5ffe67130b22ec0697b655b20bc'.
+2026-10-20T00:20:51.8852542Z 
+2026-10-20T00:20:51.8857533Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-20T00:20:51.8862292Z changes and commit them, and you can discard any commits you make in this
+2026-10-20T00:20:51.8863549Z state without impacting any branches by switching back to a branch.
+2026-10-20T00:20:51.8864709Z 
+2026-10-20T00:20:51.8874405Z If you want to create a new branch to retain commits you create, you may
+2026-10-20T00:20:51.8875580Z do so (now or later) by using -c with the switch command. Example:
+2026-10-20T00:20:51.8878034Z 
+2026-10-20T00:20:51.8878481Z   git switch -c <new-branch-name>
+2026-10-20T00:20:51.8879165Z 
+2026-10-20T00:20:51.8882640Z Or undo this operation with:
+2026-10-20T00:20:51.8883235Z 
+2026-10-20T00:20:51.8890542Z   git switch -
+2026-10-20T00:20:51.8891088Z 
+2026-10-20T00:20:51.8895246Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-20T00:20:51.8898770Z 
+2026-10-20T00:20:51.8899966Z HEAD is now at 6b154351 Merge 91ec28e2c12240bbd2693439f1ccdbc92e0a7930 into a6ffd70171b2621103c848b389f584a60a9774ee
+2026-10-20T00:20:51.8913363Z ##[endgroup]
+2026-10-20T00:20:51.8974462Z [command]/usr/bin/git log -1 --format=%H
+2026-10-20T00:20:51.9005876Z 6b154351847ca5ffe67130b22ec0697b655b20bc
+2026-10-20T00:20:51.9017747Z ##[group]Removing auth
+2026-10-20T00:20:51.9023855Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-20T00:20:51.9066083Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-20T00:20:51.9305027Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-20T00:20:51.9335972Z http.https://github.com/.extraheader
+2026-10-20T00:20:51.9347838Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-20T00:20:51.9385829Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-20T00:20:51.9630658Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-20T00:20:51.9666385Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-20T00:20:51.9928528Z ##[endgroup]
+2026-10-20T00:20:52.0192418Z ##[group]Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+2026-10-20T00:20:52.0192845Z with:
+2026-10-20T00:20:52.0193048Z   node-version: 24.19.0
+2026-10-20T00:20:52.0193265Z   cache: npm
+2026-10-20T00:20:52.0193466Z   always-auth: false
+2026-10-20T00:20:52.0193878Z   check-latest: false
+2026-10-20T00:20:52.0196896Z   token: ***
+2026-10-20T00:20:52.0197122Z ##[endgroup]
+2026-10-20T00:20:52.1651979Z Attempting to download 24.19.0...
+2026-10-20T00:20:52.1765078Z (node:2144) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-20T00:20:52.1766921Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-20T00:20:52.6679036Z Acquiring 24.19.0 - x64 from https://github.com/actions/node-versions/releases/download/24.19.0-30872449280/node-24.19.0-linux-x64.tar.gz
+2026-10-20T00:20:53.2746466Z Extracting ...
+2026-10-20T00:20:53.2900533Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/cd2cb7cb-3e56-47ac-b87d-46d4050a6a29 -f /home/runner/work/_temp/42482b94-3f03-4351-b210-34d0c8aea833
+2026-10-20T00:20:54.6533426Z Adding to the cache ...
+2026-10-20T00:20:58.6805677Z ##[group]Environment details
+2026-10-20T00:20:58.9610564Z node: v24.19.0
+2026-10-20T00:20:58.9611418Z npm: 11.17.0
+2026-10-20T00:20:58.9612323Z yarn: 1.22.22
+2026-10-20T00:20:58.9613321Z ##[endgroup]
+2026-10-20T00:20:58.9637146Z [command]/opt/hostedtoolcache/node/24.19.0/x64/bin/npm config get cache
+2026-10-20T00:20:59.0704827Z /home/runner/.npm
+2026-10-20T00:20:59.3405422Z Cache hit for: node-cache-Linux-x64-npm-a4f387acb4d4abc659b6942459f8ec9867a2de6532c459728eb476c2f4e85815
+2026-10-20T00:20:59.3532933Z (node:2144) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-20T00:21:00.6135355Z Received 4194304 of 170385373 (2.5%), 4.0 MBs/sec
+2026-10-20T00:21:01.6115394Z Received 130023424 of 170385373 (76.3%), 61.9 MBs/sec
+2026-10-20T00:21:02.1414972Z Received 170385373 of 170385373 (100.0%), 64.2 MBs/sec
+2026-10-20T00:21:02.1418585Z Cache Size: ~162 MB (170385373 B)
+2026-10-20T00:21:02.1596088Z [command]/usr/bin/tar -xf /home/runner/work/_temp/5ed74c86-0804-463b-b81c-fc6c97c649f1/cache.tzst -P -C /home/runner/work/NEVORA/NEVORA --use-compress-program unzstd
+2026-10-20T00:21:02.7495396Z Cache restored successfully
+2026-10-20T00:21:02.7585542Z Cache restored from key: node-cache-Linux-x64-npm-a4f387acb4d4abc659b6942459f8ec9867a2de6532c459728eb476c2f4e85815
+2026-10-20T00:21:02.7799187Z ##[group]Run npm ci
+2026-10-20T00:21:02.7799507Z [36;1mnpm ci[0m
+2026-10-20T00:21:02.8075469Z shell: /usr/bin/bash -e {0}
+2026-10-20T00:21:02.8075751Z ##[endgroup]
+2026-10-20T00:21:18.9292703Z 
+2026-10-20T00:21:18.9302824Z added 408 packages, and audited 411 packages in 16s
+2026-10-20T00:21:18.9305222Z 
+2026-10-20T00:21:18.9305917Z 151 packages are looking for funding
+2026-10-20T00:21:18.9306805Z   run `npm fund` for details
+2026-10-20T00:21:18.9311715Z 
+2026-10-20T00:21:18.9312212Z found 0 vulnerabilities
+2026-10-20T00:21:18.9326972Z npm warn allow-scripts 2 packages have install scripts not yet covered by allowScripts:
+2026-10-20T00:21:18.9328870Z npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+2026-10-20T00:21:18.9330430Z npm warn allow-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+2026-10-20T00:21:18.9331580Z npm warn allow-scripts
+2026-10-20T00:21:18.9333278Z npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+2026-10-20T00:21:19.0311466Z ##[group]Run npm test -- --maxWorkers=1
+2026-10-20T00:21:19.0311825Z [36;1mnpm test -- --maxWorkers=1[0m
+2026-10-20T00:21:19.0380874Z shell: /usr/bin/bash -e {0}
+2026-10-20T00:21:19.0381134Z ##[endgroup]
+2026-10-20T00:21:19.1456435Z 
+2026-10-20T00:21:19.1457026Z > fuel-scheduler@0.1.0 test
+2026-10-20T00:21:19.1457960Z > vitest run --maxWorkers=1
+2026-10-20T00:21:19.1458594Z 
+2026-10-20T00:21:19.5014523Z 
+2026-10-20T00:21:19.5044004Z [1m[30m[46m RUN [49m[39m[22m [36mv5.0.2 [39m[90m/home/runner/work/NEVORA/NEVORA[39m
+2026-10-20T00:21:19.5069919Z 
+2026-10-20T00:21:20.9267301Z  [2m[90m↓[39m[22m src/lib/tenancy/migrations/typed-guarded-backfill.postgres.test.ts [2m([22m[2m58 tests[22m[2m | [22m[33m58 skipped[39m[2m)[22m
+2026-10-20T00:21:21.2183614Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-source-observation.postgres.test.ts [2m([22m[2m39 tests[22m[2m | [22m[33m39 skipped[39m[2m)[22m
+2026-10-20T00:21:21.4320523Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/audited-role-guard.postgres.test.ts [2m([22m[2m25 tests[22m[2m | [22m[33m25 skipped[39m[2m)[22m
+2026-10-20T00:21:21.6360440Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/workspace-incarnation-storage.postgres.test.ts [2m([22m[2m46 tests[22m[2m | [22m[33m46 skipped[39m[2m)[22m
+2026-10-20T00:21:21.8482196Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-source-dependency.postgres.test.ts [2m([22m[2m30 tests[22m[2m | [22m[33m30 skipped[39m[2m)[22m
+2026-10-20T00:21:22.0715387Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/original-runtime-login.postgres.test.ts [2m([22m[2m40 tests[22m[2m | [22m[33m40 skipped[39m[2m)[22m
+2026-10-20T00:21:22.3312422Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-administrative-authority-storage.postgres.test.ts [2m([22m[2m24 tests[22m[2m | [22m[33m24 skipped[39m[2m)[22m
+2026-10-20T00:21:22.5250708Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-session-issuance-storage.postgres.test.ts [2m([22m[2m24 tests[22m[2m | [22m[33m24 skipped[39m[2m)[22m
+2026-10-20T00:21:22.7498193Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-native-installation-producer.postgres.test.ts [2m([22m[2m57 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+2026-10-20T00:21:22.9517685Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-authority-storage.postgres.test.ts [2m([22m[2m25 tests[22m[2m | [22m[33m25 skipped[39m[2m)[22m
+2026-10-20T00:21:23.1610714Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/employee-login-identity-storage.postgres.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+2026-10-20T00:21:23.3466399Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/workspace-locator-storage.postgres.test.ts [2m([22m[2m20 tests[22m[2m | [22m[33m20 skipped[39m[2m)[22m
+2026-10-20T00:21:23.5301834Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-runtime-startup-graph.postgres.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+2026-10-20T00:21:23.7614690Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-source-locks.postgres.test.ts [2m([22m[2m20 tests[22m[2m | [22m[33m20 skipped[39m[2m)[22m
+2026-10-20T00:22:23.8676807Z  [32m✓[39m src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts [2m([22m[2m68 tests[22m[2m)[22m[33m 59729[2mms[22m[39m
+2026-10-20T00:22:23.8678716Z    [32m✓[39m owned local whole-plan typed executor pure boundaries [2m(10)[22m
+2026-10-20T00:22:23.8695221Z      [33m[2m✓[22m[39m rejects plan clone without reading nested data[33m 448[2mms[22m[39m
+2026-10-20T00:22:23.8700805Z      [33m[2m✓[22m[39m rejects proxy plan without invoking any traps[33m 402[2mms[22m[39m
+2026-10-20T00:22:23.8712902Z      [33m[2m✓[22m[39m rejects facts accessor before any await without executing it[33m 364[2mms[22m[39m
+2026-10-20T00:22:23.8714499Z      [33m[2m✓[22m[39m rejects cycles and unknown request fields[33m 738[2mms[22m[39m
+2026-10-20T00:22:23.8716475Z      [33m[2m✓[22m[39m rejects unissued serialized cell even when raw bytes/digests are unchanged[33m 460[2mms[22m[39m
+2026-10-20T00:22:23.8718152Z      [33m[2m✓[22m[39m rejects exact facts/authority/source drift before transport[33m 1161[2mms[22m[39m
+2026-10-20T00:22:23.8719907Z      [33m[2m✓[22m[39m rejects ambient transaction without BEGIN or ROLLBACK[33m 382[2mms[22m[39m
+2026-10-20T00:22:23.8721546Z      [33m[2m✓[22m[39m requires matching owned localhost socket before any query[33m 377[2mms[22m[39m
+2026-10-20T00:22:23.8722872Z    [32m✓[39m whole-plan typed executor fictional transport lifecycle [2m(10)[22m
+2026-10-20T00:22:23.8725077Z      [33m[2m✓[22m[39m locks all70 source/sidecar tables before transaction MVCC/protocol reads and applies only compiler metadata[33m 1837[2mms[22m[39m
+2026-10-20T00:22:23.8726928Z      [33m[2m✓[22m[39m preserves issued cells while detaching mutable request before first await[33m 1803[2mms[22m[39m
+2026-10-20T00:22:23.8731916Z      [33m[2m✓[22m[39m denies superuser original login despite substituted session/current operator role[33m 402[2mms[22m[39m
+2026-10-20T00:22:23.8733877Z      [33m[2m✓[22m[39m denies wrong original backend role OID and selected role separately[33m 770[2mms[22m[39m
+2026-10-20T00:22:23.8736121Z      [33m[2m✓[22m[39m rolls back own lost BEGIN acknowledgement without claiming caller transaction ownership[33m 432[2mms[22m[39m
+2026-10-20T00:22:23.8738069Z      [33m[2m✓[22m[39m returns UNCERTAIN if rollback cannot be confirmed after own BEGIN attempt[33m 441[2mms[22m[39m
+2026-10-20T00:22:23.8739983Z      [33m[2m✓[22m[39m never attempts rollback after COMMIT has begun, returning original plan reconciliation[33m 1733[2mms[22m[39m
+2026-10-20T00:22:23.8741926Z      [33m[2m✓[22m[39m identical complete retry does no DML and retains original manifest[33m 2657[2mms[22m[39m
+2026-10-20T00:22:23.8743719Z      [33m[2m✓[22m[39m refuses mixedpartial ownership with an absent protocol manifest[33m 558[2mms[22m[39m
+2026-10-20T00:22:23.8745882Z      [33m[2m✓[22m[39m does not passthrough arbitrary SQL error code/message or invoke hostile error accessors[33m 379[2mms[22m[39m
+2026-10-20T00:22:23.8747274Z    [32m✓[39m typed atomic source, target and hostile-input regressions [2m(14)[22m
+2026-10-20T00:22:23.8748618Z      [33m[2m✓[22m[39m rejects nested proxy without invoking reflection traps[33m 340[2mms[22m[39m
+2026-10-20T00:22:23.8750390Z      [33m[2m✓[22m[39m retains SQLNULL/JSONNULL/unsafe numbers/native bounds and both typed sidecar literal mirrors[33m 1851[2mms[22m[39m
+2026-10-20T00:22:23.8752090Z      [33m[2m✓[22m[39m blocks pre-BEGIN INSTALLED_SOURCE field1 drift[33m 513[2mms[22m[39m
+2026-10-20T00:22:23.8753371Z      [33m[2m✓[22m[39m blocks pre-BEGIN ROLE field2 drift[33m 383[2mms[22m[39m
+2026-10-20T00:22:23.8754877Z      [33m[2m✓[22m[39m blocks pre-BEGIN PRIVILEGES field0 drift[33m 384[2mms[22m[39m
+2026-10-20T00:22:23.8756191Z      [33m[2m✓[22m[39m blocks pre-BEGIN PROTOCOL field1 drift[33m 451[2mms[22m[39m
+2026-10-20T00:22:23.8757575Z      [33m[2m✓[22m[39m blocks a source original wire change before arming[33m 517[2mms[22m[39m
+2026-10-20T00:22:23.8759397Z      [33m[2m✓[22m[39m blocks changed opaque old expression equality witness without calculating JS lower[33m 563[2mms[22m[39m
+2026-10-20T00:22:23.8761337Z      [33m[2m✓[22m[39m rolls back when exact direct attribution affects zero rows[33m 880[2mms[22m[39m
+2026-10-20T00:22:23.8762993Z      [33m[2m✓[22m[39m rolls back when exact sidecar insertion affects zero rows[33m 893[2mms[22m[39m
+2026-10-20T00:22:23.8765008Z      [33m[2m✓[22m[39m blocks wrong complete retry workspace with same original manifest[33m 2045[2mms[22m[39m
+2026-10-20T00:22:23.8766568Z      [33m[2m✓[22m[39m blocks wrong sidecar mirror on complete retry[33m 2033[2mms[22m[39m
+2026-10-20T00:22:23.8768419Z      [33m[2m✓[22m[39m rejects concurrent invocation on the same client without a second transaction[33m 1796[2mms[22m[39m
+2026-10-20T00:22:23.8769829Z    [32m✓[39m post-effect and genuine SQL-key helper failures [2m(4)[22m
+2026-10-20T00:22:23.8771286Z      [33m[2m✓[22m[39m blocks changed supplied opaque SQL-key class through genuine helper error issuer[33m 882[2mms[22m[39m
+2026-10-20T00:22:23.8772808Z      [33m[2m✓[22m[39m rolls back post-attribution role drift before commit[33m 969[2mms[22m[39m
+2026-10-20T00:22:23.8774432Z      [33m[2m✓[22m[39m rolls back if original source bytes change after attribution[33m 890[2mms[22m[39m
+2026-10-20T00:22:23.8776690Z      [33m[2m✓[22m[39m sanitizes an arbitrary thrown proxy without any getter/prototype traps[33m 384[2mms[22m[39m
+2026-10-20T00:22:23.8778199Z    [32m✓[39m typed journal atomic successor pure boundaries [2m(3)[22m
+2026-10-20T00:22:23.8779843Z      [33m[2m✓[22m[39m requires exact child journal installation before BEGIN while old API remains valid[33m 403[2mms[22m[39m
+2026-10-20T00:22:23.8782878Z    [32m✓[39m typed journal whole-plan successor fictional transaction regressions [2m(17)[22m
+2026-10-20T00:22:23.8784848Z      [33m[2m✓[22m[39m rejects installation JOURNAL_SCHEMA[0,1] drift before BEGIN[33m 404[2mms[22m[39m
+2026-10-20T00:22:23.8786565Z      [33m[2m✓[22m[39m rejects installation JOURNAL_TABLES[0,5] drift before BEGIN[33m 422[2mms[22m[39m
+2026-10-20T00:22:23.8788341Z      [33m[2m✓[22m[39m rejects installation JOURNAL_FUNCTION[0,2] drift before BEGIN[33m 407[2mms[22m[39m
+2026-10-20T00:22:23.8790153Z      [33m[2m✓[22m[39m rejects installation JOURNAL_FUNCTION[0,4] drift before BEGIN[33m 408[2mms[22m[39m
+2026-10-20T00:22:23.8791984Z      [33m[2m✓[22m[39m rejects installation JOURNAL_TRIGGERS[0,4] drift before BEGIN[33m 414[2mms[22m[39m
+2026-10-20T00:22:23.8793675Z      [33m[2m✓[22m[39m rejects installation JOURNAL_ACLS[0,3] drift before BEGIN[33m 418[2mms[22m[39m
+2026-10-20T00:22:23.8795478Z      [33m[2m✓[22m[39m rejects installation JOURNAL_ACLS[0,5] drift before BEGIN[33m 407[2mms[22m[39m
+2026-10-20T00:22:23.8797201Z      [33m[2m✓[22m[39m locks source70 then fixed journal2 before all transaction reads and commits matching structural state[33m 1875[2mms[22m[39m
+2026-10-20T00:22:23.8799087Z      [33m[2m✓[22m[39m exact applied retry reads durable state and issues no source/control/journal DML[33m 2839[2mms[22m[39m
+2026-10-20T00:22:23.8800807Z      [33m[2m✓[22m[39m rejects applied metadata with journalnull, never retrospectively repairing[33m 2247[2mms[22m[39m
+2026-10-20T00:22:23.8802514Z      [33m[2m✓[22m[39m rejects applied metadata with journalNOT_STARTED, never retrospectively repairing[33m 2454[2mms[22m[39m
+2026-10-20T00:22:23.8804530Z      [33m[2m✓[22m[39m retains preexisting STARTED journal after fresh original source/target reconciliation[33m 1813[2mms[22m[39m
+2026-10-20T00:22:23.8806407Z      [33m[2m✓[22m[39m retains preexisting UNKNOWN journal after fresh original source/target reconciliation[33m 1788[2mms[22m[39m
+2026-10-20T00:22:23.8808126Z      [33m[2m✓[22m[39m storage-registration failure rolls back every journal/source/control effect[33m 910[2mms[22m[39m
+2026-10-20T00:22:23.8809872Z      [33m[2m✓[22m[39m metadata failure rolls back previously inserted journal and STARTED states together[33m 1062[2mms[22m[39m
+2026-10-20T00:22:23.8811539Z      [33m[2m✓[22m[39m refuses changed or partial persisted coverage without arming metadata[33m 917[2mms[22m[39m
+2026-10-20T00:22:23.8813455Z      [33m[2m✓[22m[39m lost COMMIT acknowledgement never issues secondary SQL and retains original plan reconciliation[33m 1843[2mms[22m[39m
+2026-10-20T00:22:23.8815268Z    [32m✓[39m typed journal original-attempt reconciliation boundaries [2m(10)[22m
+2026-10-20T00:22:23.8816799Z      [33m[2m✓[22m[39m does not enroll uncertainty from the original journal-free entrypoint[33m 1827[2mms[22m[39m
+2026-10-20T00:22:23.8818746Z      [33m[2m✓[22m[39m refuses originating client before SQL and preserves original uncertain result[33m 1941[2mms[22m[39m
+2026-10-20T00:22:23.8820588Z      [33m[2m✓[22m[39m refuses cloned/serialized/wrapped genuine receipts before SQL[33m 1847[2mms[22m[39m
+2026-10-20T00:22:23.8822220Z      [33m[2m✓[22m[39m does not enroll acknowledged successful or blocked journal results[33m 1954[2mms[22m[39m
+2026-10-20T00:22:24.1547964Z  [2m[90m↓[39m[22m src/lib/tenancy/migrations/typed-constraints-with-keys.postgres.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m8 skipped[39m[2m)[22m
+2026-10-20T00:22:24.3412654Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/control-storage.postgres.test.ts [2m([22m[2m14 tests[22m[2m | [22m[33m14 skipped[39m[2m)[22m
+2026-10-20T00:22:36.5066282Z  [32m✓[39m src/lib/tenancy/migrations/typed-constraints.test.ts [2m([22m[2m71 tests[22m[2m)[22m[33m 11939[2mms[22m[39m
+2026-10-20T00:22:36.5116604Z    [32m✓[39m genuine supplied SQL key-class successor [2m(27)[22m
+2026-10-20T00:22:36.5119520Z      [33m[2m✓[22m[39m keeps all existing three-input V1 behavior and unsupported pair blocks, including explicit undefined[33m 538[2mms[22m[39m
+2026-10-20T00:22:36.5120700Z      [33m[2m✓[22m[39m applies global original key classes across different owners while candidate tenant classes remain owner-scoped[33m 533[2mms[22m[39m
+2026-10-20T00:22:36.5121703Z      [33m[2m✓[22m[39m keeps active endpoint and installation tuples GLOBAL across resolved tenants[33m 505[2mms[22m[39m
+2026-10-20T00:22:36.5122780Z      [33m[2m✓[22m[39m blocks genuine key observations from a different source boundary[33m 442[2mms[22m[39m
+2026-10-20T00:22:36.5152700Z      [33m[2m✓[22m[39m blocks genuine key observations from a different schema boundary[33m 445[2mms[22m[39m
+2026-10-20T00:22:36.5187893Z      [33m[2m✓[22m[39m blocks genuine key observations from a different snapshot boundary[33m 439[2mms[22m[39m
+2026-10-20T00:22:36.5215462Z      [33m[2m✓[22m[39m blocks genuine key observations from a different fence boundary[33m 442[2mms[22m[39m
+2026-10-20T00:22:36.5217368Z      [33m[2m✓[22m[39m blocks genuine key observations from a different rows boundary[33m 440[2mms[22m[39m
+2026-10-20T00:22:36.5236063Z      [33m[2m✓[22m[39m accepts independently genuinely issued identical source facts and never reissues cloned V2 output[33m 616[2mms[22m[39m
+2026-10-20T00:22:36.5256737Z      [33m[2m✓[22m[39m blocks malformed/unknown/incomplete key captures before any successor comparison without mutating original observations[33m 321[2mms[22m[39m
+2026-10-20T00:22:36.5275311Z    [32m✓[39m successor preserved evidence boundaries [2m(3)[22m
+2026-10-20T00:22:36.5295965Z      [33m[2m✓[22m[39m binds V2 digest to exact independently issued key witness checksum and retained source metadata[33m 565[2mms[22m[39m
+2026-10-20T00:22:36.6760829Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/original-runtime-login-installer.postgres.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m8 skipped[39m[2m)[22m
+2026-10-20T00:22:36.8735252Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/role-guard-installers.postgres.test.ts [2m([22m[2m16 tests[22m[2m | [22m[33m16 skipped[39m[2m)[22m
+2026-10-20T00:22:37.3652997Z  [32m✓[39m src/lib/action-center/intelligence.test.ts [2m([22m[2m112 tests[22m[2m)[22m[32m 216[2mms[22m[39m
+2026-10-20T00:22:37.7422894Z  [32m✓[39m src/lib/tenancy/runtime/portal-native-installation-producer.test.ts [2m([22m[2m93 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+2026-10-20T00:22:37.8900114Z  [32m✓[39m src/lib/tenancy/runtime/role-guard.test.ts [2m([22m[2m56 tests[22m[2m | [22m[33m54 skipped[39m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:22:38.1756013Z  [32m✓[39m src/lib/tenancy/migrations/capture.server.test.ts [2m([22m[2m27 tests[22m[2m | [22m[33m21 skipped[39m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:22:40.3917920Z  [32m✓[39m src/lib/tenancy/migrations/typed-journal-storage.test.ts [2m([22m[2m38 tests[22m[2m | [22m[33m23 skipped[39m[2m)[22m[33m 1961[2mms[22m[39m
+2026-10-20T00:22:40.3920159Z    [32m✓[39m typed durable journal source preparation [2m(12)[22m
+2026-10-20T00:22:40.3921828Z      [33m[2m✓[22m[39m retains string generation from the exact genuine typed boundary[33m 422[2mms[22m[39m
+2026-10-20T00:22:40.3923365Z    [32m✓[39m genuine typed journal descriptor prerequisite, pure only [2m(3)[22m
+2026-10-20T00:22:40.3925306Z      [33m[2m✓[22m[39m preserves all68 tables, original chunks/rows, native wire hashes and gates[33m 382[2mms[22m[39m
+2026-10-20T00:22:40.3927617Z      [33m[2m✓[22m[39m requires genuine original plan beside every serialized structural observation[33m 442[2mms[22m[39m
+2026-10-20T00:22:40.3929612Z      [33m[2m✓[22m[39m binds unsafe JSON/native array/SQLNULL wire digests without legacy projection[33m 687[2mms[22m[39m
+2026-10-20T00:22:40.6623066Z  [2m[90m↓[39m[22m src/lib/tenancy/migrations/typed-key-comparators.postgres.test.ts [2m([22m[2m11 tests[22m[2m | [22m[33m11 skipped[39m[2m)[22m
+2026-10-20T00:22:43.1678306Z  [32m✓[39m src/components/payroll-export-lifetime.test.tsx [2m([22m[2m70 tests[22m[2m)[22m[33m 1041[2mms[22m[39m
+2026-10-20T00:22:43.3981205Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/executor-catalog-fence.postgres.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m4 skipped[39m[2m)[22m
+2026-10-20T00:23:01.6596280Z  [32m✓[39m src/lib/tenancy/migrations/typed-backfill.test.ts [2m([22m[2m44 tests[22m[2m)[22m[33m 18019[2mms[22m[39m
+2026-10-20T00:23:01.6638849Z    [32m✓[39m pure typed tenant backfill compilation [2m(38)[22m
+2026-10-20T00:23:01.6645404Z      [33m[2m✓[22m[39m includes all68 empty source tables, complete SQL metadata and no effects claim[33m 476[2mms[22m[39m
+2026-10-20T00:23:01.6675327Z      [33m[2m✓[22m[39m derives only exact0026 actions and preserves all original columns/ownership ancestry[33m 384[2mms[22m[39m
+2026-10-20T00:23:01.6677232Z      [33m[2m✓[22m[39m binds source ordered native wires separately from the typed metadata effect[33m 370[2mms[22m[39m
+2026-10-20T00:23:01.6695549Z      [33m[2m✓[22m[39m retains exactly sorted registry mirrors with original SQL types, wires and lineages[33m 348[2mms[22m[39m
+2026-10-20T00:23:01.6701475Z      [33m[2m✓[22m[39m preserves padded/long root, employee and sidecar keys without normalization[33m 347[2mms[22m[39m
+2026-10-20T00:23:01.6703807Z      [33m[2m✓[22m[39m preserves exact unsafe JSON numeric lexemes, SQLNULL and JSONNULL distinctly[33m 1009[2mms[22m[39m
+2026-10-20T00:23:01.6706237Z      [33m[2m✓[22m[39m retains native array lower bounds, SQL-null elements and every calendar credential fence[33m 348[2mms[22m[39m
+2026-10-20T00:23:01.6708020Z      [33m[2m✓[22m[39m retains inactive and historical source rows, full reviews and retained-history witnesses[33m 386[2mms[22m[39m
+2026-10-20T00:23:01.6709855Z      [33m[2m✓[22m[39m orders rows canonically and chunks deterministically per table with original-plan retry identity[33m 502[2mms[22m[39m
+2026-10-20T00:23:01.6711876Z      [33m[2m✓[22m[39m changes original retry identities for source/evidence/chunk boundaries, never suggests new operation on uncertainty[33m 1016[2mms[22m[39m
+2026-10-20T00:23:01.6713814Z      [33m[2m✓[22m[39m preserves explicit singleton installation coverage while proposing only added metadata[33m 331[2mms[22m[39m
+2026-10-20T00:23:01.6715911Z      [33m[2m✓[22m[39m retains exact empty root identity rather than inventing a tenant fallback[33m 335[2mms[22m[39m
+2026-10-20T00:23:01.6717772Z      [33m[2m✓[22m[39m binds alternate genuinely supplied SQL classes into distinct plans/retries, not source authority[33m 682[2mms[22m[39m
+2026-10-20T00:23:01.6719723Z      [33m[2m✓[22m[39m cannot grant plan provenance to an accessor envelope or a revoked proxy without traps[33m 327[2mms[22m[39m
+2026-10-20T00:23:01.6722112Z      [33m[2m✓[22m[39m accepts independently genuine equivalent supplied observations by exact value, not object identity[33m 566[2mms[22m[39m
+2026-10-20T00:23:01.6724156Z      [33m[2m✓[22m[39m blocks independent genuine source boundary drift with no partial plan[33m 497[2mms[22m[39m
+2026-10-20T00:23:01.6725823Z      [33m[2m✓[22m[39m blocks independent genuine schema boundary drift with no partial plan[33m 503[2mms[22m[39m
+2026-10-20T00:23:01.6727442Z      [33m[2m✓[22m[39m blocks independent genuine snapshot boundary drift with no partial plan[33m 498[2mms[22m[39m
+2026-10-20T00:23:01.6729116Z      [33m[2m✓[22m[39m blocks independent genuine fence boundary drift with no partial plan[33m 541[2mms[22m[39m
+2026-10-20T00:23:01.6730964Z      [33m[2m✓[22m[39m blocks independent genuine rows boundary drift with no partial plan[33m 499[2mms[22m[39m
+2026-10-20T00:23:01.6732555Z      [33m[2m✓[22m[39m blocks independently genuine alternative namespace witnesses[33m 488[2mms[22m[39m
+2026-10-20T00:23:01.6734481Z      [33m[2m✓[22m[39m accepts explicit technical range endpoints without inventing workload policy[33m 549[2mms[22m[39m
+2026-10-20T00:23:01.6736295Z      [33m[2m✓[22m[39m rejects hostile options proxy, accessor, prototype, extra/non-enumerable fields without reads[33m 551[2mms[22m[39m
+2026-10-20T00:23:01.6738130Z      [33m[2m✓[22m[39m deeply freezes a deterministic plan without freezing/mutating input or accepting output copies[33m 369[2mms[22m[39m
+2026-10-20T00:23:01.6739527Z    [32m✓[39m complete legacy employee-number enrollment compiler [2m(6)[22m
+2026-10-20T00:23:01.6741089Z      [33m[2m✓[22m[39m retains complete original plan, inactive employments, raw identities and actual JS Unicode preimages[33m 444[2mms[22m[39m
+2026-10-20T00:23:01.6743180Z      [33m[2m✓[22m[39m supports a complete genuinely issued empty capture without inventing empty expression namespace rows[33m 382[2mms[22m[39m
+2026-10-20T00:23:01.6745385Z      [33m[2m✓[22m[39m rejects raw format characters permitted by the older narrow selector without rewriting them[33m 387[2mms[22m[39m
+2026-10-20T00:23:01.6747298Z      [33m[2m✓[22m[39m rejects plan clones, serialization and revoked/hostile proxies before any traps[33m 366[2mms[22m[39m
+2026-10-20T00:23:01.6749201Z      [33m[2m✓[22m[39m distinguishes empty from exact full identical and rejects every partial/foreign/renormalized tuple[33m 428[2mms[22m[39m
+2026-10-20T00:23:01.6751089Z      [33m[2m✓[22m[39m rejects hostile target envelopes/UTF8 data without property invocation or structural reissuance[33m 399[2mms[22m[39m
+2026-10-20T00:23:02.2402096Z  [32m✓[39m src/lib/tenancy/resolve.server.test.ts [2m([22m[2m72 tests[22m[2m)[22m[32m 138[2mms[22m[39m
+2026-10-20T00:23:03.0420555Z  [32m✓[39m src/lib/imports/csv.test.ts [2m([22m[2m128 tests[22m[2m)[22m[33m 560[2mms[22m[39m
+2026-10-20T00:23:03.0422073Z    [32m✓[39m F9 strict parser and explicit mapping [2m(55)[22m
+2026-10-20T00:23:03.0425602Z      [33m[2m✓[22m[39m accepts exactly2MiB with bounded excluded cells and rejects one added byte, without retaining excluded content[33m 333[2mms[22m[39m
+2026-10-20T00:23:17.3428146Z  [32m✓[39m src/lib/tenancy/migrations/backfill.test.ts [2m([22m[2m66 tests[22m[2m)[22m[33m 14132[2mms[22m[39m
+2026-10-20T00:23:17.3429630Z    [32m✓[39m complete-row migration preflight without SQL or rewritten history [2m(23)[22m
+2026-10-20T00:23:17.3430937Z      [33m[2m✓[22m[39m rejects duplicate PKs, row count drift and checksum drift[33m 473[2mms[22m[39m
+2026-10-20T00:23:17.3432210Z      [33m[2m✓[22m[39m rejects source or original-column shape drift and emits no partial executable plan[33m 335[2mms[22m[39m
+2026-10-20T00:23:17.3433055Z      [33m[2m✓[22m[39m discriminates DEVICE versus WORKSPACE PIN limiter ancestry[33m 409[2mms[22m[39m
+2026-10-20T00:23:17.3454393Z      [33m[2m✓[22m[39m checks current device credential lineage against the preserved global retired-hash ledger[33m 344[2mms[22m[39m
+2026-10-20T00:23:17.3456090Z    [32m✓[39m interruption/resume and atomic new immutable-row protocol [2m(9)[22m
+2026-10-20T00:23:17.3457696Z      [33m[2m✓[22m[39m rejects a saved plan whose typed owner or chunk changed after its digest was captured[33m 331[2mms[22m[39m
+2026-10-20T00:23:17.3459242Z    [32m✓[39m source/schema/snapshot/row-bound database namespace witnesses [2m(15)[22m
+2026-10-20T00:23:17.3460796Z      [33m[2m✓[22m[39m includes empty email in the retained IS NOT NULL namespace and excludes NULL[33m 443[2mms[22m[39m
+2026-10-20T00:23:17.3462928Z      [33m[2m✓[22m[39m requires every closed catalog even for empty tables and rejects absent result witnesses[33m 451[2mms[22m[39m
+2026-10-20T00:23:17.3528718Z      [33m[2m✓[22m[39m rejects changed catalog expression, predicate, source evidence and collation checksum[33m 750[2mms[22m[39m
+2026-10-20T00:23:17.3530568Z      [33m[2m✓[22m[39m rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records[33m 623[2mms[22m[39m
+2026-10-20T00:23:17.3531737Z    [32m✓[39m malformed comparator capture rejection without executing data accessors [2m(6)[22m
+2026-10-20T00:23:17.3532578Z      [33m[2m✓[22m[39m does not execute an accessor or serialize a mutated sparse original payload[33m 354[2mms[22m[39m
+2026-10-20T00:23:17.6390569Z  [32m✓[39m src/lib/tenancy/migrations/guarded-backfill.server.test.ts [2m([22m[2m23 tests[22m[2m | [22m[33m20 skipped[39m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:23:17.8536312Z  [2m[90m↓[39m[22m src/test/integration/f1-canonical-native.postgres.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+2026-10-20T00:23:18.1018938Z  [2m[90m↓[39m[22m src/lib/tenancy/migrations/typed-ownership.postgres.test.ts [2m([22m[2m9 tests[22m[2m | [22m[33m9 skipped[39m[2m)[22m
+2026-10-20T00:23:30.7397594Z  [32m✓[39m src/test/phase-e-runner.test.ts [2m([22m[2m83 tests[22m[2m)[22m[33m 12472[2mms[22m[39m
+2026-10-20T00:23:30.9010069Z    [33m[2m✓[22m[39m all dispatches all ten SQL suites without accepting unknown arguments[33m 591[2mms[22m[39m
+2026-10-20T00:23:30.9011055Z    [33m[2m✓[22m[39m rejects zero executed tests and skipped SQL tests even when the child exits zero[33m 340[2mms[22m[39m
+2026-10-20T00:23:30.9011991Z    [33m[2m✓[22m[39m source_manifest_mismatch_fails for modified source or an unapproved mirror substitution[33m 465[2mms[22m[39m
+2026-10-20T00:23:30.9012824Z    [33m[2m✓[22m[39m evidence acceptance rejects modified manifest custody[33m 550[2mms[22m[39m
+2026-10-20T00:23:30.9013561Z    [33m[2m✓[22m[39m evidence acceptance rejects modified ownership custody[33m 537[2mms[22m[39m
+2026-10-20T00:23:30.9014524Z    [33m[2m✓[22m[39m later SQL evidence rejects fixture substitution[33m 544[2mms[22m[39m
+2026-10-20T00:23:30.9015230Z    [33m[2m✓[22m[39m later SQL evidence rejects duplicate-selector substitution[33m 545[2mms[22m[39m
+2026-10-20T00:23:30.9015925Z    [33m[2m✓[22m[39m later SQL evidence rejects command substitution[33m 544[2mms[22m[39m
+2026-10-20T00:23:30.9016590Z    [33m[2m✓[22m[39m later SQL evidence rejects case-identity substitution[33m 551[2mms[22m[39m
+2026-10-20T00:23:30.9017356Z    [33m[2m✓[22m[39m rejects changing both the mirror DB adapter and its declared manifest hash[33m 384[2mms[22m[39m
+2026-10-20T00:23:30.9018199Z    [33m[2m✓[22m[39m pins complete generated next-env bytes and rejects mirror-only alteration[33m 412[2mms[22m[39m
+2026-10-20T00:23:30.9019047Z    [33m[2m✓[22m[39m pins complete generated next-env bytes and rejects mirror-and-hash alteration[33m 381[2mms[22m[39m
+2026-10-20T00:23:30.9019893Z    [33m[2m✓[22m[39m pins complete generated next-env bytes and rejects third-line alteration[33m 398[2mms[22m[39m
+2026-10-20T00:23:30.9020721Z    [33m[2m✓[22m[39m pins complete generated next-env bytes and rejects extra-import alteration[33m 407[2mms[22m[39m
+2026-10-20T00:23:30.9022117Z  [2m[90m↓[39m[22m src/lib/tenancy/runtime/catalog-fence.postgres.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m8 skipped[39m[2m)[22m
+2026-10-20T00:23:31.1470296Z  [32m✓[39m src/lib/tenancy/migrations/expand.test.ts [2m([22m[2m26 tests[22m[2m | [22m[33m21 skipped[39m[2m)[22m[32m 54[2mms[22m[39m
+2026-10-20T00:23:31.3359534Z  [32m✓[39m src/lib/tenancy/migrations/validate.test.ts [2m([22m[2m38 tests[22m[2m | [22m[33m36 skipped[39m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:23:32.3390754Z  [32m✓[39m src/lib/scheduling/generation/explanation-view.test.ts [2m([22m[2m93 tests[22m[2m)[22m[33m 724[2mms[22m[39m
+2026-10-20T00:23:32.6785998Z  [32m✓[39m src/lib/scheduling/publish-warning-policy.test.ts [2m([22m[2m91 tests[22m[2m)[22m[32m 152[2mms[22m[39m
+2026-10-20T00:23:33.1645935Z  [32m✓[39m src/lib/attendance/project.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 128[2mms[22m[39m
+2026-10-20T00:23:57.7983047Z  [32m✓[39m src/lib/tenancy/migrations/typed-journal-contract.test.ts [2m([22m[2m64 tests[22m[2m)[22m[33m 24395[2mms[22m[39m
+2026-10-20T00:23:57.7985781Z    [32m✓[39m pure explicitly separate typed journal descriptor and structural observation contract [2m(64)[22m
+2026-10-20T00:23:57.7995584Z      [33m[2m✓[22m[39m describes all68 empty tables and full typed original boundary without database/effects claims[33m 420[2mms[22m[39m
+2026-10-20T00:23:57.7999489Z      [33m[2m✓[22m[39m retains exact original typed chunk/key/count/retry and per-entry source/wire/mirror/ownership/effect checksums[33m 381[2mms[22m[39m
+2026-10-20T00:23:57.8007672Z      [33m[2m✓[22m[39m represents only structural observed stateNOT_STARTED with no automatic transition or target claim[33m 386[2mms[22m[39m
+2026-10-20T00:23:57.8010201Z      [33m[2m✓[22m[39m represents only structural observed stateSTARTED with no automatic transition or target claim[33m 361[2mms[22m[39m
+2026-10-20T00:23:57.8035359Z      [33m[2m✓[22m[39m represents only structural observed stateUNKNOWN with no automatic transition or target claim[33m 363[2mms[22m[39m
+2026-10-20T00:23:57.8049742Z      [33m[2m✓[22m[39m canonicalizes complete state rows to original ordinal order without altering retry identities[33m 361[2mms[22m[39m
+2026-10-20T00:23:57.8051700Z      [33m[2m✓[22m[39m accepts exact serialized structural descriptor/state only alongside the genuine original compiler plan[33m 398[2mms[22m[39m
+2026-10-20T00:23:57.8053446Z      [33m[2m✓[22m[39m always blocks completion stateCOMPLETE even with matching hashes/false flag[33m 362[2mms[22m[39m
+2026-10-20T00:23:57.8055634Z      [33m[2m✓[22m[39m always blocks completion stateCOMMITTED even with matching hashes/false flag[33m 362[2mms[22m[39m
+2026-10-20T00:23:57.8057467Z      [33m[2m✓[22m[39m blocks effectsVerifiedtrue, caller fresh/committed markers and fake reconciliation even on empty plans[33m 399[2mms[22m[39m
+2026-10-20T00:23:57.8059291Z      [33m[2m✓[22m[39m never accepts legacy journal/plan formats or bridges into existing SQL store[33m 365[2mms[22m[39m
+2026-10-20T00:23:57.8061048Z      [33m[2m✓[22m[39m rejects changed original registryDigest boundary without partial observations[33m 378[2mms[22m[39m
+2026-10-20T00:23:57.8062982Z      [33m[2m✓[22m[39m rejects changed original sourceDigest boundary without partial observations[33m 372[2mms[22m[39m
+2026-10-20T00:23:57.8065079Z      [33m[2m✓[22m[39m rejects changed original currentSchemaDigest boundary without partial observations[33m 370[2mms[22m[39m
+2026-10-20T00:23:57.8066941Z      [33m[2m✓[22m[39m rejects changed original snapshotId boundary without partial observations[33m 369[2mms[22m[39m
+2026-10-20T00:23:57.8068770Z      [33m[2m✓[22m[39m rejects changed original fenceGeneration boundary without partial observations[33m 370[2mms[22m[39m
+2026-10-20T00:23:57.8071066Z      [33m[2m✓[22m[39m rejects changed original factsDigest boundary without partial observations[33m 369[2mms[22m[39m
+2026-10-20T00:23:57.8073774Z      [33m[2m✓[22m[39m rejects changed original planDigest boundary without partial observations[33m 369[2mms[22m[39m
+2026-10-20T00:23:57.8075940Z      [33m[2m✓[22m[39m rejects changed original manifestChecksum boundary without partial observations[33m 372[2mms[22m[39m
+2026-10-20T00:23:57.8077787Z      [33m[2m✓[22m[39m rejects changed original namespaceCaptureChecksum boundary without partial observations[33m 372[2mms[22m[39m
+2026-10-20T00:23:57.8079688Z      [33m[2m✓[22m[39m rejects changed original ownershipDigest boundary without partial observations[33m 370[2mms[22m[39m
+2026-10-20T00:23:57.8081812Z      [33m[2m✓[22m[39m rejects changed original assignmentEvidenceDigest boundary without partial observations[33m 372[2mms[22m[39m
+2026-10-20T00:23:57.8083584Z      [33m[2m✓[22m[39m rejects changed original namespaceDigest boundary without partial observations[33m 372[2mms[22m[39m
+2026-10-20T00:23:57.8086281Z      [33m[2m✓[22m[39m rejects changed original constraintsDigest boundary without partial observations[33m 370[2mms[22m[39m
+2026-10-20T00:23:57.8088145Z      [33m[2m✓[22m[39m rejects changed original keyCaptureChecksum boundary without partial observations[33m 369[2mms[22m[39m
+2026-10-20T00:23:57.8090060Z      [33m[2m✓[22m[39m rejects changed original keyComparatorDigest boundary without partial observations[33m 396[2mms[22m[39m
+2026-10-20T00:23:57.8091962Z      [33m[2m✓[22m[39m rejects changed original compilerOptionsChecksum boundary without partial observations[33m 375[2mms[22m[39m
+2026-10-20T00:23:57.8093662Z      [33m[2m✓[22m[39m rejects descriptor complete68tablemissing drift[33m 358[2mms[22m[39m
+2026-10-20T00:23:57.8095445Z      [33m[2m✓[22m[39m rejects descriptor complete68tableextra drift[33m 369[2mms[22m[39m
+2026-10-20T00:23:57.8096829Z      [33m[2m✓[22m[39m rejects descriptor complete68tableduplicate drift[33m 361[2mms[22m[39m
+2026-10-20T00:23:57.8098182Z      [33m[2m✓[22m[39m rejects descriptor complete68tablechanged drift[33m 358[2mms[22m[39m
+2026-10-20T00:23:57.8099400Z      [33m[2m✓[22m[39m rejects descriptor complete68tableempty drift[33m 350[2mms[22m[39m
+2026-10-20T00:23:57.8100610Z      [33m[2m✓[22m[39m rejects journal state rowmissing coverage[33m 354[2mms[22m[39m
+2026-10-20T00:23:57.8101783Z      [33m[2m✓[22m[39m rejects journal state rowextra coverage[33m 354[2mms[22m[39m
+2026-10-20T00:23:57.8102966Z      [33m[2m✓[22m[39m rejects journal state rowduplicate coverage[33m 355[2mms[22m[39m
+2026-10-20T00:23:57.8104627Z      [33m[2m✓[22m[39m rejects changed observed chunkid[33m 366[2mms[22m[39m
+2026-10-20T00:23:57.8105851Z      [33m[2m✓[22m[39m rejects changed observed chunkretryIdentity[33m 357[2mms[22m[39m
+2026-10-20T00:23:57.8107007Z      [33m[2m✓[22m[39m rejects changed observed chunktable[33m 353[2mms[22m[39m
+2026-10-20T00:23:57.8108144Z      [33m[2m✓[22m[39m rejects changed observed chunkordinal[33m 358[2mms[22m[39m
+2026-10-20T00:23:57.8109259Z      [33m[2m✓[22m[39m rejects changed observed chunkcount[33m 355[2mms[22m[39m
+2026-10-20T00:23:57.8110476Z      [33m[2m✓[22m[39m rejects changed observed chunkfirstKey[33m 355[2mms[22m[39m
+2026-10-20T00:23:57.8111716Z      [33m[2m✓[22m[39m rejects changed observed chunklastKey[33m 355[2mms[22m[39m
+2026-10-20T00:23:57.8113020Z      [33m[2m✓[22m[39m rejects changed observed chunkkeys[33m 353[2mms[22m[39m
+2026-10-20T00:23:57.8114540Z      [33m[2m✓[22m[39m rejects changed observed chunkkeysChecksum[33m 356[2mms[22m[39m
+2026-10-20T00:23:57.8116140Z      [33m[2m✓[22m[39m rejects changed observed chunksourceChecksum[33m 356[2mms[22m[39m
+2026-10-20T00:23:57.8117691Z      [33m[2m✓[22m[39m rejects changed observed chunkexpectedMetadataChecksum[33m 371[2mms[22m[39m
+2026-10-20T00:23:57.8119967Z      [33m[2m✓[22m[39m rejects changed observed chunkrowsChecksum[33m 352[2mms[22m[39m
+2026-10-20T00:23:57.8121584Z      [33m[2m✓[22m[39m rejects changed observed chunkplanDigest[33m 355[2mms[22m[39m
+2026-10-20T00:23:57.8123351Z      [33m[2m✓[22m[39m rejects any per-row source/wire/mirror/review ownership/effect checksum substitution[33m 429[2mms[22m[39m
+2026-10-20T00:23:57.8125879Z      [33m[2m✓[22m[39m blocks rehashed changed descriptor and retry identity rather than authorizing from hash coherence[33m 360[2mms[22m[39m
+2026-10-20T00:23:57.8127642Z      [33m[2m✓[22m[39m rejects changed state retry identities independently of chunkdescriptor[33m 355[2mms[22m[39m
+2026-10-20T00:23:57.8129384Z      [33m[2m✓[22m[39m rejects missing/extra observationboundary fields[33m 368[2mms[22m[39m
+2026-10-20T00:23:57.8130656Z      [33m[2m✓[22m[39m rejects missing/extra observationrows fields[33m 364[2mms[22m[39m
+2026-10-20T00:23:57.8132080Z      [33m[2m✓[22m[39m rejects missing/extra observationdescriptorChecksum fields[33m 366[2mms[22m[39m
+2026-10-20T00:23:57.8133618Z      [33m[2m✓[22m[39m rejects missing/extra observationeffectsVerified fields[33m 366[2mms[22m[39m
+2026-10-20T00:23:57.8135271Z      [33m[2m✓[22m[39m rejects missing/extra observationreconciliation fields[33m 366[2mms[22m[39m
+2026-10-20T00:23:57.8136623Z      [33m[2m✓[22m[39m rejects missing/extra observationformat fields[33m 365[2mms[22m[39m
+2026-10-20T00:23:57.8138261Z      [33m[2m✓[22m[39m rejects plan clones/proxies/accessor/revoked envelopes without reissuing authority[33m 384[2mms[22m[39m
+2026-10-20T00:23:57.8140127Z      [33m[2m✓[22m[39m rejects nested descriptor/state proxy/accessor/cycles without reading behavior or coercion[33m 383[2mms[22m[39m
+2026-10-20T00:23:57.8141973Z      [33m[2m✓[22m[39m rejects sparse/accessor/extra/prototype arrays, unsafe numbers and nonJSON input[33m 419[2mms[22m[39m
+2026-10-20T00:23:57.8144226Z      [33m[2m✓[22m[39m preserves padded/long keys, SQLNULLvsJSONNULL/numeric lexemes/nativearray bounds solely through exact source/wire identity[33m 1335[2mms[22m[39m
+2026-10-20T00:23:57.8146589Z      [33m[2m✓[22m[39m changes exact descriptor/retry binding for altered original source/options while refusing old observation reuse[33m 485[2mms[22m[39m
+2026-10-20T00:23:57.8148972Z      [33m[2m✓[22m[39m deeply freezes deterministic descriptions and detached assessments without mutating inputs or retaining mutable state aliases[33m 415[2mms[22m[39m
+2026-10-20T00:24:00.8196334Z  [32m✓[39m src/lib/notifications/device-client.test.ts [2m([22m[2m45 tests[22m[2m)[22m[33m 2864[2mms[22m[39m
+2026-10-20T00:24:00.8198511Z    [33m[2m✓[22m[39m hanging native unsubscribe keeps exclusion after the UI wait, while server detach and native logout stay independent[33m 2551[2mms[22m[39m
+2026-10-20T00:24:01.7077977Z  [32m✓[39m src/components/generation-explanation-panel.test.tsx [2m([22m[2m69 tests[22m[2m)[22m[33m 684[2mms[22m[39m
+2026-10-20T00:24:06.5935525Z  [32m✓[39m src/lib/tenancy/migrations/typed-ownership.test.ts [2m([22m[2m73 tests[22m[2m)[22m[33m 4701[2mms[22m[39m
+2026-10-20T00:24:26.2998537Z  [32m✓[39m src/lib/tenancy/migrations/typed-key-comparators.test.ts [2m([22m[2m113 tests[22m[2m)[22m[33m 19512[2mms[22m[39m
+2026-10-20T00:24:26.3001331Z    [32m✓[39m pure supplied source SQL key comparator observations [2m(113)[22m
+2026-10-20T00:24:26.3003497Z      [33m[2m✓[22m[39m observes every row across all68 complete original column sets, including JSON/arrays without projection[33m 303[2mms[22m[39m
+2026-10-20T00:24:26.3006144Z      [33m[2m✓[22m[39m detaches caller data deeply, hashes deterministically and never reissues serialized/cloned results[33m 467[2mms[22m[39m
+2026-10-20T00:24:26.3008626Z      [33m[2m✓[22m[39m accepts closed supplied effective ICU/builtin metadata without transforming raw default collation attributes[33m 459[2mms[22m[39m
+2026-10-20T00:24:26.3025967Z      [33m[2m✓[22m[39m rejects incomplete/duplicate btree vectors rather than matching only projected entries[33m 341[2mms[22m[39m
+2026-10-20T00:24:26.3033463Z      [33m[2m✓[22m[39m keeps its private issuer trap-free and rejects foreign failed/clone/proxy output without reads[33m 336[2mms[22m[39m
+2026-10-20T00:24:26.5530284Z  [32m✓[39m src/lib/capabilities/policy.test.ts [2m([22m[2m347 tests[22m[2m)[22m[32m 97[2mms[22m[39m
+2026-10-20T00:24:26.8407489Z  [32m✓[39m src/lib/tenancy/runtime/portal-root-source-observation.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 119[2mms[22m[39m
+2026-10-20T00:24:27.3356228Z  [32m✓[39m src/lib/tenancy/migrations/journal-storage.test.ts [2m([22m[2m44 tests[22m[2m | [22m[33m39 skipped[39m[2m)[22m[33m 307[2mms[22m[39m
+2026-10-20T00:24:27.3357960Z    [32m✓[39m durable journal source preparation, never PostgreSQL verification [2m(5)[22m
+2026-10-20T00:24:27.3359187Z      [33m[2m✓[22m[39m constructs an actual accepted pure description fixture without assuming database or effect evidence[33m 302[2mms[22m[39m
+2026-10-20T00:24:27.6388319Z  [32m✓[39m src/lib/action-center/canonical-source.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 97[2mms[22m[39m
+2026-10-20T00:24:28.2487245Z  [32m✓[39m src/lib/notifications/reminders.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 165[2mms[22m[39m
+2026-10-20T00:24:34.5501582Z [90mstdout[2m | src/lib/scheduling/generation/planner.test.ts[2m > [22m[2mmeasures deterministic 50-worker 7-day 3-location planning
+2026-10-20T00:24:34.5504794Z [22m[39mPLANNER_PERFORMANCE {"locations":3,"employees":50,"milliseconds":2689,"status":"COMPLETE","additions":42,"nodes":43,"evaluations":5499,"cacheHits":62793,"periods":882}
+2026-10-20T00:24:34.5506240Z 
+2026-10-20T00:27:39.8457719Z [90mstdout[2m | src/lib/scheduling/generation/planner.test.ts[2m > [22m[2mmeasures deterministic 50-worker 7-day 20-location planning
+2026-10-20T00:27:39.8462089Z [22m[39mPLANNER_PERFORMANCE {"locations":20,"employees":50,"milliseconds":93561,"status":"COMPLETE","additions":280,"nodes":281,"evaluations":86750,"cacheHits":2867530,"periods":39200}
+2026-10-20T00:27:39.8463636Z 
+2026-10-20T00:27:40.1713555Z  [32m✓[39m src/lib/scheduling/generation/planner.test.ts [2m([22m[2m56 tests[22m[2m)[22m[33m 191744[2mms[22m[39m
+2026-10-20T00:27:40.1716716Z    [33m[2m✓[22m[39m allows 40, prevents 41, and allows target24/max40/projected32[33m 469[2mms[22m[39m
+2026-10-20T00:27:40.1718218Z    [33m[2m✓[22m[39m measures deterministic 50-worker 7-day 3-location planning[33m 5006[2mms[22m[39m
+2026-10-20T00:27:40.1719588Z    [33m[2m✓[22m[39m measures deterministic 50-worker 7-day 20-location planning[33m 185296[2mms[22m[39m
+2026-10-20T00:27:40.5785890Z  [32m✓[39m src/lib/notifications/logout.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 116[2mms[22m[39m
+2026-10-20T00:27:40.8755963Z  [32m✓[39m src/lib/activity/project.test.ts [2m([22m[2m80 tests[22m[2m)[22m[32m 105[2mms[22m[39m
+2026-10-20T00:27:41.2373148Z  [32m✓[39m src/lib/tenancy/resolve.portal-current-source.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 164[2mms[22m[39m
+2026-10-20T00:27:41.4493357Z  [32m✓[39m src/lib/scheduling/scheduling-rules.test.ts [2m([22m[2m59 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+2026-10-20T00:27:42.8631292Z  [32m✓[39m src/lib/tenancy/migrations/typed-reference.test.ts [2m([22m[2m80 tests[22m[2m)[22m[33m 1248[2mms[22m[39m
+2026-10-20T00:27:43.2316306Z  [2m[90m↓[39m[22m src/test/integration/coverage-repair.integration.test.ts [2m([22m[2m39 tests[22m[2m | [22m[33m39 skipped[39m[2m)[22m
+2026-10-20T00:28:01.6791668Z  [32m✓[39m src/lib/tenancy/migrations/key-comparator-recheck.server.test.ts [2m([22m[2m36 tests[22m[2m)[22m[33m 18146[2mms[22m[39m
+2026-10-20T00:28:01.6794519Z    [32m✓[39m locked current key comparator recheck, genuine pure observations and mocked SQL only [2m(36)[22m
+2026-10-20T00:28:01.6797296Z      [33m[2m✓[22m[39m rechecks all104 complete metadata under every70 held lock without acquiring locks or issuing effects[33m 751[2mms[22m[39m
+2026-10-20T00:28:01.6799766Z      [33m[2m✓[22m[39m returns distinctly tagged derived current metadata while preserving the original issued cells and facts[33m 614[2mms[22m[39m
+2026-10-20T00:28:01.6801844Z      [33m[2m✓[22m[39m supports exact original manifest with actornull for retry/postDML/final observations[33m 677[2mms[22m[39m
+2026-10-20T00:28:01.6815671Z      [33m[2m✓[22m[39m supports exact original manifest with actorfictional_operator for retry/postDML/final observations[33m 704[2mms[22m[39m
+2026-10-20T00:28:01.6835258Z      [33m[2m✓[22m[39m requires every exact granted source/sidecar lock:missing[33m 463[2mms[22m[39m
+2026-10-20T00:28:01.6836538Z      [33m[2m✓[22m[39m requires every exact granted source/sidecar lock:weak[33m 462[2mms[22m[39m
+2026-10-20T00:28:01.6841556Z      [33m[2m✓[22m[39m requires every exact granted source/sidecar lock:ungranted[33m 457[2mms[22m[39m
+2026-10-20T00:28:01.6843195Z      [33m[2m✓[22m[39m requires every exact granted source/sidecar lock:foreign[33m 461[2mms[22m[39m
+2026-10-20T00:28:01.6845282Z      [33m[2m✓[22m[39m accepts exact AccessExclusiveLock without inferring operator/first-read authority[33m 672[2mms[22m[39m
+2026-10-20T00:28:01.6847110Z      [33m[2m✓[22m[39m requires active transactionI before SQL[33m 416[2mms[22m[39m
+2026-10-20T00:28:01.6848487Z      [33m[2m✓[22m[39m requires active transactionE before SQL[33m 412[2mms[22m[39m
+2026-10-20T00:28:01.6850255Z      [33m[2m✓[22m[39m rejects unissued clones/serialized/proxy/accessor/null observations before any other input reads[33m 381[2mms[22m[39m
+2026-10-20T00:28:01.6852979Z      [33m[2m✓[22m[39m rejects facts/request proxies, accessors and cycles before reflection/getters or SQL[33m 381[2mms[22m[39m
+2026-10-20T00:28:01.6855122Z      [33m[2m✓[22m[39m requires genuinely issued typed cells rather than coherent serialized facts[33m 396[2mms[22m[39m
+2026-10-20T00:28:01.6857120Z      [33m[2m✓[22m[39m rejects genuinely issued original observations from different raw source/schema/snapshot[33m 441[2mms[22m[39m
+2026-10-20T00:28:01.6859998Z      [33m[2m✓[22m[39m rejects unsupported protocol before SQL:{"manifestDigest":"bad","actor":null}[33m 374[2mms[22m[39m
+2026-10-20T00:28:01.6863136Z      [33m[2m✓[22m[39m rejects unsupported protocol before SQL:{"manifestDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","actor":"foreign"}[33m 436[2mms[22m[39m
+2026-10-20T00:28:01.6866700Z      [33m[2m✓[22m[39m rejects unsupported protocol before SQL:{"manifestDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}[33m 374[2mms[22m[39m
+2026-10-20T00:28:01.6870007Z      [33m[2m✓[22m[39m rejects unsupported protocol before SQL:{"manifestDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","actor":null,"extra":true}[33m 366[2mms[22m[39m
+2026-10-20T00:28:01.6872457Z      [33m[2m✓[22m[39m rejects accessor/proxy protocol without traps[33m 375[2mms[22m[39m
+2026-10-20T00:28:01.6874522Z      [33m[2m✓[22m[39m rejects actual mismatched actor/manifest without protocol fallback[33m 459[2mms[22m[39m
+2026-10-20T00:28:01.6876880Z      [33m[2m✓[22m[39m detaches facts/request/protocol before first await, preserving exact original cell provenance[33m 646[2mms[22m[39m
+2026-10-20T00:28:01.6879248Z      [33m[2m✓[22m[39m rejects same-key original wire drift and incomplete source coverage[33m 1000[2mms[22m[39m
+2026-10-20T00:28:01.6881213Z      [33m[2m✓[22m[39m rejects valid but changed actual equality class rather than matching only source hashes[33m 635[2mms[22m[39m
+2026-10-20T00:28:01.6882997Z      [33m[2m✓[22m[39m rejects observed semanticSUPPORT/7 drift[33m 488[2mms[22m[39m
+2026-10-20T00:28:01.6884840Z      [33m[2m✓[22m[39m rejects observed semanticOPERATOR/9 drift[33m 494[2mms[22m[39m
+2026-10-20T00:28:01.6886526Z      [33m[2m✓[22m[39m rejects observed semanticCOLLATION/10 drift[33m 491[2mms[22m[39m
+2026-10-20T00:28:01.6887808Z      [33m[2m✓[22m[39m rejects observed semanticINDEX/5 drift[33m 495[2mms[22m[39m
+2026-10-20T00:28:01.6889161Z      [33m[2m✓[22m[39m rejects observed semanticDATABASE_COLLATION/7 drift[33m 493[2mms[22m[39m
+2026-10-20T00:28:01.6890782Z      [33m[2m✓[22m[39m rejects invalid live SQL snapshot without relabelling original evidence[33m 470[2mms[22m[39m
+2026-10-20T00:28:01.6892805Z      [33m[2m✓[22m[39m compares actual current engine version and effective default collation against original observations[33m 1288[2mms[22m[39m
+2026-10-20T00:28:01.6895423Z      [33m[2m✓[22m[39m rejects changed full original source catalog before independent index/class reads[33m 482[2mms[22m[39m
+2026-10-20T00:28:01.6897221Z      [33m[2m✓[22m[39m keeps failure issuer trap-free for revoked proxies and accessor envelopes[33m 460[2mms[22m[39m
+2026-10-20T00:28:01.6899044Z      [33m[2m✓[22m[39m never forwards arbitrary SQL exception/secret text or reads forged failure fields[33m 461[2mms[22m[39m
+2026-10-20T00:28:02.6474541Z  [32m✓[39m src/components/report-lifetime.test.tsx [2m([22m[2m48 tests[22m[2m)[22m[33m 640[2mms[22m[39m
+2026-10-20T00:28:04.2300448Z  [32m✓[39m src/components/manager-reviewed-views.test.tsx [2m([22m[2m71 tests[22m[2m)[22m[32m 162[2mms[22m[39m
+2026-10-20T00:28:04.5172430Z  [32m✓[39m src/lib/auth/portal-request.server.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+2026-10-20T00:28:13.5929511Z  [32m✓[39m src/lib/tenancy/migrations/journal-contract.test.ts [2m([22m[2m60 tests[22m[2m)[22m[33m 8910[2mms[22m[39m
+2026-10-20T00:28:15.8986369Z  [32m✓[39m src/components/employee-home-reviewed.test.tsx [2m([22m[2m28 tests[22m[2m)[22m[32m 210[2mms[22m[39m
+2026-10-20T00:28:16.2404228Z  [32m✓[39m src/components/activity-history-panel.test.tsx [2m([22m[2m46 tests[22m[2m)[22m[32m 148[2mms[22m[39m
+2026-10-20T00:28:16.4845897Z  [32m✓[39m src/lib/tenancy/runtime/portal-administrative-authority-storage.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+2026-10-20T00:28:16.7895841Z  [32m✓[39m src/lib/notifications/service-worker.test.ts [2m([22m[2m72 tests[22m[2m)[22m[32m 152[2mms[22m[39m
+2026-10-20T00:28:17.0128705Z  [32m✓[39m src/lib/tenancy/runtime/portal-native-root-observation.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+2026-10-20T00:28:18.5066243Z  [32m✓[39m src/components/manager-action-center.test.tsx [2m([22m[2m41 tests[22m[2m)[22m[32m 189[2mms[22m[39m
+2026-10-20T00:28:18.6921223Z  [32m✓[39m src/lib/tenancy/runtime/portal-session-issuance-storage.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-20T00:28:19.0144293Z  [32m✓[39m src/components/publish-warning-review-surface.test.tsx [2m([22m[2m64 tests[22m[2m)[22m[32m 140[2mms[22m[39m
+2026-10-20T00:28:19.2682481Z  [32m✓[39m src/lib/tenancy/resolve.administrative-scope.test.ts [2m([22m[2m66 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+2026-10-20T00:28:19.7837866Z  [32m✓[39m src/lib/tenancy/executor.server.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 129[2mms[22m[39m
+2026-10-20T00:28:20.0378928Z  [32m✓[39m src/lib/data/notification-state.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+2026-10-20T00:28:21.6829916Z  [32m✓[39m src/lib/tenancy/migrations/key-comparator-capture.server.test.ts [2m([22m[2m43 tests[22m[2m)[22m[33m 1336[2mms[22m[39m
+2026-10-20T00:28:21.8919002Z  [32m✓[39m src/lib/tenancy/runtime/audited-role-guard.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-20T00:28:22.2265697Z  [32m✓[39m src/lib/tenancy/executor.transport.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 157[2mms[22m[39m
+2026-10-20T00:28:23.4388737Z  [32m✓[39m src/lib/tenancy/inventory/schema-reducer.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 1066[2mms[22m[39m
+2026-10-20T00:28:23.4392095Z    [32m✓[39m read-only exact M0 explicit ALTER declaration folds [2m(3)[22m
+2026-10-20T00:28:23.4394319Z      [33m[2m✓[22m[39m folds0024 actual communication head composite FK while preserving unknown generated-name drops[33m 401[2mms[22m[39m
+2026-10-20T00:28:23.4396518Z      [33m[2m✓[22m[39m folds0025 calendar additions followed by the actual multi-action SET NOT NULL declarations[33m 444[2mms[22m[39m
+2026-10-20T00:28:23.7627586Z  [32m✓[39m src/app/app/api/push/push-routes.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 206[2mms[22m[39m
+2026-10-20T00:28:23.9685769Z  [32m✓[39m src/lib/data/scheduling-inputs.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+2026-10-20T00:28:24.1476282Z  [32m✓[39m src/lib/tenancy/runtime/portal-authority-storage.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-20T00:28:40.8236071Z  [32m✓[39m src/test/phase-e-process.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 16561[2mms[22m[39m
+2026-10-20T00:28:40.8275451Z    [33m[2m✓[22m[39m a short graceful timeout stops detached Next/browser process resources and fails[33m 947[2mms[22m[39m
+2026-10-20T00:28:40.8297927Z    [33m[2m✓[22m[39m a short forced timeout stops detached Next/browser process resources and fails[33m 1460[2mms[22m[39m
+2026-10-20T00:28:40.8315580Z    [33m[2m✓[22m[39m a short forced-title-worker timeout stops detached Next/browser process resources and fails[33m 2012[2mms[22m[39m
+2026-10-20T00:28:40.8345103Z    [33m[2m✓[22m[39m retained Linux marker observation: stable-member[33m 2324[2mms[22m[39m
+2026-10-20T00:28:40.8346605Z    [33m[2m✓[22m[39m retained Linux marker observation: changed-member[33m 2323[2mms[22m[39m
+2026-10-20T00:28:40.8365068Z    [33m[2m✓[22m[39m retained Linux marker observation: changed-leader[33m 1265[2mms[22m[39m
+2026-10-20T00:28:40.8380798Z    [33m[2m✓[22m[39m retained Linux marker observation: outside-group[33m 1202[2mms[22m[39m
+2026-10-20T00:28:40.8385927Z    [33m[2m✓[22m[39m retained Linux marker observation: recycled-birth[33m 1298[2mms[22m[39m
+2026-10-20T00:28:40.8387423Z    [33m[2m✓[22m[39m retained Linux marker observation: changed-ancestry[33m 1293[2mms[22m[39m
+2026-10-20T00:28:40.8388961Z    [33m[2m✓[22m[39m retained Linux marker observation: departed-member[33m 2331[2mms[22m[39m
+2026-10-20T00:28:42.8853799Z  [32m✓[39m src/components/employee-home-reviewed-wiring.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 146[2mms[22m[39m
+2026-10-20T00:28:44.7860727Z  [32m✓[39m src/components/timecards.batch.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 526[2mms[22m[39m
+2026-10-20T00:28:45.1185098Z  [32m✓[39m src/app/app/schedule/generation-actions.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 95[2mms[22m[39m
+2026-10-20T00:28:47.1494147Z  [32m✓[39m src/app/app/schedule/page.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 310[2mms[22m[39m
+2026-10-20T00:28:47.3831231Z  [32m✓[39m src/lib/data/requests.withdrawal-carry-forward.test.ts [2m([22m[2m14 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:28:49.1822021Z  [32m✓[39m src/components/app-shell.test.tsx [2m([22m[2m56 tests[22m[2m)[22m[33m 388[2mms[22m[39m
+2026-10-20T00:28:49.4266243Z  [32m✓[39m src/lib/tenancy/runtime/portal-source-binding.test.ts [2m([22m[2m84 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+2026-10-20T00:28:49.7765734Z  [32m✓[39m src/lib/tenancy/inventory/ddl.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 200[2mms[22m[39m
+2026-10-20T00:28:50.1486008Z  [32m✓[39m src/lib/notifications/worker.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 174[2mms[22m[39m
+2026-10-20T00:28:53.4317544Z  [32m✓[39m src/lib/tenancy/runtime/installed-policy-observation.test.ts [2m([22m[2m54 tests[22m[2m)[22m[33m 3154[2mms[22m[39m
+2026-10-20T00:28:53.4323395Z    [32m✓[39m installed Portal policy source-coherence decoder [2m(54)[22m
+2026-10-20T00:28:53.4326177Z      [33m[2m✓[22m[39m consumes independent root-native Base64 boundaries through the whole decoder; empty source remains ineligible[33m 673[2mms[22m[39m
+2026-10-20T00:28:53.8400896Z  [32m✓[39m src/lib/tenancy/inventory/consumers.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+2026-10-20T00:28:54.0365585Z  [32m✓[39m src/lib/tenancy/migrations/typed-wire.test.ts [2m([22m[2m91 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+2026-10-20T00:28:54.1846427Z  [32m✓[39m src/lib/capabilities/policy.verifier-capability.test.ts [2m([22m[2m54 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+2026-10-20T00:28:54.3796187Z  [32m✓[39m src/lib/activity/project.boundary.test.ts [2m([22m[2m45 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+2026-10-20T00:28:54.8043626Z  [32m✓[39m src/lib/data/exchanges-notifications.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 212[2mms[22m[39m
+2026-10-20T00:28:55.2660486Z  [32m✓[39m src/components/manager-workflows.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+2026-10-20T00:28:55.5515821Z  [32m✓[39m src/lib/data/coverage-repair.server.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+2026-10-20T00:28:55.8431774Z  [32m✓[39m src/lib/tenancy/resolve.transport.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 151[2mms[22m[39m
+2026-10-20T00:28:56.0166197Z  [32m✓[39m src/lib/tenancy/runtime/portal-source-observation.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+2026-10-20T00:28:56.4328053Z  [32m✓[39m src/lib/tenancy/inventory/module-graph.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+2026-10-20T00:28:56.6555135Z  [32m✓[39m src/lib/tenancy/resolve.incarnation.test.ts [2m([22m[2m46 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-20T00:28:56.8329437Z  [32m✓[39m src/lib/tenancy/migrations/typed-lineage.test.ts [2m([22m[2m70 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-20T00:28:57.1104377Z  [32m✓[39m src/lib/tenancy/runtime/portal-current-issuance-source.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 105[2mms[22m[39m
+2026-10-20T00:28:57.3095417Z  [32m✓[39m src/lib/scheduling/operational-rules.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+2026-10-20T00:28:57.5365241Z  [32m✓[39m src/lib/notifications/recipients.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+2026-10-20T00:28:57.8086077Z  [32m✓[39m src/lib/data/publication-revisions.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+2026-10-20T00:28:59.4050341Z  [32m✓[39m src/app/app/schedule/settings/page.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[32m 172[2mms[22m[39m
+2026-10-20T00:28:59.6424933Z  [32m✓[39m src/app/app/schedule/actions.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+2026-10-20T00:28:59.8296107Z  [32m✓[39m src/lib/tenancy/runtime/portal-policy-complete-dependency.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+2026-10-20T00:29:00.0618546Z  [32m✓[39m src/lib/scheduling/shift-change-evaluation.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+2026-10-20T00:29:00.5815416Z  [32m✓[39m src/app/app/exchange/page.test.tsx [2m([22m[2m30 tests[22m[2m)[22m[32m 187[2mms[22m[39m
+2026-10-20T00:29:00.7400921Z  [32m✓[39m src/lib/tenancy/runtime/portal-original-source-invalidation.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-10-20T00:29:00.9029751Z  [32m✓[39m src/lib/tenancy/runtime/portal-policy-joint-observation.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-20T00:29:01.0703391Z  [32m✓[39m src/lib/tenancy/runtime/portal-source-locks.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-10-20T00:29:01.2243135Z  [32m✓[39m src/lib/tenancy/runtime/workspace-incarnation-storage.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+2026-10-20T00:29:01.3926762Z  [32m✓[39m src/lib/tenancy/runtime/portal-policy-joint-locks.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+2026-10-20T00:29:01.8456691Z  [32m✓[39m src/components/manager-profile/manager-profile.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 125[2mms[22m[39m
+2026-10-20T00:29:02.3755884Z  [32m✓[39m src/lib/scheduling/generation/reservations.test.ts [2m([22m[2m18 tests[22m[2m)[22m[33m 372[2mms[22m[39m
+2026-10-20T00:29:02.3778624Z    [33m[2m✓[22m[39m throws explicit claim overflow rather than silently dropping demand metadata[33m 322[2mms[22m[39m
+2026-10-20T00:29:02.5456585Z  [32m✓[39m src/lib/attendance/historical-schedule.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-20T00:29:02.7282383Z  [32m✓[39m src/lib/workspace-presentation/model.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+2026-10-20T00:29:02.8742193Z  [32m✓[39m src/lib/clocker/punch-client.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-20T00:29:03.0336470Z  [32m✓[39m src/lib/tenancy/runtime/original-runtime-login-installer.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-20T00:29:03.2301622Z  [32m✓[39m src/app/app/schedule/settings/actions.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-20T00:29:03.4216302Z  [32m✓[39m src/lib/tenancy/runtime/portal-runtime-startup-loader.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-20T00:29:03.7626826Z [90mstderr[2m | src/app/app/schedule/coverage/page.test.tsx[2m > [22m[2mactual manager position/Lead action opens the matching location/interval and excludes unqualified employees
+2026-10-20T00:29:03.7629252Z [22m[39mReceived `false` for a non-boolean attribute `prefetch`.
+2026-10-20T00:29:03.7630077Z 
+2026-10-20T00:29:03.7631206Z If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+2026-10-20T00:29:03.7632317Z 
+2026-10-20T00:29:03.7633551Z If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+2026-10-20T00:29:03.7635100Z 
+2026-10-20T00:29:03.8036494Z  [32m✓[39m src/app/app/schedule/coverage/page.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+2026-10-20T00:29:03.9633504Z  [32m✓[39m src/lib/tenancy/runtime/control-storage.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+2026-10-20T00:29:04.1199983Z  [32m✓[39m src/lib/tenancy/runtime/workspace-locator-storage.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+2026-10-20T00:29:04.3566071Z  [32m✓[39m src/lib/tenancy/migrations/lossless-json.test.ts [2m([22m[2m61 tests[22m[2m)[22m[32m 97[2mms[22m[39m
+2026-10-20T00:29:05.3976372Z  [32m✓[39m src/lib/tenancy/migrations/namespace-comparators.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 903[2mms[22m[39m
+2026-10-20T00:29:05.5616885Z  [32m✓[39m src/lib/notifications/destinations.cfr002-carry-forward.test.ts [2m([22m[2m68 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+2026-10-20T00:29:05.7419281Z  [32m✓[39m src/lib/scheduling/generation/periods.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-10-20T00:29:05.9246442Z  [32m✓[39m src/lib/data/push-deliveries.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+2026-10-20T00:29:06.0649250Z  [32m✓[39m src/lib/tenancy/runtime/original-runtime-login.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+2026-10-20T00:29:06.2717856Z  [32m✓[39m src/lib/auth/portal-credential-session.server.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-20T00:29:06.7579352Z  [32m✓[39m src/components/employee-my-schedule.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[32m 200[2mms[22m[39m
+2026-10-20T00:29:07.7197960Z  [32m✓[39m src/lib/tenancy/migrations/typed-snapshot.test.ts [2m([22m[2m48 tests[22m[2m)[22m[33m 822[2mms[22m[39m
+2026-10-20T00:29:08.0708443Z  [32m✓[39m src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 118[2mms[22m[39m
+2026-10-20T00:29:08.2904344Z  [32m✓[39m src/components/manager-time-corrections.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-20T00:29:08.4496395Z  [32m✓[39m src/lib/tenancy/runtime/portal-installed-policy-observation.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-10-20T00:29:08.6650150Z  [32m✓[39m src/lib/tenancy/resolve.observation-boundary.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+2026-10-20T00:29:08.7970222Z  [32m✓[39m src/lib/capabilities/policy.observation-boundary.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-20T00:29:09.1587980Z  [32m✓[39m src/app/app/self-service-guards.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+2026-10-20T00:29:09.4526458Z  [32m✓[39m src/lib/notifications/provider.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 150[2mms[22m[39m
+2026-10-20T00:29:09.6355608Z  [32m✓[39m src/lib/tenancy/query-contract.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+2026-10-20T00:29:09.7850447Z  [32m✓[39m src/lib/tenancy/migrations/lossless-array.test.ts [2m([22m[2m106 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+2026-10-20T00:29:10.0777356Z  [32m✓[39m src/test/evidence/complete-native-jsonl.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 173[2mms[22m[39m
+2026-10-20T00:29:10.2862245Z  [32m✓[39m src/lib/business-improvements/attendance-policy/runtime.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+2026-10-20T00:29:10.4597706Z  [32m✓[39m src/lib/scheduling/positions.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-10-20T00:29:10.6747001Z  [2m[90m↓[39m[22m src/test/integration/employee-notification-capacity.integration.test.ts [2m([22m[2m9 tests[22m[2m | [22m[33m9 skipped[39m[2m)[22m
+2026-10-20T00:29:10.8798669Z  [32m✓[39m src/lib/clocker/schedule-candidates.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+2026-10-20T00:29:11.0139580Z  [32m✓[39m src/lib/tenancy/identity.test.ts [2m([22m[2m42 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-20T00:29:11.1863313Z  [32m✓[39m src/lib/attendance/validation.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-20T00:29:11.3309077Z  [32m✓[39m src/lib/assistance/manager-actions.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:29:11.4824895Z  [32m✓[39m src/lib/scheduling/schedule-health.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:29:11.6446499Z  [32m✓[39m src/lib/attendance/client.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+2026-10-20T00:29:11.8645602Z  [32m✓[39m src/app/app/schedule/manual-conflict-actions.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+2026-10-20T00:29:11.9888618Z  [32m✓[39m src/lib/assistance/notification-events.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:29:12.1625740Z  [32m✓[39m src/lib/calendar/http.server.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-20T00:29:12.4137589Z  [32m✓[39m src/lib/timecards/reviewed-batch.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 104[2mms[22m[39m
+2026-10-20T00:29:12.5586791Z  [32m✓[39m src/lib/tenancy/runtime/portal-source-dependency.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-10-20T00:29:12.8277146Z  [32m✓[39m src/lib/data/schedules-notifications.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+2026-10-20T00:29:12.9886211Z  [32m✓[39m src/lib/tenancy/runtime/audited-helper-storage.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-20T00:29:13.1772443Z  [32m✓[39m src/lib/data/push-subscriptions.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+2026-10-20T00:29:13.3930380Z  [32m✓[39m src/components/kit/kit.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+2026-10-20T00:29:14.7634172Z  [32m✓[39m src/components/owner-setup-card.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-10-20T00:29:14.9174380Z  [32m✓[39m src/lib/employee-home/project.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+2026-10-20T00:29:15.0867215Z  [32m✓[39m src/lib/tenancy/runtime/role-guard-installers.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-10-20T00:29:17.0910904Z  [32m✓[39m src/components/employee-home-clock.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 93[2mms[22m[39m
+2026-10-20T00:29:17.3695827Z  [32m✓[39m src/app/app/notifications/open/route.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 140[2mms[22m[39m
+2026-10-20T00:29:17.5286956Z  [32m✓[39m src/lib/business-improvements/company-policies/model.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+2026-10-20T00:29:19.5809009Z  [32m✓[39m src/components/employee-time-panel.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[32m 163[2mms[22m[39m
+2026-10-20T00:29:19.7653234Z  [32m✓[39m src/lib/employee-time.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+2026-10-20T00:29:19.9707531Z  [2m[90m↓[39m[22m src/lib/auth/portal-credential-session.postgres.test.ts [2m([22m[2m25 tests[22m[2m | [22m[33m25 skipped[39m[2m)[22m
+2026-10-20T00:29:20.2146048Z  [32m✓[39m src/lib/scheduling/generation/demand.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+2026-10-20T00:29:20.3970418Z  [32m✓[39m src/lib/data/manager-location-scope.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-10-20T00:29:20.5302887Z  [32m✓[39m src/lib/tenancy/inventory/sql-lexer.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-20T00:29:20.8219494Z  [32m✓[39m src/lib/tenancy/migrations/ownership.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 162[2mms[22m[39m
+2026-10-20T00:29:20.9662457Z  [32m✓[39m src/lib/notifications/destinations.test.ts [2m([22m[2m44 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-20T00:29:22.4731067Z  [32m✓[39m src/components/manager-inbox.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+2026-10-20T00:29:22.6073417Z  [2m[90m↓[39m[22m src/lib/tenancy/migrations/lossless-array.postgres.test.ts [2m([22m[2m35 tests[22m[2m | [22m[33m35 skipped[39m[2m)[22m
+2026-10-20T00:29:22.8471145Z  [32m✓[39m src/lib/tenancy/migrations/key-comparator-installer-recheck.server.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-20T00:29:22.9796554Z  [32m✓[39m src/lib/navigation.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-20T00:29:23.1156274Z  [32m✓[39m src/lib/payroll/model.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-20T00:29:23.3268919Z  [32m✓[39m src/app/api/employee/time-corrections/route.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+2026-10-20T00:29:23.4690546Z  [32m✓[39m src/lib/tenancy/runtime/workspace-incarnation.test.ts [2m([22m[2m48 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-20T00:29:23.6343870Z  [32m✓[39m src/app/app/employees/actions.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+2026-10-20T00:29:23.8742682Z  [32m✓[39m src/app/app/requests/actions.withdrawal-carry-forward.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-20T00:29:24.0399361Z  [32m✓[39m src/lib/tenancy/migrations/typed-journal-binding.server.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-10-20T00:29:24.1686611Z  [32m✓[39m src/lib/tenancy/runtime/portal-current-source-enrollment.source.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:29:24.3329190Z  [32m✓[39m src/lib/clock-monitor-client.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-20T00:29:24.6365772Z  [32m✓[39m src/app/app/exchange/swap/page.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+2026-10-20T00:29:26.1663624Z  [32m✓[39m src/app/app/settings/locations/page.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+2026-10-20T00:29:26.4639818Z  [32m✓[39m src/lib/data/employee-home.server.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 173[2mms[22m[39m
+2026-10-20T00:29:26.6771884Z  [32m✓[39m src/lib/reports/project.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+2026-10-20T00:29:26.9884398Z  [32m✓[39m src/app/app/schedule/templates/page.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+2026-10-20T00:29:27.6826180Z  [32m✓[39m src/lib/auth/password.malformed.test.ts [2m([22m[2m39 tests[22m[2m)[22m[33m 565[2mms[22m[39m
+2026-10-20T00:29:27.9236566Z  [32m✓[39m src/app/app/requests/actions.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-20T00:29:28.0933003Z  [32m✓[39m src/lib/notifications/policy.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-10-20T00:29:28.2916792Z  [32m✓[39m src/lib/auth/session.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+2026-10-20T00:29:28.5809349Z  [32m✓[39m src/components/communication-detail.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+2026-10-20T00:29:28.9266482Z  [32m✓[39m src/lib/notifications/manifest.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 223[2mms[22m[39m
+2026-10-20T00:29:29.1164401Z  [32m✓[39m src/lib/employee-view-route.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+2026-10-20T00:29:29.3185857Z  [32m✓[39m src/lib/time-corrections/service.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-20T00:29:29.4855579Z  [32m✓[39m src/lib/clock-monitor.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-20T00:29:29.6711795Z  [32m✓[39m src/lib/notifications/installation.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+2026-10-20T00:29:29.7951391Z  [32m✓[39m src/lib/today/project.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:29:30.0659689Z  [32m✓[39m src/app/login/actions.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 125[2mms[22m[39m
+2026-10-20T00:29:30.2905848Z  [32m✓[39m src/lib/tenancy/resolve.portal-native-version.test.ts [2m([22m[2m57 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+2026-10-20T00:29:30.4573693Z  [32m✓[39m src/app/api/workspaces/[locator]/session/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+2026-10-20T00:29:30.6046653Z  [32m✓[39m src/components/portal-device-setup-focus.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:29:32.3050055Z  [32m✓[39m src/components/payroll-export.selection.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 431[2mms[22m[39m
+2026-10-20T00:29:32.5327877Z  [32m✓[39m src/app/app/schedule/new/review.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-20T00:29:32.8094167Z  [32m✓[39m src/lib/dev/capture.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+2026-10-20T00:29:32.9306604Z  [32m✓[39m src/lib/assistance/publication-diff.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:29:33.1819303Z  [32m✓[39m src/components/account-recovery.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-20T00:29:33.3721184Z  [32m✓[39m src/lib/timecards/project.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-20T00:29:33.5486836Z  [32m✓[39m src/lib/employee-time-client.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+2026-10-20T00:29:35.0377627Z  [32m✓[39m src/app/app/employees/page.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-20T00:29:35.8417853Z  [32m✓[39m src/lib/workspace-presentation/derive.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 679[2mms[22m[39m
+2026-10-20T00:29:35.8424137Z    [32m✓[39m deriveBrand [2m(7)[22m
+2026-10-20T00:29:35.8425604Z      [33m[2m✓[22m[39m meets every contrast floor for 2,000 random seeds and the edge colours[33m 424[2mms[22m[39m
+2026-10-20T00:29:36.0118704Z  [32m✓[39m src/app/app/settings/clocker/actions.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-10-20T00:29:36.2848544Z  [32m✓[39m src/lib/data/callouts-notifications.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+2026-10-20T00:29:36.5756300Z  [32m✓[39m src/app/api/internal/notifications/worker-routes.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 118[2mms[22m[39m
+2026-10-20T00:29:38.0506235Z  [32m✓[39m src/components/manager-dashboard.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-20T00:29:38.3305623Z  [32m✓[39m src/app/app/schedule/edit/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 102[2mms[22m[39m
+2026-10-20T00:29:38.4996767Z  [32m✓[39m src/app/api/manager/attendance/route.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+2026-10-20T00:29:38.7708289Z  [32m✓[39m src/components/communication-compose.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+2026-10-20T00:29:39.0091445Z  [32m✓[39m src/app/app/schedule/assignment-actions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+2026-10-20T00:29:39.2466033Z  [32m✓[39m src/app/app/exchange/actions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-10-20T00:29:39.4033388Z  [32m✓[39m src/lib/scheduling/location-readiness.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:29:39.5673364Z  [32m✓[39m src/lib/communications/validation.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+2026-10-20T00:29:39.6951363Z  [32m✓[39m src/lib/tenancy/inventory/source.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:29:39.9112199Z  [32m✓[39m src/app/app/employees/[employeeId]/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+2026-10-20T00:29:40.1266432Z  [32m✓[39m src/app/app/employees/new/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-20T00:29:40.3216116Z  [32m✓[39m src/lib/data/schedule-generation-review.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-10-20T00:29:40.5531215Z  [32m✓[39m src/app/app/settings/actions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-10-20T00:29:40.7551202Z  [32m✓[39m src/app/app/employees/[employeeId]/clocker-pin/page.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+2026-10-20T00:29:41.0676287Z  [32m✓[39m src/components/manager-weekly-roster.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 127[2mms[22m[39m
+2026-10-20T00:29:41.2903444Z  [32m✓[39m src/components/coverage-assistant.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+2026-10-20T00:29:41.5126491Z  [32m✓[39m src/components/time-off-withdrawal.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-20T00:29:41.6892091Z  [32m✓[39m src/components/employee-core-profile-form.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+2026-10-20T00:29:41.8881551Z  [32m✓[39m src/components/schedule-generation-controls-state.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+2026-10-20T00:29:42.1094829Z  [32m✓[39m src/app/api/manager/time-corrections/route.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+2026-10-20T00:29:42.2534518Z  [32m✓[39m src/lib/scheduling/generation-claims.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-20T00:29:42.4149237Z  [32m✓[39m src/lib/communications/policy.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-10-20T00:29:42.6179785Z  [32m✓[39m src/lib/data/time-clock.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-20T00:29:42.7625888Z  [32m✓[39m src/lib/time-corrections/validation.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-20T00:29:43.1089515Z  [32m✓[39m src/components/clocker-recovery-review.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 166[2mms[22m[39m
+2026-10-20T00:29:43.2252038Z  [32m✓[39m src/lib/dashboard-status.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:29:43.4456309Z  [32m✓[39m src/components/configuration-choice-controls.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+2026-10-20T00:29:43.6149805Z  [32m✓[39m src/components/schedule-generation-controls.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-20T00:29:43.8206674Z  [32m✓[39m src/lib/data/management-profile.server.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:29:43.9864254Z  [32m✓[39m src/lib/shift-changes/maintenance.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-20T00:29:44.1798115Z  [32m✓[39m src/test/nevora-visible-branding.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+2026-10-20T00:29:44.3376076Z  [32m✓[39m src/lib/business-time.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+2026-10-20T00:29:45.7757474Z  [32m✓[39m src/components/ui-preview/home-preview.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+2026-10-20T00:29:46.0722793Z  [32m✓[39m src/lib/tenancy/migrations/portal-legacy-reconciliation.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:29:46.4475046Z  [32m✓[39m src/app/app/schedule/employee-review.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+2026-10-20T00:29:46.6616553Z  [32m✓[39m src/app/app/schedule/coverage-repair.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+2026-10-20T00:29:46.7907305Z  [32m✓[39m src/lib/capabilities/policy.rule-observations.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-20T00:29:46.9103629Z  [32m✓[39m src/lib/communications/recovery.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:29:47.1493263Z  [32m✓[39m src/components/assisted-recovery.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+2026-10-20T00:29:47.5397994Z  [32m✓[39m src/components/employee-account-panel-lifetime.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+2026-10-20T00:29:47.7206282Z  [32m✓[39m src/components/manager-attendance-review.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-20T00:29:47.9226215Z  [32m✓[39m src/lib/data/employee-notification-list.server.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:29:48.1079442Z  [32m✓[39m src/lib/data/acknowledgements.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:29:48.2478893Z  [32m✓[39m src/lib/scheduling/generation/fairness.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:29:49.7431314Z  [32m✓[39m src/app/app/settings/foundation-pages.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+2026-10-20T00:29:49.8792898Z  [32m✓[39m src/lib/payroll/backlog.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+2026-10-20T00:29:50.0405790Z  [32m✓[39m src/app/api/manager/today/route.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+2026-10-20T00:29:50.1833638Z  [32m✓[39m src/lib/business-improvements/attendance-policy/model.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-10-20T00:29:50.4081044Z  [32m✓[39m src/lib/calendar/command-http.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+2026-10-20T00:29:50.6603740Z  [32m✓[39m src/lib/communications/http.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 141[2mms[22m[39m
+2026-10-20T00:29:50.7916264Z  [32m✓[39m src/lib/scheduling/exchange-validation.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:29:50.9233518Z  [32m✓[39m src/lib/scheduling/weekly-availability.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:29:51.0789923Z  [32m✓[39m src/lib/time-corrections/read-model.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+2026-10-20T00:29:51.2226703Z  [32m✓[39m src/lib/data/attendance-review.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:29:51.3387694Z  [32m✓[39m src/lib/shift-changes/policy.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:29:51.4846405Z  [32m✓[39m scripts/company-setup.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+2026-10-20T00:29:51.6027332Z  [32m✓[39m src/components/payroll/workflow-status.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:29:51.7633862Z  [32m✓[39m src/lib/scheduling/coverage-ranking.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-20T00:29:52.0556723Z  [32m✓[39m src/components/employee-updates.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 156[2mms[22m[39m
+2026-10-20T00:29:52.2130995Z  [32m✓[39m src/lib/business-improvements/labor-budget/model.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-20T00:29:52.3331852Z  [32m✓[39m src/lib/navigation-sidebar.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:29:52.4520147Z  [32m✓[39m src/lib/shift-changes/lifecycle.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:29:52.6486358Z  [32m✓[39m src/lib/data/requests-notifications.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+2026-10-20T00:29:52.7643112Z  [32m✓[39m src/lib/action-center/inbox.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:29:52.8831724Z  [32m✓[39m src/lib/employee-directory.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:29:52.9972945Z  [32m✓[39m src/lib/action-center/needs-you.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:29:54.9614906Z  [32m✓[39m src/lib/celebrations.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-20T00:29:55.2307970Z  [32m✓[39m src/app/app/exchange/callout/page.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-20T00:29:55.6027299Z  [32m✓[39m src/lib/payroll/documents.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 107[2mms[22m[39m
+2026-10-20T00:29:55.7639102Z  [32m✓[39m src/app/api/manager/clock-monitor/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+2026-10-20T00:29:56.1619920Z  [32m✓[39m src/app/app/requests/page.withdrawal-carry-forward.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+2026-10-20T00:29:56.4517530Z  [32m✓[39m src/lib/tenancy/migrations/portal-access-lineage.source.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-20T00:29:56.6496204Z  [32m✓[39m src/app/brand-pages.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-10-20T00:29:58.0722125Z  [32m✓[39m src/app/app/settings/page.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+2026-10-20T00:29:59.4676279Z  [32m✓[39m src/components/clocker-device-manager.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+2026-10-20T00:29:59.6246452Z  [32m✓[39m src/lib/scheduling/validate-shift.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+2026-10-20T00:29:59.7906956Z  [32m✓[39m src/lib/management-profile-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+2026-10-20T00:29:59.9707754Z  [32m✓[39m src/components/manager-clock-monitor.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-20T00:30:00.1008929Z  [32m✓[39m src/lib/tenancy/inventory/serialize.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:30:00.2498343Z  [32m✓[39m src/components/configuration-form.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:00.3716093Z  [32m✓[39m src/components/payroll/api.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:30:00.5469787Z  [32m✓[39m src/lib/data/operational-profile.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:30:00.7856650Z  [32m✓[39m src/app/app/exchange/callout/actions.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-20T00:30:01.0606401Z  [32m✓[39m src/app/app/settings/breaks/actions.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+2026-10-20T00:30:01.1917683Z  [32m✓[39m src/lib/action-center/present.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-20T00:30:01.3966204Z  [32m✓[39m src/lib/data/employee-published-assignments.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-20T00:30:01.7269074Z  [32m✓[39m src/app/app/settings/locations/[locationId]/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+2026-10-20T00:30:01.8476678Z  [32m✓[39m src/lib/notifications/device-state.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:02.2406463Z  [32m✓[39m src/app/clocker/clocker-page.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-10-20T00:30:03.5805849Z  [32m✓[39m src/app/app/settings/positions/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-20T00:30:03.7291377Z  [32m✓[39m src/lib/shift-changes/command-parser.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-10-20T00:30:05.7738177Z  [32m✓[39m src/components/ui-preview/home-preview-shell.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+2026-10-20T00:30:05.9247483Z  [32m✓[39m src/app/app/schedule/new/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-20T00:30:06.0925765Z  [32m✓[39m src/app/app/availability/actions.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+2026-10-20T00:30:06.2731399Z  [32m✓[39m src/lib/data/premium-projections.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:06.4182475Z  [32m✓[39m src/lib/payroll-export/model.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:30:06.5346206Z  [32m✓[39m src/test/integration/owned-test-resources.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:06.7439221Z  [32m✓[39m src/lib/tenancy/migrations/employee-number-enrollment-binding.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:06.9474455Z  [32m✓[39m src/components/availability-team-list.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-20T00:30:07.1606960Z  [32m✓[39m src/lib/tenancy/runtime/portal-generated-publication.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:30:07.3812730Z  [32m✓[39m src/lib/data/portal-notification-list.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-20T00:30:07.6496162Z  [32m✓[39m src/lib/tenancy/migrations/portal-legacy-access-enrollment.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:30:07.8364486Z  [32m✓[39m src/lib/notifications/subscription-service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+2026-10-20T00:30:07.9976546Z  [32m✓[39m src/app/api/manager/finder/route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-20T00:30:08.2356306Z  [32m✓[39m src/app/app/employees/[employeeId]/clocker-pin/actions.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+2026-10-20T00:30:08.4375505Z  [32m✓[39m src/lib/communications/notification-intents.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-20T00:30:08.5743809Z  [32m✓[39m src/lib/reports/insights.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:08.7012273Z  [32m✓[39m src/lib/notifications/payloads.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:30:09.9525864Z  [32m✓[39m src/components/payroll/payroll-stepper.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+2026-10-20T00:30:10.1586253Z  [32m✓[39m src/app/app/settings/workspace/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-20T00:30:10.3225493Z  [32m✓[39m src/app/app/schedule/settings/shift-policy-actions.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+2026-10-20T00:30:10.4388992Z  [32m✓[39m src/lib/assistance/acknowledgement-state.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:10.6770454Z  [32m✓[39m src/lib/payroll/http.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:30:10.8374553Z  [32m✓[39m src/app/api/employee/my-time/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-20T00:30:10.9738391Z  [32m✓[39m src/lib/scheduling/coverage-repair.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:30:11.0878128Z  [32m✓[39m src/components/action-menu-geometry.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:11.2684777Z  [32m✓[39m src/lib/notifications/config.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 65[2mms[22m[39m
+2026-10-20T00:30:11.4474260Z  [32m✓[39m src/app/api/manager/action-center/route.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-20T00:30:11.6581325Z  [32m✓[39m src/lib/data/schedule-generation.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:30:11.9061689Z  [32m✓[39m src/components/employee-account-panel.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+2026-10-20T00:30:12.0332826Z  [32m✓[39m src/lib/scheduling/publish-readiness.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:12.1732566Z  [32m✓[39m src/components/shift-change-form-state.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+2026-10-20T00:30:12.4196195Z  [32m✓[39m src/components/calendar-subscription-panel.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+2026-10-20T00:30:13.7505932Z  [32m✓[39m src/app/app/settings/clocker/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+2026-10-20T00:30:15.7180551Z  [32m✓[39m src/components/employee-home-actions.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1854[2mms[22m[39m
+2026-10-20T00:30:15.7182062Z    [33m[2m✓[22m[39m late_former_authority_reply_discarded[33m 1808[2mms[22m[39m
+2026-10-20T00:30:15.8794138Z  [32m✓[39m src/app/api/employee/home/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+2026-10-20T00:30:16.0722565Z  [32m✓[39m src/app/api/reports/export/route.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+2026-10-20T00:30:16.3062600Z  [32m✓[39m src/app/api/payroll-export/route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+2026-10-20T00:30:16.4816906Z  [32m✓[39m src/lib/time-corrections/client.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-20T00:30:17.9875877Z  [32m✓[39m src/app/app/settings/breaks/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+2026-10-20T00:30:18.1777429Z  [32m✓[39m src/lib/data/shift-change-notification-versions.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+2026-10-20T00:30:18.3744159Z  [32m✓[39m src/lib/data/action-request-facts.server.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:19.6439069Z  [32m✓[39m src/components/action-menu.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1115[2mms[22m[39m
+2026-10-20T00:30:19.6545268Z    [33m[2m✓[22m[39m renders one labelled popover trigger and bounded shared menu surface[33m 1109[2mms[22m[39m
+2026-10-20T00:30:19.9851562Z  [32m✓[39m src/app/app/settings/locations/new/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-10-20T00:30:22.0426331Z  [32m✓[39m src/app/workspace-presentation.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-20T00:30:22.1714189Z  [32m✓[39m src/lib/shift-changes/eligibility-reasons.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:23.4246088Z  [32m✓[39m src/components/mobile-home-overview.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-20T00:30:23.6135423Z  [32m✓[39m src/components/shift-change-policy-fields.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-20T00:30:23.7921982Z  [32m✓[39m src/lib/data/notification-transactions.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+2026-10-20T00:30:23.9086615Z  [32m✓[39m src/lib/shift-changes/terms.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:24.0665158Z  [32m✓[39m src/components/schedule-publication-change.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-20T00:30:24.1906153Z  [32m✓[39m src/lib/finder.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:24.5677283Z  [32m✓[39m src/app/app/requests/page.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+2026-10-20T00:30:24.8186458Z  [32m✓[39m src/test/clocker-runner.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+2026-10-20T00:30:25.0200641Z  [32m✓[39m src/components/callout-view.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-20T00:30:25.1418378Z  [32m✓[39m src/lib/clocker/punch-inherited-command.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:30:25.2551302Z  [32m✓[39m src/lib/payroll/open-period.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:25.4087617Z  [32m✓[39m src/lib/dev/inspection.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-10-20T00:30:25.5961147Z  [32m✓[39m src/app/api/reports/route.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-20T00:30:25.7771135Z  [32m✓[39m src/lib/data/employee-attention-receipts.server.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:25.9360957Z  [32m✓[39m src/components/brand-lockup.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-10-20T00:30:26.1256105Z  [32m✓[39m src/app/api/timecards/route.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-20T00:30:26.4418506Z  [32m✓[39m src/app/app/schedule/new/location.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+2026-10-20T00:30:26.6026227Z  [32m✓[39m src/app/app/schedule/acknowledge-actions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-10-20T00:30:26.7586200Z  [32m✓[39m src/test/phase-e-browser-runtime.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+2026-10-20T00:30:26.9198516Z  [32m✓[39m src/app/api/manager/timecards/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+2026-10-20T00:30:27.1101567Z  [32m✓[39m src/components/schedule-template-controls.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-10-20T00:30:27.2577617Z  [32m✓[39m src/lib/data/scheduling-source-facts.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:27.3836024Z  [32m✓[39m src/lib/clocker/punch-command.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:30:27.5089013Z  [32m✓[39m src/lib/tenancy/inventory/cli.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:27.6285717Z  [32m✓[39m src/test/phase-c-governance-cleanup.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:30:27.8255515Z  [32m✓[39m src/app/api/auth/recovery/route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+2026-10-20T00:30:27.9871991Z  [32m✓[39m src/components/portal-device-setup.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-20T00:30:28.1236243Z  [32m✓[39m src/lib/data/notifications.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:28.2606903Z  [32m✓[39m src/lib/date-utils.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:28.4375985Z  [32m✓[39m src/test/release-source-custody.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+2026-10-20T00:30:28.5601929Z  [32m✓[39m src/lib/clocker/break-types.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:30:29.9995987Z  [32m✓[39m src/app/app/settings/catalog-revisions.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+2026-10-20T00:30:30.1489788Z  [32m✓[39m src/lib/timecards/client.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:30:30.2747358Z  [32m✓[39m src/lib/auth/recovery-delivery.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:30.4064984Z  [32m✓[39m src/lib/employee-view.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:30.6039129Z  [32m✓[39m src/components/app-error-screen.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-20T00:30:30.7555429Z  [32m✓[39m src/app/api/manager/inbox-count/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-10-20T00:30:30.8967516Z  [32m✓[39m src/components/select-field.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-20T00:30:31.0822957Z  [32m✓[39m src/lib/data/scheduling-operational-parity.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-20T00:30:31.2128542Z  [32m✓[39m src/lib/notification-inbox-view.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-20T00:30:32.4835817Z  [32m✓[39m src/components/manager-week-overview.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-20T00:30:32.6441046Z  [32m✓[39m src/lib/payroll-export/client.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:32.7637510Z  [32m✓[39m src/lib/data/shift-change-policy.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:32.9255714Z  [32m✓[39m src/lib/reports/csv.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+2026-10-20T00:30:33.0625781Z  [32m✓[39m src/lib/shift-changes/policy-form.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-20T00:30:33.1798456Z  [32m✓[39m src/lib/calendar/ical.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:33.2978912Z  [32m✓[39m src/lib/availability-presets.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:33.4736582Z  [32m✓[39m src/lib/data/generation-exclusions.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:33.6086352Z  [32m✓[39m src/lib/data/hour-fairness.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:33.8039665Z  [32m✓[39m src/components/swap-shift-summary.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:30:33.9173190Z  [32m✓[39m src/lib/assistance/availability-submission.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:34.0296282Z  [32m✓[39m src/test/phase-c-release-ci.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:34.1565455Z  [32m✓[39m src/lib/time-corrections/authority.server.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:34.4710720Z  [32m✓[39m src/app/app/requests/hub/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-10-20T00:30:34.5881086Z  [32m✓[39m src/test/phase-c-release-migrations.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:34.8346018Z  [32m✓[39m src/lib/communications/service.server.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:34.9495060Z  [32m✓[39m src/test/phase-d-correction-migration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:35.1346366Z  [32m✓[39m src/lib/calendar/command.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:35.3508022Z  [32m✓[39m src/app/reset-access/page.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-20T00:30:35.5232460Z  [32m✓[39m src/lib/data/workspaces.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:35.6374740Z  [32m✓[39m src/lib/tenancy/types.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:35.7514855Z  [32m✓[39m src/lib/payroll-export/selection.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:35.9376083Z  [32m✓[39m src/lib/data/schedule-templates.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:37.1846146Z  [32m✓[39m src/components/rules-hours-list.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+2026-10-20T00:30:37.3046584Z  [32m✓[39m src/test/integration/calendar-log-redaction.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+2026-10-20T00:30:37.4169841Z  [32m✓[39m src/lib/keep-whole.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:39.3525635Z  [32m✓[39m src/components/employee-dashboard.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:30:39.5022300Z  [32m✓[39m src/test/integration/owned-next-path.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:30:39.6124420Z  [32m✓[39m src/lib/scheduling/generation-provenance.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:39.8035554Z  [32m✓[39m src/app/app/schedule/copy-receipt/page.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 12[2mms[22m[39m
+2026-10-20T00:30:39.9786162Z  [32m✓[39m src/lib/data/locations.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:40.1447322Z  [32m✓[39m src/lib/data/requests.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:40.3200105Z  [32m✓[39m src/lib/data/employee-profile.server.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:40.4316269Z  [32m✓[39m src/components/employee-timecard-presentation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:40.5429157Z  [32m✓[39m src/lib/exchange-marketplace.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:40.6700199Z  [32m✓[39m src/lib/employee-compensation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:40.8618603Z  [32m✓[39m src/lib/scheduling/generation/operational-parity.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+2026-10-20T00:30:40.9743506Z  [32m✓[39m src/lib/mobile-keyboard.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:41.1006106Z  [32m✓[39m src/lib/retired-views.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:41.2346047Z  [32m✓[39m src/components/payroll/money.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+2026-10-20T00:30:42.4955780Z  [32m✓[39m src/components/command-finder.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:43.8977599Z  [32m✓[39m src/components/app-shell-management-signout.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+2026-10-20T00:30:44.0406116Z  [32m✓[39m src/lib/calendar/service-worker.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 27[2mms[22m[39m
+2026-10-20T00:30:44.6358415Z  [32m✓[39m src/lib/notifications/config-cli.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 484[2mms[22m[39m
+2026-10-20T00:30:44.6389591Z    [33m[2m✓[22m[39m loads the real notification CLI modules through raw tsx without a top-level-await CommonJS failure[33m 482[2mms[22m[39m
+2026-10-20T00:30:44.7688487Z  [32m✓[39m src/components/payroll-review-copy.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:44.9107215Z  [32m✓[39m src/components/employee-profile-tabs.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-10-20T00:30:45.0236095Z  [32m✓[39m src/lib/publication-note.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:45.1389807Z  [32m✓[39m src/lib/phone.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:45.2894941Z  [32m✓[39m src/components/time-clock-widget.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:45.4012487Z  [32m✓[39m src/test/fixtures/nevora-workspace.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:45.5476790Z  [32m✓[39m src/components/portal-signout.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:30:45.6676033Z  [32m✓[39m src/lib/attendance/format.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+2026-10-20T00:30:45.8057018Z  [32m✓[39m src/components/clocker-language.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+2026-10-20T00:30:45.9246495Z  [32m✓[39m src/lib/employee-view-authority.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:46.0446138Z  [32m✓[39m src/lib/calendar/token.server.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:47.4239639Z  [32m✓[39m src/components/payroll/my-pay.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 13[2mms[22m[39m
+2026-10-20T00:30:47.6128582Z  [32m✓[39m src/lib/payroll/schedule.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:47.7566420Z  [32m✓[39m src/lib/notifications/worker-auth.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 31[2mms[22m[39m
+2026-10-20T00:30:47.8749284Z  [32m✓[39m src/lib/navigation-ownership.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:48.0845441Z  [32m✓[39m src/lib/data/positions.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+2026-10-20T00:30:48.2009360Z  [32m✓[39m src/lib/time-off-withdrawal.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:48.3361641Z  [32m✓[39m src/lib/scheduling/copy-week.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:48.5140312Z  [32m✓[39m src/lib/data/exchanges-history.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:48.6469954Z  [32m✓[39m src/lib/workspace/validation.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+2026-10-20T00:30:48.7796333Z  [32m✓[39m src/test/integration/owned-next-payroll.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:48.9026912Z  [32m✓[39m src/lib/scheduling/capabilities.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:49.0474792Z  [32m✓[39m src/lib/company-policy-time.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-10-20T00:30:49.1900270Z  [32m✓[39m src/lib/scheduling/generation/explanations.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:49.3001760Z  [32m✓[39m src/lib/employee-display.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:49.4102521Z  [32m✓[39m src/test/phase-c-qa-harness.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+2026-10-20T00:30:49.5461463Z  [32m✓[39m src/components/shift-change-history.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-20T00:30:49.6544198Z  [32m✓[39m src/lib/time-zone-label.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:49.7644648Z  [32m✓[39m src/lib/duration-text.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+2026-10-20T00:30:49.7793474Z 
+2026-10-20T00:30:49.7810978Z [2m Test Files [22m [1m[32m447 passed[39m[22m[2m | [22m[33m27 skipped[39m[90m (474)[39m
+2026-10-20T00:30:49.7859686Z [2m      Tests [22m [1m[32m7363 passed[39m[22m[2m | [22m[33m801 skipped[39m[90m (8219)[39m
+2026-10-20T00:30:49.7860797Z [2m   Start at [22m 00:21:19
+2026-10-20T00:30:49.7870550Z [2m   Duration [22m 570.20s[2m (tests 84%, import 13%, transform 2%)[22m
+2026-10-20T00:30:49.7895113Z 
+2026-10-20T00:30:49.7896439Z [2m    Isolate [22m [33m474 workers spawned[39m[2m · ~90ms startup each (spawn + environment, per file)[22m
+2026-10-20T00:30:49.7898528Z [2m            [22m [2mat least ~42.65s faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+2026-10-20T00:30:49.7901357Z 
+2026-10-20T00:30:49.8551256Z ##[group]Run npm run test:notifications:qa
+2026-10-20T00:30:49.8551599Z [36;1mnpm run test:notifications:qa[0m
+2026-10-20T00:30:49.8551876Z [36;1mnpm run test:foundation:qa[0m
+2026-10-20T00:30:49.8552143Z [36;1mnpm run test:release-engineering[0m
+2026-10-20T00:30:49.8611762Z shell: /usr/bin/bash -e {0}
+2026-10-20T00:30:49.8612016Z ##[endgroup]
+2026-10-20T00:30:49.9577464Z 
+2026-10-20T00:30:49.9578292Z > fuel-scheduler@0.1.0 test:notifications:qa
+2026-10-20T00:30:49.9579395Z > node --test scripts/verify-fuel-phase-3-config.check.mjs
+2026-10-20T00:30:49.9580076Z 
+2026-10-20T00:30:50.0460429Z ✔ all selects every expected matrix and rejects empty/truncated evidence (6.163308ms)
+2026-10-20T00:30:50.0478890Z ✔ protected selects every expected matrix and rejects empty/truncated evidence (0.259903ms)
+2026-10-20T00:30:50.0480563Z ✔ setup selects every expected matrix and rejects empty/truncated evidence (0.375418ms)
+2026-10-20T00:30:50.0487301Z ✔ states selects every expected matrix and rejects empty/truncated evidence (0.325385ms)
+2026-10-20T00:30:50.0488642Z ✔ unknown mode fails before browser work (0.346334ms)
+2026-10-20T00:30:50.0589649Z ✔ output excludes the actual worktree and aliases, including nonexistent descendants (15.561109ms)
+2026-10-20T00:30:50.0705204Z ℹ tests 6
+2026-10-20T00:30:50.0727820Z ℹ suites 0
+2026-10-20T00:30:50.0744734Z ℹ pass 6
+2026-10-20T00:30:50.0749676Z ℹ fail 0
+2026-10-20T00:30:50.0750208Z ℹ cancelled 0
+2026-10-20T00:30:50.0750804Z ℹ skipped 0
+2026-10-20T00:30:50.0769768Z ℹ todo 0
+2026-10-20T00:30:50.0770455Z ℹ duration_ms 81.34891
+2026-10-20T00:30:50.1889629Z 
+2026-10-20T00:30:50.1890508Z > fuel-scheduler@0.1.0 test:foundation:qa
+2026-10-20T00:30:50.1891645Z > node --test scripts/verify-nevora-foundation-config.check.mjs
+2026-10-20T00:30:50.1892390Z 
+2026-10-20T00:30:50.2931923Z ✔ only explicit bare local HTTP origins; no credentials, paths, queries or remote targets (1.984569ms)
+2026-10-20T00:30:50.2936653Z ✔ all mandatory engine/width/customer matrices reject missing or duplicated cases (13.575719ms)
+2026-10-20T00:30:50.3202519Z ✔ evidence output remains outside repository including symlink and new descendant paths (8.782605ms)
+2026-10-20T00:30:50.3204316Z ✔ review decisions cannot bless stale pixels, absent provenance, runtime errors or duplicate IDs (2.983557ms)
+2026-10-20T00:30:50.3206592Z ✔ native empty-date exception is narrowly bound to all three images and unchanged fresh source pairs (9.309377ms)
+2026-10-20T00:30:50.3219671Z ✔ route identity rejects a redirected page or unrelated body before capture (0.880357ms)
+2026-10-20T00:30:50.3221422Z ✔ route identity preserves role and scenario query values while allowing parameter order (9.021071ms)
+2026-10-20T00:30:50.3223177Z ✔ Schedule fitting rejects omitted week peers and actual label/week intersections (0.600427ms)
+2026-10-20T00:30:50.3324652Z ℹ tests 8
+2026-10-20T00:30:50.3334972Z ℹ suites 0
+2026-10-20T00:30:50.3335717Z ℹ pass 8
+2026-10-20T00:30:50.3336364Z ℹ fail 0
+2026-10-20T00:30:50.3336984Z ℹ cancelled 0
+2026-10-20T00:30:50.3337577Z ℹ skipped 0
+2026-10-20T00:30:50.3338167Z ℹ todo 0
+2026-10-20T00:30:50.3338772Z ℹ duration_ms 110.411477
+2026-10-20T00:30:50.4564483Z 
+2026-10-20T00:30:50.4600140Z > fuel-scheduler@0.1.0 test:release-engineering
+2026-10-20T00:30:50.4647013Z > node --test scripts/release-ci-contract.check.mjs scripts/release-postgres-cleanup.check.mjs scripts/release-browser-diagnostics.check.mjs scripts/release-lint-chain.check.mjs
+2026-10-20T00:30:50.4648488Z 
+2026-10-20T00:30:50.6294632Z ✔ retains useful timeout detail, failed cell and scrubbed source stage (4.567782ms)
+2026-10-20T00:30:50.6331420Z ✔ retains primitive assertion evidence without serializing arbitrary actual values (0.335503ms)
+2026-10-20T00:30:50.6352421Z ✔ redacts absolute URL (0.558729ms)
+2026-10-20T00:30:50.6396200Z ✔ redacts relative capability (0.25279ms)
+2026-10-20T00:30:50.6397266Z ✔ redacts standalone capability (0.313814ms)
+2026-10-20T00:30:50.6417325Z ✔ redacts digest (0.298294ms)
+2026-10-20T00:30:50.6435215Z ✔ redacts escaped URL (0.375028ms)
+2026-10-20T00:30:50.6446998Z ✔ omits credential-bearing lines while retaining unrelated call-log detail (0.337607ms)
+2026-10-20T00:30:50.6458628Z ✔ bounds hostile messages and tolerates unreadable thrown objects (1.329361ms)
+2026-10-20T00:30:50.6486660Z ✔ rejects arbitrary error metadata and reads cell identifiers only once (0.524565ms)
+2026-10-20T00:30:50.6504982Z ✔ new diagnostic report matches the existing artifact selection (0.544663ms)
+2026-10-20T00:30:50.7382194Z ✔ all triggered candidate branches receive mandatory SQL and browser gates (1.545483ms)
+2026-10-20T00:30:50.7393061Z ✔ existing aggregate rejects failed, cancelled, skipped, neutral and missing jobs (0.752699ms)
+2026-10-20T00:30:50.7398423Z ✔ owner release hold disables Vercel Git deployments for every branch (0.198959ms)
+2026-10-20T00:30:51.0081620Z ✔ the installed development graph contains none of the vulnerable glob chain (6.147218ms)
+2026-10-20T00:30:51.0106187Z ✔ eslint-config-next retains every published file except the explicit dependency/import seam (1.401275ms)
+2026-10-20T00:30:51.0115034Z ✔ eslint-plugin-next retains every published file except the explicit dependency/import seam (2.479209ms)
+2026-10-20T00:30:51.0141755Z ✔ all 22 original Next rules and their recommended severities remain enabled (1.237971ms)
+2026-10-20T00:30:51.0161738Z ✔ root-directory semantics preserve apps/web (2.915219ms)
+2026-10-20T00:30:51.0171568Z ✔ root-directory semantics preserve apps/web/ (0.368054ms)
+2026-10-20T00:30:51.0172823Z ✔ root-directory semantics preserve ./apps/web (0.581431ms)
+2026-10-20T00:30:51.0174133Z ✔ root-directory semantics preserve . (0.343028ms)
+2026-10-20T00:30:51.0175308Z ✔ root-directory semantics preserve ./ (0.671538ms)
+2026-10-20T00:30:51.0176417Z ✔ root-directory semantics preserve apps/* (5.825179ms)
+2026-10-20T00:30:51.0177587Z ✔ root-directory semantics preserve apps/** (2.408688ms)
+2026-10-20T00:30:51.0178804Z ✔ root-directory semantics preserve apps/{web,mobile} (2.429978ms)
+2026-10-20T00:30:51.0199041Z ✔ root-directory semantics preserve apps/w?b (0.712134ms)
+2026-10-20T00:30:51.0200339Z ✔ root-directory semantics preserve apps/@(web|mobile) (0.985191ms)
+2026-10-20T00:30:51.0201621Z ✔ root-directory semantics preserve apps/missing (0.226371ms)
+2026-10-20T00:30:51.0202823Z ✔ root-directory semantics preserve apps/linked (0.172151ms)
+2026-10-20T00:30:51.0204696Z ✔ root-directory semantics preserve apps/linked/** (0.80134ms)
+2026-10-20T00:30:51.0205849Z ✔ root-directory semantics preserve apps/.* (0.628027ms)
+2026-10-20T00:30:51.0206990Z ✔ root-directory semantics preserve apps/*/pages (1.022471ms)
+2026-10-20T00:30:51.0208227Z ✔ absolute root-directory semantics preserve apps/web (0.367823ms)
+2026-10-20T00:30:51.0209463Z ✔ absolute root-directory semantics preserve apps/* (0.968641ms)
+2026-10-20T00:30:51.0210777Z ✔ default and mixed array root settings keep their existing behavior (0.310327ms)
+2026-10-20T00:30:51.0212067Z ✔ hostile oversize fails closed before glob parsing (0.524996ms)
+2026-10-20T00:30:51.0213285Z ✔ hostile deep braces fails closed before glob parsing (0.186837ms)
+2026-10-20T00:30:51.0214763Z ✔ hostile deep parentheses fails closed before glob parsing (0.198539ms)
+2026-10-20T00:30:51.0216080Z ✔ hostile Cartesian expansion fails closed before glob parsing (0.226441ms)
+2026-10-20T00:30:51.0233727Z ✔ hostile huge numeric range fails closed before glob parsing (0.137135ms)
+2026-10-20T00:30:51.0242962Z ✔ real no-html-link-for-pages detection remains active for apps/web (29.090589ms)
+2026-10-20T00:30:51.0244709Z ✔ real no-html-link-for-pages detection remains active for apps/linked (2.335632ms)
+2026-10-20T00:30:51.0246203Z ✔ real no-html-link-for-pages detection remains active for apps/* (2.300547ms)
+2026-10-20T00:30:51.0247682Z ✔ real no-html-link-for-pages detection remains active for apps/{web,mobile} (2.243831ms)
+2026-10-20T00:30:51.0249149Z ✔ real no-html-link-for-pages detection remains active for apps/*/pages/.. (2.336834ms)
+2026-10-20T00:30:51.0269151Z ✔ existing allowed navigation remains allowed: const element = <a href="https://example.test/about">External</a>; (1.341374ms)
+2026-10-20T00:30:51.0305577Z ✔ existing allowed navigation remains allowed: const element = <a href="/about" target="_blank">New tab</a>; (1.147613ms)
+2026-10-20T00:30:51.0325213Z ✔ existing allowed navigation remains allowed: const element = <a href="/about" download>Download</a>; (1.37185ms)
+2026-10-20T00:30:51.0345062Z ✔ existing allowed navigation remains allowed: const element = <Link href="/about">About</Link>; (2.034412ms)
+2026-10-20T00:30:51.1466888Z ✔ partial PostgreSQL startup invokes stop before removing owned data (48.711315ms)
+2026-10-20T00:30:51.1545429Z ℹ tests 51
+2026-10-20T00:30:51.1546177Z ℹ suites 0
+2026-10-20T00:30:51.1546903Z ℹ pass 51
+2026-10-20T00:30:51.1547551Z ℹ fail 0
+2026-10-20T00:30:51.1548281Z ℹ cancelled 0
+2026-10-20T00:30:51.1553067Z ℹ skipped 0
+2026-10-20T00:30:51.1553799Z ℹ todo 0
+2026-10-20T00:30:51.1555807Z ℹ duration_ms 622.566331
+2026-10-20T00:30:51.1677062Z ##[group]Run npm run typecheck
+2026-10-20T00:30:51.1677352Z [36;1mnpm run typecheck[0m
+2026-10-20T00:30:51.1736142Z shell: /usr/bin/bash -e {0}
+2026-10-20T00:30:51.1736383Z ##[endgroup]
+2026-10-20T00:30:51.2701923Z 
+2026-10-20T00:30:51.2702468Z > fuel-scheduler@0.1.0 typecheck
+2026-10-20T00:30:51.2703375Z > tsc --noEmit
+2026-10-20T00:30:51.2704169Z 
+2026-10-20T00:31:19.5884989Z ##[group]Run npm run lint
+2026-10-20T00:31:19.5885287Z [36;1mnpm run lint[0m
+2026-10-20T00:31:19.5943124Z shell: /usr/bin/bash -e {0}
+2026-10-20T00:31:19.5943389Z ##[endgroup]
+2026-10-20T00:31:19.6974665Z 
+2026-10-20T00:31:19.6985383Z > fuel-scheduler@0.1.0 lint
+2026-10-20T00:31:19.7000744Z > eslint .
+2026-10-20T00:31:19.7010078Z 
+2026-10-20T00:32:04.5965519Z ##[group]Run node scripts/release-build.mjs
+2026-10-20T00:32:04.5965877Z [36;1mnode scripts/release-build.mjs[0m
+2026-10-20T00:32:04.6024967Z shell: /usr/bin/bash -e {0}
+2026-10-20T00:32:04.6025196Z env:
+2026-10-20T00:32:04.6025456Z   PHASE_E_EXPECTED_SHA: 6b154351847ca5ffe67130b22ec0697b655b20bc
+2026-10-20T00:32:04.6025896Z   NEVORA_BUILD_RECEIPT: /home/runner/work/_temp/nevora-build-source.json
+2026-10-20T00:32:04.6026244Z ##[endgroup]
+2026-10-20T00:32:05.3243002Z 
+2026-10-20T00:32:05.3243803Z > fuel-scheduler@0.1.0 build
+2026-10-20T00:32:05.3244882Z > next build
+2026-10-20T00:32:05.3245298Z 
+2026-10-20T00:32:05.6642228Z ▲ Next.js 16.3.8 (Turbopack)
+2026-10-20T00:32:05.7116675Z ✓ Running next.config.ts took 46ms
+2026-10-20T00:32:05.7135848Z ⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+2026-10-20T00:32:05.7373391Z - Experiments (use with caution):
+2026-10-20T00:32:05.7389801Z   ⨯ turbopackFileSystemCacheForBuild
+2026-10-20T00:32:05.7423065Z 
+2026-10-20T00:32:05.7945224Z   Creating an optimized production build ...
+2026-10-20T00:32:23.3278656Z ✓ Compiled successfully in 17.3s
+2026-10-20T00:32:23.3304767Z   Running TypeScript ...
+2026-10-20T00:32:52.0227810Z   Finished TypeScript in 28.7s ...
+2026-10-20T00:32:52.0246109Z   Collecting page data using 1 worker ...
+2026-10-20T00:32:53.3215670Z   Generating static pages using 1 worker (0/46) ...
+2026-10-20T00:32:53.5083534Z   Generating static pages using 1 worker (11/46) 
+2026-10-20T00:32:53.5645086Z   Generating static pages using 1 worker (22/46) 
+2026-10-20T00:32:53.6385031Z   Generating static pages using 1 worker (34/46) 
+2026-10-20T00:32:53.7185775Z ✓ Generating static pages using 1 worker (46/46) in 397ms
+2026-10-20T00:32:53.7241681Z   Finalizing page optimization ...
+2026-10-20T00:32:53.7278942Z 
+2026-10-20T00:32:53.7347009Z Route (app)
+2026-10-20T00:32:53.7356219Z ┌ ○ /
+2026-10-20T00:32:53.7375949Z ├ ○ /_not-found
+2026-10-20T00:32:53.7394642Z ├ ƒ /activate
+2026-10-20T00:32:53.7395281Z ├ ƒ /api/auth/recovery
+2026-10-20T00:32:53.7414694Z ├ ƒ /api/auth/reset-access
+2026-10-20T00:32:53.7439154Z ├ ƒ /api/calendar/[token]/schedule.ics
+2026-10-20T00:32:53.7454860Z ├ ƒ /api/clocker/[location]/pin
+2026-10-20T00:32:53.7475087Z ├ ƒ /api/clocker/[location]/punch
+2026-10-20T00:32:53.7476088Z ├ ƒ /api/clocker/[location]/setup
+2026-10-20T00:32:53.7494688Z ├ ƒ /api/company-policies
+2026-10-20T00:32:53.7497401Z ├ ƒ /api/employee/calendar-subscriptions
+2026-10-20T00:32:53.7500336Z ├ ƒ /api/employee/communications
+2026-10-20T00:32:53.7502926Z ├ ƒ /api/employee/communications/[id]
+2026-10-20T00:32:53.7508058Z ├ ƒ /api/employee/communications/context
+2026-10-20T00:32:53.7509217Z ├ ƒ /api/employee/communications/operations/[id]
+2026-10-20T00:32:53.7510155Z ├ ƒ /api/employee/communications/preview
+2026-10-20T00:32:53.7510882Z ├ ƒ /api/employee/home
+2026-10-20T00:32:53.7511491Z ├ ƒ /api/employee/my-time
+2026-10-20T00:32:53.7512192Z ├ ƒ /api/employee/notifications
+2026-10-20T00:32:53.7512964Z ├ ƒ /api/employee/profile
+2026-10-20T00:32:53.7513761Z ├ ƒ /api/employee/time-corrections
+2026-10-20T00:32:53.7516709Z ├ ƒ /api/internal/notifications/dispatch
+2026-10-20T00:32:53.7517699Z ├ ƒ /api/internal/notifications/reminders
+2026-10-20T00:32:53.7518625Z ├ ƒ /api/management/profile
+2026-10-20T00:32:53.7519387Z ├ ƒ /api/management/profile/alerts
+2026-10-20T00:32:53.7520158Z ├ ƒ /api/manager/account-recovery
+2026-10-20T00:32:53.7520887Z ├ ƒ /api/manager/action-center
+2026-10-20T00:32:53.7521607Z ├ ƒ /api/manager/attendance
+2026-10-20T00:32:53.7522621Z ├ ƒ /api/manager/calendar-subscriptions/[employeeId]/revoke
+2026-10-20T00:32:53.7523688Z ├ ƒ /api/manager/clock-monitor
+2026-10-20T00:32:53.7524861Z ├ ƒ /api/manager/clocker-recovery
+2026-10-20T00:32:53.7525804Z ├ ƒ /api/manager/communications
+2026-10-20T00:32:53.7526697Z ├ ƒ /api/manager/communications/[id]
+2026-10-20T00:32:53.7527689Z ├ ƒ /api/manager/communications/context
+2026-10-20T00:32:53.7528954Z ├ ƒ /api/manager/communications/operations/[id]
+2026-10-20T00:32:53.7529850Z ├ ƒ /api/manager/communications/preview
+2026-10-20T00:32:53.7530576Z ├ ƒ /api/manager/finder
+2026-10-20T00:32:53.7531352Z ├ ƒ /api/manager/inbox-count
+2026-10-20T00:32:53.7532139Z ├ ƒ /api/manager/time-corrections
+2026-10-20T00:32:53.7533009Z ├ ƒ /api/manager/timecards
+2026-10-20T00:32:53.7533801Z ├ ƒ /api/manager/today
+2026-10-20T00:32:53.7541264Z ├ ƒ /api/notifications
+2026-10-20T00:32:53.7542123Z ├ ƒ /api/notifications/read
+2026-10-20T00:32:53.7542933Z ├ ƒ /api/payroll-export
+2026-10-20T00:32:53.7543760Z ├ ƒ /api/payroll-export/profiles
+2026-10-20T00:32:53.7544907Z ├ ƒ /api/payroll/documents/[id]
+2026-10-20T00:32:53.7546018Z ├ ƒ /api/payroll/receipts
+2026-10-20T00:32:53.7546714Z ├ ƒ /api/payroll/runs
+2026-10-20T00:32:53.7547372Z ├ ƒ /api/payroll/settings
+2026-10-20T00:32:53.7548122Z ├ ƒ /api/payroll/statements
+2026-10-20T00:32:53.7548881Z ├ ƒ /api/period-close
+2026-10-20T00:32:53.7549742Z ├ ƒ /api/period-close/artifact
+2026-10-20T00:32:53.7550418Z ├ ƒ /api/reports
+2026-10-20T00:32:53.7551021Z ├ ƒ /api/reports/export
+2026-10-20T00:32:53.7551633Z ├ ƒ /api/schedule-copy
+2026-10-20T00:32:53.7552230Z ├ ƒ /api/timecards
+2026-10-20T00:32:53.7552955Z ├ ƒ /api/workspace-presentation
+2026-10-20T00:32:53.7553849Z ├ ƒ /api/workspace-presentation/logo
+2026-10-20T00:32:53.7556634Z ├ ƒ /api/workspace-presentation/logo/[assetId]
+2026-10-20T00:32:53.7557640Z ├ ƒ /api/workspaces/[locator]/session
+2026-10-20T00:32:53.7558428Z ├ ƒ /app
+2026-10-20T00:32:53.7559127Z ├ ƒ /app/account-recovery
+2026-10-20T00:32:53.7559801Z ├ ƒ /app/api/push/status
+2026-10-20T00:32:53.7560444Z ├ ƒ /app/api/push/subscribe
+2026-10-20T00:32:53.7561101Z ├ ƒ /app/api/push/test
+2026-10-20T00:32:53.7561757Z ├ ƒ /app/api/push/unsubscribe
+2026-10-20T00:32:53.7562525Z ├ ƒ /app/availability
+2026-10-20T00:32:53.7563208Z ├ ƒ /app/clocker-recovery
+2026-10-20T00:32:53.7564237Z ├ ƒ /app/dev-inspect
+2026-10-20T00:32:53.7564983Z ├ ƒ /app/employees
+2026-10-20T00:32:53.7565823Z ├ ƒ /app/employees/[employeeId]
+2026-10-20T00:32:53.7566778Z ├ ƒ /app/employees/[employeeId]/clocker-pin
+2026-10-20T00:32:53.7567640Z ├ ƒ /app/employees/new
+2026-10-20T00:32:53.7568300Z ├ ƒ /app/exchange
+2026-10-20T00:32:53.7568903Z ├ ƒ /app/exchange/callout
+2026-10-20T00:32:53.7569520Z ├ ƒ /app/exchange/swap
+2026-10-20T00:32:53.7570070Z ├ ƒ /app/inbox
+2026-10-20T00:32:53.7570614Z ├ ƒ /app/my-pay
+2026-10-20T00:32:53.7571191Z ├ ƒ /app/my-time
+2026-10-20T00:32:53.7571791Z ├ ƒ /app/notifications
+2026-10-20T00:32:53.7572426Z ├ ƒ /app/notifications/open
+2026-10-20T00:32:53.7573075Z ├ ƒ /app/payroll
+2026-10-20T00:32:53.7573663Z ├ ƒ /app/payroll-export
+2026-10-20T00:32:53.7574497Z ├ ƒ /app/profile
+2026-10-20T00:32:53.7574926Z ├ ƒ /app/reports
+2026-10-20T00:32:53.7575328Z ├ ƒ /app/requests
+2026-10-20T00:32:53.7575746Z ├ ƒ /app/requests/hub
+2026-10-20T00:32:53.7576167Z ├ ƒ /app/schedule
+2026-10-20T00:32:53.7576661Z ├ ƒ /app/schedule/copy-receipt
+2026-10-20T00:32:53.7577151Z ├ ƒ /app/schedule/coverage
+2026-10-20T00:32:53.7577599Z ├ ƒ /app/schedule/edit
+2026-10-20T00:32:53.7578032Z ├ ƒ /app/schedule/new
+2026-10-20T00:32:53.7578455Z ├ ƒ /app/schedule/settings
+2026-10-20T00:32:53.7578911Z ├ ƒ /app/schedule/templates
+2026-10-20T00:32:53.7579335Z ├ ƒ /app/settings
+2026-10-20T00:32:53.7579739Z ├ ƒ /app/settings/branding
+2026-10-20T00:32:53.7580091Z ├ ƒ /app/settings/breaks
+2026-10-20T00:32:53.7580344Z ├ ƒ /app/settings/clocker
+2026-10-20T00:32:53.7580640Z ├ ƒ /app/settings/company-policies
+2026-10-20T00:32:53.7580937Z ├ ƒ /app/settings/features
+2026-10-20T00:32:53.7581201Z ├ ƒ /app/settings/locations
+2026-10-20T00:32:53.7581546Z ├ ƒ /app/settings/locations/[locationId]
+2026-10-20T00:32:53.7581873Z ├ ƒ /app/settings/locations/new
+2026-10-20T00:32:53.7582161Z ├ ƒ /app/settings/payroll
+2026-10-20T00:32:53.7582416Z ├ ƒ /app/settings/positions
+2026-10-20T00:32:53.7582669Z ├ ƒ /app/settings/workspace
+2026-10-20T00:32:53.7582905Z ├ ƒ /app/timecards
+2026-10-20T00:32:53.7583118Z ├ ƒ /app/updates
+2026-10-20T00:32:53.7583338Z ├ ƒ /app/updates/[id]
+2026-10-20T00:32:53.7583790Z ├ ƒ /app/updates/compose
+2026-10-20T00:32:53.7584597Z ├ ƒ /clocker/[location]
+2026-10-20T00:32:53.7585043Z ├ ○ /dev-inspect
+2026-10-20T00:32:53.7585475Z ├ ƒ /forgot-access
+2026-10-20T00:32:53.7585972Z ├ ƒ /fuel-portal.webmanifest
+2026-10-20T00:32:53.7586426Z ├ ƒ /login
+2026-10-20T00:32:53.7586802Z ├ ƒ /reset-access
+2026-10-20T00:32:53.7587207Z ├ ƒ /ui-preview/home
+2026-10-20T00:32:53.7587633Z └ ƒ /ui-preview/kit
+2026-10-20T00:32:53.7587848Z 
+2026-10-20T00:32:53.7587858Z 
+2026-10-20T00:32:53.7588204Z ○  (Static)   prerendered as static content
+2026-10-20T00:32:53.7588869Z ƒ  (Dynamic)  server-rendered on demand
+2026-10-20T00:32:53.7589182Z 
+2026-10-20T00:32:54.0691846Z ##[group]Run npm audit --omit=dev --audit-level=high
+2026-10-20T00:32:54.0692543Z [36;1mnpm audit --omit=dev --audit-level=high[0m
+2026-10-20T00:32:54.0765733Z shell: /usr/bin/bash -e {0}
+2026-10-20T00:32:54.0766158Z ##[endgroup]
+2026-10-20T00:32:54.5236253Z found 0 vulnerabilities
+2026-10-20T00:32:54.5365999Z ##[group]Run npm audit --audit-level=high
+2026-10-20T00:32:54.5366559Z [36;1mnpm audit --audit-level=high[0m
+2026-10-20T00:32:54.5441030Z shell: /usr/bin/bash -e {0}
+2026-10-20T00:32:54.5441466Z ##[endgroup]
+2026-10-20T00:32:54.9906199Z found 0 vulnerabilities
+2026-10-20T00:32:55.0041910Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-20T00:32:55.0042324Z with:
+2026-10-20T00:32:55.0042596Z   name: build-source-6b154351847ca5ffe67130b22ec0697b655b20bc
+2026-10-20T00:32:55.0042978Z   path: /home/runner/work/_temp/nevora-build-source.json
+2026-10-20T00:32:55.0043285Z   if-no-files-found: error
+2026-10-20T00:32:55.0043516Z   retention-days: 14
+2026-10-20T00:32:55.0043738Z   compression-level: 6
+2026-10-20T00:32:55.0044257Z   overwrite: false
+2026-10-20T00:32:55.0044515Z   include-hidden-files: false
+2026-10-20T00:32:55.0044751Z ##[endgroup]
+2026-10-20T00:32:55.1638111Z (node:11999) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-20T00:32:55.1639702Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-20T00:32:55.1702800Z With the provided path, there will be 1 file uploaded
+2026-10-20T00:32:55.1744840Z Artifact name is valid!
+2026-10-20T00:32:55.1745562Z Root directory input is valid!
+2026-10-20T00:32:55.5654337Z Beginning upload of artifact content to blob storage
+2026-10-20T00:32:55.6030987Z (node:11999) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-20T00:32:56.1045119Z Uploaded bytes 215060
+2026-10-20T00:32:56.1780700Z Finished uploading artifact content to blob storage!
+2026-10-20T00:32:56.1782170Z SHA256 digest of uploaded artifact zip is 6c1085a04673f995ba3266586c547b991ca604df183d9cd09b707a1e56e96235
+2026-10-20T00:32:56.1783398Z Finalizing artifact upload
+2026-10-20T00:32:56.4660241Z Artifact build-source-6b154351847ca5ffe67130b22ec0697b655b20bc.zip successfully finalized. Artifact ID 12231752770
+2026-10-20T00:32:56.4662517Z Artifact build-source-6b154351847ca5ffe67130b22ec0697b655b20bc has been successfully uploaded! Final size is 215060 bytes. Artifact ID is 12231752770
+2026-10-20T00:32:56.4667041Z Artifact download URL: https://github.com/JoseK0514/NEVORA/actions/runs/39346931917/artifacts/12231752770
+2026-10-20T00:32:56.4837592Z Post job cleanup.
+2026-10-20T00:32:56.6022764Z (node:12011) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-20T00:32:56.6024816Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-20T00:32:56.6026974Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-a4f387acb4d4abc659b6942459f8ec9867a2de6532c459728eb476c2f4e85815, not saving cache.
+2026-10-20T00:32:56.6155769Z Post job cleanup.
+2026-10-20T00:32:56.7226704Z [command]/usr/bin/git version
+2026-10-20T00:32:56.7265995Z git version 2.55.0
+2026-10-20T00:32:56.7356833Z Temporarily overriding HOME='/home/runner/work/_temp/b4756d66-fdd0-4746-be6c-e15592d3e0ff' before making global git config changes
+2026-10-20T00:32:56.7358466Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-20T00:32:56.7359809Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/NEVORA/NEVORA
+2026-10-20T00:32:56.7376253Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-20T00:32:56.7485824Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-20T00:32:56.8076955Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-20T00:32:56.8125318Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-20T00:32:56.8470892Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-20T00:32:56.8535364Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-20T00:32:56.9033164Z Cleaning up orphan processes
+2026-10-20T00:32:56.9492060Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

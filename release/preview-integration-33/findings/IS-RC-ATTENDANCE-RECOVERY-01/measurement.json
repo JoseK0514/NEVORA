@@ -1,0 +1,26 @@
+{
+  "id": "IS-RC-ATTENDANCE-RECOVERY-01",
+  "severity": "P2",
+  "owner": "Desktop/sharedAttendance",
+  "measuredSource": "6b154351847ca5ffe67130b22ec0697b655b20bc",
+  "measuredTree": "0eb7f2535e15cebff7db4c3935af86e374cad53b",
+  "candidateApplicationSource": "a21650de50374683d52e32b883d7f419d7344f22",
+  "run": 39346931917,
+  "job": 118382141804,
+  "actual": "After20passedchecks503unavailable rendersidle enabledRefresh inDOM, but sourceCSSdisplay:nonehidesfooter; ordinaryrolelocatorcannotreachit15s",
+  "independentCrosswalk": "Desktop111priorIDsdonotcoverthissamecause; IS-P4-07/17referenceworkingAttendanceIS62butfileInboxbehavior; ST-P4-06 isseparateInboxsummarydecision",
+  "measuredScope": "Chromium1440followingsevenwidthchecks;503only",
+  "staticAdditionalExposure": "SameCSSconditionhidesdenialSignIn/pausedfooterandindependentCorrections; notclaimedfreshmeasured",
+  "beforeAfter": {
+    "src/components/manager-attendance-review.tsx": {
+      "beforeSha256": "e32719fe1aa22f22eb0badb6ee3f2318c0da71b2971d21d476bd0a8003b77d06",
+      "afterSha256": "a14e9682bb6e1091e7ded3e7c1cd6c12e0c78283f7ef6f3238a6903174e467d6"
+    },
+    "src/app/app/premium-desktop.css": {
+      "beforeSha256": "168fd42e8ceae9aec97e1719ee3525d0862839d16391e8007de5b4750736ae23",
+      "afterSha256": "1b5a59baaf694fde8764534c836ab0f0c59a6341ca922b11db53d487a3946095"
+    }
+  },
+  "proposalStatus": "applied on codex/release-candidate as32c9e1ce;3existingcomponenttests/changed-filelint/wholetypecheckpass; freshbrowserpending",
+  "candidateRepair": "candidate-repair.json"
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "file": "/workspace/NEVORA/src/lib/scheduling/generation/planner.test.ts",
+    "failed": 1,
+    "onlyTimeouts": true,
+    "limits": [
+      "Error: Test timed out in 300000ms."
+    ]
+  },
+  {
+    "file": "/workspace/NEVORA/src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "failed": 25,
+    "onlyTimeouts": true,
+    "limits": [
+      "Error: Test timed out in 5000ms."
+    ]
+  }
+]

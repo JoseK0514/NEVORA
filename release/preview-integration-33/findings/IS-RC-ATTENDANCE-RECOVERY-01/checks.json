@@ -1,0 +1,43 @@
+{
+  "candidate": "32c9e1cef450ab10574555c76b0c2a9bab2ce78e",
+  "runs": [
+    {
+      "name": "component",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "src/components/manager-attendance-review.test.tsx",
+        "--maxWorkers",
+        "1",
+        "--reporter=json",
+        "--outputFile=/workspace/paused-evidence/attendance-32c9e1c/component.json"
+      ],
+      "exitCode": 0,
+      "seconds": 1.4
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npx",
+        "eslint",
+        "src/components/manager-attendance-review.tsx"
+      ],
+      "exitCode": 0,
+      "seconds": 3.804
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 21.826
+    }
+  ],
+  "completedAt": "2026-10-20T00:29:25.859525+00:00",
+  "endCandidate": "32c9e1cef450ab10574555c76b0c2a9bab2ce78e",
+  "endClean": true
+}

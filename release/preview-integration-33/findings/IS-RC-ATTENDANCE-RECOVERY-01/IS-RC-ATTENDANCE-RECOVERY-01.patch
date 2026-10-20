@@ -1,0 +1,22 @@
+--- a/src/components/manager-attendance-review.tsx
++++ b/src/components/manager-attendance-review.tsx
+@@ -108,7 +108,7 @@
+   const rows = ready ? groupRows(ready.groups, ready.labels) : [];
+ 
+   return (
+-    <section className="attendance-review" aria-labelledby="attendance-review-title">
++    <section className="attendance-review" aria-labelledby="attendance-review-title" data-attendance-state={paused ? "paused" : denied ? "unauthorized" : ready ? "ready" : unavailable ? "unavailable" : "loading"}>
+       <ConfiguredAttendancePolicies />
+       <header className="attendance-review-header">
+         <div>
+--- a/src/app/app/premium-desktop.css
++++ b/src/app/app/premium-desktop.css
+@@ -191,7 +191,7 @@
+ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review { display: flex; flex-direction: column; }
+ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review > .attendance-review-limited { order: 1; }
+ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review > :is(.attendance-review-footer, details) { order: 2; }
+-html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view:has(.attendance-review-summary[aria-busy="true"]) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }
++html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view:has(.attendance-review[data-attendance-state="loading"]) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }
+ 
+ /* Inbox filters while the read loads (all widths): the row is disabled and out of the Tab order (IS-59), so it
+  * doesn't scroll either; a scrolling region nobody can focus fails axe's scrollable-region-focusable at 320–360. */

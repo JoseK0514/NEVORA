@@ -1,0 +1,48 @@
+{
+  "run": 39346931917,
+  "head": "91ec28e2c12240bbd2693439f1ccdbc92e0a7930",
+  "testedMerge": "6b154351847ca5ffe67130b22ec0697b655b20bc",
+  "testedTree": "0eb7f2535e15cebff7db4c3935af86e374cad53b",
+  "candidateCompared": "a21650de50374683d52e32b883d7f419d7344f22",
+  "trackedManifestEntries": 2846,
+  "allTrackedDifferencesFromCandidate": [
+    ".github/workflows/ci.yml",
+    "scripts/phase-d-attendance-ui-qa.mjs",
+    "scripts/phase-e-calendar-browser-scenarios.mjs",
+    "scripts/phase-e-communications-browser-scenarios.mjs",
+    "scripts/phase-e-home-browser-scenarios.mjs",
+    "scripts/phase-e-navigation-browser-scenarios.mjs",
+    "src/test/phase-c-release-ci.test.ts"
+  ],
+  "runtimeAppAndFixturesByteIdentical": true,
+  "srcTestOnlyDifference": [
+    "src/test/phase-c-release-ci.test.ts"
+  ],
+  "unitTests": {
+    "passed": 7363,
+    "failed": 0,
+    "skipped": 801
+  },
+  "validate": "passed including typecheck/lint/build/production and full dependency audits (both zero vulnerabilities)",
+  "postgres": {
+    "clocker": "passed",
+    "release": "passed",
+    "phaseE": "passed; all10 suites, Home40/40"
+  },
+  "browser": {
+    "home": "failed native closed-disclosure link still visible during approved200ms closing animation; unchanged15s bounded hidden-state wait added in3f2bef9c",
+    "attendance": "20 checks passed then actual503 footer Refresh hidden by desktop loading CSS; repaired32c9e1ce without changing assertions"
+  },
+  "aggregate": "failed; both original failures preserved",
+  "next": {
+    "head": "971f815da47f176d7c6781dd92a1a2bce294661b",
+    "run": 39348618711,
+    "status": "fresh mandatory CI pending; no inherited browser pass"
+  },
+  "artifactDigests": {
+    "12231752770": "6c1085a04673f995ba3266586c547b991ca604df183d9cd09b707a1e56e96235",
+    "12232210612": "69258c47e74372495ca9fee947a22ae91a989f4c16a2a55d3318ca09a8e90859",
+    "12231631448": "2777cbe339eaa9613e890e5130f54ffa8a4bc27b1941970ee937ed3e8736a4c3",
+    "12230864120": "3293c38a4d3e5b80c9a99cb433daa6da1b26726e9b119fe5df28faf79c53a89f"
+  }
+}

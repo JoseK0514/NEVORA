@@ -1,0 +1,26 @@
+From 4cadf00f3e8494377dea1c99c9757207d57ee321 Mon Sep 17 00:00:00 2001
+From: Jose Karlo Natal <josekarlo-@hotmail.com>
+Date: Tue, 20 Oct 2026 00:33:45 +0000
+Subject: [PATCH] TC-WA-17: match unconfirmed copy guidance to the available
+ recovery
+
+---
+ src/app/app/schedule/copy-receipt/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/app/app/schedule/copy-receipt/page.tsx b/src/app/app/schedule/copy-receipt/page.tsx
+index aafea143..267adbe2 100644
+--- a/src/app/app/schedule/copy-receipt/page.tsx
++++ b/src/app/app/schedule/copy-receipt/page.tsx
+@@ -68,7 +68,7 @@ export default async function CopyReceiptPage({
+       <Notice tone="review" title="Check the schedule first">Do not start a new copy while this one is unconfirmed. Some shifts may already be on the schedule.</Notice>
+       <Card title="What you can do">
+         <div className="wa-card-body">
+-          <p className="wa-text">Look at the schedule. If the shifts aren’t there, retry this same copy; it won’t copy anything twice.</p>
++          <p className="wa-text">{command ? "Look at the schedule. If the shifts aren’t there, retry this same copy; it won’t copy anything twice." : "Open the schedule to check whether the shifts were copied."}</p>
+           <Link className="nv-btn" data-kind="primary" data-block="true" href={back}>Back to schedule</Link>
+           {command ? <div className="wa-retry"><ScheduleCopyForm actorId={proof.employee.id} command={command} label="Retry this copy" className="nv-btn wa-retry__button" /></div> : null}
+         </div>
+-- 
+2.52.0
+

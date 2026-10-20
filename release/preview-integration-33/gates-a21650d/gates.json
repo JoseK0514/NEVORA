@@ -1,0 +1,78 @@
+{
+  "candidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "startedAt": "2026-10-19T23:38:26.320007+00:00",
+  "sourceClean": true,
+  "checksSha256": "e1324bcdafee65f70142a35e3cc27edd205e03b2fd13618835b8eb74a802ff2d",
+  "premiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+  "coordinatorPremiumCssBlob": "c72c855ed3fcb284c9694233af56245710fcc929",
+  "lockBlob": "76af83a326821ae23720673ac2e5f5aeccb99787",
+  "runs": [
+    {
+      "name": "typegen",
+      "command": [
+        "npx",
+        "next",
+        "typegen"
+      ],
+      "startedAt": "2026-10-19T23:38:26.597545+00:00",
+      "exitCode": 0,
+      "seconds": 5.63,
+      "completedAt": "2026-10-19T23:38:32.242390+00:00"
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "startedAt": "2026-10-19T23:38:32.243091+00:00",
+      "exitCode": 0,
+      "seconds": 212.626,
+      "completedAt": "2026-10-19T23:42:04.870053+00:00"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-10-19T23:42:04.878273+00:00",
+      "exitCode": 0,
+      "seconds": 345.174,
+      "completedAt": "2026-10-19T23:47:50.053874+00:00"
+    },
+    {
+      "name": "full-tests",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers",
+        "1",
+        "--reporter=json",
+        "--outputFile=/workspace/paused-evidence/final-a21650d/vitest.json"
+      ],
+      "startedAt": "2026-10-19T23:47:50.065074+00:00",
+      "exitCode": 1,
+      "seconds": 2012.392,
+      "completedAt": "2026-10-20T00:21:22.458653+00:00"
+    },
+    {
+      "name": "production-absence",
+      "command": [
+        "npm",
+        "run",
+        "test:dev:production"
+      ],
+      "startedAt": "2026-10-20T00:21:22.461918+00:00",
+      "exitCode": 0,
+      "seconds": 60.884,
+      "completedAt": "2026-10-20T00:22:23.346135+00:00"
+    }
+  ],
+  "completedAt": "2026-10-20T00:22:23.348342+00:00",
+  "endCandidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "endClean": true
+}
