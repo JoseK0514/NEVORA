@@ -1,0 +1,27 @@
+{
+  "run": 39345746778,
+  "pr": 14,
+  "head": "8743bb02279fbdd52dd7b0c2055436632b4b79f9",
+  "actualMerge": "1231044fa57382f1b99353f82b4335680702abd4",
+  "actualTree": "d1463b43551139d745ed3bb32ee572e080ed0d08",
+  "applicationSourceByteExactTo": "a21650de50374683d52e32b883d7f419d7344f22",
+  "jobs": {
+    "home": 118377784125,
+    "attendance": 118377784413
+  },
+  "artifacts": [
+    {
+      "id": 12231510502,
+      "sha256": "f812fd08a1c1988e58595209e68910c668f8ceb49fb975c2349bc05b3bf63537",
+      "localZip": "/workspace/attachments/7efa1e08-71be-4dc3-a796-6e0ee18186ab/github-actions-artifact-12231510502.zip"
+    },
+    {
+      "id": 12230408809,
+      "sha256": "b052d25bf78602071fcac3ca03097e0d851c6e9470454c67625a619cb7354160",
+      "localZip": "/workspace/attachments/011ca859-afac-4506-b4d6-f07c1299c3e0/github-actions-artifact-12230408809.zip"
+    }
+  ],
+  "nextHead": "348db21a604d6844ae2836676c7c5eb232d96cbd",
+  "nextRun": 39346366951,
+  "nextRunStatus": "queued behind original run; no pass inferred"
+}

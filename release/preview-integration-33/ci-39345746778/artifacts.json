@@ -1,0 +1,57 @@
+[
+  {
+    "path": "26fb9054.patch",
+    "sha256": "5eb0deb462f7c9ea632ec9eae04a794ff7345b79bac68e01c41066ca6f55829f",
+    "bytes": 3110
+  },
+  {
+    "path": "341377b6.patch",
+    "sha256": "3b4b4f1d3f57a6571ceb0bd6dafe4d170af572bdab071d92d604003b2f90b966",
+    "bytes": 7915
+  },
+  {
+    "path": "README.md",
+    "sha256": "59c1fb3ce5d073bd22d89138a83fb52929e9671abf2d1cf4c5e85b255b7ea751",
+    "bytes": 2276
+  },
+  {
+    "path": "attendance-report.json",
+    "sha256": "c730debb67c7b93dcd41d202c2e1398c96a0bc289b7150b4cf04ff308ca48d7e",
+    "bytes": 2680
+  },
+  {
+    "path": "browser-failure-report.json",
+    "sha256": "61847b85a2d3de2263a87e33de48e87ca05a0c00a169e9eabd9ba2ba5dced554",
+    "bytes": 514
+  },
+  {
+    "path": "browser-report.json",
+    "sha256": "444194420d2206179e37cf46c5a51b3efdd5d029ff8990b7b72f3a2ea6706e54",
+    "bytes": 1253
+  },
+  {
+    "path": "home-task11-chromium-320-failure.png",
+    "sha256": "769680aa38d0ae50f4d4c945a3674fa4f0af0cc59f944be82576809d1d171f86",
+    "bytes": 236470
+  },
+  {
+    "path": "result-and-custody.json",
+    "sha256": "502a89821dbb3a013531556163956c5cd8c1997e875cbdf303948c92b504215a",
+    "bytes": 1020
+  },
+  {
+    "path": "source-comparison.json",
+    "sha256": "0b2692e10e022e9982aed4c3525420319e22480fe6a4a3a865c145000a39127b",
+    "bytes": 596
+  },
+  {
+    "path": "source-manifest.json",
+    "sha256": "6795df948a7a579e9b11d16c1ca3ee1bae52c5ab60537caeb44e77c40a5b4f40",
+    "bytes": 375143
+  },
+  {
+    "path": "workflow-custody.json",
+    "sha256": "050d021eb8a0f4d66051452d0f216e190f15e0ced752f2d4d65a047a58114505",
+    "bytes": 748
+  }
+]

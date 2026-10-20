@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-10-20T00:09:16.064Z",
+  "checkpoint": "1231044fa57382f1b99353f82b4335680702abd4",
+  "tree": "d1463b43551139d745ed3bb32ee572e080ed0d08",
+  "sourceClean": true,
+  "expectedSha": "1231044fa57382f1b99353f82b4335680702abd4",
+  "checks": [
+    "chromium: real Owner protected attendance read",
+    "chromium: real Manager protected attendance read",
+    "chromium: Employee cannot enter Manager attendance surface",
+    "chromium: populated factual attendance exception state",
+    "chromium: limited source state is explicitly disclosed",
+    "chromium: lifecycle reauthorization clears protected snapshot before the response",
+    "chromium: visibility revalidation clears protected snapshot before refresh",
+    "chromium: pagehide/pageshow requires a fresh protected snapshot",
+    "chromium: historical inactive location keeps its recorded label",
+    "chromium: refreshed server labels replace stale page-load labels",
+    "chromium: attendance geometry 320",
+    "chromium: attendance geometry 375",
+    "chromium: attendance geometry 390",
+    "chromium: attendance geometry 430",
+    "chromium: attendance geometry 768",
+    "chromium: attendance geometry 1024",
+    "chromium: attendance geometry 1440",
+    "chromium: keyboard focus on attendance Refresh",
+    "chromium: empty is distinct from unavailable",
+    "chromium: unavailable clears healthy empty state"
+  ],
+  "errors": [
+    "locator.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Refresh attendance review' })\n\n    at /home/runner/work/NEVORA/NEVORA/scripts/phase-d-attendance-ui-qa.mjs:381:19"
+  ],
+  "screenshots": [
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-320.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-375.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-390.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-430.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-768.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-1024.png",
+    "/home/runner/work/_temp/nevora-d13-browser-evidence/chromium-attendance-1440.png"
+  ],
+  "limitations": [
+    "Owned local Next application and fictional PostgreSQL are not hosted Vercel/Neon acceptance.",
+    "Populated exception states use browser transport fixtures; D1.2 PostgreSQL and route suites separately verify the protected reader.",
+    "Local Chromium/WebKit automation does not replace physical-device or screen-reader acceptance."
+  ],
+  "finishedAt": "2026-10-20T00:10:11.061Z"
+}

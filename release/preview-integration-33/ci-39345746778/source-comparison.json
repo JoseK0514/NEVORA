@@ -1,0 +1,16 @@
+{
+  "testedMerge": "1231044fa57382f1b99353f82b4335680702abd4",
+  "testedTree": "d1463b43551139d745ed3bb32ee572e080ed0d08",
+  "sourceClean": true,
+  "candidate": "a21650de50374683d52e32b883d7f419d7344f22",
+  "manifestPaths": 2846,
+  "allApplicationSourceByteExact": true,
+  "otherDifferences": [
+    ".github/workflows/ci.yml",
+    "scripts/phase-d-attendance-ui-qa.mjs",
+    "scripts/phase-e-calendar-browser-scenarios.mjs",
+    "scripts/phase-e-communications-browser-scenarios.mjs",
+    "scripts/phase-e-home-browser-scenarios.mjs",
+    "scripts/phase-e-navigation-browser-scenarios.mjs"
+  ]
+}
