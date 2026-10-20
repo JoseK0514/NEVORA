@@ -325,11 +325,18 @@ export function assertOwnedFixture(env = process.env) {
 }
 export function verifySourceManifest(source, root, checkpoint) {
   const manifest = json(join(root, 'source-manifest.json'));
+  const expected = verifySourceManifestMetadata(source, manifest, checkpoint);
+  for (const [file, expectedHash] of Object.entries(expected)) {
+    if (hash(readFileSync(join(root, 'app', file))) !== expectedHash) throw Error('Source manifest mismatch: ' + (file === 'next-env.d.ts' ? 'generated type references' : file === 'src/lib/db.ts' ? 'unapproved DB adapter' : 'mirror ' + file));
+  }
+  return manifest;
+}
+export function verifySourceManifestMetadata(source, manifest, checkpoint) {
   const hasTypes = existsSync(join(source, 'next-env.d.ts'));
   const substitutions = hasTypes ? ['src/lib/db.ts', 'next-env.d.ts'] : ['src/lib/db.ts'];
   if (manifest.checkpoint !== checkpoint || JSON.stringify(manifest.substitutedFiles) !== JSON.stringify(substitutions) || !manifest.hashes || !Object.keys(manifest.hashes).length) throw Error('Source manifest mismatch');
   const approvedHash = approvedDbAdapterHash(readFileSync(join(source, 'src/lib/db.ts'), 'utf8'));
-  if (manifest.substitutedDbHash !== approvedHash || hash(readFileSync(join(root, 'app/src/lib/db.ts'))) !== approvedHash) throw Error('Source manifest mismatch: unapproved DB adapter');
+  if (manifest.substitutedDbHash !== approvedHash) throw Error('Source manifest mismatch: unapproved DB adapter');
   let typesHash;
   if (hasTypes) {
     const original = readFileSync(join(source, 'next-env.d.ts'), 'utf8');
@@ -341,20 +348,20 @@ export function verifySourceManifest(source, root, checkpoint) {
       derived = derived.replace(production, `import "./.next/dev/types/${name}";`);
     }
     typesHash = hash(derived);
-    if (manifest.generatedTypeReferences?.originalHash !== hash(original) || manifest.generatedTypeReferences?.derivedHash !== typesHash || manifest.generatedTypeReferences?.reason !== 'Next 16.3.8 dev generated type-reference paths' || hash(readFileSync(join(root, 'app/next-env.d.ts'))) !== typesHash) throw Error('Source manifest mismatch: generated type references');
+    if (manifest.generatedTypeReferences?.originalHash !== hash(original) || manifest.generatedTypeReferences?.derivedHash !== typesHash || manifest.generatedTypeReferences?.reason !== 'Next 16.3.8 dev generated type-reference paths') throw Error('Source manifest mismatch: generated type references');
   }
+  const expectedHashes = {};
   for (const [file, originalHash] of Object.entries(manifest.hashes)) {
     if (isAbsolute(file) || file.split('/').some(part => part === '..' || part.startsWith('.env')) || !/^[a-f0-9]{64}$/.test(originalHash)) throw Error('Source manifest mismatch: unsafe entry');
-    const sourceHash = hash(readFileSync(join(source, file))), mirrorHash = hash(readFileSync(join(root, 'app', file)));
-    const expected = file === 'src/lib/db.ts' ? approvedHash : file === 'next-env.d.ts' ? typesHash : originalHash;
-    if (sourceHash !== originalHash || mirrorHash !== expected) throw Error('Source manifest mismatch: ' + file);
+    if (hash(readFileSync(join(source, file))) !== originalHash) throw Error('Source manifest mismatch: ' + file);
+    expectedHashes[file] = file === 'src/lib/db.ts' ? approvedHash : file === 'next-env.d.ts' ? typesHash : originalHash;
   }
   if (manifest.originalDbHash !== manifest.hashes['src/lib/db.ts']) throw Error('Source manifest mismatch: original DB');
   const files = execFileSync('git', ['ls-files', '-c', '-o', '--exclude-standard', '-z'], { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean)
     .filter(file => ['src/', 'public/'].some(prefix => file.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(file))
     .filter(file => existsSync(join(source, file))).sort();
   assert.deepEqual(Object.keys(manifest.hashes).sort(), [...new Set(files)], 'Source manifest mismatch: missing runtime source');
-  return manifest;
+  return expectedHashes;
 }
 export function verifyBrowserExecutions(executions, suites) {
   if (!Array.isArray(executions)) throw Error('Missing executed browser evidence');
@@ -387,10 +394,11 @@ function verifySqlResults(results, evidence, source, suites) {
     assert.deepEqual(record.checks, verifySqlExecution(json(join(evidence, 'sql-' + suite + '.json')), source, suite), 'SQL executed case identity mismatch: ' + suite);
   }
 }
-export function verifyEvidence(evidence, kind, source) {
+export function verifyEvidence(evidence, kind, source, browserSuite = 'all') {
+  if (kind !== 'browser' && browserSuite !== 'all') throw Error('Browser selector cannot alter SQL verification');
   const report = json(join(evidence, kind + '-report.json'));
   if (report.checkpoint !== source.checkpoint || report.tree !== source.tree || report.sourceClean !== true || report.status !== 'passed' || !Array.isArray(report.errors) || report.errors.length || report.ownershipClosed !== true) throw Error('Invalid Phase E source/clean/error/ownership evidence');
-  const suites = kind === 'sql' ? Object.keys(SQL_SUITES) : Object.keys(BROWSER_SUITES);
+  const suites = kind === 'sql' ? Object.keys(SQL_SUITES) : selectSuites('browser', browserSuite);
   assert.deepEqual(report.suites, suites, 'Mandatory Phase E suites missing');
   assert.deepEqual(json(join(evidence, 'source-manifest.json')), source, 'Phase E source manifest mismatch');
   const owner = json(report.ownershipFile);
