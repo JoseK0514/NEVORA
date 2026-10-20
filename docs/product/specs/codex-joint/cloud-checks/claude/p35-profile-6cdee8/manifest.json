@@ -11576,6 +11576,29 @@
       "code": 1,
       "passed": 15,
       "failed": 1
+    },
+    {
+      "name": "00504-matrix-payroll-qa-b-webkit-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-profile-6cdee8/checks/2026-10-20T02-37-55-610Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-profile-6cdee8-00504-matrix-payroll-qa-b-webkit-390.log",
+      "args": [
+        "--routes",
+        "/app/schedule/coverage,/app/timecards,/app/updates,/app/updates/6d5139e3-8646-4493-b5a0-a2b18fbea2ca",
+        "--accounts",
+        "payroll-qa-b",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "webkit"
+      ],
+      "rawSha256": "e7bc86d8ae7e4a38c7ff3ccd02f808786fbc91194cab1693acf4470c9e56c4cf",
+      "code": 1,
+      "passed": 10,
+      "failed": 6
     }
   ],
   "planned": 12716,

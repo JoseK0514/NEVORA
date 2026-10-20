@@ -11323,6 +11323,75 @@
       "code": 1,
       "passed": 0,
       "failed": 4
+    },
+    {
+      "name": "00493-matrix-AUDIT-LEAD-webkit-1440",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-20T02-37-38-924Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00493-matrix-AUDIT-LEAD-webkit-1440.log",
+      "args": [
+        "--routes",
+        "/app,/app/availability,/app/exchange,/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0",
+        "--accounts",
+        "AUDIT-LEAD",
+        "--widths",
+        "1440",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "webkit"
+      ],
+      "rawSha256": "597a23fbcc19a269534a889c70c23b0d0179bb5fe9921a6ed32c275b38e2cddb",
+      "code": 1,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "name": "00494-matrix-AUDIT-LEAD-webkit-1440-retry",
+      "pass": "matrix",
+      "kind": "retry",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-20T02-37-43-380Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00494-matrix-AUDIT-LEAD-webkit-1440-retry.log",
+      "args": [
+        "--routes",
+        "/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0",
+        "--accounts",
+        "AUDIT-LEAD",
+        "--widths",
+        "1440",
+        "--text",
+        "100",
+        "--browsers",
+        "webkit"
+      ],
+      "rawSha256": "ea33b5f0edf9e2bcab5dbce2e9cfef29498ec990e260fd55ecb4faf2ad14b775",
+      "code": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    {
+      "name": "00495-matrix-AUDIT-LEAD-webkit-1440-retry",
+      "pass": "matrix",
+      "kind": "retry",
+      "file": "/workspace/nevora-previews/premium-phase-1/checks/2026-10-20T02-37-59-378Z.json",
+      "log": "/workspace/nevora-cloud-state/premium-phase-1-00495-matrix-AUDIT-LEAD-webkit-1440-retry.log",
+      "args": [
+        "--routes",
+        "/app/availability",
+        "--accounts",
+        "AUDIT-LEAD",
+        "--widths",
+        "1440",
+        "--text",
+        "150",
+        "--browsers",
+        "webkit"
+      ],
+      "rawSha256": "ff25fccf6b26be24343148bc4cfdef4f8f76d1461a56f732c4a9ec4af7239069",
+      "code": 1,
+      "passed": 0,
+      "failed": 1
     }
   ],
   "planned": 12580,
