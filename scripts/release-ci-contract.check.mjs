@@ -6,6 +6,9 @@ import {verifyRequiredJobs} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
+test('the clean Manager verification branch triggers the full CI workflow',()=>{
+ assert(workflow.on.push.branches.includes('codex/verify-preview-33'));
+});
 test('all triggered candidate branches receive mandatory SQL and browser gates',()=>{
  for(const name of mandatory) {
   assert(workflow.jobs[name], 'Missing mandatory gate '+name);

@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [development, main, "phase-c/**", "phase-d/**", "codex/phase-d-**", "phase-e/**", "codex/phase-e-**", "phase-f/**", "codex/phase-f-**", "codex/par-001-**", "fix/**", "release/**"]
+    branches: [development, main, "codex/verify-preview-33", "phase-c/**", "phase-d/**", "codex/phase-d-**", "phase-e/**", "codex/phase-e-**", "phase-f/**", "codex/phase-f-**", "codex/par-001-**", "fix/**", "release/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**"]
 
