@@ -1110,9 +1110,9 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track.section-tabs-track.section-tabs-track > :is(a, button):not(#cm-hit)::after { inset: auto 0 0 0; height: 2px; background: transparent; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track.section-tabs-track.section-tabs-track > :is(a, button)[aria-current="page"]:not(#cm-hit)::after { background: var(--cm-label, #111); }
 @media (pointer: coarse), (max-width: 760px) {
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track > :is(a, button):not(#cm-hit)::before { content: ""; position: absolute; inset: -6px 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track.section-tabs-track.section-tabs-track > :is(a, button):not(#cm-hit):not(#cm-hit2)::before { content: ""; position: absolute; inset: -6px 0; display: block; }
   /* P2: pills in a scrolling strip lost their 44px hit area to the strip's clip; the strip keeps 6px of room above and below. */
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wa-chips, .wa-segments, .section-tabs-track):not(#cm-strip) { padding-block: 6px; margin-block: -6px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wa-chips, .wa-segments, .section-tabs-track):is(.nv-filters, .wa-chips, .wa-segments, .section-tabs-track):not(#cm-strip):not(#cm-strip2) { padding-block: 6px; margin-block: -6px; }
 }
 /* P1: title-row links (review "‹ Inbox", person "‹ Team", Team "Add employee") couldn't be clicked with a mouse; the
  * masthead body painted over the absolutely placed bar. */
