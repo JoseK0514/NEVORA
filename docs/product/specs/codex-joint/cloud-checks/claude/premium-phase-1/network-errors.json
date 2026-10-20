@@ -16035,5 +16035,26 @@
   "page": "/app/settings/features",
   "path": "/api/manager/inbox-count",
   "status": 404
+ },
+ {
+  "at": "2026-10-20T01:58:38.742Z",
+  "account": "QAOWNER",
+  "page": "/app/settings/locations",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-20T02:00:22.838Z",
+  "account": "QAOWNER",
+  "page": "/app/settings/locations/new",
+  "path": "/api/manager/inbox-count",
+  "status": 404
+ },
+ {
+  "at": "2026-10-20T02:00:31.396Z",
+  "account": "QAOWNER",
+  "page": "/app/settings/locations/loc-1",
+  "path": "/api/manager/inbox-count",
+  "status": 404
  }
 ]

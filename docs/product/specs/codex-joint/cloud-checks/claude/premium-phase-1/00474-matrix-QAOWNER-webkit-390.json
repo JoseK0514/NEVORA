@@ -1,0 +1,282 @@
+[
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/features",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/locations",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «2» 11px",
+   "span. «0» 11px",
+   "span.status-pill.success «Ready» 12px",
+   "span. «13 eligible employees» 12px",
+   "span.location-clocker-label «Clocker link» 12px",
+   "span. «5 eligible employees» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/locations/loc-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Edit» 13px",
+   "strong. «Active location» 14px",
+   "span. «Available for future shift ass» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 100,
+  "route": "/app/settings/locations/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Clocker link Optional» 13px",
+   "span.add-location-optional «Optional» 12px",
+   "span. «Short name» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 125,
+  "route": "/app/settings/features",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 125,
+  "route": "/app/settings/locations",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «2» 13.75px",
+   "span. «0» 13.75px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 125,
+  "route": "/app/settings/locations/loc-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 125,
+  "route": "/app/settings/locations/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 150,
+  "route": "/app/settings/features",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 150,
+  "route": "/app/settings/locations",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 150,
+  "route": "/app/settings/locations/loc-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 150,
+  "route": "/app/settings/locations/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:\n\n- A server/client bran"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 200,
+  "route": "/app/settings/features",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 200,
+  "route": "/app/settings/locations",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 200,
+  "route": "/app/settings/locations/loc-1",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/settings/locations/loc-1\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "QAOWNER",
+  "size": "390",
+  "text": 200,
+  "route": "/app/settings/locations/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

@@ -1,6 +1,6 @@
 # Cloud screen checks — October 19, 2026
 
-Updated 2026-10-20T01:58:35.782Z. p35-profile-6cdee8 partial. **Partial evidence until every branch is marked complete.**
+Updated 2026-10-20T02:00:34.540Z. premium-phase-1 partial. **Partial evidence until every branch is marked complete.**
 
 Cloud owner: Codex (`codex/premium-backend`). Fictional owned loopback PostgreSQL 17.11; Node 24.19.0; isolated Playwright Chromium/WebKit. No UI edits, merges or deployment. Exact source snapshots are unchanged.
 
@@ -22,7 +22,7 @@ Host packages were extracted from authenticated Debian packages into a user-owne
 
 | Branch | Source commit | Status | Final passed | Final failed | Observed / planned |
 |---|---|---|---:|---:|---:|
-| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 2677 | 3935 | 6612 / 12580 |
+| claude/premium-phase-1 | `51f731d399e9b94306f5d98556151933efe2ac7a` | Running matrix | 2679 | 3949 | 6628 / 12580 |
 | claude/p35-profile-6cdee8 | `be4a232a1e6a26b58314ff549f88e5a8a79e82c6` | Running matrix | 3614 | 2994 | 6608 / 12716 |
 | claude/p35-wave-a-1283c8 | `76514905153c906bb76efc45808426e9d484cb64` | Running matrix | 3326 | 1334 | 4660 / 12580 |
 | claude/p35-wave-b-808dfd | `b0e051a951642ff34692604147fcd76ba805a3e7` | Queued; exact source/runtime SHA will be checked before the first batch | 0 | 0 | 0 / 12580 |
@@ -59,7 +59,7 @@ Source 2ab131ba004f3f26cc2b21ad95c90a6e0645259b, before the supplemental fixture
 
 ## claude/premium-phase-1
 
-Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2677 passed; 3935 failed. Completed checker batches: 473. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
+Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2679 passed; 3949 failed. Completed checker batches: 474. Raw evidence: [cloud-checks/claude/premium-phase-1/](cloud-checks/claude/premium-phase-1/).
 
 | Route | Account | Width | Text | Browser | Check | Owner / disposition | checks.mjs detail line |
 |---|---|---|---:|---|---|---|---|
@@ -5188,12 +5188,27 @@ Source: `51f731d399e9b94306f5d98556151933efe2ac7a`. Running matrix. 2677 passed;
 | /app/settings/branding | QAOWNER | 390 | 200 | webkit | target | UI — claude/p35-wave-c-93e13c | FAIL webkit QAOWNER 390 200% /app/settings/branding targets=input.brand-file «» 1x73 errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 | /app/settings/branding | QAOWNER | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 200% /app/settings/branding targets=input.brand-file «» 1x73 errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 | /app/settings/clocker | QAOWNER | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 200% /app/settings/clocker errors=console: A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:  - A server/client bran |
+| /app/settings/features | QAOWNER | 390 | 100 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 100% /app/settings/features errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations | QAOWNER | 390 | 100 | webkit | small text | UI — claude/p35-wave-c-93e13c | FAIL webkit QAOWNER 390 100% /app/settings/locations small=span. «2» 11px; span. «0» 11px; span.status-pill.success «Ready» 12px; span. «13 eligible employees» 12px |
+| /app/settings/locations/loc-1 | QAOWNER | 390 | 100 | webkit | small text | UI — claude/p35-wave-c-93e13c | FAIL webkit QAOWNER 390 100% /app/settings/locations/loc-1 small=span. «Edit» 13px; strong. «Active location» 14px; span. «Available for future shift ass» 12px |
+| /app/settings/locations/new | QAOWNER | 390 | 100 | webkit | small text | UI — claude/p35-wave-c-93e13c | FAIL webkit QAOWNER 390 100% /app/settings/locations/new small=span. «Clocker link Optional» 13px; span.add-location-optional «Optional» 12px; span. «Short name» 13px |
+| /app/settings/features | QAOWNER | 390 | 125 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 125% /app/settings/features errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations | QAOWNER | 390 | 125 | webkit | small text | UI — claude/p35-wave-c-93e13c | FAIL webkit QAOWNER 390 125% /app/settings/locations small=span. «2» 13.75px; span. «0» 13.75px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations | QAOWNER | 390 | 125 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 125% /app/settings/locations small=span. «2» 13.75px; span. «0» 13.75px errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations/loc-1 | QAOWNER | 390 | 125 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 125% /app/settings/locations/loc-1 errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/features | QAOWNER | 390 | 150 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 150% /app/settings/features errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations/loc-1 | QAOWNER | 390 | 150 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 150% /app/settings/locations/loc-1 errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations/new | QAOWNER | 390 | 150 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 150% /app/settings/locations/new errors=console: A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:  - A server/client bran |
+| /app/settings/features | QAOWNER | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 200% /app/settings/features errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations | QAOWNER | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 200% /app/settings/locations errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations/loc-1 | QAOWNER | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 200% /app/settings/locations/loc-1 errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
+| /app/settings/locations/new | QAOWNER | 390 | 200 | webkit | error | backend — endpoint already fixed on codex/premium-backend, 8f341e8; absent from this immutable Claude snapshot | FAIL webkit QAOWNER 390 200% /app/settings/locations/new errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 
 ### Timeout and server observations (separate from UI findings)
 
 | Route | Account | Width | Text | Browser | Initial detail | Retry outcome |
 |---|---|---|---:|---|---|---|
-| — | — | — | — | — | None recorded | — |
+| /app/settings/locations/loc-1 | QAOWNER | 390 | 200 | webkit | FAIL webkit QAOWNER 390 200% /app/settings/locations/loc-1 errors=load: page.goto: Timeout 30000ms exceeded. Call log: [2m  - navigating to "http://127.0.0.1:35333/app/settings/locations/loc-1", waiting until "load"[22m  | FAIL webkit QAOWNER 390 200% /app/settings/locations/loc-1 errors=console: Failed to load resource: the server responded with a status of 404 (Not Found) |
 
 ## claude/p35-profile-6cdee8
 
