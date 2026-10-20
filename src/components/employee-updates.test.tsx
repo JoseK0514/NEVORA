@@ -50,3 +50,12 @@ it('gives managers requirement filters rather than claiming a personal review th
  expect(html).not.toContain('To review');
  expect(html).toContain('Create update');
 });
+
+it('a signed-out read (401, session_ended) asks to sign in, like a 403, and offers no futile Try again', async () => {
+ for (const reason of ['session_ended', 'access_denied']) {
+  const html = await render({list: null, unavailableReason: reason});
+  expect(html).toContain('Your session ended');
+  expect(html).not.toContain('Couldn’t load updates');
+  expect(html).not.toContain('Try again');
+ }
+});

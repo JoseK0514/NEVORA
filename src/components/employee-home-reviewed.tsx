@@ -285,7 +285,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   const zone = snapshot?.timeZone;
   const clock = (at: string) => new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(at));
   // Phase 3: the band says the one thing an employee opens Home for, in one line.
-  const summary = paused ? (online ? 'Paused while you’re away.' : 'You’re offline.') : denied ? 'Sign in again to view Home.' : loading ? 'Checking your shifts…'
+  const summary = paused ? (online ? 'Paused while you’re away.' : 'You’re offline.') : denied ? 'Your session ended.' : loading ? 'Checking your shifts…'
     : !snapshot ? 'Couldn’t load Home.'
     : snapshot.publicationState === 'unavailable' ? 'Your schedule couldn’t be checked.'
     : underWay ? keepWhole(`Scheduled until ${clock(underWay.endAt)}.`)
