@@ -1,0 +1,35 @@
+[
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/exchange/callout?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Times in Puerto Rico time» 12px",
+   "span. «Customer Support · No designat» 12px",
+   "strong. «This shift is still assigned t» 13px",
+   "p. «You remain responsible for it » 13px",
+   "strong. «Management reviews your report» 13px",
+   "p. «Follow its status in Shift req» 13px",
+   "strong. «If approved, coverage opens» 13px",
+   "p. «The shift moves to the coverag» 13px",
+   "a.callout-view-module__PV0QGW__statusLink «View my requests» 13px",
+   "span.nevora-field-hint «Choose the closest match.» 13px",
+   "small. «Optional» 12px",
+   "span. «Add context if it would help m» 12px",
+   "span. «0/300» 12px",
+   "p.callout-view-module__PV0QGW__privacy «Share only the details managem» 12px",
+   "p.callout-view-module__PV0QGW__receipt «Submitting sends your report f» 13px",
+   "a. «View my requests» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]

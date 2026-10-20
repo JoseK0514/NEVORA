@@ -1,0 +1,17 @@
+[
+ {
+  "engine": "webkit",
+  "account": "payroll-qa-b",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": true
+ }
+]

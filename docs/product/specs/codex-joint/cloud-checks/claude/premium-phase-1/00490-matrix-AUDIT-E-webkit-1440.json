@@ -1,0 +1,305 @@
+[
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "label. «Period start» 13px",
+   "label. «Period end» 13px",
+   "p.timecards-module__DJfzSW__status «Loading timecards…» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/updates",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.updates-footnote «Opening an update doesn’t conf» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 100,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 0,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35333/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "label. «Period start» 13px",
+   "label. «Period end» 13px",
+   "p.timecards-module__DJfzSW__status «Loading timecards…» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:\n\n- A server/client bran"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/updates",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.updates-footnote «Opening an update doesn’t conf» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 125,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "load: page.evaluate: Execution context was destroyed, most likely because of a navigation"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "label. «Period start» 13px",
+   "label. «Period end» 13px",
+   "p.timecards-module__DJfzSW__status «1 timecard in this period.» 13px",
+   "small. «Oct 13, 2026 – Oct 19, 2026» 12px",
+   "dt. «Recorded time» 13px",
+   "dt. «Break time» 13px",
+   "li. «Period is still open» 13px",
+   "p. «Totals can change until the pe» 13px",
+   "p.timecards-module__DJfzSW__definition «Times in Puerto Rico time. Hou» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/updates",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "span. «Review update» 12px",
+   "p.updates-footnote «Opening an update doesn’t conf» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 150,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 200,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 200,
+  "route": "/app/timecards",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "label. «Period start» 13px",
+   "label. «Period end» 13px",
+   "p.timecards-module__DJfzSW__status «Loading timecards…» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 200,
+  "route": "/app/updates",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.updates-footnote «Opening an update doesn’t conf» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "webkit",
+  "account": "AUDIT-E",
+  "size": "1440",
+  "text": 200,
+  "route": "/app/updates/40fc320b-bb81-4972-a433-93efb5052c3f",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "small. «Powered by VELANI LLC» 10px",
+   "p.communication-category «Location announcement» 13px",
+   "span.communication-status.attention «Acknowledgement required» 12px",
+   "p. «Published Oct 19, 2026, 2:15 P» 13px",
+   "time. «Oct 19, 2026, 2:15 PM» 13px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [],
+  "axe": [],
+  "ok": false
+ }
+]

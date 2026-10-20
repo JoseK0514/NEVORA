@@ -1,0 +1,19 @@
+[
+ {
+  "engine": "webkit",
+  "account": "payroll-qa-a",
+  "size": "390",
+  "text": 100,
+  "route": "/app/exchange/swap?sourceShiftId=cloud-payroll-qa-a",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: %o\n\n%s error: canceling statement due to statement timeout The above error occurred in the <Unknown> component. It was handled by the <ErrorBoundaryHandler> error boundary."
+  ],
+  "axe": [],
+  "ok": false
+ }
+]
