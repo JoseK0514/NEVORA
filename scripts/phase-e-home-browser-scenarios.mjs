@@ -8,6 +8,16 @@ import {hashPassword} from '../src/lib/auth/password.ts';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 
+// Shared by H06 and its controlled browser scheduling regression.
+export async function waitForFreshHome(page, freshLocation){
+ await page.waitForFunction(fresh=>{
+  const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="employee-reviewed-next-heading"]');
+  if(!root||!next)return false;
+  const style=getComputedStyle(next),text=next.textContent??'';
+  return ['partial','ready'].includes(root.getAttribute('data-home-state'))&&root.getAttribute('aria-busy')==='false'&&next.getClientRects().length>0&&style.visibility==='visible'&&style.display!=='none'&&text.includes(fresh)&&!text.includes('Main Office Operations and Customer Support');
+ },freshLocation,{timeout:15000});
+}
+
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -23,7 +33,23 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
  const refresh=async()=>{const response=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home');await page.locator('[data-home-refresh]').click();await (await response).finished();await page.getByRole('button',{name:/^(Refresh home|Retry home)$/}).waitFor();await ready();};
  async function login(target=page,id=actor){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);}
- function gate(path){let release,started,used=false;const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;});const handler=async route=>{if(used)return route.continue();used=true;const response=await route.fetch();if(path.includes('/home'))homeResponse=await response.json();started();await wait;await route.fulfill({response}).catch(()=>{});};return {handler,seen,release:()=>release(),path};}
+ function gate(path){
+  let release,started,finished,used=false,failure,outcome,operation='fetch';
+  const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;}),done=new Promise(r=>{finished=r;});
+  const handler=async route=>{
+   if(used)return route.continue();used=true;
+   try{
+    const response=await route.fetch();operation='parse';if(path.includes('/home'))homeResponse=await response.json();started();await wait;operation='fulfill';
+    try{await route.fulfill({response});outcome='fulfilled';}
+    catch{if(route.request().failure())outcome='request-aborted';else throw Error('Held response fulfillment failed');}
+   }catch{
+    // Never leak Playwright's request headers through an unhandled route error.
+    // Unexpected fetch/fulfillment failure remains a failed scenario, not a retry.
+    failure={stage,operation,name:'RouteError'};runtimeErrors.push(failure);started();await route.abort().catch(()=>{});
+   }finally{finished();}
+  };
+  return {handler,get seen(){return seen.then(()=>{if(failure)throw Error('Held response operation failed; see sanitized runtimeErrors');});},get done(){return used?done:Promise.resolve();},get outcome(){return outcome;},get failure(){return failure;},release:()=>release(),path};
+ }
  try {
  await q("UPDATE locations SET short_name='Main Office Operations and Customer Support' WHERE id='loc-1'");
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) SELECT $1||'-leave-'||n,$2,'2030-11-01'::date+(n-1)*2,'2030-11-02'::date+(n-1)*2,'APPROVED','PRIVATE HOME SENTINEL' FROM generate_series(1,7)n",[label,actor]);
@@ -188,8 +214,19 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  try{
   await page.locator('[data-home-refresh]').click();await late.seen;await markLate('old-response-held');
   lateEvidence.oldResponse={fresh:JSON.stringify(homeResponse).includes('Fresh '+label),old:JSON.stringify(homeResponse).includes('Main Office Operations and Customer Support')};
-  await q("UPDATE locations SET short_name=$1 WHERE id='loc-1'",['Fresh '+label+' Main Office']);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await ready();await markLate('generic-ready-returned');late.release();await page.unroute(late.path,late.handler);await page.waitForLoadState('networkidle');await markLate('after-release-networkidle');assert((await next().innerText()).includes('Fresh '+label));assert(!(await next().innerText()).includes('Main Office Operations and Customer Support'));checks.push('H06 actual old Home response held while source and generation change cannot repopulate prior private rows');
- }finally{late.release();await page.unroute(late.path,late.handler);lateEvidence.observations=await page.evaluate(()=>{const evidence=window.__homeHeldEvidence;evidence.observe('final');evidence.stop();delete window.__homeHeldEvidence;return evidence.observations;});page.off('request',onRequest);page.off('requestfinished',onFinished);page.off('requestfailed',onFailed);await writeFile(join(evidenceDirectory,`home-held-${engine}-${width}.json`),JSON.stringify(lateEvidence,null,2));}
+  await q("UPDATE locations SET short_name=$1 WHERE id='loc-1'",['Fresh '+label+' Main Office']);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
+  await waitForFreshHome(page,'Fresh '+label+' Main Office');await markLate('fresh-generation-rendered');
+  assert(lateEvidence.requests.some(event=>event.event==='finished'&&event.id>1),'A newer Home request must finish before releasing the held response');
+  assert.deepEqual(lateEvidence.oldResponse,{fresh:false,old:true});
+  late.release();await late.done;assert.equal(late.failure,undefined);lateEvidence.heldOutcome=late.outcome;
+  await page.unroute(late.path,late.handler);
+  // Settle a real browser rendering turn after the held handler, then assert once.
+  // Waiting for fresh again here could conceal an overwrite followed by recovery.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));await markLate('after-held-handler-settled');
+  const afterFresh=await page.evaluate(()=>{const observations=window.__homeHeldEvidence.observations;return observations.slice(observations.findIndex(item=>item.event==='fresh-generation-rendered'));});
+  assert(afterFresh.every(item=>item.fresh&&!item.old),'No observed commit may restore old private rows after fresh Home is displayed');
+  assert((await next().innerText()).includes('Fresh '+label));assert(!(await next().innerText()).includes('Main Office Operations and Customer Support'));checks.push('H06 actual old Home response held while source and generation change cannot repopulate prior private rows');
+ }finally{late.release();await late.done;await page.unroute(late.path,late.handler);lateEvidence.observations=await page.evaluate(()=>{const evidence=window.__homeHeldEvidence;evidence.observe('final');evidence.stop();delete window.__homeHeldEvidence;return evidence.observations;});page.off('request',onRequest);page.off('requestfinished',onFinished);page.off('requestfailed',onFailed);await writeFile(join(evidenceDirectory,`home-held-${engine}-${width}.json`),JSON.stringify(lateEvidence,null,2));}
 
  stage='late-time';const time=gate('**/api/employee/my-time');await page.route(time.path,time.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await time.seen;
  await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);time.release();await page.unroute(time.path,time.handler);await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await ready();await page.getByText('Off clock',{exact:true}).waitFor();checks.push('H07 held actual MyTime response after pagehide/unmount cannot restore old Clocked In; fresh re-entry reflects persisted clock-out');
