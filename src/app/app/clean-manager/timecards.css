@@ -1,0 +1,3 @@
+/* Clean Manager and Owner app (v3): the timecards page. Owner and Manager only: every rule starts with the prefix
+ *   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d)
+ * (see premium-clean-manager.css, which holds the shared shell, kit and grouped-list rules this file builds on). */
