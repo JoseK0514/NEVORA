@@ -1148,3 +1148,20 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wc-pills .wc-count:not(#cm-tab) { margin-left: 6px; color: #6B6B68; font-weight: 400; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-masthead__summary a.nv-link:not(#cm-inline) { display: inline; position: relative; min-height: 0; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-masthead__summary a.nv-link:not(#cm-inline)::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; }
+
+/* Confirmation pass (phones): Wave B cards use the one 16px inset that their titles use; the rules hours count meets the
+ * 13px floor; a wrapped status in a card head keeps its full height, so it can't overlap the body; strips under the fixed
+ * header keep their whole 44px area; Availability's chips sit above the first person row, so its edge doesn't take their area. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wb-page .nv-card:not(#cm-inset) { --nv-s-5: 16px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wb-page .wb-toggle .rules-hours-count:not(#cm-inset) { font-size: .8125rem; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-card__head > .nv-card__meta:has(> .nv-status):not(#cm-inset) { display: flex; flex-wrap: wrap; align-items: center; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-card__head > .nv-card__meta > .nv-status:not(#cm-inset):not(#cm-inset2) { margin-bottom: 0; }
+@media (pointer: coarse), (max-width: 760px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) nav.section-tabs:not(#cm-strip):not(#cm-strip2) { padding-top: 6px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .wa-chips:not(#cm-strip):not(#cm-strip2) { position: relative; z-index: 1; }
+}
+/* Focus rings that would be cut off draw inside the control: controls on the page's top edge under the fixed header, rows
+ * flush with a card's clipped edge, the More sheet's Close, and Time exports' framed select and card links. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-tc-select, .cm-insights__back, .nv-card > details > summary, .nevora-action-menu-popover .mobile-workforce-sheet-close):focus-visible:not(#cm-ring):not(#cm-ring2) { outline: 2px solid var(--cm-tint); outline-offset: -2px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) [class*="payroll-export-module"] :is([class*="selectFrame"] select, [class*="__card"] a):focus-visible:not(#cm-ring):not(#cm-ring2) { outline: 2px solid var(--cm-tint); outline-offset: -2px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-sched-slot [popover] input:focus-visible:not(#cm-ring):not(#cm-ring2) { outline: 2px solid var(--cm-tint); outline-offset: 1px; }
