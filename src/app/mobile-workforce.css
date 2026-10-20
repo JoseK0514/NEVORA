@@ -208,7 +208,7 @@ html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.mobile-hom
   html body [data-mobile-clocker="true"] .clocker-mobile-brand { display: block; color: var(--mobile-surface); }
   html body [data-mobile-clocker="true"] .login-brand-lockup { display: inline-grid; justify-items: center; gap: 4px; width: 124px; color: var(--mobile-surface); line-height: 1; }
   html body [data-mobile-clocker="true"] .login-brand-lockup .brand-wordmark { display: block; width: 100%; height: auto; }
-  html body [data-mobile-clocker="true"] .login-brand-module { color: var(--mobile-masthead-secondary); font-size: 13px; line-height: 1.2; font-weight: 450; letter-spacing: .08em; }
+  html body [data-mobile-clocker="true"] .login-brand-module { color: var(--mobile-masthead-secondary); font-size: 0.8125rem; line-height: 1.2; font-weight: 450; letter-spacing: .08em; }
   html body [data-mobile-clocker="true"] [class$="__deviceStatus"] { color: var(--mobile-masthead-secondary); }
   html body [data-mobile-clocker="true"] > section { align-self: stretch; width: auto; margin: 24px 16px; grid-template-columns: minmax(0,1fr); border: 0; background: var(--mobile-surface); border-radius: var(--mobile-radius); box-shadow: var(--mobile-shadow); }
   html body [data-mobile-clocker="true"] section > aside { padding: 20px; }

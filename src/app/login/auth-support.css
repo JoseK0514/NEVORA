@@ -45,7 +45,7 @@
   border-radius: 8px;
   list-style: none;
   color: var(--design-text-secondary);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 400;
   cursor: pointer;
 }
@@ -68,7 +68,7 @@
 .employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) summary:hover { color: var(--login-blue); }
 .employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) p {
   margin: 4px 0 16px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.6;
   color: var(--design-text-secondary);
 }
@@ -80,7 +80,7 @@
   width: fit-content;
   padding: 4px 0;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
@@ -112,7 +112,7 @@
   border-radius: var(--auth-popover-radius);
   background: var(--login-ice);
   color: var(--design-text-secondary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.6;
 }
@@ -121,7 +121,7 @@
   outline-offset: 4px;
 }
 .employee-login-page.auth-support-page :is(.recovery-receipt, .reset-receipt, .reset-error) { border-radius: var(--login-control-radius); }
-.employee-login-page.auth-support-page :is(.activation-password-toggle, .reset-password-toggle) { top: 5px; border-radius: 9px; }
+.employee-login-page.auth-support-page :is(.activation-password-toggle, .reset-password-toggle) { top: calc(50% - 22px); border-radius: 9px; }
 
 @media (max-width: 799px) {
   .employee-login-page.auth-support-page .login-visual {
@@ -131,12 +131,12 @@
     min-height: 144px;
   }
   .employee-login-page.auth-support-page .login-visual-copy { padding: 24px 0 24px 28px; }
-  .employee-login-page.auth-support-page .login-visual h2 { max-width: 8.5ch; font-size: 28px; }
+  .employee-login-page.auth-support-page .login-visual h2 { max-width: 8.5ch; font-size: 1.75rem; }
   .employee-login-page.auth-support-page .auth-still-stage { padding: 0 8px 0 0; }
   .employee-login-page.auth-support-page :is(.recovery-secondary, .activation-secondary, .reset-secondary) { margin-top: 24px; padding-top: 16px; }
 }
 @media (max-width: 360px) {
   .employee-login-page.auth-support-page .login-visual-copy { padding-left: 22px; }
-  .employee-login-page.auth-support-page .login-visual h2 { font-size: 24px; }
-  .employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) summary { font-size: 13px; }
+  .employee-login-page.auth-support-page .login-visual h2 { font-size: 1.5rem; }
+  .employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) summary { font-size: 0.8125rem; }
 }
