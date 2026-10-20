@@ -2139,3 +2139,16 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 /* Final QA: the clock card's icons grow with the reader's text size (they stayed 10–12px beside 34px text at 200%). */
 html body .app-shell.nevora-portal .page-frame .employee-time-controls svg:not(#nv-kit) { width: 1.1em; height: 1.1em; flex: none; }
 html body .app-shell.nevora-portal .page-frame .employee-time-current-heading h2 svg:not(#nv-kit) { width: 0.95em; height: 0.95em; flex: none; }
+
+/* Match the existing Safari select remedy while preserving native selection.
+ * WebKit's automatic appearance otherwise ignores the correction field height. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .employee-time-correction-form select:not(#nv-kit) {
+  -webkit-appearance: none;
+  appearance: none;
+  height: auto;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%235F666A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
