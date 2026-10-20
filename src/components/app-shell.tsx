@@ -368,9 +368,14 @@ export function AppShell({
                 }}
               >
                 <p className="employee-more-label">More</p>
+                {/* Signature (phase 2): the links stay Updates, Notifications, Profile in that order; Profile is drawn as the
+                    person's small dark card (name and initials from attributes, so the link's own words stay "Profile"). */}
                 {mobileMore.map((item) => (
                   <Link key={item.href} href={item.href}
-                    className={item.href === activeHref ? "employee-more-link active" : "employee-more-link"}
+                    className={`employee-more-link${item.href === "/app/profile" ? " employee-more-card" : ""}${item.href === activeHref ? " active" : ""}`}
+                    data-name={item.href === "/app/profile" ? `${user.firstName} ${user.lastName}` : undefined}
+                    data-initials={item.href === "/app/profile" ? `${user.firstName.trim()[0] ?? ""}${user.lastName.trim()[0] ?? ""}`.toUpperCase() : undefined}
+                    aria-label={item.href === "/app/profile" ? `Profile, ${user.firstName} ${user.lastName}` : undefined}
                     onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}
                     aria-current={item.href === activeHref ? "page" : undefined}>
                     <NavIcon name={item.icon} employee size={22} />
@@ -378,7 +383,6 @@ export function AppShell({
                   </Link>
                 ))}
                 <div className="employee-more-profile">
-                  <div><strong>{user.firstName} {user.lastName}</strong></div>
                   <PortalSignout><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></PortalSignout>
                 </div>
                 <button className="mobile-workforce-sheet-close" type="button" aria-label="Close"

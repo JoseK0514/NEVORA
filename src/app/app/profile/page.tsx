@@ -11,15 +11,16 @@ import {ProfileFrame} from '@/components/profile-frame';
 import {NavIcon} from '@/components/nav-icon';
 import {ProfileCalendarDisclosure} from '@/components/profile-calendar-disclosure';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {SigBand,SigPage} from '@/components/signature/signature';
+import pf from './profile-signature.module.css';
 import './profile.css';
-import {PageBand} from '@/components/kit/kit';
+import './profile-premium.css';
 import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
 import {PasskeySection} from '@/components/passkeys/passkey-section';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {readAuthLang} from '@/lib/auth-lang.server';
 import {LangSwitch} from '@/components/auth-premium/lang-switch';
 import {GlobeIcon} from '@phosphor-icons/react/dist/ssr/Globe';
-import './profile-premium.css';
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
  const authority=employeeViewAuthority(proof,'profile');
@@ -29,17 +30,21 @@ export default async function ProfilePage(){
  const {firstName,lastName,role}=proof.employee;
  const initials=`${firstName.trim()[0]??''}${lastName.trim()[0]??''}`.toUpperCase();
  const roleLabel=role==='LEAD'?'Lead':'Employee';
- // Sign-in redesign (E4): the band carries who you are (initials, name, role and company, all from the session), then
- // Sign-in and security, App settings, Work details and Sign out. Data reads and controls are unchanged.
- return <ProfileFrame><div className="nv-page premium-employee-profile pfx" data-nv-page="">
-  <PageBand eyebrow="Profile" title={`${firstName} ${lastName}`} summary={workspaceName?<><span className="nv-nowrap">{roleLabel}{'\u00a0·'}</span> {workspaceName}</>:roleLabel} overlap={false}
-   extra={<><span className="pfx-avatar" aria-hidden="true">{initials}</span><svg className="pfx-spark" viewBox="0 0 240 240" aria-hidden="true" focusable="false"><path d="M120 120 154 186H86z"/></svg></>}/>
-  <div className="premium-employee-content">
+ // Signature (phase 2, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-2/p2c-profile.png):
+ // the band is a membership card (initials, role, name and company, all from the session); the sheet holds Sign-in and
+ // security, Settings, Work details and Sign out. Data reads, controls and the Phase E hooks are unchanged.
+ return <ProfileFrame><SigPage className={pf.pfRoot} band={<SigBand eyebrow="Profile" mark={false}>
+  <div className={pf.pfCard}>
+   <svg className={pf.pfWatermark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/></svg>
+   <div className={pf.pfCardTop}><span className={pf.pfMono} aria-hidden="true">{initials}</span><span className={pf.pfRole}>{roleLabel}</span></div>
+   <h1 className={pf.pfName}>{firstName} {lastName}</h1>
+   {workspaceName?<p className={pf.pfCompany}><span className="nv-sr">{roleLabel} · </span>{workspaceName}</p>:null}
+  </div>
+ </SigBand>}>
   <noscript><p>Enable JavaScript to view your current profile and calendar settings. You can still sign out below.</p></noscript>
-  <div className="pfx-col">
-  <PasskeySection/>
-  <section className="profile-settings" aria-labelledby="profile-settings-title">
-   <h2 id="profile-settings-title">App settings</h2>
+  <div className={`${pf.pfSection} ${pf.pfFirst}`}><PasskeySection/></div>
+  <section className={`profile-settings ${pf.pfSection}`} aria-labelledby="profile-settings-title">
+   <h2 id="profile-settings-title" className={pf.pfHeading}>Settings</h2>
    <div className="profile-settings-list">
     <div className="profile-setting-row pfx-lang-row"><span className="profile-setting-copy"><GlobeIcon size={20} aria-hidden="true"/><span><strong>Language</strong><small>Used on the sign-in pages for now.</small></span></span><LangSwitch lang={lang} label="Language"/></div>
     <Link className="profile-setting-row" href="/app/notifications"><span className="profile-setting-copy"><NavIcon name="notifications" size={20}/><span><strong>Notifications</strong><small>Updates about your schedule and requests</small></span></span><CaretRightIcon className="profile-setting-caret" size={18} aria-hidden="true"/></Link>
@@ -51,13 +56,9 @@ export default async function ProfilePage(){
     </ProfileCalendarDisclosure>
    </div>
   </section>
+  <div className={`profile-layout ${pf.pfSection}`}>
+   <EmployeeAccountPanel key={authority} kind="profile" authority={authority}/>
   </div>
-  <div className="pfx-col">
-  <div className="profile-layout">
-  <EmployeeAccountPanel key={authority} kind="profile" authority={authority}/>
-  </div>
-  <section className="profile-signout" aria-label="Session"><PortalSignout><button type="submit" className="profile-setting-row profile-signout-row"><span className="profile-setting-copy"><NavIcon name="logout" size={20}/><strong>Sign out</strong></span></button></PortalSignout></section>
-  </div>
-  </div></div>
- </ProfileFrame>;
+  <section className={`profile-signout ${pf.pfSignout}`} aria-label="Session"><PortalSignout><button type="submit" className="profile-setting-row profile-signout-row"><span className="profile-setting-copy"><NavIcon name="logout" size={20}/><strong>Sign out</strong></span></button></PortalSignout></section>
+ </SigPage></ProfileFrame>;
 }
