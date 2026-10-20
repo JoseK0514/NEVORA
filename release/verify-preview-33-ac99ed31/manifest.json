@@ -47,14 +47,19 @@
       "bytes": 682
     },
     {
+      "path": "concurrent-driver-update.json",
+      "sha256": "de326794d3ca1683300e934fcec3d2a058428599842bcc776b08451262289043",
+      "bytes": 1082
+    },
+    {
       "path": "ci.json",
       "sha256": "4b7da54459f1253cbe4300921ab050c3c23bda4dabf8dff67f4128685667fbb1",
       "bytes": 2010
     },
     {
       "path": "README.md",
-      "sha256": "6c8849fd9e1b9e1a49e430c0fd295efd7ee0ea4ad8619e31594cb71dc3e4954b",
-      "bytes": 6805
+      "sha256": "ee8a75f35d19698f1328da0ed0a72644cbb235034171d6fce6948729f086edc1",
+      "bytes": 7044
     },
     {
       "path": "owners/phase-3.md",
@@ -92,6 +97,11 @@
       "bytes": 3078698
     },
     {
+      "path": "gates/current-driver-vitest.json",
+      "sha256": "af992aab54d5b25030d7686bc46848c4e7a08516ca85ccab58300afa07b9dcd1",
+      "bytes": 31134
+    },
+    {
       "path": "gates/build.log",
       "sha256": "e6bc909b5b70c52f8db7eb5984882b33c07c5afabe9d70e9bce4df754d2457f6",
       "bytes": 4688
@@ -112,9 +122,19 @@
       "bytes": 70
     },
     {
+      "path": "gates/current-driver-vitest.log",
+      "sha256": "919059e468f71b604d6a3cc992901c4fee631c3fbfc8b76c52aa552ed0cbddbd",
+      "bytes": 85
+    },
+    {
       "path": "gates/typecheck.log",
       "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
       "bytes": 50
+    },
+    {
+      "path": "gates/current-driver-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
     },
     {
       "path": "evidence/named.log",

@@ -1,6 +1,6 @@
 # Merge and named-ID rechecks — ac99ed31
 
-Pinned coordinator commit **4f666237** is merged without conflicts into **codex/verify-preview-33**, including the four approved candidate-only fixes. The pushed head is **ac99ed311a4ef07b61175fa9f926c0862121a1e5**. All four ports have the same stable patch IDs as the approved commits. [Lineage, port mapping and gates](merge-and-gates.json).
+Pinned coordinator commit **4f666237** is merged without conflicts into **codex/verify-preview-33**, including the four approved candidate-only fixes. This task pushed **ac99ed311a4ef07b61175fa9f926c0862121a1e5**. A concurrent publisher subsequently advanced the target to **6c56f504** with three browser-driver test commits; this merge remains an ancestor and application inputs are unchanged. [Subsequent-source custody](concurrent-driver-update.json). All four ports have the same stable patch IDs as the approved commits. [Lineage, port mapping and gates](merge-and-gates.json).
 
 Local code gates pass: locked install, typecheck, lint, **7,364 tests / 0 failures** (801 skipped, 55 pending), production build and development-marker absence across 2,325 artifacts. [Gate receipts](gates/). CI validate also passes, but the aggregate remains blocked by two browser jobs; two PostgreSQL jobs were still running at the last observation. [CI custody and follow-ups](ci.json).
 

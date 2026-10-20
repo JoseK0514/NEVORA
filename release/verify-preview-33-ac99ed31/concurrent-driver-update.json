@@ -1,0 +1,36 @@
+{
+  "observedAt": "2026-10-20T01:10:01.057057+00:00",
+  "testedMergeHead": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "subsequentTargetHead": "6c56f5043bcf264296a11961b5335a54255b31cd",
+  "subsequentCommits": [
+    "7e9e931e",
+    "b9412a5c",
+    "6c56f504"
+  ],
+  "changedPaths": [
+    "scripts/phase-e-calendar-browser-scenarios.mjs",
+    "scripts/phase-e-navigation-browser-scenarios.mjs"
+  ],
+  "applicationInputsUnchanged": [
+    "src",
+    "public",
+    "package.json",
+    "package-lock.json",
+    "next.config.ts",
+    "tsconfig.json"
+  ],
+  "pinnedSourceAndTaskMergeRemainAncestors": true,
+  "targetPreservedByLocalFastForward": true,
+  "lint": "passed",
+  "focusedRunnerTests": {
+    "passed": 101,
+    "failed": 0,
+    "success": true,
+    "files": [
+      "src/test/phase-e-browser-runtime.test.ts",
+      "src/test/phase-e-runner.test.ts",
+      "src/test/phase-e-process.test.ts"
+    ]
+  },
+  "gatesScope": "Full tests/build/browser evidence remain exact ac99ed31 results. Subsequent source changes are browser drivers; no new full-exit or hosted pass inferred."
+}
