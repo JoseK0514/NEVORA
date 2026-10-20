@@ -8,12 +8,31 @@ import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 
-/** Page exceptions can contain arbitrary private content. Persist categories,
- * never the original message, URL or stack; do not exempt any category. */
+const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
+const canonicalRuntimeMessages = new Set(['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop limit exceeded']);
+const runtimeRoutes = new Set(['/login', '/app', '/app/schedule', '/app/communications', '/app/calendar', '/app/settings']);
+function readable(read) {
+  try { return read(); } catch { return undefined; }
+}
+
+/** Only exact static messages or a bounded React invariant prefix survive;
+ * arbitrary suffixes, URLs, arguments and stacks must never be persisted. */
+function originalRuntimeDiagnostic(name, message, page) {
+  const invariant = message.match(/^Minified React error #([1-9]\d{0,2});/);
+  const route = readable(() => new URL(page.url()).pathname);
+  return {
+    nativeName: nativeErrorNames.has(name) ? name : 'Unknown',
+    canonicalMessage: canonicalRuntimeMessages.has(message) ? message : invariant ? `Minified React error #${invariant[1]}` : null,
+    reactInvariant: invariant ? Number(invariant[1]) : null,
+    route: runtimeRoutes.has(route) ? route : null,
+  };
+}
+
+/** All runtime events remain fatal, including recognized diagnostic formats. */
 export function observeBrowserCell(execution, errors) {
   const start = errors.length;
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
-  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement']);
+  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty']);
   return {
     setStageReader(reader) { readStage = reader; },
     setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },
@@ -22,14 +41,16 @@ export function observeBrowserCell(execution, errors) {
       context.on('page', page => {
         const index = pageIndex++;
         page.on('pageerror', error => {
-          const message = typeof error?.message === 'string' ? error.message : '';
+          const originalMessage = readable(() => error?.message), name = readable(() => error?.name);
+          const message = typeof originalMessage === 'string' ? originalMessage : '';
+          const diagnostic = originalRuntimeDiagnostic(name, message, page);
           const summary = /load failed|failed to fetch|networkerror|network request failed/i.test(message) ? 'Network load failure'
             : /abort|cancelled|canceled/i.test(message) ? 'Operation aborted'
               : /chunkloaderror|loading chunk/i.test(message) ? 'Module load failure'
                 : 'Unclassified page runtime error';
-          const stage = readStage();
-          errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase,
-            failure: safeBrowserFailure({ name: error?.name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
+          const stage = readable(readStage);
+          errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,
+            failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
         });
       });
     },
