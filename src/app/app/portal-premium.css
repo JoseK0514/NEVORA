@@ -2114,3 +2114,6 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .updates-list :is(a
   html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-schedule-review .my-review-action:not(#nv-kit) { grid-column: 1 / -1; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-schedule-review .my-review-action :is(button, .button):not(#nv-kit) { width: 100%; }
 }
+/* QA Oct 19: "Shift options" looks the same on Shift requests as on My schedule: an outlined 44px control, not a teal link. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .premium-shift-options > summary:not(#nv-kit) { padding: var(--nv-s-2) var(--nv-s-3); border: 1px solid var(--nv-border); border-radius: var(--nv-r-control); background: var(--nv-canvas); color: var(--nv-ink); font-weight: 500; width: fit-content; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-exchange .premium-shift-options:not(#nv-kit) { border-top: 0; padding-top: var(--nv-s-2); }

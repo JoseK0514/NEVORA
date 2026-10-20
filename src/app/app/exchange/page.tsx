@@ -192,7 +192,7 @@ export default async function ExchangePage({
       <ExchangeReviewShell view={activeView} className="employee-view employee-shift-requests-view">
         {/* Phase 3: the kit band carries the title, one line, and the two views as pills. */}
         <div className="nv-page premium-employee-exchange" data-nv-page="">
-        <PageBand eyebrow="Schedule flexibility" title="Shift requests" overlap={false}
+        <PageBand title="Shift requests" overlap={false}
           summary={activeView === "available" ? (claimable.length ? `${claimable.length}\u00a0open ${claimable.length === 1 ? "shift" : "shifts"} you can pick up.` : "Pick up a shift, review a swap, or manage your requests.") : "Pick up a shift, review a swap, or manage your requests."}
           extra={<FilterPills label="Shift marketplace views" items={[
             { href: "/app/exchange?tab=available", label: "Available shifts", current: activeView === "available" },
