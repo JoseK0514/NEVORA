@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [development, main, "phase-c/**", "phase-d/**", "codex/phase-d-**", "phase-e/**", "codex/phase-e-**", "phase-f/**", "codex/phase-f-**", "codex/par-001-**", "fix/**", "release/**"]
+    branches: [development, main, "codex/verify-preview-33", "phase-c/**", "phase-d/**", "codex/phase-d-**", "phase-e/**", "codex/phase-e-**", "phase-f/**", "codex/phase-f-**", "codex/par-001-**", "fix/**", "release/**"]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**"]
 
@@ -333,12 +333,18 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  phase-e-ui:
-    name: phase-e-ui
+  phase-e-ui-suite:
+    name: phase-e-ui-suite (${{ matrix.suite }})
     runs-on: ubuntu-24.04
     timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        suite: [home, communications, calendar, navigation, attention]
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
+      PHASE_E_BROWSER_SUITE: ${{ matrix.suite }}
     steps:
       - name: Select owned evidence directory
         run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/nevora-phase-e-browser-evidence" >> "$GITHUB_ENV"
@@ -366,6 +372,11 @@ jobs:
       - name: Install Chromium and WebKit
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Home fresh-generation scheduling regression
+        if: ${{ matrix.suite == 'home' }}
+        env:
+          HOME_READINESS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence
+        run: node --import tsx scripts/phase-e-home-held-response.check.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |
@@ -378,21 +389,64 @@ jobs:
           test -x "$PG_BIN/pg_ctl"
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
       - name: Owned Phase E browser gates
-        run: npm run test:phase-e:ui
+        run: node scripts/phase-e-owned.mjs browser --suite "$PHASE_E_BROWSER_SUITE"
       - name: Verify exact-source executed Phase E evidence
-        run: node scripts/phase-e-owned.mjs verify-evidence --suite browser
+        run: node scripts/phase-e-browser-evidence.mjs leaf --suite "$PHASE_E_BROWSER_SUITE"
       - name: Upload Phase E browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: phase-e-browser-${{ github.sha }}
+          name: phase-e-browser-${{ github.sha }}-${{ matrix.suite }}
           path: |
+            ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.json
+            ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/home-held-*.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/source-manifest.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*.png
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-postgres-*/ownership.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-next-*/ownership.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-next-*/source-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+
+  phase-e-ui:
+    name: phase-e-ui
+    if: ${{ always() }}
+    needs: [phase-e-ui-suite]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Download isolated current-run suite evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: phase-e-browser-*
+          path: ${{ runner.temp }}/nevora-phase-e-suite-artifacts
+          merge-multiple: false
+      - name: Reject incomplete or failed Phase E suite evidence
+        env:
+          PHASE_E_EXPECTED_SHA: ${{ github.sha }}
+          PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-browser-aggregate
+          PHASE_E_ARTIFACTS_DIR: ${{ runner.temp }}/nevora-phase-e-suite-artifacts
+          PHASE_E_CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/phase-e-browser-evidence.mjs aggregate
+      - name: Upload Phase E aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: phase-e-browser-aggregate-${{ github.sha }}
+          path: ${{ runner.temp }}/nevora-phase-e-browser-aggregate/browser-aggregate-report.json
           if-no-files-found: error
           retention-days: 14
 

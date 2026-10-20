@@ -1,3 +1,4 @@
+import {measureRenderedContrast} from './browser-contrast.mjs';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
@@ -7,11 +8,22 @@ import {hashPassword} from '../src/lib/auth/password.ts';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 
+// Shared by H06 and its controlled browser scheduling regression.
+export async function waitForFreshHome(page, freshLocation){
+ await page.waitForFunction(fresh=>{
+  const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="employee-reviewed-next-heading"]');
+  if(!root||!next)return false;
+  const style=getComputedStyle(next),text=next.textContent??'';
+  return ['partial','ready'].includes(root.getAttribute('data-home-state'))&&root.getAttribute('aria-busy')==='false'&&next.getClientRects().length>0&&style.visibility==='visible'&&style.display!=='none'&&text.includes(fresh)&&!text.includes('Main Office Operations and Customer Support');
+ },freshLocation,{timeout:15000});
+}
+
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
-export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile}){
+export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
  const scenario=await seedOwnedScenario(app.database.executor,label,index+14),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
  const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task11 developer verification',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse,managerContext,manager;
+ cellRuntimeErrors.setStageReader(()=>stage);
  page.on('pageerror',error=>runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')}));
  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/employee/home')binding=request.headers()['x-nevora-home'];});
  const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
@@ -22,7 +34,23 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
  const refresh=async()=>{const response=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home');await page.locator('[data-home-refresh]').click();await (await response).finished();await page.getByRole('button',{name:/^(Refresh home|Retry home)$/}).waitFor();await ready();};
  async function login(target=page,id=actor){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);}
- function gate(path){let release,started,used=false;const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;});const handler=async route=>{if(used)return route.continue();used=true;const response=await route.fetch();if(path.includes('/home'))homeResponse=await response.json();started();await wait;await route.fulfill({response}).catch(()=>{});};return {handler,seen,release:()=>release(),path};}
+ function gate(path){
+  let release,started,finished,used=false,failure,outcome,operation='fetch',navigationReleased=false;const documentUrl=page.url();
+  const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;}),done=new Promise(r=>{finished=r;});
+  const handler=async route=>{
+   if(used)return route.continue();used=true;
+   try{
+    const response=await route.fetch();operation='parse';if(path.includes('/home'))homeResponse=await response.json();started();await wait;operation='fulfill';
+    try{await route.fulfill({response});outcome='fulfilled';}
+    catch{if(navigationReleased)outcome='document-left';else if(route.request().failure())outcome='request-aborted';else throw Error('Held response fulfillment failed');}
+   }catch(error){
+    // Never leak Playwright's request headers through an unhandled route error.
+    // Unexpected fetch/fulfillment failure remains a failed scenario, not a retry.
+    failure={stage,operation,name:'RouteError',transportReset:error.message.includes('ECONNRESET'),requestFailed:!!route.request().failure()};runtimeErrors.push(failure);started();await route.abort().catch(()=>{});
+   }finally{finished();}
+  };
+  return {handler,get seen(){return seen.then(()=>{if(failure)throw Error('Held response operation failed; see sanitized runtimeErrors');});},get done(){return used?done:Promise.resolve();},get outcome(){return outcome;},get failure(){return failure;},release:(reason)=>{if(reason==='navigation'){assert.notEqual(page.url(),documentUrl,'Navigation release requires an actually changed document URL');navigationReleased=true;}release();},path};
+ }
  try {
  await q("UPDATE locations SET short_name='Main Office Operations and Customer Support' WHERE id='loc-1'");
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) SELECT $1||'-leave-'||n,$2,'2030-11-01'::date+(n-1)*2,'2030-11-02'::date+(n-1)*2,'APPROVED','PRIVATE HOME SENTINEL' FROM generate_series(1,7)n",[label,actor]);
@@ -37,7 +65,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert(await page.getByText('Loading Home…',{exact:true}).isVisible());assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert(!(await recorded().isVisible()),'a first load shows only the Next shift placeholder; recorded time appears with the snapshot');assert.equal(await recorded().locator('time').count(),0);await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
  await page.getByText('Clocked in',{exact:true}).waitFor();
  assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
- assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert(await page.getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.',{exact:true}).isVisible());assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);
+ assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert(await next().getByRole('status').filter({hasText:/published this week yet\. Shifts shown are published\.$/}).isVisible());assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('Scheduled now',{exact:true}).isVisible());
  const hierarchy=await page.locator('[aria-labelledby="employee-reviewed-next-heading"],[data-home-group="actions"]').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot('ready');
@@ -54,7 +82,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   if(rows.length>3){
    const summary=overflow.locator('summary'),peer=page.locator(`[data-home-group="${kind==='actions'?'updates':'actions'}"] details`),peerOpen=await peer.count()?await peer.evaluate(e=>e.open):null;
    assert.equal(await overflow.evaluate(e=>e.open),false);await summary.focus();await page.keyboard.press('Enter');assert.equal(await overflow.evaluate(e=>e.open),true);assert(await summary.evaluate(e=>e.matches(':focus-visible')));
-   for(const link of await group.locator('li a').all())assert(await link.isVisible());
+   for(const link of await group.locator('li a').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
    await page.keyboard.press('Space');assert.equal(await overflow.evaluate(e=>e.open),false);await page.keyboard.press('Enter');assert.equal(await overflow.evaluate(e=>e.open),true);
    if(peerOpen!==null)assert.equal(await peer.evaluate(e=>e.open),peerOpen);
    disclosure.keyboardObserved=true;
@@ -82,16 +110,16 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const preview=await previewCommunicationAudience(owner,draft,app.database.executor);assert.equal(preview.state,'ready');const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(result.status,'committed');return {result,draft};}
  const required=await publishUpdate('REQUIRED');await refresh();
  const row=()=>items().filter({has:page.locator('a[href="/app/updates/'+required.result.id+'"]')});
- assert(await row().getByText('Required review',{exact:true}).isVisible());assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+ assert(await row().getByText('Review needed',{exact:true}).isVisible());assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
  assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);
  assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:communicationAuthority(self),ref:{kind:'COMMUNICATION',id:required.result.id,version:required.result.version}},app.database.executor)).status,'blocked');
- await refresh();assert(await row().getByText('Required review',{exact:true}).isVisible());await shot('required-push-off');
+ await refresh();assert(await row().getByText('Review needed',{exact:true}).isVisible());await shot('required-push-off');
  // The Task11 fixture uses the authenticated full-content API before a receipt;
  // Task10 owns the actual detail-screen acknowledgement journey.
  const detail=await readCommunication(self,required.result.id,app.database.executor);assert.equal(detail.state,'ready');assert.equal(detail.body,required.draft.body);
  assert.equal((await executeCommunicationCommand(self,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:detail.authority,communicationId:detail.id,expectedRevisionId:detail.revisionId,contentHash:detail.contentHash},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
  const revisedDraft={...required.draft,body:'PRIVATE REVISED CONTENT '+label},preview=await previewCommunicationAudience(owner,revisedDraft,app.database.executor);assert.equal(preview.state,'ready');
- const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().getByText('Required review',{exact:true}).isVisible());await shot('new-revision');
+ const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().getByText('Review needed',{exact:true}).isVisible());await shot('new-revision');
  assert.equal((await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(owner),communicationId:required.result.id,expectedRevisionId:revised.version},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
  const optional=await publishUpdate('OPTIONAL');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),1);
  const optionalDetail=await readCommunication(self,optional.result.id,app.database.executor);assert.equal(optionalDetail.state,'ready');assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:optionalDetail.authority,ref:{kind:'COMMUNICATION',id:optional.result.id,version:optional.result.version}},app.database.executor)).status,'committed');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),0);
@@ -132,15 +160,15 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   if(await overflowOpen('actions'))await overflowToggle('actions','Space');
   assert.equal(await overflowOpen('actions'),false);assert.equal(await overflowOpen('updates'),false);
   let observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,false);
-  for(const link of await overflowGroup('actions').locator('li a').all())assert(await link.isVisible());
+  for(const link of await overflowGroup('actions').locator('li a').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
   observation=await overflowToggle('actions','Space');assert.equal(observation.actionsOpen,false);assert.equal(observation.updatesOpen,false);
-  for(const link of await overflowGroup('actions').locator('details li a').all())assert.equal(await link.isVisible(),false);
+  for(const link of await overflowGroup('actions').locator('details li a').all()){await link.waitFor({state:'hidden'});assert.equal(await link.isVisible(),false);}
   observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,false);
   observation=await overflowToggle('updates','Enter');assert.equal(observation.updatesOpen,true);assert.equal(observation.actionsOpen,true);
   for(const link of await overflowGroup('updates').locator('li a').all())assert(await link.isVisible());
   observation=await overflowToggle('actions','Space');assert.equal(observation.actionsOpen,false);assert.equal(observation.updatesOpen,true);
   observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,true);
-  for(const link of await overflowGroup('actions').locator('li a').all())assert(await link.isVisible());
+  for(const link of await overflowGroup('actions').locator('li a').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
   await shot('actions-overflow');
  }catch(error){overflowCause=error;throw error;}finally{
   overflowEvidence.phase='withdraw-extra-publications';
@@ -161,7 +189,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='keyboard';await page.locator('h1').click();const link=next().getByRole('link',{name:'View schedule',exact:false}).first(),tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));const rect=await link.boundingBox();assert(rect&&rect.height>=44&&rect.width>=44);
- const measureContrast=()=>link.evaluate(e=>{const rgb=s=>s.match(/[\d.]+/g).slice(0,3).map(Number);const lum=c=>c.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((v,n,i)=>v+n*[.2126,.7152,.0722][i],0);let bg=e;while(bg&&getComputedStyle(bg).backgroundColor==='rgba(0, 0, 0, 0)')bg=bg.parentElement;return (Math.max(lum(rgb(getComputedStyle(e).color)),lum(rgb(getComputedStyle(bg).backgroundColor)))+.05)/(Math.min(lum(rgb(getComputedStyle(e).color)),lum(rgb(getComputedStyle(bg).backgroundColor)))+.05);});details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value>=4.5);await link.focus();
+ const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
  const myTime=recorded().getByRole('link',{name:'My Time',exact:false});await page.locator('h1').click();let clockFocus=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await myTime.evaluate(e=>e===document.activeElement)){clockFocus=true;break;}}
  assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(e=>({outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth}));assert.notEqual(details.clockRecoveryFocus.outlineStyle,'none');assert(parseFloat(details.clockRecoveryFocus.outlineWidth)>=2);await link.focus();
@@ -171,18 +199,65 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert.equal(api.status,200);assert.equal(api.cache,'no-store, private');assert(api.vary.split(',').map(value=>value.trim().toLowerCase()).includes('cookie'));assert(!JSON.stringify(api.body).match(/PRIVATE HOME SENTINEL|sessionTokenHash|managerNotes/));
  const rejected=await page.evaluate(async()=>{const r=await fetch('/api/employee/home?employeeId=other',{headers:{'X-Nevora-Home':'invalid'}});return r.status;});assert.equal(rejected,400);checks.push('H04 actual authenticated Home API is private/no-store; client identity selectors refused; no source-note/raw-proof disclosure');
  stage='offline';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().locator('time').count(),0);assert(await recorded().getByRole('link',{name:'My Time',exact:false}).isVisible());assert(await recorded().getByRole('button',{name:'Refresh recorded time',exact:true}).isDisabled());await shot('offline');await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();await page.getByText('Clocked in',{exact:true}).waitFor();checks.push('H05 actual network offline clears assignment and clock rows; online re-entry performs fresh authorized reads');
- stage='late-home';const late=gate('**/api/employee/home');await page.route(late.path,late.handler);await page.locator('[data-home-refresh]').click();await late.seen;
- await q("UPDATE locations SET short_name=$1 WHERE id='loc-1'",['Fresh '+label+' Main Office']);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await ready();late.release();await page.unroute(late.path,late.handler);await page.waitForLoadState('networkidle');assert((await next().innerText()).includes('Fresh '+label));assert(!(await next().innerText()).includes('Main Office Operations and Customer Support'));checks.push('H06 actual old Home response held while source and generation change cannot repopulate prior private rows');
- stage='late-time';const time=gate('**/api/employee/my-time');await page.route(time.path,time.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await time.seen;
- await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);time.release();await page.unroute(time.path,time.handler);await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await ready();await page.getByText('Off clock',{exact:true}).waitFor();checks.push('H07 held actual MyTime response after pagehide/unmount cannot restore old Clocked In; fresh re-entry reflects persisted clock-out');
- stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.locator('[data-home-refresh]').click();await leaving.seen;await page.goto(app.url+'/app/requests/hub');leaving.release();await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('[aria-labelledby="employee-reviewed-next-heading"] a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
+ stage='late-home';
+ const lateEvidence={requests:[],observations:[]},requestIds=new Map();details.lateHome=lateEvidence;
+ const requestEvent=(event,request)=>{if(new URL(request.url()).pathname!=='/api/employee/home')return;if(!requestIds.has(request))requestIds.set(request,requestIds.size+1);lateEvidence.requests.push({event,id:requestIds.get(request),at:Date.now()});};
+ const onRequest=request=>requestEvent('request',request),onFinished=request=>requestEvent('finished',request),onFailed=request=>requestEvent('failed',request);
+ page.on('request',onRequest);page.on('requestfinished',onFinished);page.on('requestfailed',onFailed);
+ await page.evaluate(fresh=>{
+  const observations=[],observe=event=>{const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="employee-reviewed-next-heading"]'),text=next?.textContent??'';observations.push({event,at:Date.now(),state:root?.getAttribute('data-home-state'),busy:root?.getAttribute('aria-busy'),fresh:text.includes(fresh),old:text.includes('Main Office Operations and Customer Support'),visible:!!next?.getClientRects().length,visibility:document.visibilityState,focused:document.hasFocus()});};
+  const observer=new MutationObserver(()=>observe('mutation'));observer.observe(document.querySelector('.employee-home'),{subtree:true,childList:true,attributes:true,characterData:true});
+  const events=['storage','focus','blur','pageshow','pagehide','online','offline'],handlers=events.map(event=>{const handler=()=>observe(event);window.addEventListener(event,handler);return [event,handler];});
+  window.__homeHeldEvidence={observations,observe,stop:()=>{observer.disconnect();for(const [event,handler] of handlers)window.removeEventListener(event,handler);}};observe('initial');
+ },'Fresh '+label);
+ const markLate=event=>page.evaluate(event=>window.__homeHeldEvidence.observe(event),event);
+ const late=gate('**/api/employee/home');await page.route(late.path,late.handler);
+ try{
+  await page.locator('[data-home-refresh]').click();await late.seen;await markLate('old-response-held');
+  lateEvidence.oldResponse={fresh:JSON.stringify(homeResponse).includes('Fresh '+label),old:JSON.stringify(homeResponse).includes('Main Office Operations and Customer Support')};
+  await q("UPDATE locations SET short_name=$1 WHERE id='loc-1'",['Fresh '+label+' Main Office']);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
+  await waitForFreshHome(page,'Fresh '+label+' Main Office');await markLate('fresh-generation-rendered');
+  assert(lateEvidence.requests.some(event=>event.event==='finished'&&event.id>1),'A newer Home request must finish before releasing the held response');
+  assert.deepEqual(lateEvidence.oldResponse,{fresh:false,old:true});
+  late.release();await late.done;assert.equal(late.failure,undefined);lateEvidence.heldOutcome=late.outcome;
+  await page.unroute(late.path,late.handler);
+  // Settle a real browser rendering turn after the held handler, then assert once.
+  // Waiting for fresh again here could conceal an overwrite followed by recovery.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));await markLate('after-held-handler-settled');
+  const afterFresh=await page.evaluate(()=>{const observations=window.__homeHeldEvidence.observations;return observations.slice(observations.findIndex(item=>item.event==='fresh-generation-rendered'));});
+  assert(afterFresh.every(item=>item.fresh&&!item.old),'No observed commit may restore old private rows after fresh Home is displayed');
+  assert((await next().innerText()).includes('Fresh '+label));assert(!(await next().innerText()).includes('Main Office Operations and Customer Support'));checks.push('H06 actual old Home response held while source and generation change cannot repopulate prior private rows');
+ }finally{late.release();await late.done;await page.unroute(late.path,late.handler);lateEvidence.observations=await page.evaluate(()=>{const evidence=window.__homeHeldEvidence;evidence.observe('final');evidence.stop();delete window.__homeHeldEvidence;return evidence.observations;});page.off('request',onRequest);page.off('requestfinished',onFinished);page.off('requestfailed',onFailed);await writeFile(join(evidenceDirectory,`home-held-${engine}-${width}.json`),JSON.stringify(lateEvidence,null,2));}
+
+ stage='late-time';
+ const timeEvidence={requests:[]};details.lateTime=timeEvidence;
+ const timeRequest=(event,request)=>{const path=new URL(request.url()).pathname;if(['/api/employee/home','/api/employee/my-time'].includes(path))timeEvidence.requests.push({event,endpoint:path.endsWith('/home')?'home':'my-time',at:Date.now()});};
+ const timeStarted=request=>timeRequest('request',request),timeFailed=request=>timeRequest('failed',request),timeFinished=request=>timeRequest('finished',request);
+ page.on('request',timeStarted);page.on('requestfailed',timeFailed);page.on('requestfinished',timeFinished);
+ const time=gate('**/api/employee/my-time');await page.route(time.path,time.handler);
+ try{
+  await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await time.seen;
+  await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);
+  timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),state:document.querySelector('[data-home-state]')?.getAttribute('data-home-state'),clockedIn:document.querySelector('aside[aria-label="Own recorded time"]')?.textContent.includes('Clocked in')??false};});
+  // Synthetic lifecycle dispatch returns before React necessarily commits its
+  // invalidated state. Keep the old response held until that commit is visible.
+  await page.locator('[data-home-state="paused"]').waitFor({timeout:15000});assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);
+  timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await page.getByText('Clocked in',{exact:true}).count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};
+  assert.equal(timeEvidence.pausedCommit.requestCount,1,'Pagehide clearing must not require a new Home or MyTime request');
+  time.release();await time.done;assert.equal(time.failure,undefined);timeEvidence.heldOutcome=time.outcome;
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
+  assert.equal(await page.locator('[data-home-state="paused"]').count(),1);assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);
+  timeEvidence.afterHeldSettled={at:Date.now(),state:'paused',clockedInCount:0};
+ }finally{time.release();await time.done;await page.unroute(time.path,time.handler);page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
+ await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await ready();await page.getByText('Off clock',{exact:true}).waitFor();checks.push('H07 held actual MyTime response after pagehide/unmount cannot restore old Clocked In; fresh re-entry reflects persisted clock-out');
+ stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.locator('[data-home-refresh]').click();await leaving.seen;await page.goto(app.url+'/app/requests/hub');leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('[aria-labelledby="employee-reviewed-next-heading"] a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
  if(width===390){stage='sql-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Time off unavailable',{exact:true}).waitFor();assert.equal(await assignments().count(),2);await shot('unavailable');await blocker.query('COMMIT');await refresh();assert.equal(await page.getByText('Time off unavailable',{exact:true}).count(),0);checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='replaced-session';const other=await context.newPage();await login(other,scenario.actors[1]);await other.waitForLoadState('networkidle');await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().locator('time').count(),0);assert(await recorded().getByRole('link',{name:'Sign in',exact:true}).isVisible());assert(await recorded().getByRole('link',{name:'My Time',exact:false}).isVisible());assert.equal(await recorded().getByRole('button',{name:'Refresh recorded time',exact:true}).count(),0);await shot('session-replaced');checks.push('H10 actual same-browser account cookie replacement refuses former lifetime binding and clears every Home private row');
- await login();await ready();stage='early-my-time-route';const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await early.seen;await page.goto(app.url+'/app/schedule?week='+scenario.week);early.release();await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error');
+ await login();await ready();stage='early-my-time-route';const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await early.seen;await page.goto(app.url+'/app/schedule?week='+scenario.week);early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error');
  stage='removal-review';
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
  await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();
- await page.getByText('Schedule confirmed',{exact:true}).waitFor();
+ await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
  const [ack]=await q('SELECT publication_revision_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,scenario.week]);
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
@@ -191,13 +266,18 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='last-shift-removal';
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:scenario.week,managerId:'QAOWNER'},app.database.executor);
  await refresh();
- await page.getByText('Schedule reviews unavailable — a changed schedule needs review',{exact:true}).waitFor();
- assert(await page.getByRole('link',{name:'Open schedule reviews',exact:true}).isVisible());
+ const removed=items().filter({has:page.locator('a[href="/app/schedule?week='+scenario.week+'"]')});
+ await removed.getByText('Schedule removed',{exact:true}).waitFor();assert(await removed.getByText('Review needed',{exact:true}).isVisible());
+ const removalResponse=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{headers:{'X-Nevora-Home':binding},cache:'no-store'});return response.json();},binding);
+ details.removalSource=removalResponse.snapshot.sources.acknowledgements;
+ assert.equal(details.removalSource.state,'partial');assert.equal(details.removalSource.reason,'unpublished');
+ assert(removalResponse.snapshot.attention.some(item=>item.ref.kind==='SCHEDULE'&&item.ref.id===scenario.week&&item.required&&item.actionable));
+ assert.equal(removalResponse.allSet,false);
  assert(await page.getByText('Time off approved · Nov 1, 2030 – Nov 2, 2030',{exact:true}).isVisible());
  assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  await shot('last-shift-removal');
- checks.push('H13 actual canonical confirmation then last own shift removal and republish discloses unavailable weekly review, preserves independent time-off rows and canonical recovery without compact consent');
+ checks.push('H13 actual canonical confirmation then last own shift removal and republish exposes current actionable removal review, preserves independent time-off rows and canonical review without compact consent');
  stage='complete-zero';const clearActor='QA-'+label+'-CLEAR';
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Clear','555-0197','EMPLOYEE','loc-1')",[clearActor]);
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[clearActor,await hashPassword(TEST_PASSWORD)]);

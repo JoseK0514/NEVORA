@@ -10,7 +10,7 @@ import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { EmptyState } from "./empty-state";
 import { Avatar, Card, Row, Rows } from "./kit/kit";
 import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
-import { assignedHours, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
+import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedHours, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
 /* Manager and Owner Schedule, rebuilt for the clean Manager app (v3, approved Oct 19; spec "Schedule" in
  * docs/product/specs/clean-manager/spec.md). Phones: an iOS week strip, then the chosen day as a grouped list
@@ -46,6 +46,7 @@ function shiftLabel(shift: RosterShift, person: string) {
   const day = formatDayLabel(shift.date);
   return `Edit ${person}’s shift, ${day.weekday} ${day.day}, ${compactTime(shift.startTime)} to ${compactTime(shift.endTime)}, ${shift.location}${shift.status === "DRAFT" ? ", draft" : ""}`;
 }
+const absenceText = (rows: ReturnType<typeof absencesOn>) => fullDayAbsence(rows) ? "Time off · All day" : `Time off · ${rows.map(row => `${formatTime(row.startTime!)} – ${formatTime(row.endTime!)}`).join(", ")}`;
 const editHref = (shift: RosterShift) => `/app/schedule/edit?shiftId=${encodeURIComponent(shift.id)}`;
 
 /** Desktop roster block: the times show; the name, day, place, position and state are read out. */
@@ -76,8 +77,9 @@ function hoursText(hours: NonNullable<RosterEmployee["hours"]>) {
   return over ? `Over ${hours.maximum}h limit` : hours.target !== null ? `${hours.week} of ${hours.target}h target` : `${hours.week} of ${hours.maximum}h limit`;
 }
 
-export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], footnote, controls, notices }: {
+export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, footnote, controls, notices }: {
   employees: RosterEmployee[];
+  absences?: WeeklyApprovedAbsences;
   dates: string[];
   today: string;
   reviewDay?: string;
@@ -138,6 +140,8 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   // "Show N more" opens the rest of this day only; a new day starts collapsed. Focus moves to the first row it revealed.
   const showAll = moreDay === phoneDay;
   const showMore = () => { setMoreDay(phoneDay); requestAnimationFrame(() => document.querySelector<HTMLElement>(`#schedule-day .nv-rows > li:nth-child(${SHOWN + 1}) :is(a, button)`)?.focus()); };
+  const absenceKnown = (employeeId: string) => absences.state === "ready" && absences.employeeIds.includes(employeeId);
+  const dayAbsences = employees.map(employee => ({employee, rows: absencesOn(absences, employee.id, phoneDay)})).filter(entry => entry.rows.length);
   const dayList = <Card id="schedule-day" title={<>{longWeekday(phoneDay)}<span className="cm-count">{plural(dayRows.length, "shift", "shifts")}</span></>}
     titleLabel={`${longWeekday(phoneDay)}, ${plural(dayRows.length, "shift", "shifts")}`} foot={footnote}>
     <Rows label={`Shifts on ${longWeekday(phoneDay)}`}>
@@ -145,6 +149,10 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       {!showAll && dayRows.length > SHOWN ? <li className="cm-more"><button type="button" className="nv-row cm-more__button" onClick={showMore}>{`Show ${dayRows.length - SHOWN} more`}</button></li> : null}
       {!dayRows.length ? <Row title="No shifts" meta={`Nothing is scheduled on ${longWeekday(phoneDay)}.`} /> : null}
     </Rows>
+    {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="wb-note" role="status">Time off unavailable. Reload before adding shifts.</p> : null}
+    {dayAbsences.length ? <Rows label={`Approved time off on ${longWeekday(phoneDay)}`}>
+      {dayAbsences.map(({employee, rows}) => <Row key={employee.id} title={employee.name} meta={absenceText(rows)} />)}
+    </Rows> : null}
   </Card>;
 
   // ---------- Desktop: people × days ----------
@@ -169,9 +177,11 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       </th>
       {visibleDates.map(date => {
         const shifts = employee.shifts.filter(shift => shift.date === date);
+        const leave = absencesOn(absences, employee.id, date);
         return <td key={date} data-today={date === today || undefined}>
+          {leave.length ? <span className="wb-note">{absenceText(leave)}</span> : !absenceKnown(employee.id) ? <span className="wb-note">Time off unavailable</span> : null}
           {shifts.length ? shifts.map(shift => <Block shift={shift} person={employee.name} key={shift.id} />)
-            : <Link className="cm-add" tabIndex={-1} aria-hidden="true" href={newShift(date, employee.id)}>+ Add</Link>}
+            : absenceKnown(employee.id) && !fullDayAbsence(leave) ? <Link className="cm-add" tabIndex={-1} aria-hidden="true" href={newShift(date, employee.id)}>+ Add</Link> : null}
         </td>;
       })}
     </tr>;

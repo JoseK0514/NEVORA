@@ -26,13 +26,13 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
     let form;
     if(kind==='MISSING_ENTRY'){
-     await page.getByRole('button',{name:'Report missing time',exact:true}).click();
+     await page.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();
      form=page.locator('#employee-missing-time-correction');
      await form.getByLabel('Start',{exact:true}).fill(local(Temporal.Instant.from(entry.start).subtract({hours:3}).toString()));
      await form.getByLabel('End',{exact:true}).fill(local(Temporal.Instant.from(entry.start).subtract({hours:2}).toString()));
     }else{
      const details=page.locator('.employee-time-entry').first();await details.locator('summary').click();
-     await details.getByRole('button',{name:'Request correction',exact:true}).click();
+     await details.getByRole('button',{name:'Request a correction',exact:true}).click();
      form=details.locator('.employee-time-correction-form');
      if(kind==='BREAK_BOUNDARY')await form.getByLabel('What needs correction?').selectOption({index:1});
     }
@@ -60,21 +60,21 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
      await page.locator('.employee-time-entry').first().waitFor();
      if(kind!=='MISSING_ENTRY')await page.locator('.employee-time-entry').first().locator('summary').click();
-     await page.getByRole('button',{name:'Retry same request',exact:true}).waitFor();
-     await page.getByRole('button',{name:kind==='MISSING_ENTRY'?'Report missing time':'Request correction',exact:true}).click();
+     await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
+     await page.locator(kind==='MISSING_ENTRY'?'main .employee-correction-center':'.employee-time-entry').first().getByRole('button',{name:'Request a correction',exact:true}).click();
      releaseDelivery();
      checked(`${engine}: ${kind} in-flight private pause preserves the command before response classification`);
     }
     await page.getByText('The server outcome could not be confirmed. Retry the same request safely.',{exact:true}).waitFor();
-    assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),1);
+    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),1);
     assert.equal(await form.getByRole('button',{name:'Send request',exact:true}).isDisabled(),true);
     // The inherited private reader really clears/unmounts its children on pause.
     await c.setOffline(true);await page.getByText('Updates paused',{exact:true}).waitFor();
-    assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
+    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
     await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
     await page.locator('.employee-time-entry').first().waitFor();
     if(kind!=='MISSING_ENTRY')await page.locator('.employee-time-entry').first().locator('summary').click();
-    const retry=page.getByRole('button',{name:'Retry same request',exact:true});await retry.waitFor();
+    const retry=page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/});await retry.waitFor();
     if(kind==='ENTRY_BOUNDARY'&&loss==='after'){
      for(const width of [320,375,390,430,768,1024,1440]){
       await page.setViewportSize({width,height:width<=430?844:1000});
@@ -82,8 +82,14 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
       const shot=join(evidence,`${engine}-employee-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
      }
     }
-    await retry.focus();await page.keyboard.press('Enter');
-    await page.getByText('Correction request sent for manager review.',{exact:true}).waitFor();
+    // WebKit can expose animated disclosure content before it accepts focus.
+    await retry.evaluate(async e=>{await new Promise(requestAnimationFrame);await Promise.all((e.closest('details')?.getAnimations({subtree:true})??[]).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
+    await retry.focus();
+    const native=await retry.evaluate(e=>({documentFocused:document.hasFocus(),buttonFocused:document.activeElement===e,enabled:!e.disabled&&e.getAttribute('aria-disabled')!=='true',disclosureOpen:e.closest('details')?.open??null,runningAnimations:(e.closest('details')?.getAnimations({subtree:true})??[]).filter(a=>a.playState==='running').length}));
+    observations.nativeRetries??=[];const receipt={engine,kind,loss,...native,postCallsBefore:commands.length};observations.nativeRetries.push(receipt);
+    assert(native.documentFocused&&native.buttonFocused&&native.enabled,'Native retry must have foreground focus and be enabled');
+    await page.keyboard.press('Enter');
+    await page.getByText('Correction request sent for manager review.',{exact:true}).waitFor();receipt.postCallsAfter=commands.length;
     assert.equal(commands.length,2);assert.deepEqual(commands[1],commands[0]);
     assert.deepEqual(await q('SELECT count(*)::int AS count FROM time_correction_requests WHERE id=$1',[commands[0].operationId]),[{count:1}]);
     await decide(owner,commands[0].operationId);
@@ -163,18 +169,18 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
    const details=page.locator('.employee-time-entry').first();await details.locator('summary').click();
-   await details.getByRole('button',{name:'Request correction',exact:true}).click();
+   await details.getByRole('button',{name:'Request a correction',exact:true}).click();
    await details.getByLabel('Reason',{exact:true}).fill('Fictional logout recovery boundary.');
    await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
    await details.getByRole('button',{name:'Send request',exact:true}).click();
-   await page.getByRole('button',{name:'Retry same request',exact:true}).waitFor();
+   await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
    await page.locator('.employee-more-trigger').click();
    await Promise.all([page.waitForURL(url=>url.pathname==='/login'),page.locator('#employee-more-navigation').getByRole('button',{name:'Sign out',exact:true}).click()]);
    await login(c,'QAOWNER');await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
-   assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
+   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    await login(c,'D2-E');await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
    await page.locator('.employee-time-entry').first().waitFor();
-   assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
+   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    checked(`${engine}: sign-out/account-switch/sign-in clears uncertain Employee command memory`);
   }finally{await c.close();}
 
@@ -183,20 +189,20 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    const page=await denied.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
    const details=page.locator('.employee-time-entry').first();await details.locator('summary').click();
-   await details.getByRole('button',{name:'Request correction',exact:true}).click();
+   await details.getByRole('button',{name:'Request a correction',exact:true}).click();
    await details.getByLabel('Reason',{exact:true}).fill('Fictional current authority-loss regression.');
    await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
    await details.getByRole('button',{name:'Send request',exact:true}).click();
-   await page.getByRole('button',{name:'Retry same request',exact:true}).waitFor();
+   await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
    await q("UPDATE employees SET active=false WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-   await page.getByText('Sign in again',{exact:true}).waitFor();
-   assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
+   await page.locator('main .employee-time-message').getByText('Your session ended',{exact:true}).waitFor();
+   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    await q("UPDATE employees SET active=true WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
    await page.locator('.employee-time-entry').first().waitFor();
    await page.locator('.employee-time-entry').first().locator('summary').click();
-   assert.equal(await page.getByRole('button',{name:'Retry same request',exact:true}).count(),0);
+   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    checked(`${engine}: current Employee authority denial clears uncertain recovery before re-entry`);
   }finally{await q("UPDATE employees SET active=true WHERE id='D2-E'");await denied.close();}
   assert.deepEqual(observations.runtimeErrors,[]);

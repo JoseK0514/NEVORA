@@ -300,6 +300,7 @@ function jobMatches(job: string, ref: string, head = '', base = '') {
   const values: Record<string, string> = { 'github.ref': ref, 'github.head_ref': head, 'github.base_ref': base };
   const condition = workflow.jobs[job]?.if;
   if (!condition) return true;
+  if (condition === '${{ always() }}') return true;
   return condition.split(' || ').some(part => {
     const equality = part.match(/^(github\.(?:ref|head_ref|base_ref)) == '([^']+)'$/);
     if (equality) return values[equality[1]] === equality[2];
@@ -330,8 +331,8 @@ it.each([
   ['refs/pull/12/merge', 'codex/phase-e-example', 'development'],
   ['refs/pull/13/merge', 'codex/phase-f-inventory', 'main'],
 ])('requires every SQL/browser regression for triggered %s head=%s base=%s', (ref, head, base) => {
-  for (const name of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']) {
-    expect(workflow.jobs[name].if, name+' must not skip branches').toBeUndefined();
+  for (const name of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui', 'phase-e-ui-suite']) {
+    expect(workflow.jobs[name].if, name+' must not skip branches').toBe(name === 'phase-e-ui' ? '${{ always() }}' : undefined);
     expect(jobMatches(name, ref, head, base), name).toBe(true);
   }
 });
@@ -349,4 +350,26 @@ it('source safeguards hold all Git deployments through quarantine and integratio
   // Global false also holds development, main and future branch names.
   // Branch maps enable unspecified branches by default.
   expect(config.git?.deploymentEnabled).toBe(false);
+});
+
+it.each(['omitted-suite', 'budget', 'skip-aggregate', 'missing-verifier', 'duplicate-artifact', 'merge-artifacts', 'ignore-failure'])('workflow contract rejects %s', mutation => {
+  const changed = require('js-yaml').load(readFileSync('.github/workflows/ci.yml', 'utf8'));
+  const leaf = changed.jobs['phase-e-ui-suite'], aggregate = changed.jobs['phase-e-ui'];
+  if (mutation === 'omitted-suite') leaf.strategy.matrix.suite.pop();
+  if (mutation === 'budget') leaf['timeout-minutes'] = 60;
+  if (mutation === 'skip-aggregate') aggregate.if = "${{ github.ref == 'refs/heads/main' }}";
+  if (mutation === 'missing-verifier') leaf.steps = leaf.steps.filter((step: { run?: string }) => !step.run?.includes('phase-e-browser-evidence.mjs leaf'));
+  if (mutation === 'duplicate-artifact') leaf.steps.find((step: { uses?: string }) => step.uses?.startsWith('actions/upload-artifact@')).with.name = 'phase-e-browser-${{ github.sha }}';
+  if (mutation === 'merge-artifacts') aggregate.steps.find((step: { uses?: string }) => step.uses?.startsWith('actions/download-artifact@')).with['merge-multiple'] = true;
+  if (mutation === 'ignore-failure') leaf['continue-on-error'] = true;
+  const root = directory();
+  put(root, '.github/workflows/ci.yml', require('js-yaml').dump(changed));
+  put(root, 'vercel.json', readFileSync('vercel.json', 'utf8'));
+  const result = spawnSync(process.execPath, ['--test', '--test-reporter=tap', resolve('scripts/release-ci-contract.check.mjs')], { cwd: root, env: environment(), encoding: 'utf8', timeout: 15_000 });
+  expect(result.status, mutation).not.toBe(0);
+  const rejectedControls = [...result.stdout.matchAll(/^not ok \d+ - (.+)$/gm)].map(match => match[1]);
+  const suiteControl = 'five bounded leaves retain strict current-source aggregation and unique raw artifacts';
+  const expectedControls = mutation === 'budget' ? ['all-browser budget fits the existing job while single-suite and SQL budgets stay bounded']
+    : mutation === 'skip-aggregate' ? ['all triggered candidate branches receive mandatory SQL and browser gates', suiteControl] : [suiteControl];
+  expect(rejectedControls).toEqual(expectedControls);
 });

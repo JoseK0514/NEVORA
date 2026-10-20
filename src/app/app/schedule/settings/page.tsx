@@ -28,6 +28,12 @@ import { listCoverageWindows, listEmployeeHourTargets, listLocationStaffingSetti
 import { addCoverageWindowFormAction, replaceCoverageWindowPositionRequirementsAction, deleteCoverageWindowAction, saveScheduleHealthSettingsFormAction } from "./actions";
 import { formatTimeRange } from "@/lib/date-utils";
 
+import { setAvailabilityDeadlineAction } from "../actions";
+import { getWeekSettings } from "@/lib/data/week-settings";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
+import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
+
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 /* IS-B9: the page's own section links target these headings. The sections keep their ids (coverage-staffing,
@@ -41,7 +47,7 @@ function Empty({ icon, title, children, action }: { icon: React.ReactNode; title
 }
 
 export default async function ScheduleSettingsPage({ searchParams }: {
-  searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string; week?: string; deadlineSaved?: string; availabilityDeadline?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
   const params=await searchParams;
@@ -49,14 +55,17 @@ export default async function ScheduleSettingsPage({ searchParams }: {
   let policy = null;
   let policyUnavailable = false;
   try { policy = await readShiftChangePolicy(neonNotificationExecutor()); } catch { policyUnavailable = true; }
+  const workspace = await getWorkspace();
+  const weekStart = params.week && isValidWeekStart(params.week) ? params.week : weekStartFor(businessDate(new Date(), workspace.timeZone));
+  const weekSettings = await getWeekSettings(weekStart);
   const [staffing, employees, locations, coverageWindows, positions] = await Promise.all([
     listLocationStaffingSettings(), listEmployeeHourTargets(), listLocations(),
     listCoverageWindows(), listPositions({ includeInactive: true }),
   ]);
-    return {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions};
+    return {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings};
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Scheduling rules unavailable" reason={source.reason}/>;
-  const {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions}=source.data;
+  const {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings}=source.data;
   const weekOrder = [1, 2, 3, 4, 5, 6, 0];
   const coverageGroups = [...new Set(coverageWindows.map(window => window.locationId))].map(locationId => {
     const windows = coverageWindows.filter(window => window.locationId === locationId)
@@ -71,12 +80,15 @@ export default async function ScheduleSettingsPage({ searchParams }: {
 
   return (<ScopedReadFrame observation={source}>
     <div className="nv-page wb-page wb-rules" data-nv-page="">
-      <PageBand back={{ href: "/app/schedule", label: "Schedule" }} title={"Sched\u00aduling rules"} summary="Set staffing, weekly hours and recurring coverage so your team knows what a complete schedule needs." overlap={false} />
+      <PageBand back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} title={"Sched\u00aduling rules"} summary="Set staffing, weekly hours and recurring coverage so your team knows what a complete schedule needs." overlap={false} />
       <div className="nv-content">
       <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" /><KeepFocusClear />
-      {params.error || params.saved || params.windowSaved || params.windowDeleted ? <div className="wb-feedback">
+      {params.error || params.saved || params.windowSaved || params.windowDeleted || params.deadlineSaved ? <div className="wb-feedback">
       {params.error ? <p className="form-error" role="alert"><WarningCircleIcon size={22} aria-hidden="true" /><span>{
-        params.error === "invalid_staffing"
+        params.error === "INVALID_DEADLINE" ? "Enter a valid availability deadline in the workspace time zone."
+          : params.error === "DEADLINE_WORKSPACE_CHANGED" ? "Workspace settings changed. Review the deadline and try again."
+          : params.error === "INVALID_SHIFT" ? "Choose a valid Monday for the schedule week."
+          : params.error === "invalid_staffing"
           ? "Minimum staff must be a whole number from 1 to 100, and each new location needs a designated lead choice."
           : params.error === "invalid_hours"
             ? "Targets and maximums must be from 0 to 168 hours."
@@ -84,6 +96,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
               ? "That coverage period already exists."
               : "Enter a day, a start and end time, and staff numbers if you need them."
       }</span></p> : null}
+      {params.deadlineSaved ? <p className="form-success" role="status">Availability deadline saved.</p> : null}
       {params.saved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Scheduling rules saved.</span></p> : null}
       {params.windowSaved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Coverage period added.</span></p> : null}
       {params.windowDeleted ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Coverage period removed.</span></p> : null}
@@ -93,6 +106,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
         <aside className="wb-rules-nav">
           <nav className="wb-jump" aria-label="Scheduling rule sections">
             <span className="wb-jump__label">On this page</span>
+            <a href="#rules-deadline">Availability deadline</a>
             <a href="#rules-staffing">Location staffing</a>
             <a href="#rules-hours">Weekly hours</a>
             <a href="#rules-coverage">Recurring coverage</a>
@@ -102,6 +116,15 @@ export default async function ScheduleSettingsPage({ searchParams }: {
         </aside>
 
         <div className="wb-rules-content">
+          <section className="nv-card" aria-labelledby="rules-deadline">
+            <RuleHeading title="Availability deadline" id="rules-deadline" meta={formatWeekRange(weekStart)} />
+            <ActionForm action={setAvailabilityDeadlineAction} className="wb-body wb-form wb-config" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "nv-btn", kind: "primary"}}>
+              <input type="hidden" name="returnTo" value="/app/schedule/settings" />
+              <input type="hidden" name="weekStart" value={weekStart} />
+              <label className="wb-field"><span>Availability deadline</span><input type="datetime-local" name="availabilityDeadline" aria-describedby="deadline-help" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></label>
+              <p className="wb-help" id="deadline-help">Times in {workspace.timeZone.replaceAll("_", " ")}. Leave blank to clear the deadline.</p>
+            </ActionForm>
+          </section>
           <RulesSaveForm action={saveScheduleHealthSettingsFormAction} bar={staffing.length > 0 || employees.length > 0}>
             <section className="nv-card manager-issue-target" id="coverage-staffing" tabIndex={-1}>
               <RuleHeading title="Location staffing" id="rules-staffing" />
