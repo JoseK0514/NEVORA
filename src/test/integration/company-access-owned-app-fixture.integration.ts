@@ -1,6 +1,6 @@
 import {createHash,randomUUID} from 'node:crypto';
 import {beforeAll,afterAll,expect,it,vi} from 'vitest';
-import {createDisposableExchangeDatabase} from './local-postgres';
+import {createDisposableExchangeDatabase,createDisposableFoundationDatabase} from './local-postgres';
 import {initializeCompanyAccessOwnedFixture} from './company-access-owned-app-fixture';
 import {verifyPassword} from '../../lib/auth/password';
 import {readOperationalAuthority,readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
@@ -15,7 +15,15 @@ let fixture:Awaited<ReturnType<typeof initializeCompanyAccessOwnedFixture>>;
 let identity:OwnedDatabaseIdentity;
 const oldPayroll=process.env.NEVORA_PAYROLL_ENABLED;
 const q=<T=Record<string,unknown>>(text:string,values:readonly unknown[]=[])=>db.executor.query<T>({text,values});
-beforeAll(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});try{[identity]=await q<OwnedDatabaseIdentity>("SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()");fixture=await initializeCompanyAccessOwnedFixture({executor:db.executor,identity});process.env.NEVORA_PAYROLL_ENABLED='true';}catch(error){await db.dispose();throw error;}});
+beforeAll(async()=>{
+ // The Company runner uses Foundation names; the owned app runner uses Exchange.
+ // Both helpers retain their own complete URL, fresh-database and marker guards.
+ const target=process.env.FUEL_TEST_DATABASE_URL;
+ const foundation=target&&/^nevora_foundation_test_[a-z0-9_]{1,40}$/.test(decodeURIComponent(new URL(target).pathname.slice(1)));
+ const createDatabase=foundation?createDisposableFoundationDatabase:createDisposableExchangeDatabase;
+ db=await createDatabase({mode:'current-runtime'});
+ try{[identity]=await q<OwnedDatabaseIdentity>("SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()");fixture=await initializeCompanyAccessOwnedFixture({executor:db.executor,identity});process.env.NEVORA_PAYROLL_ENABLED='true';}catch(error){await db.dispose();throw error;}
+});
 afterAll(async()=>{try{await db?.dispose();}finally{if(oldPayroll===undefined)delete process.env.NEVORA_PAYROLL_ENABLED;else process.env.NEVORA_PAYROLL_ENABLED=oldPayroll;}});
 it('adopts the exact legacy census before new Managers and uses real normal credential hashes',async()=>{
  expect(await q('SELECT state,owner_policy_receipt_id,legacy_manager_census FROM company_access_adoption')).toEqual([{state:'ENFORCED',owner_policy_receipt_id:'01a13cda-e556-7652-8469-a18a77094364',legacy_manager_census:expect.arrayContaining([expect.objectContaining({employeeId:'QALEGACY'})])}]);

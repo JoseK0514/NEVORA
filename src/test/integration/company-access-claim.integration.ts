@@ -71,8 +71,10 @@ it('strict bounded public JSON rejects identity/phone/query/transport overrides 
 it('expired custody is invalid and terminal digests clear only after the 24-hour grace',async()=>{
  const f=await companyAccessFixture();try{
   const proof=randomBytes(32).toString('base64url'),id=randomUUID();
-  await f.q(`INSERT INTO company_invitations(workspace_id,id,employee_id,revision,target_version,email_fingerprint,issuer_employee_id,issuer_generation,proof_digest,issued_at,expires_at)
-   SELECT 'workspace-fuel',$1,'target',1,updated_at::text,$2,'owner',1,$3,clock_timestamp()-interval '25 hours 15 minutes',clock_timestamp()-interval '25 hours' FROM employees WHERE id='target'`,[id,invitationEmailFingerprint('target@example.invalid'),invitationProofDigest(proof)]);
+  await f.q(`WITH observed AS MATERIALIZED(SELECT clock_timestamp() AS at)
+   INSERT INTO company_invitations(workspace_id,id,employee_id,revision,target_version,email_fingerprint,issuer_employee_id,issuer_generation,proof_digest,issued_at,expires_at)
+   SELECT 'workspace-fuel',$1,'target',1,updated_at::text,$2,'owner',1,$3,observed.at-interval '25 hours 15 minutes',observed.at-interval '25 hours' FROM employees CROSS JOIN observed WHERE id='target'`,[id,invitationEmailFingerprint('target@example.invalid'),invitationProofDigest(proof)]);
+  expect(await f.q("SELECT expires_at-issued_at=interval '15 minutes' AS exact_lifetime FROM company_invitations WHERE id=$1",[id])).toEqual([{exact_lifetime:true}]);
   expect(await claimInvitation(proof,ownedPassword,f.db.executor)).toEqual({state:'invalid'});
   expect(await clearTerminalInvitationDigests(f.db.executor)).toBe(1);
   expect(await f.q('SELECT proof_digest FROM company_invitations WHERE id=$1',[id])).toEqual([{proof_digest:null}]);
