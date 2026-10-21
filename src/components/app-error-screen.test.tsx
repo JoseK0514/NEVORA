@@ -4,6 +4,8 @@ import { expect, it, vi } from "vitest";
 import { AppErrorScreen } from "./app-error-screen";
 import RootError from "../app/error";
 import GlobalError from "../app/global-error";
+const router=vi.hoisted(()=>({refresh:vi.fn()}));
+vi.mock('next/navigation',()=>({useRouter:()=>router}));
 
 vi.mock("./app-error-screen.css", () => ({}));
 vi.mock("@/components/kit/kit.css", () => ({}));
@@ -48,4 +50,8 @@ it("UI Try again asks Next to refetch (retry), not just re-render the failed res
   };
   find(PortalError({ error, reset, retry }))?.();
   expect(retry).toHaveBeenCalledOnce(); expect(reset).not.toHaveBeenCalled();
+  expect(router.refresh).not.toHaveBeenCalled();
+  find(PortalError({error,reset}))?.();
+  expect(router.refresh).toHaveBeenCalledOnce();
+  expect(reset).toHaveBeenCalledOnce();
 });

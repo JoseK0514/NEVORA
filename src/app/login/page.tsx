@@ -31,7 +31,7 @@ export default async function LoginPage({
       <p className="ap-subtitle">{t.signInSubtitle}</p>
 
       {params.error ? (
-        <p className="ap-alert" data-tone="error" id="login-error" role="alert">{params.error === "deleting" ? t.loginDeleting : t.loginError}</p>
+        <p className="ap-alert" data-tone="error" id="login-error" role="alert">{params.error === "deleting" ? t.loginDeleting : params.error === "busy" ? t.loginBusy : t.loginError}</p>
       ) : null}
       {params.activated ? (
         <p className="ap-alert" data-tone="done" role="status">{t.activated}</p>

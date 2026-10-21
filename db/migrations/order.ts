@@ -43,6 +43,8 @@ export const BASE_MIGRATIONS = [
   '0031_workspace_presentation.sql',
   '0032_workspace_words_modules.sql',
   '0033_management_alert_preferences.sql',
+  '0034_account_deletion_requests.sql',
+  '0035_passkeys.sql',
 ] as const;
 
 /** Applied last, in exactly this order, once the company and Owner exist:
