@@ -3,11 +3,11 @@
 /* Signature Clocker. Tokens are local: the kiosk runs outside the portal shell. A company brand (B1) may
  * override the four --clocker-* accent tokens; the deep-teal side stays NEVORA's. */
 .page {
-  --clocker-accent: var(--sig-deep);
-  --clocker-accent-hover: var(--sig-mark);
+  --clocker-accent: var(--sig-fill);
+  --clocker-accent-hover: var(--sig-fill-hover);
   --clocker-focus: var(--sig-action);
   --clocker-soft: var(--sig-action-wash);
-  --clocker-on-accent: var(--sig-on-deep);
+  --clocker-on-accent: var(--sig-on-fill);
   --ck-deep: var(--sig-deep);
   --ck-mark: var(--sig-mark);
   --ck-mint: var(--sig-mint);

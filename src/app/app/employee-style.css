@@ -258,7 +258,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-sett
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > p[role]:not(#e5):not(#e52) { color: var(--e5-ink-3); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-actions:not(#e5):not(#e52) { margin-left: 44px; gap: 8px; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button:not(#e5):not(#e52) { min-height: 46px; border-radius: 14px; font-weight: 500; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.primary:not(#e5):not(#e52) { background: var(--e5-deep); color: #FFFFFF; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.primary:not(#e5):not(#e52) { background: var(--sig-fill); color: var(--sig-on-fill); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.secondary:not(#e5):not(#e52) { background: #FFFFFF; color: var(--e5-ink); box-shadow: inset 0 0 0 1px var(--e5-rule); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-instructions:not(#e5):not(#e52), html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-message:not(#e5):not(#e52) { margin-left: 44px; padding: 12px 14px; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--e5-rule); }
 

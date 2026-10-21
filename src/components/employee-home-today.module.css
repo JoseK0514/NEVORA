@@ -56,8 +56,8 @@
 .h5Extra:not(#h5) { margin-top: 4px; font: 400 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-2); }
 .h5Progress:not(#h5) { margin-top: 24px; }
 .h5Track:not(#h5) { position: relative; height: 2px; background: var(--h5-rule); }
-.h5Track span:not(#h5) { position: absolute; inset: 0 auto 0 0; min-width: 2px; background: var(--h5-deep); }
-.h5Track span:not(#h5)::after { content: ""; position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--h5-deep); }
+.h5Track span:not(#h5) { position: absolute; inset: 0 auto 0 0; min-width: 2px; background: var(--sig-fill); }
+.h5Track span:not(#h5)::after { content: ""; position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--sig-fill); }
 .h5Ends:not(#h5) { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font: 400 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-3); font-variant-numeric: tabular-nums; }
 
 /* The clock row: [● Off clock] ............ [refresh] [My time →]. The heading, the empty sentence, the Clocker note

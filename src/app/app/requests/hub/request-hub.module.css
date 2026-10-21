@@ -26,9 +26,9 @@
 
 /* Sheet */
 .r6Sheet:not(#r6) { position: relative; z-index: 1; display: flex; flex-direction: column; min-width: 0; margin-top: -30px; padding-top: 26px; border-radius: 28px 28px 0 0; background: var(--r6-page); }
-.r6Primary:not(#r6) { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; margin: 0 16px; border-radius: 10px; background: var(--r6-deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--r6-font); text-decoration: none; }
+.r6Primary:not(#r6) { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; margin: 0 16px; border-radius: 10px; background: var(--sig-fill); color: var(--sig-on-fill); font: 500 1rem/1.25rem var(--r6-font); text-decoration: none; }
 .r6Primary svg:not(#r6) { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
-@media (hover: hover) { .r6Primary:hover:not(#r6) { background: #12423F; } }
+@media (hover: hover) { .r6Primary:hover:not(#r6) { background: var(--sig-fill-hover); } }
 .r6Section:not(#r6) { display: flex; flex-direction: column; min-width: 0; margin-top: 30px; }
 .r6Head:not(#r6) { margin: 0 24px 12px; }
 .r6Head h2:not(#r6) { font: 600 .75rem/1rem var(--r6-font); letter-spacing: .13em; text-transform: uppercase; color: var(--r6-ink-2); }
