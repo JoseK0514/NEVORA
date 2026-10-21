@@ -208,11 +208,16 @@ try{
     const scriptsReady=new Promise(resolve=>{releaseScripts=resolve;});
     const holdScript=route=>{if(new URL(route.request().url()).origin!==app.url)return route.abort();const pending=scriptsReady.then(()=>route.continue());heldScripts.push(pending);return pending;};
     await op.route(scriptPattern,holdScript);
+    let preinitReceiptRequests=0;
+    const beforeInitialization=request=>{if(new URL(request.url()).pathname==='/api/manager/clocker-recovery')preinitReceiptRequests++;};
+    op.on('request',beforeInitialization);
     try{
-      await op.goto(app.url+'/app/clocker-recovery',{waitUntil:'commit'});await op.getByLabel('Saved action reference',{exact:true}).waitFor();
-      assert(await op.getByLabel('Saved action reference',{exact:true}).isDisabled(),'Receipt reference must stay disabled until the client controller is ready');
-      assert(await op.getByRole('button',{name:'Check receipt',exact:true}).isDisabled(),'Receipt submission must stay disabled before initialization');
-    }finally{releaseScripts();await Promise.all(heldScripts);}
+      await op.goto(app.url+'/app/clocker-recovery',{waitUntil:'commit'});
+      await op.getByRole('heading',{name:'Current view needs a fresh check',exact:true}).waitFor();
+      assert.equal(await op.getByLabel('Saved action reference',{exact:true}).count(),0,'Company Access withholds the recovery form before initialization');
+      assert.equal(await op.getByRole('button',{name:'Check receipt',exact:true}).count(),0,'Receipt submission is unavailable before fresh authorization');
+      assert.equal(preinitReceiptRequests,0,'No receipt lookup is sent while initialization is held');
+    }finally{op.off('request',beforeInitialization);releaseScripts();await Promise.all(heldScripts);}
     checked(engine+': UX-05 delayed scripts preserve safe receipt initialization');
     const receiptRequests=[],receiptReplies=[];
     const requestReceipt=request=>{if(request.url().endsWith('/api/manager/clocker-recovery'))receiptRequests.push({commandId:request.postDataJSON()?.commandId});};
