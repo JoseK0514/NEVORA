@@ -429,7 +429,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <ul className="nv-rows">{hidden.map(item=>phoneRow(item,false))}</ul>
               </details></li>:null}
               {phoneFold?<li className="cm-tc-more cm-tc-idle"><details open={phoneIdle.some(item=>target===`timecard-${item.card.employeeId}`)||undefined}>
-                <summary className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{`${phoneIdle.length} people with no time yet`}</span></span><span className="nv-row__trail">0h</span></summary>
+                <summary className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{`${phoneIdle.length} people with no time yet`}</span></span><span className="nv-row__trail">0h</span><CaretDownIcon className="nv-row__chev" size={16} weight="bold" aria-hidden="true"/></summary>
                 <ul className="nv-rows">{phoneIdle.map(item=>phoneRow(item,false))}</ul>
               </details></li>:null}
             </ul>
