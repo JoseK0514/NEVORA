@@ -18,7 +18,6 @@ type Statement = PayrollStatementsResponse['statements'][number];
 export type NextPay = { payday: string; daysUntil: number } | null;
 
 const utc = (date: string) => new Date(`${date}T12:00:00Z`);
-const longDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric' }).format(utc(date));
 /** "Sep 21–27", or "Sep 28 – Oct 4" across a month. */
 export function periodLabel(start: string, end: string) {
   const month = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'short' }).format(utc(date));

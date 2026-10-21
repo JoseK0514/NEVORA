@@ -57,7 +57,7 @@ export default async function ProfilePage(){
     </ProfileCalendarDisclosure>
    </div>
   </section>
-  <div className={`profile-layout ${pf.pfSection}`}>
+  <div className={pf.pfSection}>
    <EmployeeAccountPanel key={authority} kind="profile" authority={authority}/>
   </div>
   <AccountPrivacyLinks/>
