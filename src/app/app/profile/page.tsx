@@ -60,7 +60,7 @@ export default async function ProfilePage(){
   <div className={`profile-layout ${pf.pfSection}`}>
    <EmployeeAccountPanel key={authority} kind="profile" authority={authority}/>
   </div>
-  <AccountPrivacyLinks/>
+  <AccountPrivacyLinks variant="settings" sectionClassName={pf.pfSection} headingClassName={pf.pfHeading}/>
   <section className={`profile-signout ${pf.pfSignout}`} aria-label="Session"><PortalSignout><button type="submit" className="profile-setting-row profile-signout-row"><span className="profile-setting-copy"><NavIcon name="logout" size={20}/><strong>Sign out</strong></span></button></PortalSignout></section>
  </SigPage></ProfileFrame>;
 }

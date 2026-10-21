@@ -1,17 +1,37 @@
 import Link from "next/link";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { FileTextIcon } from "@phosphor-icons/react/dist/ssr/FileText";
+import { LifebuoyIcon } from "@phosphor-icons/react/dist/ssr/Lifebuoy";
+import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
+import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { policiesVisible } from "@/lib/legal/policies";
 
 const rows = [
-  { href: "/privacy", title: "Privacy Policy", meta: "How NEVORA handles your information" },
-  { href: "/terms", title: "Terms of Use", meta: "The rules for using NEVORA" },
-  { href: "/support", title: "Support", meta: "Get help from NEVORA" },
-  { href: "/app/account/delete", title: "Delete my account", meta: "Ask us to delete your NEVORA account" },
+  { href: "/privacy", title: "Privacy Policy", meta: "How NEVORA handles your information", Icon: ShieldCheckIcon },
+  { href: "/terms", title: "Terms of Use", meta: "The rules for using NEVORA", Icon: FileTextIcon },
+  { href: "/support", title: "Support", meta: "Get help from NEVORA", Icon: LifebuoyIcon },
+  { href: "/app/account/delete", title: "Delete my account", meta: "Ask us to delete your NEVORA account", Icon: TrashIcon },
 ] as const;
 
-/** Profile, every role: the policies, support and Delete my account. Hidden while the policies are unpublished. */
-export function AccountPrivacyLinks() {
+/** Profile, every role: the policies, support and Delete my account. Hidden while the policies are unpublished.
+ * `settings` draws it like the employee Profile's Settings list (Signature); the default is the kit card. */
+export function AccountPrivacyLinks({ variant = "card", sectionClassName = "", headingClassName = "" }: {
+  variant?: "card" | "settings"; sectionClassName?: string; headingClassName?: string;
+}) {
   if (!policiesVisible()) return null;
+  if (variant === "settings") return (
+    <section className={`profile-settings account-privacy ${sectionClassName}`} aria-labelledby="account-privacy-title">
+      <h2 id="account-privacy-title" className={headingClassName}>Privacy and your account</h2>
+      <div className="profile-settings-list">
+        {rows.map(({ href, title, meta, Icon }) => (
+          <Link key={href} className="profile-setting-row" href={href} prefetch={false}>
+            <span className="profile-setting-copy"><Icon size={20} aria-hidden="true" /><span><strong>{title}</strong><small>{meta}</small></span></span>
+            <CaretRightIcon className="profile-setting-caret" size={18} aria-hidden="true" />
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
   return (
     <section className="nv-card account-privacy" aria-labelledby="account-privacy-title">
       <div className="nv-card__head"><h2 className="nv-card__title" id="account-privacy-title">Privacy and your account</h2></div>

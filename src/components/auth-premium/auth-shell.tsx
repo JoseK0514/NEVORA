@@ -94,7 +94,7 @@ export function AuthShell({ lang, t, variant, back, bandTitle, children }: {
             {back ? <Link className="ap-back" href={back}><CaretLeftIcon size={14} weight="bold" aria-hidden="true" />{t.backToSignIn}</Link> : null}
             {children}
           </div>
-          <footer className="ap-legal"><BrandLegal /></footer>
+          <footer className="ap-legal"><BrandLegal lang={lang} /></footer>
         </div>
       </div>
       <aside className="ap-panel" aria-label="NEVORA">
