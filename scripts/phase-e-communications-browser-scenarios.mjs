@@ -12,7 +12,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  runtimeErrors.setStageReader(()=>stage);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const details={engine,width,checks,screenshots,managerErrors,managerNetworkFailures:[]},shot=async name=>{const path=join(evidenceDirectory,`updates-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
- const login=async(target,id)=>{await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.waitForLoadState('networkidle');};
+ const login=async(target,id)=>{await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.waitForLoadState('networkidle');};
  const measureActions=async name=>{const heights=await page.locator('.wb-update').getByRole('button').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));assert(heights.length>0,'Current update actions were measured');assert(heights.every(h=>h>=44),'Current update actions keep 44px targets');(details.actionTargetHeights??=[]).push({stage:name,heights});};
  let managerContext,manager;
  try{
@@ -23,8 +23,17 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   let bootstrapWrites=Promise.resolve();
   const saveBootstrap=()=>{const snapshot=JSON.stringify({engine,width,...bootstrapReceipt},null,2);bootstrapWrites=bootstrapWrites.then(()=>writeFile(bootstrapReport,snapshot));return bootstrapWrites;};
   for(const path of managerReads){const response=path==='/api/manager/action-center'?await managerContext.request.post(app.url+path,{headers:{Origin:app.url,'x-nevora-action-center':'1'},data:{weekStart:scenario.week},timeout:15_000}):await managerContext.request.get(app.url+path,{headers:{'x-nevora-today':'1'},timeout:15_000});bootstrapReceipt.compilation.push({path,status:response.status()});await saveBootstrap();assert.equal(response.status(),401,'Unauthenticated route preparation stays denied');}
-  const bootstrap=managerReads.map(path=>manager.waitForResponse(response=>new URL(response.url()).pathname===path).then(async response=>{bootstrapReceipt.authenticated.push({path,status:response.status()});await saveBootstrap();assert.equal(response.status(),200,'Current Owner dashboard read succeeds');return response;},async error=>{bootstrapReceipt.authenticated.push({path,failure:safeBrowserFailure(error).summary});await saveBootstrap();throw error;}));
-  await Promise.all([login(manager,'QAOWNER'),...bootstrap]);await manager.waitForLoadState('networkidle');
+  const firstReads=new Map();
+  const captureRead=response=>{const path=new URL(response.url()).pathname;if(managerReads.includes(path)&&!firstReads.has(path))firstReads.set(path,response);};
+  manager.on('response',captureRead);
+  try{
+   await login(manager,'QAOWNER');
+   await Promise.all(managerReads.map(async path=>{
+    try{const response=firstReads.get(path)??await manager.waitForResponse(response=>new URL(response.url()).pathname===path);bootstrapReceipt.authenticated.push({path,status:response.status()});await saveBootstrap();assert.equal(response.status(),200,'Current Owner dashboard read succeeds');}
+    catch(error){bootstrapReceipt.authenticated.push({path,failure:safeBrowserFailure(error).summary});await saveBootstrap();throw error;}
+   }));
+  }finally{manager.off('response',captureRead);}
+  await manager.waitForLoadState('networkidle');
   stage='compose';await manager.goto(app.url+'/app/updates/compose');await manager.getByLabel('Title',{exact:true}).waitFor();
   await manager.getByLabel('Title',{exact:true}).fill('A'.repeat(121));await manager.getByRole('textbox',{name:'Message',exact:true}).fill('Fictional content');await manager.getByRole('button',{name:'Preview audience',exact:true}).click();await manager.locator('#communication-title-error').getByText('Title must contain 1–120 characters.',{exact:true}).waitFor();assert.equal(await manager.getByLabel('Title',{exact:true}).getAttribute('aria-invalid'),'true');
   const title=`${label} Accents á and emoji 👩🏽‍💻 `+'T'.repeat(60),body='First line <script>plain text</script>\n'+'á'.repeat(1300)+'\nLast line before acknowledgement';

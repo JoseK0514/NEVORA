@@ -118,3 +118,23 @@ PR16: https://github.com/JoseK0514/NEVORA/pull/16. The final merge gate is all
 mandatory hosted checks on the combined candidate, plus reconciliation with the
 current development head. Production, independent acceptance and physical-device
 testing remain separate gates; passkeys remain off by default.
+
+Jose requested moving the remaining verification to the cloud. Local browser
+runners have stopped; subsequent tests and builds run on GitHub-hosted Ubuntu
+runners with disposable fictional databases. No hosted application database is
+used. Local edits and read-only monitoring continue without local test/build runs.
+
+Hosted run 39529365071 passed the Phase E SQL suite and all 46 D1.3 attendance
+checks. Whole Phase D passed 87 checks, including the delayed-script barrier and
+actual receipt recovery, then reproduced duplicate active window focus clearing
+the receipt through its parent ScopedReadFrame. The parent now ignores duplicate
+active window focus while retaining retirement on blur, hidden/pagehide, offline,
+storage/account changes and reconnection. Added component regressions cover those
+lifecycle transitions; the unchanged browser assertion remains the integration
+gate. These new regressions still require hosted validation.
+
+The same hosted run timed out during communications bootstrap while the Owner
+Home was still compiling its readers. The driver now explicitly foregrounds the
+login tab and captures early responses before authentication, then gives pending
+reads their existing 15-second response wait after sign-in. Every original route,
+unauthenticated denial and authenticated 200 assertion remains required.
