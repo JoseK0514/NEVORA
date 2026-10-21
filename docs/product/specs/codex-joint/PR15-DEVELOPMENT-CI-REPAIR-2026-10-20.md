@@ -312,6 +312,12 @@ requested/committed/DOM-ready/failed navigation phases and bounded relative timi
 in both the actual application and its per-launch control, using the same observer.
 The classification boundary is unchanged. Three metadata assertions failed
 before this instrumentation; the diagnostic set passes167 cases afterward.
+That Home journey checks Home readiness after its preceding pageshow but did not
+wait for the independently refreshed notification bell. The navigation test now
+requires that bell's actual ready state before departing, while the intentional
+Home response remains held. The real hard navigation, cancelled/held response,
+private-row absence and fresh re-entry assertions all remain, as does the fatal
+runtime policy. This candidate readiness repair requires the next cloud run.
 
 CTO position for the application fix: recovery state belongs above the private
 pane's lifetime, with its original immutable command identity. CISO position:
