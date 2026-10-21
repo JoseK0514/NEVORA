@@ -152,6 +152,7 @@ function attentionLabel(item: AttentionItem) {
 
 /** To do says what to do: "Review your schedule", "Read the team update". Display only; the row's link is the server's. */
 function todoTitle(item: AttentionItem) {
+  if (item.ref.kind === 'SCHEDULE' && item.label.startsWith('Schedule removed')) return attentionLabel(item);
   if (item.ref.kind === 'SCHEDULE') return 'Review your schedule';
   if (item.ref.kind === 'COMMUNICATION' && /^Review update: /.test(item.label)) return 'Read the team update';
   return attentionLabel(item);

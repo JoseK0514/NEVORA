@@ -93,6 +93,12 @@ visible one-day heading instead of the retired form's summary aside. The PR15
 repair merge retains its explicit Manager grants, operational retirement checks,
 cancelled-document response handling, and exact receipt command validation.
 
+The full Home journey also reproduced a factual display regression: generic
+"Review your schedule" text replaced the canonical "Schedule removed" update.
+The view now preserves removed-schedule and review-unavailable wording. Two new
+regressions failed before the fix; all 30 Home view tests then passed. The browser
+scenario's original removed-schedule assertion is retained.
+
 PR16: https://github.com/JoseK0514/NEVORA/pull/16. The final merge gate is all
 mandatory hosted checks on the combined candidate, plus reconciliation with the
 current development head. Production, independent acceptance and physical-device

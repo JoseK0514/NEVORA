@@ -181,6 +181,19 @@ describe('released Home data and navigation', () => {
     expect(markup).toContain('1 item');
   });
 
+  it.each([true,false])('preserves the removed-schedule fact and review availability: actionable=%s', actionable => {
+    const removed=item('2030-10-07',{
+      ref:{kind:'SCHEDULE',id:'2030-10-07',version:'publication-removed'},
+      label:`Schedule removed — review ${actionable?'required':'unavailable'}`,
+      href:'/app/schedule?week=2030-10-07',required:true,actionable,
+    });
+    const actions=group(html(props(projectEmployeeHome(snapshot({attention:[removed]})))),'actions');
+    expect(actions).toContain('Schedule removed');
+    expect(actions).not.toContain('Review your schedule');
+    expect(actions).toContain('/app/schedule?week=2030-10-07');
+    if(!actionable)expect(actions).toContain('review unavailable');
+  });
+
   it('retains each schedule-review week and communication detail route with no direct acknowledgement action', () => {
     const rows: AttentionItem[] = ['2030-10-07', '2030-10-14'].map(week => item(week, {
       ref: {kind: 'SCHEDULE', id: week, version: 'publication-1'},
