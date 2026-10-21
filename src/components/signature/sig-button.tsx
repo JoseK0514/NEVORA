@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr/CircleNotch";
-import type { ComponentPropsWithRef, MouseEvent, ReactNode } from "react";
+import { useLayoutEffect, type ComponentPropsWithRef, type MouseEvent, type ReactNode, type RefObject } from "react";
 
 /* SigButton: the one Signature button. Primary (deep fill), secondary (white with a hairline and a soft lift) and link
  * (quiet text, 44px hit area). Styles live in the "Buttons" section of components.css as global `sig-btn` classes, so
@@ -42,6 +42,18 @@ export function SigPendingLabel({ children, pendingText, pending, className = ""
     <span className="sig-btn__idle" style={pending ? { visibility: "hidden" } : undefined}>{children}</span>
     <span className="sig-btn__busy" style={pending ? undefined : { visibility: "hidden" }} aria-hidden={!pending || undefined}><SigSpinner />{pendingText ?? children}</span>
   </span>;
+}
+
+/** While a form is working its fields may be disabled, which drops focus to the page top (for example after Enter in a
+ * password field). When `pending` turns on and focus has nowhere live to sit, put it on the busy button so screen
+ * readers hear "busy" and the next Tab starts from the right place. Never steals focus from a live control. */
+export function useKeepFocusWhileBusy(ref: RefObject<HTMLElement | null>, pending: boolean) {
+  useLayoutEffect(() => {
+    const button = ref.current;
+    if (!pending || !button) return;
+    const active = document.activeElement as (HTMLElement & { disabled?: boolean }) | null;
+    if (!active || active === document.body || active.disabled || active.closest("fieldset:disabled")) button.focus({ preventScroll: true });
+  }, [pending, ref]);
 }
 
 const classesFor = (variant: SigButtonVariant, className?: string) => ["sig-btn", `sig-btn--${variant}`, className].filter(Boolean).join(" ");

@@ -88,7 +88,7 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
    <button className="sg-cta" type="button" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><PaperPlaneTiltIcon size={20} aria-hidden="true"/><PendingLabel pending={action.pending} pendingText="Publishing…">Publish update</PendingLabel></button>
    <p className="sg-after">Eligibility is checked again when you publish. Changing any field requires a new preview.</p>
   </section>
-  :<div className={cc.ccSubmit}><button className="sg-cta" disabled={disabled||previewing} aria-busy={previewing||undefined} type="submit">{previewing?'Checking audience…':'Preview audience'}</button><p className="sg-after">Nothing is published until you review the audience and choose Publish.</p></div>;
+  :<div className={cc.ccSubmit}><button className="sg-cta" disabled={(disabled&&!previewing)||undefined} aria-disabled={previewing||undefined} aria-busy={previewing||undefined} onClick={event=>{if(previewing)event.preventDefault();}} type="submit"><PendingLabel pending={previewing} pendingText="Checking audience…">Preview audience</PendingLabel></button><p className="sg-after">Nothing is published until you review the audience and choose Publish.</p></div>;
  return <form ref={formRef} className="wb-form" onSubmit={e=>{e.preventDefault();void review();}}>
   <fieldset disabled={disabled} className="wb-form"><legend className="nv-sr">{editing?'Edit update':context.management?'Create update':'Message today’s team'}</legend>
    {signature?<>

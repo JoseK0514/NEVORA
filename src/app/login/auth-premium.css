@@ -74,9 +74,10 @@
   border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--sys); letter-spacing: -.1px;
   text-align: center; text-decoration: none; cursor: pointer; transition: transform 120ms ease, background-color 120ms ease;
 }
-.ap .ap-primary:hover:not(:disabled) { background: #0A2A28; }
-.ap .ap-primary:active:not(:disabled) { transform: scale(.98); }
+.ap .ap-primary:hover:not(:disabled):not([aria-busy="true"]) { background: #0A2A28; }
+.ap .ap-primary:active:not(:disabled):not([aria-busy="true"]) { transform: scale(.98); }
 .ap .ap-primary:disabled { cursor: wait; }
+.ap .ap-primary[aria-busy="true"] { cursor: progress; }
 .ap-or { display: flex; align-items: center; gap: 14px; margin-top: 22px; font: 400 .8125rem/1.125rem var(--sys); color: var(--ink-3); }
 .ap-or::before, .ap-or::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
 /* Signature secondary: white, ink, a hairline and a soft lift; same 56px and 16px radius as the primary. */

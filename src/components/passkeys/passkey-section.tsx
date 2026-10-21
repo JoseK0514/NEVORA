@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { PASSKEY_COPY } from "@/lib/passkeys/copy";
+import { SigPendingLabel } from "@/components/signature/sig-button";
 import { deviceName, isPhoneLike, listPasskeys, passkeysAvailable, passkeysFlagOn, registerPasskey, removePasskey, type Passkey } from "@/lib/passkeys/client";
 import "./passkeys.css";
 
@@ -83,8 +84,8 @@ export function PasskeySection() {
           ))}
         </ul> : null}
         {notice ? <p className="pk-notice" data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
-        {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={() => void add()} disabled={busy !== null} aria-busy={busy === "add"}>
-          {busy === "add" ? t.settingUp : phone ? t.setUpPhone : t.setUpDesktop}
+        {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={() => void add()} disabled={busy === "remove"} aria-disabled={busy === "add" || undefined} aria-busy={busy === "add"}>
+          <SigPendingLabel pending={busy === "add"} pendingText={t.settingUp}>{phone ? t.setUpPhone : t.setUpDesktop}</SigPendingLabel>
         </button> : <p className="pk-muted">{t.notSupported}</p>}
       </div>
       <dialog ref={dialog} className="pk-dialog" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body"
@@ -93,7 +94,7 @@ export function PasskeySection() {
           <h2 id="passkey-remove-title" className="pk-dialog__title">{t.confirmTitle(confirm.name)}</h2>
           <p id="passkey-remove-body" className="pk-muted">{t.confirmBody}</p>
           <div className="pk-dialog__actions">
-            <button type="button" className="nv-btn" data-kind="danger" onClick={() => void remove(confirm)} disabled={busy === "remove"} aria-busy={busy === "remove"}>{busy === "remove" ? t.removing : t.remove}</button>
+            <button type="button" className="nv-btn" data-kind="danger" onClick={() => void remove(confirm)} aria-disabled={busy === "remove" || undefined} aria-busy={busy === "remove"}><SigPendingLabel pending={busy === "remove"} pendingText={t.removing}>{t.remove}</SigPendingLabel></button>
             <button type="button" className="nv-btn" data-kind="secondary" data-autofocus="" onClick={() => setConfirm(null)} disabled={busy === "remove"}>{t.keep}</button>
           </div>
         </form> : null}

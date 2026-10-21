@@ -5,9 +5,10 @@ import type { ReactNode } from "react";
 import { SigPendingLabel } from "./signature/sig-button";
 
 
-/** Reserve both labels and centre the shorter pending words in the same grid cell. */
+/** Reserve both labels and centre the shorter pending words in the same grid cell. The pending words carry the
+ * Signature 16px spinner, so every working button in the app shows the same "working" sign. */
 export function PendingLabel({children,pendingText,pending,className = ""}: {children: ReactNode; pendingText: ReactNode; pending: boolean; className?: string}) {
-  return <span className={`nv-label-swap ${className}`} style={{alignItems: "center"}}><span style={pending ? {visibility: "hidden"} : undefined}>{children}</span><span style={pending ? undefined : {visibility: "hidden"}} aria-hidden={!pending || undefined}>{pendingText}</span></span>;
+  return <SigPendingLabel className={`nv-label-swap ${className}`.trim()} pending={pending} pendingText={pendingText}>{children}</SigPendingLabel>;
 }
 
 export function EmployeeSubmitButton({

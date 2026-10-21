@@ -9,6 +9,7 @@ import { swapBandDay, swapBandLine } from '../swap-shift-summary';
 import sr from '../shift-requests-signature.module.css';
 import type { ExchangeShift } from '@/lib/data/exchanges';
 
+import { SigButton } from "../signature/sig-button";
 const SentContext = createContext<() => void>(() => {});
 
 /** "Unable to work" after the report is recorded: the page refreshes underneath, so this boundary (above it) shows a
@@ -33,7 +34,7 @@ export function CalloutSentBoundary({ shift, children }: { shift: ExchangeShift;
     <div className="sg-card">
       <div className="sg-card-head"><span className={sr.srHeadCopy}><b><time dateTime={shift.date}>{swapBandDay(shift.date)}</time></b><small>{swapBandLine(shift)}</small></span></div>
     </div>
-    <Link className="sg-cta" href="/app/exchange?tab=requests">See my requests</Link>
+    <SigButton className="sg-cta" href="/app/exchange?tab=requests">See my requests</SigButton>
   </SigPage>;
 }
 
