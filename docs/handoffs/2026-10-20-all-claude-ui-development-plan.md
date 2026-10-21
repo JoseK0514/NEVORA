@@ -160,3 +160,22 @@ proof-consumption booleans and fixed-route server timings to its failure report.
 It records no proof, password, message body, SQL text or real customer data. The
 application's 12-second abort, test deadlines and success/denial assertions remain
 unchanged; this is diagnostic instrumentation, not a claimed reset fix.
+
+Hosted run 39533192586 completed all 201 whole-Phase-D functional checks,
+including successful assisted resets in Chromium (358 ms) and WebKit (117 ms).
+The prior unconfirmed reset did not recur; no reset application change is claimed.
+Two Owner browser runtime errors still failed acceptance. Ordinary setup and
+teardown now wait for their existing network-settlement deadline, with lifecycle,
+last-check and sanitized stack attribution for any remaining fatal page error.
+Runtime failures remain fatal; completion of functional checks alone is not a pass.
+
+That run also exposed retired My time CSS selectors in account-switch tests and
+a Manager test waiting for a browser queue read through a withdrawn access frame.
+The drivers now require the same exact session-denial text in the real Signature
+view, verify fresh Manager authority through the actual authenticated API, and
+require the old row/retry to disappear before releasing the original reply. A
+shared five-case tested transport helper accepts a cancelled request only with
+Playwright failure evidence; live late replies are still delivered and unknown
+fulfillment errors still fail. All original 401/403, immutable receipt/event,
+no-duplicate and late-private-data assertions remain. Login streams settle before
+teardown and screenshots preserve the caret, avoiding injected hydration styles.

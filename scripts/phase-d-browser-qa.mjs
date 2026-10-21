@@ -1,5 +1,6 @@
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
+import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -18,11 +19,11 @@ const {chromium,webkit}=runtime('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
 const dirty=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim();
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert.equal(dirty,'','Exact candidate browser verification requires a clean worktree');}
-const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],recovery:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
+const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],recovery:[],runtimeDiagnostics:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
 async function waitUntil(test){const deadline=Date.now()+15000;while(!test()){if(Date.now()>deadline)throw Error('Expected browser request did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 async function waitUntilAsync(test){const deadline=Date.now()+15000;while(!await test()){if(Date.now()>deadline)throw Error('Expected UI state did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 const checked=name=>{report.checks.push(name);console.log('[Phase D browser] PASS '+name);};
-let app,smtp,currentPage,recoveryEmployee;const browsers=[];
+let app,smtp,currentPage,recoveryEmployee,lifecycle='setup';const browsers=[];
 const url='/app/timecards?start=2026-09-21&end=2026-09-27';
 try{
   smtp=await createOwnedSmtp();app=await createOwnedNextApp(evidence,{clockerPinKey:"3d".repeat(32),clockerPunchEnabled:true,recoverySmtpPort:smtp.port});const q=(text,values=[])=>app.database.executor.query({text,values});
@@ -40,12 +41,17 @@ try{
   async function context(browser,id){
     const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
     await context.route('**/*',route=>{const target=new URL(route.request().url());return ['http:','https:'].includes(target.protocol)&&target.origin!==app.url?route.abort():route.continue();});
-    const page=await context.newPage();currentPage=page;page.setDefaultTimeout(15000);page.on('pageerror',error=>{if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);else report.errors.push(engineName(id)+': '+error.message);});
+    const page=await context.newPage();currentPage=page;page.setDefaultTimeout(15000);page.on('pageerror',error=>{
+      if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);
+      else{report.errors.push(engineName(id)+': '+error.message);report.runtimeDiagnostics.push({portal:id,lifecycle,afterCheck:report.checks.at(-1),route:new URL(page.url()).pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),failure:safeBrowserFailure(error),stack:safeBrowserFailure({message:error.stack}).summary});}
+    });
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
     await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
+    await page.waitForLoadState('networkidle');
     return {context,page};
   }
   for(const [engine,type] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.PHASE_D_QA_ENGINES||process.env.PHASE_D_QA_ENGINES.split(',').includes(name))){
+    lifecycle='scenario';
     const browser=await type.launch({headless:true});browsers.push(browser);
     const {context:employee,page:ep}=await context(browser,'D3-E');await ep.goto(app.url+url);
     await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();assert.equal(await ep.getByRole('article').count(),1);
@@ -189,7 +195,7 @@ try{
     const pinA=engine==='chromium'?'2468':'6812',pinB=engine==='chromium'?'3579':'7935';
     for(const [id,first,pin] of [['UX5-A-'+engine,'Fictional Avery',pinA],['UX5-B-'+engine,'Fictional Blair',pinB]]){
       await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Recovery QA','555-0500','EMPLOYEE','loc-1')",[id,first]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);
-      await op.goto(app.url+'/app/employees/'+id+'/clocker-pin');await op.getByLabel('New PIN',{exact:true}).fill(pin);await op.getByLabel('Confirm PIN',{exact:true}).fill(pin);await op.getByRole('button',{name:'Save PIN',exact:true}).click();await op.getByRole('status').filter({hasText:'PIN saved'}).waitFor();
+      await op.goto(app.url+'/app/employees/'+id+'/clocker-pin');await op.getByLabel('New PIN',{exact:true}).fill(pin);await op.getByLabel('Confirm PIN',{exact:true}).fill(pin);await op.getByRole('button',{name:'Save PIN',exact:true}).click();await op.getByRole('status').filter({hasText:'PIN saved'}).waitFor();await op.waitForLoadState('networkidle');
     }
     await op.goto(app.url+'/app/settings/clocker');await op.getByRole('button',{name:'Add device',exact:true}).click();const dialog=op.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill('UX5 '+engine+' tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
     const setupCode=await op.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();await cp.goto(app.url+'/clocker/2');await cp.getByRole('textbox',{name:'Setup code',exact:true}).fill(setupCode);await cp.getByRole('button',{name:'Connect tablet',exact:true}).click();
@@ -203,7 +209,7 @@ try{
     await cp.getByRole('button',{name:'Clock In',exact:true}).evaluate(button=>{button.click();button.click();});await cp.getByRole('heading',{name:'Clock In Recorded',exact:true}).waitFor();
     assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1",['UX5-B-'+engine]))[0].n,1);assert.equal(await cp.evaluate(key=>sessionStorage.getItem(key),engine==='chromium'?'nevora.clocker.pending.v1:2':saved.key),saved.text);checked(engine+': UX-05 next employee records exactly once without discarding prior receipt');
     await cp.getByRole('button',{name:'Done',exact:true}).click();await pin(pinA);await cp.getByRole('button',{name:'Check Action Status',exact:true}).click();await cp.getByRole('heading',{name:'Clock In Recorded',exact:true}).waitFor();assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1",['UX5-A-'+engine]))[0].n,1);assert.equal(await cp.evaluate(key=>sessionStorage.getItem(key),engine==='chromium'?'nevora.clocker.pending.v1:2':saved.key),null);checked(engine+': UX-05 refresh and re-PIN recover original receipt without replay');
-    await op.bringToFront();currentPage=op;
+    await op.bringToFront();currentPage=op;await op.waitForLoadState('networkidle');
     const heldScripts=[],scriptPattern='**/_next/static/**/*.js';let releaseScripts;
     const scriptsReady=new Promise(resolve=>{releaseScripts=resolve;});
     const holdScript=route=>{if(new URL(route.request().url()).origin!==app.url)return route.abort();const pending=scriptsReady.then(()=>route.continue());heldScripts.push(pending);return pending;};
@@ -255,9 +261,11 @@ try{
     await fp.getByRole('link',{name:'Sign in with new password',exact:true}).click();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([fp.waitForURL(u=>u.pathname==='/app'),fp.getByRole('button',{name:'Sign in',exact:true}).click()]);checked(engine+': UX-01 normal new-password sign-in after reset');
     await mp.bringToFront();await mp.goto(app.url+'/app/account-recovery');await mp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await mp.getByLabel('How you verified them',{exact:true}).fill('Fictional established verification for expiry regression.');await mp.getByRole('checkbox').check();await mp.getByRole('button',{name:'Issue recovery code',exact:true}).click();await mp.getByLabel('Recovery code',{exact:true}).waitFor();const expiring=await mp.getByLabel('Recovery code',{exact:true}).inputValue();
     await q("UPDATE password_recovery_proofs SET created_at=clock_timestamp()-interval '16 minutes',expires_at=clock_timestamp()-interval '1 minute' WHERE token_hash=$1",[createHash('sha256').update(expiring).digest('hex')]);await fp.goto(app.url+'/reset-access#proof='+expiring);await fp.getByLabel('New password',{exact:true}).fill('Fictional Expired Reset');await fp.getByLabel('Confirm new password',{exact:true}).fill('Fictional Expired Reset');await fp.getByRole('button',{name:'Reset password',exact:true}).click();await fp.getByText(/expired, was already used/).waitFor();checked(engine+': UX-01 expired proof gives the safe recovery path');
-    await recoveree.close();await publicContext.close();
-    await clockContext.close();await ownerContext.close();
-    await lead.close();await employee.close();await management.close();
+    lifecycle='context-close';
+    for(const context of [recoveree,publicContext,clockContext,ownerContext,lead,employee,management]){
+      for(const page of context.pages())await page.waitForLoadState('networkidle');
+      await context.close();
+    }
     await q('TRUNCATE timecard_revisions');
   }
 }catch(error){
@@ -279,6 +287,7 @@ try{
   report.errors.push(error instanceof Error?error.stack:String(error));process.exitCode=1;console.error(error);
 }
 finally{
+  lifecycle='browser-close';
   for(const browser of browsers)await browser.close();if(app)await app.close();if(smtp)await smtp.close();
   await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));
   console.log(JSON.stringify({checkpoint,sourceClean:report.sourceClean,checks:report.checks.length,errors:report.errors.length,evidence}));

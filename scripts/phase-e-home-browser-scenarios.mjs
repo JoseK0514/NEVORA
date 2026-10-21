@@ -1,4 +1,5 @@
 import {measureRenderedContrast} from './browser-contrast.mjs';
+import {fulfillHeldResponse} from './browser-held-response.mjs';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
@@ -20,15 +21,6 @@ export async function waitForFreshHome(page, freshLocation){
   });
   return ['partial','ready'].includes(root.getAttribute('data-home-state'))&&root.getAttribute('aria-busy')==='false'&&visibleFresh&&!text.includes('Main Office Operations and Customer Support');
  },freshLocation,{timeout:15000});
-}
-
-export async function fulfillHeldResponse(route,response,documentLeft) {
- if(documentLeft&&route.request().failure())return 'document-left';
- try{await route.fulfill({response});return 'fulfilled';}
- catch{
-  if(route.request().failure())return documentLeft?'document-left':'request-aborted';
-  throw Error('Held response fulfillment failed');
- }
 }
 
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
@@ -66,7 +58,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    if(used)return route.continue();used=true;
    try{
     const response=await route.fetch();operation='parse';if(path.includes('/home'))homeResponse=await response.json();started();await wait;operation='fulfill';
-    outcome=await fulfillHeldResponse(route,response,navigationReleased);
+    outcome=await fulfillHeldResponse(route,{response},navigationReleased);
    }catch(error){
     // Never leak Playwright's request headers through an unhandled route error.
     // Unexpected fetch/fulfillment failure remains a failed scenario, not a retry.
