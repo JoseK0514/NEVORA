@@ -302,6 +302,17 @@ pending. This diagnostic change does not add those resources to the classifier.
 Four new assertions failed before the metadata repair; the full diagnostic set
 must remain green and the next actual cloud run must determine the cause.
 
+Hosted `534ae15a` passed all three database jobs, full units, types and lint;
+its build and later browser gates were still running at this update.
+Communications passed14 cells. Home passed8 cells before WebKit375 recorded an
+exact native notification-read diagnostic at the hard route-leave stage, after
+the collector's main-frame commit boundary had closed. It remained fatal, with
+no independent JavaScript exception reported. The next diagnostic records
+requested/committed/DOM-ready/failed navigation phases and bounded relative timing
+in both the actual application and its per-launch control, using the same observer.
+The classification boundary is unchanged. Three metadata assertions failed
+before this instrumentation; the diagnostic set passes167 cases afterward.
+
 CTO position for the application fix: recovery state belongs above the private
 pane's lifetime, with its original immutable command identity. CISO position:
 retain the current-access retirement, actor/session/scope/page isolation and live

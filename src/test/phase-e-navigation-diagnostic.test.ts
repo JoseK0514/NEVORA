@@ -33,10 +33,14 @@ it.each(['/api/employee/home','/api/employee/my-time'])('recognizes only the obs
  const f=await fixture({path});f.page.emit('pageerror',f.error);f.cell.assertClean();expect(f.execution.navigationDiagnostics).toHaveLength(1);
 });
 it('retires the classification boundary at document commit',async()=>{
- const f=await fixture();f.page.emit('framenavigated',f.frame);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.errors[0]).toMatchObject({pendingMainFrameNavigation:false});
+ const f=await fixture();f.page.emit('framenavigated',f.frame);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.errors[0]).toMatchObject({pendingMainFrameNavigation:false,documentNavigation:{phase:'committed',ageMs:expect.any(Number)}});
+});
+it('records completion timing without permitting post-navigation errors',async()=>{
+ const f=await fixture();f.page.emit('framenavigated',f.frame);f.page.emit('domcontentloaded');f.page.emit('pageerror',f.error);
+ expect(()=>f.cell.assertClean()).toThrow();expect(f.errors[0]).toMatchObject({pendingMainFrameNavigation:false,documentNavigation:{phase:'dom-ready',ageMs:expect.any(Number)}});
 });
 it('retires the classification boundary when the navigation fails',async()=>{
- const f=await fixture();f.page.emit('requestfailed',f.request);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+ const f=await fixture();f.page.emit('requestfailed',f.request);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.errors[0]).toMatchObject({documentNavigation:{phase:'failed'}});
 });
 it('never creates a boundary for a subframe or foreign document',async()=>{
  for(const other of [true,false]){const f=await fixture({pending:false});f.page.emit('request',{isNavigationRequest:()=>true,frame:()=>other?{}:f.frame,url:()=>other?'http://127.0.0.1:43210/app':'https://fictional.invalid/app'});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();}
