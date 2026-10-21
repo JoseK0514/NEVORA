@@ -13,6 +13,7 @@ import { requireSelfService, TIME_OFF_REVIEW_ROLES, SELF_SERVICE_ROLES } from "@
 import { requestTimeOffAction, reviewTimeOffAction } from "./requests/actions";
 import { saveScheduleHealthSettingsAction } from "./schedule/settings/actions";
 import { createTimeOffRequest, reviewTimeOffRequest } from "@/lib/data/requests";
+vi.mock('@/lib/workspace-presentation/service', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/workspace-presentation/service')>()), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
 
 vi.mock("@/lib/auth/session", () => ({ requireSession: vi.fn(), requireSessionMutationProof:async()=>{const viewer=await requireSession();return managementProof(viewer.id,viewer.role);} }));
 // Resolve production aliases locally; no worktree-specific Vitest configuration.

@@ -73,6 +73,7 @@ vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
 
 import {reconcileShiftChangeAction} from '@/app/app/exchange/actions';
 import {readShiftChangeOperationView} from '@/lib/data/shift-change-views';
+vi.mock('@/lib/workspace-presentation/service', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/workspace-presentation/service')>()), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
 function assignedReview(){
  const shift={...exchange('source').sourceShift,date:'2035-10-05',timeZone:'America/Puerto_Rico',assignmentEpisodeId:'episode-current',termsRevision:1,positionId:'cashier',positionName:'Cashier',isDesignatedLead:true};f.assigned=[shift];
  f.reviewed={source:{timeZone:shift.timeZone,termsRevision:shift.termsRevision,shiftId:shift.id,scheduleId:shift.scheduleId,employeeId:shift.employeeId,locationId:shift.locationId,weekStart:shift.weekStart,date:shift.date,startTime:shift.startTime,endTime:shift.endTime,positionId:shift.positionId,isDesignatedLead:shift.isDesignatedLead,assignmentEpisodeId:'episode-current'},sourceTermsFingerprint:'v1:current',target:null,targetTermsFingerprint:null};
