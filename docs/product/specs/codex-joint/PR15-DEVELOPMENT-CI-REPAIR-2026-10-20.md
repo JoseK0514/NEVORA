@@ -210,6 +210,41 @@ remain. Home's prepared first Chromium320 cell passed its complete scenario; the
 run was then explicitly terminated with owned cleanup to investigate the new
 account findings. It is incomplete evidence and cannot satisfy the Home gate.
 
+Jose requested moving remaining verification to the cloud. `8b38c220` was pushed
+to the owned PR branch and GitHub Actions run39529944571 started on hosted Ubuntu
+runners. All root-owned local QA processes have closed; an orphaned Next process
+from whole Phase D r6 was identified by its ownership receipt, PID, command and
+working directory, then terminated. No more heavy local verification is scheduled.
+The complete focused WebKit390 Home scenario passed with zero runtime events;
+its external one-cell runner then correctly rejected the missing13 cells.
+
+A separate two-cell loopback experiment on pinned Playwright1.62.1/WebKit2336
+reproduced the actual native message. Control: HTTP200, one server read, no error.
+After the replacement document request arrived but before its response was
+released: handled fetch rejection, no server read, no pagehide, no window error or
+unhandled rejection, yet one native access-control `pageerror`. The external
+receipt is `nevora-webkit-provisional-fetch-probe.log` in the evidence logs.
+This matches the mechanism discussed by the [Playwright maintainer](https://github.com/microsoft/playwright/issues/43120).
+
+The candidate observer runs that control against each actual WebKit launch and
+only enables classification when the mechanism reproduces. It also tests that
+the independent window error/unhandled-rejection observer detects real throws.
+Only the exact same-origin native format for the three observed own-read paths
+can be recorded as a navigation diagnostic, between an observed main-frame
+navigation request and its commit/failure. Window exceptions, genuine TypeErrors,
+foreign/unknown resources, ordinary live-document failures and teardown errors
+remain fatal. A spoofed native-shaped JavaScript throw still fails through the
+independent observer. Diagnostic receipts contain static resource kinds only.
+No test is skipped and the full browser matrix, source custody and receipt gates
+remain required. This classification remains a candidate until matching CI passes.
+
+Local `8b38c220` account remediation still recorded a real WebKit TypeError in the
+late Manager case, plus its development diagnostic fetch. Both remain fatal.
+The helper's separate Chromium initial global-idle timeout now uses DOM readiness
+and HTTP success before the same actual controls. Whole Phase D's cold Schedule
+timeout is addressed by adding that route to unauthenticated compilation setup.
+Cloud execution must close the outstanding behavior/runtime gates.
+
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,

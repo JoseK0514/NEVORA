@@ -8,7 +8,7 @@ import {publishScheduleWithRevision} from '../src/test/integration/management-ap
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
  const label=`AT${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
  const scenario=await seedOwnedScenario(app.database.executor,label,index+56),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
- const checks=[],runtimeErrors=[],details={engine,width,actor,week:scenario.week};let stage='login';page.on('pageerror',error=>runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')}));
+ const checks=[],runtimeErrors=[],details={engine,width,actor,week:scenario.week};let stage='login';page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
  cellRuntimeErrors.setStageReader(()=>stage);
  const screenshot=async name=>page.screenshot({path:join(evidenceDirectory,`attention-${engine}-${width}-${name}.png`),fullPage:true});
  async function login(target=page){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(actor);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.waitForLoadState('networkidle');}
