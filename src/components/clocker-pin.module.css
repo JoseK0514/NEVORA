@@ -39,7 +39,7 @@
 .iconTile { display: grid; place-items: center; width: 48px; height: 48px; flex: 0 0 48px; border-radius: 16px; background: var(--pin-inset); color: var(--pin-ink); }
 .management h2 { margin: 0 0 6px; font-size: 23px; line-height: 1.25; font-weight: 550; letter-spacing: -.025em; }
 .management p { margin: 0; color: var(--pin-muted); font-size: 14px; line-height: 1.65; }
-.management fieldset, .terminal fieldset { display: grid; gap: 18px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.management fieldset { display: grid; gap: 18px; border: 0; padding: 0; margin: 0; min-width: 0; }
 .fields { display: grid; gap: 24px; }
 .management label { display: grid; gap: 10px; font-size: 14px; font-weight: 600; }
 .labelRow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
@@ -80,58 +80,66 @@
 .unavailable > svg { color: var(--pin-accent-ink); }
 .unavailable h2 { font-size: 23px; font-weight: 550; line-height: 1.3; margin: 18px 0 10px; }
 .unavailable p { margin: 0 0 24px; color: var(--pin-muted); font-size: 15px; line-height: 1.65; }
-.terminal input:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 3px; }
-.error { color: #97302f !important; line-height: 1.6; margin: 12px 0 !important; }
-.note { font-size: 12px !important; color: var(--muted); line-height: 1.6; }
-.terminal .note { font-size: 13px !important; }
-.terminal { text-align: center; }
-.terminal h1 { margin: 20px 0 8px; overflow-wrap: anywhere; }
-.terminal > p { color: var(--muted); margin: 0 0 20px; line-height: 1.5; }
-.terminal form { margin: 18px auto 16px; max-width: 348px; }
-.terminal fieldset { gap: 12px; }
-.pinIcon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto; border-radius: 18px; background: var(--clocker-soft); color: var(--clocker-focus); }
-.pinLabel { text-align: left; font-size: 13px; color: var(--muted); }
-.pinEntry { position: relative; height: 56px; border: 1px solid #d1d5db; border-radius: 17px; background: #fafafa; }
-.pinEntry:focus-within { outline: 3px solid var(--clocker-focus); outline-offset: 3px; }
-.pinEntry input { position: absolute; inset: 0; min-width: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; color: transparent; caret-color: transparent; font-size: 24px; border-radius: inherit; outline: none !important; }
-.pinSlots { height: 100%; display: flex; align-items: center; justify-content: center; gap: 24px; pointer-events: none; }
-.pinSlots > span { width: 11px; height: 11px; background: #d1d5db; border-radius: 50%; transition: background-color .12s ease, transform .12s ease; }
-.pinSlots > span[data-filled=true] { background: var(--clocker-ink); transform: scale(1.05); }
-.keypad { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
-.keypad button { min-height: 62px; border: 1px solid #ededf0; background: #f5f5f6; border-radius: 17px; font-size: 24px; font-weight: 450; color: var(--color-brand-primary); font-family: inherit; cursor: pointer; display: grid; place-items: center; transition: background-color .16s ease, transform .16s ease; }
-.keypad button:hover { background: #e9e9ec; }
-.keypad button:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 2px; }
-.keypad button:nth-child(10), .keypad button:nth-child(12) { font-size: 13px; color: var(--muted); background: transparent; border-color: transparent; }
-.keypad button:nth-child(10):hover, .keypad button:nth-child(12):hover { background: #f5f5f6; }
-.terminal button:disabled { opacity: .45; cursor: not-allowed; }
-.terminal .button { min-height: 48px; }
-.previewNotice { background: var(--color-bg-main); padding: 20px; border-radius: 16px; display: grid; gap: 8px; text-align: left; margin: 24px 0; line-height: 1.6; }
-.terminal > button { width: min(100%,348px); min-height: 52px; margin-bottom: 16px; }
 @media (max-width:480px) { .management { padding: 24px 20px; } }
-@media (min-width:701px) and (max-height:820px) {
-  .pinIcon { width: 44px; height: 44px; border-radius: 14px; }
-  .terminal h1 { margin-top: 12px; }
-  .terminal > p { margin-bottom: 12px; }
-  .terminal form { margin: 12px auto; }
-  .terminal fieldset { gap: 8px; }
-  .pinEntry { height: 48px; }
-  .keypad button { min-height: 52px; }
-  .terminal > .note:last-child { margin-bottom: 0; }
-}
-@media (max-width:480px) {
-  .pinIcon { width: 42px; height: 42px; border-radius: 14px; }
-  .terminal h1 { margin-top: 12px; }
-  .terminal > p { margin-bottom: 12px; }
-  .terminal form { margin: 12px auto 8px; }
-  .terminal fieldset { gap: 8px; }
-  .pinEntry { height: 52px; }
-  .keypad button { min-height: 52px; }
-  .terminal > .note:last-child { margin-bottom: 8px; }
-}
 @media (max-width: 1000px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 28px; } .guide { padding: 4px 8px; } .guideIntro, .guideRow p { max-width: none; } .guideIntro { margin-bottom: 24px; } .guideRow { margin-top: 22px; } }
-@media (max-width:480px) { .management, .unavailable { padding: 24px 20px; } .back { margin-bottom: 12px; } .pageHeading { margin-bottom: 20px; } .employeeSummary { flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding-bottom: 20px; } .formHeading { align-items: flex-start; gap: 12px; margin-bottom: 20px; } .formHeading h2 { font-size: 21px; } .fields { gap: 18px; } .management label { gap: 8px; } .management fieldset { gap: 16px; } .management input:not([type=hidden]) { height: 52px; } .keypad button { min-height: 48px; } .terminal form { margin-top: 16px; } }
+@media (max-width:480px) { .management, .unavailable { padding: 24px 20px; } .back { margin-bottom: 12px; } .pageHeading { margin-bottom: 20px; } .employeeSummary { flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding-bottom: 20px; } .formHeading { align-items: flex-start; gap: 12px; margin-bottom: 20px; } .formHeading h2 { font-size: 21px; } .fields { gap: 18px; } .management label { gap: 8px; } .management fieldset { gap: 16px; } .management input:not([type=hidden]) { height: 52px; } }
 @media (max-width:360px) { .employeeName { flex-basis: calc(100% - 60px); } .badge { margin-left: 60px; } .formActions { flex-direction: column; } .primary, .formActions .secondary { width: 100%; } }
-@media (prefers-reduced-motion:reduce) { .management *, .terminal * { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion:reduce) { .management * { animation: none !important; transition: none !important; } }
 
-/* U9: Spanish second lines under English titles and statuses. */
-.titleEs { margin: -6px 0 0; color: var(--muted, #5f6368); font-size: 17px; font-weight: 500; }
+/* Signature Clocker PIN: eyebrow, light title, four dots, round white keys and one deep action. */
+.terminal { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.terminal > * { max-width: 100%; }
+.eyebrow { margin: 0 0 10px; font-size: 0.75rem; line-height: 1.35; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--ck-ink2); }
+.terminal h1 { overflow-wrap: anywhere; }
+.titleEs { margin: 6px 0 0; color: var(--ck-ink3); font-size: 1.0625rem; line-height: 1.3; font-weight: 400; }
+.terminal form { width: 100%; max-width: 352px; margin: 26px auto 0; }
+.terminal fieldset { display: grid; justify-items: center; gap: 0; border: 0; padding: 0; margin: 0; min-width: 0; }
+.pinLabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.pinEntry { position: relative; width: 196px; height: 44px; border-radius: 999px; }
+.pinEntry:focus-within { box-shadow: 0 0 0 2px var(--nevora-blue); }
+.pinEntry input { position: absolute; inset: 0; min-width: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; color: transparent; caret-color: transparent; font-size: 24px; border-radius: inherit; outline: none !important; }
+.pinSlots { height: 100%; display: flex; align-items: center; justify-content: center; gap: 22px; pointer-events: none; }
+.pinSlots > span { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 2px #B9B6AF; transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease; }
+.pinSlots > span[data-filled=true] { background: var(--ck-deep); box-shadow: none; transform: scale(1.05); }
+.keypad { display: grid; grid-template-columns: repeat(3, 84px); justify-content: center; gap: 12px 26px; margin-top: 22px; }
+.keypad button { width: 84px; height: 84px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--ck-card); box-shadow: var(--ck-lift);
+  font-family: inherit; font-size: 2.125rem; line-height: 1; font-weight: 300; color: var(--color-brand-primary); font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color .16s ease, transform .16s ease; }
+.keypad button:hover { background: #FBFAF8; }
+.keypad button:active { background: #F1EFEA; }
+.keypad button:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 3px; }
+.keypad button[data-key=tool] { background: transparent; box-shadow: none; font-size: 1rem; font-weight: 500; color: var(--ck-ink2); }
+.keypad button[data-key=tool]:hover { background: #EFEDE8; }
+.terminal .continue { width: 100%; margin-top: 26px; }
+.terminal button:disabled { cursor: not-allowed; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; width: 100%; max-width: 440px; margin-top: 14px; text-align: left; }
+.meta p { flex: 1 1 220px; margin: 0; font-size: 0.875rem; line-height: 1.45; color: var(--ck-ink3); white-space: normal; }
+.note { margin: 14px 0 0; font-size: 0.875rem; line-height: 1.5; color: var(--ck-ink3); }
+.problem { display: grid; justify-items: center; gap: 12px; width: 100%; max-width: 440px; margin-top: 16px; }
+.error { margin: 0; padding: 14px 18px; border-radius: 16px; background: #FBEDEC; color: #8F2D2B; font-size: 0.9375rem; line-height: 1.5; text-align: left; }
+.problem :global(.button) { width: 100%; }
+.seal { display: grid; place-items: center; width: 104px; height: 104px; margin-bottom: 24px; border-radius: 50%; background: var(--clocker-accent); color: #ffffff; box-shadow: 0 0 0 12px #E2F1ED; }
+.lead { margin: 12px 0 0; font-size: 1.125rem; line-height: 1.45; color: var(--ck-ink2); }
+.previewNotice { display: grid; gap: 4px; width: 100%; margin: 24px 0; padding: 18px 20px; border-radius: 20px; background: var(--ck-card); box-shadow: var(--ck-lift); text-align: left; line-height: 1.5; color: var(--ck-ink2); }
+.previewNotice strong { color: var(--ck-ink); font-weight: 600; }
+.terminal > :global(.button) { width: min(100%, 352px); }
+
+@media (min-width:701px) and (max-height:820px) {
+  .terminal form { margin-top: 18px; }
+  .keypad { grid-template-columns: repeat(3, 76px); gap: 10px 24px; margin-top: 16px; }
+  .keypad button { width: 76px; height: 76px; font-size: 1.875rem; }
+  .terminal .continue { margin-top: 18px; }
+  .seal { width: 88px; height: 88px; }
+}
+@media (max-width:700px) {
+  .eyebrow { display: none; }
+  .terminal form { margin-top: 12px; }
+  .keypad { grid-template-columns: repeat(3, 72px); gap: 10px 26px; margin-top: 12px; }
+  .keypad button { width: 72px; height: 72px; font-size: 1.75rem; }
+  .terminal .continue { margin-top: 16px; min-height: 56px; }
+  .meta { flex-wrap: nowrap; margin-top: 8px; }
+  .meta p { flex: 1 1 auto; font-size: 0.8125rem; }
+  .titleEs { font-size: 1rem; }
+  .seal { width: 84px; height: 84px; margin-bottom: 20px; box-shadow: 0 0 0 10px #E2F1ED; }
+}
+@media (max-width:360px) { .keypad { grid-template-columns: repeat(3, 68px); gap: 10px 18px; } .keypad button { width: 68px; height: 68px; } }
+@media (prefers-reduced-motion:reduce) { .terminal * { animation: none !important; transition: none !important; } }
