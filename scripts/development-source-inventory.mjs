@@ -44,7 +44,12 @@ export function compareSources(inventory, heads, isAncestor) {
     } else if (actual !== source.sha) failures.push(`Branch advanced: ${source.branch}`);
     if (source.disposition === 'included' && !isAncestor(source.sha)) failures.push(`Source absent from checkout: ${source.branch}`);
   }
-  for (const branch of heads.keys()) if (!known.has(branch) && branch !== inventory.assemblyBranch) failures.push(`Unclassified branch: ${branch}`);
+  for (const [branch, sha] of heads) {
+    if (known.has(branch)) continue;
+    if (branch === inventory.assemblyBranch) {
+      if (!isAncestor(sha)) failures.push('Remote assembly has changes absent from this checkout');
+    } else failures.push(`Unclassified branch: ${branch}`);
+  }
   return failures;
 }
 

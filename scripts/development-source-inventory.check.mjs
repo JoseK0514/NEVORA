@@ -25,6 +25,12 @@ test('rejects omitted merged sources and unincorporated development changes', ()
     'Remote development has changes absent from this checkout','Source absent from checkout: feature',
   ]);
 });
+test('does not hide new work pushed to the assembly branch after integration', () => {
+  const actual = heads(); actual.set('codex/assembly',next);
+  assert.deepEqual(compareSources(inventory(),actual,value=>value===sha),[
+    'Remote assembly has changes absent from this checkout',
+  ]);
+});
 test('rejects invalid hashes, duplicate sources and relaxed main disposition', () => {
   for (const mutate of [i=>i.sources[0].sha='short',i=>i.sources.push(i.sources[0]),i=>i.sources[0].disposition='reference']) {
     const i=inventory(); mutate(i); assert.throws(()=>validateInventory(i));
