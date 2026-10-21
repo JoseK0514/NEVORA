@@ -138,7 +138,7 @@
 
 /* Phase 4 clean pass: one message per card. The example week already says what the panel is for, so its intro line
  * goes; the link card leads with a tile and its state; the closing note is small and centred. */
-.pfRoot :global(.employee-calendar > p:not([role])):not(#pf):not(#pf) { display: none; }
+.pfRoot :global(.employee-calendar > header + p:not([role])):not(#pf):not(#pf) { display: none; }
 .pfRoot :global(.profile-calendar-disclosure[open] > .employee-calendar):not(#pf):not(#pf) { gap: 16px; padding-top: 16px; }
 .pfRoot :global(.employee-calendar-status-box):not(#pf):not(#pf) { position: relative; padding: 18px 18px 18px 72px; min-height: 76px; }
 .pfRoot :global(.employee-calendar-status-box):not(#pf):not(#pf)::before { content: ""; position: absolute; top: 18px; left: 18px; width: 42px; height: 42px; border-radius: 13px; background: #E8F2EF url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%230D3634' stroke-width='1.6' stroke-linecap='round'><path d='M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1'/></svg>") center / 22px no-repeat; }
