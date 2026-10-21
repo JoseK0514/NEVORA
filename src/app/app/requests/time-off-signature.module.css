@@ -80,3 +80,29 @@
   .toTimes:not(#to) { grid-template-columns: minmax(0, 1fr); }
   .toTimes i:not(#to) { display: none; }
 }
+
+/* Phase 4: wide screens put a month calendar beside the form (target p4b-board-d.png). */
+.toMonth:not(#to) { display: none; }
+@media (min-width: 1024px) {
+  .toRoot.toRoot:not(#to) { width: min(100%, 1080px); }
+  .toForm:not(#to) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; align-items: start; }
+  .toForm > *:not(#to) { grid-column: 2; }
+  .toForm > input[type="hidden"]:not(#to) { display: none; }
+  .toMonth:not(#to) { display: block; grid-column: 1; grid-row: 1 / span 12; margin: 0 !important; padding: 22px; }
+  .toMonthHead:not(#to) { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .toMonthHead b:not(#to) { font: 500 1.0625rem/1.375rem var(--sg-font); }
+  .toMonthHead button:not(#to) { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: var(--sg-page); color: var(--sg-ink-2); cursor: pointer; }
+  .toMonthHead button + button:not(#to) { margin-left: 6px; }
+  .toMonthDays:not(#to), .toMonthGrid:not(#to) { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .toMonthDays small:not(#to) { padding-bottom: 8px; text-align: center; font: 600 .6875rem/.875rem var(--sg-font); color: var(--sg-ink-3); }
+  .toMonthGrid button:not(#to) { height: 44px; margin: 2px 0; padding: 0; border: 0; background: none; color: var(--sg-ink); font: 400 .9375rem/1 var(--sg-font); font-variant-numeric: tabular-nums; cursor: pointer; }
+  .toMonthGrid button:hover:not(#to) { background: var(--sg-page); border-radius: 22px; }
+  .toMonthGrid button[data-past]:not(#to) { color: #A19E97; }
+  .toMonthGrid button[data-today]:not(#to) { font-weight: 600; color: var(--sg-teal); }
+  .toMonthGrid button[data-range]:not(#to) { border-radius: 0; background: #E2F1ED; color: #0A5753; font-weight: 500; }
+  .toMonthGrid button[data-edge]:not(#to) { background: var(--sg-deep); color: #FFFFFF; font-weight: 500; }
+  .toMonthGrid button[data-edge="start"]:not(#to) { border-radius: 22px 0 0 22px; }
+  .toMonthGrid button[data-edge="end"]:not(#to) { border-radius: 0 22px 22px 0; }
+  .toMonthGrid button[data-edge="both"]:not(#to) { border-radius: 22px; }
+  .toMonthGrid button:focus-visible:not(#to) { outline: 2px solid var(--sg-ink); outline-offset: -2px; border-radius: 22px; }
+}

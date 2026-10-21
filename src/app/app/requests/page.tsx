@@ -18,6 +18,7 @@ import { TimeOffSignatureForm } from "./time-off-signature";
 import ts from "./time-off-signature.module.css";
 import { Status } from "@/components/kit/kit";
 import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 
 function dateLabel(date: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -74,7 +75,7 @@ export default async function RequestsPage({
     : params.submitted ? <p className={`sg-alert ${ts.toNotice}`} data-tone="ok" role="status">Your request was submitted for manager review. Track the decision below.</p>
     : params.reviewed ? <p className={`sg-alert ${ts.toNotice}`} data-tone="ok" role="status">The request was reviewed.</p> : null;
 
-  if (activeTab === "new") return <TimeOffSignatureForm requestId={randomUUID()} draftOwner={session.id} notice={notice}
+  if (activeTab === "new") return <TimeOffSignatureForm requestId={randomUUID()} draftOwner={session.id} notice={notice} today={businessDate(new Date(), zone)}
     viewLink={<Link className="sg-band-link" href="/app/requests?tab=my">My requests{mine.length ? <em>{mine.length}</em> : null}<CaretRightIcon size={14} aria-hidden="true" /></Link>} />;
 
   const range = (request: (typeof mine)[number]) => request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`;

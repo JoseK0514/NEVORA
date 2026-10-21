@@ -237,6 +237,14 @@ function SourceNotices({snapshot}: {snapshot: HomeSnapshot}) {
  * refresh on its own, replace authority/lifetime guards, or operate a time entry.
  * The enclosing application shell supplies brand and navigation exactly once.
  */
+/** "Today", "Tomorrow" or "Wed, Oct 21", in the workspace's time zone. */
+function bandDay(shift: PublishedAssignment, snapshot: HomeSnapshot) {
+  const today = businessDate(snapshot.observedAt, snapshot.timeZone);
+  const tomorrow = businessDate(new Date(Date.parse(snapshot.observedAt) + 86400000).toISOString(), snapshot.timeZone);
+  return shift.date === today ? 'Today' : shift.date === tomorrow ? 'Tomorrow' : new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric'}).format(new Date(`${shift.date}T12:00:00Z`));
+}
+const bandTime = (shift: PublishedAssignment, zone: string) => keepWhole(`${new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(shift.startAt))} – ${new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(shift.endAt))}`);
+
 export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, ownTimeSlot, displayName, timeZone}: EmployeeHomeReviewedViewProps) {
   // IS-68: offline and "window in the background" both pause Home; the summary says which.
   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
@@ -286,6 +294,12 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
         <h1>{name && snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)},<span className={styles.h5Name}> {name}</span></> : 'Home'}</h1>
         {summary ? <p className={styles.h5Summary}>{summary}</p> : null}
       </div>
+      {/* Phase 4 (wide screens only): the band's figures, from the same read as the cards below. */}
+      {/* The figures' space is held from the first frame so the band never grows when Home arrives. */}
+      {!snapshot || !published ? <dl className={styles.h5Stats} aria-hidden="true"><div><dt>Next shift</dt><dd>–</dd><dd className={styles.h5StatSub}>&nbsp;</dd></div><div><dt>To review</dt><dd>–</dd><dd className={styles.h5StatSub}>&nbsp;</dd></div></dl> : <dl className={styles.h5Stats} aria-hidden="true">
+        <div><dt>{underWay ? 'Scheduled now' : 'Next shift'}</dt>{(underWay ?? next) ? <><dd>{bandDay((underWay ?? next)!, snapshot)}</dd><dd className={styles.h5StatSub}>{bandTime((underWay ?? next)!, snapshot.timeZone)} · {(underWay ?? next)!.locationLabel}</dd></> : <><dd>None</dd><dd className={styles.h5StatSub}>No upcoming published shift</dd></>}</div>
+        <div><dt>To review</dt><dd>{actions.length}</dd><dd className={styles.h5StatSub}>{actions[0]?.label ?? 'You’re all set'}</dd></div>
+      </dl>}
     </header>
     <div className={styles.h5Columns}>
       {/* P3-ST-02/12: the shift card and clock hold their last ready height while Home is a placeholder. */}

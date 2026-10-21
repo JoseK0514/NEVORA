@@ -189,3 +189,15 @@
 @media (prefers-reduced-motion: reduce) {
   .h5More > summary .h5Chevron:not(#h5) { transition: none; }
 }
+
+/* Phase 4 (Signature, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-4/p4b-board-d.png):
+ * on wide screens the band carries two figures, the next shift and what is waiting. Hidden on phones. */
+.h5Stats:not(#h5) { display: none; }
+@media (min-width: 1024px) {
+  .h5Stats:not(#h5) { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 640px; margin: 26px 0 0; padding: 0; border-top: 1px solid rgba(255, 255, 255, .14); }
+  .h5Stats > div:not(#h5) { min-width: 0; padding: 16px 24px 0 0; }
+  .h5Stats > div + div:not(#h5) { padding-left: 24px; border-left: 1px solid rgba(255, 255, 255, .14); }
+  .h5Stats dt:not(#h5) { font: 600 .6875rem/.875rem var(--sg-font, -apple-system, sans-serif); letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .55); }
+  .h5Stats dd:not(#h5) { margin: 6px 0 0; font: 300 1.875rem/2.125rem -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; letter-spacing: -.03em; color: #FFFFFF; font-variant-numeric: tabular-nums; }
+  .h5Stats dd.h5StatSub:not(#h5) { margin-top: 2px; font: 400 .875rem/1.25rem -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; letter-spacing: 0; color: rgba(255, 255, 255, .7); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}

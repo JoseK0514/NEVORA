@@ -5,6 +5,8 @@ import { unstable_rethrow } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { SigBand, SigHead, SigPage } from "@/components/signature/signature";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
@@ -38,7 +40,39 @@ function DateHalf({ id, name, label, eyebrow, value, min, onChange }: { id: stri
   </label>;
 }
 
-export function TimeOffSignatureForm({ requestId, draftOwner = "", notice, viewLink }: { requestId: string; draftOwner?: string; notice?: ReactNode; viewLink: ReactNode }) {
+const iso = (y: number, m: number, d: number) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+/** Wide screens (1024 and up): a month to pick the dates from. The first tap sets the start, the next the end; it fills
+ * the same fields as the ticket. Hidden on phones, where the native date fields are the picker. */
+function MonthPicker({ today, start, end, single, onPick }: { today: string; start: string; end: string; single: boolean; onPick: (start: string, end: string) => void }) {
+  const anchor = start || today;
+  const [view, setView] = useState(() => ({ y: Number(anchor.slice(0, 4)), m: Number(anchor.slice(5, 7)) - 1 }));
+  const first = new Date(Date.UTC(view.y, view.m, 1)), days = new Date(Date.UTC(view.y, view.m + 1, 0)).getUTCDate();
+  const lead = (first.getUTCDay() + 6) % 7;
+  const move = (step: number) => setView(current => { const d = new Date(Date.UTC(current.y, current.m + step, 1)); return { y: d.getUTCFullYear(), m: d.getUTCMonth() }; });
+  function pick(date: string) {
+    if (single || !start || (start && end && end >= start) || date < start) { onPick(date, single ? date : ""); return; }
+    onPick(start, date);
+  }
+  const label = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "long", year: "numeric" }).format(first);
+  return <div className={`sg-card ${styles.toMonth}`} role="group" aria-label={`Choose dates, ${label}`}>
+    <div className={styles.toMonthHead}><b aria-live="polite">{label}</b><span>
+      <button type="button" onClick={() => move(-1)} aria-label="Previous month"><CaretLeftIcon size={16} aria-hidden="true" /></button>
+      <button type="button" onClick={() => move(1)} aria-label="Next month"><CaretRightIcon size={16} aria-hidden="true" /></button></span></div>
+    <div className={styles.toMonthDays} aria-hidden="true">{["M", "T", "W", "T", "F", "S", "S"].map((day, index) => <small key={index}>{day}</small>)}</div>
+    <div className={styles.toMonthGrid}>
+      {Array.from({ length: lead }, (_, index) => <span key={`x${index}`} />)}
+      {Array.from({ length: days }, (_, index) => {
+        const date = iso(view.y, view.m, index + 1), inRange = !!start && !!end && date > start && date < end;
+        const edge = date === start && date === end ? "both" : date === start ? "start" : date === end ? "end" : undefined;
+        return <button key={date} type="button" data-edge={edge} data-range={inRange || undefined} data-today={date === today || undefined} data-past={date < today || undefined}
+          aria-pressed={!!edge || inRange} aria-label={fmt(date, { weekday: "long", month: "long", day: "numeric", year: "numeric" })} onClick={() => pick(date)}>{index + 1}</button>;
+      })}
+    </div>
+  </div>;
+}
+
+export function TimeOffSignatureForm({ requestId, draftOwner = "", notice, viewLink, today }: { requestId: string; draftOwner?: string; notice?: ReactNode; viewLink: ReactNode; /** The workspace's business date, for the month calendar on wide screens. */ today: string }) {
   const kept = draftOwner && unsent?.owner === draftOwner ? unsent : null;
   const [partialDay, setPartialDay] = useState(kept?.partialDay ?? false);
   const [startDate, setStartDate] = useState(kept?.startDate ?? "");
@@ -82,6 +116,7 @@ export function TimeOffSignatureForm({ requestId, draftOwner = "", notice, viewL
     <form action={send} className={`nto-form ${styles.toForm}`} onSubmit={() => { unsent = null; }}>
       <input type="hidden" name="requestId" value={requestId} />
       <input type="hidden" name="partialDay" value={partialDay ? "on" : ""} />
+      <MonthPicker today={today} start={startDate} end={partialDay ? startDate : endDate} single={partialDay} onPick={(start, end) => { setStartDate(start); if (!partialDay) setEndDate(end); }} />
       <div className={styles.toSeg} role="group" aria-label="Request type">
         <button type="button" aria-pressed={!partialDay} onClick={() => setPartialDay(false)}>Full day</button>
         <button type="button" aria-pressed={partialDay} onClick={() => setPartialDay(true)}>Partial day</button>
