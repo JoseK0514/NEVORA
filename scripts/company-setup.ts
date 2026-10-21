@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import type { Client } from 'pg';
+import { BASE_MIGRATIONS, FINAL_MIGRATIONS } from '../db/migrations/order';
 import { hashPassword } from '../src/lib/auth/password';
 import { normalizePhoneNumber } from '../src/lib/phone';
 import { validateWorkspaceProfile } from '../src/lib/workspace/validation';
@@ -130,21 +131,11 @@ export function migrationBody(source: string): string {
 }
 
 export async function setupCompany(client: Client, input: CompanyInput) {
-  const migrations = await Promise.all([
-    '0001_initial', '0002_schedule_health', '0003_schedule_assistance', '0004_assistance_layer',
-    '0005_time_clock', '0006_scheduling_rule_inputs', '0007_portal_web_push', '0008_workspace_positions',
-    '0009_schedule_generation', '0010_shift_coverage_automation', '0011_clocker_devices', '0012_clocker_pins',
-    '0013_clocker_punches', '0014_clocker_breaks', '0015_clocker_schedule_context', '0016_time_corrections',
-    '0017_missing_time_supersession', '0018_timecards', '0019_payroll_export_mappings', '0020_account_recovery',
-    '0021_timecard_reassignment_interlock', '0022_timecard_reopen_revision_authority',
-    '0023_employee_attention_receipts', '0024_contextual_communications', '0025_calendar_subscriptions',
-    '0023_template_ownership', '0024_schedule_copy_receipts', '0025_company_policies',
-    '0026_attendance_observations', '0027_payroll_period_custody', '0028_configurable_payroll', '0029_payroll_private_notices',
-    '0030_notification_source_kinds', '0031_workspace_presentation', '0032_workspace_words_modules',
-    '0033_management_alert_preferences', '0034_account_deletion_requests', '0035_passkeys',
-  ].map(async name => migrationBody(await readFile(new URL(`../db/migrations/${name}.sql`, import.meta.url), 'utf8'))));
-  const currentMigrations = await Promise.all(['0031_native_payroll', '0032_company_access_invitations']
-    .map(async name => migrationBody(await readFile(new URL(`../db/migrations/${name}.sql`, import.meta.url), 'utf8'))));
+  // One authoritative order: duplicate numeric prefixes make filename sorting
+  // wrong, and the held tenant files must never run. See db/migrations/order.ts.
+  const read = (file: string) => readFile(new URL(`../db/migrations/${file}`, import.meta.url), 'utf8');
+  const migrations = await Promise.all(BASE_MIGRATIONS.map(async file => migrationBody(await read(file))));
+  const currentMigrations = await Promise.all(FINAL_MIGRATIONS.map(async file => migrationBody(await read(file))));
   const passwordHash = await hashPassword(input.owner.password);
   const workspaceId = randomUUID(), locationId = randomUUID();
   await client.query('BEGIN');
