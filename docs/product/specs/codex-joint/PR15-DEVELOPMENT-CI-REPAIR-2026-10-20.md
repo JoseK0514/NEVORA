@@ -245,6 +245,15 @@ and HTTP success before the same actual controls. Whole Phase D's cold Schedule
 timeout is addressed by adding that route to unauthenticated compilation setup.
 Cloud execution must close the outstanding behavior/runtime gates.
 
+Hosted `8b38c220` reached the delayed-script and actual immutable Clocker receipt
+checks, then rejected a legacy expectation that a focus event preserves the
+inner receipt. The enclosing current-access frame retires and unmounts that
+private view. The updated test requires immediate receipt absence, no automatic
+receipt POST, a fresh empty reference field after authorization, and an explicit
+same-reference review returning the same employee receipt. A real blur/focus must
+repeat that privacy boundary; exactly two explicit checks may occur. This retains
+the immutability/no-replay checks while following the new enclosing lifetime.
+
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,
