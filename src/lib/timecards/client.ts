@@ -12,7 +12,7 @@ export function parseTimecardReceipt(value:unknown,command:TimecardCommand,httpS
  const successful={APPROVE:'approved',FINALIZE:'finalized',REOPEN:'reopened'}[command.action];
  if(value.status===successful&&httpStatus===200&&value.operationId===command.operationId&&value.revision===command.expectedRevision+1&&Object.keys(value).length===3)return value as TimecardMutation;
  if(value.status==='outcome-unknown'&&httpStatus===503&&value.operationId===command.operationId&&Object.keys(value).length===2)return value as TimecardMutation;
- if(value.status==='blocked'&&httpStatus===409&&['self_review','unresolved_time','approval_required','period_state','overlapping_period'].includes(String(value.reason))&&Object.keys(value).length===2)return value as TimecardMutation;
+ if(value.status==='blocked'&&httpStatus===409&&['self_review','unresolved_time','approval_required','period_state','overlapping_period','payroll_approved'].includes(String(value.reason))&&Object.keys(value).length===2)return value as TimecardMutation;
  if(((value.status==='conflict'&&httpStatus===409)||(value.status==='unavailable'&&httpStatus===503))&&Object.keys(value).length===1)return value as TimecardMutation;
  throw Error('Unknown receipt');
 }

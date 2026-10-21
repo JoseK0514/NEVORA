@@ -13,7 +13,7 @@ export type { TimecardsResult } from './read-model';
 export type TimecardCommand = Period & { operationId:string;employeeId:string;expectedRevision:number;
   expectedSourceHash:string;action:'APPROVE'|'FINALIZE'|'REOPEN';note?:string };
 export type TimecardMutation = { status:'approved'|'finalized'|'reopened';operationId:string;revision:number } |
-  {status:'blocked';reason:'self_review'|'unresolved_time'|'approval_required'|'period_state'|'overlapping_period'} |
+  {status:'blocked';reason:'self_review'|'unresolved_time'|'approval_required'|'period_state'|'overlapping_period'|'payroll_approved'} |
   {status:'conflict'|'unavailable'} | {status:'outcome-unknown';operationId:string};
 const object = (v:unknown):v is Record<string,unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const uuid = (v:unknown):v is string => typeof v==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
@@ -143,6 +143,19 @@ async function readTimecardsCore(proof:SessionMutationProof,requested:Period,exe
   }
 }
 
+/** Reopening hours that an approved payroll already paid would leave the run, YTD and published pay statements on
+ * the old hours with nothing flagging it. While the latest payroll run for an overlapping period is APPROVED and pays
+ * this person, reopen is refused; starting a payroll correction for that period (which recalculates from current
+ * hours until it's approved) lifts the block. Runs list people in rows (provider import) or nativeCalculation. */
+export function payrollApprovedGuard(workspaceId:string,employeeId:string,startDate:string,endDate:string){
+  return {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM payroll_runs r JOIN payroll_runs_current c ON c.workspace_id=r.workspace_id AND c.run_id=r.id
+    WHERE r.workspace_id=$1 AND r.start_date<=$4::date AND r.end_date>=$3::date AND c.payload->>'status'='APPROVED'
+     AND NOT EXISTS(SELECT 1 FROM payroll_runs child WHERE child.workspace_id=r.workspace_id AND child.correction_of=r.id)
+     AND (EXISTS(SELECT 1 FROM jsonb_array_elements(CASE WHEN jsonb_typeof(c.payload->'rows')='array' THEN c.payload->'rows' ELSE '[]'::jsonb END) x WHERE x->>'employeeId'=$2)
+      OR EXISTS(SELECT 1 FROM jsonb_array_elements(CASE WHEN jsonb_typeof(c.payload->'nativeCalculation'->'employees')='array' THEN c.payload->'nativeCalculation'->'employees' ELSE '[]'::jsonb END) x WHERE x->>'employeeId'=$2)))
+    THEN 'nevora_timecard_PAYROLL_APPROVED' ELSE '1' END)::integer`,values:[workspaceId,employeeId,startDate,endDate]};
+}
+
 export async function mutateTimecard(proof:SessionMutationProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<TimecardMutation> {
   try{assertManagementProof(proof,proof?.employee?.id);}catch{return {status:'unavailable'};}
   if(!manager(proof))return {status:'unavailable'};
@@ -154,6 +167,7 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
   const statements=[...workspaceReadGuard(workspace),
     {text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([actor,command.employeeId])].sort()]},
     ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
+    ...(command.action==='REOPEN'?[payrollApprovedGuard(workspace.id,command.employeeId,command.startDate,command.endDate)]:[]),
     {text:'SELECT nevora_timecard_command($1::uuid,$2,$3,$4,$5::date,$6::date,$7::integer,$8,$9,$10,$11) AS result',
       values:[command.operationId,workspace.id,command.employeeId,actor,command.startDate,command.endDate,command.expectedRevision,
         command.expectedSourceHash,command.action,command.note??null,createHash('sha256').update(JSON.stringify(command)).digest('hex')]},
@@ -170,7 +184,7 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
       if(isManagementAuthorizationError(error)||isOperationalAuthorizationError(error))return {status:'unavailable'};
       const message=error instanceof Error?error.message:'';const code=object(error)?String(error.code??''):'';
       if(/nevora_timecard_CONFLICT/.test(message)||code==='23505')return {status:'conflict'};
-      const reasons=[['SELF_REVIEW','self_review'],['UNRESOLVED','unresolved_time'],['APPROVAL_REQUIRED','approval_required'],['STATE','period_state'],['OVERLAPPING_PERIOD','overlapping_period']] as const;
+      const reasons=[['SELF_REVIEW','self_review'],['UNRESOLVED','unresolved_time'],['APPROVAL_REQUIRED','approval_required'],['PAYROLL_APPROVED','payroll_approved'],['STATE','period_state'],['OVERLAPPING_PERIOD','overlapping_period']] as const;
       for(const [pattern,reason] of reasons)if(message.includes('nevora_timecard_'+pattern))return {status:'blocked',reason};
       if(['40001','40P01','55P03'].includes(code)){if(attempt<2)continue;return {status:'conflict'};}
       if(/AUTH_REQUIRED|SOURCE_LIMIT|INVALID/.test(message)||['42P01','42883','23503','23514'].includes(code))return {status:'unavailable'};

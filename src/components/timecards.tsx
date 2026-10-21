@@ -54,7 +54,7 @@ function Details({card}:{card:Timecard}){
 /** Sentence case for a timecard state: "Draft", "Approved", "Finalized". */
 const stateLabel=(state:string)=>{const text=state.replaceAll('_',' ').toLowerCase();return text.charAt(0).toUpperCase()+text.slice(1);};
 function commandMessage(result:TimecardMutation):string{
-  if(result.status==='blocked')return ({self_review:'A different manager must review your timecard.',unresolved_time:'Resolve open time, overlaps and pending corrections before approval.',approval_required:'Approve the current source revision before finalizing.',period_state:'Refresh the period and choose an action for its current state.',overlapping_period:'This period overlaps finalized time. Reopen that period first.'})[result.reason];
+  if(result.status==='blocked')return ({self_review:'A different manager must review your timecard.',unresolved_time:'Resolve open time, overlaps and pending corrections before approval.',approval_required:'Approve the current source revision before finalizing.',period_state:'Refresh the period and choose an action for its current state.',overlapping_period:'This period overlaps finalized time. Reopen that period first.',payroll_approved:'Payroll for this period is approved. Start a payroll correction for it first, then reopen.'})[result.reason];
   if(result.status==='conflict')return 'This period changed. Refresh and review the latest time before acting.';
   if(result.status==='outcome-unknown')return 'The result could not be confirmed. Retry the same action to reconcile it.';
   if(result.status==='unavailable')return 'The action could not be completed. Refresh your current session and try again.';
