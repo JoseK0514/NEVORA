@@ -5,7 +5,7 @@ import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 export async function runScenario({app,page,context,engine,width,evidenceDirectory}){
  const checks=[],runtimeErrors=[],receipt=join(evidenceDirectory,`calendar-case-${engine}-${width}-report.json`);let stage='seed';
- page.on('pageerror',error=>runtimeErrors.push({stage,...safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));
+ page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,...safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})});});
  const step=async(name,run)=>{stage=name;await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks,runtimeErrors}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks,runtimeErrors}));}catch(error){await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks,runtimeErrors,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));throw Error('Calendar case failed: '+name);}};
  const currentPageReady=async()=>{await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');await page.waitForLoadState('networkidle');};
  const panel=page.locator('[data-calendar-setting]');

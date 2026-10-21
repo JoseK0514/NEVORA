@@ -185,3 +185,17 @@ a driver mistake: the visible "1 day away" summary is an aria-live paragraph,
 while the h1 remains "Time off". Its screenshot shows the correct one-day range.
 The assertion now targets that exact live summary; every native invalid-date,
 actual submission, stable-ID replay, outbox and Owner approval check is retained.
+
+Attention completed Chromium's seven sizes and WebKit 320's functional actions,
+but WebKit emitted native fetch-access diagnostics during document replacement.
+The upstream mechanism is documented by a Playwright maintainer at
+https://github.com/microsoft/playwright/issues/43120. The reviewed QA control and
+regressions from PR15 `1002c9cc` are adopted as bounded test instrumentation:
+each actual WebKit launch must reproduce handled cancellation in a
+credential-free loopback fixture and verify independent detection of a genuine
+window error and unhandled rejection. Only the exact native format for three
+plain same-origin read paths, during an observed pending main-frame navigation,
+may be recorded separately. Foreign/query/fragment/userinfo paths, teardown,
+live-document events, actual TypeErrors and spoofed JavaScript exceptions remain
+fatal. No broad error filter, scenario skip or deadline increase is introduced.
+The full matrix and source/receipt validators remain required on the new SHA.

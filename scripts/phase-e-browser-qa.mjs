@@ -7,6 +7,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
+import {navigationFetchDiagnostic,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 
 const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
 const canonicalRuntimeMessages = new Set(['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop limit exceeded', 'Connection closed.']);
@@ -22,12 +23,16 @@ function nativeFetchResourceKind(message,page) {
     if(path==='/api/company-access/operational-authority')return 'authority-read';
     if(path==='/__nextjs_original-stack-frames')return 'framework-diagnostic';
     if(path==='/api/notifications')return 'notification-read';
+    if(path==='/api/employee/home')return 'home-read';
     if(path==='/api/manager/communications'||path.startsWith('/api/manager/communications/'))return 'manager-read';
     if(path==='/api/employee/communications'||path.startsWith('/api/employee/communications/'))return 'employee-read';
     if(path==='/api/employee/my-time')return 'recorded-time-read';
     if(runtimeRoutes.has(path)||path==='/app/updates/compose'||/^\/app\/updates\/[a-f0-9-]{36}$/.test(path))return 'route-read';
     return null;
   })??null;
+}
+function plainOwnNativeRead(message,page){
+  return readable(()=>{const failed=new URL('http:/'+message.slice(0,-' due to access control checks.'.length));return failed.origin===new URL(page.url()).origin&&!failed.username&&!failed.password&&!failed.search&&!failed.hash;})===true;
 }
 
 /** Only exact static messages or a bounded React invariant prefix survive;
@@ -47,12 +52,13 @@ function originalRuntimeDiagnostic(name, message, page) {
     reactInvariant: invariant ? Number(invariant[1]) : null,
     route: runtimeRoutes.has(route) ? route : null,
     resourceKind: nativeFetch ? nativeFetchResourceKind(message,page) : null,
+    plainOwnRead:nativeFetch&&plainOwnNativeRead(message,page),
   };
 }
 
-/** All runtime events remain fatal, including recognized diagnostic formats. */
-export function observeBrowserCell(execution, errors) {
+export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false}={}) {
   const start = errors.length;
+  const classified=new WeakSet(),pages=new WeakMap();
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
   const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty', 'loading', 'canonical-communications', 'actions-overflow', 'keyboard', 'api', 'offline', 'late-home', 'late-time', 'route-leave', 'sql-source-failure', 'replaced-session', 'early-my-time-route', 'removal-review', 'last-shift-removal', 'complete-zero', 'communication-source-failure', 'axe-diagnostic']);
   return {
@@ -62,6 +68,10 @@ export function observeBrowserCell(execution, errors) {
       assert(['primary', 'manager'].includes(role));
       context.on('page', page => {
         const index = pageIndex++;
+        const state={index,role,pending:null};pages.set(page,state);
+        page.on('request',request=>{if(readable(()=>request.isNavigationRequest()&&request.frame()===page.mainFrame())){state.pending=readable(()=>new URL(request.url()).origin===new URL(page.url()).origin)?request:null;}});
+        page.on('framenavigated',frame=>{if(readable(()=>frame===page.mainFrame()))state.pending=null;});
+        page.on('requestfailed',request=>{if(state.pending===request)state.pending=null;});
         page.on('pageerror', error => {
           const originalMessage = readable(() => error?.message), name = readable(() => error?.name);
           const message = typeof originalMessage === 'string' ? originalMessage : '';
@@ -71,11 +81,17 @@ export function observeBrowserCell(execution, errors) {
               : /chunkloaderror|loading chunk/i.test(message) ? 'Module load failure'
                 : 'Unclassified page runtime error';
           const stage = readable(readStage);
+          if(navigationFetchDiagnostic(execution,diagnostic,!!state.pending,navigationDiagnosticVerified,phase)){
+            classified.add(error);execution.navigationDiagnostics??=[];
+            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,stage:stages.has(stage)?stage:null});return;
+          }
           errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,
             failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
         });
       });
+      if(navigationDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
     },
+    isNavigationDiagnostic(error) {return classified.has(error);},
     assertClean() { assert.equal(errors.length, start, 'Browser runtime/network errors recorded in current cell'); },
   };
 }
@@ -174,10 +190,12 @@ async function main() {
       const server = await raceOwnedAbort(launch, controller.signal);
       const browser = await raceOwnedAbort(playwright[engine].connect(server.wsEndpoint(), { timeout: 15_000 }), controller.signal);
       try {
+        let navigationDiagnosticVerified=false;
+        if(engine==='webkit'){const probe=await raceOwnedAbort(verifyNavigationFetchDiagnostic(browser),controller.signal);report.navigationDiagnosticProbe=probe;navigationDiagnosticVerified=probe.verified;}
         for (const [item, runScenario] of modules) for (const width of WIDTHS) {
           controller.signal.throwIfAborted();
           const record = { suite: item, engine, width, status: 'failed', checks: [] }; report.executions.push(record);
-          const runtimeErrors = observeBrowserCell(record, report.errors);
+          const runtimeErrors = observeBrowserCell(record, report.errors,{navigationDiagnosticVerified});
           const started=Date.now();emitProgress(record,'start',started);
           let context;
           try {
@@ -190,7 +208,7 @@ async function main() {
               }
               return route.continue();
             });
-            runtimeErrors.observeContext(context, 'primary');
+            await runtimeErrors.observeContext(context, 'primary');
             const page = await context.newPage(); page.setDefaultTimeout(15_000);
             const result = await raceOwnedAbort(runScenario({ app, browser, context, page, engine, width, evidenceDirectory: evidence, axeFile, runtimeErrors }), controller.signal);
             if (!result || !Array.isArray(result.checks) || !result.checks.length || result.checks.some(check => typeof check !== 'string' || !check.trim())) throw Error('Missing executed browser cases: ' + item);
