@@ -5,6 +5,8 @@ import {EmployeeAccountPanel} from '@/components/employee-account-panel';
 import Link from 'next/link';
 import styles from './notifications.module.css';
 import {PageBand} from '@/components/kit/kit';
+export const metadata = { title: "Notifications" };
+
 export default async function NotificationsPage(){
  const proof=await requireSessionMutationProof();if(!['EMPLOYEE','LEAD','MANAGER','OWNER'].includes(proof.employee.role))redirect('/app');
  const authority=employeeViewAuthority(proof,'notifications'),manager=['OWNER','MANAGER'].includes(proof.employee.role);

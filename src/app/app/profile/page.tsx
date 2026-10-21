@@ -24,6 +24,8 @@ import {GlobeIcon} from '@phosphor-icons/react/dist/ssr/Globe';
 import {CircleHalfIcon} from '@phosphor-icons/react/dist/ssr/CircleHalf';
 import {ThemeSwitch} from '@/components/theme-switch';
 import {AccountPrivacyLinks} from '@/components/legal/account-privacy-links';
+
+export const metadata = { title: "Profile" };
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
  const authority=employeeViewAuthority(proof,'profile');

@@ -9,6 +9,8 @@ import "./inbox.css";
 
 /** Managers' one place for what needs a decision: exceptions first, then
  * requests. Reads through the existing authority-checked action center. */
+export const metadata = { title: "Inbox" };
+
 export default async function InboxPage() {
   const session = await requireSession();
   if (!isManagerRole(session.role)) redirect("/app/requests/hub");

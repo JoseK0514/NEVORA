@@ -38,6 +38,8 @@ import {readOperationalAuthority} from '@/lib/company-access/operational-scope.s
 import { PasskeyOffer } from "@/components/passkeys/passkey-offer";
 
 export const metadata: Metadata = {
+  // Review fix (23/24 of 50): one title per page, so tab changes are announced and tabs are tellable apart.
+  title: { template: "%s · NEVORA", default: "NEVORA" },
   manifest: "/fuel-portal.webmanifest",
   appleWebApp: { capable: true, title: "NEVORA" },
   icons: { apple: [{ url: "/icons/fuel-apple-180.png", sizes: "180x180", type: "image/png" }] },

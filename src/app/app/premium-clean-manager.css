@@ -844,12 +844,12 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 /* Counts inside a segment are plain numbers after the label, as on the Inbox (no grey chips). */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.updates-filter-count, [class*="notification-inbox-module"][class*="__count"]) { display: inline; min-width: 0; height: auto; margin: 0 0 0 5px; padding: 0; border: 0; border-radius: 0; background: none; color: var(--cm-label-2); font: inherit; font-weight: 400; font-variant-numeric: tabular-nums; }
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wc-pills, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .wa-chips, .wa-segments) { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: none; mask-image: none; animation: cm-track-fade linear both; animation-timeline: scroll(self inline); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wc-pills, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .wa-chips, .wa-segments) { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: none; mask-image: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wc-pills, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .wa-chips, .wa-segments) > :is(a, button, .nv-filter, .wa-chip, .wa-segment) { flex: 1 1 0; min-width: max-content; padding-inline: 10px; overflow: visible; text-overflow: clip; white-space: nowrap; }
 }
 @media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* Desktop underline tabs that can't fit (Availability at 768) scroll with the same fade, so focus never lands on a cut tab. */
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.wa-chips, .wc-pills, .wa-segments) { overflow-x: auto; scrollbar-width: none; animation: cm-track-fade linear both; animation-timeline: scroll(self inline); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.wa-chips, .wc-pills, .wa-segments) { overflow-x: auto; scrollbar-width: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.wa-chips, .wc-pills, .wa-segments) > * { flex-shrink: 0; }
 }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wc-pills, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .wa-chips, .wa-segments)::-webkit-scrollbar { display: none; }
@@ -1086,7 +1086,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   /* Section tabs scroll with the same edge fade as the other tracks. */
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track:not(#cm-fade) { animation: cm-track-fade linear both; animation-timeline: scroll(self inline); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .section-tabs-track:not(#cm-fade) { }
 }
 @media (min-width: 761px) and (max-width: 999px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   /* Narrow desktop: Payroll's summary takes two lines. */
@@ -1184,3 +1184,37 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 /* Mark read: 8px of padding inside its box so the inner focus ring clears the label; equal negative margins keep the label in place. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) [class*="notification-inbox-module"][class*="__markRead"]:not(#cm-pad):not(#cm-pad2) { padding-inline: 8px; margin-inline: -8px; }
+/* Review fix (cross-browser): the scroll-driven edge fade runs only where scroll timelines exist. Without them the animation
+ * would jump to its last frame and leave tracks faded on the wrong edge (Firefox, Safari 17-18); those engines use the
+ * data-overflow/start/end fallback above instead. */
+@supports (animation-timeline: scroll()) {
+  @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+    html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filters, .wc-pills, .updates-filters, [class*="notification-inbox-module"][class*="__filters"], .wa-chips, .wa-segments, .section-tabs-track) { animation: cm-track-fade linear both; animation-timeline: scroll(self inline); }
+  }
+  @media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+    html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.wa-chips, .wc-pills, .wa-segments) { animation: cm-track-fade linear both; animation-timeline: scroll(self inline); }
+  }
+}
+
+/* ===== 50-review fixes (Oct 21) ===== */
+/* Review 25/50: Windows High Contrast stripped the box-shadow underlines and tinted fills that mark the selected
+ * tab, filter, sidebar page, week day and timeline bar. Outlines and borders survive forced colors. */
+@media (forced-colors: active) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filter[aria-pressed="true"], .nv-filter[aria-current="page"], .wa-chip[aria-pressed="true"], .wa-segment[aria-selected="true"], .cm-tc-tabs button[aria-pressed="true"], .updates-filters > button[aria-pressed="true"], [class*="notification-inbox-module"][class*="__filters"] > button[aria-pressed="true"], .section-tab[aria-current="page"], .schedule-location-control .segmented.cm-locations > a.selected):not(#cm-hc) { outline: 2px solid CanvasText; outline-offset: -2px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .sidebar .nav-link.active:not(#cm-hc) { outline: 2px solid CanvasText; outline-offset: -2px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-week__day[aria-pressed="true"] > b:not(#cm-hc) { outline: 2px solid CanvasText; outline-offset: 2px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timeline__bar:not(#cm-hc) { border: 2px solid CanvasText; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timeline__bar[data-kind="missed"]:not(#cm-hc) { border-style: dashed; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-block:not(#cm-hc) { border: 1px solid CanvasText; }
+}
+/* Review 25/50: the timeline's "later" (1.27:1) and "missed" (2.3:1) bars get a 3:1 boundary. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timeline__bar[data-kind="later"]:not(#cm-nt) { box-shadow: inset 0 0 0 1px #767674; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timeline__bar[data-kind="missed"]:not(#cm-nt) { box-shadow: inset 0 0 0 1px #C0362C; }
+@media (prefers-reduced-motion: reduce) {
+  /* Review 26/50: the kit's 0ms catch-all ran the success toast's long fade to its end frame, so confirmations
+   * never appeared; and the More sheet still slid. Both go still instead. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-toast:not(#cm-rm) { animation: none !important; opacity: 1 !important; transform: none !important; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #manager-more-navigation:not(#cm-rm) { transition: none !important; animation: none !important; transform: none !important; }
+}
+/* Review QA 47/50: anchors opened under the sticky header landed past their heading. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is([id^="rules-"], .manager-issue-target):not(#cm-anchor) { scroll-margin-top: 76px; }

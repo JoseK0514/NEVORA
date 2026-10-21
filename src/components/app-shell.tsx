@@ -19,6 +19,7 @@ import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
 import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, moreNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
+import { isPopoverOpen, hidePopover } from "./kit/popover-open";
 import { CommandFinder, OPEN_FINDER_EVENT, type OpenFinderDetail } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
@@ -135,7 +136,7 @@ function AppShellView({
       // IS-P4-03: the desktop account menu and device settings close the same way, so focus never sits behind them.
       for (const id of ["manager-more-navigation", "employee-more-navigation", "portal-account-menu", "portal-device-settings"]) {
         const sheet = document.getElementById(id);
-        if (sheet?.matches(":popover-open") && !sheet.contains(target) && !target.closest(`[popovertarget="${id}"]`)) sheet.hidePopover();
+        if (isPopoverOpen(sheet) && !sheet.contains(target) && !target.closest(`[popovertarget="${id}"]`)) hidePopover(sheet);
       }
       // IS-65: every sideways-scrolling pill row follows focus, Notifications' and Updates' filters included.
       if (target.closest(".nv-filters, .section-tabs-track, .segmented, .mws-day-navigation, .my-week-days, .updates-filters, [class*='notification-inbox-module'][class*='__filters']")) {
@@ -175,7 +176,7 @@ function AppShellView({
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {
       const menu = document.getElementById(id);
-      if (menu?.matches(':popover-open')) menu.hidePopover();
+      if (isPopoverOpen(menu)) hidePopover(menu);
     }
   }, [pathname]);
 

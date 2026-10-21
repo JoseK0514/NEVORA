@@ -107,6 +107,8 @@ function marketplaceDate(date: string) {
   return `${label.weekday}, ${label.day}`;
 }
 
+export const metadata = { title: "Shift requests" };
+
 export default async function ExchangePage({
   searchParams,
 }: {

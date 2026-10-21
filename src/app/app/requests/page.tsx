@@ -40,6 +40,8 @@ function statusLabel(status: string) {
   return status[0] + status.slice(1).toLowerCase();
 }
 
+export const metadata = { title: "Time off" };
+
 export default async function RequestsPage({
   searchParams,
 }: {

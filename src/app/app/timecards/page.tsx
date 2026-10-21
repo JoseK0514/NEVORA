@@ -9,6 +9,7 @@ import {parsePeriod} from '@/lib/timecards/project';
 import {Timecards} from '@/components/timecards';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 
+export const metadata = { title: "Timecards" };
 export default async function TimecardsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession(),workspace=await getWorkspace(),params=await searchParams;
   const access=isManagerRole(session.role)?await withOperationalCompany(await requireSessionMutationProof(),async()=>null):null;

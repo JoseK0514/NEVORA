@@ -1,4 +1,5 @@
 'use client';
+import {showPopover} from './kit/popover-open';
 import {useEffect,useState} from 'react';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
 import './manager-issue-focus.css';
@@ -16,10 +17,10 @@ export function ManagerIssueFocus({prefix}:{prefix:string}){
    // A target inside a closed disclosure (e.g. unscheduled people) opens first, so it can take focus.
    for(let details=row?.closest('details');details;details=details.parentElement?.closest('details')??null)details.open=true;
    const popover=row?.closest<HTMLElement>('[popover]');
-   if(popover&&!popover.matches(':popover-open'))popover.showPopover();
+   showPopover(popover);
   };
   reveal();window.addEventListener('hashchange',reveal);return()=>window.removeEventListener('hashchange',reveal);
  },[prefix]);
  usePrivateFragmentFocus(prefix,true);
- return missing?<p className="manager-issue-notice" role="status">That issue is no longer available in this view. It may have changed since the Action Center was checked. Return to the Action Center for a current list.</p>:null;
+ return missing?<p className="manager-issue-notice" role="status">That issue is no longer available in this view. It may have changed since you opened it. Your Inbox has the current list.</p>:null;
 }

@@ -11,6 +11,8 @@ import {Reports} from '@/components/reports';
 import {ReportsEntrance} from '@/components/reports-entrance';
 import {PageBand} from '@/components/kit/kit';
 import {redirect} from 'next/navigation';
+export const metadata = { title: "Insights" };
+
 export default async function ReportsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
   if(!isManagerRole(session.role))redirect('/app');

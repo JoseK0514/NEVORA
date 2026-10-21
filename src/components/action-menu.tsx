@@ -1,4 +1,5 @@
 "use client";
+import { isPopoverOpen, hidePopover, showPopover } from "./kit/popover-open";
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { actionMenuGeometry } from "./action-menu-geometry";
@@ -47,7 +48,7 @@ export function ActionMenu({
       offsetTop: window.visualViewport?.offsetTop ?? 0,
     });
     const position = () => {
-      if (!menu.matches(":popover-open")) return;
+      if (!isPopoverOpen(menu)) return;
       const triggerBox = trigger.getBoundingClientRect();
       const viewport = visibleViewport();
       if (getComputedStyle(menu).getPropertyValue('--home-menu-sheet').trim() === '1') {
@@ -87,7 +88,7 @@ export function ActionMenu({
     };
     const onToggle = () => {
       position();
-      if (!menu.matches(":popover-open")) {
+      if (!isPopoverOpen(menu)) {
         keyboardOpenRef.current = false;
         return;
       }

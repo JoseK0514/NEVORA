@@ -83,6 +83,20 @@ export function ScheduleCopyForm({
         );
         return;
       }
+      if (
+        response.ok &&
+        body && typeof body === "object" &&
+        (body as { operationId?: unknown }).operationId === original.operationId &&
+        typeof (body as { state?: unknown }).state === "string" &&
+        !["pending", "complete"].includes((body as { state: string }).state)
+      ) {
+        // Review fix (32/50): a copy the server reports as settled (failed, rejected, conflicted) is resolved —
+        // clear the stored reference instead of showing "Check or retry" on every week forever.
+        localStorage.removeItem(key);
+        window.dispatchEvent(new Event("nevora-copy-pending"));
+        setNotice("The original copy didn’t go through. You can start a new copy when ready.");
+        return;
+      }
       setNotice(
         response.status === 401 || response.status === 403
           ? "Current management access is required. Sign in again to check the original operation."
