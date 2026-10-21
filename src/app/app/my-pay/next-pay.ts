@@ -3,8 +3,8 @@ import { getWorkspace } from '@/lib/data/workspaces';
 import { businessDate } from '@/lib/business-time';
 import type { NextPay } from '@/components/payroll/my-pay';
 
-/** The next payday from the workspace's pay schedule, as My pay's band shows it. Shared by My pay and Home's
- * "Next payday" row (MK1). No schedule, a past payday or a failed read gives null. */
+/** The next payday from the workspace's pay schedule, read the same way My pay's band reads it (my-pay/page.tsx), for
+ * Home's "Next payday" row (MK1). No schedule, a past payday or a failed read gives null. */
 export async function readNextPay(timeZone?: string): Promise<NextPay> {
   const [pay, zone] = await Promise.all([currentPayPeriod().catch(() => null), timeZone ? Promise.resolve(timeZone) : getWorkspace().then(workspace => workspace.timeZone).catch(() => null)]);
   if (!pay || !zone) return null;
