@@ -1,0 +1,323 @@
+/* Signature components: the one shared rule set for buttons, press feedback and focus across the employee app,
+ * sign-in/activation and the Clocker. Values come from the --sig-* tokens in tokens.css; every var() carries the
+ * approved fallback so these rules work before and after the token file lands. Imported once, in the root layout. */
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+/* One scale. Primary: deep fill, white text. Secondary: white, ink text, hairline plus a soft lift. Both 56px with a
+ * 16px radius on phones, tablets and desktop. Link: quiet text with a 44px hit area. Round icon buttons, keypad keys,
+ * chips and the band link keep their own shapes. `:not(#sig)` lifts these over the older page kits; the hover rules
+ * only exist where a pointer can hover. Press (:active) and focus rules live in their own sections below.
+ *
+ * States: pending is [aria-busy="true"]: the fill stays, a spinner shows, the cursor is progress. True disabled
+ * (:disabled, or aria-disabled without aria-busy) is quiet: #ECEAE5 fill, #5F625E text (5.1:1), no lift. */
+.sig-btn:not(#sig) {
+  box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-width: 44px; min-height: var(--sig-control-h, 56px); margin: 0; padding: 0 20px;
+  border: 1px solid transparent; border-radius: var(--sig-radius-control, 16px);
+  font: inherit; font-size: 1.0625rem; font-weight: 500; line-height: 1.25rem; letter-spacing: 0;
+  text-align: center; text-decoration: none; white-space: normal; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.sig-btn--primary:not(#sig) { background: var(--sig-fill); color: var(--sig-on-fill); box-shadow: none; }
+.sig-btn--secondary:not(#sig) {
+  background: var(--sig-card, #FFFFFF); color: var(--sig-ink, #161C1B);
+  box-shadow: inset 0 0 0 1px var(--sig-rule, #E8E5DF), 0 1px 2px rgba(22, 28, 27, .06);
+}
+.sig-btn--link:not(#sig) {
+  min-height: 44px; padding: 0 4px; border-radius: 8px; background: none; box-shadow: none; color: var(--sig-ink, #161C1B);
+  font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--sig-rule, #E8E5DF);
+  text-decoration-thickness: 1px; text-underline-offset: 5px;
+}
+@media (hover: hover) {
+  .sig-btn--primary:not(:disabled):not([aria-disabled="true"]):not(#sig):hover { background: var(--sig-fill-hover); }
+  .sig-btn--secondary:not(:disabled):not([aria-disabled="true"]):not(#sig):hover { background: var(--sig-card-hover, #FAFAF8); }
+  .sig-btn--link:not(:disabled):not([aria-disabled="true"]):not(#sig):hover { text-decoration-color: currentColor; }
+}
+.sig-btn[aria-busy="true"]:not(#sig) { cursor: progress; }
+.sig-btn:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#sig) {
+  background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); box-shadow: none; cursor: not-allowed;
+}
+.sig-btn--link:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#sig) { background: none; color: var(--sig-ink-3, #6F6C66); }
+/* Round icon buttons: no browser fill when disabled; the hairline ring stays, the icon goes quiet. */
+.sg-round:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#sig):not(#sig) { background: transparent; border: 0; color: var(--sig-ink-3, #6F6C66); cursor: not-allowed; }
+
+/* The label: idle words and pending words share one grid cell (used by SigButton and EmployeeSubmitButton). */
+.sig-btn__label { display: inline-grid; align-items: center; justify-items: center; max-width: 100%; }
+.sig-btn__label > * { grid-area: 1 / 1; }
+/* A text link lines up with the copy around it; the busy cell (spinner + words) must not push it right. */
+.sig-btn--link .sig-btn__label { justify-items: start; }
+.sig-btn .sig-btn__idle, .sig-btn__busy { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.sig-btn__spin { flex: none; transform-origin: 50% 50%; animation: sig-btn-spin .8s linear infinite; }
+@keyframes sig-btn-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .sig-btn__spin { animation: none; } }
+@media (forced-colors: active) {
+  .sig-btn:not(.sig-btn--link):not(#sig) { border-color: ButtonText; }
+}
+
+/* ── Press feedback ──────────────────────────────────────────────────────── */
+/* Every tap answers at once (gap 5). Surfaces say what they are with data-sig-surface: the page roots (SigPage, Home,
+ * My schedule, Requests, sign-in/activation, the Clocker) are "light"; the bands and panels (SigBand, Home, Schedule
+ * and Requests bands, the sign-in band and desktop panel, the Clocker side) are "deep". Each surface sets the wash,
+ * ring and dim its children read, so the nearest surface wins with no per-link overrides.
+ *
+ * Three kinds of press, each starting on the frame of the touch (no transition in) and easing back out in 90ms:
+ *   wash  rows, tiles, cards that are links, chips, choice labels: a 5% ink layer (12% white on deep) painted as a
+ *         background-image, so it sits on top of any base colour, hover colour or fill;
+ *   lift  buttons: the wash plus scale(.98) and brightness(.92) on light (no darkening on deep, where the wash
+ *         lightens instead);
+ *   dim   text links, tab-bar items, the phone header icons and band tabs: opacity .64.
+ * The four `:not(#sig)` lifts are needed because page modules set `background` with up to three id lifts (for
+ * example Home's clock links on hover); the shorthand would otherwise clear the wash layer. */
+[data-sig-surface="light"] {
+  --sig-surface-wash: var(--sig-press-wash, rgba(22, 28, 27, .05));
+  --sig-surface-dim: brightness(.92);
+  --sig-surface-ring: var(--sig-focus, #161C1B);
+}
+[data-sig-surface="deep"] {
+  --sig-surface-wash: var(--sig-press-wash-on-dark, rgba(255, 255, 255, .12));
+  --sig-surface-dim: none;
+  --sig-surface-ring: var(--sig-focus-on-dark, #FFFFFF);
+}
+/* Sign-in on phones: Back and EN/ES sit over the deep band, though they live in the form column. */
+@media (max-width: 767px) {
+  .ap > .ap-main > .ap-top {
+    --sig-surface-wash: var(--sig-press-wash-on-dark, rgba(255, 255, 255, .12));
+    --sig-surface-dim: none;
+    --sig-surface-ring: var(--sig-focus-on-dark, #FFFFFF);
+  }
+}
+
+/* Resting state: how the press eases back out. Colour changes keep the state pace. */
+[data-sig-surface] :is(a[href], button, summary, [role="button"], [role="tab"], label:has(> input:is([type="radio"], [type="checkbox"], [type="date"], [type="datetime-local"]):not([role="switch"]))):not(#sig):not(#sig):not(#sig):not(#sig),
+.sig-btn:not(#sig):not(#sig):not(#sig):not(#sig) {
+  transition:
+    transform var(--sig-dur-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    filter var(--sig-dur-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    opacity var(--sig-dur-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    background-color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    border-color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    box-shadow var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1));
+}
+
+/* Wash: every tappable thing in a Signature surface. Disabled and pending controls don't answer. */
+[data-sig-surface] :is(a[href], button, summary, [role="button"], [role="tab"], label:has(> input:is([type="radio"], [type="checkbox"], [type="date"], [type="datetime-local"]):not([role="switch"]))):active:not(:disabled, [aria-disabled="true"], [aria-busy="true"], :has(> input:disabled)):not(#sig):not(#sig):not(#sig):not(#sig),
+.sig-btn:active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]):not(#sig):not(#sig):not(#sig):not(#sig) {
+  background-image: linear-gradient(var(--sig-surface-wash, rgba(22, 28, 27, .05)), var(--sig-surface-wash, rgba(22, 28, 27, .05)));
+  transition-duration: 0s;
+}
+
+/* Lift: buttons. Page-module buttons opt in with data-sig-press="button". */
+[data-sig-surface] :is(.sg-cta, .sg-primary, .sg-round, .sg-band-link, .ap-primary, .ap-secondary, .ap-fid, .ap-pill, .act-id__copy, .nv-btn, .button, .employee-action, .pk-add, .employee-time-correction-submit, .employee-time-correction-retry, [data-sig-press="button"]):active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]):not(#sig):not(#sig):not(#sig):not(#sig),
+.sig-btn:not(.sig-btn--link):active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]):not(#sig):not(#sig):not(#sig):not(#sig) {
+  transform: scale(.98);
+  filter: var(--sig-surface-dim, brightness(.92));
+}
+
+/* Dim: text links. A wash block around words reads as a selection, so they fade instead (one more lift than the
+ * wash, which they also match). */
+[data-sig-surface] :is(.sg-link, .ap-link, .ap-aside-link, .ap-back, .act-signin__link, .nv-link):active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]):not(#sig):not(#sig):not(#sig):not(#sig):not(#sig),
+.sig-btn.sig-btn--link:active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]):not(#sig):not(#sig):not(#sig):not(#sig):not(#sig) {
+  background-image: none;
+  opacity: .64;
+}
+
+/* The employee shell around the pages (it carries no surface attribute): the More sheet rows, the person's card and
+ * Sign out take the wash; tab-bar items, the phone header's icons and the band tabs dim. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation :is(a, button):not(#e5):not(#e52):not(#e53):not(#sig),
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mobile-nav-link, .mobile-header :is(.e5-new, .portal-notification-bell, .nevora-action-menu-trigger), .page-frame > .section-tabs .section-tab):not(#e5):not(#e52):not(#sig) {
+  transition: opacity var(--sig-dur-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), background-color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1));
+}
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation :is(a, button):active:not(#e5):not(#e52):not(#e53):not(#sig) {
+  background-image: linear-gradient(var(--sig-press-wash, rgba(22, 28, 27, .05)), var(--sig-press-wash, rgba(22, 28, 27, .05)));
+  transition-duration: 0s;
+}
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-card:active:not(#e5):not(#e52):not(#e53):not(#sig) {
+  background-image: linear-gradient(var(--sig-press-wash-on-dark, rgba(255, 255, 255, .12)), var(--sig-press-wash-on-dark, rgba(255, 255, 255, .12)));
+}
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mobile-nav-link, .mobile-header :is(.e5-new, .portal-notification-bell, .nevora-action-menu-trigger), .page-frame > .section-tabs .section-tab):active:not(#e5):not(#e52):not(#sig) {
+  opacity: .64;
+  transition-duration: 0s;
+}
+
+/* Reduced motion: no scale; the wash, darkening and fade stay, and only colour and opacity change over time. */
+@media (prefers-reduced-motion: reduce) {
+  [data-sig-surface] :is(a[href], button, summary, [role="button"], [role="tab"], label:has(> input:is([type="radio"], [type="checkbox"], [type="date"], [type="datetime-local"]):not([role="switch"]))):not(#sig):not(#sig):not(#sig):not(#sig),
+  .sig-btn:not(#sig):not(#sig):not(#sig):not(#sig) {
+    transition-property: opacity, background-color, border-color, color;
+  }
+  [data-sig-surface] :is(a[href], button, summary, [role="button"], [role="tab"], label, .sg-cta, .sg-primary, .sg-round, .sg-band-link, .ap-primary, .ap-secondary, .ap-fid, .ap-pill, .act-id__copy, .nv-btn, .button, .employee-action, .pk-add, .employee-time-correction-submit, .employee-time-correction-retry, [data-sig-press="button"]):active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]):not(#sig):not(#sig):not(#sig):not(#sig),
+  .sig-btn:not(.sig-btn--link):active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]):not(#sig):not(#sig):not(#sig):not(#sig) {
+    transform: none;
+  }
+}
+
+/* ── Focus ───────────────────────────────────────────────────────────────── */
+/* Light surfaces keep each page's 2px ink ring (16:1 on #F7F6F3, 17.3:1 on #FFFFFF). On a deep surface the same ring
+ * would be 1.3:1, so anything focusable there takes the surface's light ring (white, 13.2:1 on #0D3634). Only the
+ * colour changes: each page keeps its own width (2px or more), offset and radius. A light island inside a deep surface
+ * gets the ink ring back, because the nearest data-sig-surface sets --sig-surface-ring. */
+[data-sig-surface="deep"] :is(a[href], button, summary, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible:not(#sig):not(#sig),
+[data-sig-surface="deep"] label:focus-within:not(#sig):not(#sig) {
+  outline-color: var(--sig-surface-ring, var(--sig-focus-on-dark, #FFFFFF));
+}
+@media (max-width: 767px) {
+  .ap > .ap-main > .ap-top :is(a[href], button):focus-visible:not(#sig):not(#sig) {
+    outline-color: var(--sig-surface-ring, var(--sig-focus-on-dark, #FFFFFF));
+  }
+}
+
+/* ── Motion ──────────────────────────────────────────────────────────────── */
+/* Three durations (tokens.css): press 120ms, state 180ms, sheet 280ms, all on --sig-ease. A page's sheet rises 12px
+ * into place when the route opens; the band above it doesn't move, so switching tabs keeps the band steady. Fill mode
+ * is `backwards`, so no transform is left on the sheet afterwards (fixed-position children keep their viewport).
+ * Reduced motion: the sheet only fades. */
+@keyframes sig-sheet-rise { from { opacity: 0; transform: translateY(12px); } }
+@keyframes sig-fade-in { from { opacity: 0; } }
+[data-sig-sheet] { animation: sig-sheet-rise var(--sig-dur-sheet, 280ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)) backwards; }
+/* A figure that changes in place (SigFade) cross-fades over the state duration; opacity only, so reduced motion keeps it. */
+[data-sig-fade] { animation: sig-fade-in var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)); }
+@media (prefers-reduced-motion: reduce) {
+  [data-sig-sheet] { animation-name: sig-fade-in; animation-duration: var(--sig-dur-state, 180ms); }
+}
+
+/* ── Components ──────────────────────────────────────────────────────────── */
+/* sig-components.tsx and sig-overlays.tsx. Rows, cards and pills reuse the sg-* rules in signature.module.css; the
+ * pieces below are new and read only --sig-* tokens. Phone first; 44px targets; caps labels follow the one caps
+ * exception (12px, weight 600, ≥4.5:1, never the only carrier of meaning). */
+
+/* A list row that is a button looks and presses like a link row. */
+.sig-row-button:not(#sig) { width: 100%; margin: 0; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
+
+/* Tabs: band pills (on deep) and a page segmented control (on the sheet). */
+.sig-tabs ul { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.sig-tabs li { flex: none; }
+.sig-tabs a {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: var(--sig-radius-pill, 999px);
+  font: var(--sig-type-link, 500 .9375rem/1.25rem sans-serif); text-decoration: none; white-space: nowrap;
+}
+.sig-tabs a em { padding: 1px 7px; border-radius: 999px; font-style: normal; font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.sig-tabs[data-variant="band"] a { background: rgba(255, 255, 255, .1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); color: rgba(255, 255, 255, .86); }
+.sig-tabs[data-variant="band"] a em { background: rgba(255, 255, 255, .14); color: #FFFFFF; }
+.sig-tabs[data-variant="band"] a[aria-current="page"] { background: #FFFFFF; box-shadow: none; color: var(--sig-deep, #0D3634); }
+.sig-tabs[data-variant="band"] a[aria-current="page"] em { background: var(--sig-done-wash, #E2F1ED); color: var(--sig-deep, #0D3634); }
+.sig-tabs[data-variant="page"] ul { gap: 2px; padding: 3px; border-radius: 14px; background: var(--sig-track, #EEECE7); }
+.sig-tabs[data-variant="page"] li { flex: 1 0 auto; }
+.sig-tabs[data-variant="page"] a { justify-content: center; width: 100%; min-height: 44px; border-radius: 11px; color: var(--sig-ink-2, #5F625E); }
+.sig-tabs[data-variant="page"] a em { background: rgba(22, 28, 27, .06); color: var(--sig-ink-2, #5F625E); }
+.sig-tabs[data-variant="page"] a[aria-current="page"] { background: var(--sig-card, #FFFFFF); color: var(--sig-ink, #161C1B); box-shadow: 0 1px 2px rgba(22, 28, 27, .08); }
+
+/* Banner: tone wash, tone edge, ink title. */
+.sig-banner { display: flex; gap: 12px; padding: 16px 18px; border-radius: var(--sig-radius-list, 18px); background: var(--sig-info-wash, #EFEDE8); box-shadow: inset 0 0 0 1px var(--sig-info-line, #E3DFD8); color: var(--sig-ink, #161C1B); }
+.sig-banner[data-tone="review"] { background: var(--sig-review-wash, #FBEFDC); box-shadow: inset 0 0 0 1px var(--sig-review-line, #F2E4CD); }
+.sig-banner[data-tone="urgent"] { background: var(--sig-urgent-wash, #FBEDEC); box-shadow: inset 0 0 0 1px var(--sig-urgent-line, rgba(163, 39, 26, .3)); }
+.sig-banner[data-tone="done"] { background: var(--sig-done-wash, #E2F1ED); box-shadow: inset 0 0 0 1px var(--sig-done-line, #C8DCD6); }
+.sig-banner__icon { flex: none; display: inline-flex; padding-top: 1px; color: var(--sig-info-ink, #55585A); }
+.sig-banner[data-tone="review"] .sig-banner__icon { color: var(--sig-review-ink, #8A5208); }
+.sig-banner[data-tone="urgent"] .sig-banner__icon { color: var(--sig-urgent-ink, #A3271A); }
+.sig-banner[data-tone="done"] .sig-banner__icon { color: var(--sig-done-ink, #0A5753); }
+.sig-banner__copy { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sig-banner__copy strong { font: 500 1rem/1.3125rem var(--sig-font, sans-serif); }
+.sig-banner__copy p { margin: 0; font: var(--sig-type-callout, 400 .9375rem/1.3125rem sans-serif); color: var(--sig-ink-2, #5F625E); }
+.sig-banner__action { margin-top: 6px; }
+.sig-banner__action > .sig-btn--link { margin-left: -4px; }
+
+/* Empty state: a 56px icon tile, a title, a line, the next step. */
+.sig-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px 24px; text-align: center; color: var(--sig-ink, #161C1B); }
+.sig-empty__tile { display: inline-flex; width: 56px; height: 56px; align-items: center; justify-content: center; margin-bottom: 6px; border-radius: 16px; background: var(--sig-done-wash, #E2F1ED); color: var(--sig-deep, #0D3634); }
+.sig-empty strong { font: 500 1.0625rem/1.375rem var(--sig-font, sans-serif); }
+.sig-empty p { max-width: 32ch; margin: 0; font: var(--sig-type-callout, 400 .9375rem/1.3125rem sans-serif); color: var(--sig-ink-3, #6F6C66); text-wrap: balance; }
+.sig-empty__action { margin-top: 10px; }
+
+/* Avatar: photo or deep-teal initials on the mint wash. */
+.sig-avatar { flex: none; display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: var(--sig-done-wash, #E2F1ED); color: var(--sig-deep, #0D3634); font: 600 min(.875rem, 16px)/1 var(--sig-font, sans-serif); letter-spacing: .04em; }
+.sig-avatar[data-size="32"] { width: 32px; height: 32px; font-size: min(.75rem, 14px); }
+.sig-avatar[data-size="56"] { width: 56px; height: 56px; font-size: min(1.125rem, 20px); }
+.sig-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Skeleton: track-coloured bars with a slow sheen; static under reduced motion. */
+.sig-skeleton { display: flex; align-items: center; gap: 14px; padding: 16px 18px; }
+.sig-skeleton__tile { flex: none; width: 42px; height: 42px; border-radius: var(--sig-radius-tile, 13px); }
+.sig-skeleton__lines { display: flex; flex: 1; flex-direction: column; gap: 8px; }
+.sig-skeleton__lines > span { height: 12px; border-radius: 6px; }
+.sig-skeleton__lines > span:first-child { width: 62%; height: 14px; }
+.sig-skeleton__lines > span:nth-child(n + 3) { width: 40%; }
+.sig-skeleton__tile, .sig-skeleton__lines > span {
+  background: linear-gradient(90deg, var(--sig-track, #EEECE7) 0%, #F6F5F1 50%, var(--sig-track, #EEECE7) 100%) 0 0 / 200% 100%;
+  animation: sig-sheen 1.4s linear infinite;
+}
+@keyframes sig-sheen { to { background-position: -200% 0; } }
+
+/* Fields: the sign-in card style for every form. One white card; each field a row with a caps label above the
+ * control; hairlines between; the focused field gets the ink ring inside the card. */
+.sig-fieldgroup { min-width: 0; margin: 0; padding: 0; border: 0; }
+.sig-fieldgroup__legend { margin: 0 0 10px; padding: 0 4px; font: var(--sig-type-caps, 600 .75rem/1rem sans-serif); letter-spacing: .13em; text-transform: uppercase; color: var(--sig-ink-2, #5F625E); }
+.sig-fieldgroup__card { overflow: hidden; border-radius: var(--sig-radius-card, 22px); background: var(--sig-card, #FFFFFF); box-shadow: var(--sig-shadow-card, inset 0 0 0 1px rgba(22, 28, 27, .06)); }
+.sig-field { position: relative; padding: 14px 18px 12px; }
+.sig-field + .sig-field { box-shadow: inset 0 1px 0 var(--sig-rule, #E8E5DF); }
+.sig-field:focus-within { box-shadow: inset 0 0 0 2px var(--sig-focus, #161C1B); }
+.sig-field[data-invalid] { box-shadow: inset 0 0 0 1.5px var(--sig-urgent-ink, #A3271A); }
+.sig-field__label { display: block; font: var(--sig-type-caps, 600 .75rem/1rem sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--sig-ink-3, #6F6C66); }
+/* The :not(#sig) lift outweighs the shell's generic input box (border, radius, invalid glow), as elsewhere in this sheet. */
+.sig-field :is(input, select, textarea):not(#sig):not(#sig) {
+  box-sizing: border-box; display: block; width: 100%; min-height: 44px; margin: 4px 0 0; padding: 8px 0; border: 0; border-radius: 0;
+  background: transparent; color: var(--sig-ink, #161C1B); font: 400 1.0625rem/1.5rem var(--sig-font, sans-serif); outline: none; box-shadow: none;
+}
+.sig-field textarea:not(#sig):not(#sig) { min-height: 96px; resize: vertical; }
+.sig-field :is(input, textarea):not(#sig):not(#sig)::placeholder { color: var(--sig-ink-3, #6F6C66); }
+.sig-field :is(input, select, textarea):disabled:not(#sig):not(#sig) { color: var(--sig-ink-3, #6F6C66); }
+.sig-field__hint, .sig-field__error { margin: 4px 0 0; font: var(--sig-type-row-sub, 400 .9375rem/1.25rem sans-serif); }
+.sig-field__hint { color: var(--sig-ink-3, #6F6C66); }
+.sig-field__error { color: var(--sig-urgent-ink, #A3271A); }
+
+/* Sheet: bottom-anchored on phones, centred panel from 768px. The dialog fills the viewport so a tap outside the
+ * panel lands on it and closes. */
+.sig-sheet { box-sizing: border-box; width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; overflow: hidden; }
+.sig-sheet::backdrop { background: rgba(9, 22, 21, .42); }
+.sig-sheet[open] { display: flex; align-items: flex-end; justify-content: center; }
+.sig-sheet__panel {
+  box-sizing: border-box; width: 100%; max-width: 560px; max-height: calc(100% - 48px); overflow: auto;
+  padding: 8px 20px calc(24px + env(safe-area-inset-bottom, 0px)); border-radius: var(--sig-radius-sheet, 28px) var(--sig-radius-sheet, 28px) 0 0;
+  background: var(--sig-page, #F7F6F3); box-shadow: var(--sig-shadow-sheet, 0 -10px 40px rgba(10, 22, 21, .18)); color: var(--sig-ink, #161C1B);
+  animation: sig-sheet-rise var(--sig-dur-sheet, 280ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)) backwards;
+}
+.sig-sheet[open]::backdrop { animation: sig-fade-in var(--sig-dur-sheet, 280ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)); }
+.sig-sheet__panel:focus { outline: none; }
+.sig-sheet__handle { display: block; width: 36px; height: 5px; margin: 0 auto 8px; border-radius: 3px; background: var(--sig-edge, #E3DFD8); }
+.sig-sheet__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
+.sig-sheet__head h2 { margin: 0; font: 500 1.1875rem/1.5rem var(--sig-font, sans-serif); }
+.sig-sheet__close, .sig-toast__close { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; margin: 0 -6px 0 0; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--sig-ink-2, #5F625E); cursor: pointer; }
+.sig-sheet__body { padding-top: 8px; }
+@media (min-width: 768px) {
+  .sig-sheet[open] { align-items: center; }
+  .sig-sheet__panel { border-radius: var(--sig-radius-sheet, 28px); padding-bottom: 24px; }
+  .sig-sheet__handle { display: none; }
+}
+
+/* Toast: dark pill above the tab bar (the band's deep teal), white text, mint Undo. */
+.sig-toast {
+  position: fixed; z-index: 60; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 4px;
+  box-sizing: border-box; width: min(calc(100% - 32px), 480px); min-height: 52px; padding: 4px 4px 4px 18px; border-radius: 16px;
+  background: var(--sig-deep, #0D3634); color: #FFFFFF; box-shadow: 0 12px 32px -12px rgba(9, 22, 21, .45);
+  transform: translateX(-50%); animation: sig-toast-in var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)) backwards;
+}
+@keyframes sig-toast-in { from { opacity: 0; transform: translate(-50%, 8px); } }
+.sig-toast__message { flex: 1; min-width: 0; margin: 0; font: var(--sig-type-callout, 400 .9375rem/1.3125rem sans-serif); }
+.sig-toast__action { flex: none; min-height: 44px; padding: 0 12px; border: 0; border-radius: 12px; background: none; color: var(--sig-mint, #A9E2DA); font: 600 .9375rem/1 var(--sig-font, sans-serif); cursor: pointer; }
+.sig-toast__close { margin: 0; color: rgba(255, 255, 255, .78); }
+@media (min-width: 1024px) { .sig-toast { bottom: 24px; } }
+
+/* Focus for the new pieces: ink on light, white on the toast. */
+:is(.sig-tabs a, .sig-sheet__close, .sig-row-button):focus-visible { outline: 2px solid var(--sig-surface-ring, var(--sig-focus, #161C1B)); outline-offset: 2px; }
+.sig-tabs[data-variant="page"] a:focus-visible { outline-offset: -2px; }
+.sig-tabs[data-variant="band"] a:focus-visible { outline-color: var(--sig-focus-on-dark, #FFFFFF); }
+.sig-toast :is(button):focus-visible { outline: 2px solid var(--sig-focus-on-dark, #FFFFFF); outline-offset: -2px; }
+
+/* Press for the new pieces outside a data-sig-surface (inside one, the shared wash already applies). */
+:is(.sig-tabs a, .sig-sheet__close, .sig-toast button):active { opacity: .64; transition-duration: 0s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sig-sheet__panel { animation-name: sig-fade-in; }
+  .sig-toast { animation-name: sig-toast-fade; }
+  .sig-skeleton__tile, .sig-skeleton__lines > span { animation: none; }
+}
+@keyframes sig-toast-fade { from { opacity: 0; } }

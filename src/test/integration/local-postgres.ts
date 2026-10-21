@@ -4,7 +4,10 @@ import { resolve } from 'node:path';
 import { Client } from 'pg';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
-const CURRENT_MIGRATIONS = [
+/** Keep this a literal equal to db/migrations/order.ts BASE_MIGRATIONS: the
+ * PR16 database-restore rehearsal parses it from this file's source, and
+ * src/test/migration-order.test.ts fails on any drift between the two. */
+export const CURRENT_MIGRATIONS = [
   '0001_initial.sql',
   '0002_schedule_health.sql',
   '0003_schedule_assistance.sql',
@@ -36,7 +39,7 @@ const CURRENT_MIGRATIONS = [
   '0026_attendance_observations.sql',
   '0027_payroll_period_custody.sql', '0028_configurable_payroll.sql', '0029_payroll_private_notices.sql',
   '0030_notification_source_kinds.sql', '0031_workspace_presentation.sql', '0032_workspace_words_modules.sql',
-  '0033_management_alert_preferences.sql',
+  '0033_management_alert_preferences.sql', '0034_account_deletion_requests.sql', '0035_passkeys.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

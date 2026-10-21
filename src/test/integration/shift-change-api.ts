@@ -6,6 +6,7 @@ import type {SqlExecutor} from '../../lib/notifications/types';
 import type {SessionMutationProof,ShiftChangeCommand,ShiftTerms} from '../../lib/shift-changes/types';
 import {sourceShiftTerms,shiftTermsFingerprint} from '../../lib/shift-changes/terms';
 import {fictionalProfile} from '../fixtures/shift-changes';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 export async function configureFictionalShiftChanges(executor:SqlExecutor){
  const scope={revision:1,mode:'MANAGER_REVIEW',submissionAdvanceMinutes:0,completionAdvanceMinutes:0};
  await executor.query({text:'UPDATE workspaces SET shift_change_policy=$1',values:[JSON.stringify({version:1,revision:1,swap:scope,coverage:scope})]});
@@ -21,6 +22,7 @@ export async function reviewedFixtureSource(executor:SqlExecutor,id:string){
  return {sourceShiftId:id,sourceEpisodeId:terms.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(terms)};
 }
 export async function fixtureProof(executor:SqlExecutor,id:string):Promise<SessionMutationProof>{
+ await installFixtureCompanyAccess(executor);
  const [employee]=await executor.query<SessionMutationProof['employee']>({text:'SELECT id,first_name AS "firstName",last_name AS "lastName",role,primary_location_id AS "primaryLocationId" FROM employees WHERE id=$1',values:[id]});
  const sessionTokenHash=createHash('sha256').update('owned-integration-proof:'+id).digest('hex');
  await executor.query({text:"INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,now()+interval '1 day') ON CONFLICT(token_hash) DO UPDATE SET expires_at=excluded.expires_at",values:[sessionTokenHash,id]});return {employee,sessionTokenHash};

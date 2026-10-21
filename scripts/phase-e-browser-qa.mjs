@@ -7,6 +7,104 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
+import {navigationFetchDiagnostic,observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
+
+const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
+const canonicalRuntimeMessages = new Set(['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop limit exceeded', 'Connection closed.']);
+const runtimeRoutes = new Set(['/login', '/app', '/app/schedule', '/app/communications', '/app/calendar', '/app/settings']);
+function readable(read) {
+  try { return read(); } catch { return undefined; }
+}
+function nativeFetchResourceKind(message,page) {
+  return readable(()=>{
+    const failed=new URL('http:/'+message.slice(0,-' due to access control checks.'.length));
+    if(failed.origin!==new URL(page.url()).origin)return null;
+    const path=failed.pathname;
+    if(path==='/api/company-access/operational-authority')return 'authority-read';
+    if(path==='/__nextjs_original-stack-frames')return 'framework-diagnostic';
+    if(path==='/api/notifications')return 'notification-read';
+    if(path==='/api/employee/home')return 'home-read';
+    if(path==='/api/manager/communications'||path.startsWith('/api/manager/communications/'))return 'manager-read';
+    if(path==='/api/employee/communications'||path.startsWith('/api/employee/communications/'))return 'employee-read';
+    if(path==='/api/employee/my-time')return 'recorded-time-read';
+    if(path==='/api/employee/profile')return 'profile-read';
+    if(path==='/api/employee/calendar-subscriptions')return 'calendar-read';
+    if(path==='/app/api/push/status')return 'device-status-read';
+    if(runtimeRoutes.has(path)||path==='/app/updates/compose'||/^\/app\/updates\/[a-f0-9-]{36}$/.test(path))return 'route-read';
+    return null;
+  })??null;
+}
+function plainOwnNativeRead(message,page){
+  return readable(()=>{const failed=new URL('http:/'+message.slice(0,-' due to access control checks.'.length));return failed.origin===new URL(page.url()).origin&&!failed.username&&!failed.password&&!failed.search&&!failed.hash;})===true;
+}
+
+/** Only exact static messages or a bounded React invariant prefix survive;
+ * arbitrary suffixes, URLs, arguments and stacks must never be persisted. */
+function originalRuntimeDiagnostic(name, message, page) {
+  // Playwright splits bare strings at their first colon (including https:).
+  // WebKit wraps rejected Errors once. These shapes are observations, not origin proof.
+  const canonical = name === 'Unhandled Promise Rejection' && message.startsWith('Error: ') ? message.slice(7) : message;
+  const split = typeof name === 'string' ? name.match(/^Minified React error #([1-9]\d{0,2}); visit https$/) : null;
+  const invariant = canonical.match(/^Minified React error #([1-9]\d{0,2});/) ?? (split?.[0] === name ? split : null);
+  const nativeFetch = name === 'Fetch API cannot load http' && message.length <= 8000
+    && message.match(/^\/[^/\s][^\s]* due to access control checks\.$/)?.[0] === message;
+  const route = readable(() => new URL(page.url()).pathname);
+  return {
+    nativeName: nativeErrorNames.has(name) ? name : 'Unknown',
+    canonicalMessage: nativeFetch ? 'Fetch API cannot load resource due to access control checks.' : canonicalRuntimeMessages.has(canonical) ? canonical : invariant ? `Minified React error #${invariant[1]}` : null,
+    reactInvariant: invariant ? Number(invariant[1]) : null,
+    route: runtimeRoutes.has(route) ? route : null,
+    resourceKind: nativeFetch ? nativeFetchResourceKind(message,page) : null,
+    plainOwnRead:nativeFetch&&plainOwnNativeRead(message,page),
+  };
+}
+
+/** Window exceptions and unproven native events remain fatal. */
+export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false}={}) {
+  const start = errors.length;
+  const classified=new WeakSet(),pages=new WeakMap();
+  let phase = 'scenario', readStage = () => null, pageIndex = 0;
+  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty', 'loading', 'canonical-communications', 'actions-overflow', 'keyboard', 'api', 'offline', 'late-home', 'late-time', 'route-leave', 'sql-source-failure', 'replaced-session', 'early-my-time-route', 'removal-review', 'last-shift-removal', 'complete-zero', 'communication-source-failure', 'axe-diagnostic']);
+  return {
+    setStageReader(reader) { readStage = reader; },
+    setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },
+    observeContext(context, role) {
+      assert(['primary', 'manager'].includes(role));
+      context.on('page', page => {
+        const index = pageIndex++;
+        const state={index,role,navigation:observeDocumentNavigation(page)};pages.set(page,state);
+        page.on('pageerror', error => {
+          const originalMessage = readable(() => error?.message), name = readable(() => error?.name);
+          const message = typeof originalMessage === 'string' ? originalMessage : '';
+          const diagnostic = originalRuntimeDiagnostic(name, message, page);
+          const summary = diagnostic.canonicalMessage === 'Fetch API cannot load resource due to access control checks.' || /load failed|failed to fetch|networkerror|network request failed/i.test(message) ? 'Network load failure'
+            : /abort|cancelled|canceled/i.test(message) ? 'Operation aborted'
+              : /chunkloaderror|loading chunk/i.test(message) ? 'Module load failure'
+                : 'Unclassified page runtime error';
+          const stage = readable(readStage);
+          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),navigationDiagnosticVerified,phase)){
+            classified.add(error);execution.navigationDiagnostics??=[];
+            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,stage:stages.has(stage)?stage:null});return;
+          }
+          errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,pendingMainFrameNavigation:state.navigation.pending(),documentNavigation:state.navigation.snapshot(),
+            failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
+        });
+      });
+      if(navigationDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
+    },
+    isNavigationDiagnostic(error) {return classified.has(error);},
+    assertClean() { assert.equal(errors.length, start, 'Browser runtime/network errors recorded in current cell'); },
+  };
+}
+
+/** Progress is an allowlist: never serialize scenario payloads, actors or URLs. */
+export function browserCellProgress(cell, event, started, now, completed, total) {
+  const {suite,engine,width}=cell;
+  assert(Object.hasOwn(BROWSER_SUITES,suite)&&ENGINES.includes(engine)&&WIDTHS.includes(width));
+  assert(['start','passed','failed'].includes(event));
+  assert([started,now,completed,total].every(Number.isSafeInteger)&&started>=0&&now>=started&&completed>=0&&total>0&&total<=70&&completed<=total);
+  return {suite,engine,width,event,startedAt:new Date(started).toISOString(),at:new Date(now).toISOString(),durationMs:now-started,completed,total};
+}
 
 /** Darwin's pinned wrapper launches a child whose marker macOS can inspect;
  * launch that exact packaged binary directly, with the wrapper's two DYLD vars.
@@ -62,6 +160,13 @@ async function main() {
   const { createOwnedNextApp } = await import('../src/test/integration/owned-next-app.ts');
   const { seedOwnedApp } = await import('../src/test/integration/owned-app-fixture.ts');
   const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, launches: [], sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
+  const progress=[];
+  const emitProgress=(cell,event,started)=>{
+    const entry=browserCellProgress(cell,event,started,Date.now(),report.executions.filter(item=>item.status==='passed').length,ENGINES.length*modules.length*WIDTHS.length);
+    progress.push(entry);
+    writeFileSync(join(evidence,'browser-progress-report.json'),JSON.stringify({checkpoint:custody.checkpoint,events:progress},null,2));
+    console.log('[Phase E progress] '+JSON.stringify(entry));
+  };
   const controller = new AbortController(), servers = new Set();
   const removeSignals = installTerminationHandlers(() => controller.abort(Error('Owned browser termination signal')));
   let app;
@@ -86,11 +191,17 @@ async function main() {
       const server = await raceOwnedAbort(launch, controller.signal);
       const browser = await raceOwnedAbort(playwright[engine].connect(server.wsEndpoint(), { timeout: 15_000 }), controller.signal);
       try {
+        let navigationDiagnosticVerified=false;
+        if(engine==='webkit'){const probe=await raceOwnedAbort(verifyNavigationFetchDiagnostic(browser),controller.signal);report.navigationDiagnosticProbe=probe;navigationDiagnosticVerified=probe.verified;}
         for (const [item, runScenario] of modules) for (const width of WIDTHS) {
           controller.signal.throwIfAborted();
           const record = { suite: item, engine, width, status: 'failed', checks: [] }; report.executions.push(record);
-          const context = await browser.newContext({ viewport: { width, height: 1000 }, hasTouch: width < 768, isMobile: width < 768, serviceWorkers: 'block' });
+          const runtimeErrors = observeBrowserCell(record, report.errors,{navigationDiagnosticVerified});
+          const started=Date.now();emitProgress(record,'start',started);
+          let context;
           try {
+            context = await browser.newContext({ viewport: { width, height: 1000 }, hasTouch: width < 768, isMobile: width < 768, serviceWorkers: 'block' });
+            try {
             await context.route('**/*', route => {
               const target = new URL(route.request().url());
               if (['http:', 'https:'].includes(target.protocol) && target.origin !== app.url) {
@@ -98,17 +209,21 @@ async function main() {
               }
               return route.continue();
             });
-            context.on('page', page => page.on('pageerror', () => report.errors.push(`${item} ${engine} ${width}: page runtime error`)));
+            await runtimeErrors.observeContext(context, 'primary');
             const page = await context.newPage(); page.setDefaultTimeout(15_000);
-            const result = await raceOwnedAbort(runScenario({ app, browser, context, page, engine, width, evidenceDirectory: evidence, axeFile }), controller.signal);
+            const result = await raceOwnedAbort(runScenario({ app, browser, context, page, engine, width, evidenceDirectory: evidence, axeFile, runtimeErrors }), controller.signal);
             if (!result || !Array.isArray(result.checks) || !result.checks.length || result.checks.some(check => typeof check !== 'string' || !check.trim())) throw Error('Missing executed browser cases: ' + item);
             if (new URL(page.url()).origin !== app.url) throw Error('Browser scenario did not exercise the owned application: ' + item);
+            runtimeErrors.setPhase('axe');
             await page.addScriptTag({ path: axeFile });
             const violations = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(item => item.id));
             assert.deepEqual(violations, [], `${item} ${engine} ${width}: accessibility violations`);
-            record.checks = [...result.checks, 'axe WCAG A/AA check']; record.status = 'passed';
-          } finally { await context.close(); }
-          assertOwnedFixture(); verifySourceManifest(source, app.root, custody.checkpoint); assertSourceUnchanged(source, custody);
+            record.checks = [...result.checks, 'axe WCAG A/AA check'];
+            } finally { runtimeErrors.setPhase('context-close'); await context.close(); }
+            runtimeErrors.assertClean();
+            assertOwnedFixture(); verifySourceManifest(source, app.root, custody.checkpoint); assertSourceUnchanged(source, custody);
+            record.status = 'passed';
+          } finally { emitProgress(record,record.status,started); }
         }
       } finally { await browser.close(); await server.close(); servers.delete(server); }
     }
@@ -136,6 +251,7 @@ async function main() {
       writeFileSync(join(evidence, 'browser-failure-report.json'), JSON.stringify({
         checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: custody.sourceClean,
         status: 'failed', failure: safeBrowserFailure(error, execution, scenario),
+        runtimeErrors: report.errors.filter(item => typeof item === 'object' && item.type === 'page-runtime-error'),
       }, null, 2));
     } catch { report.errors.push('Scrubbed browser diagnostic receipt unavailable'); }
   } finally {

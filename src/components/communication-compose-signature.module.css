@@ -1,0 +1,77 @@
+/* Message today's team (employee) in the Signature style (tokens and pieces from signature.module.css). */
+.ccRoot :global(.nv-content):not(#cc) { display: block; width: auto; max-width: none; margin: 0; padding: 0; }
+.ccRoot :global(.wb-form):not(#cc) { display: flex; flex-direction: column; gap: 0; min-width: 0; margin: 0; padding: 0; border: 0; }
+.ccRoot :global(.sg-h:first-of-type):not(#cc) { margin-top: 4px; }
+.ccRoot :global(.wb-error):not(#cc) { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; font: 500 .9375rem/1.3125rem var(--sg-font); color: var(--sg-red); }
+.ccRoot :global(.wb-error:empty):not(#cc), .ccRoot :global(#communication-form-error:empty):not(#cc) { display: none; }
+.ccRoot :global(#communication-form-error.wb-error):not(#cc) { margin: 16px 24px 0; }
+.ccRoot :global(.wb-notice):not(#cc) { display: flex; gap: 12px; margin: 20px 16px 0; padding: 18px 20px; border-radius: 20px; background: #FBF4EA; box-shadow: inset 0 0 0 1px #F2E4CD; color: var(--sg-amber); font: 400 .9375rem/1.3125rem var(--sg-font); }
+.ccRoot :global(.wb-notice p):not(#cc) { margin: 4px 0 0; color: var(--sg-ink-2); }
+.ccRoot :global(.wb-notice .nv-btn):not(#cc) { min-height: 44px; margin-top: 10px; padding: 0 16px; border: 0; border-radius: 999px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 .9375rem/1 var(--sg-font); }
+
+/* The message, set like a page. */
+.ccPaper:not(#cc) { position: relative; margin: 0 16px; padding: 22px 22px 0; border-radius: 22px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), 0 1px 1px rgba(22, 28, 27, .03), 0 24px 44px -26px rgba(13, 54, 52, .32); overflow: hidden; }
+.ccPaper:not(#cc)::before { content: ""; position: absolute; left: 0; top: 22px; bottom: 58px; width: 3px; border-radius: 0 3px 3px 0; background: var(--sg-teal); }
+.ccTag:not(#cc) { display: flex; align-items: center; justify-content: space-between; gap: 10px; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-teal); }
+.ccTag > span:first-child:not(#cc) { display: inline-flex; align-items: center; gap: 6px; }
+.ccTag > span:last-child:not(#cc) { letter-spacing: .02em; color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
+.ccTag [data-over]:not(#cc), .ccFoot [data-over]:not(#cc) { color: var(--sg-red) !important; }
+.ccTitle:not(#cc) { display: block; width: 100%; margin-top: 10px; padding: 4px 0; border: 0; background: none; color: var(--sg-ink); font: 300 1.75rem/2.0625rem var(--sg-display); letter-spacing: -.028em; }
+.ccTitle:not(#cc)::placeholder { color: var(--sig-ink-3, #6F6C66); }
+.ccBody:not(#cc) { display: block; width: 100%; min-height: 128px; margin-top: 8px; padding: 4px 0; border: 0; background: none; resize: vertical; color: var(--sg-ink-2); font: 400 1.0625rem/1.625rem var(--sg-font); }
+.ccBody:not(#cc)::placeholder { color: var(--sig-ink-3, #6F6C66); }
+.ccTitle:focus-visible:not(#cc), .ccBody:focus-visible:not(#cc) { outline: 2px solid var(--sg-ink); outline-offset: 2px; border-radius: 6px; }
+.ccTitle[aria-invalid="true"]:not(#cc), .ccBody[aria-invalid="true"]:not(#cc) { box-shadow: inset 0 -2px 0 var(--sg-red); }
+.ccFoot:not(#cc) { display: flex; justify-content: space-between; gap: 12px; margin: 14px -22px 0 !important; padding: 14px 22px; border-top: 1px solid var(--sg-rule); background: #FCFBF9; font: 400 .8125rem/1rem var(--sg-font); color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
+
+/* Who gets it */
+.ccWho:not(#cc) { min-width: 0; padding: 0; border: 0; }
+.ccWho > label:not(#cc) { position: relative; cursor: pointer; }
+.ccWho > label[data-selected]:not(#cc) { background: #F5FAF8; }
+.ccWho input[type="radio"]:not(#cc) { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.ccWho > label:focus-within:not(#cc) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
+.ccRadio:not(#cc) { flex: none; width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #CFCBC3; }
+.ccWho > label[data-selected] .ccRadio:not(#cc) { box-shadow: inset 0 0 0 7px var(--sg-deep); }
+.ccExpiry:not(#cc) { margin-top: 20px !important; }
+.ccCheck:not(#cc) { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 12px 20px; cursor: pointer; }
+.ccCheck input:not(#cc) { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--sg-deep); }
+.ccCheck b:not(#cc) { display: block; font: 500 1rem/1.3125rem var(--sg-font); color: var(--sg-ink); }
+.ccCheck small:not(#cc) { display: block; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
+.ccWhen:not(#cc) { display: flex; flex-direction: column; gap: 6px; padding: 0 20px 18px; }
+.ccWhen label:not(#cc) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.ccWhen input:not(#cc) { min-height: 48px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--sg-page); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1rem/1 var(--sg-font); }
+
+/* Review */
+.ccSubmit:not(#cc) { display: flex; flex-direction: column; }
+.ccReview:not(#cc) { display: flex; flex-direction: column; margin-top: 28px; }
+.ccCount:not(#cc) { display: flex; align-items: center; gap: 16px; margin: 0 16px; padding: 20px 22px; border-radius: 22px; background: var(--sg-deep); color: #FFFFFF; }
+.ccCount > b:not(#cc) { font: 200 4rem/3.875rem var(--sg-display); letter-spacing: -.05em; color: var(--sg-mint); font-variant-numeric: tabular-nums; }
+.ccCount h2:not(#cc) { margin: 0; font: 400 1.25rem/1.5625rem var(--sg-display); letter-spacing: -.02em; color: #FFFFFF; }
+.ccCount h2:focus:not(#cc) { outline: 2px solid rgba(169, 226, 218, .7); outline-offset: 6px; border-radius: 8px; }
+.ccCount small:not(#cc) { display: block; margin-top: 2px; font: 400 .9375rem/1.25rem var(--sg-font); color: rgba(255, 255, 255, .7); }
+.ccEmpty:not(#cc) { margin: 12px 24px 0 !important; font: 500 .9375rem/1.3125rem var(--sg-font); color: var(--sg-amber); }
+.ccHeadCopy:not(#cc) { flex: 1; min-width: 0; }
+.ccHeadCopy b:not(#cc) { display: block; font: 500 1rem/1.3125rem var(--sg-font); }
+.ccHeadCopy small:not(#cc) { display: block; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+.ccPreviewBody:not(#cc) { display: block; padding: 0 20px 20px; }
+.ccPreviewBody b:not(#cc) { display: block; font: 300 1.625rem/1.9375rem var(--sg-display); letter-spacing: -.025em; overflow-wrap: anywhere; }
+.ccPreviewBody span:not(#cc) { display: -webkit-box; margin-top: 8px; overflow: hidden; -webkit-line-clamp: 4; -webkit-box-orient: vertical; white-space: pre-line; font: 400 .9375rem/1.375rem var(--sg-font); color: var(--sg-ink-2); overflow-wrap: anywhere; }
+.ccReview :global(.sg-cta) svg:not(#cc) { flex: none; }
+
+@media (min-width: 768px) {
+  .ccPaper:not(#cc), .ccCount:not(#cc), .ccRoot :global(.wb-notice):not(#cc) { margin-inline: 0; }
+}
+
+/* Phase 4 upscale: the update on a lock screen, from the person's own title and message (illustration). */
+.ccLock:not(#cc) { margin: 0 16px; padding: 22px 14px 18px; border-radius: 26px; background: radial-gradient(120% 90% at 20% 0%, #2B6E69 0%, #12403D 55%, #0B2725 100%); overflow: hidden; }
+.ccLockTime:not(#cc) { display: flex; flex-direction: column; align-items: center; margin-bottom: 18px; color: #FFFFFF; }
+.ccLockTime b:not(#cc) { font: 200 3.25rem/3.375rem var(--sg-display); letter-spacing: -.03em; }
+.ccLockTime span:not(#cc) { font: 500 .875rem/1.125rem var(--sg-font); color: rgba(255, 255, 255, .8); }
+.ccAlert:not(#cc) { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 18px; background: rgba(245, 247, 246, .9); box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
+.ccApp:not(#cc) { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 9px; background: var(--sg-deep); color: #FFFFFF; font: 600 1rem/1 var(--sg-display); }
+.ccAlertCopy:not(#cc) { flex: 1; min-width: 0; }
+.ccAlertCopy > b:not(#cc) { display: block; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .04em; text-transform: uppercase; color: var(--sg-ink-2); }
+.ccAlertCopy > span:not(#cc) { display: -webkit-box; margin-top: 3px; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; font: 400 .875rem/1.1875rem var(--sg-font); color: var(--sg-ink); overflow-wrap: anywhere; }
+.ccAlertCopy > span b:not(#cc) { display: block; font-weight: 600; }
+.ccAlert > small:not(#cc) { flex: none; font: 400 .75rem/1rem var(--sg-font); color: var(--sg-ink-3); }
+@media (min-width: 768px) { .ccLock:not(#cc) { margin-inline: 0; } }

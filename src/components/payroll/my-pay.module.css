@@ -1,0 +1,18 @@
+/* My pay pieces on the Signature frame (tokens come from signature.module.css on the root). */
+.mpLatest:not(#mp) { display: flex; align-items: center; gap: 16px; margin: 0 16px; padding: 20px 18px; border: 1px solid var(--sg-rule); border-radius: 20px; background: var(--sg-card); }
+.mpLatestCopy:not(#mp) { flex: 1; min-width: 0; }
+.mpKicker:not(#mp) { margin: 0 0 8px; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: var(--sg-teal); }
+.mpLatestCopy h2:not(#mp) { margin: 0; font: 300 1.625rem/1.875rem var(--sg-display); letter-spacing: -.03em; color: var(--sg-ink); }
+.mpLatestCopy p:not(#mp):not(.mpKicker) { margin: 4px 0 0; font: 400 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+.mpPrivacy:not(#mp) { display: inline-flex; align-items: flex-start; gap: 8px; flex: 1 1 14rem; min-width: 0; padding: 10px 0; }
+.mpPrivacy svg:not(#mp) { flex: none; margin-top: 3px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.mpActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+@container sg (max-width: 21rem) {
+  .mpLatest:not(#mp) { flex-wrap: wrap; }
+  .mpLatest > a:not(#mp) { flex: 1 0 100%; }
+  .mpLatest > .mpActions { flex: 1 0 100%; }
+}
+@media (min-width: 768px) { .mpLatest:not(#mp) { margin-inline: 0; } }
+.mpLoadingTitle:not(#mp):not(#mp) { margin: 0; font: 300 1.625rem/1.875rem var(--sg-display); letter-spacing: -.03em; color: var(--sg-ink-3); }
+/* View opens the statement in the browser (native payroll documents offer it); Download stays the main action. */
+.mpView:not(#mp) { display: inline-flex; align-items: center; min-height: 44px; margin-top: 2px; }

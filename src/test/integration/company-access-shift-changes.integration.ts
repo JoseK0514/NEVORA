@@ -31,7 +31,7 @@ async function choose(f:Awaited<ReturnType<typeof companyAccessFixture>>,mode:'C
  expect((await assignOperationalScope(f.owner,'manager',mode==='REVOKE'?{...base,action:'REVOKE'}:{...base,action:'ASSIGN',scope:mode==='COMPANY'?{mode,locationIds:[]}:{mode,locationIds:['loc-1']}},ex)).state).toBe('saved');
 }
 async function setup(kind:ManagerKind='DECLINE_CALLOUT'){
- const f=await companyAccessFixture();ctx.ex=f.db.executor;ctx.proof=f.manager;try{
+ const f=await companyAccessFixture({database:'exchange'});ctx.ex=f.db.executor;ctx.proof=f.manager;try{
   await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('peer','Peer','QA','NONE','EMPLOYEE','loc-2');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour'),(repeat('e',64),'peer',clock_timestamp()+interval '1 hour');INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT e.id,l.id FROM employees e CROSS JOIN locations l WHERE e.id IN('target','peer');INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('scope-shift-schedule','loc-2','2035-10-01','PUBLISHED','owner');INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('scope-source','scope-shift-schedule','target','2035-10-02','08:00','16:00')");
   await configureFictionalShiftChanges(f.db.executor);
   const employee:SessionMutationProof={...f.manager,employee:{...f.manager.employee,id:'target',role:'EMPLOYEE'},sessionTokenHash:'d'.repeat(64)};

@@ -9,6 +9,15 @@ import { useEffect } from "react";
  * Only transforms are written; CSS owns the open/close transitions, so a
  * release continues from the sheet's live position. */
 const SHEET_SELECTOR = "[popover]:popover-open";
+/** Review fix (37/50): engines without the :popover-open selector (Safari 16) threw a SyntaxError from closest()
+ * and querySelectorAll(); without popover support there is no sheet to drag, so both degrade to "none". */
+function closestSheet(target: EventTarget | null): Element | null {
+  if (!(target instanceof Element)) return null;
+  try { return target.closest(SHEET_SELECTOR); } catch { return null; }
+}
+function openSheets(): HTMLElement[] {
+  try { return Array.from(document.querySelectorAll<HTMLElement>(SHEET_SELECTOR)); } catch { return []; }
+}
 const DIRECTION_SLOP = 10;      // px of movement before the gesture commits
 const DISMISS_FRACTION = 0.3;   // of the sheet height
 const FLICK_VELOCITY = 0.11;    // px per ms
@@ -37,7 +46,7 @@ export function SheetGestures() {
 
     const onDown = (event: PointerEvent) => {
       if (pointerId !== null || !event.isPrimary) return; // ignore extra touches mid-drag
-      const target = event.target instanceof Element ? event.target.closest(SHEET_SELECTOR) : null;
+      const target = closestSheet(event.target);
       if (!target || !isSheet(target)) return;
       // Let content scroll first; only a sheet scrolled to the top starts a drag.
       if (target.scrollTop > 0) return;
@@ -96,7 +105,7 @@ export function SheetGestures() {
     };
     const onOutsideDown = (event: PointerEvent) => {
       if (!event.isPrimary) return;
-      const open = Array.from(document.querySelectorAll(SHEET_SELECTOR)).filter(isSheet);
+      const open = openSheets().filter(isSheet);
       const target = event.target instanceof Node ? event.target : null;
       outsidePress = open.length > 0 && !open.some(openSheet => target !== null && openSheet.contains(target));
     };

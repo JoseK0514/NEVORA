@@ -25,6 +25,7 @@ import { clearGenerationExclusion, deleteGeneratedDraftShift } from '../../lib/d
 import { readGenerationSource } from '../../lib/data/generation-guards';
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { withOwnedTestResources } from './owned-test-resources';
+import { installFixtureCompanyAccess } from './fixture-company-access';
 
 type Operation = 'BUILD_WEEK' | 'FILL_GAPS_ONLY' | 'CLEAR';
 const operations: Operation[] = ['BUILD_WEEK', 'FILL_GAPS_ONLY', 'CLEAR'];
@@ -46,6 +47,7 @@ beforeEach(async () => {
 });
 
 async function prepare(operation: Operation) {
+  await installFixtureCompanyAccess(database.executor);
   const proof = await requireSessionMutationProof();
   let exclusionId = '';
   if (operation === 'CLEAR') {
@@ -111,11 +113,11 @@ it.each(['BUILD_WEEK', 'FILL_GAPS_ONLY', 'INVALID_BUILD', 'INVALID_FILL', 'ALREA
     await invalidate('revoked');
     return database.executor.transaction(statements);
   } };
-  await expect(prepared.write(executor)).rejects.toThrow('management_authorization');
+  await expect(prepared.write(executor)).rejects.toThrow(/^(?:management|operational)_authorization$/);
   expect(await source()).toEqual(before);
 });
 
-async function controlled(defer: (cleanup: () => void | Promise<unknown>) => void, pause: (statement: SqlStatement) => boolean = () => false) {
+async function controlled(defer: (cleanup: () => void | Promise<unknown>) => void, pause: (statement: SqlStatement) => boolean = () => false, generationOnly = false) {
   const client = new Client({ connectionString: database.connectionString, statement_timeout: 5000 });
   await client.connect(); defer(() => client.end());
   const pid = Number((await client.query('SELECT pg_backend_pid() pid')).rows[0].pid);
@@ -129,7 +131,7 @@ async function controlled(defer: (cleanup: () => void | Promise<unknown>) => voi
       const results = [];
       for (const statement of statements) {
         results.push((await client.query(statement.text, [...statement.values])).rows);
-        if (!paused && pause(statement)) { paused = true; reached(); await released; }
+        if (!paused && (!generationOnly || statements.some(item => item.text.includes('generation_source_conflict'))) && pause(statement)) { paused = true; reached(); await released; }
       }
       await client.query('COMMIT'); return results;
     } catch (error) { await client.query('ROLLBACK'); throw error; }
@@ -148,11 +150,15 @@ it.each(operations.flatMap(operation => ['session', 'generation-input'].map(lock
   const prepared = await prepare(operation), before = await source();
   await withOwnedTestResources(async defer => {
     const blocker = await controlled(defer), generator = await controlled(defer);
+    let introduced = false;
     const executor: SqlExecutor = { query: generator.executor.query, transaction: async statements => {
       // Snapshot/proof already exist; introduce the blocking transaction here.
-      await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '800 milliseconds' WHERE token_hash=$1", [hash]);
-      await blocker.client.query('BEGIN');
-      await blocker.client.query(lock === 'session' ? 'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 FOR UPDATE' : 'LOCK TABLE location_coverage_windows IN ACCESS EXCLUSIVE MODE', lock === 'session' ? [hash] : []);
+      if (!introduced && statements.some(item => item.text.includes('generation_source_conflict'))) {
+        introduced = true;
+        await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '800 milliseconds' WHERE token_hash=$1", [hash]);
+        await blocker.client.query('BEGIN');
+        await blocker.client.query(lock === 'session' ? 'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 FOR UPDATE' : 'LOCK TABLE location_coverage_windows IN ACCESS EXCLUSIVE MODE', lock === 'session' ? [hash] : []);
+      }
       return generator.executor.transaction(statements);
     } };
     defer(() => blocker.client.query('ROLLBACK'));
@@ -165,7 +171,7 @@ it.each(operations.flatMap(operation => ['session', 'generation-input'].map(lock
     await blocker.client.query('COMMIT');
     const result = await generating;
     expect(result.error).toBeInstanceOf(Error);
-    expect(String(result.error)).toContain('management_authorization');
+    expect(String(result.error)).toMatch(/(?:management|operational)_authorization/);
     expect(await source()).toEqual(before);
   });
 });
@@ -173,7 +179,7 @@ it.each(operations.flatMap(operation => ['session', 'generation-input'].map(lock
 it.each(operations.flatMap(operation => ['logout-first', 'generation-first'].map(order => ({ operation, order }))))('$operation / $order linearizes actual session deletion with final generation authority', async ({ operation, order }) => {
   const prepared = await prepare(operation), before = await source();
   await withOwnedTestResources(async defer => {
-    const generation = await controlled(defer, statement => order === 'generation-first' && statement.text.includes('management_authorization'));
+    const generation = await controlled(defer, statement => order === 'generation-first' && statement.text.includes('management_authorization'), true);
     const logout = await controlled(defer, statement => order === 'logout-first' && statement.text.startsWith('DELETE FROM employee_sessions'));
     const deleting = () => logout.executor.transaction([{ text: 'DELETE FROM employee_sessions WHERE token_hash=$1', values: [hash] }]);
     if (order === 'logout-first') {
@@ -183,17 +189,30 @@ it.each(operations.flatMap(operation => ['logout-first', 'generation-first'].map
       defer(() => logout.release());
       await blocked(generation.pid, logout.pid);
       logout.release(); expect((await loggingOut).error).toBeUndefined();
-      expect(String((await generating).error)).toContain('management_authorization');
+      expect(String((await generating).error)).toMatch(/(?:management|operational)_authorization/);
       expect(await source()).toEqual(before);
     } else {
-      const generating = outcome(prepared.write(generation.executor)); defer(() => generating);
+      let loggingOut:ReturnType<typeof outcome<unknown>>|undefined;
+      const executor:SqlExecutor={query:generation.executor.query,transaction:async statements=>{
+        const result=await generation.executor.transaction(statements);
+        if(statements.some(statement=>statement.text.includes('generation_source_conflict'))) await loggingOut;
+        return result;
+      }};
+      const generating = outcome(prepared.write(executor)); defer(() => generating);
       await generation.ready;
-      const loggingOut = outcome(deleting()); defer(() => loggingOut);
+      loggingOut = outcome(deleting()); defer(() => loggingOut);
       defer(() => generation.release());
       await blocked(logout.pid, generation.pid);
       generation.release();
-      const result = await generating; expect(result.error).toBeUndefined();
-      expect(result.value).toMatchObject(operation === 'CLEAR' ? { status: 'cleared' } : { changed: true, summary: { added: 1 } });
+      const result = await generating;
+      if(operation==='CLEAR') {
+        expect(result.error).toBeUndefined();
+        expect(result.value).toMatchObject({status:'cleared'});
+      } else {
+        expect(result.error).toBeInstanceOf(Error);
+        expect(String(result.error)).toContain('operational_authorization');
+        expect(result.value).toBeUndefined();
+      }
       expect((await loggingOut).error).toBeUndefined();
       if (operation === 'CLEAR') expect(await q('SELECT cleared_by FROM schedule_generation_exclusions')).toEqual([{ cleared_by: 'owner' }]);
       else expect(await q('SELECT assignment_origin FROM shifts')).toEqual([{ assignment_origin: 'GENERATED' }]);

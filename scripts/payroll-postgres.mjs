@@ -75,14 +75,16 @@ try {
   console.log(
     "[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.",
   );
+  const config =
+    process.argv[2] ?? "vitest.configurable-payroll-integration.config.mts";
+  const prefix = ["vitest.passkeys-network.config.mts", "vitest.all-ui-browser.config.mts"].includes(config)
+    ? "nevora_exchange_test_" : "nevora_foundation_test_";
   const env = {
     ...process.env,
-    FUEL_TEST_DATABASE_URL: `postgresql://nevora_test@127.0.0.1:${port}/nevora_foundation_test_c1_${marker.slice(0, 12)}`,
+    FUEL_TEST_DATABASE_URL: `postgresql://nevora_test@127.0.0.1:${port}/${prefix}c1_${marker.slice(0, 12)}`,
     FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: "yes",
   };
   delete env.DATABASE_URL;
-  const config =
-    process.argv[2] ?? "vitest.configurable-payroll-integration.config.mts";
   const args = ["node_modules/vitest/vitest.mjs", "run", "--config", config, ...process.argv.slice(3)];
   const result = spawnSync(process.execPath, args, { env, stdio: "inherit" });
   exitCode = result.status ?? 1;

@@ -234,9 +234,10 @@ html body .employee-login-page.auth-refinement-page .employee-login-card .employ
   transition: background .18s ease;
 }
 .employee-login-page.auth-refinement-page .login-access-link small { color: var(--design-text-secondary); font-size: 0.875rem; font-weight: 400; }
-.employee-login-page.auth-refinement-page .login-access-link:hover > span:last-child { text-decoration: underline; }
-html body .employee-login-page.auth-refinement-page .login-access-link:is(:hover, :active) { color: var(--login-blue-hover); }
-.employee-login-page.auth-refinement-page .login-access-link:hover .login-access-symbol { background: #E3F3FC; }
+@media (hover: hover) { .employee-login-page.auth-refinement-page .login-access-link:hover > span:last-child { text-decoration: underline; } }
+@media (hover: hover) { html body .employee-login-page.auth-refinement-page .login-access-link:hover { color: var(--login-blue-hover); } }
+html body .employee-login-page.auth-refinement-page .login-access-link:active { color: var(--login-blue-hover); }
+@media (hover: hover) { .employee-login-page.auth-refinement-page .login-access-link:hover .login-access-symbol { background: #E3F3FC; } }
 .employee-login-page.auth-refinement-page :is(input, button, a):focus-visible { outline: 2px solid var(--login-blue); outline-offset: 4px; }
 .employee-login-page.auth-refinement-page :is(.form-error, .form-success) { margin: 0 0 20px; font-size: 0.875rem; line-height: 1.5; }
 
@@ -303,3 +304,7 @@ html body .employee-login-page.auth-refinement-page .brand-legal span { font-siz
 
 /* Readable floor: secondary lines are 14px on desktop and 15px on phones, and every size follows the reader's text size (rem). */
 @media (max-width: 799px) { .employee-login-page.auth-refinement-page .login-access-link small { font-size: 0.9375rem; } }
+/* Policy links in the sign-in footer (shown once the policies are published). */
+html body .employee-login-page.auth-refinement-page .brand-legal-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 16px; }
+html body .employee-login-page.auth-refinement-page .brand-legal-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--login-blue); font-size: 0.875rem; text-decoration: none; }
+@media (hover: hover) { html body .employee-login-page.auth-refinement-page .brand-legal-links a:hover { text-decoration: underline; text-underline-offset: 3px; } }

@@ -128,3 +128,16 @@ it('shows access denial as a sign-in state and never retains people', () => {
   expect(html).toContain('href="/login"');
   expect(html).not.toContain('Alex Morgan');
 });
+
+it('marks the summary busy only while loading, so desktop keeps Refresh after a failed read', () => {
+  const render = (state: ComponentProps<typeof AttendanceReviewSurface>['state']) =>
+    renderToStaticMarkup(<AttendanceReviewSurface state={state} onRefresh={() => {}} />);
+  expect(render({ review: null, refreshing: false, paused: false })).toContain('aria-busy="true"');
+  for (const state of [
+    { review: { state: 'unavailable', reason: 'read_failed' }, refreshing: false, paused: false },
+    { review: { state: 'unavailable', reason: 'access_denied' }, refreshing: false, paused: false },
+    { review: null, refreshing: false, paused: true },
+  ] as const) {
+    expect(render(state)).not.toContain('aria-busy');
+  }
+});

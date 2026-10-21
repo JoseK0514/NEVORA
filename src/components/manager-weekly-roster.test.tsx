@@ -77,3 +77,26 @@ it("keeps people without a shift that day one tap away on a single day too (U2)"
   expect(tucked).toContain("Jordan Morgan");
   expect(output.split('class="mws-unscheduled"')[0]).toContain("Avery Taylor");
 });
+
+it('shows inclusive full-day and partial leave on both surfaces without offering full-day empty slots', () => {
+ const output=renderToStaticMarkup(createElement(ManagerWeeklyRoster,{employees:[employees[1]],dates:weekDates('2026-10-05'),today:'2026-10-06',reviewDay:'2026-10-06',timeZone:'America/Puerto_Rico',absences:{state:'ready',employeeIds:['unassigned'],rows:[{employeeId:'unassigned',startDate:'2026-10-04',endDate:'2026-10-06'}]}}));
+ expect(output).toContain('Time off'); expect(output).not.toContain('class="cm-add"');
+ const partial=renderToStaticMarkup(createElement(ManagerWeeklyRoster,{employees:[employees[1]],dates:weekDates('2026-10-05'),today:'2026-10-06',reviewDay:'2026-10-06',timeZone:'America/Puerto_Rico',absences:{state:'ready',employeeIds:['unassigned'],rows:[{employeeId:'unassigned',startDate:'2026-10-06',endDate:'2026-10-06',startTime:'09:00',endTime:'12:00'}]}}));
+ expect(partial).toContain('Time off');expect(partial).toContain('9:00');expect(partial).toContain('class="cm-add"');
+});
+it('does not present an unverified empty slot when the absence read fails',()=>{
+ const output=renderToStaticMarkup(createElement(ManagerWeeklyRoster,{employees:[employees[1]],dates:weekDates('2026-10-05'),today:'2026-10-06',timeZone:'America/Puerto_Rico',absences:{state:'unavailable',reason:'read_failed'}}));
+ expect(output).toContain('Time off unavailable');expect(output).not.toContain('class="cm-add"');
+});
+it('does not mistake employees outside the authorized absence scope for checked empty slots',()=>{
+ const output=renderToStaticMarkup(createElement(ManagerWeeklyRoster,{employees:[employees[1]],dates:weekDates('2026-10-05'),today:'2026-10-06',timeZone:'America/Puerto_Rico',absences:{state:'ready',employeeIds:[],rows:[]}}));
+ expect(output).toContain('Time off unavailable');expect(output).not.toContain('class="cm-add"');
+});
+it('includes each date of partial leave and unions touching periods before offering a slot',async()=>{
+ const {absencesOn,fullDayAbsence}=await import('../lib/scheduling/manager-roster-presentation');
+ const read={state:'ready' as const,employeeIds:['qa'],rows:[{employeeId:'qa',startDate:'2030-10-06',endDate:'2030-10-08',startTime:'00:00',endTime:'12:00'},{employeeId:'qa',startDate:'2030-10-07',endDate:'2030-10-07',startTime:'12:00',endTime:'24:00'}]};
+ expect(absencesOn(read,'qa','2030-10-05')).toEqual([]);
+ expect(absencesOn(read,'other','2030-10-07')).toEqual([]);
+ expect(fullDayAbsence(absencesOn(read,'qa','2030-10-07'))).toBe(true);
+ expect(fullDayAbsence(absencesOn(read,'qa','2030-10-08'))).toBe(false);
+});

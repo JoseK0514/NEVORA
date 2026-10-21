@@ -21,6 +21,10 @@ export type WorkerDeps = ReminderDeps & {
     withSignal?(signal: AbortSignal): WorkerDeps;
 };
 export type WorkerCommand = 'dispatch' | 'reminders';
+/** Check results that mean "couldn't tell right now" (a database blip, or company settings saved mid-run), not "this
+ * notification is no longer wanted". They wait and try again instead of being cancelled for good. */
+export const TRANSIENT_CHECK_REASONS: ReadonlySet<string> = new Set(['workspace_unavailable', 'workspace_changed']);
+export const TRANSIENT_RECHECK_MS = 60_000;
 const emptyReport = (): WorkerReport => ({ claimed: 0, accepted: 0, retried: 0, failed: 0, expired: 0, cancelled: 0, noSubscription: 0, disabled: false });
 export function createWorkerDeps(config: NotificationConfig, clock: () => Date = () => new Date(),localContext?:import('../dev/local-only').LocalCaptureContext): WorkerDeps {
     const raw = neonNotificationExecutor();
@@ -96,6 +100,12 @@ export async function runDispatch(input: {
         const counter = { provider_accepted: 'accepted', retry_pending: 'retried', failed: 'failed', expired: 'expired', cancelled: 'cancelled' } as const;
         report[counter[result.state]]++;
     }
+    /** Try again in a minute, or let it expire if that's too late. */
+    async function recheckLater(claim: DeliveryClaim, expiresAt: number) {
+        const at = deps.clock().getTime() + TRANSIENT_RECHECK_MS;
+        if (!Number.isFinite(expiresAt) || at >= expiresAt) await complete(claim, { state: 'expired' });
+        else await run(() => deps.deliveries.defer(claim, new Date(at)));
+    }
     async function attempt(claim: DeliveryClaim) {
         let started = false;
         try {
@@ -117,6 +127,10 @@ export async function runDispatch(input: {
             const expires = Math.min(Date.parse(claim.intent.expiresAt), Date.parse(current.expiresAt), Date.parse(checked.expiresAt));
             if (!Number.isFinite(expires) || expires <= deps.clock().getTime()) {
                 await complete(claim, { state: 'expired' });
+                return;
+            }
+            if (!checked.deliverable && TRANSIENT_CHECK_REASONS.has(checked.reason)) {
+                await recheckLater(claim, Math.min(expires, Date.parse(claim.intent.expiresAt)));
                 return;
             }
             if (!checked.deliverable || checked.effectiveVersion !== current.effectiveVersion) {
@@ -177,6 +191,7 @@ export async function runDispatch(input: {
             // the current source again immediately before handing off to transport.
             const finalIntent=await run(()=>deps.state.findIntent(current.id));
             const finalSource=finalIntent && sameIntent(finalIntent,current) ? await run(()=>deps.state.check(finalIntent,finalIntent.employeeId,deps.clock())) : null;
+            if(finalSource && !finalSource.deliverable && TRANSIENT_CHECK_REASONS.has(finalSource.reason)){await recheckLater(claim,effectiveExpiry);return;}
             if(!finalSource?.deliverable || finalSource.effectiveVersion!==current.effectiveVersion || Date.parse(finalSource.expiresAt)<=deps.clock().getTime()){
                 await complete(claim,{state:'cancelled'});return;
             }

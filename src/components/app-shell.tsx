@@ -19,6 +19,7 @@ import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
 import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, moreNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
+import { isPopoverOpen, hidePopover } from "./kit/popover-open";
 import { CommandFinder, OPEN_FINDER_EVENT, type OpenFinderDetail } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
@@ -135,7 +136,7 @@ function AppShellView({
       // IS-P4-03: the desktop account menu and device settings close the same way, so focus never sits behind them.
       for (const id of ["manager-more-navigation", "employee-more-navigation", "portal-account-menu", "portal-device-settings"]) {
         const sheet = document.getElementById(id);
-        if (sheet?.matches(":popover-open") && !sheet.contains(target) && !target.closest(`[popovertarget="${id}"]`)) sheet.hidePopover();
+        if (isPopoverOpen(sheet) && !sheet.contains(target) && !target.closest(`[popovertarget="${id}"]`)) hidePopover(sheet);
       }
       // IS-65: every sideways-scrolling pill row follows focus, Notifications' and Updates' filters included.
       if (target.closest(".nv-filters, .section-tabs-track, .segmented, .mws-day-navigation, .my-week-days, .updates-filters, [class*='notification-inbox-module'][class*='__filters']")) {
@@ -175,7 +176,7 @@ function AppShellView({
   useEffect(() => {
     for (const id of ['employee-more-navigation', 'manager-more-navigation']) {
       const menu = document.getElementById(id);
-      if (menu?.matches(':popover-open')) menu.hidePopover();
+      if (isPopoverOpen(menu)) hidePopover(menu);
     }
   }, [pathname]);
 
@@ -216,10 +217,23 @@ function AppShellView({
     {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
     <img src={brand.logoUrl} alt={`${workspaceName} logo`} decoding="async" />
   </span> : null;
+  const accountMenu = (
+    <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
+      {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
+      {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
+      {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
+      <div className="nevora-action-menu-divider" />
+      <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
+    </PortalAccountMenu>
+  );
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
       // Clean Manager and Owner app (v3): premium-clean-manager.css applies only under this attribute, so Employee and Lead pages never change.
       data-nv-clean={employee ? undefined : ""}
+      // Employee app, new style (Jose approved Oct 20, docs/product/specs/employee-style): employee-style.css applies only under this attribute.
+      data-nv-e5={employee ? "" : undefined}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
       // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
       data-mobile-workforce={pathname ? "true" : undefined}
@@ -309,16 +323,13 @@ function AppShellView({
           {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
           {!employee && navigation.some(item => item.href === "/app/schedule") ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
           {!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY") ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
+          {/* Employee app (new style): the avatar comes first, so focus order matches the phone header (avatar left; "+" and the
+            bell right). On desktop its CSS order puts it back at the end of the top bar. */}
+          {employee ? accountMenu : null}
+          {/* Employee app (new style): a round "+" for a new request, next to the bell. */}
+          {employee ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}
           {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
-          <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
-            {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
-              onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
-            {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
-              onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
-            {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
-            <div className="nevora-action-menu-divider" />
-            <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
-          </PortalAccountMenu>
+          {!employee ? accountMenu : null}
           </div>
         </header>
 
@@ -370,9 +381,14 @@ function AppShellView({
                 }}
               >
                 <p className="employee-more-label">More</p>
+                {/* Signature (phase 2): the links stay Updates, Notifications, Profile in that order; Profile is drawn as the
+                    person's small dark card (name and initials from attributes, so the link's own words stay "Profile"). */}
                 {mobileMore.map((item) => (
                   <Link key={item.href} href={item.href}
-                    className={item.href === activeHref ? "employee-more-link active" : "employee-more-link"}
+                    className={`employee-more-link${item.href === "/app/profile" ? " employee-more-card" : ""}${item.href === activeHref ? " active" : ""}`}
+                    data-name={item.href === "/app/profile" ? `${user.firstName} ${user.lastName}` : undefined}
+                    data-initials={item.href === "/app/profile" ? `${user.firstName.trim()[0] ?? ""}${user.lastName.trim()[0] ?? ""}`.toUpperCase() : undefined}
+                    aria-label={item.href === "/app/profile" ? `Profile, ${user.firstName} ${user.lastName}` : undefined}
                     onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}
                     aria-current={item.href === activeHref ? "page" : undefined}>
                     <NavIcon name={item.icon} employee size={22} />
@@ -380,7 +396,6 @@ function AppShellView({
                   </Link>
                 ))}
                 <div className="employee-more-profile">
-                  <div><strong>{user.firstName} {user.lastName}</strong></div>
                   <PortalSignout><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></PortalSignout>
                 </div>
                 <button className="mobile-workforce-sheet-close" type="button" aria-label="Close"

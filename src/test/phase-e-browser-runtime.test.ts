@@ -1,9 +1,238 @@
 import {chmodSync,mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {afterEach,expect,it} from 'vitest';
+import {afterEach,expect,it,vi} from 'vitest';
+import {EventEmitter} from 'node:events';
 const runtimeModule=resolve('scripts/phase-e-browser-qa.mjs');
 const {darwinWebKitLaunch}=await import(runtimeModule);
+const {observeBrowserCell}=await import(runtimeModule);
+it.each([
+ ['/api/company-access/operational-authority','authority-read'],
+ ['/__nextjs_original-stack-frames','framework-diagnostic'],
+ ['/app/updates/11111111-1111-4111-8111-111111111111','route-read'],
+ ['/api/manager/communications/PRIVATE_ACTOR_TOKEN','manager-read'],
+ ['/api/employee/communications','employee-read'],
+ ['/api/employee/my-time','recorded-time-read'],
+ ['/api/notifications','notification-read'],
+ ['/api/employee/profile','profile-read'],
+ ['/api/employee/calendar-subscriptions','calendar-read'],
+ ['/app/api/push/status','device-status-read'],
+ ['/PRIVATE_ACTOR_TOKEN',null],
+])('projects only a static resource kind for an owned native fetch failure: %s',(path,resourceKind)=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://127.0.0.1:43210/app'});
+ const cell=observeBrowserCell({suite:'communications',engine:'webkit',width:768,status:'failed'},errors);
+ cell.observeContext(context,'manager');context.emit('page',page);
+ page.emit('pageerror',{name:'Fetch API cannot load http',message:'/127.0.0.1:43210'+path+'?token=PRIVATE_ACTOR_TOKEN#PRIVATE_ACTOR_TOKEN due to access control checks.'});
+ expect(errors[0]).toMatchObject({diagnostic:{resourceKind}});
+ expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|127\.0\.0\.1|43210|https?:|token=|11111111/);
+ expect(()=>cell.assertClean()).toThrow();
+});
+it.each(['fictional.invalid','127.0.0.1:43211'])('never attributes a foreign native fetch to the current owned resource: %s',host=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://127.0.0.1:43210/app'});
+ const cell=observeBrowserCell({suite:'home',engine:'webkit',width:390,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);
+ page.emit('pageerror',{name:'Fetch API cannot load http',message:'/'+host+'/api/employee/my-time?PRIVATE_ACTOR_TOKEN due to access control checks.'});
+ expect(errors[0]).toMatchObject({diagnostic:{resourceKind:null}});expect(()=>cell.assertClean()).toThrow();
+ expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|fictional|43211|127\.0\.0\.1/);
+});
+it('retains only the observed native HTTP fetch format as fatal network detail in both contexts',()=>{
+ const errors:unknown[]=[],cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+ cell.setStageReader(()=> 'early-my-time-route');
+ for(const role of ['primary','manager']){
+  const context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://localhost/app/schedule?ref=Violet7'});
+  cell.observeContext(context,role);context.emit('page',page);if(role==='manager')cell.setPhase('context-close');
+  page.emit('pageerror',{name:'Fetch API cannot load http',message:'/127.0.0.1:43210/api/notifications?ref=Violet7#private due to access control checks.'});
+  expect(errors.at(-1)).toMatchObject({role,phase:role==='primary'?'scenario':'context-close',diagnostic:{nativeName:'Unknown',canonicalMessage:'Fetch API cannot load resource due to access control checks.',reactInvariant:null,route:'/app/schedule'},failure:{stage:'early-my-time-route',summary:'Network load failure'}});
+  expect(()=>cell.assertClean()).toThrow();
+ }
+ expect(errors).toHaveLength(2);expect(JSON.stringify(errors)).not.toMatch(/Violet7|127\.0\.0\.1|43210|notifications|private|https?:/);
+});
+it.each([
+ ['Fetch API cannot load https','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http\n','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http Violet7','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Violet7 Fetch API cannot load http','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Error','/fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http','/fictional.invalid/api/notifications due to access control checks. Violet7'],
+ ['Fetch API cannot load http','/fictional.invalid/api/notifications due to access control checks.\n'],
+ ['Fetch API cannot load http','/fictional.invalid/api/notifications\n due to access control checks.'],
+ ['Fetch API cannot load http','/fictional.invalid/api/notifications due to access control checks'],
+ ['Fetch API cannot load http','//fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http','fictional.invalid/api/notifications due to access control checks.'],
+ ['Fetch API cannot load http','/ due to access control checks.'],
+ ['Fetch API cannot load http','/Violet7'.repeat(2000)+' due to access control checks.'],
+])('keeps unsupported native fetch format unknown and fatal (%s)',(name,message)=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);page.emit('pageerror',{name,message});
+ expect(errors).toHaveLength(1);expect(errors[0]).toMatchObject({diagnostic:{nativeName:name==='Error'?'Error':'Unknown',canonicalMessage:null,reactInvariant:null},failure:{summary:'Unclassified page runtime error'}});
+ expect(JSON.stringify(errors)).not.toMatch(/Violet7|fictional|notifications|https?:/);expect(()=>cell.assertClean()).toThrow();
+});
+it.each(['seed','loading','canonical-communications','actions-overflow','keyboard','api','offline','late-home','late-time','route-leave','sql-source-failure','replaced-session','early-my-time-route','removal-review','empty','last-shift-removal','complete-zero','communication-source-failure','axe-diagnostic'])('retains the Home stage %s and keeps its event fatal',stage=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');cell.setStageReader(()=>stage);context.emit('page',page);page.emit('pageerror',new Error('Violet7'));
+ expect(errors[0]).toMatchObject({failure:{stage}});expect(()=>cell.assertClean()).toThrow();expect(JSON.stringify(errors)).not.toContain('Violet7');
+});
+it.each(['early-my-time-route\n','early-my-time-route-Violet7','Violet7','loading-private'])('omits an unsupported Home stage %s',stage=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');cell.setStageReader(()=>stage);context.emit('page',page);page.emit('pageerror',new Error('Violet7'));
+ expect(errors[0]).toMatchObject({failure:{stage:null}});expect(()=>cell.assertClean()).toThrow();
+});
+it('connects the actual Home stage reader before registering scenario page listeners',async()=>{
+ const fixture=resolve('src/test/integration/owned-app-fixture.ts');
+ vi.doMock(fixture,()=>({seedOwnedScenario:async()=>({actors:['fictional']}),TEST_PASSWORD:'fictional'}));
+ try{
+  const {runScenario}=await import(resolve('scripts/phase-e-home-browser-scenarios.mjs'));
+  const errors:unknown[]=[],context=new EventEmitter(),observedPage=new EventEmitter(),cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
+  cell.observeContext(context,'primary');context.emit('page',observedPage);
+  const stop=new Error('Stop before scenario listeners');
+  await expect(runScenario({app:{database:{executor:{}}},engine:'webkit',width:320,page:{on(){throw stop;}},runtimeErrors:cell})).rejects.toBe(stop);
+  observedPage.emit('pageerror',new Error('Violet7'));
+  expect(errors[0]).toMatchObject({failure:{stage:'seed'}});expect(()=>cell.assertClean()).toThrow();
+ }finally{vi.doUnmock(fixture);}
+});
+it.each([
+ ['Minified React error #418; visit https', '/react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN', 'Minified React error #418', 418],
+ ['Minified React error #1; visit https', '/fictional.invalid/PRIVATE_ACTOR_TOKEN', 'Minified React error #1', 1],
+ ['Minified React error #999; visit https', '/fictional.invalid/PRIVATE_ACTOR_TOKEN', 'Minified React error #999', 999],
+ ['Unhandled Promise Rejection', 'Error: Minified React error #418; visit https://react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN', 'Minified React error #418', 418],
+ ['Unhandled Promise Rejection', 'Error: ResizeObserver loop limit exceeded', 'ResizeObserver loop limit exceeded', null],
+ ['Unhandled Promise Rejection', 'Error: ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop completed with undelivered notifications.', null],
+ ['Unhandled Promise Rejection', 'Error: Connection closed.', 'Connection closed.', null],
+ ['', 'Connection closed.', 'Connection closed.', null],
+ ['Unhandled Promise Rejection', 'Connection closed.', 'Connection closed.', null],
+])('retains only canonical detail through observed transport format %s / %s', (name,message,canonicalMessage,reactInvariant)=>{
+ const errors:unknown[]=[],cell=observeBrowserCell({suite:'communications',engine:'webkit',width:375,status:'failed'},errors);
+ for(const role of ['primary','manager']){
+  const context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://localhost/app?token=PRIVATE_ACTOR_TOKEN'});
+  cell.observeContext(context,role);context.emit('page',page);
+  if(role==='manager')cell.setPhase('context-close');
+  page.emit('pageerror',{name,message,stack:'PRIVATE_ACTOR_TOKEN'});
+  expect(errors.at(-1)).toMatchObject({role,phase:role==='primary'?'scenario':'context-close',diagnostic:{nativeName:'Unknown',canonicalMessage,reactInvariant,route:'/app'}});
+  expect(()=>cell.assertClean()).toThrow();
+ }
+ expect(errors).toHaveLength(2);expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|https?:|args|fictional|react\.dev/);
+});
+it.each([
+ ['Minified React error #0; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #0418; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #1000; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #-1; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418PRIVATE_ACTOR_TOKEN; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418; visit https PRIVATE_ACTOR_TOKEN','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418; visit https\n','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418; visit http','/PRIVATE_ACTOR_TOKEN'],
+ ['PRIVATE_ACTOR_TOKEN Minified React error #418; visit https','/PRIVATE_ACTOR_TOKEN'],
+ ['Minified React error #418; visit https://private.invalid','PRIVATE_ACTOR_TOKEN'],
+ ['ResizeObserver loop limit exceeded','PRIVATE_ACTOR_TOKEN'],
+ ['Connection closed.','PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection PRIVATE_ACTOR_TOKEN','Error: Connection closed.'],
+ ['Unhandled Promise Rejection\n','Error: Connection closed.'],
+ ['Error','Error: Connection closed.'],
+ ['', 'Error: Connection closed.'],
+ ['Unhandled Promise Rejection','Error: Error: Connection closed.'],
+ ['Unhandled Promise Rejection','TypeError: Connection closed.'],
+ ['Unhandled Promise Rejection','Error: Connection closed. PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: Connection closed.\nPRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: ResizeObserver loop limit exceeded PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: ResizeObserver loop completed with undelivered notifications.\nPRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: Minified React error #1000; PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: Minified React error #0418; PRIVATE_ACTOR_TOKEN'],
+ ['Unhandled Promise Rejection','Error: PRIVATE_ACTOR_TOKEN Minified React error #418;'],
+ ['Error','Connection closed'],
+ ['Error','Connection closed.\n'],
+ ['Error','Connection closed. https://private.invalid/?token=PRIVATE_ACTOR_TOKEN'],
+ ['Error','PRIVATE_ACTOR_TOKEN Connection closed.'],
+])('keeps unsupported format %s / %s unknown and fatal', (name,message)=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter();
+ const cell=observeBrowserCell({suite:'communications',engine:'webkit',width:375,status:'failed'},errors);
+ cell.observeContext(context,'manager');context.emit('page',page);cell.setPhase('context-close');
+ page.emit('pageerror',{name,message,stack:'PRIVATE_ACTOR_TOKEN'});
+ expect(errors).toHaveLength(1);expect(errors[0]).toMatchObject({diagnostic:{canonicalMessage:null,reactInvariant:null},phase:'context-close'});
+ expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|https?:|args|private\.invalid/);expect(()=>cell.assertClean()).toThrow();
+});
+it('does not coerce hostile name or message objects while keeping the event fatal',()=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter();
+ const cell=observeBrowserCell({suite:'communications',engine:'webkit',width:375,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);
+ const hostile={toString(){throw Error('PRIVATE_ACTOR_TOKEN');},match(){throw Error('PRIVATE_ACTOR_TOKEN');}};
+ expect(()=>page.emit('pageerror',{name:hostile,message:hostile})).not.toThrow();
+ expect(errors[0]).toMatchObject({diagnostic:{nativeName:'Unknown',canonicalMessage:null,reactInvariant:null}});
+ expect(JSON.stringify(errors)).not.toContain('PRIVATE');expect(()=>cell.assertClean()).toThrow();
+});
+it.each([
+ ['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop completed with undelivered notifications.', null],
+ ['ResizeObserver loop limit exceeded', 'ResizeObserver loop limit exceeded', null],
+ ['Minified React error #418; visit https://react.dev/errors/418?args[]=PRIVATE_ACTOR_TOKEN for the full message.', 'Minified React error #418', 418],
+ ['Connection closed.', 'Connection closed.', null],
+])('retains only canonical diagnostic detail and rejects %s', (message,canonicalMessage,reactInvariant)=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://127.0.0.1:1234/app/schedule?authority=PRIVATE_ACTOR_TOKEN#PRIVATE_ACTOR_TOKEN'});
+ const cell=observeBrowserCell({suite:'attention',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');cell.setStageReader(()=> 'response-loss');context.emit('page',page);
+ page.emit('pageerror',new Error(message!));
+ expect(errors).toHaveLength(1);
+ expect(errors[0]).toMatchObject({diagnostic:{nativeName:'Error',canonicalMessage,reactInvariant,route:'/app/schedule'},failure:{stage:'response-loss'}});
+ expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|https?:|args|authority/);
+ expect(()=>cell.assertClean()).toThrow();
+});
+it.each([
+ 'ResizeObserver loop limit exceeded PRIVATE_ACTOR_TOKEN',
+ 'ResizeObserver loop completed with undelivered notifications.\nPRIVATE_ACTOR_TOKEN',
+ 'PRIVATE_ACTOR_TOKEN Minified React error #418;',
+ 'Minified React error #12345678901234567890; PRIVATE_ACTOR_TOKEN',
+ 'Minified React error #0418; PRIVATE_ACTOR_TOKEN',
+ 'Minified React error #418PRIVATE_ACTOR_TOKEN;',
+ 'PRIVATE_ACTOR_TOKEN https://private.invalid/api/calendar/capability',
+])('bounds unknown/spoofed error metadata for %s', message=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://private.invalid/app/schedule/PRIVATE_ACTOR_TOKEN'});
+ const cell=observeBrowserCell({suite:'attention',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'manager');cell.setStageReader(()=> 'PRIVATE_ACTOR_TOKEN');context.emit('page',page);
+ page.emit('pageerror',{name:'TypeError PRIVATE_ACTOR_TOKEN',message,stack:'PRIVATE_ACTOR_TOKEN'});
+ expect(errors[0]).toMatchObject({diagnostic:{nativeName:'Unknown',canonicalMessage:null,reactInvariant:null,route:null},failure:{stage:null,summary:'Unclassified page runtime error'}});
+ expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|private|https?:/);
+ expect(()=>cell.assertClean()).toThrow();
+});
+it.each(['Error','TypeError','RangeError','ReferenceError','SyntaxError','EvalError','URIError','AggregateError','AbortError','InvalidStateError','NetworkError','NotAllowedError','NotFoundError','NotSupportedError','OperationError','QuotaExceededError','SecurityError','TimeoutError','DataCloneError','EncodingError'])('retains the bounded observed native name %s through teardown',name=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://localhost/login?token=PRIVATE'});
+ const cell=observeBrowserCell({suite:'attention',engine:'chromium',width:320,status:'failed'},errors);
+ cell.observeContext(context,'manager');context.emit('page',page);cell.setPhase('context-close');
+ page.emit('pageerror',{name,message:'PRIVATE'});
+ expect(errors[0]).toMatchObject({role:'manager',phase:'context-close',diagnostic:{nativeName:name,canonicalMessage:null,reactInvariant:null,route:'/login'}});
+ expect(JSON.stringify(errors)).not.toContain('PRIVATE');expect(()=>cell.assertClean()).toThrow();
+});
+it.each(['login','full-review','native-focus','revision-conflict','confirmation','republish','response-loss','leave-and-revoke','unavailable-retry','empty','layout'])('retains the Attention stage %s while rejecting the event',stage=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter();
+ const cell=observeBrowserCell({suite:'attention',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');cell.setStageReader(()=>stage);context.emit('page',page);
+ page.emit('pageerror',new Error('PRIVATE'));
+ expect(errors[0]).toMatchObject({failure:{stage}});expect(()=>cell.assertClean()).toThrow();
+});
+it('keeps malformed metadata and throwing accessors fatal without copying their payload',()=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=>{throw Error('PRIVATE');}});
+ const cell=observeBrowserCell({suite:'attention',engine:'webkit',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);cell.setStageReader(()=>{throw Error('PRIVATE');});
+ page.emit('pageerror',{get name(){throw Error('PRIVATE');},get message(){throw Error('PRIVATE');}});
+ expect(errors[0]).toMatchObject({diagnostic:{nativeName:'Unknown',canonicalMessage:null,reactInvariant:null,route:null},failure:{stage:null}});
+ expect(JSON.stringify(errors)).not.toContain('PRIVATE');expect(()=>cell.assertClean()).toThrow();
+});
+it('refuses a cell with a late runtime error and never records private error payloads',async()=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=new EventEmitter();
+ const cell=observeBrowserCell({suite:'communications',engine:'webkit',width:390,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);
+ cell.setStageReader(()=> 'replacement');
+ page.emit('pageerror',new TypeError('Load failed https://private.invalid/api/calendar/secret Alice private body'));
+ expect(errors).toHaveLength(1);expect(JSON.stringify(errors)).not.toMatch(/private|Alice|secret/);
+ expect(errors[0]).toMatchObject({pageIndex:0,role:'primary',failure:{name:'TypeError',stage:'replacement',summary:'Network load failure'}});
+ expect(()=>cell.assertClean()).toThrow('Browser runtime/network errors recorded in current cell');
+});
+it('observes errors during context close before accepting a cell and isolates previous cells',async()=>{
+ const errors:unknown[]=['previous cell'],context=new EventEmitter(),page=new EventEmitter();
+ const cell=observeBrowserCell({suite:'home',engine:'chromium',width:320,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);cell.assertClean();
+ cell.setPhase('context-close');
+ await Promise.resolve().then(()=>page.emit('pageerror',new Error('arbitrary body')));
+ expect(()=>cell.assertClean()).toThrow();expect(errors[1]).toMatchObject({phase:'context-close',failure:{summary:'Unclassified page runtime error'}});
+ expect(JSON.stringify(errors)).not.toContain('arbitrary body');
+});
 const roots:string[]=[];
 afterEach(()=>{for(const root of roots.splice(0))rmSync(root,{recursive:true,force:true});});
 function fixture(binary=true,revision='2336'){

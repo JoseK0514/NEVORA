@@ -14,6 +14,7 @@ vi.mock('@/lib/db', () => {
 });
 vi.mock('@/lib/data/notification-transactions', async original => ({ ...await original<Record<string, unknown>>(), neonNotificationExecutor: () => context.executor! }));
 import { createDisposableFoundationDatabase } from './local-postgres';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 import { ensureSchedule, insertShift, updateShift, deleteShift } from '../../lib/data/schedules';
 import { publishScheduleWithRevision } from '../../lib/data/publication-revisions';
 import { reviewTimeOffRequest } from '../../lib/data/requests';
@@ -43,6 +44,7 @@ for (const scenario of scenarios) for (const expires of [false, true]) {
         INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('fr-coverage','loc-1',1,'08:00','12:00');
         INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) VALUES('fr-leave','fr-worker','2030-11-01','2030-11-01','PENDING');`);
       await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'fr-owner',clock_timestamp()+interval '1 day')", [proof.sessionTokenHash]);
+      await installFixtureCompanyAccess(db.executor);
       let scheduleId = '', shiftId = '', exclusionId = '';
       if (['shift-create','shift-update','shift-delete','publish'].includes(scenario)) {
         scheduleId = await ensureSchedule({ locationId: 'loc-1', weekStart: request.weekStart, createdBy: 'fr-owner', proof }, db.executor);

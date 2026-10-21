@@ -83,16 +83,18 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   }catch(reason){if(generation===epoch.current){setError(reason instanceof Error?reason.message:'Verification could not be confirmed. Please try again.');setBlocked(!(reason instanceof PinRequestError)||reason.recover);}}
   finally{if(generation===epoch.current){busy.current=false;setPending(false);}}
  }
- return <div ref={motion} className={styles.terminal} aria-busy={pending}>
+ const problem=error?<div className={styles.problem}><p role="alert" className={styles.error}>{error}</p>{blocked?<button type="button" className="button secondary" onClick={()=>void reset()}>Check Connection</button>:null}</div>:null;
+ return <div ref={motion} className={styles.terminal} aria-busy={pending} data-clocker-pin={identity?'verified':'entry'}>
   {identity&&punchEnabled?<ClockerPunchPanel locationKey={locationKey} timeZone={timeZone} onDone={reset}/>:identity?<>
-   <div className={styles.pinIcon}><ClockerIcon name="check" size={28}/></div>
-   <h1>Hi, {identity.firstName}.</h1><p>Your PIN is verified for this tablet.</p>
+   <span className={styles.seal}><ClockerIcon name="check" size={52} weight="bold"/></span>
+   <h1>Hi, {identity.firstName}.</h1><p className={styles.lead}>Your PIN is verified for this tablet.</p>
    <div className={styles.previewNotice}><strong>Time punches are not enabled yet.</strong><span>No worked time has been recorded.</span></div>
    <button className="button primary" type="button" onClick={()=>void reset()}>Done</button>
    <p className={styles.note}>This screen clears automatically after 30 seconds.</p>
   </>:<>
-   <div className={styles.pinIcon}><ClockerIcon name="lock" size={28}/></div>
-   <h1>Enter your PIN</h1>{spanish?<p className={styles.titleEs}><Es phrase="Enter your PIN"/></p>:null}<p>Use your four-digit employee PIN.</p>
+   <p className={styles.eyebrow}>Employee PIN</p>
+   <h1>Enter your PIN</h1>{spanish?<p className={styles.titleEs}><Es phrase="Enter your PIN"/></p>:null}
+   {problem}
    <form onSubmit={submit}>
     <fieldset disabled={pending||blocked}>
      <label className={styles.pinLabel} htmlFor="clocker-pin">Employee PIN</label>
@@ -101,15 +103,14 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
       <div className={styles.pinSlots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
      </div>
      <div className={styles.keypad} aria-label="PIN keypad">
-      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" onClick={()=>key(value)} aria-label={value==='clear'?'Clear PIN':value==='delete'?'Delete digit':`Number ${value}`}>{value==='clear'?'Clear':value==='delete'?<ClockerIcon name="delete" size={23}/>:value}</button>)}
+      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" data-key={value==='clear'||value==='delete'?'tool':'digit'} onClick={()=>key(value)} aria-label={value==='clear'?'Clear PIN':value==='delete'?'Delete digit':`Number ${value}`}>{value==='clear'?'Clear':value==='delete'?<ClockerIcon name="delete" size={30}/>:value}</button>)}
      </div>
-     <button className="button primary" type="submit" aria-label="Continue" disabled={count!==4}><span className="clocker-label"><span>Continue</span>{spanish?<Es phrase="Continue" inButton/>:null}</span><ClockerIcon name="arrow" size={20}/></button>
+     <button className={`button primary ${styles.continue}`} type="submit" aria-label="Continue" disabled={count!==4}><span className="clocker-label"><span>Continue</span>{spanish?<Es phrase="Continue" inButton/>:null}</span><ClockerIcon name="arrow" size={20}/></button>
     </fieldset>
    </form>
-   <p id="clocker-pin-help" className={styles.note}>Your PIN is separate from your portal password.</p>
-   <ClockerLanguageToggle/>
+   <div className={styles.meta}><p id="clocker-pin-help">Your PIN is separate from your portal password.</p><ClockerLanguageToggle/></div>
   </>}
   {pending?<p role="status" className={styles.note}>Checking tablet verification…</p>:null}
-  {error?<div><p role="alert" className={styles.error}>{error}</p>{blocked?<button type="button" className="button secondary" onClick={()=>void reset()}>Check Connection</button>:null}</div>:null}
+  {identity?problem:null}
  </div>;
 }

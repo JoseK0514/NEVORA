@@ -102,6 +102,14 @@ describe('Owner and Manager Profile', () => {
     expect(html.match(/<dt class="nv-row__meta">/g)).toHaveLength(7);
   });
 
+  it('places the account cards in the right column after Notifications and before Sign out', () => {
+    const html = render(owner, parseManagerProfile(fixture('owner')), { accountCards: <section id="test-account-cards" /> });
+    const notifications = html.indexOf('id="profile-notifications"'), cards = html.indexOf('id="test-account-cards"'), signout = html.indexOf('pmp-signout');
+    expect(notifications).toBeGreaterThan(html.indexOf('<div class="pmp-col">', html.indexOf('id="profile-details"')));
+    expect(cards).toBeGreaterThan(notifications);
+    expect(signout).toBeGreaterThan(cards);
+  });
+
   it('keeps a phone extension with its number', () => {
     const large = parseManagerProfile(fixture('owner-large'));
     expect(render(owner, large)).toContain('<span class="pmp-part">ext. 4021</span>');

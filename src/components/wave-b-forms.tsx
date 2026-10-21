@@ -235,6 +235,8 @@ export function KeepFocusClear() {
       const style = getComputedStyle(document.documentElement);
       const top = parseFloat(style.scrollPaddingTop) || 0, bottom = parseFloat(style.scrollPaddingBottom) || 0;
       const box = target.getBoundingClientRect();
+      // Only keyboard focus, and only a target that fits: a click on page content focuses the tall <main>, which must not scroll.
+      if (!target.matches(":focus-visible") || box.height > window.innerHeight - top - bottom) return;
       if (box.bottom > window.innerHeight - bottom) window.scrollBy({ top: box.bottom - (window.innerHeight - bottom) });
       else if (box.top < top) window.scrollBy({ top: box.top - top });
     };

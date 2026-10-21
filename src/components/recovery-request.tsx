@@ -2,54 +2,47 @@
 
 import Link from 'next/link';
 import {useEffect,useRef,type FormEventHandler} from 'react';
-import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
-import {AuthAccessSymbol} from './auth-access-symbol';
 import {AuthDisclosureSymbol} from './auth-disclosure-symbol';
+import {RecoverySubmit} from './recovery-submit';
+import {AUTH_COPY,authMessage,type AuthLang} from '@/lib/auth-copy';
 
 /** Presentation only: AccountRecovery owns the existing request and privacy contract. */
-export function RecoveryRequest({hydrated,busy,done,message,onSubmit}:{
- hydrated:boolean;busy:boolean;done:boolean;message:string;onSubmit:FormEventHandler<HTMLFormElement>;
+export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en'}:{
+ hydrated:boolean;busy:boolean;done:boolean;message:string;onSubmit:FormEventHandler<HTMLFormElement>;lang?:AuthLang;
 }){
+ const t=AUTH_COPY[lang];
  const feedback=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(message)feedback.current?.focus();},[message,done]);
- return <section className="auth-card employee-login-card recovery-card">
-  <div className="employee-login-heading">
-   <h1>Forgot access</h1>
-  </div>
-  {done?<div className="recovery-receipt" ref={feedback} role="status" tabIndex={-1}>
-   <h2>Request received</h2><p>{message}</p>
+ return <>
+  <h1 className="ap-title">{t.forgotTitle}</h1>
+  {done?<div className="ap-receipt" ref={feedback} role="status" tabIndex={-1}>
+   <h2>{t.requestReceived}</h2><p>{authMessage(lang,message)}</p>
   </div>:<>
-   <noscript><p className="recovery-no-script">Enable JavaScript to request recovery, or contact your manager or Owner for assisted recovery.</p></noscript>
-   <form className="form-stack employee-login-form recovery-form" onSubmit={onSubmit}>
-    <fieldset disabled={!hydrated||busy}>
-     <label>Employee ID<input name="employeeId" placeholder="Enter your employee ID" required maxLength={200}
-      autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-error':undefined}/></label>
-     <div className="recovery-email-field">
-      <div className="auth-label-row">
-       <label htmlFor="recovery-email">Recovery email</label>
-       <details className="auth-field-help">
-        <summary aria-label="About your recovery email"><InfoIcon size={18} weight="regular" aria-hidden="true" focusable="false"/></summary>
-        <p id="recovery-email-hint">Use the email registered with your account.</p>
-       </details>
-      </div>
-      <input id="recovery-email" name="email" type="email" placeholder="you@example.com" required maxLength={254}
-       autoComplete="email" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-email-hint recovery-error':'recovery-email-hint'}/>
+   <noscript><p className="ap-alert" data-tone="info">{t.requestNoScript}</p></noscript>
+   <form className="ap-form" onSubmit={onSubmit}>
+    <fieldset className="ap-fieldset" disabled={!hydrated||busy}>
+     <div className="ap-field">
+      <label className="ap-label" htmlFor="recovery-employee-id">{t.employeeId}</label>
+      <div className="ap-box"><input id="recovery-employee-id" className="ap-input" name="employeeId" placeholder={t.employeeIdPlaceholder} required maxLength={200}
+       autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-error':undefined}/></div>
      </div>
-     <button className="button primary employee-login-submit recovery-submit" type="submit" disabled={!hydrated||busy} aria-busy={busy}>
-      <span>{busy?'Requesting recovery…':'Request recovery'}</span>
-     </button>
+     <div className="ap-field">
+      <label className="ap-label" htmlFor="recovery-email">{t.recoveryEmail}</label>
+      <div className="ap-box"><input id="recovery-email" className="ap-input" name="email" type="email" placeholder="you@example.com" required maxLength={254}
+       autoComplete="email" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-email-hint recovery-error':'recovery-email-hint'}/></div>
+      <p className="ap-hint" id="recovery-email-hint">{t.recoveryEmailHint}</p>
+     </div>
     </fieldset>
+    <RecoverySubmit hydrated={hydrated} busy={busy} idle={t.requestRecovery} pendingText={t.requestingRecovery}/>
    </form>
-   {message?<div id="recovery-error" className="recovery-error" ref={feedback} role="alert" tabIndex={-1}>{message}</div>:null}
-   <span className="login-submit-status" role="status">{busy?'Requesting recovery. Please wait.':''}</span>
+   {message?<div id="recovery-error" className="ap-alert" data-tone="error" ref={feedback} role="alert" tabIndex={-1}>{authMessage(lang,message)}</div>:null}
+   <span className="ap-sr" role="status">{busy?t.requestingRecoveryStatus:''}</span>
   </>}
-  <div className="auth-secondary employee-login-secondary recovery-secondary">
-   <Link href="/reset-access" className="login-access-link"><AuthAccessSymbol kind="recovery"/>
-    <span>I already have a recovery code</span></Link>
-   <details className="recovery-help"><summary><span>Can’t use your recovery email?</span><AuthDisclosureSymbol/></summary>
-    <p>Contact your manager or Owner for assisted recovery. They must verify your identity before issuing a recovery code.</p>
+  <div className="ap-links">
+   <p><Link href="/reset-access" className="ap-link">{t.haveRecoveryCode}</Link></p>
+   <details className="ap-help"><summary><span>{t.cantUseEmail}</span><AuthDisclosureSymbol/></summary>
+    <p>{t.cantUseEmailBody}</p>
    </details>
   </div>
-  <Link href="/login" className="recovery-back">Back to sign in</Link>
- </section>;
+ </>;
 }

@@ -75,6 +75,17 @@ try{
  await q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,'7875550101',$4,$5,'loc-1')",[id,first,last,id.toLowerCase()+'@example.invalid',role]);
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,password]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1'),($1,'loc-2')",[id]);await q("INSERT INTO employee_positions(employee_id,position_id) VALUES($1,'qa-pos')",[id]);
  }
+ // The current-runtime chain stops before 0032_company_access_invitations, so the database has no
+ // company_access_adoption row and every operational write (publishScheduleWithRevision, the browser
+ // publication) fails as operational_authorization. Apply 0032 here, after the AUDIT-* inserts so legacy
+ // adoption gives AUDIT-M COMPANY scope, and before the first publishScheduleWithRevision. 0031 follows
+ // the payroll fixture below: with the native schema present, new runs become NATIVE_RECORDED_TIME and
+ // the fixture's provider-amount IMPORT is refused (NATIVE_AMOUNT_INPUT_FORBIDDEN), while the real
+ // upgrade also created its provider runs before 0031 existed. Matching that order keeps the fixture's
+ // legacy provider statements AND gives the served app the full production schema.
+ await q(await readFile(join(source,'db/migrations/0032_company_access_invitations.sql'),'utf8'));
+ const [adoption]=await q("SELECT state,legacy_manager_census AS census FROM company_access_adoption");
+ assert.equal(adoption?.state,'ENFORCED','Company Access adoption must be enforced');assert.deepEqual(adoption.census.map(r=>r.employeeId),['AUDIT-M'],'AUDIT-M must keep legacy COMPANY scope');report.companyAccessCensus=adoption.census.map(r=>r.employeeId);
  await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) VALUES('audit-rest','workspace-fuel','Rest break','REST',15,'QAOWNER','QAOWNER')");
  const today=businessDate(new Date(),'America/Puerto_Rico'),week=weekStartFor(today);report.fixtureDate=today;report.fixtureWeek=week;
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('audit-current','loc-1',$1,'DRAFT','QAOWNER')",[week]);
@@ -88,6 +99,10 @@ try{
  const hook=registerHooks({resolve(specifier,ctx,next){return next(specifier==='server-only'?new URL('../../node_modules/next/dist/compiled/server-only/empty.js',import.meta.url).href:specifier,ctx);}});
  const {seedPayrollPreviewFixture}=await import('../../src/test/integration/payroll-preview-fixture.ts');hook.deregister();
  const payroll=await seedPayrollPreviewFixture(app.database.executor);report.payrollFixtureSeeded=true;
+ // Full production chain: 0031 lands after the legacy provider runs exist (see the 0032 note above).
+ await q(await readFile(join(source,'db/migrations/0031_native_payroll.sql'),'utf8'));
+ const [native]=await q("SELECT to_regclass('native_payroll_ledger') IS NOT NULL AS present");
+ assert.equal(native?.present,true,'Native payroll schema must be present for full-chain parity');report.nativePayrollSchema=true;
  const boot=await pw.chromium.launch({headless:true});browsers.push(boot);const bc=await context(boot,1440);await login(bc,'QAOWNER');const bp=await bc.newPage();
  const updateTitle='This week’s team schedule',updateBody='Please review your upcoming shifts and contact your manager if you need a change. This is fictional audit content.';
  await bp.goto(app.url+'/app/updates/compose');await bp.getByLabel('Title',{exact:true}).fill(updateTitle);await bp.getByLabel('Message',{exact:true}).fill(updateBody);await bp.getByLabel('Review requirement',{exact:true}).selectOption('REQUIRED');await bp.getByRole('button',{name:'Preview audience',exact:true}).click();

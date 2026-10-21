@@ -186,12 +186,12 @@
 html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-exports :is(section[data-export-loading] ~ section.panel) { display: none; }
 
 /* Attendance view: "Some comparisons are limited" is only known once the read arrives. It sits after the list,
- * and the footer, "What we compare" and Corrections wait for the read, so nothing is pushed down as it appears
- * (layout shift 0.035 to 0.052). */
+ * and the footer, "What we compare" and Corrections wait during an unfocused cold read
+ * (layout shift 0.035 to 0.052). Failed reads retain recovery; reauthorization keeps focused controls visible. */
 html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review { display: flex; flex-direction: column; }
 html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review > .attendance-review-limited { order: 1; }
 html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view .attendance-review > :is(.attendance-review-footer, details) { order: 2; }
-html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view:has(.attendance-review-summary[aria-busy="true"]) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }
+html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-frame.page-frame > .premium-home-view:has(.attendance-review[data-attendance-state="loading"]):not(:focus-within) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }
 
 /* Inbox filters while the read loads (all widths): the row is disabled and out of the Tab order (IS-59), so it
  * doesn't scroll either; a scrolling region nobody can focus fails axe's scrollable-region-focusable at 320–360. */

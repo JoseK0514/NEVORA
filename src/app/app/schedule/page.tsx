@@ -24,6 +24,7 @@ import { ManagerWeeklyRoster, type RosterOpenShift } from "@/components/manager-
 import { scheduleWeekFacts } from "@/components/clean/week-summary";
 import { TopBarTools } from "@/components/clean/top-bar-tools";
 import { DayAwareLink } from "@/components/clean/day-aware-link";
+import { readWeeklyApprovedAbsences } from "@/lib/data/weekly-approved-absences.server";
 import { loadManagerDashboardData } from "@/lib/data/manager-dashboard";
 import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-roster-presentation";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
@@ -78,6 +79,8 @@ function validWeek(value?: string) {
     value && isValidWeekStart(value)
   );
 }
+
+export const metadata = { title: "Schedule" };
 
 export default async function SchedulePage({
   searchParams,
@@ -192,7 +195,7 @@ export default async function SchedulePage({
 
     const confirmation = employeeAcknowledgement.latestRevisionId && (hasPublishedShifts || employeeSchedule!.intent || employeeAcknowledgement.acknowledged) ? (
       employeeAcknowledgement.needsAcknowledgement && employeeSchedule!.intent ? (
-        <EmployeeWeeklyConfirmation key={employeeSchedule!.intent.operationId} weekStart={weekStart} expectedRevisionId={employeeSchedule!.displayedRevisionId!} intent={employeeSchedule!.intent}/>
+        <EmployeeWeeklyConfirmation key={employeeSchedule!.intent.operationId} weekStart={weekStart} expectedRevisionId={employeeSchedule!.displayedRevisionId!} intent={employeeSchedule!.intent} compact/>
       ) : employeeAcknowledgement.acknowledged ? <span className="employee-quiet-status success">Confirmed</span> : <span className="employee-quiet-status">Confirmation unavailable — review the current schedule again.</span>
     ) : undefined;
     return <EmployeeMySchedule
@@ -221,7 +224,7 @@ export default async function SchedulePage({
   // Status chips and hour targets are optional context: a failed read hides them, never shows zero.
   // The week's facts Home used to show (availability received, open shifts, the last publication) come from the
   // dashboard's existing read, which Schedule now owns (clean Manager v3). A failed read leaves those lines out.
-  const [positions, capturedPositions, generationReview, scheduleStatuses, hourTargets, weekRead] = await Promise.all([
+  const [positions, capturedPositions, generationReview, scheduleStatuses, hourTargets, weekRead, absences] = await Promise.all([
     listPositions({ includeInactive: true }),
     listCapturedShiftPositions({
       weekStart,
@@ -234,6 +237,7 @@ export default async function SchedulePage({
     listScheduleStatuses(weekStart).catch(() => null),
     listEmployeeHourTargets().catch(() => null),
     requireSessionMutationProof().then(proof => loadManagerDashboardData(weekStart, proof)).catch(() => null),
+    readWeeklyApprovedAbsences(await requireSessionMutationProof(), weekStart),
   ]);
   const statusFor = (locationId: string) => scheduleStatuses ? scheduleStatuses.find(row => row.locationId === locationId)?.status ?? "NONE" : null;
   const targetsById = new Map((hourTargets ?? []).map(target => [target.employeeId, target]));
@@ -331,7 +335,7 @@ export default async function SchedulePage({
             <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}${locationQuery}&plan=1#schedule-planning`}><strong>Build and publish</strong><span>Automatic scheduling and publication by location.</span></Link>
             <ScheduleCopyForm actorId={session.id} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
             <PrintScheduleButton />
-            <Link className="nevora-action-menu-item" href="/app/schedule/settings"><strong>Scheduling rules</strong><span>Coverage requirements and employee hour targets.</span></Link>
+            <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong><span>Coverage requirements and employee hour targets.</span></Link>
             <Link className="nevora-action-menu-item" href="/app/updates"><strong>Team updates</strong><span>Keep your team informed.</span></Link>
             <div className="nevora-action-menu-divider" />
             <form action={setAvailabilityDeadlineAction} className="schedule-menu-deadline manager-issue-target" id="schedule-deadline" tabIndex={-1}>
@@ -388,7 +392,7 @@ export default async function SchedulePage({
       <ManagerIssueFocus prefix="schedule-" />
       {params.plan === "1" || params.publishCheck ? <FocusOnArrival targetId="schedule-planning" /> : null}
       <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone}
-        locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts} footnote={facts.availabilityNote ?? undefined}
+        absences={absences} locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts} footnote={facts.availabilityNote ?? undefined}
         controls={<ScheduleLocationControl dense={locations.length > 8}>
           <div className="segmented cm-locations" role="group" aria-label="Schedule location">
             <Link className={selectedLocation === "all" ? "selected" : ""} aria-current={selectedLocation === "all" ? "true" : undefined} href={`/app/schedule?week=${weekStart}`}>

@@ -1,15 +1,16 @@
 import { getWorkspace } from "@/lib/data/workspaces";
 import { keepWhole } from "@/lib/keep-whole";
-import { FilterPills, PageBand } from "@/components/kit/kit";
 import { businessDate, formatBusinessDateTime } from "@/lib/business-time";
 import Link from "next/link";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
-import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { AvailabilityFeedback } from "@/components/availability-feedback";
 import "./availability.css";
 import { ManagerAvailability } from "@/components/manager-availability";
-import { AvailabilityEditor } from "@/components/availability-editor";
+import { AvailabilitySignatureEditor, type AvailabilityStatus } from "@/components/availability-signature";
+import avs from "@/components/availability-signature.module.css";
+import { SigBand, SigPage } from "@/components/signature/signature";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listAvailability } from "@/lib/data/availability";
@@ -97,6 +98,8 @@ function submissionStatusCopy(status: AvailabilitySubmissionStatus, hasDeadline 
   };
 }
 
+export const metadata = { title: "Availability" };
+
 export default async function AvailabilityPage({
   searchParams,
 }: {
@@ -149,46 +152,29 @@ export default async function AvailabilityPage({
     ? submissionStatusCopy(submissionStatus, Boolean(settings?.availabilityDeadline))
     : null;
 
+  // Phase 3 (Signature, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-3/p3c-board-a.png):
+  // the band leads with the deadline when a week has one; the band pill switches between this week and the usual week.
+  const deadline = selectedWeek && settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
+  const today = businessDate(new Date(requestTime), workspace.timeZone);
+  const deadlineDay = deadline ? businessDate(deadline, workspace.timeZone) : null;
+  const daysLeft = deadlineDay ? Math.round((Date.parse(deadlineDay) - Date.parse(today)) / 86400000) : null;
+  const inZone = (date: Date, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, ...options }).format(date);
+  const nextWeek = upcomingWeek?.weekStart ?? addDays(currentWeek, 7);
+  const status: AvailabilityStatus = submissionStatus && submissionCopy
+    ? { label: locked ? (submissionStatus.submitted ? "Locked · submitted" : "Locked") : submissionStatus.submitted ? "Submitted" : "Not submitted", tone: submissionStatus.submitted ? "teal" : locked ? "gray" : "amber" } : null;
+  const band = selectedWeek ? (deadline && !locked
+    ? <SigBand eyebrow="Availability due"><h1 className="nv-sr">Availability</h1><b className="sg-date">{inZone(deadline, { month: "short", day: "numeric" })}</b>
+      <p className="sg-sub"><span>{inZone(deadline, { weekday: "long" })} · for {keepWhole(formatWeekRange(selectedWeek))}</span>{daysLeft !== null && daysLeft >= 0 ? <b>{daysLeft === 0 ? "today" : daysLeft === 1 ? "tomorrow" : `in ${daysLeft} days`}</b> : null}</p>
+      <Link className="sg-band-link" href="/app/availability">Usual week<CaretRightIcon size={14} aria-hidden="true" /></Link></SigBand>
+    : <SigBand eyebrow={locked ? "Availability · closed" : "Availability"}><h1 className="nv-sr">Availability</h1><p className="sg-word">{keepWhole(formatWeekRange(selectedWeek))}</p>
+      <p className="sg-sub"><span>{locked ? "The deadline passed. Your submitted hours are kept." : "Hours for this week only. Your usual week stays the same."}</span></p>
+      <Link className="sg-band-link" href="/app/availability">Usual week<CaretRightIcon size={14} aria-hidden="true" /></Link></SigBand>)
+    : <SigBand eyebrow="Availability"><h1 className="nv-sr">Availability</h1><p className="sg-word">Your usual week</p>
+      <p className="sg-sub"><span>Let your team know when you can work.</span></p>
+      <Link className="sg-band-link" href={`/app/availability?week=${nextWeek}`}>Week of {keepWhole(formatWeekRange(nextWeek).split(/\s+[–-]\s+/)[0])}<CaretRightIcon size={14} aria-hidden="true" /></Link></SigBand>;
+
   return (
-    <div className="nv-page availability-page employee-view employee-availability-view premium-employee-availability" data-nv-page="">
-      {/* Phase 3 + Codex M5: the band names the scope, and "Usual week | Specific week" is a visible switch. */}
-      <PageBand title="Availability" overlap={false}
-        summary={selectedWeek ? `Changes here apply only to ${keepWhole(formatWeekRange(selectedWeek))}.` : "Your usual week. Let your team know when you can work."}
-        extra={<FilterPills label="Availability scope" items={[
-          { href: "/app/availability", label: "Usual week", current: !selectedWeek },
-          { href: `/app/availability?week=${selectedWeek ?? upcomingWeek?.weekStart ?? addDays(currentWeek, 7)}`, label: "Specific week", current: Boolean(selectedWeek) },
-        ]} />} />
-      <div className="premium-employee-content">
-
-      {/* Phase 3: for the usual week the band already says what this page edits; the context card is for a specific week. */}
-      {selectedWeek ? <section className="av-week-panel" aria-label="Weekly availability context">
-        <div className="av-week-context"><span className="av-icon-tile"><CalendarBlankIcon size={24} aria-hidden="true" /></span><div><p>{selectedWeek ? "Weekly submission" : "Normal availability"}</p><strong>{selectedWeek ? formatWeekRange(selectedWeek) : "Your usual week"}</strong><span>{selectedWeek ? "These hours apply to this schedule week." : "Your regular hours. Submit separately for a specific week."}</span></div></div>
-        {selectedWeek ? <div className={`av-deadline${locked ? " locked" : ""}`}><ClockIcon size={20} aria-hidden="true" /><div><strong>{locked ? "Submissions closed" : "Availability deadline"}</strong><p>{settings?.availabilityDeadline ? formatBusinessDateTime(settings.availabilityDeadline, workspace.timeZone) : "No deadline set"}</p><span>{locked ? "This week’s submitted hours are locked." : settings?.availabilityDeadline ? "You can update your submission until the deadline." : "No deadline has been set for this week."}</span></div></div> : null}
-        {selectedWeek && submissionStatus && submissionCopy ? <div className={`av-submission-detail${submissionStatus.submitted ? " submitted" : ""}`}><strong>{submissionCopy.label}</strong><p>{submissionCopy.detail}</p>{submissionStatus.updatedAt ? <small>Last updated {keepWhole(formatBusinessDateTime(submissionStatus.updatedAt, workspace.timeZone))}</small> : null}</div> : null}
-      </section> : null}
-
-      {/* Codex mobile review M5: a specific week is always reachable, with or without a cutoff. */}
-      {/* The pills always reach a specific week (M5); this card only appears when a real deadline is coming. */}
-      {!selectedWeek && upcomingWeek?.availabilityDeadline ? (
-        <section className="av-upcoming-banner">
-          <div>
-            <p>{upcomingWeek?.availabilityDeadline ? "Upcoming schedule" : "A specific week"}</p>
-            <strong>{keepWhole(formatWeekRange(upcomingWeek?.weekStart ?? addDays(currentWeek, 7)))}</strong>
-            <span>
-              {upcomingWeek?.availabilityDeadline
-                ? <>Availability closes {formatBusinessDateTime(upcomingWeek.availabilityDeadline, workspace.timeZone)}.</>
-                : "Different hours for one week? Submit them here. Your usual week stays the same."}
-            </span>
-          </div>
-          <Link
-            className="av-button primary"
-            href={`/app/availability?week=${upcomingWeek?.weekStart ?? addDays(currentWeek, 7)}`}
-          >
-            Submit for this week<ArrowRightIcon size={18} aria-hidden="true" />
-          </Link>
-        </section>
-      ) : null}
-
+    <SigPage className={avs.avPage} band={band}>
       {params.error ? (
         <AvailabilityFeedback error>
           {params.error === "locked"
@@ -200,7 +186,6 @@ export default async function AvailabilityPage({
               : "Every available day needs a valid start and end time."}
         </AvailabilityFeedback>
       ) : null}
-
       {params.saved ? (
         <AvailabilityFeedback>
           {selectedWeek
@@ -208,15 +193,23 @@ export default async function AvailabilityPage({
             : "Your normal weekly availability has been updated."}
         </AvailabilityFeedback>
       ) : null}
-
-      <AvailabilityEditor
+      {/* Codex mobile review M5: a specific week is always reachable; this card appears when a real deadline is coming. */}
+      {!selectedWeek && upcomingWeek?.availabilityDeadline ? <div className="sg-card" data-tone="tint">
+        <Link className={avs.avNext} href={`/app/availability?week=${upcomingWeek.weekStart}`}>
+          <span className="sg-tile" data-tone="white" aria-hidden="true"><CalendarBlankIcon size={22} /></span>
+          <span><b>{keepWhole(formatWeekRange(upcomingWeek.weekStart))}</b><small>Due {formatBusinessDateTime(upcomingWeek.availabilityDeadline, workspace.timeZone)}</small></span>
+          <i aria-hidden="true"><ArrowRightIcon size={18} /></i>
+          <span className="nv-sr">Submit for this week</span>
+        </Link>
+      </div> : null}
+      <AvailabilitySignatureEditor
         key={selectedWeek ?? "normal"}
         initialAvailability={initialAvailability}
         weekStart={selectedWeek}
         locked={locked}
-        employeeView
+        status={status}
+        after={selectedWeek ? (deadline ? `You can change it until ${inZone(deadline, { weekday: "long" })}. Your usual week stays the same.` : "Your usual week stays the same.") : "Your saved usual week."}
       />
-      </div>
-    </div>
+    </SigPage>
   );
 }

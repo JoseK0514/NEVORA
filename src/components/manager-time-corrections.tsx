@@ -12,6 +12,7 @@ import type { CorrectionReviewCommand } from '@/lib/time-corrections/validation'
 import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-context';
 
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
+import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 const changedEvent='nevora:time-correction-changed';
 const unknownNotice='The server outcome could not be confirmed. Retry the same decision safely.';
@@ -101,11 +102,12 @@ export function ManagerTimeCorrectionsSurface({
 }
 
 export function ManagerTimeCorrections({actorId,authority}:{actorId?:string;authority?:string}={}){
+  const recovery=useManagerCorrectionRecovery();
   const [snapshot,setSnapshot]=useState<ManagerTimeCorrections|null>(null);
   const [connection,setConnection]=useState<CorrectionQueueConnection>('loading');
   const [busyId,setBusyId]=useState<string|null>(null);
-  const [notice,setNotice]=useState<string|null>(null);
-  const [retry,setRetry]=useState<CorrectionReviewCommand|null>(null);
+  const [notice,setNotice]=useState<string|null>(()=>recovery?.read()?unknownNotice:null);
+  const [retry,setRetry]=useState<CorrectionReviewCommand|null>(()=>recovery?.read()??null);
   const authorityLost=useRef(false);
   const commandEpoch=useRef(0);
   useEffect(()=>{
@@ -117,28 +119,30 @@ export function ManagerTimeCorrections({actorId,authority}:{actorId?:string;auth
       const denied=next.snapshot?.state==='unavailable'&&next.snapshot.reason==='access_denied';
       if(denied){authorityLost.current=true;advanceCommandEpoch();}
       else if(next.snapshot?.state==='ready')authorityLost.current=false;
-      if(denied){setRetry(null);setNotice(null);setConnection('access_lost');}
+      if(denied){recovery?.clear();setRetry(null);setNotice(null);setConnection('access_lost');}
       else {setConnection(next.paused?resumeMode:next.refreshing?resumeMode:next.snapshot?.state==='ready'?'ready':'unavailable');if(next.snapshot?.state==='ready'&&!next.refreshing)resumeMode='loading';}
     },signal=>fetchManagerTimeCorrections(signal,actorId,authority),parseManagerTimeCorrections,reason=>({state:'unavailable',reason}),()=> 'read_failed');
     const clear=(mode:CorrectionQueueConnection)=>{active=false;resumeMode=mode;controller.pause();setNotice(pausedCorrectionNotice);};
     const refresh=(event?:Event)=>{if(event?.type==='focus'&&event.target!==window)return;
-      if(event?.type==='focus'&&active){authorityProbe?.abort();const probe=new AbortController();authorityProbe=probe;void fetchManagerTimeCorrections(probe.signal,actorId,authority).then(next=>{if(disposed||probe.signal.aborted)return;if(next.state==='unavailable'&&next.reason==='access_denied'){authorityLost.current=true;advanceCommandEpoch();clear('access_lost');setRetry(null);setNotice(null);}}).catch(()=>{if(!disposed&&!probe.signal.aborted)clear('unavailable');});return;}if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='loading';controller.start();}};
+      if(event?.type==='focus'&&active){authorityProbe?.abort();const probe=new AbortController();authorityProbe=probe;void fetchManagerTimeCorrections(probe.signal,actorId,authority).then(next=>{if(disposed||probe.signal.aborted)return;if(next.state==='unavailable'&&next.reason==='access_denied'){authorityLost.current=true;advanceCommandEpoch();clear('access_lost');recovery?.clear();setRetry(null);setNotice(null);}}).catch(()=>{if(!disposed&&!probe.signal.aborted)clear('unavailable');});return;}if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='loading';controller.start();}};
     const reconnect=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='reconnecting';controller.start();}};
     const offline=()=>clear('offline'),hide=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;clear('paused');},visibility=()=>document.visibilityState==='hidden'?hide():refresh();
     if(navigator.onLine&&document.visibilityState!=='hidden')refresh();else clear(navigator.onLine?'paused':'offline');
     window.addEventListener(changedEvent,refresh);window.addEventListener('focus',refresh);window.addEventListener('pageshow',refresh);window.addEventListener('storage',refresh);window.addEventListener('online',reconnect);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);window.addEventListener('blur',hide);document.addEventListener('visibilitychange',visibility);
     return()=>{disposed=true;authorityProbe?.abort();advanceCommandEpoch();controller.stop();window.removeEventListener(changedEvent,refresh);window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',refresh);window.removeEventListener('online',reconnect);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);window.removeEventListener('blur',hide);document.removeEventListener('visibilitychange',visibility);};
-  },[actorId,authority]);
+  },[actorId,authority,recovery]);
 
   const send=async(command:CorrectionReviewCommand)=>{
     if(authorityLost.current)return;
     const epoch=commandEpoch.current;
+    recovery?.remember(command);
     setBusyId(command.requestId);setNotice(null);
     try{
       const result=await reviewManagerTimeCorrection(command,actorId,authority);
       if(authorityLost.current||epoch!==commandEpoch.current)return;
       setNotice(noticeFor(result));
       setRetry(result.state==='outcome_unknown'?command:null);
+      if(result.state!=='outcome_unknown')recovery?.clear(command.operationId);
       if(result.state==='approved'||result.state==='rejected'){
         window.dispatchEvent(new Event(changedEvent));
       }

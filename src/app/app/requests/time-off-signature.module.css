@@ -1,0 +1,110 @@
+/* Time off in the Signature style (tokens and shared pieces from signature.module.css). */
+.toHero:not(#to) { min-height: 3.125rem; font-weight: 200 !important; }
+.toForm:not(#to) { display: flex; flex-direction: column; min-width: 0; margin: 0; }
+
+/* Full day / Partial day */
+.toSeg:not(#to) { display: flex; margin: 0 16px; padding: 3px; border-radius: 12px; background: var(--sg-track); }
+.toSeg button:not(#to) { flex: 1; min-height: 44px; border: 0; border-radius: 9px; background: none; color: var(--sg-ink-2); font: 500 .9375rem/1 var(--sg-font); cursor: pointer; }
+.toSeg button[aria-pressed="true"]:not(#to) { background: var(--sg-card); color: var(--sg-ink); box-shadow: 0 1px 2px rgba(22, 28, 27, .08); }
+.toSeg button:focus-visible:not(#to) { outline: 2px solid var(--sg-ink); outline-offset: -2px; }
+
+/* The date card: a ticket whose halves are labels over native date fields. */
+.toDates:not(#to) { min-width: 0; margin-top: 20px !important; padding: 0; border: 0; }
+.toHalf:not(#to) { cursor: pointer; padding: 4px; margin: -4px; }
+.toHalf:focus-within:not(#to) { outline: 2px solid var(--sg-ink); outline-offset: 2px; }
+.toHalf input:not(#to) { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; font-size: 16px; }
+.toHalf input:not(#to)::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.toSingle:not(#to) { grid-template-columns: 1fr !important; }
+.toTimes:not(#to) { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); align-items: end; gap: 6px; padding: 0 20px 20px; }
+.toTimes label:not(#to) { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.toTimes label span:not(#to) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
+.toTimes input:not(#to) { width: 100%; min-width: 0; min-height: 48px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--sg-page); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1.0625rem/1 var(--sg-font); font-variant-numeric: tabular-nums; }
+.toTimes input[aria-invalid="true"]:not(#to) { box-shadow: inset 0 0 0 1.5px var(--sg-red); }
+.toTimes i:not(#to) { display: flex; justify-content: center; align-items: center; height: 48px; color: var(--sg-ink-3); }
+.toError:not(#to) { margin: -8px 20px 16px !important; font: 500 .9375rem/1.3125rem var(--sg-font); color: var(--sg-red); }
+
+/* Note */
+.toNote textarea:not(#to) { display: block; width: 100%; min-height: 96px; padding: 18px 20px; border: 0; background: none; resize: vertical; color: var(--sg-ink); font: 400 1.0625rem/1.5rem var(--sg-font); }
+.toNote textarea:not(#to)::placeholder { color: var(--sg-ink-3); }
+.toNote textarea:focus-visible:not(#to) { outline: 2px solid var(--sg-ink); outline-offset: -4px; border-radius: 20px; }
+.toNote :global(.sg-card-foot):not(#to) { justify-content: space-between; font-size: .875rem; color: var(--sg-ink-3); }
+.toCount:not(#to) { flex: none; font-variant-numeric: tabular-nums; }
+.toFailed:not(#to) { margin-top: 20px !important; }
+.toFailed a:not(#to) { color: var(--sg-ink); }
+
+/* Notices above the sheet content (sent, reviewed, couldn't send). */
+.toNotice:not(#to) { margin-bottom: 20px !important; }
+.toNotice[data-tone="ok"]:not(#to) { background: #EAF4F2; border-color: transparent; color: #0A5753; }
+.toNotice[data-tone="error"]:not(#to) { background: #FBF0EE; border-color: #F1D6D1; color: var(--sg-red); }
+
+/* My requests: the waiting card */
+.toWait:not(#to) { scroll-margin-top: 96px; }
+.toWait :global(.sg-card-head) b:not(#to) { display: block; font: 500 1.0625rem/1.375rem var(--sg-font); letter-spacing: -.012em; }
+.toWait :global(.sg-card-head) small:not(#to) { display: block; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.toHeadCopy:not(#to) { flex: 1; min-width: 0; }
+.toRail:not(#to) { position: relative; display: flex; justify-content: space-between; margin: 0 !important; padding: 18px 0 0 !important; border-top: 1px dashed var(--sg-rule); }
+.toRail li:not(#to) { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; font: 400 .875rem/1.125rem var(--sg-font); color: var(--sg-ink-2); }
+.toRail li:last-child:not(#to) { align-items: flex-end; text-align: right; color: var(--sg-ink); font-weight: 500; }
+.toRail li:not(#to)::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--sg-teal); }
+.toRail li[data-done="true"]:last-child:not(#to)::before { background: var(--sg-teal); box-shadow: none; }
+.toRail li:last-child:not([data-done]):not(#to)::before { background: #FFFFFF; box-shadow: inset 0 0 0 2.5px var(--sg-amber), 0 0 0 4px rgba(138, 82, 8, .1); }
+.toTrack:not(#to) { position: absolute; top: 22.5px; left: 5px; right: 5px; height: 1.5px; background: linear-gradient(90deg, var(--sg-teal), var(--sg-rule)); }
+.toQuote:not(#to) { margin-top: 18px !important; padding: 12px 14px !important; border-radius: 12px; background: var(--sg-page); font: 400 .9375rem/1.375rem var(--sg-font); color: var(--sg-ink-2); overflow-wrap: anywhere; }
+.toWithdraw:not(#to) { border-top: 1px solid var(--sg-rule); }
+.toWithdraw > summary:not(#to) { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 20px; list-style: none; cursor: pointer; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.toWithdraw > summary:not(#to)::-webkit-details-marker { display: none; }
+.toWithdraw > summary b:not(#to) { font-weight: 500; color: var(--sg-ink); text-decoration: underline; text-decoration-color: var(--sg-rule); text-underline-offset: 5px; }
+.toWithdraw > summary:focus-visible:not(#to) { outline-offset: -3px; border-radius: 0 0 22px 22px; }
+.toWithdraw form:not(#to) { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 0 20px 20px; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.toWithdraw form label:not(#to) { display: flex; align-items: center; gap: 10px; min-height: 44px; color: var(--sg-ink); }
+.toWithdraw form input[type="checkbox"]:not(#to) { width: 20px; height: 20px; accent-color: var(--sg-deep); }
+.toWithdraw form button:not(#to) { min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #FBF0EE; color: var(--sg-red); font: 500 .9375rem/1 var(--sg-font); cursor: pointer; }
+.toWithdraw form p:empty:not(#to) { display: none; }
+
+/* My requests: decided rows */
+.toRow:not(#to) { scroll-margin-top: 96px; }
+.toRow:focus-visible:not(#to), .toWait:focus-visible:not(#to) { outline: 2px solid var(--sg-ink); outline-offset: 2px; }
+.toEmpty:not(#to) { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 32px 24px; text-align: center; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.toEmpty strong:not(#to) { font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
+.toEmpty :global(.sg-cta):not(#to) { width: auto; margin: 14px 0 0; }
+
+@container sg (max-width: 359px) {
+  .toTimes:not(#to) { padding: 0 16px 16px; }
+  .toTimes input:not(#to) { padding: 0 10px; font-size: 1rem; }
+  .toTimes input:not(#to)::-webkit-calendar-picker-indicator { display: none; }
+}
+.toList:not(#to) { display: flex; flex-direction: column; gap: 12px; }
+
+/* Very large text (the container is under 19 of the reader's rem): From and Until stack. */
+@container sg (max-width: 19rem) {
+  .toTimes:not(#to) { grid-template-columns: minmax(0, 1fr); }
+  .toTimes i:not(#to) { display: none; }
+}
+
+/* Phase 4: wide screens put a month calendar beside the form (target p4b-board-d.png). */
+.toMonth:not(#to) { display: none; }
+@media (min-width: 1024px) {
+  .toRoot.toRoot:not(#to) { width: min(100%, 1080px); }
+  .toForm:not(#to) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; align-items: start; }
+  .toForm > *:not(#to) { grid-column: 2; }
+  .toForm > input[type="hidden"]:not(#to) { display: none; }
+  .toMonth:not(#to) { display: block; grid-column: 1; grid-row: 1 / span 12; margin: 0 !important; padding: 22px; }
+  .toMonthHead:not(#to) { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .toMonthHead b:not(#to) { font: 500 1.0625rem/1.375rem var(--sg-font); }
+  .toMonthHead button:not(#to) { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: var(--sg-page); color: var(--sg-ink-2); cursor: pointer; }
+  .toMonthHead button + button:not(#to) { margin-left: 6px; }
+  .toMonthDays:not(#to), .toMonthGrid:not(#to) { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .toMonthDays small:not(#to) { padding-bottom: 8px; text-align: center; font: 600 .75rem/1rem var(--sg-font); color: var(--sg-ink-3); }
+  .toMonthGrid button:not(#to) { height: 44px; margin: 2px 0; padding: 0; border: 0; background: none; color: var(--sg-ink); font: 400 .9375rem/1 var(--sg-font); font-variant-numeric: tabular-nums; cursor: pointer; }
+  @media (hover: hover) { .toMonthGrid button:hover:not(#to) { background: var(--sg-page); border-radius: 22px; } }
+  .toMonthGrid button[data-past]:not(#to) { color: var(--sig-ink-3, #6F6C66); }
+  .toMonthGrid button[data-today]:not(#to) { font-weight: 600; color: var(--sg-teal); }
+  .toMonthGrid button[data-range]:not(#to) { border-radius: 0; background: #E2F1ED; color: #0A5753; font-weight: 500; }
+  .toMonthGrid button[data-edge]:not(#to) { background: var(--sig-fill); color: var(--sig-on-fill); font-weight: 500; }
+  .toMonthGrid button[data-edge="start"]:not(#to) { border-radius: 22px 0 0 22px; }
+  .toMonthGrid button[data-edge="end"]:not(#to) { border-radius: 0 22px 22px 0; }
+  .toMonthGrid button[data-edge="both"]:not(#to) { border-radius: 22px; }
+  .toMonthGrid button:focus-visible:not(#to) { outline: 2px solid var(--sg-ink); outline-offset: -2px; border-radius: 22px; }
+  /* The chosen start and end are deep fills; the inset ink ring would vanish on them, so theirs is light. */
+  .toMonthGrid button[data-edge]:focus-visible:not(#to) { outline-color: var(--sig-focus-on-dark, #FFFFFF); }
+}

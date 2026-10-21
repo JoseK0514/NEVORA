@@ -31,7 +31,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const version=observation?JSON.stringify([observation.authority,observation.observedAt,duration]):'unavailable';
 
  useEffect(()=>{
-  let active=true,requestStartedAt=0,lastRefresh='';
+  let active=true,foreground=false,requestStartedAt=0,lastRefresh='';
   function retire(phase:'paused'|'expired'){
    required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
    setBody(previous=>previous.authority===null&&previous.phase===phase&&previous.content===null?previous:{authority:null,phase,content:null});
@@ -60,8 +60,9 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    if(Date.parse(result.observedAt)<latest.current)throw Error('Authority observation moved backwards');
    return {...result,requestStartedAt};
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');
-  function pause(){retire('paused');controller.pause();}
-  function recover(){retire('expired');lastRefresh='';controller.pause();if(online())controller.start();}
+  function pause(){foreground=false;retire('paused');controller.pause();}
+  function recover(){foreground=online();retire('expired');lastRefresh='';controller.pause();if(foreground)controller.start();}
+  const focus=(event:Event)=>{if(event.target!==window||(foreground&&online()))return;recover();};
   function complete(current:CurrentAuthority){
    anchor.current=current;required.current=false;controller.pause();setRecovery({required:false,view:null});
   }
@@ -69,9 +70,10 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else recover();};
   document.addEventListener('visibilitychange',visibility);
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
-  for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,recover);
+  window.addEventListener('focus',focus);
+  for(const event of ['pageshow','online','storage'])window.addEventListener(event,recover);
   queueMicrotask(()=>{if(active)recover();});
-  return()=>{active=false;controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,recover);};
+  return()=>{active=false;controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recover);};
  },[router]);
 
  useEffect(()=>{

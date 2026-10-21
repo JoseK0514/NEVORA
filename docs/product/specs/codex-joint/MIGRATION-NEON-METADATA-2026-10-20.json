@@ -1,0 +1,181 @@
+{
+  "checkedAtUTC": "2026-10-20 13:33:42 UTC",
+  "projectId": "rough-fire-63258908",
+  "branchName": "main",
+  "branchId": "br-green-night-b87vx3ud",
+  "databaseName": "fuel_scheduler",
+  "scope": "Read-only metadata only. No database writes, backup branches, connection-string retrieval, customer row reads or production tests.",
+  "project": {"id":"rough-fire-63258908","name":"NEVORA","pg_version":17,"history_retention_seconds":21600,"region_id":"aws-us-east-1"},
+  "state": [
+    {
+      "database_name": "fuel_scheduler",
+      "server_version_num": "170011",
+      "time_entries": null,
+      "workspaces": null,
+      "management_alert_preferences": null,
+      "tenancy_schema": null,
+      "locations_workspace_id": false
+    }
+  ],
+  "tables": [
+    {
+      "table_schema": "public",
+      "table_name": "availability_exceptions",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "availability_windows",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "employee_credentials",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "employee_location_eligibility",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "employee_scheduling_settings",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "employee_sessions",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "employees",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "location_coverage_windows",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "location_staffing_settings",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "locations",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "notifications",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "schedule_acknowledgements",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "schedule_publication_revision_shifts",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "schedule_publication_revisions",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "schedule_template_shifts",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "schedule_templates",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "schedule_week_settings",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "schedules",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "shift_callouts",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "shift_exchanges",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "shifts",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "time_off_requests",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "weekly_availability_submissions",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "weekly_availability_windows",
+      "table_type": "BASE TABLE"
+    }
+  ],
+  "legacyColumns": [
+    {
+      "table_name": "employee_scheduling_settings",
+      "columns": "employee_id:text, target_weekly_hours:numeric, updated_at:timestamp with time zone"
+    },
+    {
+      "table_name": "notifications",
+      "columns": "id:text, employee_id:text, type:text, title:text, body:text, read_at:timestamp with time zone, created_at:timestamp with time zone, action_href:text, event_key:text"
+    },
+    {
+      "table_name": "schedule_acknowledgements",
+      "columns": "week_start:date, employee_id:text, acknowledged_at:timestamp with time zone, publication_revision_id:text"
+    },
+    {
+      "table_name": "schedule_publication_revision_shifts",
+      "columns": "id:text, revision_id:text, source_shift_id:text, schedule_id:text, location_id:text, employee_id:text, date:date, start_time:time without time zone, end_time:time without time zone, notes:text, is_designated_lead:boolean, is_callout_approved:boolean"
+    },
+    {
+      "table_name": "schedule_publication_revisions",
+      "columns": "id:text, week_start:date, revision_number:integer, source_type:text, source_id:text, affected_location_id:text, created_by:text, created_at:timestamp with time zone"
+    },
+    {
+      "table_name": "schedule_template_shifts",
+      "columns": "id:text, template_id:text, location_id:text, day_offset:smallint, start_time:time without time zone, end_time:time without time zone, employee_id:text, is_designated_lead:boolean, notes:text"
+    },
+    {
+      "table_name": "schedule_templates",
+      "columns": "id:text, name:text, created_by:text, active:boolean, created_at:timestamp with time zone, updated_at:timestamp with time zone"
+    },
+    {
+      "table_name": "schedule_week_settings",
+      "columns": "week_start:date, availability_deadline:timestamp with time zone, updated_by:text, updated_at:timestamp with time zone"
+    },
+    {
+      "table_name": "weekly_availability_submissions",
+      "columns": "week_start:date, employee_id:text, submitted_at:timestamp with time zone, updated_at:timestamp with time zone"
+    }
+  ],
+  "interpretation": "24 public tables include objects introduced in 0003 and 0004, so the approximate 0002 label is not an exact migration baseline. Current application prerequisites from 0005 and 0008 are absent. Exact catalog/constraints and migration-ledger reconciliation remain required."
+}

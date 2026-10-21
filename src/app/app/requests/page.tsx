@@ -4,17 +4,23 @@ import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { ManagerTimeOff } from "@/components/manager-time-off";
-import { NavIcon } from "@/components/nav-icon";
 import { isTimeOffReviewerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
 import { listEmployeeTimeOffRequests } from "@/lib/data/requests";
-import { TimeOffForm } from "@/app/app/requests/time-off-form";
 import { formatTime } from "@/lib/date-utils";
-import { TimeOffMotion } from "@/components/time-off-motion";
 import "./time-off.css";
-import { Card, CardBody, FilterPills, PageBand, Status } from "@/components/kit/kit";
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { SunHorizonIcon } from "@phosphor-icons/react/dist/ssr/SunHorizon";
+import { SigBand, SigDay, SigHead, SigPage } from "@/components/signature/signature";
+import { TimeOffSignatureForm } from "./time-off-signature";
+import ts from "./time-off-signature.module.css";
+import { Status } from "@/components/kit/kit";
 import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 
+import { SigButton } from "@/components/signature/sig-button";
 function dateLabel(date: string) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -24,9 +30,17 @@ function dateLabel(date: string) {
   }).format(new Date(`${date}T12:00:00Z`));
 }
 
+const longDay = (date: string, part: "weekday" | "month") => new Intl.DateTimeFormat("en-US", { [part]: "long", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+const monthShort = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+const shortDay = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+const countWords = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+const countWord = (n: number) => n < countWords.length ? countWords[n] : String(n);
+
 function statusLabel(status: string) {
   return status[0] + status.slice(1).toLowerCase();
 }
+
+export const metadata = { title: "Time off" };
 
 export default async function RequestsPage({
   searchParams,
@@ -57,70 +71,72 @@ export default async function RequestsPage({
   const sentOn = (at: string) => { try { return new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(at)); } catch { return ""; } };
   const waiting = mine.filter(request => request.status === "PENDING").length;
 
-  // Phase 3: Time off on the kit. The band names what is waiting; New request and My requests are its pills.
+  // Phase 3 (Signature, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-3/p3c-board-a.png):
+  // New request is the ticket form; My requests holds the waiting card (timeline, note, withdraw) and the decided rows.
+  // The band's pill moves between the two views; the shell's Requests tabs sit above it.
+  const notice = params.error ? <p className={`sg-alert ${ts.toNotice}`} data-tone="error" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p>
+    : params.submitted ? <p className={`sg-alert ${ts.toNotice}`} data-tone="ok" role="status">Your request was submitted for manager review. Track the decision below.</p>
+    : params.reviewed ? <p className={`sg-alert ${ts.toNotice}`} data-tone="ok" role="status">The request was reviewed.</p> : null;
+
+  if (activeTab === "new") return <TimeOffSignatureForm requestId={randomUUID()} draftOwner={session.id} notice={notice} today={businessDate(new Date(), zone)}
+    viewLink={<Link className="sg-band-link" href="/app/requests?tab=my">My requests{mine.length ? <em>{mine.length}</em> : null}<CaretRightIcon size={14} aria-hidden="true" /></Link>} />;
+
+  const range = (request: (typeof mine)[number]) => request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`;
+  const span = (request: (typeof mine)[number]) => Math.round((Date.parse(request.endDate) - Date.parse(request.startDate)) / 86400000) + 1;
+  const tone = (status: string) => status === "APPROVED" ? "done" as const : status === "PENDING" ? "review" as const : "neutral" as const;
+  const word = (status: string) => status === "DENIED" ? "Declined" : status === "CANCELLED" ? "Withdrawn" : status === "PENDING" ? "Waiting" : statusLabel(status);
+  const decision = (request: (typeof mine)[number]) => keepWhole(`${request.status === "APPROVED" ? "Approved" : request.status === "DENIED" ? "Declined" : "Withdrawn"}${request.reviewerName && request.status !== "CANCELLED" ? ` by ${request.reviewerName}` : ""}${request.reviewedAt ? ` · ${sentOn(request.reviewedAt)}` : ""}`);
+  const kind = (request: (typeof mine)[number]) => request.startTime && request.endTime ? "Partial day" : "Full day";
+  const detail = (request: (typeof mine)[number]) => request.startTime && request.endTime ? keepWhole(`${formatTime(request.startTime)} – ${formatTime(request.endTime)}`)
+    : span(request) > 1 ? keepWhole(`${span(request)} days · through ${shortDay(request.endDate)}`) : "1 day";
+  const pending = mine.filter(request => request.status === "PENDING"), decided = mine.filter(request => request.status !== "PENDING");
+
   return (
-    <TimeOffMotion><div className="nv-page timeoff-page employee-view employee-timeoff-view nto-page premium-employee-timeoff" data-nv-page="">
-      <PageBand title="Time off" overlap={false}
-        summary={waiting ? `${waiting}\u00a0${waiting === 1 ? "request" : "requests"} waiting for approval.` : "Plan your time away."}
-        extra={<FilterPills label="Time off sections" items={[
-          { href: "/app/requests?tab=new", label: "New request", current: activeTab === "new" },
-          { href: "/app/requests?tab=my", label: `My requests${mine.length ? ` (${mine.length})` : ""}`, current: activeTab === "my" },
-        ]} />} />
-      <div className="premium-employee-content" data-timeoff-intro>
-      {params.error ? (
-        <p className="form-error" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p>
-      ) : null}
-      {params.submitted ? (
-        <p className="form-success" role="status">Your request was submitted for manager review. Track the decision below.</p>
-      ) : null}
-      {params.reviewed ? (
-        <p className="form-success" role="status">The request was reviewed.</p>
-      ) : null}
-
-      {activeTab === "new" ? (
-        <Card title="Request time off" id="timeoff-new">
-          <CardBody>
-            <p className="premium-card-lead">Choose when you need to be away.</p>
-            <TimeOffForm employeeView requestId={randomUUID()} draftOwner={session.id} />
-          </CardBody>
-        </Card>
-      ) : null}
-
-      {activeTab === "my" ? (
-        <Card title="My requests" id="timeoff-mine" meta={`${mine.length}\u00a0request${mine.length === 1 ? "" : "s"}`}>
-          {mine.length ? <ul className="nv-rows premium-timeoff-list" aria-label="My requests">
-            {mine.map((request) => (
-              <li className="premium-timeoff-row" id={`request-${request.id}`} tabIndex={-1} data-employee-status={request.status} key={request.id}>
-                <div className="premium-timeoff-row__head">
-                  <span className="nv-row__title">{keepWhole(request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`)}</span>
-                  <Status tone={request.status === "APPROVED" ? "done" : request.status === "PENDING" ? "review" : "neutral"}>
-                    {request.status === "DENIED" ? "Declined" : request.status === "CANCELLED" ? "Withdrawn" : request.status === "PENDING" ? "Waiting" : statusLabel(request.status)}
-                  </Status>
-                </div>
-                <span className="nv-row__meta">{request.startTime && request.endTime ? keepWhole(`Partial day · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}`) : "Full day"}</span>
-                {request.reason ? <span className="nv-row__meta premium-timeoff-note">Note: {request.reason}</span> : null}
-                {/* Request timeline: when it was sent, then who decided it and when (Jose, 2026-10-19). */}
-                <ol className="premium-timeline" aria-label="Request timeline">
-                  <li data-done="true">{keepWhole(`Sent ${sentOn(request.createdAt)}`)}</li>
-                  <li data-done={request.status !== "PENDING" ? "true" : undefined}>{request.status === "PENDING" ? "Waiting for approval"
-                    : keepWhole(`${request.status === "APPROVED" ? "Approved" : request.status === "DENIED" ? "Declined" : "Withdrawn"}${request.reviewerName && request.status !== "CANCELLED" ? ` by ${request.reviewerName}` : ""}${request.reviewedAt ? ` · ${sentOn(request.reviewedAt)}` : ""}`)}</li>
-                </ol>
-                {request.employeeId === session.id && request.status === "PENDING" ? <details className="nto-withdrawal"><summary>Withdraw this request <NavIcon name="chevronRight" size={16} /></summary><TimeOffWithdrawal requestId={request.id} dateLabel={request.startDate === request.endDate ? dateLabel(request.startDate) : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`} /></details> : null}
-              </li>
-            ))}
-          </ul> : (
-            <CardBody>
-              <div className="nto-empty-state">
-                <span className="nto-empty-icon"><NavIcon name="timeOff" size={28} /></span>
-                <strong>No time-off requests yet</strong>
-                <span>Choose your dates and send a request to your manager.</span>
-                <Link className="nv-btn" data-kind="primary" href="/app/requests?tab=new">Request time off</Link>
+    <SigPage className={ts.toRoot} band={<SigBand eyebrow="Time off">
+      <h1 className="nv-sr">Time off</h1>
+      <p className="sg-head2">{pending.length ? <><em>{countWord(pending.length)}</em> {pending.length === 1 ? "request" : "requests"}<br />waiting</> : mine.length ? <>Nothing<br />waiting</> : <>Plan your<br />time away</>}</p>
+      <p className="sg-sub"><span>{decided.length ? `${decided.length} decided` : mine.length ? "Your manager is reviewing" : "Send a request when you need time off."}</span></p>
+      <Link className="sg-band-link" href="/app/requests?tab=new"><PlusIcon size={14} aria-hidden="true" />New request</Link>
+    </SigBand>}>
+      {notice}
+      {mine.length ? <>
+        {pending.length ? <><SigHead id="to-waiting" title="Waiting" count={pending.length} />
+          <ul className={ts.toList} aria-labelledby="to-waiting">{pending.map(request => (
+            <li className={`sg-card ${ts.toWait}`} id={`request-${request.id}`} tabIndex={-1} data-employee-status={request.status} key={request.id}>
+              <div className="sg-card-head"><span className="sg-tile" aria-hidden="true"><SunHorizonIcon size={22} /></span>
+                <span className={ts.toHeadCopy}><b>{kind(request)}</b><small>{detail(request)}</small></span>
+                <Status tone={tone(request.status)}>{word(request.status)}</Status></div>
+              <div className="sg-ticket">
+                <div><small>From</small><b>{Number(request.startDate.slice(8))}</b><span>{longDay(request.startDate, "weekday")}</span><span>{longDay(request.startDate, "month")}</span></div>
+                <i aria-hidden="true"><ArrowRightIcon size={18} /></i>
+                <div><small>Until</small><b>{Number(request.endDate.slice(8))}</b><span>{longDay(request.endDate, "weekday")}</span><span>{longDay(request.endDate, "month")}</span></div>
               </div>
-            </CardBody>
-          )}
-        </Card>
-      ) : null}
-      </div>
-    </div></TimeOffMotion>
+              <div className="sg-card-body">
+                <span className="nv-sr">{range(request)}</span>
+                {/* Request timeline: when it was sent, then who decided it and when (Jose, 2026-10-19). */}
+                <ol className={ts.toRail} aria-label="Request timeline"><span className={ts.toTrack} aria-hidden="true" />
+                  <li data-done="true">{request.createdAt ? keepWhole(`Sent ${sentOn(request.createdAt)}`) : "Sent"}</li>
+                  <li>Waiting for approval</li>
+                </ol>
+                {request.reason ? <p className={ts.toQuote}><span className="nv-sr">Note: </span>{request.reason}</p> : null}
+              </div>
+              {request.employeeId === session.id ? <details className={ts.toWithdraw}><summary><span>Changed your plans?</span><b>Withdraw</b></summary>
+                <TimeOffWithdrawal requestId={request.id} dateLabel={range(request)} /></details> : null}
+            </li>))}</ul></> : null}
+        {decided.length ? <><SigHead id="to-decided" title="Decided" count={decided.length} />
+          <ul className="sg-card" aria-labelledby="to-decided">{decided.map(request => (
+            <li className={`sg-r ${ts.toRow}`} id={`request-${request.id}`} tabIndex={-1} data-employee-status={request.status} key={request.id}>
+              <SigDay top={monthShort(request.startDate)} day={Number(request.startDate.slice(8))} />
+              <span className="sg-copy"><span className="sg-t1"><b><span className="nv-sr">{range(request)} · </span>{kind(request)}</b><Status tone={tone(request.status)}>{word(request.status)}</Status></span>
+                <span>{detail(request)}{request.reason ? <span className="nv-sr"> · Note: {request.reason}</span> : null}</span>
+                <span>{request.createdAt ? <>{keepWhole(`Sent ${sentOn(request.createdAt)}`)} · </> : null}{decision(request)}</span></span>
+            </li>))}</ul></> : null}
+      </> : <div className="sg-card"><div className={ts.toEmpty}>
+        <span className="sg-tile" aria-hidden="true"><SunHorizonIcon size={22} /></span>
+        <strong>No time-off requests yet</strong>
+        <span>Choose your dates and send a request to your manager.</span>
+        <SigButton className="sg-cta" href="/app/requests?tab=new">Request time off</SigButton>
+      </div></div>}
+    </SigPage>
   );
 }

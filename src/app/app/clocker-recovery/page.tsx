@@ -1,4 +1,3 @@
-import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -12,5 +11,5 @@ export default async function ClockerRecoveryPage({searchParams}: {searchParams?
   const workspace = await getWorkspace();
   // Settings is Owner-only, so only an Owner's Back returns there.
   const from = (await searchParams)?.from === 'settings' && actor.role === 'OWNER' ? 'settings' : undefined;
-  return <ScopedReadFrame observation={access}><ClockerRecoveryReview actorId={actor.id} timeZone={workspace.timeZone} from={from}/></ScopedReadFrame>;
+  return <ClockerRecoveryReview key={access.authority} actorId={actor.id} timeZone={workspace.timeZone} from={from} observation={access}/>;
 }

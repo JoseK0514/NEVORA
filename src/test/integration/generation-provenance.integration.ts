@@ -1,6 +1,9 @@
 import { updateShift, deleteShift, insertShift, saveEmployeeSchedulingProfile } from './management-api';
 import { beforeAll, afterAll, beforeEach, expect, it } from 'vitest';
 import { createDisposableGenerationDatabase } from './local-postgres';
+import { instrumentGeneration } from './generation-instrumentation';
+import { installFixtureCompanyAccess } from './fixture-company-access';
+import { fixtureProof } from './shift-change-api';
 let database: Awaited<ReturnType<typeof createDisposableGenerationDatabase>>;
 beforeAll(async()=>{database=await createDisposableGenerationDatabase();});
 afterAll(async()=>{await database?.dispose();});
@@ -25,9 +28,13 @@ const need={kind:'LEAD' as const,needStart:'2030-10-07T08:00',needEnd:'2030-10-0
 const claims={version:1,claims:[{...need,needKey:generationNeedKey(scope,need),coveredStart:need.needStart,coveredEnd:need.needEnd,quantity:1}]};
 async function generated(){await q("UPDATE shifts SET assignment_origin='GENERATED',generated_claims=$1::jsonb,is_designated_lead=true WHERE id='legacy'",[JSON.stringify(claims)]);}
 async function api(){
- const implementation=await import('./management-api').catch(()=>({}));
+ await installFixtureCompanyAccess(database.executor);
+ const implementation=await import('./management-api');
  expect(implementation).toHaveProperty('deleteGeneratedDraftShift');
- return implementation as typeof import('./management-api');
+ return {...implementation,
+  deleteGeneratedDraftShift:(value:Parameters<typeof implementation.deleteGeneratedDraftShift>[0],executor=database.executor)=>implementation.deleteGeneratedDraftShift(value,instrumentGeneration(executor,database.executor)),
+  clearGenerationExclusion:(value:Parameters<typeof implementation.clearGenerationExclusion>[0],executor=database.executor)=>implementation.clearGenerationExclusion(value,instrumentGeneration(executor,database.executor)),
+ };
 }
 const count=async(table:string)=>Number((await q(`SELECT count(*) AS n FROM ${table}`))[0].n);
 it('rejects invalid stored origins, missing claims and malformed claim envelopes',async()=>{
@@ -162,7 +169,7 @@ async function heldExecutor(defer:(cleanup:()=>void|Promise<unknown>)=>void,hold
  defer(()=>release());
  const executor:SqlExecutor={query:database.executor.query,transaction:async statements=>{
   await client.query('BEGIN');
-  try {const results=[];for(const s of statements){results.push((await client.query(s.text,[...s.values])).rows);if(!paused&&hold(s)){paused=true;reached();await released;}}
+  try {const results=[];for(const s of statements){results.push((await client.query(s.text,[...s.values])).rows);if(!paused&&statements.some(item=>item.text.includes('generation_source_conflict')||/^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/.test(item.text))&&hold(s)){paused=true;reached();await released;}}
     await client.query('COMMIT');return results;
   }catch(error){await client.query('ROLLBACK');throw error;}
  }};
@@ -182,9 +189,15 @@ it.each(['profile','absent-membership','coverage-cascade','foreign-week-shift'].
   const generation=await heldExecutor(defer,s=>order==='generation-first'&&s.text.includes('generation_source_conflict'));
   const writer=await heldExecutor(defer,s=>order==='writer-first'&&(kind==='profile'?s.text.includes('FROM employees')&&s.text.includes('FOR UPDATE'):true));
   const runWriter=()=>kind==='profile'?saveEmployeeSchedulingProfile({employeeId:'employee',actorEmployeeId:'manager',positionIds:['p'],eligibleLocationIds:['loc-1','loc-2']},writer.executor):writer.executor.transaction([{text:kind==='absent-membership'?"INSERT INTO employee_positions VALUES('employee','p')":kind==='coverage-cascade'?"DELETE FROM location_coverage_windows WHERE id='w'":"INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('foreign-shift','foreign-schedule','employee','2030-10-07','16:00','20:00')",values:[]}]);
+  let writing:Promise<unknown>|undefined;
+  const generationExecutor:SqlExecutor={...generation.executor,query:async<T>(statement:SqlStatement)=>{
+   const result=await generation.executor.query<T>(statement);
+   if(kind==='profile'&&order==='writer-first'&&!writing){writing=runWriter();defer(()=>writing);await writer.ready;}
+   return result;
+  }};
   if(order==='writer-first') {
-    const writing=runWriter();defer(()=>writing);await writer.ready;
-    const deleting=a.deleteGeneratedDraftShift(input,generation.executor);defer(()=>deleting);defer(()=>writer.release());
+    if(kind!=='profile'){writing=runWriter();defer(()=>writing);await writer.ready;}
+    const deleting=a.deleteGeneratedDraftShift(input,generationExecutor);defer(()=>deleting);defer(()=>writer.release());
     await observeBlocked(generation.pid);writer.release();await writing;expect((await deleting).status).toBe('deleted');
   }else{
     const deleting=a.deleteGeneratedDraftShift(input,generation.executor);defer(()=>deleting);await generation.ready;
@@ -224,7 +237,14 @@ it('publication or actor revocation racing deletion rejects without reservation;
  await q("UPDATE schedules SET status='DRAFT'");first=true;
  const revoked:SqlExecutor={query:database.executor.query,transaction:async statements=>{if(first){first=false;await q("UPDATE employees SET active=false WHERE id='manager'");}return database.executor.transaction(statements);}};
  await expect(a.deleteGeneratedDraftShift(input,revoked)).rejects.toThrow('active Owner or Manager');
- await q("UPDATE employees SET active=true WHERE id='manager'");let attempts=0;
+ await q("UPDATE employees SET active=true WHERE id='manager'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('scope-owner','Fictional','Owner','NONE','OWNER','loc-1')");
+ const {readOwnerOperationalScope,assignOperationalScope}=await import('../../lib/company-access/operational-scope.server');
+ const owner=await fixtureProof(database.executor,'scope-owner');
+ const current=await readOwnerOperationalScope(owner,'manager',database.executor);
+ if(current.state!=='ready')throw Error('Missing owned scope context');
+ const target=current.data.current;
+ expect(await assignOperationalScope(owner,'manager',{action:'ASSIGN',operationId:crypto.randomUUID(),expectedEmployeeVersion:target.employeeUpdatedAt,expectedRoleGeneration:target.roleGeneration,expectedScopeRevision:target.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},database.executor)).toMatchObject({state:'saved'});
+ let attempts=0;
  const churn:SqlExecutor={query:database.executor.query,transaction:async statements=>{attempts++;await q("UPDATE employees SET last_name=$1 WHERE id='employee'",[`Fictional ${attempts}`]);return database.executor.transaction(statements);}};
  await expect(a.deleteGeneratedDraftShift(input,churn)).rejects.toBeInstanceOf(GenerationConflictError);expect(attempts).toBe(3);
  expect(await count('schedule_generation_exclusions')).toBe(0);
@@ -252,8 +272,13 @@ it('bounded workspace lock wait returns a typed conflict and leaves all state in
  await generated();const a=await api();
  const blocker=new Client({connectionString:database.connectionString});await blocker.connect();
  try{
-   await blocker.query('BEGIN');await blocker.query('SELECT id FROM workspaces FOR UPDATE');
-   await expect(a.deleteGeneratedDraftShift(input,database.executor)).rejects.toBeInstanceOf(GenerationConflictError);
+   let blocked=false;
+   const executor:SqlExecutor={query:database.executor.query,transaction:async statements=>{
+    if(!blocked){blocked=true;await blocker.query('BEGIN');await blocker.query('SELECT id FROM workspaces FOR UPDATE');}
+    return database.executor.transaction(statements);
+   }};
+   await expect(a.deleteGeneratedDraftShift(input,executor)).rejects.toBeInstanceOf(GenerationConflictError);
+   expect(blocked).toBe(true);
  }finally{await blocker.query('ROLLBACK');await blocker.end();}
  expect(await count('shifts')).toBe(1);expect(await count('schedule_generation_exclusions')).toBe(0);
 });

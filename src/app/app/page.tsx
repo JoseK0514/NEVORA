@@ -5,6 +5,8 @@ import {Card,CardBody,KitStack,PageBand} from '@/components/kit/kit';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction-recovery';
+import {managerReviewRecoveryKey} from '@/lib/time-corrections/review-recovery';
 import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
 import {ScopedManagementHome} from '@/components/company-access/scoped-operational-views';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
@@ -41,6 +43,8 @@ function validWeek(value?: string) {
   );
 }
 
+export const metadata = { title: { absolute: "Home · NEVORA" } };
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -72,10 +76,12 @@ export default async function DashboardPage({
   const source=await withOperationalCompany(proof,()=>loadManagerDashboardData(weekStart,proof));
   if(source.state==='unavailable'&&source.reason!=='read_failed')return <OperationalUnavailable title="Home unavailable" reason={source.reason}/>;
   const dashboardData=source.state==='ready'?source.data:null;
+  const reviewAuthority=correctionAuthority(proof);
+  const recoveryKey=managerReviewRecoveryKey(session.id,reviewAuthority,source.state==='ready'?source.authority:authority.authority,view);
   // WR-59: the same kit error page as app/app/error.tsx. IS-50: "Try again" reloads this exact view (week, day, location, person).
   // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
   const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
-  if(!dashboardData)return <div className="nv-page premium-error" data-nv-page="">
+  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><div className="nv-page premium-error" data-nv-page="">
     <PageBand title="This page could not be loaded" summary="Your current information is unavailable."/>
     <KitStack><Card><CardBody><div className="premium-error__body">
       <p className="premium-error__text">Try loading the page again before taking an action.</p>
@@ -84,15 +90,15 @@ export default async function DashboardPage({
         {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>:null}
       </div>
     </div></CardBody></Card></KitStack>
-  </div>;
+  </div></ManagerCorrectionRecoveryBoundary>;
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision}=dashboardData;
 
   const {modules}=await currentPresentation();
-  return (<ScopedReadFrame observation={source.state==='ready'?source:null}>
+  return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={source.state==='ready'?source:null}>
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
-      correctionAuthority={correctionAuthority(proof)}
+      correctionAuthority={reviewAuthority}
       workspaceName={workspace.name}
       timeZone={workspace.timeZone}
       firstName={session.firstName}
@@ -124,5 +130,5 @@ export default async function DashboardPage({
           : null
       }
     />
-  </ScopedReadFrame>);
+  </ScopedReadFrame></ManagerCorrectionRecoveryBoundary>);
 }

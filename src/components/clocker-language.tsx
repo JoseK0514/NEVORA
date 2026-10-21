@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { ClockerIcon } from './clocker-icon';
 
 /** Spanish secondary labels for the shared Clocker, beside the unchanged
  * English. English stays the accessible name and the text scripts press;
@@ -34,9 +35,10 @@ export function Es({ phrase, inButton = false }: { phrase: ClockerPhrase; inButt
   return <span className="clocker-es" lang="es" aria-hidden={inButton || undefined}>{CLOCKER_ES[phrase]}</span>;
 }
 
+/** Shows or hides the Spanish second lines. Named by its visible text; aria-pressed carries the state. */
 export function ClockerLanguageToggle() {
   const on = useClockerSpanish();
   return <button type="button" className="clocker-language-toggle" aria-pressed={on} onClick={() => setSpanish(!on)}>
-    <span aria-hidden="true">ES</span> Spanish labels{on ? ' on' : ' off'}
+    <ClockerIcon name="globe" size={18}/><span lang="es">Español</span><b aria-hidden="true">{on ? 'On' : 'Off'}</b>
   </button>;
 }

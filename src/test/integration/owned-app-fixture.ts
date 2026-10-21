@@ -3,13 +3,17 @@ import { hashPassword } from '../../lib/auth/password';
 import { businessDate } from '../../lib/business-time';
 import { addDays, weekStartFor } from '../../lib/date-utils';
 import { fictionalProfile } from '../fixtures/shift-changes';
+import {installFixtureCompanyAccess} from './fixture-company-access';
+import {fixtureProof} from './shift-change-api';
+import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
+import {randomUUID} from 'node:crypto';
 
 import type { SqlExecutor } from '../../lib/notifications/types';
 
 // Explicit fictional credentials used only in ownership-marked disposable data.
 export const TEST_PASSWORD = 'Fictional-Phase-A-only!';
 const scopes = () => ({ revision: 1, mode: 'AUTOMATIC_WHEN_VALID', submissionAdvanceMinutes: 0, completionAdvanceMinutes: 0 });
-export async function seedOwnedApp(executor: SqlExecutor) {
+export async function seedOwnedApp(executor: SqlExecutor, options: {adoptCompanyAccess?: boolean} = {}) {
   const q = (text: string, values: readonly unknown[] = []) => executor.query({ text, values });
   await q("UPDATE workspaces SET name='Northside QA Workforce'; UPDATE locations SET name=CASE id WHEN 'loc-1' THEN 'Northside Main Office' ELSE 'Northside West Office' END,short_name=CASE id WHEN 'loc-1' THEN 'Main Office' ELSE 'West Office' END");
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QAOWNER','Fictional','Owner','555-0100','OWNER','loc-1')");
@@ -21,6 +25,17 @@ export async function seedOwnedApp(executor: SqlExecutor) {
     for (let day = 0; day < 7; day++) await q("INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES($1,$2,$3,'00:00','24:00')", [`qa-${location}-${day}`, location, day]);
   }
   await q("INSERT INTO positions(id,workspace_id,name) VALUES('qa-pos','workspace-fuel','Customer Support'),('qa-pos2','workspace-fuel','Operations')");
+  if (options.adoptCompanyAccess !== false) await installFixtureCompanyAccess(executor);
+}
+
+export async function assignOwnedManagerCompanyAccess(executor:SqlExecutor,employeeId:string,ownerId='QAOWNER') {
+  const owner=await fixtureProof(executor,ownerId);
+  const view=await readOwnerOperationalScope(owner,employeeId,executor);
+  if(view.state!=='ready')throw Error('Owned Manager scope context unavailable.');
+  const current=view.data.current;
+  const result=await assignOperationalScope(owner,employeeId,{action:'ASSIGN',operationId:randomUUID(),expectedEmployeeVersion:current.employeeUpdatedAt,expectedRoleGeneration:current.roleGeneration,expectedScopeRevision:current.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},executor);
+  if(result.state!=='saved')throw Error('Owned Manager Company scope assignment failed.');
+  return result.receipt;
 }
 
 export async function seedOwnedScenario(executor: SqlExecutor, label: string, offset: number) {

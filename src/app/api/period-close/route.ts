@@ -55,6 +55,16 @@ export async function POST(request: Request) {
         message,
       );
     const invalid = /INVALID|Review every|ZERO_TIME/.test(message);
+    const excludeWithTime = /EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER/.test(message);
+    if (excludeWithTime)
+      return correctionJson(
+        {
+          state: "invalid",
+          message:
+            "Someone you're leaving out of pay has recorded hours. Only an Owner can do that, with a reason of at least 10 characters.",
+        },
+        400,
+      );
     return correctionJson(
       {
         state: conflict ? "conflict" : invalid ? "invalid" : "unavailable",

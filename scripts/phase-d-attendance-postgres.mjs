@@ -66,6 +66,7 @@ try {
 
   const env = {
     ...process.env,
+    NODE_ENV: 'test',
     FUEL_TEST_DATABASE_URL:
       `postgresql://nevora_d13@127.0.0.1:${port}/nevora_exchange_test_d13_${marker.slice(0, 12)}`,
     FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes',
@@ -74,7 +75,7 @@ try {
 
   const result = spawnSync(
     process.execPath,
-    ['--import', 'tsx', 'scripts/phase-d-attendance-ui-qa.mjs'],
+    ['--import', './scripts/qa-server-context.mjs', '--import', 'tsx', 'scripts/phase-d-attendance-ui-qa.mjs'],
     { env, stdio: 'inherit' },
   );
   exitCode = result.status ?? 1;

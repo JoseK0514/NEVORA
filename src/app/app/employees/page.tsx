@@ -9,6 +9,8 @@ import { wordPreset } from "@/lib/workspace-presentation/words";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { filterDirectoryEmployees, readDirectoryFilters, type DirectorySearchParams } from "@/lib/employee-directory";
 
+export const metadata = { title: "Team" };
+
 export default async function EmployeesPage({ searchParams }: {
   searchParams?: Promise<DirectorySearchParams>;
 } = {}) {

@@ -160,7 +160,7 @@ try {
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await page.waitForURL('**/app');
     await page.goto(`${app.url}/app/settings/workspace`);
-    assert.equal(await page.getByLabel('Workspace name', { exact: true }).inputValue(), config.COMPANY_NAME);
+    assert.equal(await page.getByLabel('Business name', { exact: true }).inputValue(), config.COMPANY_NAME);
     assert.equal(await page.getByLabel('Business timezone', { exact: true }).inputValue(), config.COMPANY_TIME_ZONE);
     await page.keyboard.press('Tab');
     assert(await page.evaluate(() => document.activeElement !== document.body));

@@ -1,4 +1,6 @@
-import { createHash, randomBytes } from "node:crypto";
+import { createHash } from "node:crypto";
+import { prepareSession, type PreparedSession, type ReviewedLoginCredential } from "./session-issuance";
+export type { ReviewedLoginCredential } from "./session-issuance";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getDb, queryRows } from "@/lib/db";
@@ -9,7 +11,6 @@ import { readInstallationProof } from "@/lib/notifications/installation";
 import { neonNotificationExecutor } from '@/lib/data/notification-transactions';
 
 const SESSION_COOKIE = "fuel_session";
-const SESSION_DAYS = 14;
 
 export type SessionEmployee = {
   id: string;
@@ -23,26 +24,15 @@ function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
-export type ReviewedLoginCredential = { updated_at: string; password_hash: string; password_updated_at: string };
-
 export async function createSession(employeeId: string, reviewed: ReviewedLoginCredential) {
-  if (!employeeId || !reviewed?.updated_at || !reviewed.password_hash || !reviewed.password_updated_at) throw new Error('session_login_changed');
-  const token = randomBytes(32).toString("base64url");
-  const tokenHash = hashToken(token);
-  const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
+  const prepared = prepareSession(employeeId, reviewed);
   // Employee lifecycle precedes credentials/session locks. Separate statements
   // are essential: an INSERT SELECT predicate can retain its pre-lock snapshot.
-  await neonNotificationExecutor().transaction([
-    { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [employeeId] },
-    { text: 'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR SHARE', values: [employeeId] },
-    { text: `SELECT (CASE WHEN EXISTS (
-      SELECT 1 FROM employees e JOIN employee_credentials c ON c.employee_id=e.id
-      WHERE e.id=$1 AND e.active AND e.updated_at::text=$2
-        AND c.password_hash=$3 AND c.password_updated_at::text=$4
-    ) THEN '1' ELSE 'session_login_changed' END)::integer`, values: [employeeId, reviewed.updated_at, reviewed.password_hash, reviewed.password_updated_at] },
-    { text: 'INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,$3)', values: [tokenHash, employeeId, expiresAt.toISOString()] },
-  ]);
+  await neonNotificationExecutor().transaction([...prepared.guards, prepared.insert]);
+  await writeSessionCookie(prepared);
+}
 
+export async function writeSessionCookie({ token, expiresAt }: Pick<PreparedSession, "token" | "expiresAt">) {
   const store = await cookies();
   store.set(SESSION_COOKIE, token, {
     httpOnly: true,

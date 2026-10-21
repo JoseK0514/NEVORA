@@ -85,7 +85,8 @@ it("uses the canonical select language for operational and shift-change policies
   expect(shiftPolicy).toContain('class="nevora-select"');
 });
 
-it("uses the canonical select language for reviewed inability reporting", () => {
+// Phase 3 Signature (approved Oct 20, 2026): the reasons are one required choice among six tiles, not a select.
+it("offers the six canonical reasons as one required choice for reviewed inability reporting", () => {
   const html = renderToStaticMarkup(
     <ReviewedCalloutForm
       fields={{
@@ -96,7 +97,8 @@ it("uses the canonical select language for reviewed inability reporting", () => 
       }}
     />,
   );
-  expect(html).toContain('class="nevora-select"');
+  for (const reason of ["ILLNESS", "FAMILY_EMERGENCY", "TRANSPORTATION", "SCHOOL", "PERSONAL_EMERGENCY", "OTHER"]) expect(html).toMatch(new RegExp(`<input type="radio"[^>]*required=""[^>]*name="reasonCode" value="${reason}"`));
+  expect(html).not.toContain('checked=""');
 });
 
 it("progressively discloses large location catalogs but leaves small catalogs direct", () => {

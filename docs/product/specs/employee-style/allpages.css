@@ -1,0 +1,65 @@
+@import url("home4.css");
+/* Every employee page in the Withings-style Home language: round top buttons, big title, soft rounded rows, one framed card. */
+.ios.pg { height: auto; min-height: 844px; }
+.hi.sm { font-size: 32px; line-height: 38px; }
+.seg { display: flex; gap: 4px; margin: 18px 16px 0; padding: 4px; border-radius: 16px; background: var(--frame); }
+.seg span { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; height: 38px; border-radius: 12px; font: 500 14px/1 var(--sys); color: var(--ink-2); }
+.seg span.on { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.seg span em { font-style: normal; color: var(--ink-3); }
+.week { display: flex; justify-content: space-between; margin: 18px 16px 0; }
+.week span { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 44px; padding: 8px 0 10px; border-radius: 16px; font: 500 12px/14px var(--sys); color: var(--ink-3); }
+.week span b { font: 600 18px/22px var(--sys); color: var(--ink); }
+.week span.on { background: var(--deep); color: rgba(255,255,255,.75); }
+.week span.on b { color: #fff; }
+.week span i { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); }
+.week span.on i { background: var(--sky); }
+.cardx { margin: 18px 16px 0; padding: 10px; border-radius: 28px; background: var(--frame); }
+.cardx .in { padding: 18px; border-radius: 20px; background: #fff; }
+.cardx .k { font: 600 13px/16px var(--sys); color: var(--teal); }
+.cardx b.t { display: block; margin-top: 6px; font: 600 22px/27px var(--sys); letter-spacing: -.4px; }
+.cardx .s { display: block; margin-top: 6px; font: 400 15px/21px var(--sys); color: var(--ink-2); }
+.cardx .btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; margin-top: 16px; border-radius: 14px; background: var(--deep); color: #fff; font: 600 16px/20px var(--sys); }
+.cardx .btn.ghost { background: #fff; border: 1px solid var(--rule); color: var(--ink); }
+.cardx .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.cardx .stats div { padding: 12px 14px; border-radius: 14px; background: var(--bg); }
+.cardx .stats small { display: block; font: 500 13px/16px var(--sys); color: var(--ink-2); }
+.cardx .stats strong { display: block; margin-top: 4px; font: 600 24px/28px var(--sys); letter-spacing: -.4px; }
+.cardx .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--bg); font: 500 13px/16px var(--sys); color: var(--ink-2); }
+.cardx .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #A9AAA5; }
+.cardx .pill.ok::before { background: var(--ok); }
+.cardx .top2 { display: flex; justify-content: space-between; align-items: center; }
+.note { margin: 12px 20px 0; font: 400 13px/18px var(--sys); color: var(--ink-3); }
+.it .th.day { flex-direction: column; gap: 0; background: var(--bg); color: var(--ink); }
+.it .th.day small { font: 600 10px/12px var(--sys); letter-spacing: .4px; text-transform: uppercase; color: var(--ink-2); }
+.it .th.day strong { font: 600 17px/19px var(--sys); }
+.it.today { border-color: var(--deep); box-shadow: 0 0 0 1px var(--deep); }
+.it.today .th.day { background: var(--deep); } .it.today .th.day small { color: rgba(255,255,255,.7); } .it.today .th.day strong { color: #fff; }
+.it .chev { flex: none; color: #BDBDB8; }
+.it .st { flex: none; font: 500 14px/18px var(--sys); }
+.it .st.ok { color: var(--ok); } .it .st.wait { color: #9A5B00; } .it .st.no { color: #B42318; }
+.it .unread { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--sky); }
+.it .dl { flex: none; display: inline-flex; width: 38px; height: 38px; border-radius: 50%; align-items: center; justify-content: center; background: var(--bg); color: var(--deep); }
+.it.red b { color: #B42318; }
+.it .val { flex: none; font: 400 15px/20px var(--sys); color: var(--ink-2); }
+.empty { margin: 0 16px; padding: 22px 18px; border-radius: 18px; border: 1px dashed #D8D8D3; text-align: center; font: 400 15px/21px var(--sys); color: var(--ink-2); }
+.privacy { display: flex; gap: 8px; margin: 18px 20px 0; font: 400 13px/18px var(--sys); color: var(--ink-3); }
+.prof { display: flex; flex-direction: column; align-items: center; padding: 18px 20px 0; text-align: center; }
+.prof .ava { display: inline-flex; width: 92px; height: 92px; border-radius: 50%; align-items: center; justify-content: center; background: var(--deep); color: #fff; font: 600 32px/1 var(--sys); box-shadow: 0 0 0 6px #fff, 0 0 0 7px var(--rule); }
+.prof b { display: block; margin-top: 16px; font: 700 28px/34px var(--sys); letter-spacing: -.6px; }
+.prof span { display: block; margin-top: 4px; font: 400 15px/20px var(--sys); color: var(--ink-2); }
+.signout { display: flex; align-items: center; justify-content: center; height: 52px; margin: 22px 16px 0; border-radius: 16px; background: #fff; border: 1px solid var(--rule); color: #B42318; font: 600 16px/20px var(--sys); }
+.ios.sheetv { height: 844px; overflow: hidden; }
+.ios.sheetv .scrim { position: absolute; inset: 0; z-index: 5; background: rgba(14,20,19,.36); }
+.msh { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; padding: 10px 16px 34px; border-radius: 28px 28px 0 0; background: var(--bg); }
+.msh .grab { width: 38px; height: 5px; margin: 0 auto 16px; border-radius: 3px; background: #CFCFCA; }
+.msh .who { display: flex; align-items: center; gap: 14px; padding: 0 4px 16px; }
+.msh .who .ava { display: inline-flex; width: 52px; height: 52px; border-radius: 50%; align-items: center; justify-content: center; background: var(--deep); color: #fff; font: 600 18px/1 var(--sys); }
+.msh .who b { display: block; font: 600 18px/22px var(--sys); }
+.msh .who span span { display: block; margin-top: 2px; font: 400 14px/18px var(--sys); color: var(--ink-2); }
+.msh .items { padding: 0; }
+.board { display: flex; flex-wrap: wrap; gap: 30px; padding: 36px; background: #E7E7E4; font: 600 20px/1.3 -apple-system, system-ui, sans-serif; }
+.board .f { display: flex; flex-direction: column; gap: 10px; }
+.board .f > span { font-weight: 500; color: #555; }
+.board iframe { width: 390px; border: 0; border-radius: 22px; box-shadow: 0 10px 40px rgba(0,0,0,.14); background: #fff; }
+.msh .who > span:not(.ava) { color: var(--ink); }
+.it.red .th { background: #FDECEA; color: #B42318; }

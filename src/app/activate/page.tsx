@@ -1,40 +1,23 @@
 import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
-import { AuthBrand } from "@/components/auth-brand";
-import { BrandLegal } from "@/components/brand-legal";
-import { NUVORA_BRAND } from "@/lib/brand";
+import { AUTH_COPY } from "@/lib/auth-copy";
+import { readAuthLang } from "@/lib/auth-lang.server";
+import { AuthShell } from "@/components/auth-premium/auth-shell";
 import { ActivationInvitation } from "./activation-invitation";
-import { ActivationVisual } from "./activation-visual";
-import "../login/login.css";
+import "../login/auth-premium.css";
+import "../login/auth-signature.css";
 import "./activation.css";
-import "../login/auth-refinement.css";
-import "../login/auth-support.css";
 
+/** Account activation in the Signature sign-in frame. The invitation flow and its wording are development's. */
 export default async function ActivatePage({ searchParams }: {
   searchParams: Promise<{ returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
-  const workspaceName = await getPublicWorkspaceName();
+  const [workspaceName, lang] = await Promise.all([getPublicWorkspaceName(), readAuthLang()]);
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
+  const returnQuery = returnTo ? `returnTo=${encodeURIComponent(returnTo)}` : "";
 
-
-  return <main className="auth-page employee-login-page auth-refinement-page auth-support-page activation-page">
-    <div className="employee-login-shell">
-      <header className="employee-login-brand">
-        <AuthBrand />
-        <span className="login-workspace">{workspaceName ?? "Workspace unavailable"}</span>
-      </header>
-      <div className="employee-login-composition">
-        <ActivationVisual />
-        <section className="auth-card employee-login-card activation-card">
-          <div className="employee-login-heading">
-            <h1>Activate account</h1>
-            <p>Open your email invitation, then choose a password.</p>
-          </div>
-          <ActivationInvitation loginHref={`/login?activated=1${returnTo?`&returnTo=${encodeURIComponent(returnTo)}`:''}`} />
-        </section>
-      </div>
-      <footer className="employee-login-footer"><small>{NUVORA_BRAND.poweredBy}</small><BrandLegal /></footer>
-    </div>
-  </main>;
+  return <AuthShell lang={lang} t={AUTH_COPY[lang]} variant="sub" back={`/login${returnQuery ? `?${returnQuery}` : ""}`}>
+    <ActivationInvitation workspaceName={workspaceName} loginHref={`/login?activated=1${returnQuery ? `&${returnQuery}` : ""}`} />
+  </AuthShell>;
 }

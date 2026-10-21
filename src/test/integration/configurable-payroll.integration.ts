@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { beforeEach, afterEach, it, expect } from "vitest";
 import { createPunchFixture } from "./clocker-punch-fixture";
 import {
@@ -41,6 +42,14 @@ let f: Awaited<ReturnType<typeof createPunchFixture>>;
 beforeEach(async () => {
   process.env.NEVORA_PAYROLL_ENABLED = "true";
   f = await createPunchFixture();
+  // Timecard and period-close writes require the company_access_adoption row
+  // since the Company Access integration. Apply 0032 after the fixture roster
+  // (its census is captured at application time) but never 0031: with the
+  // native payroll schema present, PREPARE captures a native run and this
+  // suite's provider-amount IMPORT fails NATIVE_AMOUNT_INPUT_FORBIDDEN.
+  await f.q(
+    await readFile("db/migrations/0032_company_access_invitations.sql", "utf8"),
+  );
 });
 afterEach(async () => {
   await f?.db.dispose();

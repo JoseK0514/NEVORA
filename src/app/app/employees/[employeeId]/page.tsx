@@ -80,7 +80,8 @@ export default async function EmployeeProfilePage({
               <Rows label="Access">
                 <Row href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`} title="Clocker PIN" meta="For the shared tablet. Separate from portal sign-in."
                   leading={<Tile><KeyIcon size={20} weight="bold" /></Tile>} />
-                {employee.id !== actor.id ? <Row href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account recovery" meta="Help them back in after you check who they are."
+                {/* Managers can help Employees and Leads; only an Owner can reset a Manager (matches the server rule). */}
+                {employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD") ? <Row href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account recovery" meta="Help them back in after you check who they are."
                   leading={<Tile><LockKeyIcon size={20} weight="bold" /></Tile>} /> : null}
               </Rows>
             </Card> : null}

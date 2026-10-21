@@ -29,3 +29,25 @@ export function SwapShiftSummary({ shift, label, employee = false }: { shift: Ex
     {shift.timeZone ? <p className="wa-shift__where">Times in {timeZoneLabel(shift.timeZone)}</p> : null}
   </section>;
 }
+
+/** Signature (phase 3): "Thu, Oct 22" for the band's figure. */
+export function swapBandDay(date: string) {
+  return new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`));
+}
+
+/** Signature (phase 3): the band's line under the date: time, place, position, Lead and any other time zone. */
+export function swapBandLine(shift: ExchangeShift) {
+  return [keepWhole(swapTimeLabel(shift)), shift.locationName, swapPositionLabel(shift), shift.isDesignatedLead ? 'Shift lead' : null, shift.timeZone ? `Times in ${timeZoneLabel(shift.timeZone)}` : null].filter(Boolean).join(' · ');
+}
+
+/** Signature (phase 3): one half of the give/receive ticket. Every fact SwapShiftSummary shows stays. */
+export function SwapHalf({ shift, label, employee = false }: { shift: ExchangeShift; label: string; employee?: boolean }) {
+  const details = [employee ? shift.employeeName : null, shift.locationName, swapPositionLabel(shift), shift.isDesignatedLead ? 'Shift lead' : null].filter(Boolean) as string[];
+  return <section aria-label={label}>
+    <small>{label}</small>
+    <b aria-hidden="true">{Number(shift.date.slice(8))}</b>
+    <span><time dateTime={shift.date}>{new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }).format(new Date(`${shift.date}T12:00:00Z`))}<span className="nv-sr">, {swapDateLabel(shift.date)}</span></time></span>
+    <span>{keepWhole(swapTimeLabel(shift))}</span>
+    <em>{details.join(' · ')}{shift.timeZone ? ` · ${timeZoneLabel(shift.timeZone)}` : ''}</em>
+  </section>;
+}

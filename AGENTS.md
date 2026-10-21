@@ -2,6 +2,16 @@
 
 These instructions apply to implementation work in this repository.
 
+## Development integration
+
+Start new release work from freshly fetched `origin/development`. Development is
+the combined application line. Before another assembly, run
+`npm run check:development-sources` after fetching origin. Its inventory is
+`docs/handoffs/2026-10-21-development-assembly-sources.json`: reconcile changed or
+new branches, verify their work, then update the recorded heads and dispositions.
+The check reports drift; it never merges branches automatically. Main and
+production still require Jose's explicit authorization.
+
 ## Executive operating model
 Before material application code, test, schema/database, configuration, CI/CD,
 infrastructure, security, deployment, or release work, read:

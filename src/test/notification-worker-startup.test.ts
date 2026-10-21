@@ -1,12 +1,23 @@
 import {expect,it} from 'vitest';
 import {spawnSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
+import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
 const environment=()=>({PATH:process.env.PATH??'',TMPDIR:tmpdir(),NODE_ENV:'test' as const});
-it('the actual npm worker command rejects invalid arguments through its bounded CLI handler without loading a provider or database',()=>{
- const r=spawnSync('npm',['run','notifications:worker','--','invalid'],{cwd:process.cwd(),env:environment(),encoding:'utf8',timeout:8000});
+it.each([false,true])('the actual npm worker command retains its exact bounded error with package-manager diagnostic %s',notice=>{
+ const root=mkdtempSync(join(tmpdir(),'nevora-worker-cli-'));
+ try{
+ const preload=join(root,'npm-diagnostic.cjs');
+ writeFileSync(preload,"if(['npm','npm-cli.js'].includes(require('node:path').basename(process.argv[1]??'')))process.stderr.write('Controlled package manager diagnostic.\\n');");
+ const scriptShell=join(root,'worker-shell.cjs'),workerDiagnostic=join(root,'worker-stderr');
+ writeFileSync(scriptShell,`#!${process.execPath}\nconst {openSync,closeSync}=require('node:fs');const {spawnSync}=require('node:child_process');const fd=openSync(${JSON.stringify(workerDiagnostic)},'w');const result=spawnSync('/bin/sh',process.argv.slice(2),{stdio:['inherit','inherit',fd]});closeSync(fd);process.exit(result.status??1);`,{mode:0o700});
+ const r=spawnSync('npm',['run','notifications:worker','--','invalid'],{cwd:process.cwd(),env:{...environment(),npm_config_script_shell:scriptShell,...(notice?{NODE_OPTIONS:'--require='+preload}:{})},encoding:'utf8',timeout:8000});
  expect(r.status).toBe(1);expect(r.error===undefined).toBe(true);
- expect(r.stderr.trim()==='Notification worker could not complete.').toBe(true);
- expect(/MODULE_NOT_FOUND|Cannot find module|Require stack:/.test(r.stderr)).toBe(false);
+ const actual=readFileSync(workerDiagnostic,'utf8');
+ expect(actual.trim()).toBe('Notification worker could not complete.');
+ expect(/MODULE_NOT_FOUND|Cannot find module|Require stack:/.test(r.stderr+actual)).toBe(false);
+ if(notice)expect(r.stderr).toContain('Controlled package manager diagnostic.');
+ }finally{rmSync(root,{recursive:true,force:true});}
 });
 it('the explicit Node server entry loads the actual worker and executes an injected disabled dispatch without any IO',()=>{
  const script=`

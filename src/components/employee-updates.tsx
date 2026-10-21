@@ -13,7 +13,12 @@ import {NavIcon} from './nav-icon';
 import {HoldHeight} from './kit/hold-height';
 import {createPortal} from 'react-dom';
 import {useTopBarSlot} from './clean/top-bar-slot';
-import {UpdateEntrance, UpdateKind} from './update-visual';
+import {UpdateEntrance, updateKinds} from './update-visual';
+import {SigBand, SigHead, SigPage} from './signature/signature';
+import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
+import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
+import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
+import eu from './employee-updates-signature.module.css';
 import {useCommunicationResource, type CommunicationMode} from '../lib/communications/client';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
 import './updates-review.css';
@@ -105,39 +110,63 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
    </div>
   </UpdateEntrance>;
  }
- return <UpdateEntrance className="employee-view communication-view updates-page">
-  <div className="nv-page premium-updates" data-nv-page="">
-  <PageBand title="Updates" summary="Workplace news and notes, all in one place." overlap={false}/>
-  <div className="premium-employee-content">
-  {slot ? createPortal(compose, slot) : compose}
+ // Phase 3 (Signature, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-3/p3c-board-c.png):
+ // the band says what needs confirming; updates to review are cards with a dark "Read and confirm" foot, the rest are rows.
+ const words = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+ const required = items.filter(item => !isReviewed(item) && item.acknowledgement === 'REQUIRED').length;
+ const longDate = (item: ReadyUpdate) => new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'long'}).format(new Date(item.publishedAt));
+ const shortDate = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, month: 'short', day: 'numeric'}).format(new Date(item.publishedAt)));
+ const status = (item: ReadyUpdate) => item.ownAcknowledgedAt ? 'Acknowledged' : item.acknowledgement === 'REQUIRED' ? 'Review needed' : item.ownReadAt ? 'Read' : 'Not read';
+ const review = visible.filter(item => !isReviewed(item)), done = visible.filter(isReviewed);
+ const stateTitle = paused ? 'Updates paused' : signedOut ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…';
+ const stateText = paused ? 'Return online and to this page to refresh.' : signedOut ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.';
+ const headline = !current ? <>{paused ? 'Updates paused' : signedOut ? 'Your session ended' : unavailableReason ? 'Not available right now' : 'Checking updates'}</>
+  : required ? <><em>{words[required] ?? required}</em> {required === 1 ? 'update' : 'updates'}<br />to confirm</>
+  : toReview ? <><em>{words[toReview] ?? toReview}</em> {toReview === 1 ? 'update' : 'updates'}<br />to read</> : <>All caught up</>;
+ const band = <SigBand eyebrow="Team updates">
+  <h1 className="nv-sr">Updates</h1>
+  <p className="sg-head2" data-update-heading="">{headline}</p>
+  <p className="sg-sub"><span>{!current ? 'Workplace news and notes, all in one place.' : required ? 'Your manager asked everyone to confirm' : 'Workplace news and notes, all in one place.'}</span></p>
+  <Link className="sg-band-link" href="/app/updates/compose"><PlusIcon size={14} aria-hidden="true" />Message today’s team</Link>
+ </SigBand>;
+ const kind = (item: ReadyUpdate) => updateKinds[item.type];
+ return <SigPage className={eu.euRoot} band={band}>
   <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
-   <div className="updates-toolbar">
-    {/* P3-ST-05: the filters are there from the first frame (disabled, counts "–" until read), so the list never jumps down. */}
-    <fieldset className="updates-filters" disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
-    {/* Signed out, Refresh would only fetch the same refusal; Sign in is the way forward (QA r3). */}
-    {signedOut ? null : <button type="button" className="updates-refresh" disabled={paused || refreshing} onClick={onRefresh}><NavIcon name="refresh" /><span>{refreshing ? 'Checking…' : unavailableReason ? 'Try again' : 'Refresh'}</span></button>}
-   </div>
+   {/* P3-ST-05: the filters are there from the first frame (disabled, counts "–" until read), so the list never jumps down. */}
+   <fieldset className={`updates-filters ${eu.euFilters}`} disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
    {/* QA r3: paused, offline, a failed read or a signed-out read keeps the list's height; the state shows in its place. */}
    <HoldHeight holding={!current} memory={`updates-${mode}`}>
-   {current?.state === 'partial' ? <p className="updates-partial" role="status"><NavIcon name="alert" />Some updates couldn’t load. Try again to check for the rest.</p> : null}
-   {!current ? <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{paused ? 'Updates paused' : signedOut ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…'}</h2><p>{paused ? 'Return online and to this page to refresh.' : signedOut ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.'}</p>{signedOut ? <Link className="nv-btn" data-kind="primary" href="/login">Sign in</Link> : null}</div> : visible.length ? <div className="updates-groups">{[...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
-    <h2>{keepWhole(date)}</h2><ul className="updates-list">{rows.map(item => {
-     const reviewed = isReviewed(item);
-     const status = item.ownAcknowledgedAt ? 'Acknowledged' : item.acknowledgement === 'REQUIRED' ? 'Review needed' : item.ownReadAt ? 'Read' : 'Not read';
-     return <li key={item.id}><Link className={`updates-row${reviewed ? ' is-reviewed' : ''}`} href={'/app/updates/' + item.id} prefetch={false}>
-      <UpdateKind type={item.type} iconOnly />
-      <div className="updates-row-copy"><div className="updates-row-meta">{/* Employees keep the kind and the status (managers have their own rows above). */}<UpdateKind type={item.type} /><span className={`updates-status${reviewed ? ' is-reviewed' : ''}`}>{reviewed ? <CheckCircleIcon size={14} aria-hidden="true" /> : <span className="updates-status-dot" aria-hidden="true" />}{status}</span></div><h3>{item.title}</h3><p className="updates-preview">{item.body}</p><time dateTime={item.publishedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt)))}</time></div>
-      <span className="updates-row-action"><span>Review update</span><NavIcon name="arrowRight" /></span>
-     </Link></li>;
-    })}</ul>
-   </section>)}</div> : <div className="updates-empty" role="status"><TrayIcon size={32} aria-hidden="true" /><h2>{emptyTitle}</h2><p>{emptyDescription}</p>{filter !== 'all' ? <button className="button secondary" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
+   {current?.state === 'partial' ? <p className={`sg-alert ${eu.euPartial}`} role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
+   {!current ? <div className={`sg-card ${eu.euState}`} role="status"><span className="sg-tile" aria-hidden="true"><TrayIcon size={22} /></span><h2>{stateTitle}</h2><p>{stateText}</p>{signedOut ? <Link className="sg-cta" href="/login">Sign in</Link> : null}</div>
+    : visible.length ? <>
+     {review.length ? <><SigHead id="eu-review" title="To review" count={review.length} />
+      <ul className={eu.euStack} aria-labelledby="eu-review">{review.map(item => {
+       const {Icon, label} = kind(item);
+       return <li key={item.id}><Link className={`sg-card ${eu.euFeature}`} href={'/app/updates/' + item.id} prefetch={false}>
+        <span className="sg-card-head"><span className="sg-tile" data-tone={item.acknowledgement === 'REQUIRED' ? 'amber' : undefined} aria-hidden="true"><Icon size={22} /></span>
+         <span className={eu.euHeadCopy}><b>{label}</b><small><time dateTime={item.publishedAt}>{longDate(item)}</time>{item.authorContext ? ` · ${item.authorContext}` : ''}</small></span>
+         <span className="sg-pill" data-tone={item.acknowledgement === 'REQUIRED' ? 'amber' : undefined}>{status(item)}</span></span>
+        <span className={eu.euBody}><b>{item.title}</b><span>{item.body}</span></span>
+        <span className={eu.euFoot}>{item.acknowledgement === 'REQUIRED' ? 'Read and confirm' : 'Read update'}<ArrowRightIcon size={18} aria-hidden="true" /></span>
+       </Link></li>;
+      })}</ul></> : null}
+     {done.length ? <><SigHead id="eu-done" title={review.length ? 'Earlier' : 'Updates'} count={done.length} />
+      <ul className="sg-card" aria-labelledby="eu-done">{done.map(item => {
+       const {Icon, label} = kind(item);
+       return <li key={item.id}><Link className={`sg-r ${eu.euRow}`} href={'/app/updates/' + item.id} prefetch={false}>
+        <span className="sg-tile" aria-hidden="true"><Icon size={22} /></span>
+        <span className="sg-copy"><b>{item.title}</b><span><span className={eu.euDone}><CheckIcon size={14} weight="bold" aria-hidden="true" />{status(item)}</span> · {label} · <time dateTime={item.publishedAt}>{shortDate(item)}</time><span className="nv-sr"> ({longDate(item)})</span></span></span>
+        <CaretRightIcon className={eu.euChev} size={16} aria-hidden="true" />
+       </Link></li>;
+      })}</ul></> : null}
+    </> : <div className={`sg-card ${eu.euState}`} role="status"><span className="sg-tile" aria-hidden="true"><CheckCircleIcon size={22} /></span><h2>{emptyTitle}</h2><p>{emptyDescription}</p>{filter !== 'all' ? <button type="button" className="sg-link" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
    </HoldHeight>
   </section>
-  {/* Clean Manager (v3): the manager footnote went; the employee one prevents a mistake and stays. */}
-  <p className="updates-footnote">Opening an update doesn’t confirm it. Read the full message, then confirm.</p>
+  <div className="sg-quiet">
+   <span>Opening an update doesn’t confirm it.</span>
+   {signedOut ? null : <button type="button" className="sg-link" disabled={paused || refreshing} onClick={onRefresh}>{refreshing ? 'Checking…' : unavailableReason ? 'Try again' : 'Refresh'}</button>}
   </div>
-  </div>
- </UpdateEntrance>;
+ </SigPage>;
 }
 
 export function EmployeeUpdates({authority, mode}: {authority: string; mode: CommunicationMode}) {

@@ -14,6 +14,28 @@ function processHasStopped(pid:number):boolean {
   return !observed.error&&observed.status===0&&/^Z/.test(observed.stdout.trim());
 }
 it('does not classify a live process as stopped',()=>{expect(processHasStopped(process.pid)).toBe(false);});
+it('retains the independently observed ancestry parent when identity capture sees reparenting',()=>{
+ const root=mkdtempSync(join(tmpdir(),'nevora-e-parent-observation-')),trace=join(root,'resource.json');
+ try{
+  const child=join(root,'child.mjs');
+  writeFileSync(child,`import fs from 'node:fs';import {spawn} from 'node:child_process';import {once} from 'node:events';import {registerOwnedProcess} from ${JSON.stringify(runner)};
+const resource=spawn(process.execPath,['-e','setInterval(()=>{},100)'],{env:process.env,detached:true,stdio:'ignore'});fs.writeFileSync(${JSON.stringify(trace)},JSON.stringify({pid:resource.pid,parent:process.pid}));
+await registerOwnedProcess({kind:'next',pid:resource.pid,ownerId:process.env.PHASE_E_OWNER_ID});const stopped=once(resource,'exit');resource.kill('SIGTERM');await stopped;`);
+  // Alter only the later identity read's PPID. Ancestry, marker, birth, PGID,
+  // command and cleanup are observed from the real invocation-created process.
+  const script=`import fs from 'node:fs';import cp from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';const raw=cp.spawnSync;let reparented=false;
+cp.spawnSync=function(command,args,options){const result=raw(command,args,options);let target;try{target=JSON.parse(fs.readFileSync(${JSON.stringify(trace)},'utf8')).pid;}catch{}
+if(command==='ps'&&args[0]==='-p'&&args[1]===String(target)&&args[3]==='pid=,ppid=,pgid=,lstart=,stat=,command='&&result.status===0){const fields=result.stdout.trim().split(/\\s+/);fields[1]='1';result.stdout=fields.join(' ')+'\\n';reparented=true;}return result;};syncBuiltinESMExports();
+const api=await import(${JSON.stringify(runner)}),ownerId='a'.repeat(32);const result=await api.superviseOwnedChild({command:process.execPath,args:[${JSON.stringify(child)}],cwd:${JSON.stringify(root)},env:{...api.safeEnvironment(),PHASE_E_OWNER_ID:ownerId},ownerId,timeoutMs:2500,graceMs:100});process.stdout.write(JSON.stringify({reparented,result}));`;
+  const execution=spawnSync(process.execPath,['--input-type=module','-e',script],{encoding:'utf8',timeout:5000});expect(execution.status,execution.stderr).toBe(0);
+  const {reparented,result}=JSON.parse(execution.stdout),observed=JSON.parse(readFileSync(trace,'utf8'));
+  expect(reparented).toBe(true);expect(result.status).toBe(0);expect(result.resources).toHaveLength(1);
+  expect(result.resources[0]).toMatchObject({pid:observed.pid,ppid:observed.parent,lastObservedPpid:1,stopped:true});expect(observed.parent).toBeGreaterThan(1);expect(processHasStopped(observed.pid)).toBe(true);
+ }finally{
+  try{const {pid}=JSON.parse(readFileSync(trace,'utf8'));if(!processHasStopped(pid))process.kill(-pid,'SIGKILL');}catch{}
+  rmSync(root,{recursive:true,force:true});
+ }
+});
 it.each(['graceful', 'forced', 'forced-title-worker'])('a short %s timeout stops detached Next/browser process resources and fails', mode => {
   const root = mkdtempSync(join(tmpdir(), 'nevora-e-timeout-')), trace = join(root, 'resources.json');
   try {
