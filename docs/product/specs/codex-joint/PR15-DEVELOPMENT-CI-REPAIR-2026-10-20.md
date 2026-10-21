@@ -257,6 +257,13 @@ same-reference review returning the same employee receipt. A real blur/focus mus
 repeat that privacy boundary; exactly two explicit checks may occur. This retains
 the immutability/no-replay checks while following the new enclosing lifetime.
 
+Hosted `9709f2dd` passed those Clocker checks and the first password reset/session
+invalidation. The reset helper then incorrectly required an HTTP response for a
+hash-only revisit, which Playwright correctly reports as null. A repeated reset
+visit now first leaves the old reset document through `about:blank`, then requires
+a real HTTP-success reset document, the code input and consumed fragment. This
+exercises reuse and expiry against a fresh form and retains the15second deadlines.
+
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,
