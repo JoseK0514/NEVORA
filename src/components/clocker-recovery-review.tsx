@@ -14,6 +14,7 @@ import type {RecoveryReview} from '../lib/clocker/recovery-review.server';
 import {keepWhole} from '../lib/keep-whole';
 import {EmptyState, GuideCard, Notice, SettingsFrame} from '../app/app/settings/wave-c-kit';
 import {ButtonLabel, FormActions} from '../app/app/settings/wave-c-form';
+import {ScopedReadFrame,type ScopedObservation} from './company-access/scoped-read-frame';
 
 const subscribe = () => () => {};
 const actionNames: Record<string, string> = {
@@ -22,7 +23,7 @@ const actionNames: Record<string, string> = {
 
 /** Wave C: Clocker recovery on the kit (Owners and Managers). The private snapshot controller,
  * its pause-on-blur and the request are unchanged; checking a receipt never changes recorded time. */
-export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: string; timeZone: string; from?: 'settings'}) {
+export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {actorId: string; timeZone: string; from?: 'settings'; observation?:ScopedObservation}) {
   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
   const [reference, setReference] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
@@ -109,7 +110,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: strin
   }
 
   const errorId = `${inputId}-error`;
-  return <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Check a saved Clocker action and help the employee finish recovery."
+  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Check a saved Clocker action and help the employee finish recovery."
     aside={<GuideCard title="A clear path to recovery">
       <ol className="wc-steps">
         <li><strong>Find the saved reference</strong>It’s on the recovery screen of the registered tablet.</li>
@@ -190,4 +191,5 @@ export function ClockerRecoveryReview({actorId, timeZone, from}: {actorId: strin
       <div className="wc-card-actions"><Link href="/app/timecards" className="nv-link">Review timecards<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link></div>
     </section>
   </SettingsFrame>;
+  return observation ? <ScopedReadFrame observation={observation}>{content}</ScopedReadFrame> : content;
 }

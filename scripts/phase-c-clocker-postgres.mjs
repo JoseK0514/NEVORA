@@ -43,12 +43,13 @@ try {
   started = true;
   console.log('[C1 PostgreSQL] New owned loopback cluster started; no existing databases used.');
   const env = { ...process.env,
+    NODE_ENV: 'test',
     FUEL_TEST_DATABASE_URL: `postgresql://nevora_test@127.0.0.1:${port}/${ui ? 'nevora_exchange_test_' : 'nevora_foundation_test_'}c1_${marker.slice(0, 12)}`,
     FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes',
   };
   delete env.DATABASE_URL;
   const config = process.argv[2] ?? 'vitest.clocker-integration.config.mts';
-  const args = ui ? ['--import','tsx',companySetup ? 'scripts/company-setup-qa.mjs' : punchUi ? 'scripts/phase-c-punch-ui-qa.mjs' : breaksUi ? 'scripts/phase-c-breaks-ui-qa.mjs' : punchHttp ? 'scripts/phase-c-punch-http-qa.mjs' : pinUi ? 'scripts/phase-c-pins-ui-qa.mjs' : 'scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
+  const args = ui ? ['--import','./scripts/qa-server-context.mjs','--import','tsx',companySetup ? 'scripts/company-setup-qa.mjs' : punchUi ? 'scripts/phase-c-punch-ui-qa.mjs' : breaksUi ? 'scripts/phase-c-breaks-ui-qa.mjs' : punchHttp ? 'scripts/phase-c-punch-http-qa.mjs' : pinUi ? 'scripts/phase-c-pins-ui-qa.mjs' : 'scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
   const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });
   exitCode = result.status ?? 1;
 } finally {

@@ -110,7 +110,9 @@ const dayText = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "
 const timeText = (hhmm: string) => { const [h, m] = hhmm.split(":").map(Number); if (h === 24 || (h === 0 && m === 0)) return "midnight"; return `${(h % 12) || 12}:${String(m).padStart(2, "0")}\u00a0${h < 12 ? "AM" : "PM"}`; };
 const wholeDays = (start: string, end: string) => { const days = Math.round((Date.parse(`${end}T12:00:00Z`) - Date.parse(`${start}T12:00:00Z`)) / 86_400_000) + 1; return days === 1 ? "Full day" : `${days} full days`; };
 function requestFacts(facts: RequestFacts): [string, ReactNode][] {
-  const dates = facts.startDate === facts.endDate ? dayText(facts.startDate) : `${dayText(facts.startDate)} – ${dayText(facts.endDate)}`;
+  // Each day stays whole; at large text a range breaks only after the dash.
+  const dates = facts.startDate === facts.endDate ? <span className="nv-nowrap">{dayText(facts.startDate)}</span>
+    : <><span className="nv-nowrap">{dayText(facts.startDate)}{"\u00a0–"}</span> <span className="nv-nowrap">{dayText(facts.endDate)}</span></>;
   return [
     ["Dates", <span key="d" className="nv-keep">{dates}</span>],
     ...(facts.partialDay ? [["Time", <span key="t" className="nv-keep">{keepWhole(`${timeText(facts.partialDay.start)} – ${timeText(facts.partialDay.end)}`)}</span>] as [string, ReactNode]] : []),

@@ -6,6 +6,8 @@ import { listLocations } from "@/lib/data/employees";
 import { listLocationStaffingSettings } from "@/lib/data/schedule-health";
 import { listEmployeeHourTargets, listCoverageWindows } from "@/lib/data/schedule-health";
 import { requireRoles } from "@/lib/auth/permissions";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { getWeekSettings } from "@/lib/data/week-settings";
 import {
   fuelRuleLocations,
   fuelRuleStaffing,
@@ -16,6 +18,9 @@ import { calculateScheduleHealth } from "../../../../lib/scheduling/schedule-hea
 const access=vi.hoisted(()=>({denied:false}));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+vi.mock("@/lib/data/workspaces",()=>({getWorkspace:vi.fn(async()=>({timeZone:"America/Puerto_Rico"}))}));
+vi.mock("@/lib/data/week-settings",()=>({getWeekSettings:vi.fn(async()=>({availabilityDeadline:"2030-10-04T13:00:00.000Z"}))}));
+vi.mock("../actions",()=>({setAvailabilityDeadlineAction:vi.fn()}));
 vi.mock("@/lib/data/positions",()=>({listPositions:async()=>[]}));
 vi.mock("@/lib/data/shift-change-policy",()=>({readShiftChangePolicy:async()=>null}));
 vi.mock("@/lib/data/notification-transactions",()=>({neonNotificationExecutor:()=>({})}));
@@ -75,7 +80,7 @@ it("keeps every rule group and native fragment destination available from sectio
   for (const id of ["coverage-staffing", "target-hours", "coverage-windows"]) expect(html).toContain(`id="${id}"`);
   expect(html).toContain('id="staffing-loc-1"');
   expect(html).toContain('Save staffing and hours');
-  expect(html).toContain('href="/app/schedule"');
+  expect(html).toMatch(/href="\/app\/schedule\?week=\d{4}-\d{2}-\d{2}"/);
 });
 
 it("labels staffing and Lead controls separately while retaining submitted field names", async () => {
@@ -300,3 +305,23 @@ it('does not load global scheduling rules after a current-source denial (present
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+
+it('does not read the workspace or availability deadline after current-source denial', async () => {
+  access.denied = true;
+  vi.mocked(getWorkspace).mockClear();
+  vi.mocked(getWeekSettings).mockClear();
+  const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({week: "2030-10-07"})}));
+  expect(html).toContain('Scheduling rules unavailable');
+  expect(html).not.toContain('name="availabilityDeadline"');
+  expect(getWorkspace).not.toHaveBeenCalled();
+  expect(getWeekSettings).not.toHaveBeenCalled();
+});
+
+it("renders the selected week's deadline with workspace-local input and safe return destination",async()=>{
+ const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({week:"2030-10-07",deadlineSaved:"1"})}));
+ expect(html).toContain('name="weekStart" value="2030-10-07"');
+ expect(html).toContain('name="returnTo" value="/app/schedule/settings"');
+ expect(html).toContain('value="2030-10-04T09:00"');
+ expect(html).toContain('role="status">Availability deadline saved.');
+ expect(html).toContain('href="/app/schedule?week=2030-10-07"');
+});

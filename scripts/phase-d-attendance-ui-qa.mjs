@@ -5,7 +5,7 @@ import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createOwnedNextApp } from '../src/test/integration/owned-next-app.ts';
-import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture.ts';
+import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture.ts';
 import { hashPassword } from '../src/lib/auth/password.ts';
 
 const WIDTHS = [320, 375, 390, 430, 768, 1024, 1440];
@@ -236,6 +236,8 @@ try {
     await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')", [id]);
   }
 
+  await assignOwnedManagerCompanyAccess(app.database.executor,'D13-M');
+
   for (const engine of ENGINES) {
     const browser = await playwright[engine].launch({ headless: true });
     browsers.push(browser);
@@ -266,17 +268,37 @@ try {
     await owner.route('**/api/manager/attendance', async (route) => {
       const headers = route.request().headers();
       assert.equal(headers['x-nevora-attendance'], '1');
-      if (fixture.delayMs) await new Promise((resolve) => setTimeout(resolve, fixture.delayMs));
+      const response = fixture;
+      if (response.waitForRelease) await response.waitForRelease;
       await route.fulfill({
-        status: fixture.status,
+        status: response.status,
         contentType: 'application/json',
         headers: { 'Cache-Control': 'no-store, private', Vary: 'Cookie' },
-        body: JSON.stringify(fixture.payload),
+        body: JSON.stringify(response.payload),
       });
     });
 
     const page = await owner.newPage();
     page.setDefaultTimeout(15000);
+    async function expectClearedDuringRevalidation(trigger, status = 200) {
+      let release;
+      const waitForRelease = new Promise(resolve => { release = resolve; });
+      fixture = { payload: status === 403 ? { state: 'unavailable', reason: 'access_denied' } : fixtureReady(), status, waitForRelease };
+      try {
+        await Promise.all([
+          page.waitForRequest(request => new URL(request.url()).pathname === endpoint),
+          trigger(),
+        ]);
+        await page.getByText('Loading attendance', { exact: true }).waitFor();
+        assert.equal(
+          await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(),
+          0,
+          'protected attendance data must clear while reauthorization is held',
+        );
+      } finally {
+        release();
+      }
+    }
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
@@ -290,38 +312,21 @@ try {
     await page.getByText('Some comparisons are limited', { exact: true }).waitFor();
     checked(engine + ': limited source state is explicitly disclosed');
 
-    fixture = {
-      status: 403,
-      payload: { state: 'unavailable', reason: 'access_denied' },
-      delayMs: 350,
-    };
-    await page.evaluate(() => window.dispatchEvent(new StorageEvent('storage', { key: 'nevora-session-check' })));
-    await page.getByText('Loading attendance', { exact: true }).waitFor();
-    assert.equal(
-      await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(),
-      0,
-      'protected attendance data must clear before lifecycle reauthorization completes',
-    );
+    await expectClearedDuringRevalidation(() => page.evaluate(() => window.dispatchEvent(new StorageEvent('storage', { key: 'nevora-session-check' }))), 403);
     await page.getByText('Sign in again', { exact: true }).waitFor();
     checked(engine + ': lifecycle reauthorization clears protected snapshot before the response');
     fixture = { payload: fixtureReady(), status: 200 };
     await page.reload({ waitUntil: 'networkidle' });
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
 
-    fixture = { payload: fixtureReady(), status: 200, delayMs: 200 };
-    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-    await page.getByText('Loading attendance', { exact: true }).waitFor();
-    assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+    await expectClearedDuringRevalidation(() => page.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))));
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': visibility revalidation clears protected snapshot before refresh');
 
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
-    await page.getByText('Attendance paused', { exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'View paused', exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
-    fixture = { payload: fixtureReady(), status: 200, delayMs: 200 };
-    await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
-    await page.getByText('Loading attendance', { exact: true }).waitFor();
-    assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+    await expectClearedDuringRevalidation(() => page.evaluate(() => window.dispatchEvent(new Event('pageshow'))));
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': pagehide/pageshow requires a fresh protected snapshot');
 
@@ -397,7 +402,7 @@ try {
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     await owner.setOffline(true);
-    await page.getByText('You’re offline', { exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'View paused', exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await owner.setOffline(false);
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();

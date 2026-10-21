@@ -1,0 +1,36 @@
+/* Public policy pages (Privacy, Terms, Support, Account deletion): the sign-in brand shell with one readable
+ * column. Sizes are rem so the reader's text size applies. */
+html body .employee-login-page.legal-page .employee-login-shell { width: min(760px, 100%); min-width: 0; }
+html body .employee-login-page.legal-page .employee-login-shell > * { min-width: 0; }
+html body .employee-login-page.legal-page .employee-login-brand { justify-content: flex-start; }
+.employee-login-page.legal-page .legal-brand-link { color: inherit; text-decoration: none; border-radius: 8px; }
+.employee-login-page.legal-page .legal-document {
+  box-sizing: border-box; min-width: 0; max-width: 100%;
+  padding: 40px 48px; border: 1px solid var(--login-divider); border-radius: var(--login-frame-radius);
+  background: var(--design-surface-elevated); color: var(--design-text-primary);
+}
+.employee-login-page.legal-page .legal-head { display: grid; gap: 10px; padding-bottom: 24px; margin-bottom: 8px; border-bottom: 1px solid var(--login-divider); }
+.employee-login-page.legal-page .legal-head h1 { margin: 0; font: 500 2rem/1.2 var(--design-font-body); letter-spacing: -.03em; text-wrap: balance; }
+.employee-login-page.legal-page .legal-summary { margin: 0; font-size: 1.0625rem; line-height: 1.55; color: var(--design-text-secondary); text-wrap: pretty; }
+.employee-login-page.legal-page .legal-meta { margin: 0; font-size: 0.875rem; line-height: 1.5; color: var(--design-text-secondary); }
+.employee-login-page.legal-page .legal-action { justify-self: start; margin-top: 8px; padding-inline: 24px; text-decoration: none; }
+.employee-login-page.legal-page .legal-section { padding-top: 24px; }
+.employee-login-page.legal-page .legal-section h2 { margin: 0 0 8px; font: 600 1.125rem/1.4 var(--design-font-body); letter-spacing: -.01em; }
+.employee-login-page.legal-page .legal-section :is(p, li) { margin: 0 0 12px; font-size: 1rem; line-height: 1.65; color: var(--design-text-primary); text-wrap: pretty; overflow-wrap: break-word; }
+.employee-login-page.legal-page .legal-section ul { margin: 0 0 12px; padding-left: 1.25rem; }
+.employee-login-page.legal-page .legal-section li { margin-bottom: 6px; }
+.employee-login-page.legal-page .legal-document a { color: var(--login-blue); text-decoration: underline; text-underline-offset: 3px; }
+.employee-login-page.legal-page .legal-document a:hover { color: var(--login-blue-hover); }
+.employee-login-page.legal-page .legal-document a.legal-action { color: #FFFFFF; text-decoration: none; }
+.employee-login-page.legal-page .legal-unresolved { padding: 0 4px; border-radius: 4px; background: #FDF0C4; color: #6B4E00; font-family: var(--design-font-mono, monospace); font-size: 0.875em; overflow-wrap: anywhere; word-break: break-all; }
+.employee-login-page.legal-page .legal-nav { display: flex; flex-wrap: wrap; gap: 4px 20px; justify-content: center; }
+.employee-login-page.legal-page .legal-nav :is(a, span) { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.9375rem; }
+.employee-login-page.legal-page .legal-nav a { color: var(--login-blue); text-decoration: none; }
+.employee-login-page.legal-page .legal-nav a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.employee-login-page.legal-page .legal-nav [aria-current="page"] { color: var(--design-text-secondary); font-weight: 600; }
+.employee-login-page.legal-page :is(a, button):focus-visible { outline: 2px solid var(--login-blue); outline-offset: 3px; }
+@media (max-width: 799px) {
+  .employee-login-page.legal-page .legal-document { padding: 28px 22px; border-radius: 20px; }
+  .employee-login-page.legal-page .legal-head h1 { font-size: 1.75rem; }
+  .employee-login-page.legal-page .legal-action { justify-self: stretch; }
+}

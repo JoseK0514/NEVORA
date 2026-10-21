@@ -3,6 +3,7 @@ import {reviewedAttentionInput} from './attention-api';
 import { deleteGeneratedDraftShift, publishScheduleWithRevision, insertShift, updateShift, setAvailabilityDeadline, reviewTimeOffRequest } from './management-api';
 import { createHash } from 'node:crypto';
 import { fixtureProof } from './shift-change-api';
+import { instrumentGeneration } from './generation-instrumentation';
 import { managementProof } from '../fixtures/management';
 import { generateWeekAction, clearGenerationExclusionAction } from '../../app/app/schedule/generation-actions';
 
@@ -45,7 +46,7 @@ beforeEach(async()=>{
 async function ready() {
   await q("INSERT INTO location_staffing_settings(location_id,minimum_staff_per_shift,requires_designated_lead) VALUES('quay',1,false); INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('window','quay',1,'08:00','12:00'); INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('worker','Fictional','Worker','NONE','EMPLOYEE','quay'); INSERT INTO employee_location_eligibility VALUES('worker','quay'); INSERT INTO availability_windows VALUES('normal','worker',1,'08:00','12:00')");
 }
-const generate = (executor = database.executor) => generateWeekDraft(request,executor);
+const generate = (executor = database.executor) => generateWeekDraft(request,instrumentGeneration(executor,database.executor));
 
 it.each([1,3,5,20])('uses explicit New York database configuration with %i arbitrary locations and no invented setup', async count => {
   for(let index=1;index<count;index++) await q("INSERT INTO locations(id,workspace_id,clocker_key,name,short_name) VALUES($1,'atelier',$2,$3,$4)",[`studio-${index}`,`studio-${index}`,`Fictional Studio ${index}`,`S${index}`]);
@@ -106,7 +107,7 @@ it.each(['manual-create','manual-edit','availability-submit','approved-leave','d
     }
     return database.executor.transaction(statements);
   }};
-  if(kind==='actor-role') await expect(generate(racing)).rejects.toThrow('active Owner or Manager');
+  if(kind==='actor-role') await expect(generate(racing)).rejects.toThrow('operational_authorization');
   else {
     const result=await generate(racing);
     expect(result.summary.added).toBe(kind==='deadline-insert'?1:0);

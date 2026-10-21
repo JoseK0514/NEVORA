@@ -18,9 +18,9 @@ try{
  run('initdb',['-D',data,'-U','nevora_d2','--auth-local=trust','--auth-host=trust','--encoding=UTF8','--no-locale']);
  run('pg_ctl',['-D',data,'-l',join(owned,'postgres.log'),'-w','start','-o',`-h 127.0.0.1 -p ${port} -k ${owned}`]);
  started=true;console.log('[D2 Browser PostgreSQL] New owned loopback cluster started; no existing databases used.');
- const env={...process.env,FUEL_TEST_DATABASE_URL:`postgresql://nevora_d2@127.0.0.1:${port}/nevora_exchange_test_d2_${marker.slice(0,12)}`,FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN:'yes'};
+ const env={...process.env,NODE_ENV:'test',FUEL_TEST_DATABASE_URL:`postgresql://nevora_d2@127.0.0.1:${port}/nevora_exchange_test_d2_${marker.slice(0,12)}`,FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN:'yes'};
  delete env.DATABASE_URL;
- const result=spawnSync(process.execPath,['--import','tsx','scripts/phase-d2-corrections-ui-qa.mjs'],{env,stdio:'inherit'});
+ const result=spawnSync(process.execPath,['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d2-corrections-ui-qa.mjs'],{env,stdio:'inherit'});
  exitCode=result.status??1;
 }finally{
  if(started||existsSync(join(data,'postmaster.pid'))){run('pg_ctl',['-D',data,'-w','stop','-m','fast']);console.log('[D2 Browser PostgreSQL] Owned cluster stopped.');}

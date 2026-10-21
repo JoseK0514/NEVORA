@@ -1,0 +1,10 @@
+/* Employee system screens (tokens and pieces from signature.module.css). */
+.ssRoot:not(#ss) { min-height: 70vh; }
+.ss404:not(#ss) { display: block; margin: 8px 0 14px; font: 200 6rem/5.5rem var(--sg-display); letter-spacing: -.06em; color: rgba(169, 226, 218, .9); }
+.ssOrb:not(#ss) { display: inline-flex; width: 72px; height: 72px; margin: 10px 0 18px; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255, 255, 255, .08); color: #F4C98A; box-shadow: 0 0 0 10px rgba(255, 255, 255, .04); }
+.ssRow:not(#ss) { color: var(--sg-ink); }
+.ssRow:hover:not(#ss) { background: #FAFAF8; }
+.ssRow:focus-visible:not(#ss) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
+.ssChev:not(#ss) { flex: none; color: var(--sg-faint); }
+.ssRoot :global(.sg-card) > li:not(#ss) { list-style: none; position: relative; }
+.ssRoot :global(.sg-card) > li + li:not(#ss)::before { content: ""; position: absolute; top: 0; left: 78px; right: 0; height: 1px; background: var(--sg-rule); }

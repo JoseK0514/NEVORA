@@ -6,6 +6,8 @@ import { verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession } from "@/lib/auth/session";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { prepareInstallationForLogin } from "@/lib/notifications/logout";
+import { activeDeletionRequest } from "@/lib/account-deletion/requests.server";
+import { passwordLoginAllowed } from "@/lib/auth/login-limits";
 
 export async function login(formData: FormData) {
   const returnTo = safeReturnTo(String(formData.get("returnTo") ?? ""));
@@ -19,6 +21,7 @@ export async function login(formData: FormData) {
     redirect(`/login?error=invalid${returnQuery}`);
   }
 
+  if (!(await passwordLoginAllowed(employeeId))) redirect(`/login?error=invalid${returnQuery}`);
   const employee = await findEmployeeCredential(employeeId);
 
   if (
@@ -28,6 +31,10 @@ export async function login(formData: FormData) {
   ) {
     redirect(`/login?error=invalid${returnQuery}`);
   }
+
+  // An account with an open deletion request stays signed out. Checked only after the password matches,
+  // so the message never reveals anything about an account to someone who doesn't control it.
+  if (await activeDeletionRequest(employee.id)) redirect(`/login?error=deleting${returnQuery}`);
 
   await prepareInstallationForLogin(employee.id);
   try { await createSession(employee.id, employee); }

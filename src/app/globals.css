@@ -12348,6 +12348,8 @@ body {
   box-shadow: var(--shadow-premium); font-family: inherit;
 }
 .portal-device-settings::backdrop { background: transparent; }
+/* The example alert is shown only in the employee app (employee-style.css). */
+.portal-device-example { display: none; }
 .portal-device-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .portal-device-heading > strong { font-size: calc(13 * var(--type-unit, 1px)); font-weight: 600; }
 .portal-device-close { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 22px; background: #f6f6f8; color: #18191f; font-size: calc(22 * var(--type-unit, 1px)); cursor: pointer; }
@@ -13795,3 +13797,14 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 .communication-view :is(a,button,input,textarea,select){scroll-margin-block:8px}
 @media(max-width:767px){.communication-view :is(a,button,input,textarea,select){scroll-margin-block:80px calc(100px + env(safe-area-inset-bottom,0px))}}
 @media(max-width:430px){.communication-view .employee-view-heading{align-items:flex-start;flex-wrap:wrap;gap:12px}.communication-view .employee-view-heading .button{width:100%;justify-content:center}.communication-detail{padding:20px 16px}}
+
+/* Employee Signature system screens (phase 4): hidden outside the employee shell, which shows them instead. */
+.sg-sys-employee { display: none; }
+
+/* Correction trigger and history pieces (phase 4 upscale): readable everywhere; the employee Signature page dresses them. */
+.employee-time-correction-trigger { display: inline-flex; align-items: center; gap: 10px; }
+.employee-time-correction-trigger__copy { display: inline-flex; flex-direction: column; text-align: left; }
+.employee-time-correction-trigger__copy small { font-size: .8125rem; font-weight: 400; opacity: .75; }
+.employee-correction-day { display: none; }
+.employee-correction-change { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.employee-correction-change s { opacity: .6; }

@@ -1,23 +1,22 @@
 'use client';
 
-import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import Link from 'next/link';
-import {usePresentation} from './presentation-context';
-import type {ModuleId} from '@/lib/workspace-presentation/modules';
-import {ArrowsLeftRightIcon, CalendarCheckIcon, CalendarMinusIcon, ChatTextIcon, ClockIcon, HourglassMediumIcon, PencilSimpleLineIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
 import {useEffect, useState, type ReactNode} from 'react';
-import {Illustration} from './illustrations';
 import {Celebration} from './celebration';
 import type {CelebrationKind} from '../lib/celebrations';
 import {EmployeeTimeView} from './employee-time-panel';
 import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, PublishedAssignment} from '../lib/employee-home/types';
-import styles from './employee-home-reviewed.module.css';
+import styles from './employee-home-today.module.css';
 import {formatDisplayDate} from '../lib/date-utils';
 import {unpublishedNote} from '../lib/publication-note';
-import {KitStack, PageBand} from './kit/kit';
 import {HoldHeight} from './kit/hold-height';
 import {keepWhole} from '../lib/keep-whole';
+
+/* Employee Home in the Signature style (Jose approved all eight Signature pages on Oct 20, 2026; the target is
+ * docs/product/specs/employee-style/signature/sig-home.png). A deep-teal band with the greeting, then on a cream sheet
+ * a paper card for today's shift with the clock under it, To do, Coming up and Recent activity. Look only: the reads, states, links and private-data clearing
+ * are the same as before. */
 
 export type EmployeeHomeReviewedViewProps = {
   home: EmployeeHomeRead | null;
@@ -38,41 +37,32 @@ const sourceDestinations: Record<HomeSource, string> = {
   timeOff: '/app/requests?tab=my', ownTime: '/app/my-time', communications: '/app/updates',
 };
 
-/** TC-P3-32: Home's To do lines are narrow (about 150px at 200% text on a 320px phone), too narrow for
- * "Mon, Oct 19" in one piece, so here the weekday may wrap on its own; "Oct 19" and "7:49 PM" still never break. */
-const weekdayMayWrap = (text: string) => text.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\u00a0/, '$1, ');
+const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
+const monthDay = (at: Date, zone = 'UTC') => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: zone, month: 'short', day: 'numeric'}).format(at));
 
-function stamp(at: string, zone: string) {
-  return weekdayMayWrap(keepWhole(new Intl.DateTimeFormat('en-US', {
-    timeZone: zone, weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
-  }).format(new Date(at))));
+/** "Mon, Oct 19", with the year only when it isn't this year. */
+function dateLabel(date: string) {
+  const at = utcDay(date);
+  return keepWhole(new Intl.DateTimeFormat('en-US', {
+    timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', ...(at.getUTCFullYear() === new Date().getUTCFullYear() ? {} : {year: 'numeric' as const}),
+  }).format(at));
 }
 
-/** TC-P3-32: "Mon, Oct 19", with the year only when it isn't this year, so dates fit narrow rows whole. */
-function dateLabel(date: string) {
-  const at = new Date(`${date}T12:00:00Z`);
-  return weekdayMayWrap(keepWhole(new Intl.DateTimeFormat('en-US', {
-    timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric', ...(at.getUTCFullYear() === new Date().getUTCFullYear() ? {} : {year: 'numeric' as const}),
-  }).format(at)));
+/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
+function weekRange(weekStart: string) {
+  const start = utcDay(weekStart), end = new Date(start.getTime() + 6 * 86_400_000);
+  const same = start.getUTCMonth() === end.getUTCMonth();
+  return <><time dateTime={weekStart}>{monthDay(start)}</time>{' – '}{same ? end.getUTCDate() : monthDay(end)}</>;
 }
 
 function businessDate(at: string, zone: string) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit',
-  }).formatToParts(new Date(at));
+  const parts = new Intl.DateTimeFormat('en-US', {timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit'}).formatToParts(new Date(at));
   return ['year', 'month', 'day'].map(key => parts.find(part => part.type === key)!.value).join('-');
 }
 
 /** "America/Puerto_Rico" → "Puerto Rico time". */
 function zoneLabel(zone: string) {
   return `${zone.split('/').pop()!.replace(/_/g, ' ')} time`;
-}
-
-/** "Today" or "Tomorrow" relative to when Home was read, in the workspace zone. */
-function relativeDay(date: string, observedAt: string, zone: string) {
-  const today = businessDate(observedAt, zone);
-  const tomorrow = businessDate(new Date(Date.parse(observedAt) + 86_400_000).toISOString(), zone);
-  return date === today ? 'Today' : date === tomorrow ? 'Tomorrow' : null;
 }
 
 export function untilLabel(ms: number) {
@@ -85,9 +75,13 @@ export function untilLabel(ms: number) {
   return `${days} ${days === 1 ? 'day' : 'days'}`;
 }
 
-/** A glanceable countdown, updated each minute after mount. Decorative: the
- * start time above it is the accessible fact, so screen readers skip it. */
-function Countdown({startAt}: {startAt: string}) {
+function greeting(at: string, zone: string) {
+  const hour = Number(new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', hourCycle: 'h23'}).format(new Date(at)));
+  return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+}
+
+/** The time now, from mount and then each minute: null on the server and the first render, so markup matches. */
+function useMinute() {
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
     const tick = () => setNow(Date.now());
@@ -95,56 +89,50 @@ function Countdown({startAt}: {startAt: string}) {
     const timer = setInterval(tick, 60_000);
     return () => clearInterval(timer);
   }, []);
+  return now;
+}
+
+/** The shift under way as a bar with the time left. Decorative: the hours above it are the accessible fact. */
+function Progress({shift, zone}: {shift: PublishedAssignment; zone: string}) {
+  const now = useMinute();
+  const start = Date.parse(shift.startAt), end = Date.parse(shift.endAt);
+  const done = now === null ? 0 : Math.min(1, Math.max(0, (now - start) / Math.max(1, end - start)));
+  return <div className={styles.h5Progress} aria-hidden="true">
+    <div className={styles.h5Track}><span style={{width: `${(done * 100).toFixed(2)}%`}}/></div>
+    {/* The line's space is held from the first frame, so the card doesn't grow when the clock starts. */}
+    <p className={styles.h5Ends}><span>{new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(shift.startAt))}</span><span>{now !== null && end > now ? `${untilLabel(end - now)} left` : ' '}</span></p>
+  </div>;
+}
+
+/** "Tomorrow, 8:00 AM" or "Thu, Oct 22, 8:00 AM". */
+function nextWhen(shift: PublishedAssignment, observedAt: string, zone: string) {
+  const tomorrow = businessDate(new Date(Date.parse(observedAt) + 86_400_000).toISOString(), zone);
+  const start = new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(shift.startAt));
+  return keepWhole(`${shift.date === tomorrow ? 'Tomorrow' : dateLabel(shift.date)}, ${start}`);
+}
+
+/** "Starts in 2h 15m", for a shift later today. Decorative, like the bar. */
+function StartsIn({startAt}: {startAt: string}) {
+  const now = useMinute();
   const remaining = now === null ? null : Date.parse(startAt) - now;
-  // P3-ST-01: the pill's space is held from the first frame, so the pass doesn't grow when the clock starts.
-  if (remaining === null) return <p className={styles.countdown} aria-hidden="true" style={{visibility: 'hidden'}}><HourglassMediumIcon size={16} weight="bold"/>&nbsp;</p>;
-  if (remaining <= 0) return null;
-  return <p className={styles.countdown} aria-hidden="true"><HourglassMediumIcon size={16} weight="bold"/>Starts in {untilLabel(remaining)}</p>;
+  return <p className={styles.h5Kicker} aria-hidden="true">{remaining !== null && remaining > 0 ? `Starts in ${untilLabel(remaining)}` : ' '}</p>;
 }
 
-function greeting(at: string, zone: string) {
-  const hour = Number(new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', hourCycle: 'h23'}).format(new Date(at)));
-  return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+function Hours({shift, zone}: {shift: PublishedAssignment; zone: string}) {
+  const time = (at: string) => new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(at));
+  return <><time dateTime={shift.startAt}>{time(shift.startAt)}</time><span aria-hidden="true"> – </span><span className="nv-sr"> to </span><time dateTime={shift.endAt}>{time(shift.endAt)}</time></>;
 }
 
-function Arrow({forward = false}: {forward?: boolean}) {
-  return <svg className={styles.arrow} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-    <path d={forward ? 'M4 12h15m-5-5 5 5-5 5' : 'm9 5 7 7-7 7'}/>
-  </svg>;
+function Place({shift}: {shift: PublishedAssignment}) {
+  return <>{shift.locationLabel}{shift.positionLabel ? ` · ${shift.positionLabel}` : null}</>;
 }
 
-/** One shift. `showZone` is off when the card carries a single zone line for both blocks. */
-function Assignment({shift, zone, observedAt, countdown = false, showZone = true}: {shift: PublishedAssignment; zone: string; observedAt?: string; countdown?: boolean; showZone?: boolean}) {
+/** What the shift needs said beyond its hours: an end on another day, and the Lead role. */
+function Extras({shift, zone}: {shift: PublishedAssignment; zone: string}) {
   const endDate = businessDate(shift.endAt, zone);
-  const formatTime = (at: string) => new Intl.DateTimeFormat('en-US', {
-    timeZone: zone, hour: 'numeric', minute: '2-digit',
-  }).format(new Date(at));
-  return <>
-    <p className={styles.assignmentDate}>{observedAt && relativeDay(shift.date, observedAt, zone) ? <><strong>{relativeDay(shift.date, observedAt, zone)}</strong>{'\u00a0· '}</> : null}<time dateTime={shift.date}>{dateLabel(shift.date)}</time></p>
-    <p className={styles.interval}>
-      <time dateTime={shift.startAt}>{formatTime(shift.startAt)}</time>
-      <span className={styles.intervalDash} aria-hidden="true">–</span>
-      <time dateTime={shift.endAt}>{formatTime(shift.endAt)}</time>
-    </p>
-    {countdown ? <Countdown startAt={shift.startAt}/> : null}
-    <p className={styles.location}>{shift.locationLabel}{shift.positionLabel ? <span className={styles.position}> · {shift.positionLabel}</span> : null}</p>
-    {endDate !== shift.date ? <p className={styles.assignmentDetail}>Ends <time dateTime={shift.endAt}>{dateLabel(endDate)}</time></p> : null}
-    {shift.designatedLead ? <p className={styles.assignmentDetail}>Designated lead</p> : null}
-    <div className={styles.assignmentFooter}>
-      {/* One whole name per day link ("View schedule, Sat, Oct 17"), so two links tell apart and translate whole. */}
-      <Link className={styles.scheduleLink} href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}
-        aria-label={`View schedule, ${formatDisplayDate(shift.date)}`}>
-        View schedule <Arrow forward/>
-      </Link>
-      {showZone ? <p className={styles.zone}>Times in {zoneLabel(zone)}</p> : null}
-    </div>
-  </>;
+  const extras = [endDate !== shift.date ? <>Ends <time dateTime={shift.endAt}>{dateLabel(endDate)}</time></> : null, shift.designatedLead ? 'Designated lead' : null].filter(Boolean);
+  return extras.length ? <p className={styles.h5Extra}>{extras.map((part, index) => <span key={index}>{index ? ' · ' : null}{part}</span>)}</p> : null;
 }
-
-const kindIcons = {
-  SCHEDULE: CalendarCheckIcon, EXCHANGE: ArrowsLeftRightIcon, TIME_OFF: CalendarMinusIcon,
-  TIME_CORRECTION: PencilSimpleLineIcon, COMMUNICATION: ChatTextIcon,
-} as const;
 
 /** Approvals the employee receives are the moments worth marking; the server
  * wrote these labels from the request's confirmed status. */
@@ -162,84 +150,77 @@ function attentionLabel(item: AttentionItem) {
     .replace(/ — review required$/, item.required ? '' : ' — review required');
 }
 
-function placeholderEyebrow(timeZone?: string) {
-  // The longest greeting and the workspace's public date reserve the same inline
-  // structure as the released eyebrow, including across UTC/business midnight.
-  return <>Good afternoon{'\u00a0· '}<time suppressHydrationWarning>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time></>;
+/** To do says what to do: "Review your schedule", "Read the team update". Display only; the row's link is the server's. */
+function todoTitle(item: AttentionItem) {
+  if (item.ref.kind === 'SCHEDULE' && item.label.startsWith('Schedule removed')) return attentionLabel(item);
+  if (item.ref.kind === 'SCHEDULE') return 'Review your schedule';
+  if (item.ref.kind === 'COMMUNICATION' && /^Review update: /.test(item.label)) return 'Read the team update';
+  return attentionLabel(item);
 }
 
-function AttentionRow({item, zone, celebrate = false}: {item: AttentionItem; zone: string; celebrate?: boolean}) {
+function Chevron() {
+  return <svg className={styles.h5Chevron} width="8" height="14" viewBox="0 0 8 14" aria-hidden="true" focusable="false"><path d="m1 1 6 6-6 6"/></svg>;
+}
+
+function Row({item, zone, kind, celebrate = false}: {item: AttentionItem; zone: string; kind: 'actions' | 'updates'; celebrate?: boolean}) {
   const moment = celebrate ? approvalCelebration(item) : null;
-  const Icon = kindIcons[item.ref.kind] ?? ChatTextIcon;
+  const recorded = <>Recorded <time dateTime={item.changedAt}>{monthDay(new Date(item.changedAt), zone)}</time></>;
+  const update = kind === 'actions' && item.ref.kind === 'COMMUNICATION' && /^Review update: /.test(item.label) ? item.label.replace(/^Review update: /, '') : null;
   return <li>
-    <Link className={styles.itemLink} href={item.href}>
-      <span className={styles.itemIcon} aria-hidden="true"><Icon size={20}/>{moment ? <Celebration kind={moment.kind} eventKey={moment.key} confirmed/> : null}</span>
-      <span className={styles.itemCopy}>
-        {/* TC-P3-10: the "Review needed" tag names the state, so the title doesn't repeat it. */}
-        <strong>{keepWhole(attentionLabel(item))}</strong>
-        {item.ref.kind === 'SCHEDULE' ? <small>Week of <time dateTime={item.ref.id}>{dateLabel(item.ref.id)}</time></small>
-          : <small>Recorded <time dateTime={item.changedAt}>{stamp(item.changedAt, zone)}</time></small>}
-        {item.required ? <small className={styles.required}>Review needed</small> : null}
-        {item.deadlineAt ? <small className={styles.deadline}>Respond by <time dateTime={item.deadlineAt}>{stamp(item.deadlineAt, zone)}</time></small> : null}
+    <Link className={styles.h5Row} href={item.href}>
+      {kind === 'actions' ? <span className={styles.h5Ring} aria-hidden="true"/> : null}
+      <span className={styles.h5Copy}>
+        <strong>{keepWhole(kind === 'actions' ? todoTitle(item) : attentionLabel(item))}</strong>
+        {item.ref.kind === 'SCHEDULE' ? <small>Week of {weekRange(item.ref.id)}</small>
+          : update ? <small>{keepWhole(update)}<span className="nv-sr"> · {recorded}</span></small>
+            : <small>{recorded}</small>}
+        {item.deadlineAt ? <small className={styles.h5Due}>Respond by <time dateTime={item.deadlineAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: zone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}</time></small> : null}
+        {item.required ? <small className="nv-sr">Review needed</small> : null}
       </span>
-      <Arrow/>
+      <span className={styles.h5End}>{moment ? <Celebration kind={moment.kind} eventKey={moment.key} confirmed/> : null}<Chevron/></span>
     </Link>
   </li>;
 }
 
-function AttentionGroup({kind, items, partial, zone}: {kind: 'actions' | 'updates'; items: AttentionItem[]; partial: boolean; zone: string}) {
+function Group({kind, items, partial, allSet, zone}: {kind: 'actions' | 'updates'; items: AttentionItem[]; partial: boolean; allSet: boolean; zone: string}) {
   const actions = kind === 'actions';
   const headingId = `employee-reviewed-${kind}-heading`;
   const firstApproval = items.find(item => approvalCelebration(item));
-  const row = (item: AttentionItem) => <AttentionRow key={`${item.ref.kind}:${item.ref.id}`} item={item} zone={zone} celebrate={item === firstApproval}/>;
-  const count = `${items.length}${partial ? ' known' : ''} ${items.length === 1 ? 'item' : 'items'}`;
-  return <section data-home-group={kind} aria-labelledby={headingId} className={actions ? styles.actions : styles.updates}>
-    <header className={styles.groupHeader}>
-      <h2 id={headingId}>{actions ? 'To do' : 'Recent activity'}</h2>
-      <span className={styles.count}>{count}</span>
+  const row = (item: AttentionItem) => <Row key={`${item.ref.kind}:${item.ref.id}`} item={item} zone={zone} kind={kind} celebrate={item === firstApproval}/>;
+  return <section data-home-group={kind} aria-labelledby={headingId} className={styles.h5Section}>
+    <header className={styles.h5Head}>
+      <h2 id={headingId}>{actions ? 'To do' : 'Recent activity'}<span className={styles.h5Count}>{items.length ? <span aria-hidden="true">· {items.length}</span> : null}<span className="nv-sr">{`${items.length}${partial ? ' known' : ''} ${items.length === 1 ? 'item' : 'items'}`}</span></span></h2>
     </header>
-    {items.length ? <>
-      <ul className={styles.itemList}>{items.slice(0, 3).map(row)}</ul>
-      {items.length > 3 ? <details className={styles.overflow}>
-        <summary>
-          <span className={styles.expandLabel}>View all {actions ? 'items' : 'activity'} ({items.length - 3} more)</span>
-          <span className={styles.collapseLabel}>Show fewer {kind}</span>
-          <Arrow/>
-        </summary>
-        <ul className={styles.itemList}>{items.slice(3).map(row)}</ul>
-      </details> : null}
-    </> : <p className={styles.groupEmpty}>
-      {partial ? (actions ? 'Nothing to do in the checked sources.' : 'No activity in the checked sources.')
-        : (actions ? 'Nothing to do right now.' : 'No recent activity.')}
-    </p>}
+    <div className={styles.h5List}>
+      {items.length ? <>
+        <ul>{items.slice(0, 3).map(row)}</ul>
+        {items.length > 3 ? <details className={styles.h5More}>
+          <summary>
+            <span className={styles.h5Expand}>View all {actions ? 'items' : 'activity'} ({items.length - 3} more)</span>
+            <span className={styles.h5Collapse}>Show fewer {kind}</span>
+            <Chevron/>
+          </summary>
+          <ul>{items.slice(3).map(row)}</ul>
+        </details> : null}
+      </> : actions && allSet ? <div className={styles.h5Done}>
+        <span className={styles.h5Tick} aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="m7.5 12.5 3 3 6-6.5"/></svg></span>
+        <span className={styles.h5Copy}><strong role="status">You’re all set.</strong><small>Nothing needs your review.</small></span>
+      </div> : <p className={styles.h5Empty}>
+        {partial ? (actions ? 'Nothing to do in the checked sources.' : 'No activity in the checked sources.')
+          : (actions ? 'Nothing to do right now.' : 'No recent activity.')}
+      </p>}
+    </div>
   </section>;
 }
 
-const shortcuts: {href: string; label: string; Icon: typeof ClockIcon; module?: ModuleId}[] = [
-  {href: '/app/requests', label: 'Request time off', Icon: CalendarMinusIcon, module: 'timeOff'},
-  {href: '/app/schedule?intent=swap', label: 'Swap a shift', Icon: ArrowsLeftRightIcon, module: 'marketplace'},
-  {href: '/app/availability', label: 'Update availability', Icon: UserCheckIcon},
-  {href: '/app/my-time', label: 'My time', Icon: ClockIcon},
-];
-
-function QuickActions() {
-  const {modules} = usePresentation();
-  return <nav className={styles.quick} aria-labelledby="employee-home-quick">
-    <h2 id="employee-home-quick">Quick actions</h2>
-    <ul>{shortcuts.filter(item => !item.module || modules[item.module]).map(({href, label, Icon}) => <li key={href}><Link href={href}>
-      <span className={styles.quickIcon} aria-hidden="true"><Icon size={22}/></span><span>{label}</span>
-    </Link></li>)}</ul>
-  </nav>;
-}
-
-/** Complete, or only waiting on a location to publish (a known state, explained in the Next shift card). */
+/** Complete, or only waiting on a location to publish (a known state, explained under Coming up). */
 const isComplete = (source: HomeSnapshot['sources'][keyof HomeSnapshot['sources']]) =>
   source.state === 'complete' || (source.state === 'partial' && source.reason === 'unpublished');
 
 function SourceNotices({snapshot}: {snapshot: HomeSnapshot}) {
   const sources = HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key]));
   if (!sources.length) return null;
-  return <ul className={styles.sourceNotices} aria-label="Home source availability">
+  return <ul className={styles.h5Sources} aria-label="Home source availability">
     {sources.map(key => {
       const source = snapshot.sources[key];
       const state = source.state === 'unavailable'
@@ -247,7 +228,7 @@ function SourceNotices({snapshot}: {snapshot: HomeSnapshot}) {
         : source.reason === 'source_cap' ? 'partially shown — more records are available' : 'partial';
       return <li key={key}>
         <p>{sourceNames[key]} {state}</p>
-        <Link className={styles.textLink} href={sourceDestinations[key]}>Open {sourceNames[key].toLowerCase()} <Arrow forward/></Link>
+        <Link href={sourceDestinations[key]}>Open {sourceNames[key].toLowerCase()}</Link>
       </li>;
     })}
   </ul>;
@@ -257,16 +238,23 @@ function SourceNotices({snapshot}: {snapshot: HomeSnapshot}) {
  * refresh on its own, replace authority/lifetime guards, or operate a time entry.
  * The enclosing application shell supplies brand and navigation exactly once.
  */
+/** "Today", "Tomorrow" or "Wed, Oct 21", in the workspace's time zone. */
+function bandDay(shift: PublishedAssignment, snapshot: HomeSnapshot) {
+  const today = businessDate(snapshot.observedAt, snapshot.timeZone);
+  const tomorrow = businessDate(new Date(Date.parse(snapshot.observedAt) + 86400000).toISOString(), snapshot.timeZone);
+  return shift.date === today ? 'Today' : shift.date === tomorrow ? 'Tomorrow' : new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric'}).format(new Date(`${shift.date}T12:00:00Z`));
+}
+const bandTime = (shift: PublishedAssignment, zone: string) => keepWhole(`${new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(shift.startAt))} – ${new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(shift.endAt))}`);
+
 export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, ownTimeSlot, displayName, timeZone}: EmployeeHomeReviewedViewProps) {
-  // IS-68: offline and "window in the background" both pause Home; the band says which.
-  // Read when the pause re-renders Home (going offline pauses it), so no subscription is needed.
+  // IS-68: offline and "window in the background" both pause Home; the summary says which.
   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
   const paused = status === 'paused';
   const denied = !paused && (status === 'unauthorized' || home?.state === 'unauthorized');
   const released = !paused && !denied && (status === 'ready' || status === 'partial') && home && 'snapshot' in home ? home : null;
   const snapshot = released?.snapshot;
-  // A week that isn't fully published yet is known, not a failed check: the Next shift
-  // card already says so. Only sources that could not be read make Home "partial".
+  // A week that isn't fully published yet is known, not a failed check: Coming up says so.
+  // Only sources that could not be read make Home "partial".
   const knownOnly = !!snapshot && HOME_SOURCES.every(key => isComplete(snapshot.sources[key]));
   const partial = !!snapshot && (status === 'partial' || released!.state === 'partial') && !knownOnly;
   const loading = !paused && !denied && !snapshot && status === 'loading';
@@ -277,107 +265,118 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
   // The name is private like the rest of Home: it shows only with released data and clears when Home pauses.
   const name = snapshot ? displayName?.trim() : undefined;
   const allSet = !!snapshot && !partial && released!.allSet;
-  // A shift under way leads the card; the next shift follows under its own heading.
-  const underWay = snapshot?.currentShift && snapshot.publicationState !== 'unavailable' ? snapshot.currentShift : null;
-  // TC-P3-16: the band names the state; the pass says what happens to the shift, so the two never repeat.
+  const published = !!snapshot && snapshot.publicationState !== 'unavailable';
+  const underWay = published ? snapshot!.currentShift ?? null : null;
+  const next = published ? snapshot!.nextShift ?? null : null;
+  // A shift later today leads the card; otherwise the card says the day is clear and Coming up lists the next one.
+  const laterToday = !underWay && next && snapshot && next.date === businessDate(snapshot.observedAt, snapshot.timeZone) ? next : null;
+  const upcoming = laterToday ? null : next;
+  const scheduleKnown = !!snapshot && snapshot.publicationState === 'complete' && snapshot.sources.schedule.state === 'complete';
+  // TC-P3-16: the summary names the state; the card says what happens to the shift, so the two never repeat.
   const recovery = paused ? (online ? 'Your shift updates when you come back.' : 'Your shift updates when you reconnect.') : denied ? 'Sign in again to see your shift.' : loading ? 'Loading Home…' : 'Couldn’t load your shift.';
-
+  const summary = paused ? (online ? 'Paused while you’re away.' : 'You’re offline.') : denied ? 'Your session ended.' : !snapshot && !loading ? 'Couldn’t load Home.' : null;
   const zone = snapshot?.timeZone;
-  const clock = (at: string) => new Intl.DateTimeFormat('en-US', {timeZone: zone, hour: 'numeric', minute: '2-digit'}).format(new Date(at));
-  // Phase 3: the band says the one thing an employee opens Home for, in one line.
-  const summary = paused ? (online ? 'Paused while you’re away.' : 'You’re offline.') : denied ? 'Your session ended.' : loading ? 'Checking your shifts…'
-    : !snapshot ? 'Couldn’t load Home.'
-    : snapshot.publicationState === 'unavailable' ? 'Your schedule couldn’t be checked.'
-    : underWay ? keepWhole(`Scheduled until ${clock(underWay.endAt)}.`)
-    : snapshot.nextShift ? keepWhole(`Next shift ${(relativeDay(snapshot.nextShift.date, snapshot.observedAt, snapshot.timeZone) ?? formatDisplayDate(snapshot.nextShift.date)).replace(/^(Today|Tomorrow)$/, word => word.toLowerCase())} at ${clock(snapshot.nextShift.startAt)}.`)
-    : 'No published shifts coming up.';
 
-  return <div className={`nv-page premium-employee-home ${styles.root}`} data-nv-page="" data-home-state={viewState} aria-busy={refreshing || loading}>
-    <PageBand
-      eyebrow={<span className={styles.eyebrowSlot}>
-        <span className={styles.eyebrowSizer} aria-hidden="true" suppressHydrationWarning>{placeholderEyebrow(timeZone)}</span>
-        <span>{snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)}{'\u00a0· '}<time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time></> : null}</span>
-      </span>}
-      title={name ? `Hi, ${name}.` : 'Home'}
-      // ST-RC-HOME-01: the loading sentence and a dated next-shift sentence share their responsive space.
-      summary={<span className={styles.summarySlot}>
-        <span className={styles.summarySizer} aria-hidden="true">{keepWhole('Next shift Wed, May 30 at 10:00 AM.')}</span>
-        <span>{summary}</span>
-      </span>}
-      // Codex mobile review M8: required work is noticed on the first screen; the full list stays below.
-      // P3-ST-01: the review line is always there (checking, the link, or a calm note), so the band never changes height.
-      extra={<span className={styles.reviewSlot}>
-        <span className={`${styles.reviewSizer} premium-band-link`} aria-hidden="true">999 items need your review</span>
-        {snapshot && actions.length ? <a className="premium-band-link" href="#employee-reviewed-actions-heading">{actions.length === 1 ? '1 item needs your review' : `${actions.length} items need your review`}</a>
-          : <span className="premium-band-note">{snapshot ? 'Nothing needs your review.' : '\u00a0'}</span>}
-      </span>}
-    />
-    <KitStack className={styles.content}>
-      {/* P3-ST-02/12: the pass and clock hold their last ready height while Home is a placeholder. */}
-      <HoldHeight holding={!snapshot} memory="employee-home-primary" className={styles.mainColumn}>
-        {/* The shift card is always the green pass (Jose, 2026-10-18), whatever its state. */}
-        {/* P3-ST-02: the pass itself keeps its last ready height while paused or offline, so the clock card under it stays put. */}
-        <HoldHeight as="section" holding={!snapshot} memory="employee-home-pass" className={styles.assignment} aria-labelledby="employee-reviewed-next-heading"
-          data-pass="true">
-          <header className={styles.assignmentHeader}>
-            <h2 id="employee-reviewed-next-heading">{underWay ? 'Your shifts' : 'Next shift'}</h2>
-            {snapshot?.nextShift && snapshot.publicationState !== 'unavailable' ? <span className={styles.published}>Published</span> : null}
-          </header>
-          {snapshot ? <>
-            {snapshot.publicationState === 'unavailable' ? <p className={styles.assignmentMessage}>Schedule unavailable</p>
-              : underWay ? <>
-                <section className={styles.current} aria-label="Scheduled now">
-                  <h3>Scheduled now</h3>
-                  <p className={styles.currentNote}>Clock status below shows whether you’re clocked in.</p>
-                  <Assignment shift={underWay} zone={snapshot.timeZone} observedAt={snapshot.observedAt} showZone={false}/>
-                </section>
-                <section className={styles.upcoming} aria-labelledby="employee-reviewed-upcoming-heading">
-                  <h3 id="employee-reviewed-upcoming-heading">Next shift</h3>
-                  {snapshot.nextShift ? <Assignment shift={snapshot.nextShift} zone={snapshot.timeZone} observedAt={snapshot.observedAt} countdown showZone={false}/>
-                    : <><p className={styles.assignmentMessage}>No upcoming published shift</p><Link className={styles.scheduleLink} href="/app/schedule">View schedule <Arrow forward/></Link></>}
-                </section>
-                <p className={`${styles.zone} ${styles.cardZone}`}>Times in {zoneLabel(snapshot.timeZone)}</p>
-              </>
-              : snapshot.nextShift ? <Assignment shift={snapshot.nextShift} zone={snapshot.timeZone} observedAt={snapshot.observedAt} countdown/>
-                : <><p className={styles.assignmentMessage}>No upcoming published shift</p><Link className={styles.scheduleLink} href="/app/schedule">View schedule <Arrow forward/></Link></>}
-            {snapshot.publicationState === 'partial' ? <p className={styles.notice} role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
-          </> : <div className={`${styles.recovery} premium-pass-placeholder`} role="status">
-            {/* P3-ST-01/12: the placeholder has the pass's own lines (date, time, countdown, place, footer), so it's the same height. */}
-            <p className={styles.assignmentDate} data-recovery="">{recovery}</p>
-            <p className={styles.interval} aria-hidden="true">&nbsp;</p>
-            <p className={styles.countdown} aria-hidden="true"><HourglassMediumIcon size={16} weight="bold"/>&nbsp;</p>
-            <p className={styles.location} aria-hidden="true">&nbsp;</p>
-            <div className={styles.assignmentFooter} aria-hidden="true"><span className={styles.scheduleLink}>&nbsp;</span><p className={styles.zone}>&nbsp;</p></div>
-          </div>}
-        </HoldHeight>
-        <HoldHeight as="aside" holding={!snapshot} memory="employee-home-clock" className={styles.recordedSlot} aria-label="Own recorded time">
-          {snapshot ? ownTimeSlot : <div className={styles.recordedFallback}>
-            <EmployeeTimeView compact state={{
-              time: loading || paused ? null : {state: 'unavailable', reason: denied ? 'access_denied' : 'read_failed'},
-              refreshing: loading, paused,
-            }} onRefresh={onRetry}/>
-          </div>}
-        </HoldHeight>
+  const clock = <HoldHeight as="aside" holding={!snapshot} memory="employee-home-clock" className={styles.h5Clock} aria-label="Own recorded time">
+    {snapshot ? ownTimeSlot : <EmployeeTimeView compact state={{
+      time: loading || paused ? null : {state: 'unavailable', reason: denied ? 'access_denied' : 'read_failed'},
+      refreshing: loading, paused,
+    }} onRefresh={onRetry}/>}
+  </HoldHeight>;
+
+  return <div className={styles.h5Root} data-home-state={viewState} aria-busy={refreshing || loading}>
+    <header className={styles.h5Band}>
+      <svg className={styles.h5Mark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path className={styles.h5MarkL} d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/><path className={styles.h5MarkT} d="M146 330 L180 266 L214 330 Z"/></svg>
+      <p className={styles.h5Date}>{snapshot
+        ? <time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time>
+        // Before Home is read, the workspace's public date, so the line is there from the first frame.
+        : <time suppressHydrationWarning>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time>}</p>
+      <div className={styles.h5Greet}>
+        <h1>{name && snapshot ? <>{greeting(snapshot.observedAt, snapshot.timeZone)},<span className={styles.h5Name}> {name}</span></> : 'Home'}</h1>
+        {summary ? <p className={styles.h5Summary}>{summary}</p> : null}
+      </div>
+      {/* Phase 4 (wide screens only): the band's figures, from the same read as the cards below. */}
+      {/* The figures' space is held from the first frame so the band never grows when Home arrives. */}
+      {!snapshot || !published ? <dl className={styles.h5Stats} aria-hidden="true"><div><dt>Next shift</dt><dd>–</dd><dd className={styles.h5StatSub}>&nbsp;</dd></div><div><dt>To review</dt><dd>–</dd><dd className={styles.h5StatSub}>&nbsp;</dd></div></dl> : <dl className={styles.h5Stats} aria-hidden="true">
+        <div><dt>{underWay ? 'Scheduled now' : 'Next shift'}</dt>{(underWay ?? next) ? <><dd>{bandDay((underWay ?? next)!, snapshot)}</dd><dd className={styles.h5StatSub}>{bandTime((underWay ?? next)!, snapshot.timeZone)} · {(underWay ?? next)!.locationLabel}</dd></> : <><dd>None</dd><dd className={styles.h5StatSub}>No upcoming published shift</dd></>}</div>
+        <div><dt>To review</dt><dd>{actions.length}</dd><dd className={styles.h5StatSub}>{actions[0]?.label ?? 'You’re all set'}</dd></div>
+      </dl>}
+    </header>
+    <div className={styles.h5Columns}>
+      {/* P3-ST-02/12: the shift card and clock hold their last ready height while Home is a placeholder. */}
+      <HoldHeight holding={!snapshot} memory="employee-home-primary" className={styles.h5Primary}>
+        <section aria-labelledby="employee-reviewed-next-heading" className={styles.h5Shifts}>
+          <h2 id="employee-reviewed-next-heading" className="nv-sr">{underWay ? 'Your shifts' : 'Next shift'}</h2>
+          <HoldHeight holding={!snapshot} memory="employee-home-pass" className={styles.h5Card}>
+            {snapshot ? !published ? <div className={`${styles.h5Today} ${styles.h5Calm}`}>
+              <p className={styles.h5Title}>Schedule unavailable</p>
+              <p className={styles.h5Where}>Your schedule couldn’t be checked.</p>
+            </div> : underWay ? <section className={styles.h5Today} aria-label="Scheduled now">
+              <h3 className={styles.h5Kicker}><i aria-hidden="true"/>Scheduled now</h3>
+              <p className="nv-sr">Clock status below shows whether you’re clocked in.</p>
+              <p className={styles.h5Hours}><Hours shift={underWay} zone={snapshot.timeZone}/></p>
+              <p className={styles.h5Where}><Place shift={underWay}/></p>
+              <Extras shift={underWay} zone={snapshot.timeZone}/>
+              <Progress shift={underWay} zone={snapshot.timeZone}/>
+            </section> : laterToday ? <div className={styles.h5Today}>
+              <StartsIn startAt={laterToday.startAt}/>
+              <p className="nv-sr">Later today</p>
+              <p className={styles.h5Hours}><Hours shift={laterToday} zone={snapshot.timeZone}/></p>
+              <p className={styles.h5Where}><Place shift={laterToday}/></p>
+              <Extras shift={laterToday} zone={snapshot.timeZone}/>
+            </div> : <div className={styles.h5Today}>
+              <p className={styles.h5Kicker}>Today</p>
+              <p className={`${styles.h5Title} ${styles.h5Spaced}`}>No more shifts today</p>
+              {scheduleKnown ? <p className={styles.h5Where}>Enjoy your time off.</p> : null}
+              {/* The line where a shift's progress sits says when the next one is. */}
+              {upcoming ? <p className={styles.h5Next}>Next shift · {nextWhen(upcoming, snapshot.observedAt, snapshot.timeZone)}</p> : null}
+            </div>
+              : <div className={styles.h5Today} role="status">
+                {/* P3-ST-01: the placeholder has the card's own lines, so it's the same height. */}
+                <p className={styles.h5Kicker} data-recovery="">{recovery}</p>
+                <p className={styles.h5Hours} aria-hidden="true">&nbsp;</p>
+                <p className={styles.h5Where} aria-hidden="true">&nbsp;</p>
+              </div>}
+            <p className="nv-sr">{zone ? `Times in ${zoneLabel(zone)}` : null}</p>
+            {clock}
+          </HoldHeight>
+          {snapshot && published ? <section className={`${styles.h5Section} ${styles.h5Upcoming}`} aria-labelledby="employee-reviewed-upcoming-heading">
+            <header className={styles.h5Head}>
+              <h3 id="employee-reviewed-upcoming-heading">Coming up</h3>
+              <Link className={styles.h5Action} href="/app/schedule">View schedule</Link>
+            </header>
+            {upcoming ? <div className={styles.h5List}><Link className={styles.h5Row} href={`/app/schedule?week=${encodeURIComponent(upcoming.weekStart)}&day=${encodeURIComponent(upcoming.date)}`}
+              aria-label={`View schedule, ${formatDisplayDate(upcoming.date)}`}>
+              <span className={styles.h5Day} aria-hidden="true"><small>{new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'}).format(utcDay(upcoming.date))}</small><strong>{utcDay(upcoming.date).getUTCDate()}</strong></span>
+              <span className={styles.h5Copy}>
+                <strong><Hours shift={upcoming} zone={snapshot.timeZone}/></strong>
+                <small><Place shift={upcoming}/></small>
+                <Extras shift={upcoming} zone={snapshot.timeZone}/>
+              </span>
+              <span className={styles.h5End}><Chevron/></span>
+            </Link></div>
+              : <p className={styles.h5Empty}>{laterToday ? 'Your later shifts are on your schedule.' : 'No upcoming published shift'}</p>}
+            {snapshot.publicationState === 'partial' ? <p className={styles.h5Note} role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
+          </section> : null}
+        </section>
       </HoldHeight>
-      <HoldHeight holding={!snapshot} memory="employee-home-secondary" className={styles.sideColumn}>{snapshot ? <>
-        {partial ? <p className={styles.notice} role="status">Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.</p> : null}
-        {allSet ? <div className={styles.allSet}><Illustration name="all-caught-up" size={72}/><p role="status">You’re all set.</p></div> : null}
-        <AttentionGroup kind="actions" items={actions} partial={partial} zone={snapshot.timeZone}/>
-        <QuickActions/>
-        <AttentionGroup kind="updates" items={updates} partial={partial} zone={snapshot.timeZone}/>
+      <HoldHeight holding={!snapshot} memory="employee-home-secondary" className={styles.h5Secondary}>{snapshot ? <>
+        {partial ? <p className={styles.h5Warn} role="status">Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.</p> : null}
+        <Group kind="actions" items={actions} partial={partial} allSet={allSet} zone={snapshot.timeZone}/>
+        <Group kind="updates" items={updates} partial={partial} allSet={false} zone={snapshot.timeZone}/>
         <SourceNotices snapshot={snapshot}/>
       </> : null}</HoldHeight>
-      <footer className={styles.freshness}>
-        {snapshot ? <small data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
-        {/* P3-WR-14: a failed read gets the same control as every other page: a primary "Try again" with the refresh icon. */}
-        {denied ? <Link className={styles.textLink} href="/login">Sign in <Arrow forward/></Link>
-          : !snapshot && !loading && !paused ? <button className="nv-btn" data-kind="primary" data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
-            <ArrowsClockwiseIcon size={18} aria-hidden="true"/>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
-          </button>
-          : <button className={styles.refreshButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
-            {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Try again'}
-          </button>}
-      </footer>
-    </KitStack>
+    </div>
+    {/* While the first read is under way the line waits unseen, so it doesn't jump down when Home arrives. */}
+    <footer className={styles.h5Refresh} data-waiting={loading || undefined}>
+      {snapshot ? <small className="nv-sr" data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
+      {denied ? <Link className={styles.h5PrimaryButton} href="/login">Sign in</Link>
+        : !snapshot && !loading && !paused ? <button className={styles.h5PrimaryButton} data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
+          {refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
+        </button>
+        : <button className={styles.h5QuietButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>
+          {refreshing ? 'Checking…' : snapshot ? 'Refresh home' : 'Try again'}
+        </button>}
+    </footer>
   </div>;
 }

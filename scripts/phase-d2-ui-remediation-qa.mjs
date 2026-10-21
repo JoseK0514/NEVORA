@@ -56,8 +56,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   }
   observations.states.push(state);
  };
- const safePause=async(label)=>{
-  const text=await mp.locator('.manager-corrections').innerText();
+ const safePause=async(label,selector='.manager-corrections')=>{
+  const text=await mp.locator(selector).innerText();
   assert(!text.includes('No correction requests'));assert(!text.includes('No employee time corrections are waiting for review.'));
   assert.equal(await mp.locator('.manager-corrections-count').count(),0);
   assert.equal(await mp.locator('.manager-correction-row').count(),0);
@@ -97,11 +97,17 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   });
   assert(contrast.length>0);assert(contrast.every(pair=>pair.opacity===1&&pair.ratio>=4.5));observations.contrast=contrast;
 
+  observations.keyboard.push({stage:'employee-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
+  await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
+  observations.keyboard.push({stage:'employee-after-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus())});
   await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   const details=ep.locator('.employee-time-entry').first();
   await details.locator('summary').focus();await details.locator('summary').press('Enter');
-  const trigger=details.getByRole('button',{name:'Request correction',exact:true});
-  await trigger.focus();await trigger.press('Enter');
+  const trigger=details.getByRole('button',{name:'Request a correction',exact:true});
+  observations.keyboard.push({stage:'disclosure-before-settle',state:await details.evaluate(e=>({open:e.open,contentVisibility:getComputedStyle(e,'::details-content').contentVisibility,blockSize:getComputedStyle(e,'::details-content').blockSize,animations:e.getAnimations({subtree:true}).map(a=>a.playState)}))});
+  await details.evaluate(async e=>{e.getBoundingClientRect();await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
+  observations.keyboard.push({stage:'disclosure-after-settle',state:await details.evaluate(e=>({open:e.open,contentVisibility:getComputedStyle(e,'::details-content').contentVisibility,blockSize:getComputedStyle(e,'::details-content').blockSize,animations:e.getAnimations({subtree:true}).map(a=>a.playState)}))});
+  await trigger.focus();observations.keyboard.push({stage:'trigger-focus',state:await trigger.evaluate(e=>({documentFocused:document.hasFocus(),buttonFocused:document.activeElement===e,activeTag:document.activeElement?.tagName,enabled:!e.disabled}))});assert(await trigger.evaluate(e=>document.hasFocus()&&document.activeElement===e),'Correction trigger must have native foreground focus');await trigger.press('Enter');
   const form=details.locator('.employee-time-correction-form');await form.waitFor();
   await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);
   assert.equal(await form.getByLabel('Start',{exact:true}).inputValue(),local(canonical.start));
@@ -123,17 +129,19 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   // Actual visible focus is the contract; WebKit's recorded pseudo-class flag
   // remains false for its native date control despite a real Tab transition.
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
+  observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
+  await mp.bringToFront();assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
   const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
 
   // Cleared states use real lifecycle events and preserve the authoritative count.
-  phase='offline';await owner.setOffline(true);await mp.getByText('Correction requests unavailable offline',{exact:true}).waitFor();await safePause('offline');await shots(mp,'.manager-corrections','offline');
+  phase='offline';await owner.setOffline(true);await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('offline','.portal-route-state');await shots(mp,'.portal-route-state','offline');
   await owner.setOffline(false);await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();phase='normal';checked(`${engine}: offline → online protected refresh`);
-  await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByText('Updates paused',{exact:true}).waitFor();await safePause('pagehide');
+  await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.portal-route-state');
   await mp.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
-  await mp.getByText('Updates paused',{exact:true}).waitFor();await safePause('hidden');
+  await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('hidden','.portal-route-state');
   await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});document.dispatchEvent(new Event('visibilitychange'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
 
@@ -175,7 +183,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal((await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE employee_id=$1',[employeeId]))[0].count,4);
   const unrelated=await owner.request.get(app.url+'/api/employee/time-corrections',{headers});assert.equal(unrelated.status(),403);
   phase='authority-denied';await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
-  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction access ended',{exact:true}).waitFor();assert.equal(await mp.locator('.manager-correction-row').count(),0);
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.locator('.manager-corrections').waitFor({state:'detached'});assert.equal(await mp.locator('.manager-correction-row').count(),0);
   assert.equal((await owner.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
   await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");
   // Record all native errors. Only explicitly injected transport failures may be classified.

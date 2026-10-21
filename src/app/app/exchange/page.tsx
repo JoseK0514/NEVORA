@@ -1,15 +1,11 @@
 import { keepWhole } from "@/lib/keep-whole";
 import {randomUUID} from 'node:crypto';
-import { FilterPills, PageBand } from "@/components/kit/kit";
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import {ShiftChangeForm} from '@/components/shift-change-form';
-import {ExchangeAssignment as ShiftSlot} from '@/components/exchange-assignment';
-import {ExchangeReviewShell} from '@/components/exchange-review-shell';
 import {ShiftChangeHistory} from '@/components/shift-change-history';
 import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
 import {readShiftChangeTerms} from '@/lib/data/shift-change-snapshot';
 import {readShiftChangeAvailability,type ShiftChangeAvailability} from '@/lib/data/shift-changes';
-import {BlockedOpenShifts} from '@/components/blocked-open-shifts';
 import {refusalLines} from '@/lib/shift-changes/eligibility-reasons';
 import {shiftChangeFeedback} from '@/components/shift-change-form-state';
 import type {ShiftChangeCommand} from '@/lib/shift-changes/types';
@@ -18,8 +14,17 @@ import { businessDate, shiftBoundaryInstants } from "@/lib/business-time";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import Link from "next/link";
 import { ManagerShiftRequests } from "@/components/manager-shift-requests";
-import { NavIcon } from "@/components/nav-icon";
-import { StatusPill } from "@/components/status-pill";
+import { SigBand, SigDay, SigHead, SigPage } from "@/components/signature/signature";
+import { ShiftCopy, ShiftDay, ShiftTicket, shiftPlace } from "@/components/shift-requests-signature";
+import sr from "@/components/shift-requests-signature.module.css";
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
+import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr/DotsThree";
+import { HandPalmIcon } from "@phosphor-icons/react/dist/ssr/HandPalm";
+import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";import { StatusPill } from "@/components/status-pill";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
 import {
@@ -90,6 +95,11 @@ function calloutReason(code: string) {
     OTHER: "Other",
   };
   return labels[code] ?? code;
+}
+
+/** "JL" from "Jordan Lee"; one letter for one word. */
+function initials(name: string) {
+  return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]!.toUpperCase()).join("") || "?";
 }
 
 function marketplaceDate(date: string) {
@@ -188,113 +198,116 @@ export default async function ExchangePage({
     visibleCallouts.length > 0 || (selectedHistory===null||selectedHistory.length>0);
 
   if (!manager) {
+    // Phase 3 (Signature, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-3/p3c-board-b.png).
+    // Same reads, forms and authority as before; the band says what needs you and its pill switches the two views.
+    const zone = workspace.timeZone;
+    const n = (count: number) => ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][count] ?? String(count);
+    const inProgress = visibleActivity.filter(row => ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(row.status)).length + visibleCallouts.filter(row => row.status === "PENDING").length;
+    const otherName = (row: (typeof visibleActivity)[number]) => marketplaceDisplayName(row.requestedByEmployeeId === session.id ? (row.targetEmployeeName ?? row.targetShift?.employeeName ?? "") : row.requestedByName);
+    const band = activeView === "available"
+      ? <SigBand eyebrow="Shift requests"><h1 className="nv-sr">Shift requests</h1>
+        <p className="sg-head2">{claimable.length ? <><em>{n(claimable.length)}</em> open {claimable.length === 1 ? "shift" : "shifts"}<br />you can pick up</> : <>No open shifts<br />right now</>}</p>
+        <p className="sg-sub"><span>{blocked.length ? `${blocked.length} more you can’t pick up yet` : claimable.length ? "Claim one and it’s yours once it’s confirmed." : "Check back later for open shifts."}</span></p>
+        <Link className="sg-band-link" href="/app/exchange?tab=requests">Your requests<CaretRightIcon size={14} aria-hidden="true" /></Link></SigBand>
+      : <SigBand eyebrow="Shift requests"><h1 className="nv-sr">Shift requests</h1>
+        <p className="sg-head2">{incoming.length ? <><em>{n(incoming.length)}</em> {incoming.length === 1 ? "swap" : "swaps"}<br />{incoming.length === 1 ? "needs" : "need"} your answer</> : inProgress ? <><em>{n(inProgress)}</em> {inProgress === 1 ? "request" : "requests"}<br />in progress</> : <>Your shifts<br />and requests</>}</p>
+        <p className="sg-sub"><span>{assignedShifts.length ? `${assignedShifts.length} ${assignedShifts.length === 1 ? "shift" : "shifts"} coming up` : "Pick up a shift, review a swap, or manage your requests."}</span></p>
+        <Link className="sg-band-link" href="/app/exchange?tab=available">Open shifts{claimable.length ? <em>{claimable.length}</em> : null}<CaretRightIcon size={14} aria-hidden="true" /></Link></SigBand>;
     return (
-      <ExchangeReviewShell view={activeView} className="employee-view employee-shift-requests-view">
-        {/* Phase 3: the kit band carries the title, one line, and the two views as pills. */}
-        <div className="nv-page premium-employee-exchange" data-nv-page="">
-        <PageBand title="Shift requests" overlap={false}
-          summary={activeView === "available" ? (claimable.length ? `${claimable.length}\u00a0open ${claimable.length === 1 ? "shift" : "shifts"} you can pick up.` : "Pick up a shift, review a swap, or manage your requests.") : "Pick up a shift, review a swap, or manage your requests."}
-          extra={<FilterPills label="Shift marketplace views" items={[
-            { href: "/app/exchange?tab=available", label: "Available shifts", current: activeView === "available" },
-            { href: "/app/exchange?tab=requests", label: "Your requests", current: activeView === "requests" },
-          ]} />} />
-        <div className="premium-employee-content">
-        {params.error ? <p className="employee-notice error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "We couldn’t send that request. Try again."}</p> : null}
-        {operation ? <p className="employee-notice" role="status">{shiftChangeFeedback(operation)}</p> : null}
-
-        <div className="employee-view-surface employee-exchange-feed">
-          {activeView === "available" ? (
-            claimable.length || blocked.length ? <>{claimable.length ? claimable.map((exchange) => (
-              <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
-                <div className="employee-shift-entry-copy">
-                  <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Offered shift"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}</div>
-                  <small>{marketplaceDisplayName(exchange.requestedByName)} · {marketplaceRoleLabel(exchange.requestedByRole)}</small>
-                  {!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
+      <SigPage className={`employee-shift-requests-view ${sr.srRoot}`} band={band}>
+        {params.error ? <p className="sg-alert" data-tone="error" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "We couldn’t send that request. Try again."}</p> : null}
+        {operation ? <p className="sg-alert" role="status">{shiftChangeFeedback(operation)}</p> : null}
+        {activeView === "available" ? (claimable.length || blocked.length ? <>
+          {claimable.length ? <><SigHead id="sr-open" title="Open shifts" count={claimable.length} />
+            <ul className="sg-card" aria-labelledby="sr-open">{claimable.map(exchange => (
+              <li className="sg-r employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
+                <ShiftDay shift={exchange.sourceShift} />
+                <ShiftCopy shift={exchange.sourceShift} zone={zone} label="Offered shift">
+                  <span>{exchange.targetShift ? "Swap · " : ""}{keepWhole(`From ${marketplaceDisplayName(exchange.requestedByName)}`)} · {marketplaceRoleLabel(exchange.requestedByRole)}</span>
+                  {exchange.targetShift ? <span>For your {keepWhole(`${marketplaceDate(exchange.targetShift.date)} · ${formatTime(exchange.targetShift.startTime)} – ${formatTime(exchange.targetShift.endTime)}`)}</span> : null}
+                  {!acceptViews.get(exchange.id)?.allowed ? <span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span> : null}
+                </ShiftCopy>
+                <div className="employee-shift-entry-actions">{acceptViews.get(exchange.id)?.allowed ? <ShiftChangeForm fields={{ kind: "ACCEPT", ...requestFields(exchange.id, exchange.requestRevision)! }}><button className="employee-action primary" type="submit"><span>Claim</span><span className="nv-sr"> shift</span></button></ShiftChangeForm> : null}</div>
+              </li>))}</ul></> : <div className="sg-card"><div className={sr.srEmpty}><span className="sg-tile" aria-hidden="true"><CalendarBlankIcon size={22} /></span><strong>No open shifts fit your schedule</strong><span>The shifts below can’t be picked up yet.</span></div></div>}
+          {blocked.length ? <><SigHead id="sr-blocked" title="Not open to you yet" count={blocked.length} />
+            <ul className="sg-card" aria-labelledby="sr-blocked">{blocked.map(shift => (
+              <li className={sr.srBlocked} key={shift.id}>
+                <div className="sg-r"><SigDay top={formatDayLabel(shift.date).weekday} day={Number(shift.date.slice(8))} />
+                  <span className="sg-copy"><span className="sg-time"><span className="nv-sr">{marketplaceDate(shift.date)}, </span>{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span><span>{shift.position ? `${shift.position} · ` : ""}{shift.location}</span></span></div>
+                <ul className="sg-card-foot" data-tone="amber" aria-label="Why you can’t pick this up"><LockSimpleIcon size={18} aria-hidden="true" />{(shift.reasons ?? []).map(reason => <li key={reason}>{reason}</li>)}</ul>
+              </li>))}</ul>
+            {session.role === "EMPLOYEE" || session.role === "LEAD" ? <div className="sg-card" data-tone="tint"><Link className={sr.srNext} href="/app/availability">
+              <span className="sg-tile" data-tone="white" aria-hidden="true"><CalendarBlankIcon size={22} /></span>
+              <span><b>Want more shifts?</b><small>Update when you can work.</small></span><i aria-hidden="true"><ArrowRightIcon size={18} /></i></Link></div> : null}</> : null}
+        </> : <div className="sg-card"><div className={sr.srEmpty}><span className="sg-tile" aria-hidden="true"><CalendarBlankIcon size={22} /></span><strong>The shift board is clear</strong><span>Check back later for available open shifts.</span></div></div>)
+        : hasTradeRequests ? <>
+          {incoming.length ? <><SigHead id="sr-incoming" title="Waiting for you" count={incoming.length} />
+            <ul className={sr.srStack} aria-labelledby="sr-incoming">{incoming.map(exchange => (
+              <li className="sg-card employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
+                <div className="sg-card-head"><span className={sr.srAvatar} aria-hidden="true">{initials(marketplaceDisplayName(exchange.requestedByName))}</span>
+                  <span className={sr.srHeadCopy}><b>{marketplaceDisplayName(exchange.requestedByName)} wants to swap</b><small>{marketplaceRoleLabel(exchange.requestedByRole)}</small></span></div>
+                {exchange.targetShift ? <ShiftTicket give={exchange.targetShift} get={exchange.sourceShift} giveLabel="You give" getLabel="You get" zone={zone} />
+                  : <div className="sg-r"><ShiftDay shift={exchange.sourceShift} /><ShiftCopy shift={exchange.sourceShift} zone={zone} label="Their shift" /></div>}
+                <div className="sg-card-body">
+                  {!requestFields(exchange.id, exchange.requestRevision) ? <span className="shift-change-unavailable">This request changed. Reload to see the latest.</span> : !acceptViews.get(exchange.id)?.allowed ? <span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span> : null}
+                  <ShiftChangeHistory events={histories.get(exchange.id) ?? null} />
+                  <p className={sr.srMuted}>Accepting sends this swap for schedule checks. Review the result before changing your plans.</p>
+                  <div className="employee-shift-entry-actions">{requestFields(exchange.id, exchange.requestRevision) ? <ShiftChangeForm fields={requestFields(exchange.id, exchange.requestRevision)!}><button className="employee-action" name="kind" value="DECLINE" type="submit">Decline</button>{acceptViews.get(exchange.id)?.allowed ? <button className="employee-action primary" name="kind" value="ACCEPT" type="submit">Accept</button> : null}</ShiftChangeForm> : null}</div>
                 </div>
-                <div className="employee-shift-entry-actions">{acceptViews.get(exchange.id)?.allowed?<ShiftChangeForm fields={{kind:'ACCEPT',...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action primary" type="submit"><span>Claim shift</span></button></ShiftChangeForm>:null}</div>
-              </div>
-            )) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>No open shifts fit your schedule</strong><p>The shifts below can’t be picked up yet.</p></div>}
-              <BlockedOpenShifts shifts={blocked} availabilityHref={session.role === 'EMPLOYEE' || session.role === 'LEAD' ? '/app/availability' : null} /></>
-            : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>The shift board is clear</strong><p>Check back later for available open shifts.</p></div>
-          ) : hasTradeRequests ? (
-            <>
-              {assignedShifts.length ? <section className="employee-exchange-section">
-                <h2>Your assigned shifts</h2>
-                {assignedShifts.map((shift) => (
-                  <div className="employee-shift-entry" key={shift.id}>
-                    <div className="employee-shift-entry-copy">
-                      <ShiftSlot shift={shift}/>
-                      {!offerViews.get(shift.id)?.allowed||!offerViews.get(shift.id)?.fields?<span className="shift-change-unavailable">{offerViews.get(shift.id)?.notice??'Swap unavailable. You can still report that you can’t work.'}</span>:null}
-                    </div>
-                    {/* Phase 3: the three shift actions sit behind one "Shift options" disclosure, as on My schedule. */}
-                    <details className="premium-shift-options"><summary><span>Shift options</span><NavIcon name="chevronRight" size={16} /></summary>
-                    <div className="employee-shift-entry-actions">
-                      <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${encodeURIComponent(shift.id)}`}><span>Unable to work</span></Link>
-                      {offerViews.get(shift.id)?.allowed&&offerViews.get(shift.id)?.fields?<ShiftChangeForm fields={{kind:'OFFER_COVERAGE',...offerViews.get(shift.id)!.fields!}}><button className="employee-action" type="submit"><span>Offer for coverage</span></button></ShiftChangeForm>:null}
-                      {offerViews.get(shift.id)?.fields?<Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><span>Request a swap</span></Link>:null}
-                    </div>
-                    </details>
-                  </div>
-                ))}
-              </section> : null}
+              </li>))}</ul></> : null}
 
-              {incoming.length ? <section className="employee-exchange-section">
-                <h2>Waiting for You</h2>
-                {incoming.map((exchange) => (
-                  <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
-                    <div className="employee-shift-entry-copy">
-                      <strong>{marketplaceDisplayName(exchange.requestedByName)} wants to swap</strong>
-                      {!requestFields(exchange.id,exchange.requestRevision)?<span className="shift-change-unavailable">This request changed. Reload to see the latest.</span>:!acceptViews.get(exchange.id)?.allowed?<span className="shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</span>:null}
-                      <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Their shift"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Your shift"/>:null}</div><ShiftChangeHistory events={histories.get(exchange.id)??null}/>
-                      <span>Accepting sends this swap for schedule checks. Review the result before changing your plans.</span>
-                    </div>
-                    <div className="employee-shift-entry-actions">{requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={requestFields(exchange.id,exchange.requestRevision)!}><button className="employee-action" name="kind" value="DECLINE" type="submit">Decline</button>{acceptViews.get(exchange.id)?.allowed?<button className="employee-action primary" name="kind" value="ACCEPT" type="submit">Accept</button>:null}</ShiftChangeForm>:null}</div>
+          {visibleActivity.length ? <><SigHead id="sr-activity" title="Your requests" count={visibleActivity.length} />
+            <ul className="sg-card" aria-labelledby="sr-activity">{visibleActivity.map(exchange => (
+              <li className={`sg-r employee-shift-entry ${sr.srStacked}`} id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
+                <span className="sg-tile" aria-hidden="true">{exchange.kind === "COVERAGE" ? <HandPalmIcon size={22} /> : <ArrowsLeftRightIcon size={22} />}</span>
+                <span className="sg-copy">
+                  <span className="sg-t1"><b>{exchange.kind === "COVERAGE" ? "Coverage" : otherName(exchange) ? `Swap · ${otherName(exchange)}` : "Swap"}</b><StatusPill tone={statusTone(exchange.status)}>{exchange.status === "OPEN" ? "Offered" : exchange.status === "EMPLOYEE_PENDING" ? "Awaiting employee" : exchange.status === "MANAGER_PENDING" ? "Manual review" : exchange.status === "APPROVED" ? "Completed" : statusLabel(exchange.status)}</StatusPill></span>
+                  <span>{keepWhole(`${marketplaceDate(exchange.sourceShift.date)} · ${formatTime(exchange.sourceShift.startTime)} – ${formatTime(exchange.sourceShift.endTime)}`)}</span>
+                  <span>{shiftPlace(exchange.sourceShift, zone)}</span>
+                  {exchange.targetShift ? <span>For {keepWhole(`${marketplaceDate(exchange.targetShift.date)} · ${formatTime(exchange.targetShift.startTime)} – ${formatTime(exchange.targetShift.endTime)}`)} · {shiftPlace(exchange.targetShift, zone)}</span> : null}
+                  {exchange.actionable === false && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <span className="shift-change-unavailable">This request changed or needs a manager’s review. Reload, or ask your manager.</span> : null}
+                  <ShiftChangeHistory events={histories.get(exchange.id) ?? null} />
+                  <div className="employee-shift-entry-actions" data-status={exchange.status}>
+                    {exchange.requestedByEmployeeId === session.id && requestFields(exchange.id, exchange.requestRevision) && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <ShiftChangeForm fields={{ kind: "CANCEL", ...requestFields(exchange.id, exchange.requestRevision)! }}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
+                    {exchange.status === "MANAGER_PENDING" && exchange.targetEmployeeId === session.id && requestFields(exchange.id, exchange.requestRevision) ? <ShiftChangeForm fields={{ kind: "WITHDRAW", ...requestFields(exchange.id, exchange.requestRevision)! }}><button className="employee-action danger" type="submit">Withdraw</button></ShiftChangeForm> : null}
                   </div>
-                ))}
-              </section> : null}
+                </span>
+              </li>))}</ul></> : null}
 
-              {visibleActivity.length ? <section className="employee-exchange-section">
-                <h2>Your requests</h2>
-                {visibleActivity.map((exchange) => (
-                  <div className="employee-shift-entry" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id}>
-                    <div className="employee-shift-entry-copy">
-                      <strong>{exchange.kind === "COVERAGE" ? "Coverage" : "Swap"}</strong>
-                      <div className={`exchange-assignments${exchange.targetShift ? " paired" : ""}`}><ShiftSlot shift={exchange.sourceShift} label="Requested assignment"/>{exchange.targetShift?<ShiftSlot shift={exchange.targetShift} label="Other assignment"/>:null}</div><ShiftChangeHistory events={histories.get(exchange.id)??null}/>
-                      {exchange.actionable===false&&['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'].includes(exchange.status)?<span className="shift-change-unavailable">This request changed or needs a manager’s review. Reload, or ask your manager.</span>:null}
-                    </div>
-                    <div className="employee-shift-entry-actions" data-status={exchange.status}>
-                      <StatusPill tone={statusTone(exchange.status)}>{exchange.status==='OPEN'?'Offered':exchange.status==='EMPLOYEE_PENDING'?'Awaiting employee':exchange.status==='MANAGER_PENDING'?'Manual review':exchange.status==='APPROVED'?'Completed':statusLabel(exchange.status)}</StatusPill>
-                      {exchange.requestedByEmployeeId === session.id && requestFields(exchange.id,exchange.requestRevision) && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <ShiftChangeForm fields={{kind:"CANCEL",...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
-                      {exchange.status==='MANAGER_PENDING'&&exchange.targetEmployeeId===session.id&&requestFields(exchange.id,exchange.requestRevision)?<ShiftChangeForm fields={{kind:"WITHDRAW",...requestFields(exchange.id,exchange.requestRevision)!}}><button className="employee-action danger" type="submit">Withdraw</button></ShiftChangeForm>:null}
-                    </div>
+          {visibleCallouts.length ? <><SigHead id="sr-callouts" title="Unable to work" count={visibleCallouts.length} />
+            <ul className="sg-card" aria-labelledby="sr-callouts">{visibleCallouts.map(callout => (
+              <li className={`sg-r employee-shift-entry ${sr.srStacked}`} id={`request-${callout.id}`} tabIndex={-1} key={callout.id}>
+                <span className="sg-tile" data-tone="amber" aria-hidden="true"><WarningIcon size={22} /></span>
+                <span className="sg-copy">
+                  <span className="sg-t1"><b>{keepWhole(marketplaceDate(callout.date))}</b>{callout.status !== "APPROVED" || callout.releaseApplies ? <StatusPill tone={statusTone(callout.status)}>{callout.status === "PENDING" ? "Reported" : callout.status === "APPROVED" ? "Released — check coverage" : statusLabel(callout.status)}</StatusPill> : <StatusPill tone="neutral">Previously approved — review current assignment</StatusPill>}</span>
+                  <span>{keepWhole(`${formatTime(callout.startTime)} – ${formatTime(callout.endTime)}`)} · {callout.locationName}</span>
+                  <span>{calloutReason(callout.reasonCode)}</span>
+                  {callout.status === "APPROVED" && !callout.releaseApplies ? <span className="shift-change-unavailable">Historical approval does not release the current assignment. Ask management to review.</span> : null}
+                  <ShiftChangeHistory events={histories.get(callout.id) ?? null} />
+                  <div className="employee-shift-entry-actions" data-status={callout.status}>
+                    {callout.status === "PENDING" && requestFields(callout.id, callout.requestRevision) ? <ShiftChangeForm fields={{ kind: "CANCEL_CALLOUT", ...requestFields(callout.id, callout.requestRevision)! }}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
                   </div>
-                ))}
-              </section> : null}
+                </span>
+              </li>))}</ul></> : null}
 
-              {visibleCallouts.length ? <section className="employee-exchange-section">
-                <h2>Unable-to-Work Requests</h2>
-                {visibleCallouts.map((callout) => (
-                  <div className="employee-shift-entry" id={`request-${callout.id}`} tabIndex={-1} key={callout.id}>
-                    <div className="employee-shift-entry-copy">
-                      <strong>{keepWhole(`${marketplaceDate(callout.date)} · ${formatTime(callout.startTime)} – ${formatTime(callout.endTime)}`)}</strong>
-                      <span>{calloutReason(callout.reasonCode)}</span><span>{callout.locationName}</span><ShiftChangeHistory events={histories.get(callout.id)??null}/>
-                      {callout.status==='APPROVED'&&!callout.releaseApplies?<StatusPill tone="neutral">Previously approved — review current assignment</StatusPill>:null}
-                      {callout.status==='APPROVED'&&!callout.releaseApplies?<span className="shift-change-unavailable">Historical approval does not release the current assignment. Ask management to review.</span>:null}
-                    </div>
-                    <div className="employee-shift-entry-actions" data-status={callout.status}>
-                      {callout.status!=='APPROVED'||callout.releaseApplies?<StatusPill tone={statusTone(callout.status)}>{callout.status==='PENDING'?'Reported inability':callout.status==='APPROVED'?'Released — check coverage':statusLabel(callout.status)}</StatusPill>:null}
-                      {callout.status === "PENDING" && requestFields(callout.id,callout.requestRevision) ? <ShiftChangeForm fields={{kind:"CANCEL_CALLOUT",...requestFields(callout.id,callout.requestRevision)!}}><button className="employee-action danger" type="submit"><span>Cancel</span></button></ShiftChangeForm> : null}
-                    </div>
+          {assignedShifts.length ? <><SigHead id="sr-shifts" title="Your shifts" count={assignedShifts.length} />
+            <ul className="sg-card" aria-labelledby="sr-shifts">{assignedShifts.map(shift => (
+              <li className={`employee-shift-entry ${sr.srShift}`} key={shift.id}>
+                {/* Phase 3: the three shift actions sit behind one "Shift options" button, as on My schedule. */}
+                <details className={sr.srOptions}>
+                  <summary className="sg-r"><ShiftDay shift={shift} /><ShiftCopy shift={shift} zone={zone} />
+                    <span className={sr.srMore}><DotsThreeIcon size={20} weight="bold" aria-hidden="true" /><span className="nv-sr">Shift options</span></span></summary>
+                  {!offerViews.get(shift.id)?.allowed || !offerViews.get(shift.id)?.fields ? <span className={`shift-change-unavailable ${sr.srNotice}`}>{offerViews.get(shift.id)?.notice ?? "Swap unavailable. You can still report that you can’t work."}</span> : null}
+                  <div className="employee-shift-entry-actions">
+                    {offerViews.get(shift.id)?.fields ? <Link className="employee-action primary" href={`/app/exchange/swap?sourceShiftId=${encodeURIComponent(shift.id)}`}><ArrowsLeftRightIcon size={18} aria-hidden="true" /><span>Request a swap</span></Link> : null}
+                    {offerViews.get(shift.id)?.allowed && offerViews.get(shift.id)?.fields ? <ShiftChangeForm fields={{ kind: "OFFER_COVERAGE", ...offerViews.get(shift.id)!.fields! }}><button className="employee-action" type="submit"><HandPalmIcon size={18} aria-hidden="true" /><span>Offer for coverage</span></button></ShiftChangeForm> : null}
+                    <Link className="employee-action danger" href={`/app/exchange/callout?shiftId=${encodeURIComponent(shift.id)}`}><WarningIcon size={18} aria-hidden="true" /><span>Unable to work</span></Link>
                   </div>
-                ))}
-              </section> : null}
-              {(selectedHistory===null||selectedHistory.length>0)&&!visibleActivity.some(e=>e.id===params.requestId)&&!visibleCallouts.some(e=>e.id===params.requestId)?<section className="employee-exchange-section"><h2>Original request history</h2><ShiftChangeHistory events={selectedHistory}/></section>:null}
-            </>
-          ) : <div className="employee-view-empty"><span className="employee-empty-icon"><NavIcon name="exchange" employee size={16} /></span><strong>No swap requests yet</strong><p>Your offers, swaps, and coverage requests will appear here.</p></div>}
-        </div>
-        </div>
-        </div>
-      </ExchangeReviewShell>
+                </details>
+              </li>))}</ul></> : null}
+          {(selectedHistory === null || selectedHistory.length > 0) && !visibleActivity.some(e => e.id === params.requestId) && !visibleCallouts.some(e => e.id === params.requestId) ? <><SigHead title="Original request history" /><div className="sg-card"><div className="sg-card-body">{/* keeps its own disclosure */}<ShiftChangeHistory events={selectedHistory} /></div></div></> : null}
+        </> : <div className="sg-card"><div className={sr.srEmpty}><span className="sg-tile" aria-hidden="true"><ArrowsLeftRightIcon size={22} /></span><strong>No swap requests yet</strong><span>Your offers, swaps, and coverage requests will appear here.</span></div></div>}
+      </SigPage>
     );
   }
 

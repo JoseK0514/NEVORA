@@ -1,8 +1,8 @@
 import {readFile} from 'node:fs/promises';
-import {createDisposableFoundationDatabase} from './local-postgres';
+import {createDisposableFoundationDatabase,createDisposableExchangeDatabase} from './local-postgres';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-export async function companyAccessFixture(){
- const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
+export async function companyAccessFixture(options:{database?:'foundation'|'exchange'}={}){
+ const db=await (options.database==='exchange'?createDisposableExchangeDatabase({mode:'current-runtime'}):createDisposableFoundationDatabase({mode:'current-runtime'}));
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>db.executor.query<T>({text,values});
  try{
   await q(await readFile('db/migrations/0031_native_payroll.sql','utf8'));

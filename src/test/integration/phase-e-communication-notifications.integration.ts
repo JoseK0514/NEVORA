@@ -102,6 +102,11 @@ async function managementTestNotification(){
 
 it('management inbox preserves recipient authority, idempotent read status and separate acknowledgement',async()=>{
  const id=await managementTestNotification();
+ const deniedProof={...owner,sessionTokenHash:'f'.repeat(64)};
+ const beforeDenied=await q('SELECT to_jsonb(n) AS row FROM notifications n WHERE id=$1',[id]);
+ expect(await markManagementNotificationRead(deniedProof,id,'test',db.executor)).toBe(false);
+ expect(await q('SELECT to_jsonb(n) AS row FROM notifications n WHERE id=$1',[id])).toEqual(beforeDenied);
+ expect(await readPortalNotificationList(deniedProof,'test',db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
  expect(await readPortalNotificationList(owner,'test',db.executor)).toMatchObject({state:'ready',items:[{id,reviewState:'unread'}]});
  expect(await markManagementNotificationRead(owner,id,'test',db.executor)).toBe(true);
  const [first]=await q('SELECT read_at::text AS read FROM notifications WHERE id=$1',[id]);
@@ -109,7 +114,8 @@ it('management inbox preserves recipient authority, idempotent read status and s
  expect(await q('SELECT read_at::text AS read FROM notifications WHERE id=$1',[id])).toEqual([first]);
  expect(await readPortalNotificationList(owner,'test',db.executor)).toMatchObject({state:'ready',items:[{id,reviewState:'read'}]});
  expect(await markManagementNotificationRead(employee,id,'test',db.executor)).toBe(false);
- await expect(markManagementNotificationRead({...owner,sessionTokenHash:'f'.repeat(64)},id,'test',db.executor)).rejects.toThrow();
+ expect(await markManagementNotificationRead(deniedProof,id,'test',db.executor)).toBe(false);
+ expect(await q('SELECT read_at::text AS read FROM notifications WHERE id=$1',[id])).toEqual([first]);
  expect(await markManagementNotificationRead(owner,id,'production',db.executor)).toBe(false);
  expect(await q('SELECT * FROM communication_receipts')).toEqual([]);
  await q('DELETE FROM employee_sessions WHERE employee_id=$1',[owner.employee.id]);

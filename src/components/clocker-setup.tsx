@@ -78,17 +78,18 @@ export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled 
     status={feedback?.uncertain ? 'unconfirmed' : pending ? 'checking' : state.state === 'connected' ? 'connected' : 'setup'}>
     <div ref={motion} className={styles.kioskBody} aria-busy={pending}>
       {feedback?.uncertain ? <>
-        <div className={styles.kioskIcon}><ClockerIcon name="refresh" size={28}/></div>
+        <div className={styles.kioskIcon} data-tone="amber"><ClockerIcon name="refresh" size={44} weight="duotone"/></div>
         <h1>Check tablet setup</h1>
       </> : state.state === 'connected' && pinEnabled ? <ClockerPinGate locationKey={locationKey} timeZone={timeZone} punchEnabled={punchEnabled} /> : state.state === 'connected' ? <>
-        <div className={styles.connectedMark}><ClockerIcon name="check" size={28}/></div>
+        <div className={styles.connectedMark}><ClockerIcon name="check" size={48} weight="bold"/></div>
         <h1>Tablet connected</h1>
         <p className={styles.kioskLead}>{state.deviceName} is registered for this location.</p>
         <div className={styles.tabletNotice}><strong>Timekeeping is not available yet.</strong>Employee PINs and real time punches are being connected. Do not use this tablet to record worked time yet.</div>
         <p className={styles.footnote}>Owner access has been signed out on this tablet.</p>
         <button className="button secondary" type="button" disabled={pending} onClick={check}>Check Connection</button>
       </> : <>
-        <div className={styles.kioskIcon}><ClockerIcon name="shield" size={28}/></div>
+        <div className={styles.kioskIcon}><ClockerIcon name="lock" size={44} weight="duotone"/></div>
+        <p className={styles.kioskEyebrow}>One-time setup</p>
         <h1>Set up this tablet</h1>
         <p className={styles.kioskLead}>Ask your Owner to add this device in Settings &rarr; Clocker devices. Then paste the one-use setup code.</p>
         <form onSubmit={connect} className={styles.tabletForm}>
@@ -100,7 +101,7 @@ export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled 
         </form>
       </>}
       {pending ? <p role="status" className={styles.kioskStatus}>Checking this tablet...</p> : null}
-      {feedback ? <div><p role="alert" className={styles.error}>{feedback.message}</p>
+      {feedback ? <div className={styles.kioskProblem}><p role="alert" className={styles.error}>{feedback.message}</p>
         <button className="button secondary" type="button" disabled={pending} onClick={check}>Check Setup</button></div> : null}
     </div>
   </ClockerShell>;

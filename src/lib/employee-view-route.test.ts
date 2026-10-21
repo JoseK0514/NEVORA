@@ -16,6 +16,7 @@ it.each(['OWNER','MANAGER','LEAD','EMPLOYEE'])('permits only the actual %s recip
  expect((await GET(request('notifications',{},'?employeeId=foreign'))).status).toBe(400);
  expect((await GET(request('notifications',{'sec-fetch-site':'cross-site'}))).status).toBe(403);
  expect((await GET(request('notifications',{'X-Nevora-Employee-View':'foreign'}))).status).toBe(403);
+ expect((await GET(request('notifications',{'X-Nevora-Employee-View':binding('profile')}))).status).toBe(403);
  expect(m.read).toHaveBeenCalledTimes(1);
 });
 it.each(['profile','notifications'] as const)('authenticates actual %s destination, exact binding and no arbitrary employee selector',async kind=>{

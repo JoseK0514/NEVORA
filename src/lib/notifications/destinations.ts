@@ -12,6 +12,7 @@ export function canAccessPublishedAssignment(recipient: RecipientAccess, shift: 
 }
 const ROUTE_PARAMS: Record<string, readonly string[]> = {
   '/app': [],
+  '/app/account/delete': [],
   '/app/payroll': [],
   '/app/my-pay': [], '/app/schedule': ['week','employeeId'], '/app/availability': ['week','employeeId'],
   '/app/requests': ['tab','requestId'], '/app/exchange': ['tab','requestId'],

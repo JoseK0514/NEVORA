@@ -5,7 +5,7 @@ import {beforeEach,expect,it,vi} from 'vitest';
 const m=vi.hoisted(()=>({role:'MANAGER',denied:false,workspace:vi.fn(async()=>({timeZone:'America/Puerto_Rico'}))}));
 vi.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>({id:'reviewer',role:m.role})}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:m.role},sessionTokenHash:'fixture'})}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:null}}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:null,authority:'fictional-authority',observedAt:'2026-10-20T12:00:00.000Z',validForMs:15000}}));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:m.workspace}));
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 vi.mock('@/components/account-recovery',()=>({AccountRecovery:({employeeId,from,timeZone}:{employeeId?:string;from?:string;timeZone?:string})=>createElement('div',{'data-recovery':'account','data-employee':employeeId,'data-from':from,'data-zone':timeZone})}));
@@ -39,4 +39,10 @@ it('retains the Owner Settings return on both authorized recovery pages',async()
  for(const page of [AccountRecoveryPage,ClockerRecoveryPage]){
   expect(renderToStaticMarkup(await page({searchParams:Promise.resolve({from:'settings'})}))).toContain('data-from="settings"');
  }
+});
+
+it('keys retained Clocker selection to current authority and passes its observation to the body guard',async()=>{
+ const page=await ClockerRecoveryPage();
+ expect(page.key).toBe('fictional-authority');
+ expect(page.props.observation).toMatchObject({authority:'fictional-authority',validForMs:15000});
 });

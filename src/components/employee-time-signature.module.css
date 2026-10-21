@@ -1,0 +1,127 @@
+/* My time pieces on the Signature frame. The entry rows and the correction center keep their shared class names
+ * (the corrections release suite finds them by those names); here they take the Signature look. */
+.mtRoot:not(#mt) { --mt-pad: 18px; }
+.mtWaiting:not(#mt) { color: rgba(255, 255, 255, .82); font-size: 2rem !important; line-height: 3.125rem !important; letter-spacing: -.03em !important; }
+.mtRoot :global(.employee-time-badge):not(#mt):not(#mt) { display: inline; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: none; box-shadow: none; }
+.mtRoot :global(.employee-time-badge):not(#mt):not(#mt)::before { display: none; }
+.mtWhere:not(#mt) { min-height: 1.375rem; }
+.mtDash:not(#mt) { display: block; font: 300 1.75rem/2rem var(--sg-display); color: rgba(255, 255, 255, .5); }
+.mtControls:not(#mt) { display: inline-flex; align-items: center; gap: 16px; }
+.mtDetails:not(#mt) { position: relative; }
+.mtDetails > summary:not(#mt) { list-style: none; }
+.mtDetails > summary:not(#mt)::-webkit-details-marker { display: none; }
+.mtDetails > div:not(#mt) { position: absolute; right: 0; z-index: 3; width: min(18rem, 80vw); margin-top: 4px; padding: 12px 14px; border: 1px solid var(--sg-rule); border-radius: 14px; background: var(--sg-card); box-shadow: 0 10px 30px rgba(22, 28, 27, .12); font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.mtDetails > div p:not(#mt) { margin: 0; }
+.mtFine:not(#mt) { margin: 10px 24px 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); }
+.mtCount:not(#mt) { color: var(--sg-ink-3); }
+
+/* Entry rows: [date] [day, range, place] [total] [+]. */
+.mtEntries :global(.employee-time-entry):not(#mt):not(#mt) { margin: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.mtEntries :global(.employee-time-entry > summary):not(#mt):not(#mt) { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto 24px; align-items: center; gap: 14px; min-height: 72px; padding: 14px 14px 14px 18px; border: 0; background: none; list-style: none; cursor: pointer; }
+.mtEntries :global(.employee-time-entry > summary)::-webkit-details-marker { display: none; }
+.mtEntries :global(.employee-time-entry > summary:hover):not(#mt):not(#mt) { background: #FAFAF8; }
+.mtEntries :global(.employee-time-entry-date):not(#mt):not(#mt) { display: flex; flex-direction: column; width: auto; height: auto; padding: 0; border: 0; border-radius: 0; background: none; color: var(--sg-ink); box-shadow: none; }
+.mtEntries :global(.employee-time-entry-date span):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtEntries :global(.employee-time-entry-date b):not(#mt):not(#mt) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--sg-display); letter-spacing: -.03em; }
+.mtEntries :global(.employee-time-entry-label):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mtEntries :global(.employee-time-entry-label strong):not(#mt):not(#mt) { font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
+.mtEntries :global(.employee-time-entry-label small):not(#mt):not(#mt) { display: flex; align-items: center; gap: 4px; font: 400 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+.mtEntries :global(.employee-time-entry-total):not(#mt):not(#mt) { display: flex; flex-direction: column; align-items: flex-end; font: 300 1.25rem/1.5rem var(--sg-display); color: var(--sg-ink); font-variant-numeric: tabular-nums; }
+.mtEntries :global(.employee-time-entry-total small):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtEntries :global(.employee-time-disclosure):not(#mt):not(#mt) { color: var(--sg-faint); }
+.mtEntries :global(.employee-time-punches):not(#mt):not(#mt) { margin: 0 14px 0 18px; padding: 6px 0 14px; border-top: 1px solid var(--sg-rule); background: none; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.mtEntries :global(.employee-time-punches dl > div):not(#mt):not(#mt) { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border: 0; }
+.mtEntries :global(.employee-time-punches dt):not(#mt):not(#mt) { color: var(--sg-ink-2); }
+.mtEntries :global(.employee-time-punches dd):not(#mt):not(#mt) { margin: 0; color: var(--sg-ink); text-align: right; }
+
+/* The correction center: one white card, the trigger as an underlined link. */
+.mtCorrections :global(.employee-correction-center):not(#mt):not(#mt) { margin: 30px 16px 0; padding: 18px; border: 1px solid var(--sg-rule); border-radius: 18px; background: var(--sg-card); box-shadow: none; }
+.mtCorrections :global(.employee-time-section-heading):not(#mt):not(#mt) { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 14px; margin: 0; padding: 0; border: 0; }
+.mtCorrections :global(.employee-time-section-heading h2):not(#mt):not(#mt) { margin: 0; font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
+.mtCorrections :global(.employee-time-section-heading p):not(#mt):not(#mt) { margin: 2px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.mtCorrections :global(.employee-time-correction-trigger):not(#mt):not(#mt) { min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--sg-deep); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
+.mtCorrections :global(.employee-time-empty):not(#mt):not(#mt) { margin: 12px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); }
+
+@media (min-width: 768px) { .mtCorrections :global(.employee-correction-center):not(#mt):not(#mt) { margin-inline: 0; } .mtFine:not(#mt) { margin-inline: 4px; } }
+.mtPanel:not(#mt) { display: flex; flex-direction: column; min-width: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+
+/* Phase 4 (Signature, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-4/p4b-board-a.png):
+ * the correction form reads as before and after, then the new times, the reason and one full-width action. History rows
+ * carry a status pill. Same form, fields, labels and classes as before. */
+.mtPanel :global(.employee-time-correction-form):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 14px; margin: 12px 0 0; padding: 18px; border: 0; border-radius: 22px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), 0 1px 1px rgba(22, 28, 27, .03), 0 18px 36px -24px rgba(13, 54, 52, .3); }
+.mtCorrections :global(.employee-time-correction-form):not(#mt):not(#mt) { box-shadow: inset 0 0 0 1px var(--sg-rule); background: #FCFBF9; }
+.mtPanel :global(.employee-time-correction-form > label):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 6px; font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtPanel :global(.employee-time-correction-form :is(select, textarea, input:not([type="datetime-local"]))):not(#mt):not(#mt) { width: 100%; min-width: 0; min-height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: var(--sg-page); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1rem/1.25rem var(--sg-font); letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
+.mtPanel :global(.employee-time-correction-form textarea):not(#mt):not(#mt) { min-height: 88px; padding: 12px 14px; font-weight: 400; resize: vertical; }
+.mtPanel :global(.employee-time-correction-form :is(select, input, textarea)):focus-visible:not(#mt):not(#mt) { outline: 2px solid var(--sg-ink); outline-offset: 1px; }
+.mtPanel :global(.correction-comparison):not(#mt):not(#mt) { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; margin: 0; padding: 0; border-radius: 18px; background: var(--sg-page); overflow: hidden; }
+.mtPanel :global(.correction-comparison > div):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; }
+.mtPanel :global(.correction-comparison > div + div):not(#mt):not(#mt) { border-left: 1px solid var(--sg-rule); background: #F2F8F6; }
+.mtPanel :global(.correction-comparison > div:nth-child(3)):not(#mt):not(#mt) { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--sg-rule); background: #FBF4EA; }
+.mtPanel :global(.correction-comparison small):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtPanel :global(.correction-comparison > div + div > small:first-child):not(#mt):not(#mt) { color: var(--sg-teal); }
+.mtPanel :global(.correction-comparison > div > small + strong + small):not(#mt):not(#mt), .mtPanel :global(.correction-comparison strong + small):not(#mt):not(#mt) { font: 400 .8125rem/1.125rem var(--sg-font); letter-spacing: 0; text-transform: none; color: var(--sg-ink-3); }
+.mtPanel :global(.correction-comparison strong):not(#mt):not(#mt) { font: 300 1.1875rem/1.5rem var(--sg-display); letter-spacing: -.01em; color: var(--sg-ink); font-variant-numeric: tabular-nums; }
+.mtPanel :global(.correction-comparison > div:first-child strong):not(#mt):not(#mt) { color: var(--sg-ink-3); }
+.mtPanel :global(.correction-context-zone):not(#mt):not(#mt) { margin: -6px 2px 0; font: 400 .8125rem/1.125rem var(--sg-font); color: var(--sg-ink-3); }
+.mtPanel :global(.employee-time-correction-note):not(#mt):not(#mt) { margin: 0; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
+.mtPanel :global(.employee-time-correction-submit):not(#mt):not(#mt) { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 54px; padding: 0 20px; border: 0; border-radius: 16px; background: var(--sg-deep); color: #FFFFFF; font: 500 1.0625rem/1 var(--sg-font); cursor: pointer; }
+.mtPanel :global(.employee-time-correction-submit):disabled:not(#mt):not(#mt) { background: #C9CFCD; color: #4E5654; cursor: not-allowed; }
+.mtPanel :global(.employee-time-correction-status):not(#mt):not(#mt) { margin: 10px 0 0; padding: 12px 14px; border-radius: 14px; background: #FBF0EE; color: var(--sg-red); font: 500 .9375rem/1.3125rem var(--sg-font); }
+.mtPanel :global(.employee-time-correction-status.success):not(#mt):not(#mt) { background: #EAF4F2; color: #0A5753; }
+.mtPanel :global(.employee-time-correction-retry):not(#mt):not(#mt) { min-height: 44px; margin-top: 8px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--sg-card); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 .9375rem/1 var(--sg-font); }
+
+/* Correction history: rows with a status pill. */
+.mtCorrections :global(.employee-correction-history):not(#mt):not(#mt) { display: flex; flex-direction: column; margin-top: 14px; border-radius: 18px; background: var(--sg-card); box-shadow: inset 0 0 0 1px var(--sg-rule); overflow: hidden; }
+.mtCorrections :global(.employee-correction-history-row):not(#mt):not(#mt) { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px; }
+.mtCorrections :global(.employee-correction-history-row + .employee-correction-history-row):not(#mt):not(#mt) { border-top: 1px solid var(--sg-rule); }
+.mtCorrections :global(.employee-correction-history-row > div):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mtCorrections :global(.employee-correction-history-row strong):not(#mt):not(#mt) { font: 500 1rem/1.3125rem var(--sg-font); }
+.mtCorrections :global(.employee-correction-history-row > div > small):not(#mt):not(#mt) { font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+.mtCorrections :global(.employee-correction-state):not(#mt):not(#mt) { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: #EFEDE8; color: #55585A; font: 500 .8125rem/1 var(--sg-font); }
+.mtCorrections :global(.employee-correction-state.pending):not(#mt):not(#mt) { background: #FBEFDC; color: #74440A; }
+.mtCorrections :global(.employee-correction-state.approved):not(#mt):not(#mt) { background: #E2F1ED; color: #0A5753; }
+.mtCorrections :global(.employee-correction-more):not(#mt):not(#mt) { padding: 12px 16px; border-top: 1px solid var(--sg-rule); font: 400 .8125rem/1.125rem var(--sg-font); color: var(--sg-ink-3); }
+
+@container sg (max-width: 359px) {
+  .mtPanel :global(.correction-comparison):not(#mt):not(#mt) { grid-template-columns: minmax(0, 1fr); }
+  .mtPanel :global(.correction-comparison > div + div):not(#mt):not(#mt) { border-left: 0; border-top: 1px solid var(--sg-rule); }
+}
+
+/* Phase 4 upscale: the corrections section. No outer box; a tracked-caps heading, a calm card to add time, the form as
+ * a sheet of cards, and history rows with a date block, the change in large type and a status pill. */
+.mtCorrections :global(.employee-correction-center):not(#mt):not(#mt) { margin: 40px 0 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.mtCorrections :global(.employee-time-section-heading):not(#mt):not(#mt) { display: flex; flex-direction: column; align-items: stretch; gap: 14px; margin: 0 16px; }
+.mtCorrections :global(.employee-time-section-heading > div):not(#mt):not(#mt) { margin: 0 8px; }
+.mtCorrections :global(.employee-time-section-heading h2):not(#mt):not(#mt) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: var(--sg-ink-2); }
+.mtCorrections :global(.employee-time-section-heading p):not(#mt):not(#mt) { margin-top: 4px; font-size: .875rem; color: var(--sg-ink-3); }
+.mtCorrections :global(.employee-time-correction-trigger):not(#mt):not(#mt) { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px; padding: 16px 18px; border: 0; border-radius: 22px; background: #EAF4F2; box-shadow: none; color: var(--sg-ink); text-align: left; cursor: pointer; }
+.mtCorrections :global(.employee-time-correction-trigger:hover):not(#mt):not(#mt) { background: #E1EFEC; }
+.mtCorrections :global(.employee-time-correction-trigger[data-open]):not(#mt):not(#mt) { min-height: 52px; padding: 8px 12px; background: transparent; color: var(--sg-ink-2); }
+.mtCorrections :global(.employee-time-correction-trigger:disabled):not(#mt):not(#mt) { opacity: .55; cursor: default; }
+.mtCorrections :global(.employee-time-correction-trigger__tile):not(#mt):not(#mt) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; background: #FFFFFF; color: var(--sg-teal); box-shadow: 0 6px 16px -10px rgba(13, 54, 52, .45); }
+.mtCorrections :global(.employee-time-correction-trigger[data-open] .employee-time-correction-trigger__tile):not(#mt):not(#mt) { width: 36px; height: 36px; border-radius: 50%; background: var(--sg-track); box-shadow: none; color: var(--sg-ink-2); }
+.mtCorrections :global(.employee-time-correction-trigger__copy):not(#mt):not(#mt) { flex: 1; min-width: 0; }
+.mtCorrections :global(.employee-time-correction-trigger__copy b):not(#mt):not(#mt) { font: 500 1.0625rem/1.375rem var(--sg-font); }
+.mtCorrections :global(.employee-time-correction-trigger__copy small):not(#mt):not(#mt) { font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); opacity: 1; }
+.mtCorrections :global(.employee-time-correction-trigger__go):not(#mt):not(#mt) { flex: none; width: 36px; height: 36px; padding: 9px; border-radius: 50%; background: #FFFFFF; color: var(--sg-deep); }
+.mtCorrections :global(.employee-time-correction-form.missing):not(#mt):not(#mt) { margin: 12px 16px 0; padding: 0; background: none; box-shadow: none; gap: 14px; }
+.mtCorrections :global(.employee-time-correction-form.missing > label:first-child):not(#mt):not(#mt), .mtPanel :global(.employee-time-correction-form > label:has(textarea)):not(#mt):not(#mt) { padding: 14px 16px; border-radius: 18px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .07); }
+.mtPanel :global(.employee-time-correction-form > label :is(select, textarea)):not(#mt):not(#mt):not(#mt2) { min-height: 44px; padding: 4px 0; border-radius: 8px; background: transparent; box-shadow: none; font-size: 1.0625rem; }
+.mtPanel :global(.employee-time-correction-form > label textarea):not(#mt):not(#mt):not(#mt2) { min-height: 72px; }
+.mtPanel :global(.employee-time-correction-form .employee-time-correction-note):not(#mt):not(#mt) { margin: 0 6px; text-align: center; }
+.mtCorrections :global(.employee-correction-history):not(#mt):not(#mt) { margin: 16px 16px 0; border-radius: 22px; box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), 0 16px 36px -22px rgba(13, 54, 52, .24); }
+.mtCorrections :global(.employee-correction-history-row):not(#mt):not(#mt) { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: start; gap: 4px 14px; padding: 18px; }
+.mtCorrections :global(.employee-correction-day):not(#mt):not(#mt) { display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
+.mtCorrections :global(.employee-correction-day small):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtCorrections :global(.employee-correction-day b):not(#mt):not(#mt) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--sg-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.mtCorrections :global(.employee-correction-change):not(#mt):not(#mt) { gap: 8px; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
+.mtCorrections :global(.employee-correction-change b):not(#mt):not(#mt) { font: 300 1.25rem/1.5rem var(--sg-display); letter-spacing: -.015em; color: var(--sg-ink); }
+.mtCorrections :global(.employee-correction-change svg):not(#mt):not(#mt) { color: var(--sg-teal); }
+.mtCorrections :global(.employee-correction-history-row .correction-comparison):not(#mt):not(#mt) { margin-top: 6px; border-radius: 14px; }
+.mtCorrections :global(.employee-correction-history-row .correction-comparison > div):not(#mt):not(#mt) { padding: 10px 12px; }
+.mtCorrections :global(.employee-correction-history-row .correction-comparison strong):not(#mt):not(#mt) { font-size: .9375rem; line-height: 1.25rem; }
+.mtCorrections :global(.employee-correction-history-row > div > .employee-time-correction-note):not(#mt):not(#mt) { font-size: .8125rem; }
+.mtCorrections :global(.employee-correction-history-row > div > small):not(#mt):not(#mt) { color: var(--sg-ink-3); }
+.mtCorrections :global(.employee-correction-history-row .employee-time-correction-trigger):not(#mt):not(#mt) { min-height: 44px; margin-top: 6px; padding: 0 14px; border-radius: 999px; background: var(--sg-page); width: auto; }
+.mtCorrections :global(.employee-correction-state):not(#mt):not(#mt) { grid-column: 3; grid-row: 1; }

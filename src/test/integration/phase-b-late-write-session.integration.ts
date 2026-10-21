@@ -1,6 +1,7 @@
 import { Client } from 'pg';
 import { expect, it } from 'vitest';
 import { createDisposableFoundationDatabase } from './local-postgres';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 import { createPosition } from '../../lib/data/positions';
 import { createLocation } from '../../lib/data/locations';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
@@ -24,6 +25,7 @@ for (const kind of ['position', 'location'] as const) {
       try {
         await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('review-owner','Review','Owner','5550000001','OWNER','loc-1')");
         await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'review-owner',clock_timestamp()+interval '1 day')", [proof.sessionTokenHash]);
+        await installFixtureCompanyAccess(db.executor);
         await blocker.connect(); await worker.connect();
         const pid = (await worker.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
         const executor: SqlExecutor = {

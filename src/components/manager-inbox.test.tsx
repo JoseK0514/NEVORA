@@ -78,7 +78,7 @@ it('Phase 4: the desktop pane shows the first item and opens its full review; de
 it("Codex's optional request facts fill the pane; the decision stays on the full review", () => {
   const request = {...item('TIME_OFF:r1', 'TIME_OFF', 'requests'), request: {startDate: '2026-10-28', endDate: '2026-10-29', lengthText: '2 days', locationName: 'Main Office', note: 'Fictional family appointment', reviewHref: '/app/requests?tab=pending&requestId=r1&from=inbox'}} as ActionItem;
   const pane = html(ready([request])).split('class="nv-card inbox-detail"')[1].split('</section>')[0];
-  expect(pane).toContain('<dt>Dates</dt><dd><span class="nv-keep">Wed, Oct 28 – Thu, Oct 29</span></dd>');
+  expect(pane).toContain('<dt>Dates</dt><dd><span class="nv-keep"><span class="nv-nowrap">Wed, Oct 28\u00a0–</span> <span class="nv-nowrap">Thu, Oct 29</span></span></dd>');
   // r4 QA: whole days read as the full review words them ("2 full days"), not the read's shorter "2 days".
   expect(pane).toContain('<dt>Length</dt><dd>2 full days</dd>');
   expect(pane).toContain('<dt>Works at</dt><dd>Main Office</dd>');

@@ -131,3 +131,13 @@ it('R16 a failed silent refresh leaves the verified report until its own expiry,
  await vi.advanceTimersByTimeAsync(12001);expect(html()).toContain(originalName);
  vi.stubGlobal('fetch',async()=>new Promise<Response>(()=>{}));await vi.advanceTimersByTimeAsync(3000);assertProtectedAbsent();
 });
+
+it('report table regions expose explicit native keyboard focus targets',async()=>{
+ reads();await mount();const output=html();
+ const regions=[...output.matchAll(/<div[^>]*class="wb-table-scroll"[^>]*>/g)].map(match=>match[0]);
+ expect(regions).toHaveLength(4);
+ for(const name of ['Scheduled vs recorded','Hours by employee','Hours by location','Hours by position']){
+  const region=regions.find(tag=>tag.includes(`aria-label="${name} columns"`));
+  expect(region).toContain('role="region"');expect(region).toContain('tabindex="0"');
+ }
+});

@@ -13,6 +13,15 @@ import {NavIcon} from './nav-icon';
 import './calendar-subscription-panel.css';
 import {PendingLabel} from './employee-submit-button';
 type ViewProps={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
+/** Signature (phase 4): an example week, drawn the way a calendar app shows subscribed shifts. Decorative and
+ * generic; it never shows the person's own schedule. */
+function CalendarExample(){
+ const days:[string,number,[string,number,number]|null][]=[['Mon',26,['8 – 4',22,46]],['Tue',27,['8 – 4',22,46]],['Wed',28,null],['Thu',29,['12 – 8',44,46]],['Fri',30,['8 – 2',22,33]]];
+ return <figure className="employee-calendar-example" aria-hidden="true"><figcaption><b>Example week</b><span>How shifts appear in your calendar</span></figcaption>
+  <div className="employee-calendar-example__grid">{days.map(([day,date,shift])=><div key={day}><small>{day}</small><b>{date}</b><span>{shift?<i style={{top:`${shift[1]}%`,height:`${shift[2]}%`}}><b>{shift[0]}</b>Shift</i>:null}</span></div>)}</div>
+ </figure>;
+}
+
 export function CalendarSubscriptionView({status,url,paused,busy,notice,onCommand,onCopy,onRetry}:ViewProps){
  const link=useRef<HTMLTextAreaElement>(null),feedback=useRef<HTMLDivElement>(null),unknown=notice.includes('unknown');
  useEffect(()=>{if(notice&&feedback.current)revealFeedback(feedback.current);},[notice]);
@@ -22,6 +31,7 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
   <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="calendar" size={24}/></span><div><h2 id="employee-calendar-title">Calendar subscription</h2><p>Your shifts, alongside your plans.</p></div></header>
   {paused?<p role="status">Calendar settings paused. Return to this window to check the link.</p>:<>
    <p>View your published shifts in Apple Calendar, Google Calendar, or Outlook.</p>
+   <CalendarExample/>
    <div className="employee-calendar-status-box">
     {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">Calendar settings unavailable. {status.state==='unauthorized'?'Sign in again.':'Retry to check the current link.'}</p>:<>
      <span className={`employee-calendar-state${active?' is-active':''}`}>{active?'Link active':status.state==='revoked'?'Link revoked':'No calendar link'}</span>

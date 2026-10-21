@@ -5,11 +5,12 @@ import {useEffect,useRef,useState} from 'react';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
 import {parseEmployeeView,type EmployeeViewKind,type EmployeeViewSnapshot} from '../lib/employee-view';
 import {NotificationInbox} from './notification-inbox';
+import {NotificationInboxSignature} from './notification-inbox-signature';
 import {EmployeeProfileDetails} from './employee-profile-details';
 import {NavIcon} from './nav-icon';
 
-export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=false,onMarkRead}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled?:boolean;onMarkRead?:(id:string)=>Promise<void>}){
- if(kind==='notifications')return <NotificationInbox state={state} onRetry={onRetry} onMarkRead={onMarkRead}/>;
+export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=false,onMarkRead,signature=false}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled?:boolean;onMarkRead?:(id:string)=>Promise<void>;signature?:boolean}){
+ if(kind==='notifications')return signature&&!onMarkRead?<NotificationInboxSignature state={state} onRetry={onRetry}/>:<NotificationInbox state={state} onRetry={onRetry} onMarkRead={onMarkRead}/>;
  const ready=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.kind==='profile'?state.snapshot:null;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const unavailable=state.snapshot?.state==='unavailable';
@@ -27,7 +28,9 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
    :<button type="button" className={kind==='profile'?'profile-refresh-link':'button secondary'} disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':kind==='profile'?'Refresh details':'Refresh'}</button>}</footer>
  </section>;
 }
-export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean}){
+export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false,signature=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean;
+ /** Employee Signature pages (phase 2): the Notifications page draws its own band and sheet. */
+ signature?:boolean}){
  const [state,setState]=useState<PrivatePanelState<EmployeeViewSnapshot>>({snapshot:null,paused:false,refreshing:true});
  const control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeeViewSnapshot>>|null>(null);
  useEffect(()=>{
@@ -50,7 +53,7 @@ export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);if(kind==='notifications')window.removeEventListener('nevora:notifications-changed',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,kind,endpoint]);
- return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled} onMarkRead={markReadAllowed?async id=>{
+ return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled} signature={signature} onMarkRead={markReadAllowed?async id=>{
  const response=await fetch('/api/notifications/read',{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000),headers:{'Content-Type':'application/json','X-Nevora-Notification-Read':'1','X-Nevora-Employee-View':authority},body:JSON.stringify({notificationId:id})});
  if(!response.ok)throw Error('Read not confirmed');control.current?.refresh();window.dispatchEvent(new Event('nevora:notifications-changed'));
  }:undefined}/>;

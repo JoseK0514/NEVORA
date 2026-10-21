@@ -43,7 +43,9 @@ it('midnight end, real position names, lead and approved-callout labels remain e
 it('selected day, today, current-week return and planning destinations retain native URLs',()=>{
  const output=html({selectedDay:'2026-10-14'});
  expect(output).toContain('aria-current="date"');expect(output).toContain('Selected day');
- expect(output).toContain('/app/schedule?week=2026-10-12&amp;day=2026-10-12#schedule-2026-10-12');
+ // Signature: on the current week the arrows are enough; another week offers Today back to the current one.
+ expect(output).not.toContain('>Today</a>');
+ expect(html({weekStart:'2026-10-19'})).toContain('/app/schedule?week=2026-10-12&amp;day=2026-10-12#schedule-2026-10-12');
  expect(output).toContain('/app/availability');expect(output).toContain('/app/requests');
 });
 
@@ -54,12 +56,12 @@ it('My shifts and Open shifts are real URLs with an announced count',()=>{
  expect(mine).toContain('href="/app/schedule?week=2026-10-12&amp;view=open">Open shifts');
  // Phase 3: the count is part of the pill's visible name, so it is announced with it.
  expect(mine).toContain('view=open">Open shifts (1)</a>');
- expect(mine).toContain('employee-schedule-agenda');
+ expect(mine).toContain('data-s6-agenda');
 });
 it('Open shifts lists claimable shifts and own claims waiting for approval without the week agenda',()=>{
  const output=html({view:'open',openShifts:{available:[open],requested:[{...open,id:'mine-1',href:'/app/exchange?tab=requests&requestId=mine-1'}]}});
  for(const value of ['Waiting for approval','Requested · waiting for approval','View request','View and claim','#request-open-1','North Office · Barista','Claiming sends a request to your manager']) expect(output.replace(/\u00a0/g," ")).toContain(value);
- expect(output).not.toContain('employee-schedule-agenda');
+ expect(output).not.toContain('data-s6-agenda');
 });
 it('Open shifts shows a calm empty state and an honest unavailable state',()=>{
  expect(html({view:'open',openShifts:{available:[],requested:[]}})).toContain('No open shifts right now');
@@ -80,35 +82,49 @@ it('B3: shifts the claim rules refuse sit collapsed below the claimable ones, wi
 it('opens swap choosing from Home: a banner, open options on upcoming shifts, and the mode kept across weeks (Codex F1)', () => {
   const markup = html({intent: 'swap'});
   expect(markup).toContain('Choose the shift you want to swap');
-  expect(markup).toMatch(/<details class="my-shift-options" open="">/);
+  expect(markup).toMatch(/<details class="[^"]*s6Options[^"]*" open="">/);
   expect(markup).toContain('href="/app/exchange/swap?sourceShiftId=self-shift"');
   expect(markup).toContain('href="/app/schedule?week=2026-10-19&amp;intent=swap"');
   const none = html({intent: 'swap', shifts: []});
   expect(none).toContain('No shifts to swap this week');
   expect(html()).not.toContain('Choose the shift you want to swap');
-  expect(html()).not.toMatch(/<details class="my-shift-options" open="">/);
+  expect(html()).not.toMatch(/<details class="[^"]*s6Options[^"]*" open="">/);
 });
 
 it('lists Planning ahead as one group of rows with the same destinations (Jose phone notes)', () => {
   const markup = html();
   expect(markup).toContain('id="my-schedule-more-title">Planning ahead</h2>');
   for (const href of ['/app/exchange?tab=my', '/app/availability', '/app/requests', '/app/profile#employee-calendar-title']) {
-    expect(markup).toMatch(new RegExp(`<a href="${href.replace(/[?#]/g, m => '\\' + m)}" class="my-schedule-row">`));
+    expect(markup).toMatch(new RegExp(`<a href="${href.replace(/[?#]/g, m => '\\' + m)}" class="[^"]*s6LinkRow[^"]*">`));
   }
 });
 
 it('says plainly what the review asks: confirm you have seen your own schedule (Jose, 2026-10-18)', () => {
   const markup = html({confirmationNeeded: true, confirmation: createElement('button', null, 'Confirm schedule')});
-  expect(markup).toContain('>Your manager asks you to confirm this week</a>');
-  expect(markup).toContain('Confirm you’ve seen your schedule');
-  expect(markup).toContain('Check your shifts for this week, then confirm.');
+  // Signature: the review sits right under the week, before the shifts, so no jump link is needed.
+  expect(markup.indexOf('id="my-review-title"')).toBeLessThan(markup.indexOf('data-s6-agenda'));
+  expect(markup).not.toContain('>Your manager asks you to confirm this week</a>');
+  expect(markup).toContain('Confirm this week');
+  expect(markup).toContain('Your manager asked you to check it.');
   expect(markup).not.toContain('below');
 });
 
 it('names the location that has not published, inside the week card (Jose, 2026-10-18)', () => {
   const markup = html({state: 'unpublished', locations: [{id: 'north', shortName: 'North Office'}, {id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
-  expect(markup).toContain('class="my-week-note"');
+  expect(markup).toContain('data-week-note=""');
   expect(markup).toContain('Your North Office shifts are published. Harbor hasn’t published this week yet.');
   const none = html({state: 'unpublished', shifts: [], locations: [{id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
   expect(none).toContain('Harbor hasn’t published this week yet. Shifts shown are published. An empty day isn’t a day off yet.');
+});
+
+it('organizes the week: days still ahead first with the next shift marked, finished days folded under Earlier this week', () => {
+  const markup = html({today: '2026-10-14', observedAt: '2026-10-14T12:00:00Z', shifts: [{...shift, id: 'past', date: '2026-10-12'}, {...shift, id: 'next', date: '2026-10-15'}]});
+  const next = markup.indexOf('Next up'), earlier = markup.indexOf('Earlier this week');
+  expect(next).toBeGreaterThan(0);
+  expect(earlier).toBeGreaterThan(next);
+  // Every day keeps its own anchor; finished days live inside the closed disclosure.
+  expect(markup.match(/<article[^>]*id="schedule-/g)).toHaveLength(7);
+  expect(markup.indexOf('id="schedule-2026-10-12"')).toBeGreaterThan(earlier);
+  expect(markup.indexOf('id="schedule-2026-10-15"')).toBeLessThan(earlier);
+  expect(markup).toContain('Coming up');
 });

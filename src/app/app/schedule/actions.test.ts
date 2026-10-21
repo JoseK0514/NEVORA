@@ -117,3 +117,16 @@ it('a newly saved second-location shift returns to that location rather than all
  await expect(createShiftAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&location=loc-2&day=2030-10-07#schedule-employee-E'});
  expect(m.insert).toHaveBeenCalledWith(expect.objectContaining({locationId:'loc-2',weekStart:'2030-10-07',employeeId:'E'}));
 });
+
+it('deadline returns to the allowed rules editor with the selected week after success and invalid input',async()=>{
+ const data=form();data.set('returnTo','/app/schedule/settings');
+ await expect(setAvailabilityDeadlineAction(data)).rejects.toMatchObject({destination:'/app/schedule/settings?week=2030-10-07&deadlineSaved=1'});
+ data.set('availabilityDeadline','2026-03-08T02:30');
+ await expect(setAvailabilityDeadlineAction(data)).rejects.toMatchObject({destination:'/app/schedule/settings?week=2030-10-07&error=INVALID_DEADLINE&availabilityDeadline=2026-03-08T02%3A30'});
+ data.set('weekStart','invalid');
+ await expect(setAvailabilityDeadlineAction(data)).rejects.toMatchObject({destination:'/app/schedule/settings?error=INVALID_SHIFT'});
+});
+it.each(['https://evil.invalid','//evil.invalid','/app/schedule/settings?next=evil','/app/schedule/settings/../other','/app/employees'])('deadline refuses unapproved return destination %s',async path=>{
+ const data=form();data.set('returnTo',path);
+ await expect(setAvailabilityDeadlineAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&deadlineSaved=1'});
+});

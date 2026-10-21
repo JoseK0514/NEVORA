@@ -38,7 +38,7 @@ export async function initializeCompanyAccessOwnedFixture(context:Parameters<Own
  process.env.NEVORA_PAYROLL_ENABLED='true';process.env.PUSH_ENVIRONMENT='test';
  try{
   await q(await readFile('db/migrations/0031_native_payroll.sql','utf8'));
-  await seedOwnedApp(executor);
+  await seedOwnedApp(executor,{adoptCompanyAccess:false});
   // Capture the B-only native run against the COMPLETE real four-person B roster.
   // Later A actors are real new roster members, never a filtered payroll source.
   await q("UPDATE employees SET email='owner@example.invalid',primary_location_id='loc-2' WHERE id='QAOWNER';INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES('QALEGACY','Fictional','Legacy Manager','2025550101','legacy@example.invalid','MANAGER','loc-2')");

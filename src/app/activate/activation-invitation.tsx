@@ -73,9 +73,9 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
    <p><strong>Account activated</strong></p>
    <p>Keep your Employee ID. You will use it with the password you just created.</p>
    <label className="activation-success-id">Employee ID for sign-in<input value={employeeId} readOnly autoComplete="off" onFocus={event=>event.currentTarget.select()}/></label>
-   <Link href={loginHref} className="button primary full employee-login-submit"><span>Continue to sign in</span><ArrowRightIcon size={20} weight="regular" aria-hidden="true"/></Link>
+   <Link href={loginHref} className="ap-primary"><span>Continue to sign in</span><ArrowRightIcon size={20} weight="regular" aria-hidden="true"/></Link>
   </div>}
-  {canSubmit&&<form ref={formRef} className="form-stack employee-login-form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'}>
+  {canSubmit&&<form ref={formRef} className="form-stack employee-login-form activation-form ap-form" onSubmit={onSubmit} aria-busy={phase==='pending'}>
    <ActivationPasswords errorId={error?'activation-error':undefined}/>
    {error&&<p id="activation-error" className="form-error" role="alert">{mismatch?'Enter the same password in both fields.':'Activation is temporarily unavailable. Your invitation was not confirmed. Try again later.'}</p>}
    <ActivationSubmit pending={phase==='pending'}/>

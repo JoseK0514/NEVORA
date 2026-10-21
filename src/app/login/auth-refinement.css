@@ -303,3 +303,7 @@ html body .employee-login-page.auth-refinement-page .brand-legal span { font-siz
 
 /* Readable floor: secondary lines are 14px on desktop and 15px on phones, and every size follows the reader's text size (rem). */
 @media (max-width: 799px) { .employee-login-page.auth-refinement-page .login-access-link small { font-size: 0.9375rem; } }
+/* Policy links in the sign-in footer (shown once the policies are published). */
+html body .employee-login-page.auth-refinement-page .brand-legal-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 16px; }
+html body .employee-login-page.auth-refinement-page .brand-legal-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--login-blue); font-size: 0.875rem; text-decoration: none; }
+html body .employee-login-page.auth-refinement-page .brand-legal-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
