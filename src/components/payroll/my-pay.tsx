@@ -18,6 +18,7 @@ type Statement = PayrollStatementsResponse['statements'][number];
 export type NextPay = { payday: string; daysUntil: number } | null;
 
 const utc = (date: string) => new Date(`${date}T12:00:00Z`);
+const longDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric' }).format(utc(date));
 /** "Sep 21–27", or "Sep 28 – Oct 4" across a month. */
 export function periodLabel(start: string, end: string) {
   const month = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'short' }).format(utc(date));
@@ -31,13 +32,11 @@ export function PaydayMoment({ statement }: { statement: Statement }) {
     <Celebration kind="PAYDAY_AVAILABLE" eventKey={statement.id} confirmed={statement.published} />
     <div className={styles.mpLatestCopy}>
       <p className={styles.mpKicker}>Latest statement</p>
-      <h2 id="pw-payday-title">Payday {formatDisplayDate(statement.payday)}</h2>
-      <p>{formatDateRange(statement.period.startDate, statement.period.endDate)} · Published pay statement</p>
+      <h2 id="pw-payday-title"><span className="nv-sr">Payday </span>{longDay(statement.payday)}</h2>
+      <p>{periodLabel(statement.period.startDate, statement.period.endDate)} · PDF<span className="nv-sr">, published pay statement</span></p>
+      {statement.viewUrl ? <a className={`sg-link ${styles.mpView}`} href={`${documentHref(statement)}/view`}>View<span className="nv-sr"> statement, payday {longDay(statement.payday)}</span></a> : null}
     </div>
-    <div className={styles.mpActions}>
-      {statement.viewUrl ? <a className="sg-link" href={`${documentHref(statement)}/view`} aria-label={`View ${statement.filename}`}>View</a> : null}
-      <a className="sg-primary" href={documentHref(statement)} aria-label={`Download ${statement.filename}`}><DownloadIcon />Download</a>
-    </div>
+    <a className="sg-primary" href={documentHref(statement)} aria-label={`Download statement, payday ${longDay(statement.payday)}`}><DownloadIcon />Download</a>
   </section>;
 }
 

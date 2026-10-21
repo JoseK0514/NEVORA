@@ -22,7 +22,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 .back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 550; color: var(--pin-muted); margin: -8px 0 20px; }
-.back:hover { color: var(--pin-accent-ink); }
+@media (hover: hover) { .back:hover { color: var(--pin-accent-ink); } }
 .pageHeading { margin-bottom: 28px; }
 .pageHeading h1 { margin: 0 0 10px; font-size: clamp(30px, 3vw, 38px); line-height: 1.15; font-weight: 550; letter-spacing: -.04em; }
 .pageHeading p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--pin-muted); }
@@ -45,7 +45,7 @@
 .labelRow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .labelRow > span { font-size: 12px; font-weight: 400; color: var(--pin-muted); }
 .management input:not([type=hidden]) { width: 100%; min-width: 0; height: 58px; padding: 12px 20px; font-size: 23px; letter-spacing: .6em; border: 1px solid transparent; border-radius: 17px; background: var(--pin-inset); color: var(--pin-ink); caret-color: var(--pin-accent-ink); transition: background-color 150ms ease, border-color 150ms ease; }
-.management input:hover { background: #ECEEF0; }
+@media (hover: hover) { .management input:hover { background: #ECEEF0; } }
 .management input:focus-visible { background: var(--pin-surface); border-color: var(--pin-accent-ink); outline: 2px solid var(--pin-accent-ink); outline-offset: 3px; }
 .management input:disabled { opacity: .65; }
 .management .fieldHelp { font-size: 13px; }
@@ -55,11 +55,11 @@
 .formActions { display: flex; align-items: center; gap: 12px; padding-top: 8px; }
 .primary, .secondary { min-height: 48px; border: 1px solid transparent; border-radius: 17px; padding: 0 20px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-family: inherit; font-weight: 600; font-size: 14px; line-height: 1.4; transition: background-color 160ms ease, transform 160ms ease; }
 .primary { background: var(--pin-primary); color: var(--pin-ink); flex: 1; }
-.primary:hover { background: var(--pin-primary-hover); }
+@media (hover: hover) { .primary:hover { background: var(--pin-primary-hover); } }
 .primary:active, .secondary:active { transform: scale(.98); }
 .primary:disabled { background: #E5E7EB; color: var(--pin-muted); cursor: not-allowed; transform: none; }
 .secondary { background: var(--pin-surface); color: var(--pin-muted); border-color: var(--pin-line); }
-.secondary:hover { background: var(--pin-inset); }
+@media (hover: hover) { .secondary:hover { background: var(--pin-inset); } }
 .page :is(a, button):focus-visible, .feedback:focus { outline: 2px solid var(--pin-accent-ink); outline-offset: 4px; }
 .management .pending { margin-top: 18px; font-size: 13px; }
 .feedback { display: flex; align-items: flex-start; gap: 12px; margin-top: 24px; padding: 18px; border-radius: 14px; }
@@ -100,15 +100,15 @@
 .pinEntry input { position: absolute; inset: 0; min-width: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; color: transparent; caret-color: transparent; font-size: 24px; border-radius: inherit; outline: none !important; }
 .pinSlots { height: 100%; display: flex; align-items: center; justify-content: center; gap: 22px; pointer-events: none; }
 .pinSlots > span { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 2px #B9B6AF; transition: background-color .12s ease, box-shadow .12s ease, transform .12s ease; }
-.pinSlots > span[data-filled=true] { background: var(--ck-deep); box-shadow: none; transform: scale(1.05); }
+.pinSlots > span[data-filled=true] { background: var(--sig-fill); box-shadow: none; transform: scale(1.05); }
 .keypad { display: grid; grid-template-columns: repeat(3, 84px); justify-content: center; gap: 12px 26px; margin-top: 22px; }
 .keypad button { width: 84px; height: 84px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--ck-card); box-shadow: var(--ck-lift);
   font-family: inherit; font-size: 2.125rem; line-height: 1; font-weight: 300; color: var(--color-brand-primary); font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color .16s ease, transform .16s ease; }
-.keypad button:hover { background: #FBFAF8; }
+@media (hover: hover) { .keypad button:hover { background: #FBFAF8; } }
 .keypad button:active { background: #F1EFEA; }
 .keypad button:focus-visible { outline: 3px solid var(--nevora-blue); outline-offset: 3px; }
 .keypad button[data-key=tool] { background: transparent; box-shadow: none; font-size: 1rem; font-weight: 500; color: var(--ck-ink2); }
-.keypad button[data-key=tool]:hover { background: #EFEDE8; }
+@media (hover: hover) { .keypad button[data-key=tool]:hover { background: #EFEDE8; } }
 .terminal .continue { width: 100%; margin-top: 26px; }
 .terminal button:disabled { cursor: not-allowed; }
 .meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; width: 100%; max-width: 440px; margin-top: 14px; text-align: left; }

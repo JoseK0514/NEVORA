@@ -284,8 +284,8 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
     }} onRefresh={onRetry}/>}
   </HoldHeight>;
 
-  return <div className={styles.h5Root} data-home-state={viewState} aria-busy={refreshing || loading}>
-    <header className={styles.h5Band}>
+  return <div className={styles.h5Root} data-sig-surface="light" data-home-state={viewState} aria-busy={refreshing || loading}>
+    <header className={styles.h5Band} data-sig-surface="deep">
       <svg className={styles.h5Mark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path className={styles.h5MarkL} d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/><path className={styles.h5MarkT} d="M146 330 L180 266 L214 330 Z"/></svg>
       <p className={styles.h5Date}>{snapshot
         ? <time dateTime={snapshot.observedAt}>{keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time>
@@ -302,7 +302,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
         <div><dt>To review</dt><dd>{actions.length}</dd><dd className={styles.h5StatSub}>{actions[0]?.label ?? 'You’re all set'}</dd></div>
       </dl>}
     </header>
-    <div className={styles.h5Columns}>
+    <div className={styles.h5Columns} data-sig-sheet="">
       {/* P3-ST-02/12: the shift card and clock hold their last ready height while Home is a placeholder. */}
       <HoldHeight holding={!snapshot} memory="employee-home-primary" className={styles.h5Primary}>
         <section aria-labelledby="employee-reviewed-next-heading" className={styles.h5Shifts}>
@@ -370,8 +370,8 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
     {/* While the first read is under way the line waits unseen, so it doesn't jump down when Home arrives. */}
     <footer className={styles.h5Refresh} data-waiting={loading || undefined}>
       {snapshot ? <small className="nv-sr" data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{new Intl.DateTimeFormat('en-US', {timeZone: snapshot.timeZone, hour: 'numeric', minute: '2-digit'}).format(new Date(snapshot.observedAt))}</time></small> : null}
-      {denied ? <Link className={styles.h5PrimaryButton} href="/login">Sign in</Link>
-        : !snapshot && !loading && !paused ? <button className={styles.h5PrimaryButton} data-home-refresh type="button" onClick={onRetry} disabled={refreshing}>
+      {denied ? <Link className={styles.h5PrimaryButton} data-sig-press="button" href="/login">Sign in</Link>
+        : !snapshot && !loading && !paused ? <button className={styles.h5PrimaryButton} data-sig-press="button" data-home-refresh type="button" onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>
           {refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span>
         </button>
         : <button className={styles.h5QuietButton} data-home-refresh type="button" onClick={onRetry} disabled={paused || refreshing}>

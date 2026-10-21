@@ -3,6 +3,28 @@
 Every product-team agent reads this file before working. It holds what the
 roles share; each agent's own file adds its role.
 
+## Current direction (October 20, 2026)
+
+- **Employee app, sign-in/activation and the Clocker use Signature**, approved
+  by Jose on October 20, 2026. The written source of truth is
+  [specs/employee-style/signature/SIGNATURE-SPEC.md](specs/employee-style/signature/SIGNATURE-SPEC.md).
+  Shared values live in `src/components/signature/tokens.css` (`--sig-*`).
+  Pages read those tokens; they never declare their own palette.
+- **Manager and Owner keep clean manager v3** (the Wave A v3 light mockups,
+  [specs/clean-manager/spec.md](specs/clean-manager/spec.md)). Moving them to
+  the Signature neutrals is a later step.
+- **Signature in short:** a deep band (`#0D3634`) with the Λ mark carries the
+  page's key fact; a soft-white sheet (`#F7F6F3`) with 28px top corners holds
+  white 22px cards. One message per card. No glass. Phosphor regular icons,
+  fill only for the active tab. No illustration on Home.
+- **Open decisions for Jose** (SIGNATURE-SPEC.md section 17): teal or green
+  for "done"; a 300 display-weight floor; system font or Inter everywhere; how
+  company branding appears in Signature; ink or teal links; button radius 16
+  or 14; band headline weight; press scale and duration; `/reset-access` still
+  on the old ivory colours; 11px caps.
+- Where an older line below disagrees with this section for those surfaces,
+  this section wins. Superseded lines are marked, not deleted.
+
 ## What we are building
 
 NEVORA Workforce is a scheduling, time, pay and workforce app for small and
@@ -14,8 +36,13 @@ market (local labour rules and full Spanish set it apart).
 - **Platforms:** iOS and Android app stores, desktop web, mobile web and PWA.
 - **Today:** a Next.js (App Router, React, TypeScript) PWA with a service worker
   (`public/fuel-portal-sw.js`). There is no native wrapper yet.
-- **Current design:** a Gusto-style teal system, documented in `DESIGN.MD` and
-  `.21st/DESIGN.md` (read the latest dated sections first).
+- **Current design:** Signature for the employee app, sign-in/activation and
+  the Clocker (SIGNATURE-SPEC.md); clean manager v3 for Manager and Owner.
+  `DESIGN.MD` starts with a "Current direction" section; its later sections
+  and `.21st/DESIGN.md` are dated history.
+  - *Superseded October 20, 2026:* "a Gusto-style teal system, documented in
+    `DESIGN.MD` and `.21st/DESIGN.md`". The Gusto tokens remain only as the base
+    layer and the B1 brand default.
 
 ## Goals
 
@@ -32,6 +59,8 @@ market (local labour rules and full Spanish set it apart).
 
 - **Trend chasing:** style over substance, such as ultra-light fonts or
   low-contrast colours.
+  - Signature uses weight 200 on some large figures today. A 300 floor is a
+    decision for Jose (SIGNATURE-SPEC.md, D2); do not add new 200 text.
 - **Alienating users:** drastic changes that break muscle memory (the
   "Snapchat redesign" effect).
 - **Uniformity:** generic minimalism, stock corporate illustrations, pastel
@@ -51,11 +80,24 @@ safe, do not make it.
 - The NEVORA wordmark.
 - Teal as the action colour; status labels use the ladder: grey neutral or
   waiting, amber to review, green done, coral urgent.
-- Inter for type and Phosphor for icons.
+  - *Signature today (October 20, 2026):* the action teal is `#0B6E69`
+    (`--sig-action`) and the primary button fill is deep `#0D3634`. The urgent
+    red is `#A3271A`. The employee app currently shows "done/approved" in teal
+    (`#0A5753` on `#E2F1ED`), which breaks this ladder; teal or green for done
+    is a decision for Jose (SIGNATURE-SPEC.md, D1).
+- Phosphor for icons (regular weight; fill only for the active tab).
+- Type: *superseded October 20, 2026:* "Inter for type". Today the employee
+  app, sign-in and Manager/Owner use the platform's system font; the Clocker
+  and PIN setup bundle Inter. One typeface everywhere is a decision for Jose
+  (SIGNATURE-SPEC.md, D3). Until then, keep each surface on the font it uses.
 - Targets of at least 44px, WCAG 2.2 AA, a visible focus ring, and reduced
   motion honoured.
 - Company branding works only within the B1 contrast rules
   (`src/lib/workspace-presentation/derive.ts`).
+  - *Signature today:* the employee app and sign-in ignore the derived brand
+    colours; the Clocker lets a brand recolour its accent but never the deep
+    side. How branding appears in Signature is a decision for Jose
+    (SIGNATURE-SPEC.md, D4). The band is never recoloured.
 - Payroll and legal copy stay exactly as approved.
 - The navigation structure and key action names stay. A move or rename needs a
   stated reason and a migration note (for example, an old location that still

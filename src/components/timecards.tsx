@@ -466,7 +466,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       <form onSubmit={choose} className={sigStyles.tcPeriod} aria-label="Choose a period">
         <label>Period start<input type="date" required value={draft.startDate} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></label>
         <label>Period end<input type="date" required value={draft.endDate} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></label>
-        <button className="sg-primary" disabled={paused||busy||!!pending}>View period</button>
+        <button className="sg-primary" disabled={paused||busy||!!pending} aria-busy={(!paused&&(busy||!!pending))||undefined}>View period</button>
       </form>
       <div className="sg-quiet"><p role="status" aria-live="polite" className={sigStyles.tcStatus}>{message}</p><button type="button" className="sg-link" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button></div>
       <HoldHeight holding={!data} memory="timecards-employee" className={sigStyles.tcHold}>

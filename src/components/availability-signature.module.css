@@ -12,7 +12,7 @@
 .avCol:not(#av) { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
 .avTrack:not(#av) { position: relative; width: 100%; max-width: 28px; height: 112px; border-radius: 9px; background: repeating-linear-gradient(180deg, var(--sg-track) 0 1px, transparent 1px 37px), #F6F4F0; }
 .avTrack span:not(#av) { position: absolute; left: 0; right: 0; min-height: 6px; border-radius: 8px; background: linear-gradient(180deg, #13847D, var(--sg-teal)); box-shadow: 0 4px 10px -4px rgba(11, 110, 105, .5); }
-.avCol small:not(#av) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .1em; color: var(--sg-ink-2); }
+.avCol small:not(#av) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .1em; color: var(--sg-ink-2); }
 .avCol[data-off] small:not(#av) { color: var(--sg-ink-3); }
 
 /* Day by day */
@@ -32,9 +32,14 @@
 .avSwitch input:checked + span:not(#av) { background: var(--sg-teal); }
 .avSwitch input:checked + span:not(#av)::after { transform: translateX(20px); }
 .avSwitch input:focus-visible + span:not(#av) { outline: 2px solid var(--sg-ink); outline-offset: 3px; }
+/* Press: the thumb stretches toward the side it will travel to and the track dims a touch, the instant it is touched. */
+.avSwitch input:active + span:not(#av) { filter: brightness(.95); }
+.avSwitch input:active + span:not(#av)::after { width: 28px; transition-duration: 0s, 0s; }
+.avSwitch input:checked:active + span:not(#av)::after { transform: translateX(16px); }
+.avSwitch span:not(#av)::after { transition: transform .18s var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), width var(--sig-dur-press, 120ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)); }
 .avTimes:not(#av) { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); align-items: end; gap: 6px; margin: 8px 0 0; }
 .avTimes label:not(#av) { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.avTimes label span:not(#av) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
+.avTimes label span:not(#av) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
 .avTimes input:not(#av) { width: 100%; min-width: 0; min-height: 46px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--sg-page); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1.0625rem/1 var(--sg-font); font-variant-numeric: tabular-nums; }
 .avTimes input:focus-visible:not(#av) { outline: 2px solid var(--sg-ink); outline-offset: 1px; }
 .avTimes i:not(#av) { display: flex; align-items: center; justify-content: center; height: 46px; color: var(--sg-ink-3); }
@@ -68,4 +73,9 @@
 @container sg (max-width: 19rem) {
   .avTimes:not(#av) { grid-template-columns: minmax(0, 1fr); }
   .avTimes i:not(#av) { display: none; }
+}
+
+/* Reduced motion: the thumb jumps to its side; the colour change and the press stretch stay. */
+@media (prefers-reduced-motion: reduce) {
+  .avSwitch span:not(#av)::after { transition: none; }
 }

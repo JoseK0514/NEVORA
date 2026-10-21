@@ -1,34 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import { EyeIcon } from "@phosphor-icons/react/dist/ssr/Eye";
-import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
+import { useEffect, useRef, useState } from "react";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { PasswordInput } from "@/components/auth-premium/password-input";
 
-export function ActivationPasswords({ errorId }: { errorId?: string }) {
-  const [visible, setVisible] = useState(false);
-  const type = visible ? "text" : "password";
+type Rule = "idle" | "ok" | "bad";
+
+/** Both passwords in one group, then two checks that follow what is typed. They only describe; the form still checks
+ * the minimum length and compares the two values on submit, exactly as before. */
+export function ActivationPasswords({ mismatch = false, errorId }: { mismatch?: boolean; errorId?: string }) {
+  const group = useRef<HTMLDivElement>(null);
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  useEffect(() => {
+    const form = group.current?.closest("form");
+    const clear = () => { setPassword(""); setConfirm(""); };
+    form?.addEventListener("reset", clear);
+    return () => form?.removeEventListener("reset", clear);
+  }, []);
+  const length: Rule = password.length >= 8 ? "ok" : "idle";
+  const differs = mismatch && confirm !== password;
+  const match: Rule = differs ? "bad" : confirm && confirm === password ? "ok" : "idle";
+  const describedBy = ["activation-rules", differs || !mismatch ? errorId : undefined].filter(Boolean).join(" ");
+  const dot = (rule: Rule) => <span className="act-rule__dot" aria-hidden="true">{rule === "ok" ? <CheckIcon size={11} weight="bold" /> : rule === "bad" ? <XIcon size={10} weight="bold" /> : null}</span>;
   return (
     <>
-      <div className="activation-password-field ap-field">
-        <label className="ap-label" htmlFor="activation-password">Create password</label>
-        <div className="activation-password-input ap-box ap-box--toggle">
-          <input className="ap-input" id="activation-password" name="password" type={type} minLength={8}
-            placeholder="Choose your password" autoComplete="new-password" required
-            aria-describedby={["activation-password-hint", errorId].filter(Boolean).join(" ")} />
-          <button type="button" className="activation-password-toggle" aria-pressed={visible}
-            aria-controls="activation-password activation-confirm-password"
-            aria-label={visible ? "Hide passwords" : "Show passwords"}
-            onClick={() => setVisible(!visible)}>
-            {visible ? <EyeSlashIcon size={20} weight="regular" aria-hidden="true" focusable="false" />
-              : <EyeIcon size={20} weight="regular" aria-hidden="true" focusable="false" />}
-          </button>
+      <div className="act-card" ref={group}>
+        <div className="ap-field">
+          <label className="ap-label" htmlFor="activation-password">Create password</label>
+          <PasswordInput id="activation-password" name="password" minLength={8} placeholder="Choose your password" autoComplete="new-password" required
+            aria-describedby={describedBy} controls={["activation-password", "activation-confirm-password"]}
+            showLabel="Show passwords" hideLabel="Hide passwords" onInput={event => setPassword(event.currentTarget.value)} />
         </div>
-        <p className="activation-hint" id="activation-password-hint">At least 8 characters.</p>
+        <div className="ap-field" data-invalid={differs ? "" : undefined}>
+          <label className="ap-label" htmlFor="activation-confirm-password">Confirm password</label>
+          <div className="ap-box">
+            <input id="activation-confirm-password" className="ap-input" name="confirmPassword" type="password" minLength={8}
+              placeholder="Re-enter your password" autoComplete="new-password" required aria-invalid={differs || undefined}
+              aria-describedby={describedBy} onInput={event => setConfirm(event.currentTarget.value)} />
+          </div>
+        </div>
       </div>
-      <label className="ap-label ap-field" htmlFor="activation-confirm-password">Confirm password
-        <span className="ap-box"><input className="ap-input" id="activation-confirm-password" name="confirmPassword" type={type} minLength={8}
-          placeholder="Re-enter your password" autoComplete="new-password" required aria-describedby={errorId} /></span>
-      </label>
+      <ul className="act-rules" id="activation-rules">
+        <li data-state={length}>{dot(length)}<span id="activation-password-hint">At least 8 characters.</span></li>
+        <li data-state={match}>{dot(match)}{differs
+          ? <span id={errorId} role="alert">Enter the same password in both fields.</span>
+          : <span>Passwords match</span>}</li>
+      </ul>
     </>
   );
 }

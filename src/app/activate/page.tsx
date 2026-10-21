@@ -8,21 +8,16 @@ import "../login/auth-premium.css";
 import "../login/auth-signature.css";
 import "./activation.css";
 
+/** Account activation in the Signature sign-in frame. The invitation flow and its wording are development's. */
 export default async function ActivatePage({ searchParams }: {
   searchParams: Promise<{ returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
   const [workspaceName, lang] = await Promise.all([getPublicWorkspaceName(), readAuthLang()]);
-  const t = AUTH_COPY[lang];
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
-  const returnQuery = returnTo ? "?returnTo=" + encodeURIComponent(returnTo) : "";
-  const loginHref = "/login?activated=1" + (returnTo ? "&returnTo=" + encodeURIComponent(returnTo) : "");
-  return <AuthShell lang={lang} t={t} variant="sub" back={"/login" + returnQuery}>
-    <span className="ap-sr">{workspaceName ?? t.workspaceUnavailable}</span>
-    <h1 className="ap-title">{t.activateTitle}</h1>
-    <div className="activation-page">
-      <p className="ap-intro">Open your email invitation, then choose a password.</p>
-      <ActivationInvitation loginHref={loginHref} />
-    </div>
+  const returnQuery = returnTo ? `returnTo=${encodeURIComponent(returnTo)}` : "";
+
+  return <AuthShell lang={lang} t={AUTH_COPY[lang]} variant="sub" back={`/login${returnQuery ? `?${returnQuery}` : ""}`}>
+    <ActivationInvitation workspaceName={workspaceName} loginHref={`/login?activated=1${returnQuery ? `&${returnQuery}` : ""}`} />
   </AuthShell>;
 }

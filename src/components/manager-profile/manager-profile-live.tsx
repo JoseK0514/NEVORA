@@ -44,6 +44,9 @@ type View = {
   /** The last ready read. While paused, offline or failed it holds each row's size (hidden, under the note), and
    * while re-reading after a return it stays on screen, so the page doesn't collapse and regrow. */
   held?: Ready | null;
+  /** Server-rendered account cards (Face ID and passkeys, Privacy and your account), shown in the right column after
+   * Notifications and before Sign out, so Sign out stays last at every width. */
+  accountCards?: ReactNode;
   /** The read rows' last heights, kept only while the session has ended (the values themselves are cleared). */
   rowHeights?: Record<string, number> | null;
 };
@@ -155,7 +158,7 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: Mana
   </li>;
 }
 
-export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, rowHeights = null }: View) {
+export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, rowHeights = null, accountCards = null }: View) {
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
   const read = readState(state), row = 'row' in read ? read.row : undefined;
   // Approved set: without payroll an Owner isn't told about payroll, even if the read lists the topic (switched off).
@@ -231,6 +234,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         <p className="sr-only" role="status">{announcement}</p>
         {shown && !shown.alerts.length ? <p className="pmp-empty">No alert choices for your role yet.</p> : null}
       </Card>
+      {accountCards}
       <section className="nv-card pmp-signout" aria-label="Session">
         <PortalSignout><ul className="nv-rows"><li><SignOutButton /></li></ul></PortalSignout>
       </section>
@@ -245,7 +249,7 @@ function focusedTopic(): string | null {
   return active instanceof HTMLElement && active.dataset.topic ? active.dataset.topic : null;
 }
 
-export function ManagerProfileLive({ identity, initial = null }: { identity: ManagerProfileIdentity; initial?: Ready | null }) {
+export function ManagerProfileLive({ identity, initial = null, accountCards = null }: { identity: ManagerProfileIdentity; initial?: Ready | null; accountCards?: ReactNode }) {
   const [state, setState] = useState<PrivatePanelState<ManagerProfileSnapshot>>({ snapshot: null, paused: false, refreshing: true });
   const [saves, setSaves] = useState<Record<string, AlertSave>>({});
   const [overrides, setOverrides] = useState<Record<string, { on: boolean; basis: string }>>({});
@@ -366,6 +370,6 @@ export function ManagerProfileLive({ identity, initial = null }: { identity: Man
     if (!error || error === 'signed_out') control.current?.refresh();
   }
 
-  return <ManagerProfileView identity={identity} state={state} onRetry={retry} retrying={retrying} retried={outcome} saves={saves} overrides={shownOverrides} onToggle={toggle}
+  return <ManagerProfileView identity={identity} accountCards={accountCards} state={state} onRetry={retry} retrying={retrying} retried={outcome} saves={saves} overrides={shownOverrides} onToggle={toggle}
     held={held} rowHeights={rowHeights} announcement={announced.text ? announced.text + (announced.count % 2 ? '' : '\u00a0') : ''} />;
 }

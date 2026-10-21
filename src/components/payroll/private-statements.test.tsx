@@ -29,8 +29,9 @@ describe('private employee statement presentation', () => {
   });
   it('preserves the period/payday in own published history with a viewing action', () => {
     const html = renderToStaticMarkup(<MyPay />);
-    expect(html).toContain('Oct 5 – Oct 11, 2026');
-    expect(html).toContain('Payday Fri, Oct 16');
+    // Signature My pay (approved): the period in short form and the payday as a long date.
+    expect(html).toContain('Oct 5–11');
+    expect(html).toContain('Payday </span>October 16');
     expect(html).toContain(statement.viewUrl);
   });
   it('clears the own statement identity while current private access is loading', () => {

@@ -15,6 +15,9 @@
 .pk-notice { margin: 0; padding: 10px 12px; border-radius: 10px; font: 500 .875rem/1.25rem system-ui, -apple-system, sans-serif; }
 .pk-notice[data-tone="done"] { background: var(--nv-done-fill, #E7F4EC); color: var(--nv-done-ink, #1D5B36); }
 .pk-notice[data-tone="error"] { background: var(--nv-urgent-fill, #FDECEC); color: var(--nv-urgent-ink, #B42318); }
+/* "Try again" inside the error reads as a link, not a boxed button (the kit gives bare buttons a border). */
+.pk-section .pk-notice .nv-link { display: inline; min-height: 0; margin: 0 0 0 4px; padding: 0; border: 0; border-radius: 4px; background: none; color: inherit; font: 600 .875rem/1.25rem system-ui, -apple-system, sans-serif; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.pk-section .pk-notice .nv-link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .pk-dialog { width: min(440px, calc(100vw - 32px)); max-width: none; padding: 0; border: 0; border-radius: 20px; background: var(--nv-canvas, #FFFFFF); color: var(--nv-ink, #161C1B); box-shadow: 0 24px 64px rgba(16, 40, 38, .28); }
 .pk-dialog::backdrop { background: rgba(16, 40, 38, .45); }
 .pk-dialog__form { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 24px; }

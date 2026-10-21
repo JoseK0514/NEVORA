@@ -5,8 +5,8 @@
 
 /* ---------- Canvas: soft white (Jose chose it over ivory, Oct 20) ---------- */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] {
-  --e5-bg: #F7F6F3; --e5-card: #FFFFFF; --e5-frame: #EEECE7; --e5-ink: #161C1B; --e5-ink-2: #5F625E; --e5-ink-3: #6F6C66;
-  --e5-rule: #E8E5DF; --e5-deep: #0D3634; --e5-teal: #0B6E69; --e5-sky: #35B6EC;
+  --e5-bg: var(--sig-page); --e5-card: var(--sig-card); --e5-frame: var(--sig-track); --e5-ink: var(--sig-ink-1); --e5-ink-2: var(--sig-ink-2); --e5-ink-3: var(--sig-ink-3);
+  --e5-rule: var(--sig-rule); --e5-deep: var(--sig-deep); --e5-teal: var(--sig-action); --e5-sky: var(--sig-sky);
   background: var(--e5-bg);
 }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.app-main, .page-frame):not(#e5) { background: var(--e5-bg); }
@@ -19,6 +19,13 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.app-main, .pag
     background: var(--e5-deep); -webkit-backdrop-filter: none; backdrop-filter: none; color: #FFFFFF;
   }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] > .app-main > .mobile-header > .brand:not(#e5) { display: none; }
+  /* Tablets show the page title in the deep header: white for the page you're on, 72% white for the trail (the shared
+   * desktop rule made it ink, 1.29:1 on the deep teal). Initials above stay inside the 40px avatar at any text size;
+   * the person's name is in the trigger for screen readers. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-location :is(li, a):not(#e5):not(#e52) { color: rgba(255, 255, 255, .72); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-location [aria-current="page"]:not(#e5):not(#e52) { color: #FFFFFF; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-location a:focus-visible:not(#e5):not(#e52) { outline-color: var(--sig-focus-on-dark, #FFFFFF); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header :is(.e5-new, .portal-notification-bell, .portal-account-menu):not(#e5):not(#e52) { flex: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header-actions:not(#e5) { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin: 0; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-location :is(li,a,span):not(#e5):not(#e52) { color: #FFFFFF; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-account-menu:not(#e5):not(#e52) { display: block; order: -1; margin-right: auto; }
@@ -28,7 +35,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.app-main, .pag
   }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-account-menu .nevora-action-menu-trigger > :not(.portal-account-avatar):not(#e5) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-account-avatar:not(#e5):not(#e52) {
-    display: inline-flex; width: 40px; height: 40px; border-radius: 50%; align-items: center; justify-content: center; background: var(--e5-bg); color: var(--e5-deep); font-size: .875rem; font-weight: 600; letter-spacing: .04em;
+    display: inline-flex; width: 40px; height: 40px; border-radius: 50%; align-items: center; justify-content: center; background: var(--e5-bg); color: var(--e5-deep); font-size: min(.875rem, 16px); font-weight: 600; letter-spacing: .04em;
   }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header :is(.e5-new, .portal-notification-bell):not(#e5):not(#e52) {
     position: relative; display: inline-flex; width: 44px; height: 44px; min-width: 0; padding: 0; align-items: center; justify-content: center; border: 0; border-radius: 50%;
@@ -74,7 +81,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame > .rout
 
 /* One typeface: the platform's own (as in the approved mockups), on the employee app. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] {
-  --nv-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --nv-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif; /* sig conflict: keeps this stack (adds "SF Pro Display"), canonical --sig-font is the same stack without it; see SIGNATURE-SPEC §16 (T8) */
   --design-font-body: var(--nv-font); font-family: var(--nv-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.page-frame, .mobile-header, .mobile-nav, [popover]) :is(h1, h2, h3, p, span, a, button, small, strong, time, li, label, input, select, textarea, summary):not(#e5) { font-family: var(--nv-font); }
@@ -208,7 +215,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navi
 /* Rows: one white group. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-link:not(.employee-more-card):not(#e5):not(#e52):not(#e53) { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 58px; margin: 0 16px; padding: 0 16px 0 18px; border: 1px solid var(--e5-rule); border-radius: 0; background: var(--e5-card); color: var(--e5-ink); font: 500 1.0625rem/1.375rem var(--nv-font); text-decoration: none; box-shadow: none; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-link:not(.employee-more-card):not(#e5):not(#e52):not(#e53) > svg { display: none; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-link:not(.employee-more-card):not(#e5):not(#e52):not(#e53)::after { content: ""; width: 7px; height: 7px; border-right: 1.5px solid #B9B6AF; border-bottom: 1.5px solid #B9B6AF; transform: rotate(-45deg); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-link:not(.employee-more-card):not(#e5):not(#e52):not(#e53)::after { content: ""; width: 7px; height: 7px; border-right: 1.5px solid var(--sig-glyph, #8A8378); border-bottom: 1.5px solid var(--sig-glyph, #8A8378); transform: rotate(-45deg); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-label + .employee-more-link:not(#e5):not(#e52):not(#e53) { border-radius: 18px 18px 0 0; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-link:not(.employee-more-card) + .employee-more-link:not(.employee-more-card):not(#e5):not(#e52):not(#e53) { margin-top: -1px; border-top-color: transparent; border-radius: 0 0 18px 18px; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-link:not(.employee-more-card) + .employee-more-link:not(.employee-more-card):not(#e5):not(#e52):not(#e53)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--e5-rule); }
@@ -244,7 +251,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-sett
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example:not(#e5):not(#e52) { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 8px; padding: 22px 14px; border-radius: 22px; background: radial-gradient(120% 90% at 20% 0%, #2B6E69 0%, #12403D 55%, #0B2725 100%); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:first-child:not(#e5):not(#e52) { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 9px; background: var(--e5-deep); color: #FFFFFF; font: 600 1rem/1 var(--e5-font, inherit); box-shadow: 0 0 0 1px rgba(255, 255, 255, .14); position: relative; z-index: 1; margin: 2px 0 0 10px; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:nth-child(2):not(#e5):not(#e52) { flex: 1; min-width: 0; padding: 10px 12px; margin: -10px 0 -10px -46px; padding-left: 58px; border-radius: 16px; background: rgba(245, 247, 246, .88); font: 400 .875rem/1.1875rem var(--e5-font, inherit); color: var(--e5-ink); }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:nth-child(2) > b:not(#e5):not(#e52) { display: block; font: 600 .6875rem/.875rem var(--e5-font, inherit); letter-spacing: .04em; text-transform: uppercase; color: var(--e5-ink-2); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:nth-child(2) > b:not(#e5):not(#e52) { display: block; font: 600 .75rem/1rem var(--e5-font, inherit); letter-spacing: .04em; text-transform: uppercase; color: var(--e5-ink-2); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > span:nth-child(2) span b:not(#e5):not(#e52) { display: block; font-weight: 600; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-example > small:not(#e5):not(#e52) { display: none; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > :is(h2, h3):not(#e5):not(#e52) { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; font: 500 1.0625rem/1.375rem var(--e5-font, inherit); color: var(--e5-ink); }
@@ -253,7 +260,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-sett
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > p[role]:not(#e5):not(#e52) { color: var(--e5-ink-3); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-actions:not(#e5):not(#e52) { margin-left: 44px; gap: 8px; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button:not(#e5):not(#e52) { min-height: 46px; border-radius: 14px; font-weight: 500; }
-html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.primary:not(#e5):not(#e52) { background: var(--e5-deep); color: #FFFFFF; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.primary:not(#e5):not(#e52) { background: var(--sig-fill); color: var(--sig-on-fill); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.secondary:not(#e5):not(#e52) { background: #FFFFFF; color: var(--e5-ink); box-shadow: inset 0 0 0 1px var(--e5-rule); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-instructions:not(#e5):not(#e52), html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-message:not(#e5):not(#e52) { margin-left: 44px; padding: 12px 14px; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--e5-rule); }
 
@@ -265,3 +272,10 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-sett
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > :is(h2, h3) + p:not(#e5):not(#e52) { margin-top: -4px; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-actions:not(#e5):not(#e52) { grid-template-columns: minmax(0, 1fr); }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.secondary:not(#e5):not(#e52):is(:last-child:not(:only-child)) { background: transparent; box-shadow: none; color: var(--e5-ink-2); min-height: 44px; }
+
+
+/* Tablet sidebar: 212px until the reader's text size needs more (240px at 200%), so the wordmark clears the collapse
+ * button and "Notifications" fits instead of being clipped, while the page keeps most of the width. */
+@media (min-width: 761px) and (max-width: 1100px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5]:not([data-sidebar-collapsed="true"]):not(#e5) { grid-template-columns: max(212px, 7.5rem) minmax(0, 1fr); }
+}

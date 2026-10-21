@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {useEffect,useRef,type FormEventHandler} from 'react';
 import {AuthDisclosureSymbol} from './auth-disclosure-symbol';
+import {RecoverySubmit} from './recovery-submit';
 import {AUTH_COPY,authMessage,type AuthLang} from '@/lib/auth-copy';
 
 /** Presentation only: AccountRecovery owns the existing request and privacy contract. */
@@ -31,10 +32,8 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en'}:
        autoComplete="email" autoCapitalize="none" spellCheck={false} aria-describedby={message?'recovery-email-hint recovery-error':'recovery-email-hint'}/></div>
       <p className="ap-hint" id="recovery-email-hint">{t.recoveryEmailHint}</p>
      </div>
-     <button className="ap-primary" type="submit" disabled={!hydrated||busy} aria-busy={busy}>
-      <span>{busy?t.requestingRecovery:t.requestRecovery}</span>
-     </button>
     </fieldset>
+    <RecoverySubmit hydrated={hydrated} busy={busy} idle={t.requestRecovery} pendingText={t.requestingRecovery}/>
    </form>
    {message?<div id="recovery-error" className="ap-alert" data-tone="error" ref={feedback} role="alert" tabIndex={-1}>{authMessage(lang,message)}</div>:null}
    <span className="ap-sr" role="status">{busy?t.requestingRecoveryStatus:''}</span>

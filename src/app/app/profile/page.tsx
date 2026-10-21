@@ -21,6 +21,8 @@ import {getWorkspace} from '@/lib/data/workspaces';
 import {readAuthLang} from '@/lib/auth-lang.server';
 import {LangSwitch} from '@/components/auth-premium/lang-switch';
 import {GlobeIcon} from '@phosphor-icons/react/dist/ssr/Globe';
+import {CircleHalfIcon} from '@phosphor-icons/react/dist/ssr/CircleHalf';
+import {ThemeSwitch} from '@/components/theme-switch';
 import {AccountPrivacyLinks} from '@/components/legal/account-privacy-links';
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
@@ -48,6 +50,7 @@ export default async function ProfilePage(){
    <h2 id="profile-settings-title" className={pf.pfHeading}>Settings</h2>
    <div className="profile-settings-list">
     <div className="profile-setting-row pfx-lang-row"><span className="profile-setting-copy"><GlobeIcon size={20} aria-hidden="true"/><span><strong>Language</strong><small>Used on the sign-in pages for now.</small></span></span><LangSwitch lang={lang} label="Language"/></div>
+    <div className="profile-setting-row pfx-lang-row"><span className="profile-setting-copy"><CircleHalfIcon size={20} aria-hidden="true"/><span><strong>Appearance</strong><small>Light, dark, or match this device.</small></span></span><ThemeSwitch/></div>
     <Link className="profile-setting-row" href="/app/notifications"><span className="profile-setting-copy"><NavIcon name="notifications" size={20}/><span><strong>Notifications</strong><small>Updates about your schedule and requests</small></span></span><CaretRightIcon className="profile-setting-caret" size={18} aria-hidden="true"/></Link>
     {notificationsEnabled
      ? <button type="button" className="profile-setting-row" popoverTarget="portal-device-settings"><span className="profile-setting-copy"><NavIcon name="settings" size={20}/><span><strong>Alerts on this device</strong><small>Choose how this device alerts you</small></span></span><CaretRightIcon className="profile-setting-caret" size={18} aria-hidden="true"/></button>
@@ -60,7 +63,7 @@ export default async function ProfilePage(){
   <div className={pf.pfSection}>
    <EmployeeAccountPanel key={authority} kind="profile" authority={authority}/>
   </div>
-  <AccountPrivacyLinks/>
+  <AccountPrivacyLinks variant="settings" sectionClassName={pf.pfSection} headingClassName={pf.pfHeading}/>
   <section className={`profile-signout ${pf.pfSignout}`} aria-label="Session"><PortalSignout><button type="submit" className="profile-setting-row profile-signout-row"><span className="profile-setting-copy"><NavIcon name="logout" size={20}/><strong>Sign out</strong></span></button></PortalSignout></section>
  </SigPage></ProfileFrame>;
 }

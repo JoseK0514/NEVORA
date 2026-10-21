@@ -65,7 +65,7 @@
 .employee-login-page.auth-support-page .auth-disclosure-open { display: none; }
 .employee-login-page.auth-support-page details[open] > summary .auth-disclosure-open { display: block; }
 .employee-login-page.auth-support-page details[open] > summary .auth-disclosure-closed { display: none; }
-.employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) summary:hover { color: var(--login-blue); }
+@media (hover: hover) { .employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) summary:hover { color: var(--login-blue); } }
 .employee-login-page.auth-support-page :is(.recovery-help, .activation-help, .reset-help) p {
   margin: 4px 0 16px;
   font-size: 0.8125rem;
@@ -104,7 +104,7 @@
   list-style: none;
   cursor: pointer;
 }
-.employee-login-page.auth-support-page .auth-field-help summary:hover { color: var(--login-blue); background: var(--login-field); }
+@media (hover: hover) { .employee-login-page.auth-support-page .auth-field-help summary:hover { color: var(--login-blue); background: var(--login-field); } }
 .employee-login-page.auth-support-page .auth-field-help p {
   margin: 10px -48px 2px 0;
   padding: 12px 16px;

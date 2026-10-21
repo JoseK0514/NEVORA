@@ -108,7 +108,7 @@ html body .employee-login-brand .brand-mark.brand-mark-logo {
   color: var(--design-surface-elevated);
   cursor: pointer;
 }
-.employee-login-page .login-motion-toggle:hover { background: var(--login-blue); }
+@media (hover: hover) { .employee-login-page .login-motion-toggle:hover { background: var(--login-blue); } }
 .employee-login-page .login-motion-toggle[hidden] { display: none; }
 .employee-login-page .login-motion-toggle:focus-visible { outline-color: var(--login-cyan); }
 
@@ -172,7 +172,14 @@ html body .employee-login-page .employee-login-card .employee-login-submit.butto
   color: var(--design-surface-elevated);
   transition: background .18s ease, border-color .18s ease, transform .18s ease;
 }
-html body .employee-login-page .employee-login-card .employee-login-submit.button.primary:is(:hover, :active):not(:disabled) {
+@media (hover: hover) {
+  html body .employee-login-page .employee-login-card .employee-login-submit.button.primary:hover:not(:disabled) {
+    background: var(--login-blue-hover);
+    border-color: var(--login-blue-hover);
+    color: var(--design-surface-elevated);
+  }
+}
+html body .employee-login-page .employee-login-card .employee-login-submit.button.primary:active:not(:disabled) {
   background: var(--login-blue-hover);
   border-color: var(--login-blue-hover);
   color: var(--design-surface-elevated);
@@ -218,8 +225,9 @@ html body .employee-login-page .employee-login-card .employee-login-submit.butto
 
 .employee-login-page .login-access-link > span { display: grid; gap: 3px; }
 .employee-login-page .login-access-link small { color: var(--design-text-secondary); font-size: 0.75rem; font-weight: 400; }
-.employee-login-page .login-access-link:hover > span { text-decoration: underline; }
-html body .employee-login-page .login-access-link:is(:hover, :active) { color: var(--login-blue-hover); }
+@media (hover: hover) { .employee-login-page .login-access-link:hover > span { text-decoration: underline; } }
+@media (hover: hover) { html body .employee-login-page .login-access-link:hover { color: var(--login-blue-hover); } }
+html body .employee-login-page .login-access-link:active { color: var(--login-blue-hover); }
 .employee-login-page .login-access-link > svg:first-child { color: var(--design-text-secondary); }
 
 .employee-login-page :is(input, button, a):focus-visible {

@@ -20,6 +20,7 @@ import { Status } from "@/components/kit/kit";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 
+import { SigButton } from "@/components/signature/sig-button";
 function dateLabel(date: string) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -132,7 +133,7 @@ export default async function RequestsPage({
         <span className="sg-tile" aria-hidden="true"><SunHorizonIcon size={22} /></span>
         <strong>No time-off requests yet</strong>
         <span>Choose your dates and send a request to your manager.</span>
-        <Link className="sg-cta" href="/app/requests?tab=new">Request time off</Link>
+        <SigButton className="sg-cta" href="/app/requests?tab=new">Request time off</SigButton>
       </div></div>}
     </SigPage>
   );

@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useRef,useState,useTransition} from 'react';
 import {useRouter} from 'next/navigation';
+import {SigPendingLabel} from './signature/sig-button';
 import {acknowledgeScheduleAction} from '@/app/app/schedule/acknowledge-actions';
 import type {AttentionIntent} from '@/lib/data/employee-attention-receipts.server';
 import type {CommandResult} from '@/lib/employee-attention/types';
@@ -29,7 +30,7 @@ export function EmployeeWeeklyConfirmation({weekStart,expectedRevisionId,intent,
   {result?.status==='blocked'?null:<form action={submit}>
    <input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="expectedRevisionId" value={expectedRevisionId}/>
    <input type="hidden" name="operationId" value={intent.operationId}/><input type="hidden" name="authority" value={intent.authority}/>
-   <button className="employee-action primary" disabled={pending||!retryable} aria-label={compact&&!pending&&!result?'Confirm schedule':undefined}>{pending?'Confirming…':result?'Retry confirmation':compact?'Confirm':'Confirm schedule'}</button>
+   <button className="employee-action primary" disabled={(!pending&&!retryable)||undefined} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={event=>{if(pending)event.preventDefault();}} aria-label={compact&&!pending&&!result?'Confirm schedule':undefined}><SigPendingLabel pending={pending} pendingText="Confirming…">{result?'Retry confirmation':compact?'Confirm':'Confirm schedule'}</SigPendingLabel></button>
   </form>}
   {result&&result.status!=='committed'?<p role="alert">{result.status==='conflict'?'The schedule changed. Review the current week before confirming.':result.status==='blocked'?'This review is no longer authorized. Sign in and review the schedule again.':result.status==='outcome_unknown'?'Confirmation outcome unknown. Retry to check the original confirmation.':'Confirmation unavailable. Retry the original confirmation.'}</p>:null}
   {result?.status==='committed'?<p role="status">Checking the current schedule confirmation…</p>:null}

@@ -8,7 +8,7 @@
 .pfWatermark:not(#pf) { position: absolute; z-index: -1; right: -40px; bottom: -40px; width: 190px; height: auto; fill: var(--sg-mark); }
 .pfCardTop:not(#pf) { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .pfMono:not(#pf) { display: inline-flex; width: 44px; height: 44px; border-radius: 50%; align-items: center; justify-content: center; background: var(--sg-page); color: var(--sg-deep); font: 400 1.0625rem/1 var(--sg-display); letter-spacing: .04em; }
-.pfRole:not(#pf) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-mint); }
+.pfRole:not(#pf) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-mint); }
 .pfName:not(#pf) { margin: 18px 0 0; font: 300 1.875rem/2.125rem var(--sg-display); letter-spacing: -.035em; color: #FFFFFF; overflow-wrap: anywhere; }
 .pfCompany:not(#pf) { margin: 4px 0 0; font: 400 .9375rem/1.25rem var(--sg-font); color: rgba(255, 255, 255, .72); }
 
@@ -23,13 +23,13 @@
 .pfRoot :global(.profile-setting-row):not(#pf):not(#pf) { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 60px; margin: 0; padding: 8px 16px 8px 18px; border: 0; border-radius: 0; background: none; box-shadow: none; color: var(--sg-ink); font: inherit; text-align: left; text-decoration: none; cursor: pointer; }
 .pfRoot :global(.profile-settings-list > * + *):not(#pf):not(#pf)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--sg-rule); pointer-events: none; }
 .pfRoot :global(.profile-settings-list > *):not(#pf):not(#pf) { position: relative; }
-.pfRoot :global(.profile-setting-row:hover):not(#pf):not(#pf) { background: #FAFAF8; }
+@media (hover: hover) { .pfRoot :global(.profile-setting-row:hover):not(#pf):not(#pf) { background: #FAFAF8; } }
 .pfRoot :global(.profile-setting-row:focus-visible):not(#pf):not(#pf) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 18px; }
 .pfRoot :global(.profile-setting-copy):not(#pf):not(#pf) { display: flex; align-items: center; gap: 0; min-width: 0; }
 .pfRoot :global(.profile-setting-copy > svg):not(#pf):not(#pf) { display: none; }
 .pfRoot :global(.profile-setting-copy strong):not(#pf):not(#pf) { display: block; font: 500 1.0625rem/1.375rem var(--sg-font); letter-spacing: -.012em; color: var(--sg-ink); }
 .pfRoot :global(.profile-setting-copy small):not(#pf):not(#pf) { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
-.pfRoot :global(.profile-setting-caret):not(#pf):not(#pf) { flex: none; width: 14px; height: 14px; color: var(--sg-faint); }
+.pfRoot :global(.profile-setting-caret):not(#pf):not(#pf) { flex: none; width: 14px; height: 14px; color: var(--sig-glyph, #8A8378); }
 .pfRoot :global(.profile-setting-note):not(#pf):not(#pf) { margin: 0; padding: 16px 18px; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); }
 .pfRoot :global(.profile-calendar-disclosure):not(#pf):not(#pf) { margin: 0; padding: 0; border: 0; background: none; }
 .pfRoot :global(.profile-calendar-disclosure > summary):not(#pf):not(#pf) { list-style: none; }
@@ -46,7 +46,7 @@
 .pfRoot :global(.pk-body):not(#pf):not(#pf) { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; margin: 0 16px; padding: 14px 16px 14px 18px; border: 1px solid var(--sg-rule); border-radius: 18px; background: var(--sg-card); font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
 .pfRoot :global(.pk-muted):not(#pf):not(#pf) { flex: 1 1 10rem; margin: 0; color: var(--sg-ink-2); }
 .pfRoot :global(.pk-notice):not(#pf):not(#pf) { flex: 1 1 100%; margin: 0; }
-.pfRoot :global(.pk-add):not(#pf):not(#pf) { flex: none; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--sg-deep); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
+.pfRoot :global(.pk-add):not(#pf):not(#pf) { flex: none; min-height: var(--sig-control-h-compact, 44px); padding: 0 18px; border: 0; border-radius: var(--sig-radius-compact, 12px); background: var(--sig-fill); color: var(--sig-on-fill); font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
 .pfRoot :global(.pk-list):not(#pf):not(#pf) { flex: 1 1 100%; margin: 0; padding: 0; list-style: none; }
 
 /* Work details: the panel as a heading, the details list and the Refresh link. */
@@ -102,24 +102,24 @@
 .pfRoot :global(.employee-calendar-example__grid > div > b):not(#pf):not(#pf) { font: 500 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink); }
 .pfRoot :global(.employee-calendar-example__grid > div > span):not(#pf):not(#pf) { position: relative; width: 100%; height: 118px; border-radius: 9px; background: repeating-linear-gradient(180deg, #F1EFEB 0 1px, transparent 1px 26px); }
 .pfRoot :global(.employee-calendar-example__grid i):not(#pf):not(#pf) { position: absolute; left: 2px; right: 2px; padding: 5px; border-radius: 7px; background: #DDEFEB; box-shadow: inset 3px 0 0 var(--sg-teal); font: 400 .625rem/.8125rem var(--sg-font); font-style: normal; color: #0A5753; overflow: hidden; }
-.pfRoot :global(.employee-calendar-example__grid i b):not(#pf):not(#pf) { display: block; font: 600 .6875rem/.875rem var(--sg-font); }
+.pfRoot :global(.employee-calendar-example__grid i b):not(#pf):not(#pf) { display: block; font: 600 .75rem/1rem var(--sg-font); }
 .pfRoot :global(.employee-calendar-status-box):not(#pf):not(#pf) { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 18px; border: 0; border-radius: 20px; background: #FFFFFF; box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06); }
 .pfRoot :global(.employee-calendar-status-box:has(.employee-calendar-secret)):not(#pf):not(#pf) { background: var(--sg-deep); box-shadow: none; color: #FFFFFF; }
 .pfRoot :global(.employee-calendar-state):not(#pf):not(#pf) { display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 999px; background: #EFEDE8; color: #55585A; font: 500 .8125rem/1 var(--sg-font); }
 .pfRoot :global(.employee-calendar-state.is-active):not(#pf):not(#pf) { background: rgba(169, 226, 218, .16); color: var(--sg-mint); }
 .pfRoot :global(.employee-calendar-status-box p):not(#pf):not(#pf) { margin: 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: inherit; opacity: .86; }
 .pfRoot :global(.employee-calendar-status-box .button):not(#pf):not(#pf), .pfRoot :global(.employee-calendar-management .button):not(#pf):not(#pf), .pfRoot :global(.employee-calendar-status-box .nv-btn):not(#pf):not(#pf) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 0 18px; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1rem/1 var(--sg-font); cursor: pointer; }
-.pfRoot :global(.employee-calendar-status-box .calendar-primary):not(#pf):not(#pf) { background: var(--sg-deep); box-shadow: none; color: #FFFFFF; }
-.pfRoot :global(.employee-calendar-status-box:has(.employee-calendar-secret) .calendar-primary):not(#pf):not(#pf) { background: #FFFFFF; color: var(--sg-deep); }
+.pfRoot :global(.employee-calendar-status-box .calendar-primary):not(#pf):not(#pf) { background: var(--sig-fill); box-shadow: none; color: var(--sig-on-fill); }
+.pfRoot :global(.employee-calendar-status-box:has(.employee-calendar-secret) .calendar-primary):not(#pf):not(#pf) { background: #FFFFFF; color: var(--sig-fill); }
 .pfRoot :global(.employee-calendar-secret):not(#pf):not(#pf) { display: flex; flex-direction: column; gap: 10px; }
-.pfRoot :global(.employee-calendar-secret label):not(#pf):not(#pf) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.pfRoot :global(.employee-calendar-secret label):not(#pf):not(#pf) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
 .pfRoot :global(.employee-calendar-secret textarea):not(#pf):not(#pf) { width: 100%; padding: 12px 14px; border: 0; border-radius: 12px; background: rgba(255, 255, 255, .08); color: #FFFFFF; font: 400 .8125rem/1.25rem ui-monospace, "SF Mono", Menlo, monospace; resize: none; }
 .pfRoot :global(.employee-calendar-secret .profile-supporting-copy):not(#pf):not(#pf) { color: rgba(255, 255, 255, .7); }
 .pfRoot :global(.employee-calendar-actions):not(#pf):not(#pf) { display: flex; flex-wrap: wrap; gap: 8px; }
 .pfRoot :global(.employee-calendar-privacy):not(#pf):not(#pf) { display: flex; gap: 10px; margin: 0 2px; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
 .pfRoot :global(.employee-calendar-privacy svg):not(#pf):not(#pf) { flex: none; margin-top: 1px; color: var(--sg-ink-3); }
 .pfRoot :global(.employee-calendar-providers):not(#pf):not(#pf) { margin: 6px 0 0; padding: 0; border: 0; border-radius: 18px; background: #FFFFFF; box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06); overflow: hidden; }
-.pfRoot :global(.employee-calendar-providers h3):not(#pf):not(#pf) { margin: 0; padding: 14px 18px 4px; font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-2); }
+.pfRoot :global(.employee-calendar-providers h3):not(#pf):not(#pf) { margin: 0; padding: 14px 18px 4px; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-2); }
 .pfRoot :global(.employee-calendar-providers details + details):not(#pf):not(#pf) { border-top: 1px solid var(--sg-rule); }
 .pfRoot :global(.employee-calendar-providers summary):not(#pf):not(#pf) { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 18px; list-style: none; cursor: pointer; }
 .pfRoot :global(.employee-calendar-providers summary::-webkit-details-marker):not(#pf):not(#pf) { display: none; }

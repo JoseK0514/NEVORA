@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PASSKEY_COPY } from "@/lib/passkeys/copy";
+import { SigPendingLabel } from "@/components/signature/sig-button";
 import { clearPasswordSignIn, deviceName, dismissOffer, isPhoneLike, listPasskeys, offerDismissedRecently, passkeysAvailable, passwordSignInPending, registerPasskey } from "@/lib/passkeys/client";
 import "./passkeys.css";
 
@@ -59,7 +60,7 @@ export function PasskeyOffer() {
         <p id="passkey-offer-body" className="pk-muted">{t.offerBody}</p>
         {failed ? <p className="pk-notice" data-tone="error" role="alert">{t.setUpFailed}</p> : null}
         <div className="pk-dialog__actions">
-          <button type="button" className="nv-btn" data-kind="primary" onClick={() => void setUp()} disabled={busy} aria-busy={busy}>{busy ? t.settingUp : t.setUpPhone}</button>
+          <button type="button" className="nv-btn" data-kind="primary" onClick={() => void setUp()} aria-disabled={busy || undefined} aria-busy={busy}><SigPendingLabel pending={busy} pendingText={t.settingUp}>{t.setUpPhone}</SigPendingLabel></button>
           <button type="button" className="nv-btn" data-kind="secondary" onClick={() => close(true)} disabled={busy}>{t.notNow}</button>
         </div>
       </div>

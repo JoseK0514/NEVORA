@@ -12,14 +12,14 @@
 /* The message, set like a page. */
 .ccPaper:not(#cc) { position: relative; margin: 0 16px; padding: 22px 22px 0; border-radius: 22px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), 0 1px 1px rgba(22, 28, 27, .03), 0 24px 44px -26px rgba(13, 54, 52, .32); overflow: hidden; }
 .ccPaper:not(#cc)::before { content: ""; position: absolute; left: 0; top: 22px; bottom: 58px; width: 3px; border-radius: 0 3px 3px 0; background: var(--sg-teal); }
-.ccTag:not(#cc) { display: flex; align-items: center; justify-content: space-between; gap: 10px; font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-teal); }
+.ccTag:not(#cc) { display: flex; align-items: center; justify-content: space-between; gap: 10px; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-teal); }
 .ccTag > span:first-child:not(#cc) { display: inline-flex; align-items: center; gap: 6px; }
 .ccTag > span:last-child:not(#cc) { letter-spacing: .02em; color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
 .ccTag [data-over]:not(#cc), .ccFoot [data-over]:not(#cc) { color: var(--sg-red) !important; }
 .ccTitle:not(#cc) { display: block; width: 100%; margin-top: 10px; padding: 4px 0; border: 0; background: none; color: var(--sg-ink); font: 300 1.75rem/2.0625rem var(--sg-display); letter-spacing: -.028em; }
-.ccTitle:not(#cc)::placeholder { color: #B9B6AF; }
+.ccTitle:not(#cc)::placeholder { color: var(--sig-ink-3, #6F6C66); }
 .ccBody:not(#cc) { display: block; width: 100%; min-height: 128px; margin-top: 8px; padding: 4px 0; border: 0; background: none; resize: vertical; color: var(--sg-ink-2); font: 400 1.0625rem/1.625rem var(--sg-font); }
-.ccBody:not(#cc)::placeholder { color: #A19E97; }
+.ccBody:not(#cc)::placeholder { color: var(--sig-ink-3, #6F6C66); }
 .ccTitle:focus-visible:not(#cc), .ccBody:focus-visible:not(#cc) { outline: 2px solid var(--sg-ink); outline-offset: 2px; border-radius: 6px; }
 .ccTitle[aria-invalid="true"]:not(#cc), .ccBody[aria-invalid="true"]:not(#cc) { box-shadow: inset 0 -2px 0 var(--sg-red); }
 .ccFoot:not(#cc) { display: flex; justify-content: space-between; gap: 12px; margin: 14px -22px 0 !important; padding: 14px 22px; border-top: 1px solid var(--sg-rule); background: #FCFBF9; font: 400 .8125rem/1rem var(--sg-font); color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
@@ -38,7 +38,7 @@
 .ccCheck b:not(#cc) { display: block; font: 500 1rem/1.3125rem var(--sg-font); color: var(--sg-ink); }
 .ccCheck small:not(#cc) { display: block; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
 .ccWhen:not(#cc) { display: flex; flex-direction: column; gap: 6px; padding: 0 20px 18px; }
-.ccWhen label:not(#cc) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.ccWhen label:not(#cc) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
 .ccWhen input:not(#cc) { min-height: 48px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--sg-page); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1rem/1 var(--sg-font); }
 
 /* Review */
@@ -70,7 +70,7 @@
 .ccAlert:not(#cc) { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 18px; background: rgba(245, 247, 246, .9); box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
 .ccApp:not(#cc) { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 9px; background: var(--sg-deep); color: #FFFFFF; font: 600 1rem/1 var(--sg-display); }
 .ccAlertCopy:not(#cc) { flex: 1; min-width: 0; }
-.ccAlertCopy > b:not(#cc) { display: block; font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .04em; text-transform: uppercase; color: var(--sg-ink-2); }
+.ccAlertCopy > b:not(#cc) { display: block; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .04em; text-transform: uppercase; color: var(--sg-ink-2); }
 .ccAlertCopy > span:not(#cc) { display: -webkit-box; margin-top: 3px; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; font: 400 .875rem/1.1875rem var(--sg-font); color: var(--sg-ink); overflow-wrap: anywhere; }
 .ccAlertCopy > span b:not(#cc) { display: block; font-weight: 600; }
 .ccAlert > small:not(#cc) { flex: none; font: 400 .75rem/1rem var(--sg-font); color: var(--sg-ink-3); }

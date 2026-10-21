@@ -10,6 +10,7 @@ import { SwapHalf } from '../swap-shift-summary';
 import sr from '../shift-requests-signature.module.css';
 import type { ExchangeShift } from '@/lib/data/exchanges';
 
+import { SigButton } from "../signature/sig-button";
 type Sent = { give: ExchangeShift; receive: ExchangeShift };
 const SentContext = createContext<(sent: Sent) => void>(() => {});
 
@@ -37,7 +38,7 @@ export function SwapSentBoundary({ children }: { children: ReactNode }) {
     <div className="sg-card">
       <div className="sg-ticket"><SwapHalf shift={sent.give} label="You give" /><i aria-hidden="true"><ArrowsLeftRightIcon size={18} /></i><SwapHalf shift={sent.receive} label="You receive" employee /></div>
     </div>
-    <Link className="sg-cta" href="/app/exchange?tab=requests">View request status</Link>
+    <SigButton className="sg-cta" href="/app/exchange?tab=requests">View request status</SigButton>
   </SigPage>;
 }
 
