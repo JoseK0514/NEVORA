@@ -2,8 +2,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import styles from "./signature.module.css";
 
-/* The employee Signature frame (Jose approved Signature, Oct 20, 2026; phase-1 target:
- * docs/product/specs/employee-style/signature/phase-1/p1c-*.png). A deep-teal band whose eyebrow and large light
+/* The employee Signature frame (Jose approved Signature, Oct 20, 2026; spec:
+ * docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md; phase-1 target:
+ * docs/product/specs/employee-style/signature/phase-1/p1c-board.png). A deep-teal band whose eyebrow and large light
  * figure carry the page's key fact, then a soft-white sheet of tracked-caps sections and white lists. Shared by the
  * employee pages built in phase 1 and after; `data-sig` lets the shell (section tabs, frame padding) know. */
 

@@ -3,26 +3,26 @@
 /* Signature Clocker. Tokens are local: the kiosk runs outside the portal shell. A company brand (B1) may
  * override the four --clocker-* accent tokens; the deep-teal side stays NEVORA's. */
 .page {
-  --clocker-accent: #0D3634;
-  --clocker-accent-hover: #164B48;
-  --clocker-focus: #0B6E69;
-  --clocker-soft: #E3F0EC;
-  --clocker-on-accent: #ffffff;
-  --ck-deep: #0D3634;
-  --ck-mark: #164B48;
-  --ck-mint: #A9E2DA;
-  --ck-page: #F7F6F3;
-  --ck-card: #ffffff;
-  --ck-ink: #161C1B;
-  --ck-ink2: #5F625E;
-  --ck-ink3: #6F6C66;
-  --ck-rule: #E8E5DF;
-  --ck-edge: #E3DFD8;
-  --ck-track: #E3E0D9;
-  --ck-amber: #8A5208;
-  --ck-amber-wash: #FBEFDC;
-  --ck-lift: 0 0 0 1px var(--ck-edge), 0 14px 30px -22px rgba(13, 54, 52, .32);
-  --ck-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --clocker-accent: var(--sig-deep);
+  --clocker-accent-hover: var(--sig-mark);
+  --clocker-focus: var(--sig-action);
+  --clocker-soft: var(--sig-action-wash);
+  --clocker-on-accent: var(--sig-on-deep);
+  --ck-deep: var(--sig-deep);
+  --ck-mark: var(--sig-mark);
+  --ck-mint: var(--sig-mint);
+  --ck-page: var(--sig-page);
+  --ck-card: var(--sig-card);
+  --ck-ink: var(--sig-ink-1);
+  --ck-ink2: var(--sig-ink-2);
+  --ck-ink3: var(--sig-ink-3);
+  --ck-rule: var(--sig-rule);
+  --ck-edge: var(--sig-edge);
+  --ck-track: #E3E0D9; /* sig conflict: keeps #E3E0D9, canonical --sig-track is #EEECE7; see SIGNATURE-SPEC §16 (C1) */
+  --ck-amber: var(--sig-review-ink);
+  --ck-amber-wash: var(--sig-review-wash);
+  --ck-lift: var(--sig-shadow-raised);
+  --ck-grain: var(--sig-grain);
   /* Legacy names the task components and shared button styles read. */
   --design-primary: var(--clocker-accent);
   --design-accent: var(--clocker-accent-hover);

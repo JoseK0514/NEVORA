@@ -1,9 +1,31 @@
 ---
-version: "nevora-gusto-2026-10-16"
+version: "nevora-signature-2026-10-20"
 name: "NEVORA Workforce portal"
-description: "Workforce scheduling, time and pay portal in the Gusto style: teal action colour, white canvas, Inter, Phosphor icons. Mobile first; desktop uses one left-aligned page grid. Companies can set their own colour and logo within fixed contrast floors (B1). The body of this file records each approved refinement."
+description: "Workforce scheduling, time and pay app. Current direction (October 20, 2026): the employee app, sign-in/activation and the Clocker use Signature (deep band #0D3634, soft-white sheet #F7F6F3, system font today, Phosphor regular icons), specified in docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md and tokenised in src/components/signature/tokens.css. Manager and Owner use the clean-manager v3 design (docs/product/specs/clean-manager/spec.md). The Gusto portal tokens below remain the base layer and the B1 brand default. The body of this file records each approved refinement; older sections are history."
 colors:
-  # Portal palette (Batch 2 and U10 tokens in src/app/app/portal-gusto.css). The NEVORA wordmark itself never changes.
+  # Signature (CURRENT for the employee app, sign-in/activation and the Clocker). Full roles in SIGNATURE-SPEC.md section 3.
+  sig-page: "#F7F6F3"
+  sig-card: "#FFFFFF"
+  sig-ink-1: "#161C1B"
+  sig-ink-2: "#5F625E"
+  sig-ink-3: "#6F6C66"
+  sig-faint: "#B9B6AF"
+  sig-rule: "#E8E5DF"
+  sig-edge: "#E3DFD8"
+  sig-track: "#EEECE7"
+  sig-deep: "#0D3634"
+  sig-mark: "#164B48"
+  sig-sky: "#35B6EC"
+  sig-mint: "#A9E2DA"
+  sig-action: "#0B6E69"
+  sig-action-wash: "#E3F0EC"
+  sig-on-deep: "#FFFFFF"
+  # Manager and Owner (clean-manager v3, src/app/app/premium-clean-manager.css) render --cm-tint #087571 over the Gusto base, with iOS greys.
+  manager-tint: "#087571"
+  manager-tint-press: "#06605D"
+  # Gusto portal base layer (Batch 2 and U10 tokens in src/app/app/portal-gusto.css). Still loaded under both role shells and still the
+  # B1 derivation default (derive.ts), but neither the Signature employee app nor Manager/Owner renders these as its own palette now.
+  # The NEVORA wordmark itself never changes.
   primary: "#077572"
   primary-hover: "#055C5A"
   accent-strong: "#07605F"
@@ -16,7 +38,9 @@ colors:
   border: "#D7D9DC"
   hairline: "#ECEDEF"
   urgent: "#E1553F"
-  # Sign-in pages (login, forgot access, account activation) keep their own palette; the portal palette above stays intact.
+  # HISTORICAL (superseded): the 2026-10-10/12 blue sign-in palette. Sign-in moved to E4 (docs/product/specs/auth-premium/SPEC.md)
+  # and then to Signature on 2026-10-20. No sign-in page uses these now; #0756D9 survives only in legacy portal stylesheets
+  # under the Gusto override. Kept for history; do not use.
   login-blue: "#0756D9"
   login-blue-hover: "#003AAE"
   login-cyan: "#43CCFB"
@@ -28,6 +52,51 @@ colors:
   login-refined-hero-ink: "#062959"
   auth-still-surface: "#F1F4F8"
 typography:
+  # Signature type roles (CURRENT). The family is the platform's own system stack on the employee app and sign-in; the Clocker
+  # and PIN bundle Inter ("Nevora Clocker"). Which one wins is a pending decision (SIGNATURE-SPEC.md section 11).
+  sig-hero-word:
+    fontFamily: "system-ui (SF Pro Display, Segoe UI, Roboto)"
+    fontSize: "46px"
+    fontWeight: 300
+    lineHeight: "50px"
+    letterSpacing: "-.04em"
+  sig-hero-figure:
+    fontFamily: "system-ui (SF Pro Display, Segoe UI, Roboto)"
+    fontSize: "60px"
+    fontWeight: 200
+    lineHeight: "62px"
+    letterSpacing: "-.045em"
+  sig-headline:
+    fontFamily: "system-ui (SF Pro Display, Segoe UI, Roboto)"
+    fontSize: "40px"
+    fontWeight: 300
+    lineHeight: "44px"
+    letterSpacing: "-.035em"
+  sig-row:
+    fontFamily: "system-ui (SF Pro Text, Segoe UI, Roboto)"
+    fontSize: "17px"
+    fontWeight: 500
+    lineHeight: "22px"
+    letterSpacing: "-.012em"
+  sig-callout:
+    fontFamily: "system-ui (SF Pro Text, Segoe UI, Roboto)"
+    fontSize: "15px"
+    fontWeight: 400
+    lineHeight: "20px"
+  sig-caps:
+    fontFamily: "system-ui (SF Pro Text, Segoe UI, Roboto)"
+    fontSize: "12px"
+    fontWeight: 600
+    lineHeight: "16px"
+    letterSpacing: ".13em"
+  sig-tab:
+    fontFamily: "system-ui (SF Pro Text, Segoe UI, Roboto)"
+    fontSize: "13px"
+    fontWeight: 500
+    lineHeight: "16px"
+  # HISTORICAL: the roles below come from the 2026-10 orange/Inter reference and the blue sign-in. The employee app, sign-in and
+  # Manager/Owner now use the system stack; JetBrains Mono is not a label face anywhere (it remains only for code and hex inputs
+  # in a few Owner settings and payroll-export screens). Kept for history; do not use for new work.
   display-lg:
     fontFamily: "Inter"
     fontSize: "64px"
@@ -120,6 +189,12 @@ spacing:
   activation-secondary-gap: "28px"
   activation-secondary-gap-mobile: "24px"
 rounded:
+  # Signature radii (CURRENT): cards 22, sheet top corners 28, pills full. Button radii are being normalised (SIGNATURE-SPEC.md 6.7).
+  sig-card: "22px"
+  sig-sheet: "28px"
+  sig-pill: "999px"
+  # HISTORICAL: card 18 / control 17 were the blue sign-in geometry. The Gusto portal base uses 12px cards and 8px controls
+  # (portal-gusto.css); Manager/Owner clean v3 uses 10px cards and 12px buttons. Kept for history.
   card: "18px"
   control: "17px"
   pill: "9999px"
@@ -130,6 +205,26 @@ rounded:
   auth-popover: "14px"
   activation-password-toggle: "13px"
 components:
+  # Signature components (CURRENT, as built). Full list, states and targets: SIGNATURE-SPEC.md section 6.
+  sig-band:
+    backgroundColor: "{colors.sig-deep}"
+    textColor: "{colors.sig-on-deep}"
+    padding: "22px 24px 62px"
+  sig-sheet:
+    backgroundColor: "{colors.sig-page}"
+    rounded: "{rounded.sig-sheet}"
+  sig-card:
+    backgroundColor: "{colors.sig-card}"
+    rounded: "{rounded.sig-card}"
+  sig-cta:
+    backgroundColor: "{colors.sig-deep}"
+    textColor: "{colors.sig-on-deep}"
+    typography: "{typography.sig-row}"
+    rounded: "16px"
+    height: "54px"
+    width: "100%"
+  # HISTORICAL: every login-*, recovery-* and activation-* component below is the superseded blue sign-in. Sign-in, recovery,
+  # reset and activation now use the Signature .ap frame (auth-premium.css, auth-signature.css, activation.css). Kept for history.
   login-refined-composition:
     backgroundColor: "{colors.login-form-surface}"
     rounded: "{rounded.login-refined-composition}"
@@ -258,7 +353,58 @@ components:
     textColor: "{colors.login-blue-hover}"
 ---
 
+# Current direction (October 20, 2026)
+
+Read this first. The rest of the file is a dated history of approved refinements; where an older section disagrees with
+this one, this one wins.
+
+| Surface | Current design | Source of truth |
+|---|---|---|
+| Employee app (Employee and Lead, `data-nv-e5`) | **Signature**, approved by Jose on October 20, 2026 | [SIGNATURE-SPEC.md](docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md) |
+| Sign-in, forgot access, reset access, account activation (`.ap`) | **Signature** (the E4 sign-in carried forward, then restyled in phase 4 and activation v3) | SIGNATURE-SPEC.md; E4 base in [auth-premium/SPEC.md](docs/product/specs/auth-premium/SPEC.md) |
+| Clocker tablet and PIN setup | **Signature** (approved c4 boards) | SIGNATURE-SPEC.md |
+| Manager and Owner (`data-nv-clean`) | **Clean manager v3** (Wave A v3 light mockups, approved October 19) | [clean-manager/spec.md](docs/product/specs/clean-manager/spec.md), `src/app/app/premium-clean-manager.css` |
+
+Signature in one paragraph: a deep band (`#0D3634`) with the NEVORA Λ mark and grain carries each page's key fact in
+large light type; a soft-white sheet (`#F7F6F3`) rises over it with 28px top corners and holds white cards (22px
+radius). One message per card, no glass, Phosphor regular icons (fill only for the active tab), no illustration on Home.
+Shared values are in `src/components/signature/tokens.css` (`--sig-*`). Pages read those tokens and never declare their
+own palette.
+
+**What this supersedes, for the Signature surfaces only:**
+
+- "Typeface 75" and "Applying this reference to NEVORA" (orange, Inter, JetBrains Mono labels).
+- "Employee login", "Forgot access", "New user account activation", "Authentication family refinement" and "Set a New
+  Password refinement": their **visual** rules (blue and cyan, illustrations, motion, 18px frame, 52px/17px controls).
+  Their **workflow, privacy and copy** rules still hold, including the Registered Email Invitation Rule, the Truthful
+  Feedback Rule and the exact "Brighter work ahead" wording from `src/lib/brand.ts` if the slogan is shown (the
+  Signature sign-in does not show it today).
+- The employee parts of the Gusto sections (Batch 2 portal palette, U2 Today Home, U6 pay, D5 employee desktop) and the
+  "Employee My Time and Timecards" refinement.
+- U9's Clocker teal tokens (`#077572` family): the Clocker now uses the Signature deep palette.
+
+**Front-matter values corrected or marked on October 20, 2026:**
+
+- Added `sig-*` colours, type roles, radii and components (current).
+- The Gusto teal `#077572` family is marked as the base layer and B1 default, not the rendered palette of either role
+  shell. Manager/Owner render `#087571` (`--cm-tint`).
+- `login-blue #0756D9` and the other `login-*` colours, components and type roles are marked historical.
+- `label-md` and `login-workspace` (JetBrains Mono) are historical; JetBrains Mono survives only for code and hex inputs
+  on a few Owner and payroll-export screens.
+- `rounded.card 18px` and `rounded.control 17px` are historical. The Gusto base uses 12px cards and 8px controls.
+
+**Open decisions for Jose** (details in SIGNATURE-SPEC.md section 17): teal or green for "done"; a 300 display-weight
+floor; system font or Inter everywhere (PIN setup also bundles Inter a second time); how company branding (B1) appears
+in Signature; ink or teal links; button radius 16 or 14; band headline weight 300 or 400; press scale and duration;
+moving `/reset-access` off the old ivory sign-in colours; 11px caps; adding the untracked phase-3, phase-4, activation
+and Clocker boards to the repository.
+
+---
+
 # Typeface 75 - Premium Mechanical Keyboard
+
+> **Superseded (October 20, 2026).** This orange/Inter reference no longer describes any current surface. See "Current
+> direction" above. Kept as history.
 
 Source: Neuform Featured templates from top creators. Author: Meng To (@mengto). Views: 52; favorites: 17; remixes: 0. Tags: dashboard, charts, bento, animated, webgl, threejs, navigation, links.
 
@@ -329,6 +475,8 @@ The official NEVORA logo, wordmark, and PWA icons remain unchanged. There were n
 
 ## Employee login
 
+> **Visual rules superseded (October 20, 2026)** by Signature (SIGNATURE-SPEC.md). The workflow, security and copy rules here still hold.
+
 The sign-in task leads. Keep Employee ID, Password, Sign In, Forgot access?, Activate your account, configured workspace identity, and Velani ownership visible and readable. Preserve the native server form, password-manager autocomplete, validated return destination, activation redirect, credential verification, and session creation. Do not add unsupported social login or fabricated testimonials.
 
 NEVORA's slogan is **Brighter work ahead**. Keep this exact wording; it is the Employee Login, Forgot access and New user account activation illustration panels' headline and is defined once in `src/lib/brand.ts`. Do not replace it with newly invented positioning copy.
@@ -363,6 +511,8 @@ Employee Login leads directly into Employee ID, Password and the centered Sign I
 Reference: [Gusto sign-in on Mobbin](https://mobbin.com/screens/faab7a02-dc26-462b-b0f9-0a4a5245a65e) for focused authentication hierarchy and separated illustration; [21st Nav List Card](https://21st.dev/@arihantcodes_1f7b8c4d/components/nav-list-card) for a coordinated icon/link rhythm. No external auth component is imported. The 21st MCP server was unavailable in this session; its public reference was inspected instead.
 
 ## Forgot access
+
+> **Visual rules superseded (October 20, 2026)** by Signature (SIGNATURE-SPEC.md). The recovery workflow and the Truthful Feedback Rule still hold.
 
 Forgot access extends the approved `nevora-typeface-auth-blue-cyan` world with focused assistance and the same clean, cohesive composition. This is an ordinary extension, not a replacement visual world. The existing `login-*` color, type, spacing and component tokens now apply to Employee Login, Forgot access and New user account activation only. Reset access, assisted recovery and the orange portal retain their incumbent presentation.
 
@@ -401,6 +551,8 @@ The original model-generated `public/assets/illustrations/recovery-access-blue.p
 These are visual references. No paid component code was imported. See [the bounded review](docs/ui/2026-10-10-nevora-forgot-access-review.md) for candidate evidence and release limits.
 
 ## New user account activation
+
+> **Visual rules superseded (October 20, 2026)** by Signature activation v3 (SIGNATURE-SPEC.md). The Registered Email Invitation Rule, proof handling and privacy rules still hold.
 
 New user account activation at `/activate` extends the approved `nevora-typeface-auth-blue-cyan` world. Keep the existing workplace activation workflow and the shared split composition; this is an ordinary extension of Employee Login and Forgot access. Inter is explicitly pinned for this surface, with locally bundled JetBrains Mono reserved for the configured workspace identity. The orange portal, Reset access and assisted-recovery presentation remain outside this variant.
 
@@ -453,6 +605,8 @@ These are references, not new product workflows. No paid component code or exter
 
 ## Authentication family refinement — 2026-10-12
 
+> **Visual rules superseded (October 20, 2026)** by Signature (SIGNATURE-SPEC.md). Kept as history.
+
 Jose approved the still Employee Login and requested the same considered treatment for Forgot Access and Activate Account. These current rules supersede the older recovery/activation artwork, motion, introductory copy, arrows and geometry above. Login keeps its approved photographic hero and rendered geometry. The operational portal retains its presentation; Reset access now joins this family as described below.
 
 AuthBrand is the reusable authentication identity: original NEVORA wordmark, no boxed flame, Workforce centered below. Treat this as the standard for subsequent page refinements; retain the configured workspace and Velani ownership. AuthAccessSymbol supplies the exact same Phosphor LockKey/IdentificationBadge duotone icons used on login. The refined 54px controls, 14px control corners, 24px composition corners and neutral fields are shared through `src/app/login/auth-refinement.css`, requiring `.auth-refinement-page`. The earlier `login-refinement.css` was promoted without changing login's style declarations.
@@ -466,6 +620,8 @@ Assisted recovery and employee-detail guidance use native details with a thin ci
 [ZARA recovery on Mobbin](https://mobbin.com/screens/7cc092e3-8d52-4843-b98b-a278bd55cdf3) and [H&M recovery on Mobbin](https://mobbin.com/screens/fff66ab1-7532-4fac-83dc-5ad237fd7348) informed concise form hierarchy. The public [21st Forgot Password Form](https://21st.dev/@cnippet-dev/components/v-form-11) was inspected as a state/hierarchy reference; the 21st MCP is not exposed. Keep NEVORA's own authentication implementation and form contracts.
 
 ## Set a New Password refinement — 2026-10-12
+
+> **Visual rules superseded (October 20, 2026)** by Signature (SIGNATURE-SPEC.md). Kept as history.
 
 Jose requested the same approved authentication treatment at `/reset-access`. These rules supersede the earlier reset illustration, animation and introductory copy. Use AuthBrand with centered Workforce, the shared refinement geometry and a neutral still-art panel. `reset-key-still-v2.png` is an original transparent 1536×1024 imagegen edit showing only a cobalt physical key; the doorway and sunrise are removed. Keep the image stationary, contained, decorative and secondary to real HTML. Retain the original asset for rollback; manifest records the full prompt and SHA-256.
 
@@ -518,6 +674,8 @@ Scope/QA:41 remaining route patterns, actual employee and lead variants, phone s
 
 ## Employee My Time and Timecards — approved refinement (2026-10-13)
 
+> **Superseded (October 20, 2026)** by Signature phase 1 (SIGNATURE-SPEC.md). Kept as history.
+
 Jose approved the visual proposal for these two employee mobile pages, with coordinated color and consistent typography/alignment. This is a bounded successor to the mobile-workforce rules above. Require role EMPLOYEE and exact `/app/my-time` or `/app/timecards` via `data-employee-corporate="true"`; apply presentation only at screen widths <=760px. Home, authentication, sibling routes, Lead/Manager/Owner and desktop keep their incumbent presentation. The wider employee polish plan remains deferred.
 
 **Update, October 19, 2026 (premium rebuild, P3-WR-09):** Leads use the Employee app, so this My time and Timecards presentation now applies to role LEAD as well as EMPLOYEE. Managers and Owners are unchanged.
@@ -553,6 +711,8 @@ Jose gave Claude authority over NEVORA UI decisions, including overriding earlie
 - **Mobile tab bar:** the preview uses the production "Shifts" label for Shift requests.
 
 ### Portal-wide Gusto system (Batch 2) — 2026-10-15
+
+> **Partly superseded (October 20, 2026).** Employee and Lead pages now use Signature (SIGNATURE-SPEC.md); Manager and Owner use clean manager v3 (`docs/product/specs/clean-manager/spec.md`, `--cm-tint #087571`). The Gusto tokens remain the base layer and the B1 default.
 
 The Gusto palette and system now cover every authenticated portal page, not only Home. They are defined in `src/app/app/portal-gusto.css`, imported after `portal-refinement.css`. This supersedes the portal blue (#0756D9 / #003AAE / #EDF4FF / #062959) and the mobile-workforce and employee-corporate blue tokens. Authentication (login, forgot access, activation) keeps its own blue world until it is reviewed separately.
 
@@ -621,6 +781,8 @@ First phase of the full implementation plan (mobile first, enjoyable, customizab
 - **Deferred:** the manager Requests tab becomes Inbox, with one badge, when `/app/inbox` ships (U4).
 
 #### U2: employee Today Home (2026-10-15)
+
+> **Visual rules superseded (October 20, 2026)** by Signature Home (SIGNATURE-SPEC.md). Data and accuracy rules still hold.
 
 Reference: the Future Pro home on Mobbin (time-of-day greeting on a light background above one coloured event card), adapted to NEVORA tokens.
 - **Arrival:** employee Home drops the teal hero, so the next-shift pass is the one brand-colour moment under the teal app bar. The line under the heading reads "Good morning · Thursday, October 15, 2026" in the workspace time zone. The live Home still receives no name, by design; the "Hi, Alexandra." heading appears only where a name is supplied, as in the preview.
@@ -753,6 +915,8 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - On phones, "At a glance" sits below the period controls. Moving it first means restructuring the report's tested lifetime and state handling.
 
 #### U9: Clocker kiosk (2026-10-16)
+
+> **Teal tokens superseded (October 20, 2026)**: the Clocker uses the Signature deep palette (SIGNATURE-SPEC.md). The bilingual-label and script-safety rules still hold.
 
 - **Teal:** the kiosk defines its own teal tokens (`clocker-shell.module.css`), because it runs outside the portal shell.
   - Accent `#077572`, hover `#055C5A`, focus and icons `#07605F`, wash `#E7F3F2`, with white text on teal.

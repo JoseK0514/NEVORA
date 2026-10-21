@@ -3,11 +3,11 @@
  * cream), placeholder #726E67 (5.0:1 on paper), field edge #8A8378 (3.3:1 on paper and cream). */
 
 .ap {
-  --cream: #F4EFE7; --paper: #FFFDF9; --ink: #161C1B; --ink-2: #5F625E; --ink-3: #6E6A63; --rule: #E2DACD;
-  --edge: #8A8378; --deep: #0D3634; --mark: #164B48; --sky: #35B6EC;
-  --danger: var(--color-state-danger, #B42318); --danger-bg: var(--color-state-danger-bg, #FDECEC);
-  --done: var(--color-state-success, #1D6F42); --done-bg: var(--color-state-success-bg, #E7F4EC);
-  --sys: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --cream: #F4EFE7; --paper: #FFFDF9; --ink: var(--sig-ink-1); --ink-2: var(--sig-ink-2); --ink-3: #6E6A63; --rule: #E2DACD; /* sig conflict: keeps #F4EFE7 / #FFFDF9 / #6E6A63 / #E2DACD (--cream / --paper / --ink-3 / --rule, render on /reset-access), canonical --sig-page / --sig-card / --sig-ink-3 / --sig-rule are #F7F6F3 / #FFFFFF / #6F6C66 / #E8E5DF; see SIGNATURE-SPEC §16 (C2) */
+  --edge: var(--sig-control-edge); --deep: var(--sig-deep); --mark: var(--sig-mark); --sky: var(--sig-sky);
+  --danger: var(--color-state-danger, #B42318); --danger-bg: var(--color-state-danger-bg, #FDECEC); /* sig conflict: keeps #B42318 / #FDECEC, canonical --sig-urgent-ink / --sig-urgent-wash are #A3271A / #FBEDEC; see SIGNATURE-SPEC §16 (C3) */
+  --done: var(--color-state-success, #1D6F42); --done-bg: var(--color-state-success-bg, #E7F4EC); /* sig conflict: keeps #1D6F42 / #E7F4EC (renders #EAF5EA via globals.css), canonical --sig-done-ink / --sig-done-wash are #0A5753 / #E2F1ED; see SIGNATURE-SPEC §16 (C4) */
+  --sys: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* sig conflict: keeps this stack (adds Arial), canonical --sig-font is the same stack without it; see SIGNATURE-SPEC §16 (T9) */
   display: grid; grid-template-columns: minmax(0, 47fr) minmax(0, 53fr);
   min-height: 100svh; margin: 0; background: var(--cream); color: var(--ink);
   font-family: var(--sys); font-size: 1rem; -webkit-font-smoothing: antialiased; overflow-x: clip;

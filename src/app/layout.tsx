@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { NUVORA_BRAND } from "../lib/brand";
+import "../components/signature/tokens.css";
 import "./globals.css";
 import "./typeface-theme.css";
 import "./mobile-workforce.css";

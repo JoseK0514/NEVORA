@@ -3,8 +3,8 @@
  * the app uses, fields grouped in one card, light display type, and on phones the greeting in the band with Face ID
  * leading the sheet. Same forms, fields, names and actions. */
 
-.ap.ap { --cream: #F7F6F3; --paper: #FFFFFF; --rule: #E8E5DF; --ink-3: #6F6C66; --mint: #A9E2DA; --teal: #0B6E69;
-  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+.ap.ap { --cream: var(--sig-page); --paper: var(--sig-card); --rule: var(--sig-rule); --ink-3: var(--sig-ink-3); --mint: var(--sig-mint); --teal: var(--sig-action);
+  --display: var(--sig-font-display); }
 html:has(body .ap), body:has(> .ap), body:has(.ap) { background: #F7F6F3 !important; }
 
 /* Light display headings, as in the app. */
