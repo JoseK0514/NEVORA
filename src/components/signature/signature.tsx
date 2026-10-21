@@ -1,25 +1,27 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import styles from "./signature.module.css";
+import { SigFade } from "./sig-fade";
 
-/* The employee Signature frame (Jose approved Signature, Oct 20, 2026; phase-1 target:
- * docs/product/specs/employee-style/signature/phase-1/p1c-*.png). A deep-teal band whose eyebrow and large light
+/* The employee Signature frame (Jose approved Signature, Oct 20, 2026; spec:
+ * docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md; phase-1 target:
+ * docs/product/specs/employee-style/signature/phase-1/p1c-board.png). A deep-teal band whose eyebrow and large light
  * figure carry the page's key fact, then a soft-white sheet of tracked-caps sections and white lists. Shared by the
  * employee pages built in phase 1 and after; `data-sig` lets the shell (section tabs, frame padding) know. */
 
 export { styles as signatureStyles };
 
 export function SigPage({ band, children, className = "" }: { band: ReactNode; children: ReactNode; className?: string }) {
-  return <div className={`${styles.sgRoot} ${className}`.trim()} data-sig="">
+  return <div className={`${styles.sgRoot} ${className}`.trim()} data-sig="" data-sig-surface="light">
     {band}
-    <div className={styles.sgSheet}>{children}</div>
+    <div className={styles.sgSheet} data-sig-sheet="">{children}</div>
   </div>;
 }
 
 /** The band: an eyebrow (tracked caps), the hero (a large figure or word), and what follows it. The page's h1 is the
  * hero's label for screen readers when the hero is a figure. */
 export function SigBand({ eyebrow, live = false, mark = true, children }: { eyebrow: ReactNode; live?: boolean | "idle"; /** False when the page draws its own Λ (Profile's card). */ mark?: boolean; children: ReactNode }) {
-  return <header className={styles.sgBand}>
+  return <header className={styles.sgBand} data-sig-surface="deep">
     {mark ? <svg className={styles.sgMark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path className={styles.sgMarkL} d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/><path className={styles.sgMarkT} d="M146 330 L180 266 L214 330 Z"/></svg> : null}
     <p className={styles.sgEyebrow}>{live ? <i className={live === true ? styles.sgLive : undefined} aria-hidden="true" /> : null}{eyebrow}</p>
     {children}
@@ -30,7 +32,7 @@ export function SigBand({ eyebrow, live = false, mark = true, children }: { eyeb
 export function Duration({ seconds, size = "hero" }: { seconds: number; size?: "hero" | "pair" }) {
   const minutesTotal = Math.max(0, Math.floor(seconds / 60)), hours = Math.floor(minutesTotal / 60), minutes = minutesTotal % 60;
   return <span className={size === "hero" ? styles.sgDurHero : styles.sgDurPair}>
-    <span aria-hidden="true">{hours}<em>h</em> {String(minutes).padStart(2, "0")}<em>m</em></span>
+    <SigFade value={`${hours}:${minutes}`}>{hours}<em>h</em> {String(minutes).padStart(2, "0")}<em>m</em></SigFade>
     <span className="nv-sr">{hours} {hours === 1 ? "hour" : "hours"} {minutes} {minutes === 1 ? "minute" : "minutes"}</span>
   </span>;
 }

@@ -2,6 +2,7 @@
 
 import { useRef, useState, useSyncExternalStore } from "react";
 import type { AuthCopy } from "@/lib/auth-copy";
+import { SigSpinner } from "@/components/signature/sig-button";
 import { isPhoneLike, markPasswordSignIn, passkeysAvailable, signInWithPasskey, type PasskeyError } from "@/lib/passkeys/client";
 
 const subscribe = () => () => {};
@@ -40,7 +41,7 @@ export function PasskeySlot({ t, lead = false }: { t: AuthCopy; /** Signature (p
 
   if (lead) return (
     <div className="ap-passkey ap-passkey--lead">
-      <button type="button" className="ap-fid" onClick={start} disabled={busy} aria-busy={busy} aria-describedby={error ? "passkey-error" : undefined}>
+      <button type="button" className="ap-fid" onClick={start} aria-disabled={busy || undefined} aria-busy={busy} aria-describedby={error ? "passkey-error" : undefined}>
         <span className="ap-fid__ring" aria-hidden="true"><FaceIcon /></span>
         <b>{busy ? (phone ? t.passkeyBusyPhone : t.passkeyBusyDesktop) : (phone ? t.passkeyPhone : t.passkeyDesktop)}</b>
         <small>{phone ? t.passkeyHintPhone : t.passkeyHintDesktop}</small>
@@ -54,8 +55,8 @@ export function PasskeySlot({ t, lead = false }: { t: AuthCopy; /** Signature (p
   return (
     <div className="ap-passkey">
       <div className="ap-or ap-wide">{t.or}</div>
-      <button type="button" className="ap-secondary" onClick={start} disabled={busy} aria-busy={busy} aria-describedby={error ? "passkey-error" : undefined}>
-        <FaceIcon />
+      <button type="button" className="ap-secondary" onClick={start} aria-disabled={busy || undefined} aria-busy={busy} aria-describedby={error ? "passkey-error" : undefined}>
+        {busy ? <SigSpinner /> : <FaceIcon />}
         <span>{busy ? (phone ? t.passkeyBusyPhone : t.passkeyBusyDesktop) : (phone ? t.passkeyPhone : t.passkeyDesktop)}</span>
       </button>
       <span className="ap-sr" role="status" aria-live="polite">{busy ? (phone ? t.passkeyBusyPhone : t.passkeyBusyDesktop) : ""}</span>

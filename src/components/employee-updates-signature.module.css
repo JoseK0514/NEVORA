@@ -23,14 +23,14 @@
 .euBody span:not(#eu) { display: -webkit-box; margin-top: 10px; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; font: 400 .9375rem/1.375rem var(--sg-font); color: var(--sg-ink-2); overflow-wrap: anywhere; white-space: pre-line; }
 .euFoot:not(#eu) { display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 20px; background: var(--sg-deep); color: #FFFFFF; font: 500 1rem/1 var(--sg-font); }
 .euFoot svg:not(#eu) { color: var(--sg-mint); transition: transform .18s ease; }
-.euFeature:hover .euFoot svg:not(#eu) { transform: translateX(3px); }
+@media (hover: hover) { .euFeature:hover .euFoot svg:not(#eu) { transform: translateX(3px); } }
 
 /* Reviewed updates: rows. */
 .euRow:not(#eu) { color: var(--sg-ink); text-decoration: none; }
-.euRow:hover:not(#eu) { background: #FAFAF8; }
+@media (hover: hover) { .euRow:hover:not(#eu) { background: #FAFAF8; } }
 .euRow:focus-visible:not(#eu) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
 .euDone:not(#eu) { display: inline-flex; align-items: center; gap: 4px; color: var(--sg-teal); font-weight: 500; }
-.euChev:not(#eu) { flex: none; color: var(--sg-faint); }
+.euChev:not(#eu) { flex: none; color: var(--sig-glyph, #8A8378); }
 
 /* States */
 .euState:not(#eu) { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 32px !important; padding: 32px 24px; text-align: center; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
@@ -39,3 +39,7 @@
 .euRoot :global(.sg-quiet):not(#eu) { margin-top: 18px; }
 
 @media (min-width: 768px) { .euFilters:not(#eu) { margin-inline: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .euFoot svg:not(#eu) { transition: none; }
+}

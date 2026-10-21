@@ -1,7 +1,7 @@
 /* Account activation in the Signature sign-in frame (activation v3, approved Oct 20, 2026;
  * docs/product/specs/employee-style/signature/activation/v3). Tokens come from auth-premium.css and auth-signature.css. */
-.ap { --act-edge: #E3DFD8; --act-teal: #0B6E69; --act-deep: #0D3634; --act-wash: #E3F0EC; --act-halo: #E2F1ED;
-  --act-lift: 0 0 0 1px var(--act-edge), 0 14px 30px -24px rgba(13, 54, 52, .32); }
+.ap { --act-edge: var(--sig-edge); --act-teal: var(--sig-action); --act-deep: var(--sig-deep); --act-wash: var(--sig-action-wash); --act-halo: var(--sig-done-wash);
+  --act-lift: 0 0 0 1px var(--act-edge), 0 14px 30px -24px rgba(13, 54, 52, .32); /* sig conflict: keeps -24px offset, canonical --sig-shadow-raised is -22px; see SIGNATURE-SPEC §16 (E1) */ }
 
 /* Status line under the title: verified badge (or the opening spinner) and the workspace. */
 .ap .act-status { display: flex; align-items: center; gap: 9px; margin-top: 12px; font: 400 .9375rem/1.4 var(--sys); color: var(--ink-2); overflow-wrap: anywhere; }

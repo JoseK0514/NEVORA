@@ -115,8 +115,8 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
    <fieldset className="ap-fieldset" disabled={phase==='pending'}>
     <ActivationPasswords mismatch={mismatch} errorId={error?'activation-error':undefined}/>
     {phase==='unavailable'&&!mismatch?<p id="activation-error" className="act-alert" role="alert"><span className="act-alert__tile" aria-hidden="true"><CloudSlashIcon size={20} weight="duotone"/></span>Activation is temporarily unavailable. Your invitation was not confirmed. Try again later.</p>:null}
-    <ActivationSubmit pending={phase==='pending'}/>
    </fieldset>
+   <ActivationSubmit pending={phase==='pending'}/>
   </form>}
   <noscript><p className="act-foot">JavaScript is required to open your secure email invitation. Use an enabled browser or contact your Owner.</p></noscript>
   {note?<Link href={signInHref} className="ap-secondary act-go act-soft">Sign in</Link>:<p className="act-signin"><Link href={signInHref} className="act-signin__link">Already activated? Sign in</Link></p>}

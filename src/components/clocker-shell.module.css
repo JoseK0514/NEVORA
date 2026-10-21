@@ -3,26 +3,26 @@
 /* Signature Clocker. Tokens are local: the kiosk runs outside the portal shell. A company brand (B1) may
  * override the four --clocker-* accent tokens; the deep-teal side stays NEVORA's. */
 .page {
-  --clocker-accent: #0D3634;
-  --clocker-accent-hover: #164B48;
-  --clocker-focus: #0B6E69;
-  --clocker-soft: #E3F0EC;
-  --clocker-on-accent: #ffffff;
-  --ck-deep: #0D3634;
-  --ck-mark: #164B48;
-  --ck-mint: #A9E2DA;
-  --ck-page: #F7F6F3;
-  --ck-card: #ffffff;
-  --ck-ink: #161C1B;
-  --ck-ink2: #5F625E;
-  --ck-ink3: #6F6C66;
-  --ck-rule: #E8E5DF;
-  --ck-edge: #E3DFD8;
-  --ck-track: #E3E0D9;
-  --ck-amber: #8A5208;
-  --ck-amber-wash: #FBEFDC;
-  --ck-lift: 0 0 0 1px var(--ck-edge), 0 14px 30px -22px rgba(13, 54, 52, .32);
-  --ck-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --clocker-accent: var(--sig-deep);
+  --clocker-accent-hover: var(--sig-mark);
+  --clocker-focus: var(--sig-action);
+  --clocker-soft: var(--sig-action-wash);
+  --clocker-on-accent: var(--sig-on-deep);
+  --ck-deep: var(--sig-deep);
+  --ck-mark: var(--sig-mark);
+  --ck-mint: var(--sig-mint);
+  --ck-page: var(--sig-page);
+  --ck-card: var(--sig-card);
+  --ck-ink: var(--sig-ink-1);
+  --ck-ink2: var(--sig-ink-2);
+  --ck-ink3: var(--sig-ink-3);
+  --ck-rule: var(--sig-rule);
+  --ck-edge: var(--sig-edge);
+  --ck-track: #E3E0D9; /* sig conflict: keeps #E3E0D9, canonical --sig-track is #EEECE7; see SIGNATURE-SPEC §16 (C1) */
+  --ck-amber: var(--sig-review-ink);
+  --ck-amber-wash: var(--sig-review-wash);
+  --ck-lift: var(--sig-shadow-raised);
+  --ck-grain: var(--sig-grain);
   /* Legacy names the task components and shared button styles read. */
   --design-primary: var(--clocker-accent);
   --design-accent: var(--clocker-accent-hover);
@@ -93,23 +93,27 @@
 .task h1 { max-width: 100%; margin: 0; font-size: clamp(2.25rem, 3.6vw, 2.75rem); line-height: 1.1; font-weight: 300; letter-spacing: -.035em; color: var(--ck-ink); overflow-wrap: anywhere; }
 
 /* Shared buttons inside the kiosk. */
-.page :global(.button) { min-height: 60px; border-radius: 18px; padding: 14px 22px; font-family: inherit; font-size: 1.0625rem; line-height: 1.3; font-weight: 500; gap: 10px; white-space: normal; border: 0; box-shadow: none; transition: background-color .16s ease, transform .16s ease; }
+/* Signature button scale: 56px, radius 16 (the action cards and keypad keys keep their own shapes). */
+.page :global(.button) { min-height: var(--sig-control-h, 56px); border-radius: var(--sig-radius-control, 16px); padding: 14px 22px; font-family: inherit; font-size: 1.0625rem; line-height: 1.3; font-weight: 500; gap: 10px; white-space: normal; border: 0; box-shadow: none; transition: background-color .16s ease, transform .16s ease; }
 .page :global(.button.primary) { background: var(--clocker-accent); color: var(--clocker-on-accent); }
-.page :global(.button.primary:hover) { background: var(--clocker-accent-hover); }
+@media (hover: hover) { .page :global(.button.primary:hover) { background: var(--clocker-accent-hover); } }
 /* A quiet, readable disabled look (the shared rule only fades the deep fill). */
 .page.page.page :global(.button.primary):disabled { background: var(--ck-track); color: var(--ck-ink2); opacity: 1; }
-.page :global(.button.secondary) { background: var(--ck-card); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-edge); }
-.page :global(.button.secondary:hover) { background: #F1EFEA; }
+.page :global(.button.secondary) { background: var(--ck-card); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-edge), 0 1px 2px rgba(22, 28, 27, .06); }
+@media (hover: hover) { .page :global(.button.secondary:hover) { background: #F1EFEA; } }
 .page :global(.button.ghost) { background: transparent; color: var(--ck-ink); }
-.page :global(.button.ghost:hover) { background: #EFEDE8; }
+@media (hover: hover) { .page :global(.button.ghost:hover) { background: #EFEDE8; } }
 .page button:active { transform: scale(.98); }
 .page button:focus-visible, .page a:focus-visible { outline: 3px solid var(--clocker-focus); outline-offset: 3px; }
 .page button:disabled { cursor: not-allowed; }
 .page button:disabled:active { transform: none; }
-.page.page.page :global(.button.primary):is(:hover, :active):not(:disabled) { color: var(--clocker-on-accent); }
+@media (hover: hover) { .page.page.page :global(.button.primary):hover:not(:disabled) { color: var(--clocker-on-accent); } }
+.page.page.page :global(.button.primary):active:not(:disabled) { color: var(--clocker-on-accent); }
 
 .skip { position: absolute; top: 12px; left: 12px; z-index: 3; padding: 14px 20px; border-radius: 12px; background: #ffffff; color: var(--ck-ink); transform: translateY(-160%); }
 .skip:focus { transform: none; }
+/* The skip link opens over the deep side, so its ring is the light one (13.2:1 on #0D3634). */
+.page .skip:focus-visible { outline-color: var(--sig-focus-on-dark, #FFFFFF); }
 
 /* U9 bilingual labels: English first, Spanish beneath in a lighter weight. */
 .page :global(.clocker-label) { display: inline-grid; justify-items: inherit; gap: 2px; line-height: 1.25; }
@@ -130,7 +134,7 @@
   .mark { width: 300px; right: -70px; bottom: -40px; }
   .logo { height: 14px; }
   .when { margin: 0; padding: 14px 0 0; }
-  .location { font-size: 0.6875rem; padding: 6px 12px 6px 9px; }
+  .location { font-size: 0.75rem; padding: 6px 12px 6px 9px; }
   .clock { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 10px; }
   .clock time { font-size: 3.75rem; letter-spacing: -.04em; gap: 6px; }
   .clock time > span { font-size: 1.125rem; }

@@ -5,6 +5,6 @@
 .ssRow:not(#ss) { color: var(--sg-ink); }
 .ssRow:hover:not(#ss) { background: #FAFAF8; }
 .ssRow:focus-visible:not(#ss) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
-.ssChev:not(#ss) { flex: none; color: var(--sg-faint); }
+.ssChev:not(#ss) { flex: none; color: var(--sig-glyph, #8A8378); }
 .ssRoot :global(.sg-card) > li:not(#ss) { list-style: none; position: relative; }
 .ssRoot :global(.sg-card) > li + li:not(#ss)::before { content: ""; position: absolute; top: 0; left: 78px; right: 0; height: 1px; background: var(--sg-rule); }

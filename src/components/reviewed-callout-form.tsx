@@ -18,6 +18,7 @@ import { PendingButton } from "./wave-a/pending-button";
 import { SigHead } from "./signature/signature";
 import sr from "./shift-requests-signature.module.css";
 
+import { SigButton } from "./signature/sig-button";
 const reasons = [
   ["ILLNESS", "Illness / sick", ThermometerIcon],
   ["FAMILY_EMERGENCY", "Family emergency", HeartIcon],
@@ -99,7 +100,7 @@ export function ReviewedCalloutForm({
         </div>
         {!fields ? (
           <div className={sr.srNoticeTop}><Notice tone="urgent" title="The shift changed">Your reason is kept. Refresh to see the shift as it is now, then send.</Notice>
-            <button className="sg-cta" data-kind="ghost" type="button" onClick={() => router.refresh()}>Refresh the shift</button></div>
+            <SigButton variant="secondary" className="sg-cta" data-kind="ghost" onClick={() => router.refresh()}>Refresh the shift</SigButton></div>
         ) : null}
       </div>
       <FormActions note={<>A manager reviews it. If they approve it, the shift opens for someone else to pick up. <Link href="/app/exchange?tab=requests">See my requests</Link></>}>

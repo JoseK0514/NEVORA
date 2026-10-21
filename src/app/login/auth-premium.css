@@ -3,11 +3,11 @@
  * cream), placeholder #726E67 (5.0:1 on paper), field edge #8A8378 (3.3:1 on paper and cream). */
 
 .ap {
-  --cream: #F4EFE7; --paper: #FFFDF9; --ink: #161C1B; --ink-2: #5F625E; --ink-3: #6E6A63; --rule: #E2DACD;
-  --edge: #8A8378; --deep: #0D3634; --mark: #164B48; --sky: #35B6EC;
-  --danger: var(--color-state-danger, #B42318); --danger-bg: var(--color-state-danger-bg, #FDECEC);
-  --done: var(--color-state-success, #1D6F42); --done-bg: var(--color-state-success-bg, #E7F4EC);
-  --sys: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --cream: #F4EFE7; --paper: #FFFDF9; --ink: var(--sig-ink-1); --ink-2: var(--sig-ink-2); --ink-3: #6E6A63; --rule: #E2DACD; /* sig conflict: keeps #F4EFE7 / #FFFDF9 / #6E6A63 / #E2DACD (--cream / --paper / --ink-3 / --rule, render on /reset-access), canonical --sig-page / --sig-card / --sig-ink-3 / --sig-rule are #F7F6F3 / #FFFFFF / #6F6C66 / #E8E5DF; see SIGNATURE-SPEC §16 (C2) */
+  --edge: var(--sig-control-edge); --deep: var(--sig-deep); --mark: var(--sig-mark); --sky: var(--sig-sky);
+  --danger: var(--color-state-danger, #B42318); --danger-bg: var(--color-state-danger-bg, #FDECEC); /* sig conflict: keeps #B42318 / #FDECEC, canonical --sig-urgent-ink / --sig-urgent-wash are #A3271A / #FBEDEC; see SIGNATURE-SPEC §16 (C3) */
+  --done: var(--color-state-success, #1D6F42); --done-bg: var(--color-state-success-bg, #E7F4EC); /* sig conflict: keeps #1D6F42 / #E7F4EC (renders #EAF5EA via globals.css), canonical --sig-done-ink / --sig-done-wash are #0A5753 / #E2F1ED; see SIGNATURE-SPEC §16 (C4) */
+  --sys: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* sig conflict: keeps this stack (adds Arial), canonical --sig-font is the same stack without it; see SIGNATURE-SPEC §16 (T9) */
   display: grid; grid-template-columns: minmax(0, 47fr) minmax(0, 53fr);
   min-height: 100svh; margin: 0; background: var(--cream); color: var(--ink);
   font-family: var(--sys); font-size: 1rem; -webkit-font-smoothing: antialiased; overflow-x: clip;
@@ -35,7 +35,7 @@
 .ap-back + .ap-title { margin-top: 18px; }
 .ap-subtitle { margin-top: 12px; font: 400 1.0625rem/1.5625rem var(--sys); letter-spacing: -.2px; color: var(--ink-2); }
 .ap-back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin: -12px 0 0; font: 500 .875rem/1.25rem var(--sys); color: var(--ink-2); text-decoration: none; }
-.ap-back:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+@media (hover: hover) { .ap-back:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; } }
 
 /* ---------- Fields ---------- */
 .ap-form { margin-top: 36px; }
@@ -49,7 +49,7 @@
 .ap-label { display: block; font: 500 .8125rem/1.125rem var(--sys); color: var(--ink); }
 .ap-aside-link { position: relative; font: 400 .8125rem/1.125rem var(--sys); color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
 .ap-aside-link::after { content: ""; position: absolute; inset: calc(50% - 22px) -4px; }
-.ap-aside-link:hover { color: var(--ink); }
+@media (hover: hover) { .ap-aside-link:hover { color: var(--ink); } }
 .ap-box {
   display: flex; align-items: center; min-height: 3.25rem; margin-top: 8px; padding: 0 16px; border: 1px solid var(--edge); border-radius: 10px;
   background: var(--paper); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8); transition: border-color 120ms ease, box-shadow 120ms ease;
@@ -64,26 +64,30 @@
 .ap-form[data-invalid] .ap-box, .ap-box:has(input[aria-invalid="true"]) { border-color: var(--danger); }
 .ap-box--toggle { padding-right: 4px; }
 .ap-eye { display: inline-grid; flex: none; place-items: center; width: 44px; height: 44px; margin: 0; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); cursor: pointer; }
-.ap-eye:hover { color: var(--ink); background: rgba(22, 28, 27, .05); }
+@media (hover: hover) { .ap-eye:hover { color: var(--ink); background: rgba(22, 28, 27, .05); } }
 .ap-hint { margin-top: 8px; font: 400 .8125rem/1.125rem var(--sys); color: var(--ink-2); }
 .ap-fieldset:disabled .ap-box { opacity: .7; }
 
 /* ---------- Actions and links ---------- */
 .ap .ap-primary {
-  display: flex; align-items: center; justify-content: center; width: 100%; min-height: 3.25rem; margin-top: 28px; padding: .75rem 1rem;
-  border: 0; border-radius: 10px; background: var(--deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--sys); letter-spacing: -.1px;
+  display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--sig-control-h, 56px); margin-top: 28px; padding: .75rem 1rem;
+  border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--sys); letter-spacing: -.1px;
   text-align: center; text-decoration: none; cursor: pointer; transition: transform 120ms ease, background-color 120ms ease;
 }
-.ap .ap-primary:hover:not(:disabled) { background: #0A2A28; }
-.ap .ap-primary:active:not(:disabled) { transform: scale(.96); }
+@media (hover: hover) { .ap .ap-primary:hover:not(:disabled):not([aria-busy="true"]) { background: #0A2A28; } }
+.ap .ap-primary:active:not(:disabled):not([aria-busy="true"]) { transform: scale(.98); }
 .ap .ap-primary:disabled { cursor: wait; }
+.ap .ap-primary[aria-busy="true"] { cursor: progress; }
 .ap-or { display: flex; align-items: center; gap: 14px; margin-top: 22px; font: 400 .8125rem/1.125rem var(--sys); color: var(--ink-3); }
 .ap-or::before, .ap-or::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
-.ap-secondary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 3.25rem; margin-top: 22px; border: 1px solid var(--edge); border-radius: 10px; background: transparent; color: var(--ink); font: 500 1rem/1.25rem var(--sys); }
+/* Signature secondary: white, ink, a hairline and a soft lift; same 56px and 16px radius as the primary. */
+.ap-secondary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: var(--sig-control-h, 56px); margin-top: 22px; border: 1px solid transparent; border-radius: var(--sig-radius-control, 16px); background: var(--sig-card, #FFFFFF); color: var(--ink); font: 500 1rem/1.25rem var(--sys); box-shadow: inset 0 0 0 1px var(--sig-rule, #E8E5DF), 0 1px 2px rgba(22, 28, 27, .06); }
+@media (hover: hover) { .ap .ap-secondary:not(:disabled):not(.act-soft):hover { background: var(--sig-card-hover, #FBFAF8); } }
+.ap .ap-secondary[aria-busy="true"] { cursor: progress; }
 .ap-links { display: grid; gap: 8px; margin-top: 26px; }
 .ap-alt { font: 400 .9375rem/1.375rem var(--sys); color: var(--ink-2); }
 .ap-link { color: var(--ink); font-weight: 500; text-decoration: underline; text-decoration-color: var(--rule); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-.ap-link:hover { text-decoration-color: currentColor; }
+@media (hover: hover) { .ap-link:hover { text-decoration-color: currentColor; } }
 .ap-links > p:not(.ap-alt) .ap-link { display: inline-flex; align-items: center; min-height: 44px; font-size: .9375rem; }
 .ap-help summary { display: flex; align-items: center; gap: 10px; min-height: 44px; color: var(--ink); font: 500 .9375rem/1.375rem var(--sys); list-style: none; cursor: pointer; }
 .ap-help summary::-webkit-details-marker { display: none; }
@@ -122,7 +126,7 @@
 .ap-legal .brand-legal > span + span { display: none; }
 .ap-legal .brand-legal :is(nav, .brand-legal-links) { display: flex; flex-wrap: wrap; gap: 0 20px; }
 .ap-legal .brand-legal a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink-3); font-size: .8125rem; text-decoration: none; }
-.ap-legal .brand-legal a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) { .ap-legal .brand-legal a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; } }
 
 /* ---------- Focus ---------- */
 .ap :is(a, button, summary):focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
@@ -206,7 +210,6 @@
   .ap-narrow { display: block; }
   .ap-pill { position: relative; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px 6px 8px; border-radius: 16px; background: rgba(255, 255, 255, .14); color: #FFFFFF; font: 500 .9375rem/1.25rem var(--sys); text-decoration: none; }
   .ap-pill::after { content: ""; position: absolute; inset: -6px -4px; }
-  .ap :is(.ap-pill, .ap-lang button):focus-visible { outline-color: #FFFFFF; }
   .ap-lang { background: rgba(255, 255, 255, .12); }
   .ap-lang button { min-width: 2.75rem; padding: 4px 9px; color: rgba(255, 255, 255, .8); }
   .ap-lang button[aria-pressed="true"] { background: #FFFFFF; color: var(--ink); }
@@ -219,8 +222,8 @@
   .ap-form { margin-top: 22px; }
   .ap-field + .ap-field { margin-top: 14px; }
   .ap-box { min-height: 3.125rem; }
-  .ap .ap-primary { min-height: 3.125rem; margin-top: 20px; }
-  .ap-secondary { min-height: 3.125rem; margin-top: 10px; }
+  .ap .ap-primary { margin-top: 20px; }
+  .ap-secondary { margin-top: 10px; }
   .ap-links { justify-items: center; gap: 2px; margin-top: 16px; text-align: center; }
   .ap-legal .brand-legal { justify-content: center; text-align: center; }
 }

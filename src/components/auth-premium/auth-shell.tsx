@@ -72,8 +72,8 @@ export function AuthShell({ lang, t, variant, back, bandTitle, children }: {
   children: ReactNode;
 }) {
   return (
-    <main className={`ap ap--${variant}`} lang={lang === "es" ? "es" : undefined}>
-      <div className="ap-band">
+    <main className={`ap ap--${variant}`} data-sig-surface="light" lang={lang === "es" ? "es" : undefined}>
+      <div className="ap-band" data-sig-surface="deep">
         <Mark className="ap-band__mark" />
         <span className="ap-grain" aria-hidden="true" />
         {variant === "signin" ? <>
@@ -97,7 +97,7 @@ export function AuthShell({ lang, t, variant, back, bandTitle, children }: {
           <footer className="ap-legal"><BrandLegal lang={lang} /></footer>
         </div>
       </div>
-      <aside className="ap-panel" aria-label="NEVORA">
+      <aside className="ap-panel" data-sig-surface="deep" aria-label="NEVORA">
         <Mark className="ap-panel__mark" />
         <span className="ap-grain" aria-hidden="true" />
         <div className="ap-panel__copy">

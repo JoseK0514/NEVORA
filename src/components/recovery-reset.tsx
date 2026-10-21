@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {useEffect, useRef, type FormEventHandler, type RefCallback} from 'react';
 import {AuthDisclosureSymbol} from './auth-disclosure-symbol';
+import {RecoverySubmit} from './recovery-submit';
 import {PasswordInput} from './auth-premium/password-input';
 import {AUTH_COPY, authMessage, type AuthLang} from '@/lib/auth-copy';
 
@@ -53,10 +54,8 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
       <div className="ap-box"><input id="reset-confirm-password" className="ap-input" name="confirmPassword" type="password" required minLength={8} maxLength={1024}
        autoComplete="new-password" placeholder={t.enterItAgain} aria-invalid={mismatch || undefined} aria-describedby={message ? 'reset-error' : undefined}/></div>
      </div>
-     <button type="submit" className="ap-primary" disabled={!hydrated || busy} aria-busy={busy}>
-      <span>{busy ? t.resettingPassword : t.resetPassword}</span>
-     </button>
     </fieldset>
+    <RecoverySubmit hydrated={hydrated} busy={busy} idle={t.resetPassword} pendingText={t.resettingPassword}/>
    </form>
    {message ? <div id="reset-error" className="ap-alert ap-alert--block" data-tone="error" ref={feedback} role="alert" tabIndex={-1}>
     <h2>{mismatch ? t.checkPasswords : invalid ? t.useNewCode : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}</h2>

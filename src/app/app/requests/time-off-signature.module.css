@@ -17,7 +17,7 @@
 .toSingle:not(#to) { grid-template-columns: 1fr !important; }
 .toTimes:not(#to) { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); align-items: end; gap: 6px; padding: 0 20px 20px; }
 .toTimes label:not(#to) { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.toTimes label span:not(#to) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
+.toTimes label span:not(#to) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
 .toTimes input:not(#to) { width: 100%; min-width: 0; min-height: 48px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--sg-page); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1.0625rem/1 var(--sg-font); font-variant-numeric: tabular-nums; }
 .toTimes input[aria-invalid="true"]:not(#to) { box-shadow: inset 0 0 0 1.5px var(--sg-red); }
 .toTimes i:not(#to) { display: flex; justify-content: center; align-items: center; height: 48px; color: var(--sg-ink-3); }
@@ -94,10 +94,10 @@
   .toMonthHead button:not(#to) { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: var(--sg-page); color: var(--sg-ink-2); cursor: pointer; }
   .toMonthHead button + button:not(#to) { margin-left: 6px; }
   .toMonthDays:not(#to), .toMonthGrid:not(#to) { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
-  .toMonthDays small:not(#to) { padding-bottom: 8px; text-align: center; font: 600 .6875rem/.875rem var(--sg-font); color: var(--sg-ink-3); }
+  .toMonthDays small:not(#to) { padding-bottom: 8px; text-align: center; font: 600 .75rem/1rem var(--sg-font); color: var(--sg-ink-3); }
   .toMonthGrid button:not(#to) { height: 44px; margin: 2px 0; padding: 0; border: 0; background: none; color: var(--sg-ink); font: 400 .9375rem/1 var(--sg-font); font-variant-numeric: tabular-nums; cursor: pointer; }
-  .toMonthGrid button:hover:not(#to) { background: var(--sg-page); border-radius: 22px; }
-  .toMonthGrid button[data-past]:not(#to) { color: #A19E97; }
+  @media (hover: hover) { .toMonthGrid button:hover:not(#to) { background: var(--sg-page); border-radius: 22px; } }
+  .toMonthGrid button[data-past]:not(#to) { color: var(--sig-ink-3, #6F6C66); }
   .toMonthGrid button[data-today]:not(#to) { font-weight: 600; color: var(--sg-teal); }
   .toMonthGrid button[data-range]:not(#to) { border-radius: 0; background: #E2F1ED; color: #0A5753; font-weight: 500; }
   .toMonthGrid button[data-edge]:not(#to) { background: var(--sg-deep); color: #FFFFFF; font-weight: 500; }
@@ -105,4 +105,6 @@
   .toMonthGrid button[data-edge="end"]:not(#to) { border-radius: 0 22px 22px 0; }
   .toMonthGrid button[data-edge="both"]:not(#to) { border-radius: 22px; }
   .toMonthGrid button:focus-visible:not(#to) { outline: 2px solid var(--sg-ink); outline-offset: -2px; border-radius: 22px; }
+  /* The chosen start and end are deep fills; the inset ink ring would vanish on them, so theirs is light. */
+  .toMonthGrid button[data-edge]:focus-visible:not(#to) { outline-color: var(--sig-focus-on-dark, #FFFFFF); }
 }

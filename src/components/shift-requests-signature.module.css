@@ -19,10 +19,12 @@
 .srRoot :global(.employee-shift-entry-actions:empty):not(#sr) { display: none; }
 .srRoot :global(.shift-change-form):not(#sr) { display: contents; }
 .srRoot :global(.shift-change-fields):not(#sr) { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
-.srRoot :global(.employee-action):not(#sr) { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--sg-card); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 .9375rem/1 var(--sg-font); text-decoration: none; cursor: pointer; }
+.srRoot :global(.employee-action):not(#sr) { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: var(--sig-control-h-compact, 44px); padding: 0 16px; border: 0; border-radius: var(--sig-radius-compact, 12px); background: var(--sg-card); box-shadow: inset 0 0 0 1px var(--sg-rule), 0 1px 2px rgba(22, 28, 27, .06); color: var(--sg-ink); font: 500 .9375rem/1 var(--sg-font); text-decoration: none; cursor: pointer; }
 .srRoot :global(.employee-action.primary):not(#sr) { background: var(--sg-deep); box-shadow: none; color: #FFFFFF; }
 .srRoot :global(.employee-action.danger):not(#sr) { color: var(--sg-red); }
-.srRoot :global(.employee-action):disabled:not(#sr) { opacity: .55; cursor: default; }
+/* A form that is sending (aria-busy) keeps its buttons in their colours; only true disabled goes quiet. */
+.srRoot :global(.employee-action):disabled:not([aria-busy="true"]):not([aria-busy="true"] *):not(#sr) { opacity: 1; background: var(--sig-disabled, #ECEAE5); box-shadow: none; color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
+.srRoot :global(.employee-action):is([aria-busy="true"], [aria-busy="true"] *):not(#sr) { opacity: 1; cursor: progress; }
 .srRoot :global(.employee-action):focus-visible:not(#sr) { outline: 2px solid var(--sg-ink); outline-offset: 2px; }
 .srRoot :global(.sg-r > .employee-shift-entry-actions):not(#sr) { flex: none; }
 .srRoot :global(form[aria-busy]) :global(p[role]):not(#sr) { margin: 8px 0 0; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
@@ -47,7 +49,7 @@
 .srStack :global(.sg-ticket em):not(#sr) { margin-top: 6px; font: 400 .8125rem/1.125rem var(--sg-font); font-style: normal; color: var(--sg-ink-3); }
 .srStack :global(.sg-card-body) :global(.employee-shift-entry-actions):not(#sr) { margin-top: 16px; }
 .srStack :global(.sg-card-body) :global(.shift-change-fields):not(#sr) { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
-.srStack :global(.sg-card-body) :global(.employee-action):not(#sr) { min-height: 48px; border-radius: 14px; }
+.srStack :global(.sg-card-body) :global(.employee-action):not(#sr) { min-height: 48px; border-radius: var(--sig-radius-compact, 12px); }
 .srAvatar:not(#sr) { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; background: linear-gradient(145deg, #1B5A56, var(--sg-deep)); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); letter-spacing: .02em; }
 .srHeadCopy:not(#sr) { flex: 1; min-width: 0; }
 .srHeadCopy b:not(#sr) { display: block; font: 500 1.0625rem/1.375rem var(--sg-font); }
@@ -139,8 +141,10 @@
 .srRoot :global(.wa-actions__note):not(#sr) { margin: 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); text-align: center; text-wrap: balance; }
 .srRoot :global(.wa-actions__note a):not(#sr) { color: var(--sg-ink); text-decoration: underline; text-decoration-color: var(--sg-rule); text-underline-offset: 4px; }
 .srRoot :global(.wa-actions__buttons):not(#sr) { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.srRoot :global(.wa-actions__buttons > .nv-btn):not(#sr), .srCoverage :global(.nv-btn):not(#sr) { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 54px; padding: 0 20px; border: 0; border-radius: 16px; background: var(--sg-deep); box-shadow: none; color: #FFFFFF; font: 500 1.0625rem/1 var(--sg-font); cursor: pointer; }
-.srRoot :global(.wa-actions__buttons > .nv-btn):disabled:not(#sr) { background: #C9CFCD; color: #4E5654; cursor: not-allowed; }
+.srRoot :global(.wa-actions__buttons > .nv-btn):not(#sr), .srCoverage :global(.nv-btn):not(#sr) { display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--sig-control-h, 56px); padding: 0 20px; border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--sig-deep, #0D3634); box-shadow: none; color: #FFFFFF; font: 500 1.0625rem/1 var(--sg-font); cursor: pointer; }
+/* PendingButton marks the sender aria-busy while its fieldset is disabled: it keeps the deep fill. */
+.srRoot :global(.wa-actions__buttons > .nv-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not([data-busy="true"]):not(#sr) { background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
+.srRoot :global(.wa-actions__buttons > .nv-btn):is([aria-busy="true"], [data-busy="true"]):not(#sr) { background: var(--sig-deep, #0D3634); color: #FFFFFF; opacity: 1; cursor: progress; }
 .srRoot :global(.wa-actions__buttons > .nv-btn):focus-visible:not(#sr) { outline: 2px solid var(--sg-ink); outline-offset: 3px; }
 .srSwapForm > :global(.shift-change-fields + .shift-change-fields):not(#sr) { margin-top: 0; }
 .srSwapForm > :global(p[role]):not(#sr) { margin: 16px 16px 0; padding: 14px 18px; border-radius: 16px; background: var(--sg-card); box-shadow: inset 0 0 0 1px var(--sg-rule); font: 400 .9375rem/1.3125rem var(--sg-font); }

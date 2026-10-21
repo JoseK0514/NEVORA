@@ -72,15 +72,15 @@ export function RequestHub({ modules = ALL_MODULES_ON, requests, timeZone = "UTC
   const decided = (requests ?? []).filter(request => request.status !== "PENDING").slice(0, 3);
   const eyebrow = modules.timeOff && requests ? (waiting.length ? `${waiting.length} waiting for approval` : "Nothing waiting") : "Requests";
   return (
-    <div className={styles.r6Root}>
-      <header className={styles.r6Band}>
+    <div className={styles.r6Root} data-sig-surface="light">
+      <header className={styles.r6Band} data-sig-surface="deep">
         <Mark />
         <p className={styles.r6Eyebrow}>{eyebrow}</p>
         <h1>Requests</h1>
         <p className={styles.r6Summary}>{purpose}</p>
       </header>
-      <div className={styles.r6Sheet}>
-        {modules.timeOff ? <Link href="/app/requests?tab=new" className={styles.r6Primary}>
+      <div className={styles.r6Sheet} data-sig-sheet="">
+        {modules.timeOff ? <Link href="/app/requests?tab=new" className={styles.r6Primary} data-sig-press="button">
           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 6v12M6 12h12"/></svg>Request time off
         </Link> : null}
 
