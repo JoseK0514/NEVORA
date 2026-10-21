@@ -159,7 +159,7 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
         identity.commandHash = previous.commandHash;
       } else assertSameProcess(identity, previous);
     }
-    leases.set(pid, { ...identity, kind: previous?.kind === 'owned-descendant' ? kind : previous?.kind ?? kind });
+    leases.set(pid, { ...identity, ppid:previous?.ppid??table.get(pid).ppid, lastObservedPpid:identity.ppid, kind: previous?.kind === 'owned-descendant' ? kind : previous?.kind ?? kind });
   };
   const snapshot = () => {
     const table = processTable();

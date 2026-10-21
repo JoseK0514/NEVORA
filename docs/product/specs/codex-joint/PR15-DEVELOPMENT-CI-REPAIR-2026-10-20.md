@@ -319,6 +319,19 @@ Home response remains held. The real hard navigation, cancelled/held response,
 private-row absence and fresh re-entry assertions all remain, as does the fatal
 runtime policy. This candidate readiness repair requires the next cloud run.
 
+The same run's Navigation gate failed on a native operational-authority read at
+the API stage, again after its commit boundary, so it was not classified. Calendar
+executed all14 cells with zero runtime errors, but its separate leaf verifier
+correctly rejected a resource receipt with `ppid:1`. The supervisor had proved
+descent from its process-table observation before a later identity observation
+recorded reparenting. Its receipt now retains the original independently observed
+ancestry parent and records the later value separately as `lastObservedPpid`.
+The leaf's parent check, random ownership marker, PID/birth/group/command checks,
+live signal authorization and closed-resource checks are unchanged.
+A real tiny-process regression simulates only that later PPID field: it failed
+with the original receipt and passes after the fix; the unrelated-process refusal
+also passes. Full lifecycle/negative regressions remain required in cloud CI.
+
 CTO position for the application fix: recovery state belongs above the private
 pane's lifetime, with its original immutable command identity. CISO position:
 retain the current-access retirement, actor/session/scope/page isolation and live
