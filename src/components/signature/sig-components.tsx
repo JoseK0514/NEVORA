@@ -76,7 +76,7 @@ export type SigTabItem = { href: string; label: ReactNode; current?: boolean; co
 export function SigTabs({ label, items, variant = "page" }: { label: string; items: SigTabItem[]; variant?: "band" | "page" }) {
   return <nav className="sig-tabs" data-variant={variant} aria-label={label}>
     <ul>{items.map(item => <li key={item.href}>
-      <Link href={item.href} aria-current={item.current ? "page" : undefined}>
+      <Link className="sig-tabs__link" href={item.href} aria-current={item.current ? "page" : undefined}>
         {item.label}{item.count !== undefined ? <em>{item.count}</em> : null}
       </Link>
     </li>)}</ul>

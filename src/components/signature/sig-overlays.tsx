@@ -7,21 +7,24 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
  * (sheet 280ms rise, state 180ms fade); under reduced motion they only fade. */
 
 /** A bottom sheet on phones (a centred panel from 768px): a native modal <dialog>, so focus is trapped, Escape closes
- * it and focus returns to what opened it. A drag handle shows it is a sheet; the content keeps clear of the home
+ * it and focus returns to what opened it. Focus starts on the panel. A drag handle shows it is a sheet; the content keeps clear of the home
  * indicator (safe area). Tapping the dimmed backdrop closes it. */
 export function SigSheet({ open, onClose, title, children, closeLabel = "Close" }: { open: boolean; onClose: () => void; title: ReactNode; children: ReactNode; closeLabel?: string }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
   const titleId = useId();
   useEffect(() => {
     const element = dialog.current;
     if (!element) return;
-    if (open && !element.open) element.showModal();
+    // Focus starts on the sheet itself (announced by its title), not on Close, so a tap doesn't flash a ring on the X;
+    // the next Tab reaches Close and the content.
+    if (open && !element.open) { element.showModal(); panel.current?.focus({ preventScroll: true }); }
     if (!open && element.open) element.close();
   }, [open]);
   return <dialog ref={dialog} className="sig-sheet" aria-labelledby={titleId} onClose={() => { if (open) onClose(); }}
     onCancel={event => { event.preventDefault(); onClose(); }}
     onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <div className="sig-sheet__panel">
+    <div ref={panel} className="sig-sheet__panel" tabIndex={-1}>
       <span className="sig-sheet__handle" aria-hidden="true" />
       <header className="sig-sheet__head">
         <h2 id={titleId}>{title}</h2>
