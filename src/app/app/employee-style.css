@@ -20,6 +20,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.app-main, .pag
   }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] > .app-main > .mobile-header > .brand:not(#e5) { display: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header-actions:not(#e5) { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-location :is(li,a,span):not(#e5):not(#e52) { color: #FFFFFF; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-account-menu:not(#e5):not(#e52) { display: block; order: -1; margin-right: auto; }
   /* The avatar: a 40px soft-white circle with deep-teal initials; the name is for screen readers only. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-header .portal-account-menu .nevora-action-menu-trigger:not(#e5):not(#e52) {
