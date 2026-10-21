@@ -27,7 +27,7 @@ vi.mock("@/app/activate/actions", () => ({ activateAccountAction: vi.fn() }));
 // every page carries the NEVORA wordmark, the brand panel and the VELANI LLC footer.
 it("brands login as NEVORA Workforce with the configured workspace and Velani ownership", async () => {
   const html = renderToStaticMarkup(await LoginPage({ searchParams: Promise.resolve({}) }));
-  expect(html).toContain('alt="NEVORA"');
+  expect(html).toContain('aria-label="NEVORA"');
   expect(html).toContain("NEVORA Workforce");
   expect(html).toContain("Your week,<br/>in one place.");
   expect(html).toContain("Northside Services");
@@ -58,7 +58,7 @@ it("renders unavailable workspace identity when public configuration is missing"
   const html = renderToStaticMarkup(await LoginPage({ searchParams: Promise.resolve({}) }));
   expect(html).toContain("Workspace unavailable");
   expect(html).not.toContain("Fuel Coffee Drive");
-  expect(html).toContain('alt="NEVORA"');
+  expect(html).toContain('aria-label="NEVORA"');
   const activation = renderToStaticMarkup(await ActivatePage({ searchParams: Promise.resolve({}) }));
   expect(activation).toContain("Workspace unavailable");
   expect(activation).not.toContain("Fuel Coffee Drive");

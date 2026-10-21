@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { BrandLegal } from "@/components/brand-legal";
+import { BrandWordmark } from "@/components/brand-mark";
 import type { AuthCopy, AuthLang } from "@/lib/auth-copy";
 import { LangSwitch } from "./lang-switch";
 
@@ -76,16 +77,15 @@ export function AuthShell({ lang, t, variant, back, bandTitle, children }: {
         <Mark className="ap-band__mark" />
         <span className="ap-grain" aria-hidden="true" />
         {variant === "signin" ? <>
-          {/* eslint-disable-next-line @next/next/no-img-element -- a small static wordmark; next/image adds nothing here */}
-          <img className="ap-band__wordmark" src="/images/nevora-wordmark-white.png" alt="NEVORA" width={907} height={122} />
+          <span className="ap-band__wordmark"><BrandWordmark /></span>
           <p className="ap-band__line"><TwoLines text={t.bandLine} /></p>
           {bandTitle ? <div className="ap-band__hero" aria-hidden="true">{bandTitle}</div> : null}
         </> : null}
       </div>
       <div className="ap-main">
         <header className="ap-top">
-          {/* eslint-disable-next-line @next/next/no-img-element -- a small static wordmark; next/image adds nothing here */}
-          <img className="ap-wordmark" src="/images/nevora-wordmark.png" alt="NEVORA" width={907} height={122} />
+          {/* The app's wordmark (the official PNG recoloured through a mask, cyan A kept): navy here, white in the phone band. */}
+          <span className="ap-wordmark"><BrandWordmark /></span>
           {back ? <Link className="ap-pill" href={back}><CaretLeftIcon size={16} weight="bold" aria-hidden="true" />{t.signInPill}</Link> : null}
           <LangSwitch lang={lang} label={t.langLabel} />
         </header>
