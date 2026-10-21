@@ -150,3 +150,13 @@ access generation and session; changed authority discards the selection. The
 server access check, client freshness barrier and validity limits remain. Added
 selection-lifecycle and authority-composition regressions await hosted execution;
 the original end-to-end blur/focus receipt assertion remains unchanged.
+
+Hosted run 39531532680 then passed 98 whole-Phase-D checks, including receipt
+restoration after blur, missing-receipt handling, offline privacy, email recovery,
+session revocation and reused-proof denial. Assisted reset ended in the existing
+unconfirmed-outcome message instead of success. The next cloud candidate adds
+sanitized HTTP timings/statuses, foreground state, aggregate PostgreSQL waits,
+proof-consumption booleans and fixed-route server timings to its failure report.
+It records no proof, password, message body, SQL text or real customer data. The
+application's 12-second abort, test deadlines and success/denial assertions remain
+unchanged; this is diagnostic instrumentation, not a claimed reset fix.

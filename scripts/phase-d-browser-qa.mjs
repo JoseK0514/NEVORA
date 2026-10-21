@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 import {homedir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {hashPassword} from '../src/lib/auth/password.ts';
@@ -18,11 +18,11 @@ const {chromium,webkit}=runtime('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
 const dirty=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim();
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert.equal(dirty,'','Exact candidate browser verification requires a clean worktree');}
-const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
+const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],recovery:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
 async function waitUntil(test){const deadline=Date.now()+15000;while(!test()){if(Date.now()>deadline)throw Error('Expected browser request did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 async function waitUntilAsync(test){const deadline=Date.now()+15000;while(!await test()){if(Date.now()>deadline)throw Error('Expected UI state did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 const checked=name=>{report.checks.push(name);console.log('[Phase D browser] PASS '+name);};
-let app,smtp,currentPage;const browsers=[];
+let app,smtp,currentPage,recoveryEmployee;const browsers=[];
 const url='/app/timecards?start=2026-09-21&end=2026-09-27';
 try{
   smtp=await createOwnedSmtp();app=await createOwnedNextApp(evidence,{clockerPinKey:"3d".repeat(32),clockerPunchEnabled:true,recoverySmtpPort:smtp.port});const q=(text,values=[])=>app.database.executor.query({text,values});
@@ -233,8 +233,13 @@ try{
     await op.getByLabel('Saved action reference',{exact:true}).fill(crypto.randomUUID());await op.getByRole('button',{name:'Check receipt',exact:true}).click();await op.getByText(/No recorded action was found yet/).waitFor();assert.match(await op.locator('main').innerText(),/Not finding a receipt doesn’t cancel/);checked(engine+': UX-05 manager missing receipt remains unconfirmed');
     await ownerContext.setOffline(true);await op.evaluate(()=>window.dispatchEvent(new Event('offline')));assert.equal(await op.getByRole('status').filter({hasText:'Recorded action found'}).count(),0);checked(engine+': UX-05 manager review offline privacy clearing');
     const recoveryId='UX1-'+engine,recoveryEmail='ux1-'+engine+'@example.invalid';
+    recoveryEmployee=recoveryId;
     await q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,'Fictional Recovery','Employee','555-0101',$2,'EMPLOYEE','loc-1')",[recoveryId,recoveryEmail]);await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)",[recoveryId,password]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[recoveryId]);
     const {context:recoveree,page:rp}=await context(browser,recoveryId),publicContext=await browser.newContext({viewport:{width:390,height:1000},serviceWorkers:'block'});await publicContext.route('**/*',route=>new URL(route.request().url()).origin===app.url?route.continue():route.abort());const fp=await publicContext.newPage();currentPage=fp;fp.setDefaultTimeout(15000);fp.on('pageerror',error=>report.errors.push('Recovery runtime: '+error.message));
+    const recovery={engine,calls:[]},calls=new Map();report.recovery.push(recovery);
+    fp.on('request',request=>{const path=new URL(request.url()).pathname;if(!['/api/auth/recovery','/api/auth/reset-access'].includes(path))return;const call={path,startedAt:Date.now()};calls.set(request,call);recovery.calls.push(call);});
+    fp.on('response',async response=>{const call=calls.get(response.request());if(!call)return;call.status=response.status();call.elapsedMs=Date.now()-call.startedAt;try{const data=await response.json();call.state=['accepted','reset','invalid','unavailable'].includes(data.state)?data.state:'unclassified';}catch{call.state='unreadable';}});
+    fp.on('requestfailed',request=>{const call=calls.get(request);if(!call)return;call.elapsedMs=Date.now()-call.startedAt;call.failure=/aborted|cancelled/i.test(request.failure()?.errorText??'')?'cancelled':'failed';});
     const boundaryHeaders={origin:app.url,'x-nevora-recovery':'1'},unknownReply=await fp.request.post(app.url+'/api/auth/recovery',{headers:boundaryHeaders,data:{employeeId:'UNKNOWN-'+engine,email:'unknown@example.invalid'}});assert.equal(unknownReply.status(),202);const unknownBody=await unknownReply.json();
     await fp.goto(app.url+'/login');await fp.getByRole('link',{name:'Forgot access?',exact:true}).click();await fp.getByRole('heading',{name:'Forgot access',exact:true}).waitFor();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Recovery email',{exact:true}).fill(recoveryEmail);
     for(const width of [320,390,768,1440]){await fp.setViewportSize({width,height:1000});assert(await fp.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2));checked(engine+': UX-01 recovery geometry '+width);}
@@ -246,7 +251,7 @@ try{
     const staleSession=await rp.request.post(app.url+'/api/timecards',{headers:{origin:app.url,'x-nevora-timecards':'1','x-nevora-actor':recoveryId},data:{startDate:'2026-09-21',endDate:'2026-09-27'}});assert([401,403].includes(staleSession.status()));assert.equal((await q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id=$1",[recoveryId]))[0].n,0);checked(engine+': UX-01 reset invalidates current portal authority');
     await fp.goto(app.url+'/reset-access#proof='+emailProof);await fp.getByLabel('New password',{exact:true}).fill('Fictional Attempt Reuse');await fp.getByLabel('Confirm new password',{exact:true}).fill('Fictional Attempt Reuse');await fp.getByRole('button',{name:'Reset password',exact:true}).click();await fp.getByText(/expired, was already used/).waitFor();checked(engine+': UX-01 reused proof rejected with recovery path');
     await mp.goto(app.url+'/app/account-recovery');await mp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await mp.getByLabel('How you verified them',{exact:true}).fill('Fictional in-person identity confirmed through established workplace process.');await mp.getByRole('checkbox').check();await mp.getByRole('button',{name:'Issue recovery code',exact:true}).click();await mp.getByLabel('Recovery code',{exact:true}).waitFor();const assisted=await mp.getByLabel('Recovery code',{exact:true}).inputValue();
-    await fp.goto(app.url+'/reset-access');await fp.getByLabel('Recovery code',{exact:true}).fill(assisted);await fp.getByLabel('New password',{exact:true}).fill(TEST_PASSWORD);await fp.getByLabel('Confirm new password',{exact:true}).fill(TEST_PASSWORD);await fp.getByRole('button',{name:'Reset password',exact:true}).click();await fp.getByText(/Password reset. All portal sessions/).waitFor();checked(engine+': UX-01 inaccessible-channel assisted proof resets through the same protocol');
+    await fp.goto(app.url+'/reset-access');await fp.getByLabel('Recovery code',{exact:true}).fill(assisted);await fp.getByLabel('New password',{exact:true}).fill(TEST_PASSWORD);await fp.getByLabel('Confirm new password',{exact:true}).fill(TEST_PASSWORD);recovery.assistedSubmit=await fp.evaluate(()=>({focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine}));await fp.getByRole('button',{name:'Reset password',exact:true}).click();await fp.getByText(/Password reset. All portal sessions/).waitFor();checked(engine+': UX-01 inaccessible-channel assisted proof resets through the same protocol');
     await fp.getByRole('link',{name:'Sign in with new password',exact:true}).click();await fp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await fp.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([fp.waitForURL(u=>u.pathname==='/app'),fp.getByRole('button',{name:'Sign in',exact:true}).click()]);checked(engine+': UX-01 normal new-password sign-in after reset');
     await mp.bringToFront();await mp.goto(app.url+'/app/account-recovery');await mp.getByLabel('Employee ID',{exact:true}).fill(recoveryId);await mp.getByLabel('How you verified them',{exact:true}).fill('Fictional established verification for expiry regression.');await mp.getByRole('checkbox').check();await mp.getByRole('button',{name:'Issue recovery code',exact:true}).click();await mp.getByLabel('Recovery code',{exact:true}).waitFor();const expiring=await mp.getByLabel('Recovery code',{exact:true}).inputValue();
     await q("UPDATE password_recovery_proofs SET created_at=clock_timestamp()-interval '16 minutes',expires_at=clock_timestamp()-interval '1 minute' WHERE token_hash=$1",[createHash('sha256').update(expiring).digest('hex')]);await fp.goto(app.url+'/reset-access#proof='+expiring);await fp.getByLabel('New password',{exact:true}).fill('Fictional Expired Reset');await fp.getByLabel('Confirm new password',{exact:true}).fill('Fictional Expired Reset');await fp.getByRole('button',{name:'Reset password',exact:true}).click();await fp.getByText(/expired, was already used/).waitFor();checked(engine+': UX-01 expired proof gives the safe recovery path');
@@ -255,7 +260,20 @@ try{
     await lead.close();await employee.close();await management.close();
     await q('TRUNCATE timecard_revisions');
   }
-}catch(error){if(currentPage)await currentPage.screenshot({path:join(evidence,'recovery-failure.png'),fullPage:true}).catch(()=>{});report.errors.push(error instanceof Error?error.stack:String(error));process.exitCode=1;console.error(error);}
+}catch(error){
+  if(currentPage)await currentPage.screenshot({path:join(evidence,'recovery-failure.png'),fullPage:true}).catch(()=>{});
+  if(app){
+    try{
+      report.databaseWaits=await app.database.executor.query({text:"SELECT state,wait_event_type,wait_event,count(*)::int AS connections FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() GROUP BY state,wait_event_type,wait_event",values:[]});
+      if(recoveryEmployee)report.recoveryProofs=await app.database.executor.query({text:'SELECT method,used_at IS NOT NULL AS consumed,retired_at IS NOT NULL AS retired FROM password_recovery_proofs WHERE employee_id=$1 ORDER BY created_at',values:[recoveryEmployee]});
+    }catch{report.databaseDiagnostics='unavailable';}
+    try{
+      const log=(await readFile(join(app.root,'next.log'),'utf8')).replace(/\[[0-9;]*m/g,'').replaceAll(String.fromCharCode(27),'');
+      report.recoveryServerRequests=log.split('\n').flatMap(line=>{const match=line.match(/\b(POST|GET) (\/api\/auth\/(?:recovery|reset-access)|\/api\/manager\/account-recovery) (\d{3}) in ([\d.]+)(ms|s)/);return match?[{method:match[1],path:match[2],status:Number(match[3]),elapsedMs:Number(match[4])*(match[5]==='s'?1000:1)}]:[];}).slice(-32);
+    }catch{report.serverDiagnostics='unavailable';}
+  }
+  report.errors.push(error instanceof Error?error.stack:String(error));process.exitCode=1;console.error(error);
+}
 finally{
   for(const browser of browsers)await browser.close();if(app)await app.close();if(smtp)await smtp.close();
   await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));
