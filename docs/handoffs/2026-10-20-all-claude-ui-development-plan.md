@@ -206,3 +206,12 @@ missing-time checks and 28 keyboard/scroll checks also passed with no runtime
 errors. D2 then measured a real 40px correction select at Chromium 320, below its
 unchanged 44px requirement. The compact Signature correction control minimum is
 now 44px; the native D2 geometry assertion remains unchanged for verification.
+
+The same retired My time selector is aligned in D2's current-authority denial
+case. Manager recovery setup now requires HTTP success and DOM readiness before
+the same actual decision controls, retaining its original deadline instead of
+waiting for unrelated global network idle. Communications withdrawal returns to
+the already-open Manager detail tab, verifies its URL/title, and performs the
+same explicit confirmation and persisted withdrawal checks. This avoids an
+unnecessary hard reload during prefetch; route/framework runtime errors remain
+fatal and are not added to the bounded navigation-diagnostic read allowlist.

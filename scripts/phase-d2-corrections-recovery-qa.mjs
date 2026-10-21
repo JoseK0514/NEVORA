@@ -105,7 +105,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    const c=await context(browser,{width:390,height:844});await login(c,'QAOWNER');
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
-    await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});await page.bringToFront();
+    const attendanceNavigation=await page.goto(app.url+'/app?view=attendance',{waitUntil:'domcontentloaded'});assert(attendanceNavigation?.ok());await page.bringToFront();
     const commands=[];
     await page.route('**/api/manager/time-corrections',async route=>{
      if(route.request().method()!=='POST')return route.continue();
@@ -197,7 +197,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
    await q("UPDATE employees SET active=false WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-   await page.locator('main .employee-time-message').getByText('Your session ended',{exact:true}).waitFor();
+   await page.locator('main').getByText('Your session ended',{exact:true}).waitFor();
    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    await q("UPDATE employees SET active=true WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
