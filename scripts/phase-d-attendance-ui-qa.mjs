@@ -63,6 +63,7 @@ const report = {
   ],
 };
 let app;
+let activePage;
 const browsers = [];
 const checked = (name) => {
   report.checks.push(name);
@@ -270,6 +271,7 @@ try {
       assert.equal(headers['x-nevora-attendance'], '1');
       const response = fixture;
       if (response.waitForRelease) await response.waitForRelease;
+      (report.fixtureResponses ??= []).push({status:response.status,state:response.payload.state,reason:response.payload.reason??null,validForMs:response.payload.validForMs??null});
       await route.fulfill({
         status: response.status,
         contentType: 'application/json',
@@ -279,6 +281,7 @@ try {
     });
 
     const page = await owner.newPage();
+    activePage = page;
     page.setDefaultTimeout(15000);
     async function expectClearedDuringRevalidation(trigger, status = 200) {
       let release;
@@ -415,6 +418,30 @@ try {
   assert.deepEqual(report.errors, []);
 } catch (error) {
   report.errors.push(String(error?.stack ?? error));
+  if (activePage && !activePage.isClosed()) {
+    try {
+      report.failureSurface = await activePage.evaluate(() => ({
+        path: location.pathname,
+        visibility: document.visibilityState,
+        online: navigator.onLine,
+        attendanceSurfaces: document.querySelectorAll('.attendance-review').length,
+        status: document.querySelector('.attendance-review-empty')?.textContent?.slice(0, 500) ?? null,
+        headings: [...document.querySelectorAll('h1, h2')].map(element => element.textContent?.slice(0, 160)),
+        controls: [...document.querySelectorAll('.attendance-review button, .attendance-review a')].map(element => ({
+          tag: element.tagName,
+          label: element.getAttribute('aria-label'),
+          text: element.textContent?.slice(0, 160),
+          disabled: element.hasAttribute('disabled'),
+          ariaDisabled: element.getAttribute('aria-disabled'),
+        })),
+      }));
+      const shot = join(evidence, 'attendance-failure.png');
+      await activePage.screenshot({ path: shot, fullPage: true });
+      report.screenshots.push(shot);
+    } catch (diagnosticError) {
+      report.diagnosticFailure = diagnosticError?.name ?? 'UnknownError';
+    }
+  }
   process.exitCode = 1;
 } finally {
   for (const browser of browsers) await browser.close().catch(() => {});

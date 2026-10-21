@@ -13,7 +13,7 @@ it('defines an exact release PostgreSQL gate for non-Clocker integration suites'
   const gate = workflow.split('  release-postgres:')[1].split('  phase-e-postgres:')[0];
   expect(gate).not.toMatch(/^    if:/m);
   expect(gate).toContain('ref: ${{ github.sha }}');
-  expect(workflow).toContain('branches: [development, main, "phase-c/**", "release/**"]');
+  expect(workflow).toContain('branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]');
 });
 
 it('release PostgreSQL runner includes every omitted critical SQL suite', async () => {
