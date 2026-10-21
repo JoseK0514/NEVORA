@@ -56,7 +56,8 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .mobile-nav .mobile
 
 /* ---------- Signature pages draw their own band from the top edge: no frame padding on phones ---------- */
 @media (max-width: 767px) {
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame:is(:has([class*="__s6Root"], [class*="__r6Root"], [data-sig]), :has(> .route-skeleton[data-route="schedule"]), :has(> .route-skeleton[data-route="hub"]), :has(> .route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"], [data-route="review"], [data-route="exchange"], [data-route="availability"], [data-route="updates"], [data-route="wb-update"], [data-route="wa-swap"], [data-route="wa-callout"], [data-route="profile"], [data-route="notifications"]))):not(#e5):not(#e52) { padding: 0; }
+  html:has(.employee-shell[data-nv-e5]) { scroll-padding-block: 80px calc(100px + env(safe-area-inset-bottom, 0px)); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .page-frame:is(:has([class*="__s6Root"], [class*="__r6Root"], [data-sig]), :has(> .route-skeleton[data-route="schedule"]), :has(> .route-skeleton[data-route="hub"]), :has(> .route-skeleton:is([data-route="mypay"], [data-route="mytime"], [data-route="timecards"], [data-route="review"], [data-route="exchange"], [data-route="availability"], [data-route="updates"], [data-route="wb-update"], [data-route="wa-swap"], [data-route="wa-callout"], [data-route="profile"], [data-route="notifications"]))):not(#e5):not(#e52) { padding: 0 0 calc(100px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* ---------- Home's route placeholder: the teal band with two light lines, then the paper shift card on the sheet ---------- */

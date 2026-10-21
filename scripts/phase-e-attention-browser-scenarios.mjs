@@ -19,7 +19,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  await login();stage='full-review';await schedule('&acknowledged=1');
  assert.equal(await page.getByText('Schedule confirmed.',{exact:true}).count(),0,'query cannot fabricate success');assert(await confirm().isEnabled());
  details.reviewedRevision=await page.locator('input[name="expectedRevisionId"]').inputValue();
- assert.equal(await page.locator('.employee-schedule-agenda').count(),1);assert.equal(await page.locator('input[name="sessionTokenHash"]').count(),0);
+ assert.equal(await page.getByRole('heading',{level:1,name:'My schedule',exact:true}).count(),1);assert.equal(await page.getByRole('navigation',{name:'Schedule views',exact:true}).count(),1);assert.equal(await page.locator('#schedule-'+scenario.sourceDate).count(),1);assert.equal(await page.locator('input[name="sessionTokenHash"]').count(),0);
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  const rect=await confirm().boundingBox();assert(rect&&rect.height>=44&&rect.x>=0&&rect.x+rect.width<=width);
  await screenshot('review');checks.push('Actual authenticated weekly content and displayed revision; forged success query ignored; 44px bounded control; no raw session proof in form');

@@ -75,6 +75,7 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         settings:document.querySelector('.profile-settings-list')!.getBoundingClientRect().width,
       }));
       expect(profileGeometry.details).toBeGreaterThanOrEqual(profileGeometry.settings-32);
+      expect(await page.locator('.pk-body').evaluate((element:HTMLElement)=>element.getBoundingClientRect().height)).toBeLessThan(200);
       await page.screenshot({path:evidence+'/'+engine+'-profile-1440.png',fullPage:true});
       if (engine==='chromium') {
         await page.setViewportSize({width:1440,height:1000});
