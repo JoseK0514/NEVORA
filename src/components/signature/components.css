@@ -163,3 +163,17 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mo
     outline-color: var(--sig-surface-ring, var(--sig-focus-on-dark, #FFFFFF));
   }
 }
+
+/* ── Motion ──────────────────────────────────────────────────────────────── */
+/* Three durations (tokens.css): press 120ms, state 180ms, sheet 280ms, all on --sig-ease. A page's sheet rises 12px
+ * into place when the route opens; the band above it doesn't move, so switching tabs keeps the band steady. Fill mode
+ * is `backwards`, so no transform is left on the sheet afterwards (fixed-position children keep their viewport).
+ * Reduced motion: the sheet only fades. */
+@keyframes sig-sheet-rise { from { opacity: 0; transform: translateY(12px); } }
+@keyframes sig-fade-in { from { opacity: 0; } }
+[data-sig-sheet] { animation: sig-sheet-rise var(--sig-dur-sheet, 280ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)) backwards; }
+/* A figure that changes in place (SigFade) cross-fades over the state duration; opacity only, so reduced motion keeps it. */
+[data-sig-fade] { animation: sig-fade-in var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)); }
+@media (prefers-reduced-motion: reduce) {
+  [data-sig-sheet] { animation-name: sig-fade-in; animation-duration: var(--sig-dur-state, 180ms); }
+}

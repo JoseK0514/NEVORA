@@ -194,7 +194,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
         <h1>My schedule</h1>
         <p className={styles.s6Summary}>{summary}</p>
       </header>
-      <div className={styles.s6Sheet}>
+      <div className={styles.s6Sheet} data-sig-sheet="">
         {modules.marketplace ? <nav className={styles.s6Seg} aria-label="Schedule views">
           <Link href={`/app/schedule?week=${weekStart}`} aria-current={view === 'mine' ? 'page' : undefined}>My shifts</Link>
           <Link href={`/app/schedule?week=${weekStart}&view=open`} aria-current={view === 'open' ? 'page' : undefined}>{openCount ? `Open shifts (${openCount})` : 'Open shifts'}</Link>

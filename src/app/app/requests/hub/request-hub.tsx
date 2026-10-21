@@ -79,7 +79,7 @@ export function RequestHub({ modules = ALL_MODULES_ON, requests, timeZone = "UTC
         <h1>Requests</h1>
         <p className={styles.r6Summary}>{purpose}</p>
       </header>
-      <div className={styles.r6Sheet}>
+      <div className={styles.r6Sheet} data-sig-sheet="">
         {modules.timeOff ? <Link href="/app/requests?tab=new" className={styles.r6Primary} data-sig-press="button">
           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 6v12M6 12h12"/></svg>Request time off
         </Link> : null}

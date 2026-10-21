@@ -39,3 +39,7 @@
 .euRoot :global(.sg-quiet):not(#eu) { margin-top: 18px; }
 
 @media (min-width: 768px) { .euFilters:not(#eu) { margin-inline: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .euFoot svg:not(#eu) { transition: none; }
+}

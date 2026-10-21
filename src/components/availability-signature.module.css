@@ -74,3 +74,8 @@
   .avTimes:not(#av) { grid-template-columns: minmax(0, 1fr); }
   .avTimes i:not(#av) { display: none; }
 }
+
+/* Reduced motion: the thumb jumps to its side; the colour change and the press stretch stay. */
+@media (prefers-reduced-motion: reduce) {
+  .avSwitch span:not(#av)::after { transition: none; }
+}

@@ -301,7 +301,7 @@ export function EmployeeHomeReviewedView({home, status, refreshing, onRetry, own
         <div><dt>To review</dt><dd>{actions.length}</dd><dd className={styles.h5StatSub}>{actions[0]?.label ?? 'You’re all set'}</dd></div>
       </dl>}
     </header>
-    <div className={styles.h5Columns}>
+    <div className={styles.h5Columns} data-sig-sheet="">
       {/* P3-ST-02/12: the shift card and clock hold their last ready height while Home is a placeholder. */}
       <HoldHeight holding={!snapshot} memory="employee-home-primary" className={styles.h5Primary}>
         <section aria-labelledby="employee-reviewed-next-heading" className={styles.h5Shifts}>
