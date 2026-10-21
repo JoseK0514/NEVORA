@@ -160,7 +160,7 @@ function lateBy(shift: TodayShift, observedAt: string | undefined) {
   return h ? (m ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
 }
 
-function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, showPlace = true, phone?: string): InboxEntry {
+export function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, showPlace = true, phone?: string): InboxEntry {
   const running = shift.status === "not_clocked_in";
   const href = running ? `/app/employees/${encodeURIComponent(shift.employeeId)}` : `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`;
   const action = running ? "Contact" : "Review timecard";
@@ -496,7 +496,7 @@ function wideSubscribe(change: () => void) {
 }
 
 /** The desktop detail pane: the selected row's facts and its one action, which opens the full review. */
-function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet?: boolean }) {
+export function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet?: boolean }) {
   return <section className="nv-card inbox-detail" aria-labelledby="inbox-detail-title"
     onKeyDown={event => {
       if (sheet) return;
