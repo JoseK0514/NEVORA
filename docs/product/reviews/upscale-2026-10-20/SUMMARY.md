@@ -7,6 +7,8 @@ October 20, 2026. Four read-only design reviewers walked every Owner and Manager
 2. **Let people finish a job where they find it.**
 3. **Bring the last older-looking pages up to v3.**
 
+**Status: Jose approved the ranked list below as direction on October 20, 2026** ("approved"). The items marked "Jose" still need his specific call (see "Decisions for Jose"). The quick wins are being built in their own session.
+
 ## Ranked opportunities
 
 Ranked by how many reviewers raised it and by client value. "Codex" means it needs server or data work; "Jose" means it needs your approval or decision.
