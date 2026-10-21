@@ -1,0 +1,214 @@
+{
+  "candidate": "98c63b9ef3879e5b0e9721aed860bba1efb4bf48",
+  "observedPr": "https://github.com/JoseK0514/NEVORA/pull/16",
+  "startedAt": "2026-10-21T15:42:35.393Z",
+  "completedAt": "2026-10-21T15:44:50.062Z",
+  "node": "v24.19.0",
+  "image": "postgres@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4",
+  "harnessSha256": {
+    "database-rehearsal.mts": "a4dc510f8d1a66e069c8d1aa2d7dbd1627c6f6b43b51803e70df0249fe10e01a",
+    "guards.mts": "72826561130320e901b9e7be3c7351f8f654284f1959b2bf7f49d55fb199832e",
+    "guards.check.mts": "00524f0d452c096b8daeb5c2c3466ffefdef19ce94f941c0ec5383b03e79e25a",
+    "migration-plan.mts": "efe5980e9c4cd198810e5c8697694355275102392b1cb4c23469cdd86e0237cd",
+    "migration-plan.check.mts": "0cec3886b69acf5a1c81f9d7e6536346c528515dfed6d457104a1babc654664a",
+    "sql-diagnostics.mts": "7765dbe8ac055b0cab113749ba7709929f5890a3b6bae1653b77f7f14f623773",
+    "sql-diagnostics.check.mts": "8323c3bb6b63c5d58ca0357408c343c39da7c433f32e8b4527ac62cca9e3bee2",
+    "fixture-diagnostics.setup.ts": "89eb4f1ba83ee1e04e8e3f073a7e2460ed48be5dc107d3f96d7530b90093fd09",
+    "fixture-diagnostics.integration.ts": "22cd54955286695d018b6b34ccc9b7a76ec5e1c058fe1dc366a0c26317b55481",
+    "vitest.fixture-diagnostics.config.mts": "bb30a2ddb98dc804dfda744d33273c4ab90128e67a4bfd11f3434e2e751cac64",
+    "tsconfig.json": "d9a48c02e5ed73f4a6cc32256dc1f67afcf6f35c9d530027f904f31467411898"
+  },
+  "dependencyLockSha256": "99f5428878d84ade0cbfe9311b53efcfea95d4acae1ba30a61d5f52bf72564f2",
+  "migrationPlanSource": "legacy-installer",
+  "migrationPlanInputs": [
+    {
+      "path": "scripts/company-setup.ts",
+      "sha256": "898580261047181cfa93cd51b55f2b8009a1bd436df7e627c504074bc03de707"
+    },
+    {
+      "path": "src/test/integration/local-postgres.ts",
+      "sha256": "9c84415e71286faf5644a0221eead26ef5135f5186600722a1c880abfa8b8f9e"
+    }
+  ],
+  "fixtureDiagnostics": null,
+  "postgres": "",
+  "migrationManifest": [
+    {
+      "name": "0001_initial.sql",
+      "sha256": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1"
+    },
+    {
+      "name": "0002_schedule_health.sql",
+      "sha256": "0dd019d1658c22763d11531ef72b39db9e5a106bb418b1a4fc63f5caaff7f9f0"
+    },
+    {
+      "name": "0003_schedule_assistance.sql",
+      "sha256": "d82513ab58c0e8a84f976a05c2be0e342309467c586ded8347cce4ef9001900a"
+    },
+    {
+      "name": "0004_assistance_layer.sql",
+      "sha256": "c0263d1e40bbfe3aa646a4740b0fe345728783eac39dfda916495ccf7a1ab7e5"
+    },
+    {
+      "name": "0005_time_clock.sql",
+      "sha256": "fc4afbdf4770bd7a3a718cd54fd204bc8df1b96296c04cb676dab3f4f6d0c4e5"
+    },
+    {
+      "name": "0006_scheduling_rule_inputs.sql",
+      "sha256": "4a0eb437395a5f4d1873c9b06b3c1104da5a23319e968d422a5a14f3c310483a"
+    },
+    {
+      "name": "0007_portal_web_push.sql",
+      "sha256": "020c45cbeb1c5000be22b3ce240f94225fc0c88471e540a67246dd54085440d2"
+    },
+    {
+      "name": "0008_workspace_positions.sql",
+      "sha256": "f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756"
+    },
+    {
+      "name": "0009_schedule_generation.sql",
+      "sha256": "aadde6a1f5d3167ed4f346817d1feeb0c9f99f28d50adcf904a989b86120f007"
+    },
+    {
+      "name": "0010_shift_coverage_automation.sql",
+      "sha256": "0d8b55abe49995204bda9e63492026158b91b8dc4ca414d05c77b595a6474d8e"
+    },
+    {
+      "name": "0011_clocker_devices.sql",
+      "sha256": "788b748bbbd995c44f40d130ea079296aa3e6affcad86c78cbb3857e866c0cd0"
+    },
+    {
+      "name": "0012_clocker_pins.sql",
+      "sha256": "9b607ca2e9e111953695ba5cf1a1dbc87f65ae483caeccc3d8056f19aab8c90f"
+    },
+    {
+      "name": "0013_clocker_punches.sql",
+      "sha256": "f222d8b52e5cace6698f22b8d4a10fa5ffcd93db1d8c7d5cfd551a02b74216e5"
+    },
+    {
+      "name": "0014_clocker_breaks.sql",
+      "sha256": "c20cd86b16fe2f82c05b69687402c52f37a648eb1d79c8f1418436ed8e4c5508"
+    },
+    {
+      "name": "0015_clocker_schedule_context.sql",
+      "sha256": "5b5160bff760e17d4e235c35e4936271fba0b8124f5da8a8989e01478fff6796"
+    },
+    {
+      "name": "0016_time_corrections.sql",
+      "sha256": "36532a3efc7c641a96b447f5caf2efbd3c4184cbfae2c6e080b548fa3fac4b35"
+    },
+    {
+      "name": "0017_missing_time_supersession.sql",
+      "sha256": "2a35c4e3180c3294c7197af56415b231bf66a0b30417000e08de17d161ef8fea"
+    },
+    {
+      "name": "0018_timecards.sql",
+      "sha256": "0221827d5faa0670a85661b6a15e59882382703a42bb9800576c30a1f66c1a81"
+    },
+    {
+      "name": "0019_payroll_export_mappings.sql",
+      "sha256": "1610d1018824ec84ba9cdbe2f42f3ae36c12ba509a735ea10dce3ee21b594262"
+    },
+    {
+      "name": "0020_account_recovery.sql",
+      "sha256": "26bc594863f1950588250be50a1ae66ba2191f90e8a908aea6a41a6ac76c61db"
+    },
+    {
+      "name": "0021_timecard_reassignment_interlock.sql",
+      "sha256": "c5e9f1df923c67d4764427cca9f005fed93a4cb148c4a469866d15d4253b4918"
+    },
+    {
+      "name": "0022_timecard_reopen_revision_authority.sql",
+      "sha256": "616dc741d8b48679b05958cfbd9dcf3ece018a356892034f2f1ad6a644ba584b"
+    },
+    {
+      "name": "0023_employee_attention_receipts.sql",
+      "sha256": "2758fd0dd5567839537483bb49eba8f4e5618b67a9a77c1deccf0e550cefcef1"
+    },
+    {
+      "name": "0024_contextual_communications.sql",
+      "sha256": "f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277"
+    },
+    {
+      "name": "0025_calendar_subscriptions.sql",
+      "sha256": "357bce5c806af4f3f0d9ff8a5b48e09a90b1342e8168206efce4f949072d824b"
+    },
+    {
+      "name": "0023_template_ownership.sql",
+      "sha256": "0352f4db63cb5ede8f47aec1178b8cf9cbdfb010d678c412fc1c127abca7439c"
+    },
+    {
+      "name": "0024_schedule_copy_receipts.sql",
+      "sha256": "fc13bcef690b30f6c3eb932581f19947835efbb0c8d523e54ca4c89331e4f3ee"
+    },
+    {
+      "name": "0025_company_policies.sql",
+      "sha256": "247139b09eb20e587061ddb925367dea9176b0c8acb0c062f0d517b4ad9a427a"
+    },
+    {
+      "name": "0026_attendance_observations.sql",
+      "sha256": "470cca7063764347d3bf0cde4163b1dc6629fc3aed08d2daaa57e6f97b2715db"
+    },
+    {
+      "name": "0027_payroll_period_custody.sql",
+      "sha256": "1b2999603afe74c8d36d8643386b2944d82ae6c83ccd395669b46a774695c826"
+    },
+    {
+      "name": "0028_configurable_payroll.sql",
+      "sha256": "6e6da74c87fb76b49af1beea70e9bef71a6d3e0fb3924c4b24896a6eb499a839"
+    },
+    {
+      "name": "0029_payroll_private_notices.sql",
+      "sha256": "42fc345790410582084db999b7069a242f14efb5deb91dfa4b75e084a0290576"
+    },
+    {
+      "name": "0030_notification_source_kinds.sql",
+      "sha256": "32cc7ee9d071c40e0f79b78918ba2cf7d46be6b0a69ef1d0d2eff5f321eea6b0"
+    },
+    {
+      "name": "0031_workspace_presentation.sql",
+      "sha256": "cb684bdfd7b3457048eb39f7b144e8c1e561a220682e9d3a346c8ae9937cab7e"
+    },
+    {
+      "name": "0032_workspace_words_modules.sql",
+      "sha256": "978301c0e13541471aa7a42835eae36bd0efbcee51fa1972e41363dc5273163e"
+    },
+    {
+      "name": "0033_management_alert_preferences.sql",
+      "sha256": "ba1e1e117c1c04be5359318d056bc2d4b6dbe33c29bcde78bf38f97f9345cccc"
+    },
+    {
+      "name": "0034_account_deletion_requests.sql",
+      "sha256": "43c750a764e6e6e77c10126469beee7d805bbeed7a5f50b0262ff9558c26f8da"
+    },
+    {
+      "name": "0035_passkeys.sql",
+      "sha256": "ca7d8071ff3a7e9d34b06b7a51818e7709c669296c60e3da96c1c29273c9a98d"
+    },
+    {
+      "name": "0031_native_payroll.sql",
+      "sha256": "bbe2857612e5ee1fc359f93e695a28c61f95b02846b1b3eb9aaae1e990b338bf"
+    },
+    {
+      "name": "0032_company_access_invitations.sql",
+      "sha256": "361edcc14081de6c196d3fe157a8e5bda91da942eec5db5fb1f9c6279e0b2612"
+    }
+  ],
+  "excludedHeldMigrations": [
+    "0026_tenant_ownership_expand.sql",
+    "0027_tenant_ownership_validate.sql"
+  ],
+  "checks": [],
+  "scenarios": {},
+  "backups": [],
+  "historicalBrowserEvidence": {
+    "commit": "6c56f504",
+    "passed": 42,
+    "artifactCommit": "f3a1a7c4b8d10ca76094f7c819f1fa59615998c2",
+    "executedByThisRehearsal": false
+  },
+  "interruptedBy": null,
+  "sourceUnchanged": true,
+  "cleanup": true,
+  "status": "FAIL"
+}

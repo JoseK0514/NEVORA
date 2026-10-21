@@ -1,0 +1,99 @@
+{
+  "candidate": "98c63b9ef3879e5b0e9721aed860bba1efb4bf48",
+  "recordedAt": "2026-10-21T16:29:44.395721+00:00",
+  "focusedChecks": [
+    {
+      "command": "node --import tsx --test scripts/rehearsal/*.check.mts",
+      "exitCode": 0,
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "node_modules/.bin/eslint scripts/rehearsal",
+      "exitCode": 0
+    },
+    {
+      "command": "node_modules/.bin/tsc --noEmit --pretty false -p scripts/rehearsal/tsconfig.json",
+      "exitCode": 0
+    }
+  ],
+  "startupFailures": [
+    {
+      "receipt": "blocked-startup-cancellation.json",
+      "classification": "ENVIRONMENT_STARTUP",
+      "reason": "docker run exceeded 120-second command deadline; no database checks executed. Concurrent Docker startup was retried serially.",
+      "cleanupReceiptSuperseded": true,
+      "postReceiptFinding": "A request completed late after the original receipt: its labeled container appeared in Created state. Original cleanup:true was only an immediate observation, not completed teardown.",
+      "externalCleanup": "The container ownership label was checked against the invocation marker, then only that container was removed with volumes.",
+      "externalCleanupCompletedAt": "2026-10-21T15:50:11.594762+00:00"
+    },
+    {
+      "receipt": "blocked-startup-full.json",
+      "classification": "ENVIRONMENT_STARTUP",
+      "reason": "docker run exceeded 120-second command deadline; no database checks executed. Concurrent Docker startup was retried serially.",
+      "cleanupReceiptSuperseded": true,
+      "postReceiptFinding": "A request completed late after the original receipt: its labeled container appeared in Created state. Original cleanup:true was only an immediate observation, not completed teardown.",
+      "externalCleanup": "The container ownership label was checked against the invocation marker, then only that container was removed with volumes.",
+      "externalCleanupCompletedAt": "2026-10-21T15:50:11.594780+00:00"
+    },
+    {
+      "receipt": "blocked-readiness.json",
+      "classification": "ENVIRONMENT_STARTUP",
+      "reason": "The earlier 500ms connection/readiness loop expired before PostgreSQL was reachable; no database checks ran. Final harness uses a 120s readiness deadline, bounded 3s probes and startup diagnostics."
+    }
+  ],
+  "focusedChecksCompletedAt": "2026-10-21T16:23:55.308Z",
+  "finalRunnerSha256": "f9770c7cff4936cb5d6c67240aec37ad766a00339816c05dcbcf92dbd0c072c9",
+  "interruptionControls": [
+    {
+      "signal": "SIGTERM",
+      "expectedExit": 143,
+      "actualExit": 143,
+      "remainingOwnedContainers": 0,
+      "receipt": "interruption-sigterm.json",
+      "runnerSha256": "e70a11ae45ac6e77793e7b10b4a97d6403a1956840595c0d55615cb9aab6ca30",
+      "phase": "owned source container running, before SQL acceptance"
+    },
+    {
+      "signal": "SIGINT",
+      "expectedExit": 130,
+      "actualExit": 130,
+      "remainingOwnedContainers": 0,
+      "receipt": "interruption-sigint.json",
+      "runnerSha256": "e70a11ae45ac6e77793e7b10b4a97d6403a1956840595c0d55615cb9aab6ca30",
+      "phase": "owned source container running, before SQL acceptance"
+    }
+  ],
+  "disposalProbeFailure": {
+    "receipt": "failed-disposal-probe.json",
+    "coreChecksPassed": 54,
+    "fixtureTestsPassed": 2,
+    "fixtureChildExitCode": 0,
+    "classification": "OWNED_PARENT_CONNECTION_TIMEOUT",
+    "reason": "Final parent connection to verify fixture database disposal exceeded the prior 3s connect deadline. SQL tests passed; parent aggregate check failed and containers were removed. Final harness gives owned connections a recorded 15s deadline; shared fixture SQLlimits unchanged."
+  },
+  "interruptionControlVersionNote": "Signal handler/cleanup code is unchanged after these controls. The only later runner change records and uses a 15000ms owned connection budget instead of 3000ms; the final full rehearsal reruns that version.",
+  "finalRun": {
+    "receipt": "report.json",
+    "status": "PASS",
+    "exitCode": 0,
+    "passed": 56,
+    "failed": 0,
+    "fixtureChildTestsPassed": 2,
+    "fixtureChildExitCode": 0,
+    "sourceUnchanged": true,
+    "cleanup": true,
+    "reportSha256": "3f9d2db75ebc37a62c15e95cd5593b9a787824fc7f9728f72b6e2e8fd3ddc653"
+  },
+  "finalRemoteObservation": {
+    "observedAt": "2026-10-21T16:29:44.395721+00:00",
+    "pr16": "98c63b9ef3879e5b0e9721aed860bba1efb4bf48",
+    "development": "d4b01453f7fabaa7ac739d049934527b6b366310",
+    "deliveryBranchAlreadyExists": false
+  },
+  "finalContainerAudit": {
+    "observedAt": "2026-10-21T16:29:44.395721+00:00",
+    "rehearsalLabeledContainers": 0
+  }
+}
