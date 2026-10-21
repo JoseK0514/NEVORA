@@ -199,3 +199,10 @@ may be recorded separately. Foreign/query/fragment/userinfo paths, teardown,
 live-document events, actual TypeErrors and spoofed JavaScript exceptions remain
 fatal. No broad error filter, scenario skip or deadline increase is introduced.
 The full matrix and source/receipt validators remain required on the new SHA.
+
+At `7edc1a4e`, all 201 whole-Phase-D functional checks completed with zero runtime
+errors after setup/teardown settlement. All 14 account-retirement checks, six
+missing-time checks and 28 keyboard/scroll checks also passed with no runtime
+errors. D2 then measured a real 40px correction select at Chromium 320, below its
+unchanged 44px requirement. The compact Signature correction control minimum is
+now 44px; the native D2 geometry assertion remains unchanged for verification.
