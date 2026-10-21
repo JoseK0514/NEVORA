@@ -215,3 +215,9 @@ the already-open Manager detail tab, verifies its URL/title, and performs the
 same explicit confirmation and persisted withdrawal checks. This avoids an
 unnecessary hard reload during prefetch; route/framework runtime errors remain
 fatal and are not added to the bounded navigation-diagnostic read allowlist.
+
+The next Navigation run stopped in owned Next development-tool setup: Preferences
+remained open over Home after its panel closed. Its screenshot confirms the menu,
+not an application failure. The driver now settles the panel transition and uses
+native Escape before requiring the same menu to be hidden. Developer errors and
+normal application hit testing remain visible; no portal-wide CSS hiding is used.
