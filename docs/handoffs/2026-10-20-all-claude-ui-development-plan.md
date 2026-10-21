@@ -179,3 +179,9 @@ Playwright failure evidence; live late replies are still delivered and unknown
 fulfillment errors still fail. All original 401/403, immutable receipt/event,
 no-duplicate and late-private-data assertions remain. Login streams settle before
 teardown and screenshots preserve the caret, avoiding injected hydration styles.
+
+Navigation's Chromium 390 cell then reached native time-off submission and exposed
+a driver mistake: the visible "1 day away" summary is an aria-live paragraph,
+while the h1 remains "Time off". Its screenshot shows the correct one-day range.
+The assertion now targets that exact live summary; every native invalid-date,
+actual submission, stable-ID replay, outbox and Owner approval check is retained.
