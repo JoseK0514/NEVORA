@@ -93,6 +93,18 @@ assertion was removed. The same explicit Manager scope setup is also applied to
 the whole Phase D and account-remediation positive Manager fixtures found by the
 helper-graph search. These final Phase D corrections require matching reruns.
 
+The next Phase D run confirmed the held loading states, then exposed stale
+inner-pane pause expectations. Company Access now retires the whole operational
+view on pagehide/offline and renders `View paused`. Tests require that exact outer
+state and retain protected-person/report absence checks. The late Manager
+account-switch test now observes the replacement Manager's real GET200 with a
+different bound authority and retirement of the old row before releasing the
+held committed reply. No retry may reappear, stale intent must return403, and the
+single original approval event must still belong to the first Manager. The old
+inner `Correction access ended` label cannot survive the enclosing view's
+retirement. The failed run's WebKit development-overlay fetch error is retained;
+runtime failures remain fatal and must be absent in the matching rerun.
+
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,
