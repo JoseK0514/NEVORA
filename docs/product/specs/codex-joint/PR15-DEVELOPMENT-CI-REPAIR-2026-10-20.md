@@ -41,7 +41,7 @@ disclosure: a final authority fence can deny the response after the write commit
 Denied communication notification writes assert the current `false` contract and
 preserve the entire notification row and its original read timestamp.
 
-No application authorization, business logic, payroll wording, legal wording,
+Through `1002c9cc`, no application authorization, business logic, payroll wording, legal wording,
 database migration source, mandatory job, scenario, threshold or runtime-error
 failure policy was changed by these repairs.
 
@@ -268,6 +268,45 @@ Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,
 exact committed source custody and its original owned runtime checks.
+
+Hosted `1002c9cc` passed types, lint, full units, the production build, all three
+database jobs and all14 Home, Communications and Calendar browser cells. Whole
+Phase D passed201 checks in each engine, including the fresh reset-document
+regressions. The later D2 recovery suite exposed an application regression:
+the enclosing current-access frame unmounts the private correction pane while
+offline, which discarded its local uncertain review command.
+
+The repair retains only that exact command in an in-memory React boundary above
+the retiring private body. Its key binds actor, session, operational authority and
+page; a different key discards recovery. A denied dashboard render omits the
+boundary, and a denied correction read explicitly clears it. No queue rows, names or
+snapshots are retained and no browser storage is used. A remounted pane still
+requires a fresh authorized snapshot before enabling the existing explicit retry.
+Late responses from the retired pane cannot clear a newer command. Approval,
+decline, original-record immutability, same-operation replay and server guards
+remain unchanged. The browser regression now requires the outer paused state and
+zero private rows/retry controls offline, followed by the original exact-command
+recovery and one persisted decision after fresh authorization.
+
+The focused recovery checks pass43 cases in4 files; scoped lint and types pass.
+Their failing-before evidence and logs are retained under `/tmp/nevora-pr15-review-recovery-*`.
+The matching D2 browser run in both engines remains required in cloud CI.
+
+Navigation on `1002c9cc` completed9 cells before WebKit390 recorded three native
+access-control events for an unidentified resource. The per-launch control proved
+the provisional-navigation mechanism and independent JavaScript-error observer,
+but those application events were not classified and still failed the gate.
+The next report identifies three additional static resources (profile, calendar
+status and device status), the scenario stage and whether document navigation was
+pending. This diagnostic change does not add those resources to the classifier.
+Four new assertions failed before the metadata repair; the full diagnostic set
+must remain green and the next actual cloud run must determine the cause.
+
+CTO position for the application fix: recovery state belongs above the private
+pane's lifetime, with its original immutable command identity. CISO position:
+retain the current-access retirement, actor/session/scope/page isolation and live
+server authorization. Governance position: the new application behavior and all
+mandatory checks must pass on the final candidate before integration.
 
 CTO position: repair test context and fixture fidelity while preserving current
 server authority. CISO position: retain credential denial, real authorization

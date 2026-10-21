@@ -27,6 +27,9 @@ function nativeFetchResourceKind(message,page) {
     if(path==='/api/manager/communications'||path.startsWith('/api/manager/communications/'))return 'manager-read';
     if(path==='/api/employee/communications'||path.startsWith('/api/employee/communications/'))return 'employee-read';
     if(path==='/api/employee/my-time')return 'recorded-time-read';
+    if(path==='/api/employee/profile')return 'profile-read';
+    if(path==='/api/employee/calendar-subscriptions')return 'calendar-read';
+    if(path==='/app/api/push/status')return 'device-status-read';
     if(runtimeRoutes.has(path)||path==='/app/updates/compose'||/^\/app\/updates\/[a-f0-9-]{36}$/.test(path))return 'route-read';
     return null;
   })??null;
@@ -86,7 +89,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
             classified.add(error);execution.navigationDiagnostics??=[];
             execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,stage:stages.has(stage)?stage:null});return;
           }
-          errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,
+          errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,pendingMainFrameNavigation:!!state.pending,
             failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
         });
       });

@@ -14,6 +14,9 @@ it.each([
  ['/api/employee/communications','employee-read'],
  ['/api/employee/my-time','recorded-time-read'],
  ['/api/notifications','notification-read'],
+ ['/api/employee/profile','profile-read'],
+ ['/api/employee/calendar-subscriptions','calendar-read'],
+ ['/app/api/push/status','device-status-read'],
  ['/PRIVATE_ACTOR_TOKEN',null],
 ])('projects only a static resource kind for an owned native fetch failure: %s',(path,resourceKind)=>{
  const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://127.0.0.1:43210/app'});

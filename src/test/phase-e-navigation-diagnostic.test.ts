@@ -24,6 +24,7 @@ it('records the reproduced native refusal only during a pending owned document n
 it.each([
  {verified:false},{engine:'chromium'},{pending:false},{phase:'context-close'},
  {host:'fictional.invalid'},{host:'127.0.0.1:43211'},{path:'/__nextjs_original-stack-frames'},{path:'/api/manager/communications'},{path:'/PRIVATE_ACTOR_TOKEN'},
+ {path:'/api/employee/profile'},{path:'/api/employee/calendar-subscriptions'},{path:'/app/api/push/status'},
  {host:'PRIVATE_ACTOR_TOKEN@127.0.0.1:43210'},{path:'/api/notifications?token=PRIVATE_ACTOR_TOKEN'},{path:'/api/employee/home#PRIVATE_ACTOR_TOKEN'},
 ])('keeps an unproven or live-document event fatal: %j',async options=>{
  const f=await fixture(options);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(0);
@@ -32,7 +33,7 @@ it.each(['/api/employee/home','/api/employee/my-time'])('recognizes only the obs
  const f=await fixture({path});f.page.emit('pageerror',f.error);f.cell.assertClean();expect(f.execution.navigationDiagnostics).toHaveLength(1);
 });
 it('retires the classification boundary at document commit',async()=>{
- const f=await fixture();f.page.emit('framenavigated',f.frame);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+ const f=await fixture();f.page.emit('framenavigated',f.frame);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.errors[0]).toMatchObject({pendingMainFrameNavigation:false});
 });
 it('retires the classification boundary when the navigation fails',async()=>{
  const f=await fixture();f.page.emit('requestfailed',f.request);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
