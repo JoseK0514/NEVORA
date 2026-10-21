@@ -52,6 +52,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   return {handler,get seen(){return seen.then(()=>{if(failure)throw Error('Held response operation failed; see sanitized runtimeErrors');});},get done(){return used?done:Promise.resolve();},get outcome(){return outcome;},get failure(){return failure;},release:(reason)=>{if(reason==='navigation'){assert.notEqual(page.url(),documentUrl,'Navigation release requires an actually changed document URL');navigationReleased=true;}release();},path};
  }
  try {
+ if(engine==='chromium'&&width===320){
+  const prepared=[];
+  for(const path of ['/app/requests/hub','/app/schedule']){const response=await context.request.get(app.url+path,{maxRedirects:0,timeout:15000});assert.equal(response.status(),307);assert.equal(new URL(response.headers().location,app.url).pathname,'/login');prepared.push({path,status:response.status()});}
+  await writeFile(join(evidenceDirectory,'home-route-preparation-report.json'),JSON.stringify(prepared,null,2));
+ }
  await q("UPDATE locations SET short_name='Main Office Operations and Customer Support' WHERE id='loc-1'");
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) SELECT $1||'-leave-'||n,$2,'2030-11-01'::date+(n-1)*2,'2030-11-02'::date+(n-1)*2,'APPROVED','PRIVATE HOME SENTINEL' FROM generate_series(1,7)n",[label,actor]);
  const [clock]=await q("SELECT date_trunc('week',(clock_timestamp()-interval '1 hour') AT TIME ZONE 'America/Puerto_Rico')::date::text AS week,((clock_timestamp()-interval '1 hour') AT TIME ZONE 'America/Puerto_Rico')::date::text AS day,to_char((clock_timestamp()-interval '1 hour') AT TIME ZONE 'America/Puerto_Rico','HH24:MI') AS start,to_char((clock_timestamp()+interval '1 hour') AT TIME ZONE 'America/Puerto_Rico','HH24:MI') AS finish");

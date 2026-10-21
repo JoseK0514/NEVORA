@@ -174,6 +174,25 @@ intent must receive403 and exactly one original approval must remain. The shared
 transport helper retains five passing regression cases, including live late
 delivery and fatal unknown failures. Matching browser execution remains required.
 
+Hosted `a405b608` also passed Communications and Calendar, including their exact
+leaf receipts. Validate, Clocker, release SQL and Phase E SQL passed. Home's
+remaining WebKit320 event is now identified as a notification read during H08's
+hard navigation; it is still fatal. Local `41dfed17` reproduced a different cold
+route timeout: Requests took15.1seconds, including9.4seconds of compilation.
+Home now prepares Requests/Schedule without credentials and requires their307
+login denial before the actual browser journeys. Phase D similarly prepares its
+three cold management routes. These are setup steps, not performance acceptance.
+Its held Inbox response waiter now starts immediately before the held response
+is released, after the original loading/private-absence assertions, rather than
+spending its deadline on route compilation.
+
+At `41dfed17` all14 account behavior checks passed, but two WebKit runtime events
+still failed the gate. The next diagnostic adds case attribution and original
+page-error stacks to that fictional-data suite. Missing-time checks passed6 and
+report keyboard/scroll checks passed28. A separate local static HTTP/WebKit
+navigation probe recorded zero errors in30 routed and30 unrouted iterations;
+that probe does not establish closure of the real Next application failure.
+
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,
