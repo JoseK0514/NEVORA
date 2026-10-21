@@ -32,7 +32,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const items=()=>page.locator('[data-home-group] li');
  const recorded=()=>page.locator('aside[aria-label="Own recorded time"]');
  const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
- const refresh=async()=>{const response=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home');await page.locator('[data-home-refresh]').click();await (await response).finished();await page.getByRole('button',{name:/^(Refresh home|Retry home)$/}).waitFor();await ready();};
+ const refresh=async()=>{await page.bringToFront();await ready();const [response]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home'),page.locator('[data-home-refresh]').click()]);await response.finished();await page.getByRole('button',{name:/^(Refresh home|Retry home)$/}).waitFor();await ready();};
  async function login(target=page,id=actor){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);}
  function gate(path){
   let release,started,finished,used=false,failure,outcome,operation='fetch',navigationReleased=false;const documentUrl=page.url();
