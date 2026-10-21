@@ -3,12 +3,12 @@
  * these rules over the shared phone type rules. Same tokens as Home (employee-home-today.module.css). */
 
 .s6Root:not(#s6) {
-  --s6-page: #F7F6F3; --s6-card: #FFFFFF; --s6-ink: #161C1B; --s6-ink-2: #5F625E; --s6-ink-3: #6F6C66; --s6-faint: #B9B6AF;
-  --s6-rule: #E8E5DF; --s6-track: #EEECE7; --s6-deep: #0D3634; --s6-mark: #164B48; --s6-teal: #0B6E69; --s6-sky: #35B6EC;
-  --s6-amber: #8A5208; --s6-red: #A3271A;
-  --s6-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --s6-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --s6-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --s6-page: var(--sig-page); --s6-card: var(--sig-card); --s6-ink: var(--sig-ink-1); --s6-ink-2: var(--sig-ink-2); --s6-ink-3: var(--sig-ink-3); --s6-faint: var(--sig-faint);
+  --s6-rule: var(--sig-rule); --s6-track: var(--sig-track); --s6-deep: var(--sig-deep); --s6-mark: var(--sig-mark); --s6-teal: var(--sig-action); --s6-sky: var(--sig-sky);
+  --s6-amber: var(--sig-review-ink); --s6-red: var(--sig-urgent-ink);
+  --s6-font: var(--sig-font);
+  --s6-display: var(--sig-font-display);
+  --s6-grain: var(--sig-grain);
   display: flex; flex-direction: column; min-width: 0; margin: 0 auto; padding: 0 0 36px; background: var(--s6-page); color: var(--s6-ink);
   font-family: var(--s6-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }

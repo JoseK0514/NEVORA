@@ -89,7 +89,7 @@
   --sig-tracking-caps-sm:        .12em;                                          /* signature.module.css:123 */
   --sig-type-pill:               500 .8125rem/1 var(--sig-font);                 /* status pill, 13 | signature.module.css:113 (.sg-pill) */
   --sig-tracking-pill:           .01em;                                          /* signature.module.css:113 */
-  --sig-type-tab:                500 .8125rem/1rem var(--sig-font);              /* tab-bar label, 13/16 (declared preset; rendered size not browser-verified) | employee-style.css:90 (--nv-t-tab) */
+  --sig-type-tab:                500 .8125rem/1rem var(--sig-font);              /* tab-bar label, 13/16 (browser-verified 13px at 390, Chromium + WebKit) | employee-style.css:90 (--nv-t-tab) */
   --sig-tracking-tab:            0;                                              /* employee-style.css:90 (none set) */
 
   /* ---------- Spacing ---------- */

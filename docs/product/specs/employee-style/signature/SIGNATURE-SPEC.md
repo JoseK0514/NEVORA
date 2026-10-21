@@ -170,7 +170,7 @@ re-checked for this spec (section 9.5). The grain value is a long data URI; see 
 | `--sig-tracking-caps-sm` | `.12em` | letter-spacing for caps-sm | — |
 | `--sig-type-pill` | `500 .8125rem/1 var(--sig-font)` | status pill, 13 | — |
 | `--sig-tracking-pill` | `.01em` | letter-spacing for pill | — |
-| `--sig-type-tab` | `500 .8125rem/1rem var(--sig-font)` | tab-bar label, 13/16 (declared preset; rendered size not browser-verified) | — |
+| `--sig-type-tab` | `500 .8125rem/1rem var(--sig-font)` | tab-bar label, 13/16 (browser-verified 13px at 390, Chromium + WebKit) | — |
 | `--sig-tracking-tab` | `0` | letter-spacing for tab | — |
 
 #### Spacing
@@ -291,7 +291,7 @@ display stack; everything else uses the text stack.
 | Status pill | `pill` | 13 / 1 | 500 | .01em | text | `.sg-pill` |
 | Caps label (section head, eyebrow) | `caps` | **12** / 16 | 600 | .13em, uppercase | text | `.sgHead h2`, `.sg-h h2`, `.sgEyebrow` |
 | Small caps (today; to retire) | `caps-sm` | 11 / 14 | 600 | .12em, uppercase | text | `.sg-day small`, `.sg-ticket small`, `.sg-pair dt` |
-| Tab label | `tab` | **13** / 16 declared; may render at 12 (T12, not browser-verified) | 500 (600 when active) | 0 | text | `--nv-t-tab` |
+| Tab label | `tab` | **13** / 16 (T12: verified 13px in Chromium and WebKit at 390) | 500 (600 when active) | 0 | text | `--nv-t-tab` |
 
 Use a role as `font: var(--sig-type-<role>); letter-spacing: var(--sig-tracking-<role>);`. Figures add
 `font-variant-numeric: tabular-nums`. Caps add `text-transform: uppercase`.
@@ -768,7 +768,7 @@ The code cites these boards, and they exist only as **untracked** files in the m
 
 These come from the token architect's notes (rows C1–C20, E1–E3, R1–R4, T1–T13, M1–M6, copied verbatim) plus what this spec found (S1–S8). Under the conflict rule, each local value keeps rendering; nothing here was changed. Rows marked **raw** sit in selector rules, which the token session does not edit.
 
-The most important rows: **C2** (`/reset-access` still renders the pre-Signature ivory colours because it loads only `auth-premium.css`), **C18** ("done" text in the action teal), **T1** (band headline weight 400 vs 300), **T12** (tab label may render at 12px, not verified in a browser) and **C13** (Clocker footer text fails AA at 4.45:1).
+The most important rows: **C2** (`/reset-access` still renders the pre-Signature ivory colours because it loads only `auth-premium.css`), **C18** ("done" text in the action teal), **T1** (band headline weight 400 vs 300) and **C13** (Clocker footer text fails AA at 4.45:1).
 
 ### Colour
 
@@ -826,7 +826,7 @@ The most important rows: **C2** (`/reset-access` still renders the pre-Signature
 | T9 | auth-premium.css:10 | `--sys` | `… "Helvetica Neue", Arial, sans-serif` | `--sig-font` | no `Arial` | only differs where no system face exists |
 | T10 | employee-style.css:238, :243-:250 | `var(--e5-font, inherit)` | `--e5-font` is never declared, so it resolves to `inherit` (= `--nv-font`) | `--sig-font` | | the alerts dialog inherits `--nv-font` |
 | T11 | employee-home-today.module.css:200-202 | `.h5Stats` | `var(--sg-font, -apple-system, sans-serif)` (`--sg-font` is not in scope on Home, so it falls back); two inline stacks | `--sig-font` / `--sig-font-display` | | shortened fallback stacks on desktop Home stats |
-| T12 | employee-style.css:90 vs portal-gusto.css:346 | `--nv-t-tab` | 13/16 declared; `.mobile-nav-link` gets `min(0.75rem, 13px)` = 12px from portal-gusto | `--sig-type-tab` | `500 .8125rem/1rem` | **not verified**: the tab-bar label may render at 12px. Check in a browser before migrating |
+| T12 | employee-style.css:90 vs portal-gusto.css:346 | `--nv-t-tab` | 13/16 declared; `.mobile-nav-link` gets `min(0.75rem, 13px)` = 12px from portal-gusto | `--sig-type-tab` | `500 .8125rem/1rem` | **resolved**: the employee tab-bar label renders at 13px/16px, weight 500 (600 active), in Chromium and WebKit at 390 on /app (migration check, Oct 20). No conflict. |
 | T13 | signature.module.css:57 vs :58 | row sub-line vs callout | 15/**20** vs 15/**21** | `--sig-type-row-sub` / `--sig-type-callout` | | two 15px line-heights kept as two roles; `--nv-t-callout` is 15/20 |
 
 ### Motion and press

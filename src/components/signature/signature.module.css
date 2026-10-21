@@ -2,12 +2,12 @@
  * keep the shared premium layers out. Page-specific pieces live in each page's own module. */
 
 .sgRoot:not(#sg) {
-  --sg-page: #F7F6F3; --sg-card: #FFFFFF; --sg-ink: #161C1B; --sg-ink-2: #5F625E; --sg-ink-3: #6F6C66; --sg-faint: #B9B6AF;
-  --sg-rule: #E8E5DF; --sg-track: #EEECE7; --sg-deep: #0D3634; --sg-mark: #164B48; --sg-teal: #0B6E69; --sg-mint: #A9E2DA; --sg-sky: #35B6EC;
-  --sg-amber: #8A5208; --sg-red: #A3271A;
-  --sg-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --sg-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --sg-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --sg-page: var(--sig-page); --sg-card: var(--sig-card); --sg-ink: var(--sig-ink-1); --sg-ink-2: var(--sig-ink-2); --sg-ink-3: var(--sig-ink-3); --sg-faint: var(--sig-faint);
+  --sg-rule: var(--sig-rule); --sg-track: var(--sig-track); --sg-deep: var(--sig-deep); --sg-mark: var(--sig-mark); --sg-teal: var(--sig-action); --sg-mint: var(--sig-mint); --sg-sky: var(--sig-sky);
+  --sg-amber: var(--sig-review-ink); --sg-red: var(--sig-urgent-ink);
+  --sg-font: var(--sig-font);
+  --sg-display: var(--sig-font-display);
+  --sg-grain: var(--sig-grain);
   container: sg / inline-size;
   display: flex; flex-direction: column; min-width: 0; margin: 0 auto; padding: 0 0 36px; background: var(--sg-page); color: var(--sg-ink);
   font-family: var(--sg-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
@@ -90,7 +90,7 @@
 /* Phase 3 pieces (approved Oct 20, 2026; target: docs/product/specs/employee-style/signature/phase-3/p3c-*.png):
  * one card, one icon tile, one status pill, a date ticket and a full-width action, on an 8-point rhythm
  * (section gap 40, heading to card 14, card padding 20, row 76). */
-.sgRoot:not(#sg) { --sg-card-shadow: 0 1px 1px rgba(22, 28, 27, .03), 0 2px 6px rgba(22, 28, 27, .03), 0 16px 36px -22px rgba(13, 54, 52, .24); }
+.sgRoot:not(#sg) { --sg-card-shadow: var(--sig-shadow-card-lift); }
 .sgRoot :global(.sg-h):not(#sg) { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 40px 24px 14px; }
 .sgSheet > :global(.sg-h:first-child):not(#sg) { margin-top: 4px; }
 .sgRoot :global(.sg-h h2):not(#sg) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: var(--sg-ink-2); }

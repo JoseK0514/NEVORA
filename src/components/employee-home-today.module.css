@@ -5,12 +5,12 @@
  * `:not(#h5)` pairs lift these rules over the shared phone and clock styles. */
 
 .h5Root:not(#h5) {
-  --h5-cream: #F7F6F3; --h5-paper: #FFFFFF; --h5-ink: #161C1B; --h5-ink-2: #5F625E; --h5-ink-3: #6F6C66; --h5-faint: #B9B6AF;
-  --h5-rule: #E8E5DF; --h5-deep: #0D3634; --h5-mark: #164B48; --h5-teal: #0B6E69; --h5-mint: #A9E2DA; --h5-sky: #35B6EC;
-  --h5-amber: #8A5208; --h5-red: #A3271A;
-  --h5-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --h5-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --h5-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --h5-cream: var(--sig-page); --h5-paper: var(--sig-card); --h5-ink: var(--sig-ink-1); --h5-ink-2: var(--sig-ink-2); --h5-ink-3: var(--sig-ink-3); --h5-faint: var(--sig-faint);
+  --h5-rule: var(--sig-rule); --h5-deep: var(--sig-deep); --h5-mark: var(--sig-mark); --h5-teal: var(--sig-action); --h5-mint: var(--sig-mint); --h5-sky: var(--sig-sky);
+  --h5-amber: var(--sig-review-ink); --h5-red: var(--sig-urgent-ink);
+  --h5-font: var(--sig-font);
+  --h5-display: var(--sig-font-display);
+  --h5-grain: var(--sig-grain);
   container: h5-home / inline-size;
   display: flex; flex-direction: column; min-width: 0; margin: 0 auto; padding: 0 0 32px; background: var(--h5-cream); color: var(--h5-ink);
   font-family: var(--h5-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;

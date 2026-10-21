@@ -2,11 +2,11 @@
  * Same tokens as Home and My schedule; r6-prefixed classes and `:not(#r6)` keep the shared layers out. */
 
 .r6Root:not(#r6) {
-  --r6-page: #F7F6F3; --r6-card: #FFFFFF; --r6-ink: #161C1B; --r6-ink-2: #5F625E; --r6-ink-3: #6F6C66; --r6-faint: #B9B6AF;
-  --r6-rule: #E8E5DF; --r6-deep: #0D3634; --r6-mark: #164B48; --r6-teal: #0B6E69; --r6-sky: #35B6EC; --r6-amber: #8A5208; --r6-red: #A3271A;
-  --r6-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --r6-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --r6-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --r6-page: var(--sig-page); --r6-card: var(--sig-card); --r6-ink: var(--sig-ink-1); --r6-ink-2: var(--sig-ink-2); --r6-ink-3: var(--sig-ink-3); --r6-faint: var(--sig-faint);
+  --r6-rule: var(--sig-rule); --r6-deep: var(--sig-deep); --r6-mark: var(--sig-mark); --r6-teal: var(--sig-action); --r6-sky: var(--sig-sky); --r6-amber: var(--sig-review-ink); --r6-red: var(--sig-urgent-ink);
+  --r6-font: var(--sig-font);
+  --r6-display: var(--sig-font-display);
+  --r6-grain: var(--sig-grain);
   display: flex; flex-direction: column; min-width: 0; margin: 0 auto; padding: 0 0 36px; background: var(--r6-page); color: var(--r6-ink);
   font-family: var(--r6-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }
