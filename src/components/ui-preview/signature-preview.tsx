@@ -268,7 +268,7 @@ export function SignaturePreview() {
           <SigBanner tone="done" icon={<CheckCircleIcon size={20} />} title="Request sent">You will hear back by Friday.</SigBanner>
         </div>
         <div className="sg-card"><SigEmpty icon={<TrayIcon size={26} />} title="No requests yet" action={<SigButton variant="secondary" href={`${here}#sgp-set`}>Request time off</SigButton>}>Time off and swaps you send show up here.</SigEmpty></div>
-        <div className="sg-card" aria-busy="true" aria-label="Loading example"><SigSkeleton tile /><SigSkeleton tile lines={2} /></div>
+        <div className="sg-card" role="status" aria-busy="true" aria-label="Loading example"><SigSkeleton tile /><SigSkeleton tile lines={2} /></div>
         <div className="sgp-pad">
           <SigFieldGroup legend="SigFieldGroup">
             <SigField id="sgp-f-name" label="Preferred name" hint="Shown to your team"><input defaultValue="Alex" /></SigField>
