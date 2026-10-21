@@ -138,3 +138,15 @@ Home was still compiling its readers. The driver now explicitly foregrounds the
 login tab and captures early responses before authentication, then gives pending
 reads their existing 15-second response wait after sign-in. Every original route,
 unauthenticated denial and authenticated 200 assertion remains required.
+
+Hosted run 39530404293 passed Phase E SQL and the unchanged duplicate-focus
+receipt assertion, then reproduced loss of the selected reference after real
+blur/focus. Its screenshot shows the recovered authorized form with an empty
+reference and no receipt. Clocker recovery now owns its selection outside its
+ScopedReadFrame body, so retirement still removes private DOM while the existing
+snapshot controller clears and re-reads receipt details. The page keys that
+selection owner by operational authority, which binds workspace, actor, role,
+access generation and session; changed authority discards the selection. The
+server access check, client freshness barrier and validity limits remain. Added
+selection-lifecycle and authority-composition regressions await hosted execution;
+the original end-to-end blur/focus receipt assertion remains unchanged.

@@ -23,19 +23,21 @@ vi.mock('gsap', () => ({default: {registerPlugin: () => {}}}));
 vi.mock('@gsap/react', () => ({useGSAP: () => {}}));
 
 import {ClockerRecoveryReview} from './clocker-recovery-review';
+import {ScopedReadFrame} from './company-access/scoped-read-frame';
 
 type Element = {type: unknown; props: Record<string, unknown>};
 function isElement(value: unknown): value is Element {
   return value !== null && typeof value === 'object' && 'type' in value && 'props' in value;
 }
-function find(value: unknown, type: string): Element | undefined {
+function find(value: unknown, type: unknown): Element | undefined {
   if (Array.isArray(value)) return value.map(item => find(item, type)).find(Boolean);
   if (!isElement(value)) return;
   return value.type === type ? value : find(value.props.children, type);
 }
+const observation={authority:'fictional-authority',observedAt:'2026-10-20T12:00:00.000Z',validForMs:15000};
 function render() {
   hooks.stateIndex = 0; hooks.refIndex = 0; hooks.effects = [];
-  return ClockerRecoveryReview({actorId: 'QAOWNER', timeZone: 'America/Puerto_Rico'});
+  return ClockerRecoveryReview({actorId: 'QAOWNER', timeZone: 'America/Puerto_Rico',observation});
 }
 function change(value: string) {
   const input = find(render(), 'input');
@@ -94,6 +96,19 @@ it('editing a reference retires its receipt before a lifecycle refresh can read 
   expect(observed()).toBe(false);
   submit();
   await vi.waitFor(() => expect(requests).toEqual([first, second]));
+});
+
+it('keeps the selected reference outside the access barrier and clears and re-reads receipt data on return',async()=>{
+  expect(find(render(),ScopedReadFrame)?.props.observation).toEqual(observation);
+  change(first);submit();
+  await vi.waitFor(()=>expect(observed()).toBe(true));
+  window.dispatchEvent(new Event('blur'));
+  expect(observed()).toBe(false);
+  expect(find(render(),'input')?.props.value).toBe(first);
+  expect(requests).toEqual([first]);
+  window.dispatchEvent(new Event('focus'));
+  await vi.waitFor(()=>expect(requests).toEqual([first,first]));
+  await vi.waitFor(()=>expect(observed()).toBe(true));
 });
 
 it('uppercase references are normalized to the server command format', async () => {
