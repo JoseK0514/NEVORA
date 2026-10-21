@@ -13,8 +13,12 @@ export async function waitForFreshHome(page, freshLocation){
  await page.waitForFunction(fresh=>{
   const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="employee-reviewed-next-heading"]');
   if(!root||!next)return false;
-  const style=getComputedStyle(next),text=next.textContent??'';
-  return ['partial','ready'].includes(root.getAttribute('data-home-state'))&&root.getAttribute('aria-busy')==='false'&&next.getClientRects().length>0&&style.visibility==='visible'&&style.display!=='none'&&text.includes(fresh)&&!text.includes('Main Office Operations and Customer Support');
+  const text=next.textContent??'';
+  const visibleFresh=[next,...next.querySelectorAll('*')].some(node=>{
+   if(!node.textContent?.includes(fresh)||[...node.children].some(child=>child.textContent?.includes(fresh)))return false;
+   const style=getComputedStyle(node);return node.getClientRects().length>0&&style.visibility==='visible'&&style.display!=='none';
+  });
+  return ['partial','ready'].includes(root.getAttribute('data-home-state'))&&root.getAttribute('aria-busy')==='false'&&visibleFresh&&!text.includes('Main Office Operations and Customer Support');
  },freshLocation,{timeout:15000});
 }
 
@@ -80,7 +84,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');assert(await next().getByRole('status').filter({hasText:/published this week yet\. Shifts shown are published\.$/}).isVisible());assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);
  assert.equal(await page.getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.',{exact:true}).count(),0,'an unpublished location is explained by publication state, not a failed read');
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('Scheduled now',{exact:true}).isVisible());
- const hierarchy=await page.locator('[aria-labelledby="employee-reviewed-next-heading"],[data-home-group="actions"]').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
+ const hierarchy=await page.locator('[aria-labelledby="employee-reviewed-next-heading"],[data-home-group="actions"]').evaluateAll(es=>({tops:es.map(e=>(e.querySelector('[aria-label="Scheduled now"]')??e).getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot('ready');
  checks.push('H01 actual loading contains no private row/success; Scheduled now leads and the persisted future Next shift follows, with actual recorded Clocked In coexisting; six-source canonical communications complete and private notes absent');
  // Native disclosures are independent. Complete row membership/order comes only

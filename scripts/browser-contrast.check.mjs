@@ -9,6 +9,14 @@ function measure(background,foreground={}) {
  try{return measureRenderedContrast(link);}finally{delete globalThis.getComputedStyle;}
 }
 test('solid white on black has 21:1 contrast',()=>assert.equal(measure({backgroundColor:'rgb(0, 0, 0)'}).ratio,21));
+test('solid black on white has 21:1 contrast',()=>assert.equal(measure({backgroundColor:'rgb(255, 255, 255)'},{color:'rgb(0, 0, 0)'}).ratio,21));
+test('dark text uses the darkest light-gradient endpoint',()=>{
+ const result=measure({backgroundImage:'linear-gradient(145deg, rgb(119, 119, 119) 0%, rgb(255, 255, 255) 100%)'},{color:'rgb(0, 0, 0)'});
+ assert(result.ratio>=4.5);assert(result.ratio<4.7);
+});
+test('a foreground inside the gradient range remains unsupported',()=>{
+ assert.throws(()=>measure({backgroundImage:'linear-gradient(145deg, rgb(0, 0, 0) 0%, rgb(255, 255, 255) 100%)'},{color:'rgb(119, 119, 119)'}),/Foreground crosses background bounds/);
+});
 test('uses the least contrast gradient endpoint, not page background',()=>{
  const result=measure({backgroundImage:'linear-gradient(145deg, rgb(0, 0, 0) 0%, rgb(119, 119, 119) 78%)'});
  assert(result.ratio<4.5);assert(result.ratio>4.47);assert.deepEqual(result.samples[1].background,[119,119,119,1]);

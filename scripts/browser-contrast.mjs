@@ -62,7 +62,7 @@ export function measureRenderedContrast(element) {
     backgrounds = paint(layer, backgrounds);
     for (const overlay of layer.overlays) backgrounds = [ ...backgrounds, ...paint(overlay, backgrounds) ];
     // All sRGB interpolants lie within these channel bounds. Their extreme
-    // luminances bound contrast against the light foreground used by this link.
+    // luminances bound contrast while the foreground stays outside their range.
     backgrounds = [0,1].map(high => [0,1,2].map(i => Math[high?'max':'min'](...backgrounds.map(c => c[i]))).concat(1));
   }
   const foreground = rgba(getComputedStyle(element).color);
@@ -70,6 +70,8 @@ export function measureRenderedContrast(element) {
     const rendered = over(foreground, background), a = luminance(rendered), b = luminance(background);
     return {foreground:rendered,background,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
   });
-  if (samples.some(s => luminance(s.foreground) <= luminance(s.background))) throw Error('Foreground crosses background bounds; measurement unsupported');
+  const lighter=samples.every(s=>luminance(s.foreground)>luminance(s.background));
+  const darker=samples.every(s=>luminance(s.foreground)<luminance(s.background));
+  if (!lighter&&!darker) throw Error('Foreground crosses background bounds; measurement unsupported');
   return {ratio:Math.min(...samples.map(s=>s.ratio)),samples,layers,method:'conservative sRGB gradient bounds with alpha compositing'};
 }
