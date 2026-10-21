@@ -36,7 +36,8 @@
     "payroll:worker": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/payroll-worker.ts",
     "test:payroll:owned": "node scripts/payroll-postgres.mjs",
     "test:passkeys:owned": "node scripts/payroll-postgres.mjs vitest.passkeys-integration.config.mts",
-    "test:passkeys:network": "node scripts/payroll-postgres.mjs vitest.passkeys-network.config.mts"
+    "test:passkeys:network": "node scripts/payroll-postgres.mjs vitest.passkeys-network.config.mts",
+    "test:ui:combined": "node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",

@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { createHash, randomBytes } from "node:crypto";
-import { readFile, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from "@simplewebauthn/server";
 import { createOwnedNextApp } from "./owned-next-app";
 import { fictionalAuthenticator } from "./passkey-authenticator.test-support";
@@ -11,7 +11,6 @@ it("completes discoverable passkey sign-in through a real owned Next HTTP runtim
   const app = await createOwnedNextApp(evidence, { passkeysEnabled: true });
   try {
     const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
-    await q(await readFile("db/migrations/0035_passkeys.sql", "utf8"));
     const session = randomBytes(32).toString("base64url");
     await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PK-NETWORK','Fictional','Network','5550199','EMPLOYEE','loc-1'); INSERT INTO employee_credentials(employee_id,password_hash) VALUES('PK-NETWORK','fictional-network-hash')");
     await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'PK-NETWORK',clock_timestamp()+interval '1 hour')",

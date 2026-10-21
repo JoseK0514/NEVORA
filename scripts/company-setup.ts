@@ -141,7 +141,7 @@ export async function setupCompany(client: Client, input: CompanyInput) {
     '0023_template_ownership', '0024_schedule_copy_receipts', '0025_company_policies',
     '0026_attendance_observations', '0027_payroll_period_custody', '0028_configurable_payroll', '0029_payroll_private_notices',
     '0030_notification_source_kinds', '0031_workspace_presentation', '0032_workspace_words_modules',
-    '0033_management_alert_preferences', '0034_account_deletion_requests',
+    '0033_management_alert_preferences', '0034_account_deletion_requests', '0035_passkeys',
   ].map(async name => migrationBody(await readFile(new URL(`../db/migrations/${name}.sql`, import.meta.url), 'utf8'))));
   const currentMigrations = await Promise.all(['0031_native_payroll', '0032_company_access_invitations']
     .map(async name => migrationBody(await readFile(new URL(`../db/migrations/${name}.sql`, import.meta.url), 'utf8'))));

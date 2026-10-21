@@ -77,7 +77,7 @@ try {
   );
   const config =
     process.argv[2] ?? "vitest.configurable-payroll-integration.config.mts";
-  const prefix = config === "vitest.passkeys-network.config.mts"
+  const prefix = ["vitest.passkeys-network.config.mts", "vitest.all-ui-browser.config.mts"].includes(config)
     ? "nevora_exchange_test_" : "nevora_foundation_test_";
   const env = {
     ...process.env,

@@ -1,5 +1,7 @@
 # Passkey server and UI handoff
 
+Combined-development addendum: the auth/Employee Signature UI now uses its native WebAuthn JSON client with this server; adding the optional browser library below is unnecessary. Apply compliance `0034` before the integrated `0035`, whose new deletion interlock prevents pending account deletion from being bypassed by passkeys or an in-flight password sign-in. Fresh company setup includes both. Original standalone evidence below remains source-specific history; current combined evidence is recorded in the [integration handoff](../../../handoffs/2026-10-20-all-claude-ui-development-plan.md). Production activation remains off and separately authorized.
+
 Owner: Jose for integration, domain choice and production authorization. Server branch: `codex/passkey-server-20261020`, based on `codex/verify-preview-33` at `06e85d7af995969b17ac0118897ce7e79ddf4614`. UI integration target: `claude/auth-premium`. No UI files are changed here.
 
 ## Contract

@@ -56,6 +56,11 @@ DECLARE target text; why text;
 BEGIN
   IF TG_TABLE_NAME='employees' THEN
     IF OLD.active AND NOT NEW.active THEN target:=NEW.id;why:='account_disabled'; END IF;
+  ELSIF TG_TABLE_NAME='account_deletion_requests' THEN
+    IF NEW.employee_id IS NOT NULL AND NEW.status IN ('received','processing') THEN
+      target:=NEW.employee_id;why:='account_deletion';
+      UPDATE employees SET updated_at=clock_timestamp() WHERE id=target;
+    END IF;
   ELSIF TG_OP='DELETE' THEN
     target:=OLD.employee_id;why:='credential_reset';
   ELSE
@@ -70,12 +75,19 @@ BEGIN
     INSERT INTO auth_passkey_audit(employee_id,passkey_id,event,reason)
       SELECT target,id,'revoke',why FROM revoked;
     DELETE FROM auth_passkey_challenges WHERE employee_id=target;
+    IF why='account_deletion' THEN
+      DELETE FROM employee_sessions WHERE employee_id=target;
+      UPDATE calendar_subscriptions SET revoked_at=clock_timestamp(),revocation_reason='account_loss'
+        WHERE employee_id=target AND revoked_at IS NULL;
+    END IF;
   END IF;
   RETURN NULL;
 END $$;
 CREATE TRIGGER auth_passkey_employee_loss AFTER UPDATE ON employees
   FOR EACH ROW EXECUTE FUNCTION auth_passkey_authority_loss();
 CREATE TRIGGER auth_passkey_credential_loss AFTER UPDATE OR DELETE ON employee_credentials
+  FOR EACH ROW EXECUTE FUNCTION auth_passkey_authority_loss();
+CREATE TRIGGER auth_passkey_deletion_loss AFTER INSERT OR UPDATE ON account_deletion_requests
   FOR EACH ROW EXECUTE FUNCTION auth_passkey_authority_loss();
 
 COMMIT;

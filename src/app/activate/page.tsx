@@ -12,12 +12,13 @@ export default async function ActivatePage({ searchParams }: {
   searchParams: Promise<{ returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
-  const [, lang] = await Promise.all([getPublicWorkspaceName(), readAuthLang()]);
+  const [workspaceName, lang] = await Promise.all([getPublicWorkspaceName(), readAuthLang()]);
   const t = AUTH_COPY[lang];
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
   const returnQuery = returnTo ? "?returnTo=" + encodeURIComponent(returnTo) : "";
   const loginHref = "/login?activated=1" + (returnTo ? "&returnTo=" + encodeURIComponent(returnTo) : "");
   return <AuthShell lang={lang} t={t} variant="sub" back={"/login" + returnQuery}>
+    <span className="ap-sr">{workspaceName ?? t.workspaceUnavailable}</span>
     <h1 className="ap-title">{t.activateTitle}</h1>
     <div className="activation-page">
       <p className="ap-intro">Open your email invitation, then choose a password.</p>

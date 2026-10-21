@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { readFile } from "node:fs/promises";
 import { randomBytes } from "node:crypto";
 import { createDisposableFoundationDatabase } from "./local-postgres";
 import { fictionalAuthenticator } from "./passkey-authenticator.test-support";
 import { PasskeyService } from "../../lib/auth/passkeys/service.server";
 import { consumeLoginAttempt } from "../../lib/auth/login-limits";
+import { prepareSession } from "../../lib/auth/session-issuance";
 import type { SessionMutationProof } from "../../lib/shift-changes/types";
 
 describe("passkeys with real signed WebAuthn messages and owned PostgreSQL", () => {
@@ -19,7 +19,6 @@ describe("passkeys with real signed WebAuthn messages and owned PostgreSQL", () 
   beforeEach(async () => {
     db = await createDisposableFoundationDatabase({ mode: "current-runtime" });
     try {
-      await q(await readFile("db/migrations/0035_passkeys.sql", "utf8"));
       await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id)
         VALUES('PK-FICTIONAL','Fictional','Passkey','5550100','EMPLOYEE','loc-1');
         INSERT INTO employee_credentials(employee_id,password_hash) VALUES('PK-FICTIONAL','fictional-test-hash');
@@ -147,6 +146,34 @@ describe("passkeys with real signed WebAuthn messages and owned PostgreSQL", () 
     const device = fictionalAuthenticator(), token = flow(), options = await service.registrationOptions(proof, token);
     await expect(service.register(other, token, device.register(options.challenge), "Wrong subject")).rejects.toMatchObject({ code: "not_found" });
     await service.register(proof, token, device.register(options.challenge), "Correct subject");
+  });
+  async function deletionRequest() {
+    await q(`INSERT INTO account_deletion_requests(id,reference,employee_id,workspace_id,channel,policy_version,status,verified_at,confirmed_at)
+      SELECT gen_random_uuid(),'DEL-ABCDEFG9','PK-FICTIONAL',workspace_id,'web','2026-10-20','received',clock_timestamp(),clock_timestamp()
+      FROM locations WHERE id='loc-1'`);
+  }
+  it("ends access and revokes existing passkeys when a deletion request is accepted", async () => {
+    const { device, handle } = await enrolled();
+    await deletionRequest();
+    expect(await q("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='PK-FICTIONAL'")).toEqual([{ n: 0 }]);
+    const token = flow(), options = await service.loginOptions(token);
+    await expect(service.login(token, device.authenticate(options.challenge, handle))).rejects.toMatchObject({ code: "not_found" });
+    expect(await q("SELECT event,reason FROM auth_passkey_audit WHERE event='revoke'"))
+      .toEqual([{ event: "revoke", reason: "account_deletion" }]);
+  });
+  it("rejects a passkey session when deletion commits after verification", async () => {
+    const { device, handle } = await enrolled(), token = flow(), options = await service.loginOptions(token);
+    await expect(service.login(token, device.authenticate(options.challenge, handle), deletionRequest))
+      .rejects.toMatchObject({ code: "not_found" });
+    expect(await q("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='PK-FICTIONAL'")).toEqual([{ n: 0 }]);
+  });
+  it("fences a reviewed password session when deletion commits before session issuance", async () => {
+    const [credential] = await q<{updated_at:string;password_hash:string;password_updated_at:string}>(
+      "SELECT e.updated_at::text,c.password_hash,c.password_updated_at::text FROM employees e JOIN employee_credentials c ON c.employee_id=e.id WHERE e.id='PK-FICTIONAL'");
+    const session = prepareSession('PK-FICTIONAL', credential);
+    await deletionRequest();
+    await expect(db.executor.transaction([...session.guards, session.insert])).rejects.toThrow('session_login_changed');
+    expect(await q("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='PK-FICTIONAL'")).toEqual([{ n: 0 }]);
   });
   it("serializes two distinct nonzero challenges against the stored counter", async () => {
     const { device, handle } = await enrolled(1), a = flow(), b = flow();
