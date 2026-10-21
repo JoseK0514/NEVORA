@@ -19,6 +19,20 @@ function clockTime(value:string,timeZone:string):string {
  const part=(name:Intl.DateTimeFormatPartTypes)=>parts.find(p=>p.type===name)?.value??'';
  return `${part('month')} ${part('day')} · ${part('hour')}:${part('minute')} ${part('dayPeriod')}`;
 }
+const shown:Record<string,string>={'Clocked In':'Clocked in','On Break':'On break','Off Clock':'Off clock'};
+function dayKey(value:Date,timeZone:string){return new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(value);}
+/** "8:02 AM" today, "Oct 19 · 10:02 PM" on another day. */
+function shortTime(value:string,timeZone:string,now:number):string {
+ if(dayKey(new Date(value),timeZone)!==dayKey(new Date(now),timeZone))return clockTime(value,timeZone);
+ return new Intl.DateTimeFormat('en-US',{timeZone,hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(value));
+}
+/** Time since a recorded moment, for orientation only: "6h 26m", "12m", "under a minute". */
+function elapsed(value:string,now:number):string {
+ const minutes=Math.max(0,Math.floor((now-new Date(value).getTime())/60000));
+ if(minutes<1)return 'under a minute';
+ const h=Math.floor(minutes/60),m=minutes%60;return h?`${h}h ${m}m`:`${m}m`;
+}
+const breakIcon=(category:string):ClockerIconName=>category==='REST'?'rest':category==='MEAL'?'meal':'break';
 export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:string;timeZone:string;onDone:()=>void}) {
  const [view,setView]=useState<ClockView|null>(null),[pending,setPending]=useState<PendingPunch|null>(null);
  const [mode,setMode]=useState<Mode>('loading'),[message,setMessage]=useState<string|null>(null);
@@ -27,6 +41,8 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
  const [receipt,setReceipt]=useState<PunchReceipt|null>(null);
  const [references,setReferences]=useState<ReturnType<typeof pendingPunchReferences>>([]),[showReferences,setShowReferences]=useState(false);
  const busy=useRef(false),alive=useRef(false),heading=useRef<HTMLHeadingElement>(null);
+ const [now,setNow]=useState(()=>Date.now());
+ useEffect(()=>{if(mode!=='ready'&&mode!=='confirm-out')return;const tick=()=>setNow(Date.now());const first=window.setTimeout(tick,0),timer=window.setInterval(tick,15000);return()=>{clearTimeout(first);clearInterval(timer);};},[mode]);
  function failed(error:unknown,hasPending:boolean){
   if(error instanceof PunchRequestError&&(['AUTH_REQUIRED','CONTEXT_CHANGED'].includes(error.code)||error.status===401)){
    setMode('auth');setMessage('Your tablet verification changed. Enter your PIN again. Any pending action is kept for checking.');return;
@@ -103,39 +119,58 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
   }catch(error){if(alive.current)failed(error,Boolean(pending));}
   finally{busy.current=false;}
  }
- const entry=view?.snapshot.entry,pause=view?.snapshot.break,actions=view?punchActions(view):[];
+ const entry=view?.snapshot.entry,pause=view?.snapshot.break,allowed=view?punchActions(view):[];
+ // One deep card for the likeliest next step: End Break on a break, otherwise Clock Out once clocked in.
+ const lead=(['END_BREAK','CLOCK_OUT','CLOCK_IN'] as PunchAction[]).find(action=>allowed.includes(action));
+ const actions=lead?[lead,...allowed.filter(action=>action!==lead)]:allowed;
  const status=entry?.status==='ON_BREAK'?'On Break':entry?'Clocked In':'Off Clock';
  const title=mode==='success'&&receipt?receipts[receipt.action]:mode==='confirm-out'?'Clock Out?':mode==='select-break'?'Choose a Break':mode==='sending'?'Recording Your Action…'
   :mode==='recovery'||mode==='retry'?'Check Your Last Action':mode==='other-person'?'Previous Action Needs Review'
   :mode==='auth'?'Verify Your PIN Again':mode==='loading'?'Checking Your Clock…':mode==='storage'?'Browser Storage Needed'
   :mode==='unavailable'?'Clock State Unavailable':`Hi, ${view?.firstName??''}.`;
  const waiting=mode==='loading'||mode==='sending';
- return <div ref={motion} className={styles.panel} aria-busy={waiting} data-clocker-state={mode}>
-  {mode==='success'?<div className={styles.successMark}><ClockerIcon name="check" size={32}/></div>:mode==='ready'?<div className={styles.taskIcon}><ClockerIcon name={entry?.status==='ON_BREAK'?'break':entry?'clock-out':'clock-in'} size={28}/></div>:null}
-  <h1 ref={heading} tabIndex={-1}>{title}</h1>
+ const since=entry?(entry.status==='ON_BREAK'?pause!.breakStartAt:entry.clockInAt):null;
+ const orb:ClockerIconName|null=mode==='confirm-out'?'clock-out':mode==='auth'?'lock':['recovery','retry','other-person','storage','unavailable'].includes(mode)?'refresh':null;
+ const left=mode==='ready'||mode==='select-break';
+ return <div ref={motion} className={styles.panel} aria-busy={waiting} data-clocker-state={mode} data-align={left?'start':'center'}>
+  {mode==='success'?<span className={styles.seal}><ClockerIcon name="check" size={52} weight="bold"/></span>
+   :orb?<span className={styles.orb} data-tone={mode==='confirm-out'||orb==='refresh'?'amber':undefined}><ClockerIcon name={orb} size={44} weight="duotone"/></span>:null}
+  <h1 ref={heading} tabIndex={-1} className={mode==='ready'?styles.hello:undefined}>{title}</h1>
   {spanish&&(title in ESP)?<p className={styles.titleEs}><Es phrase={title as ClockerPhrase}/></p>:null}
   {mode==='ready'&&view?<>
-   <span className={`${styles.state} ${entry?styles.active:''}`}>{status}</span>{spanish?<span className={styles.stateEs}><Es phrase={status as ClockerPhrase}/></span>:null}
-   {entry?<p className={styles.detail}>{entry.status==='ON_BREAK'?'Break started':'Clocked in'} <time dateTime={entry.status==='ON_BREAK'?pause!.breakStartAt:entry.clockInAt}>{clockTime(entry.status==='ON_BREAK'?pause!.breakStartAt:entry.clockInAt,timeZone)}</time></p>:<p className={styles.detail}>Ready to begin? Your time is recorded when you clock in.</p>}
+   <p className={styles.state} data-state={entry?.status==='ON_BREAK'?'break':entry?'on':'off'}><span aria-hidden="true"/>{shown[status]}</p>
+   {spanish?<p className={styles.stateEs}><Es phrase={status as ClockerPhrase}/></p>:null}
+   {entry&&since?<p className={styles.detail}>{entry.status==='ON_BREAK'?'Break started':'Clocked in'} <time dateTime={since}>{shortTime(since,timeZone,now)}</time><span className={styles.dot} aria-hidden="true">·</span><span className={styles.ago}>{elapsed(since,now)} ago</span></p>
+    :<p className={styles.detail}>Your time is recorded when you clock in.</p>}
    {pause?.type?<p className={styles.breakContext}><strong>{pause.type.name}</strong>{pause.type.targetMinutes!==null?` · Reference: ${pause.type.targetMinutes} min`:''}</p>:null}
    {entry?.status==='CLOCKED_IN'&&!view.breakTypes.length&&!view.atOtherLocation?<p className={styles.notice}>{view.breaksOff?'Breaks aren\u2019t recorded on the Clocker here.':'No break types are configured. Ask your Owner to add one.'}</p>:null}
    {!actions.length?<p className={styles.notice}>This shift was started at another location. Use that location’s registered Clocker to continue.</p>:null}
-   <div className={styles.actions}>{actions.map((action,i)=><button tabIndex={0} key={action} type="button" className={`button ${i===0?'primary':'secondary'}`} aria-label={labels[action]} onClick={()=>action==='CLOCK_OUT'?setMode('confirm-out'):action==='START_BREAK'?setMode('select-break'):act(action)}><ClockerIcon name={actionIcons[action]} size={22}/><span className="clocker-label"><span>{labels[action]}</span>{spanish?<Es phrase={labels[action] as ClockerPhrase} inButton/>:null}</span></button>)}</div>
-   <button tabIndex={0} className={`button ghost ${styles.quiet}`} type="button" onClick={()=>void refresh()}>Refresh Clock State</button>
+   <div className={styles.cards}>{actions.map((action,i)=><button tabIndex={0} key={action} type="button" className={`button ${i===0?'primary':'secondary'} ${styles.card}`} aria-label={labels[action]} onClick={()=>action==='CLOCK_OUT'?setMode('confirm-out'):action==='START_BREAK'?setMode('select-break'):act(action)}>
+    <span className={styles.tile}><ClockerIcon name={actionIcons[action]} size={36} weight="duotone"/></span>
+    <span className="clocker-label"><span>{labels[action]}</span>{spanish?<Es phrase={labels[action] as ClockerPhrase} inButton/>:null}</span>
+    <ClockerIcon name="arrow" size={22}/></button>)}</div>
+   <div className={styles.foot}>
+    <button tabIndex={0} className={`button ghost ${styles.link}`} type="button" onClick={onDone}>Done</button>
+    <button tabIndex={0} className={`button ghost ${styles.quiet}`} type="button" onClick={()=>void refresh()}><ClockerIcon name="refresh" size={18}/>Refresh Clock State</button>
+   </div>
+   <p className={styles.clears}>This screen clears after 30 seconds.</p>
   </>:null}
   {mode==='select-break'&&view?<>
-   <p className={styles.detail}>Choose the break you are starting. Reference durations do not end a break automatically.</p>
+   <p className={styles.detail}>Reference times don’t end a break on their own.</p>
    <div className={styles.breakOptions}>{view.breakTypes.map(type=><button tabIndex={0} key={type.id} className={`button secondary ${styles.breakOption}`} type="button" aria-label={`Start ${type.name}`} onClick={()=>act('START_BREAK',type)}>
-    <ClockerIcon name="break" size={24}/><strong>{type.name}</strong><span>{type.category==='REST'?'Rest':type.category==='MEAL'?'Meal':'Other'}{type.targetMinutes!==null?` · Reference: ${type.targetMinutes} min`:''}</span><ClockerIcon name="arrow" size={20}/>
+    <span className={styles.tile}><ClockerIcon name={breakIcon(type.category)} size={32} weight="duotone"/></span>
+    <span className={styles.breakText}><strong>{type.name}</strong><span>{type.category==='REST'?'Rest':type.category==='MEAL'?'Meal':'Other'}{type.targetMinutes!==null?` · Reference: ${type.targetMinutes} min`:''}</span></span>
+    <ClockerIcon name="arrow" size={22}/>
    </button>)}</div>
-   <button tabIndex={0} type="button" className="button secondary" onClick={()=>setMode('ready')}>Back</button>
+   <div className={styles.foot}><button tabIndex={0} type="button" className={`button ghost ${styles.link}`} onClick={()=>setMode('ready')}>Back</button></div>
   </>:null}
   {mode==='confirm-out'?<>
    <p className={styles.detail}>Your shift will end at the time recorded by NEVORA.</p>
+   {entry?<dl className={styles.summary}><div><dt>Clocked in</dt><dd><time dateTime={entry.clockInAt}>{shortTime(entry.clockInAt,timeZone,now)}</time></dd></div><div><dt>Since clock-in</dt><dd>{elapsed(entry.clockInAt,now)}</dd></div></dl>:null}
    {entry?.status==='ON_BREAK'?<p className={styles.notice}>This will also end your current break.</p>:null}
-   <div className={styles.actions}><button tabIndex={0} className="button primary" type="button" aria-label="Confirm Clock Out" onClick={()=>act('CLOCK_OUT')}><span className="clocker-label"><span>Confirm Clock Out</span>{spanish?<Es phrase="Confirm Clock Out" inButton/>:null}</span></button><button tabIndex={0} className="button secondary" type="button" aria-label="Keep Working" onClick={()=>setMode('ready')}><span className="clocker-label"><span>Keep Working</span>{spanish?<Es phrase="Keep Working" inButton/>:null}</span></button></div>
+   <div className={styles.stack}><button tabIndex={0} className="button primary" type="button" aria-label="Confirm Clock Out" onClick={()=>act('CLOCK_OUT')}><span className="clocker-label"><span>Confirm Clock Out</span>{spanish?<Es phrase="Confirm Clock Out" inButton/>:null}</span></button><button tabIndex={0} className="button secondary" type="button" aria-label="Keep Working" onClick={()=>setMode('ready')}><span className="clocker-label"><span>Keep Working</span>{spanish?<Es phrase="Keep Working" inButton/>:null}</span></button></div>
   </>:null}
-  {mode==='success'&&receipt?<p role="status" className={styles.detail}>Saved at <time dateTime={receipt.performedAt}>{clockTime(receipt.performedAt,timeZone)}</time>. This screen will clear shortly.</p>:null}
+  {mode==='success'&&receipt?<><p role="status" className={styles.saved}>Saved at <time dateTime={receipt.performedAt}>{clockTime(receipt.performedAt,timeZone)}</time>. This screen will clear shortly.</p><span className={styles.countdown} aria-hidden="true"><i/></span></>:null}
   {mode==='other-person'?<p className={styles.notice}>A previous employee’s action needs verification on this tablet. Ask that employee to enter their PIN again. No new action was sent.</p>:null}
   {references.length>0&&!waiting?<aside className={styles.notice}>
    <p>Saved actions remain on this tablet. Each employee can check their own action after entering their PIN. A manager can review a reference at Clocker Recovery in the portal.</p>
@@ -143,13 +178,14 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
    {showReferences?<ul>{references.map((r,i)=><li key={r.commandId??i}>{r.commandId?<code style={{overflowWrap:'anywhere'}}>{r.commandId}</code>:'Unreadable recovery record — keep it saved for assistance'}</li>)}</ul>:null}
   </aside>:null}
   {waiting?<p role="status" className={styles.detail}>{mode==='sending'?'Keep this screen open while the action is checked.':'Reading the latest saved information.'}</p>:null}
+  {waiting?<span className={styles.working} aria-hidden="true"/>:null}
   {message&&mode!=='other-person'?<p role={mode==='ready'||mode==='success'?'status':'alert'} className={styles.notice}>{message}</p>:null}
-  {mode==='recovery'||mode==='retry'?<div className={styles.actions}>
+  {mode==='recovery'||mode==='retry'?<div className={styles.stack}>
    <button tabIndex={0} className="button primary" type="button" onClick={()=>void refresh()}>Check Action Status</button>
    {mode==='retry'&&pending&&view?<button tabIndex={0} className="button secondary" type="button" onClick={()=>void send(pending,view)}>Retry Same Action</button>:null}
   </div>:null}
-  {mode==='unavailable'?<button tabIndex={0} className="button primary" type="button" onClick={()=>void refresh()}>Try Again</button>:null}
+  {mode==='unavailable'?<div className={styles.stack}><button tabIndex={0} className="button primary" type="button" onClick={()=>void refresh()}>Try Again</button></div>:null}
   {mode==='storage'?<p className={styles.detail}>Do not clear recovery data for an unconfirmed action. An Owner can help check it.</p>:null}
-  {!waiting&&!['confirm-out','select-break'].includes(mode)?<button tabIndex={0} className={`button ghost ${styles.quiet}`} type="button" aria-label={mode==='ready'||mode==='success'?'Done':'Return to PIN'} onClick={onDone}>{mode==='ready'||mode==='success'?<span className="clocker-label"><span>Done</span>{spanish?<Es phrase="Done" inButton/>:null}</span>:'Return to PIN'}</button>:null}
+  {!waiting&&!['ready','confirm-out','select-break'].includes(mode)?<button tabIndex={0} className={`button secondary ${styles.leave}`} type="button" aria-label={mode==='success'?'Done':'Return to PIN'} onClick={onDone}>{mode==='success'?<span className="clocker-label"><span>Done</span>{spanish?<Es phrase="Done" inButton/>:null}</span>:'Return to PIN'}</button>:null}
  </div>;
 }

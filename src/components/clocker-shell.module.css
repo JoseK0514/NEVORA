@@ -1,138 +1,143 @@
 @font-face { font-family: 'Nevora Clocker'; src: url('/fonts/clocker/inter-variable.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
 
+/* Signature Clocker. Tokens are local: the kiosk runs outside the portal shell. A company brand (B1) may
+ * override the four --clocker-* accent tokens; the deep-teal side stays NEVORA's. */
 .page {
-  /* Teal, defined locally: the kiosk runs outside the portal shell (U9). */
-  --clocker-accent: #077572;
-  --clocker-accent-hover: #055c5a;
-  --clocker-focus: #07605f;
-  --clocker-soft: #e7f3f2;
+  --clocker-accent: #0D3634;
+  --clocker-accent-hover: #164B48;
+  --clocker-focus: #0B6E69;
+  --clocker-soft: #E3F0EC;
   --clocker-on-accent: #ffffff;
-  /* The root theme still defines the old orange; the kiosk is outside the portal overrides. */
+  --ck-deep: #0D3634;
+  --ck-mark: #164B48;
+  --ck-mint: #A9E2DA;
+  --ck-page: #F7F6F3;
+  --ck-card: #ffffff;
+  --ck-ink: #161C1B;
+  --ck-ink2: #5F625E;
+  --ck-ink3: #6F6C66;
+  --ck-rule: #E8E5DF;
+  --ck-edge: #E3DFD8;
+  --ck-track: #E3E0D9;
+  --ck-amber: #8A5208;
+  --ck-amber-wash: #FBEFDC;
+  --ck-lift: 0 0 0 1px var(--ck-edge), 0 14px 30px -22px rgba(13, 54, 52, .32);
+  --ck-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  /* Legacy names the task components and shared button styles read. */
   --design-primary: var(--clocker-accent);
   --design-accent: var(--clocker-accent-hover);
   --design-accent-ink: var(--clocker-focus);
   --design-primary-light: var(--clocker-soft);
-  --clocker-ink: #111827;
-  --clocker-muted: #5b616d;
-  --clocker-border: #e5e7eb;
-  --color-bg-main: #fafafa;
-  --color-bg-surface: #fff;
-  --color-brand-primary: var(--clocker-ink);
-  --color-border-subtle: var(--clocker-border);
+  --clocker-ink: var(--ck-ink);
+  --clocker-muted: var(--ck-ink2);
+  --clocker-border: var(--ck-rule);
+  --color-bg-main: var(--ck-page);
+  --color-bg-surface: var(--ck-card);
+  --color-brand-primary: var(--ck-ink);
+  --color-border-subtle: var(--ck-rule);
   --nevora-blue: var(--clocker-focus);
   --nevora-soft: var(--clocker-soft);
-  --ink: var(--clocker-ink);
-  --muted: var(--clocker-muted);
-  --surface: #fff;
-  --line: var(--clocker-border);
+  --ink: var(--ck-ink);
+  --muted: var(--ck-ink2);
+  --surface: var(--ck-card);
+  --line: var(--ck-rule);
   min-height: 100dvh;
-  padding: max(24px, env(safe-area-inset-top)) max(32px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(32px, env(safe-area-inset-left));
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--color-bg-main);
-  color: var(--clocker-ink);
+  background: var(--ck-page);
+  color: var(--ck-ink);
   font-family: 'Nevora Clocker', -apple-system, BlinkMacSystemFont, sans-serif;
   /* Text that inherits follows the reader's text size (the shared body size is fixed at 14px). */
-  font-size: 0.875rem;
+  font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
   overflow-x: clip;
 }
-.header, .footer { width: min(100%, 1080px); display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.header { min-height: 44px; margin-bottom: 24px; }
-.brand { display: flex; align-items: center; gap: 18px; }
-.brand img { width: 132px; height: auto; }
-.brand > span { border-left: 1px solid #d1d5db; padding-left: 18px; font-size: 0.875rem; color: var(--clocker-muted); }
-.deviceStatus { display: inline-flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--clocker-muted); }
-.deviceStatus > span { width: 7px; height: 7px; border-radius: 50%; background: #757b85; flex-shrink: 0; }
-.deviceStatus[data-connected=true] > span { background: #1d6f42; }
-.frame { width: min(100%, 1080px); margin: auto 0; display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); grid-auto-flow: dense; background: #fff; border: 1px solid var(--clocker-border); border-radius: 24px; overflow: clip; }
-.context { display: flex; flex-direction: column; align-items: flex-start; padding: 48px; background: #f5f5f6; min-width: 0; }
-.location { display: flex; align-items: center; gap: 8px; color: var(--clocker-muted); font-size: 0.8125rem; }
-.location svg { color: var(--clocker-focus); }
-.context h2 { font-size: clamp(1.375rem, 2.4vw, 1.875rem); font-weight: 550; line-height: 1.25; letter-spacing: -.035em; margin: 14px 0 0; overflow-wrap: anywhere; }
-.clock { margin: 46px 0 52px; }
-.clock time { display: flex; align-items: baseline; gap: 12px; font-size: clamp(3.375rem, 6.3vw, 5.125rem); line-height: 1.1; font-weight: 450; font-variant-numeric: tabular-nums; letter-spacing: -.065em; white-space: nowrap; }
-.clock time > span { font-size: 1.125rem; letter-spacing: -.02em; font-weight: 500; }
-.clock p { margin: 12px 0 6px; font-size: 1rem; line-height: 1.5; }
-.clock small { color: var(--clocker-muted); font-size: 0.875rem; line-height: 1.6; overflow-wrap: anywhere; }
-.guidance { display: flex; align-items: flex-start; gap: 14px; margin-top: auto; padding-top: 28px; border-top: 1px solid #dedfe3; width: 100%; }
-.guidanceIcon { display: grid; place-items: center; background: #fff; border: 1px solid var(--clocker-border); border-radius: 14px; width: 48px; height: 48px; flex-shrink: 0; color: var(--clocker-focus); }
-.guidance strong { font-size: 0.9375rem; font-weight: 600; line-height: 1.5; }
-.guidance p { font-size: 0.875rem; line-height: 1.6; color: var(--clocker-muted); margin: 6px 0 0; }
-.deviceName { font-size: 0.875rem; line-height: 1.5; color: var(--clocker-muted); overflow-wrap: anywhere; margin: 24px 0 0; }
-.task { padding: 40px 44px; min-width: 0; display: flex; align-items: center; justify-content: center; }
-.task > div { width: 100%; min-width: 0; }
+.frame { flex: 1; min-width: 0; display: grid; grid-template-columns: clamp(320px, 35vw, 500px) minmax(0, 1fr); min-height: 100dvh; }
+
+/* Side: deep teal, the Λ mark, grain, location, a large light clock and the tablet status. */
+.side { position: relative; isolation: isolate; overflow: hidden; min-width: 0; display: flex; flex-direction: column;
+  padding: max(40px, env(safe-area-inset-top)) 44px max(32px, env(safe-area-inset-bottom)) max(44px, env(safe-area-inset-left));
+  background: var(--ck-deep); color: #ffffff; }
+.side::after { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ck-grain); opacity: .07; mix-blend-mode: overlay; pointer-events: none; }
+.mark { position: absolute; z-index: -1; right: -110px; bottom: -36px; width: 420px; height: auto; opacity: .55; pointer-events: none; }
+.mark path { fill: var(--ck-mark); }
+.mark .markSky { fill: #35B6EC; }
+.brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.wordmark { display: grid; gap: 6px; }
+.wordmark img { display: block; width: 128px; height: auto; }
+.wordmark > span { font-size: 0.625rem; line-height: 1.2; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.when { margin: auto 0; padding: 32px 0; min-width: 0; }
+.location { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; margin: 0; padding: 7px 14px 7px 10px; border-radius: 999px;
+  background: rgba(255, 255, 255, .08); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
+  font-size: 0.75rem; line-height: 1.35; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 255, 255, .86); }
+.location svg { flex: none; color: var(--ck-mint); }
+.location span { min-width: 0; overflow-wrap: anywhere; }
+.clock { margin-top: 18px; }
+.clock time { display: flex; align-items: baseline; gap: 10px; font-size: clamp(5rem, 9.4vw, 8.25rem); line-height: .95; font-weight: 200; letter-spacing: -.045em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.clock time > span { font-size: 1.625rem; font-weight: 300; letter-spacing: 0; color: rgba(255, 255, 255, .78); }
+.clock p { margin: 14px 0 0; font-size: 1.5rem; line-height: 1.25; font-weight: 300; color: #ffffff; }
+.foot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .12); font-size: 0.875rem; line-height: 1.4; color: rgba(255, 255, 255, .74); }
+.status { display: inline-flex; align-items: center; gap: 8px; }
+.status > span { width: 8px; height: 8px; border-radius: 50%; flex: none; background: rgba(255, 255, 255, .5); }
+.status[data-connected=true] > span { background: var(--ck-mint); box-shadow: 0 0 0 4px rgba(169, 226, 218, .16); }
+.status[data-attention=true] > span { background: #F4C98A; box-shadow: 0 0 0 4px rgba(244, 201, 138, .18); }
+.zone { flex-basis: 100%; overflow-wrap: anywhere; color: rgba(255, 255, 255, .62); }
+.powered { flex-basis: 100%; margin-top: 6px; overflow-wrap: anywhere; font-size: 0.75rem; color: rgba(255, 255, 255, .5); }
+.companyLogo { display: inline-flex; align-items: center; justify-content: center; height: 36px; max-width: 140px; padding: 4px 8px; border-radius: 8px; background: #ffffff; }
+.companyLogo img { display: block; max-width: 100%; max-height: 28px; width: auto; height: auto; object-fit: contain; }
+
+/* Task area: soft white, one centred column. */
+.task { min-width: 0; display: flex; align-items: center; justify-content: center; padding: 40px clamp(24px, 5vw, 72px); }
+.task > div { width: 100%; max-width: 520px; min-width: 0; }
 .task:focus { outline: none; }
-.task h1 { max-width: 100%; font-size: clamp(1.6875rem, 2.8vw, 2.125rem); font-weight: 550; line-height: 1.18; letter-spacing: -.04em; }
-.page :global(.button) { min-height: 56px; border-radius: 17px; padding: 14px 20px; font-size: 0.9375rem; line-height: 1.4; font-weight: 600; gap: 10px; white-space: normal; border-width: 1px; transition: background-color .16s ease, transform .16s ease; box-shadow: none; }
-.page :global(.button.primary) { background: var(--clocker-accent); color: var(--clocker-on-accent); border-color: transparent; }
+.task h1 { max-width: 100%; margin: 0; font-size: clamp(2.25rem, 3.6vw, 2.75rem); line-height: 1.1; font-weight: 300; letter-spacing: -.035em; color: var(--ck-ink); overflow-wrap: anywhere; }
+
+/* Shared buttons inside the kiosk. */
+.page :global(.button) { min-height: 60px; border-radius: 18px; padding: 14px 22px; font-family: inherit; font-size: 1.0625rem; line-height: 1.3; font-weight: 500; gap: 10px; white-space: normal; border: 0; box-shadow: none; transition: background-color .16s ease, transform .16s ease; }
+.page :global(.button.primary) { background: var(--clocker-accent); color: var(--clocker-on-accent); }
 .page :global(.button.primary:hover) { background: var(--clocker-accent-hover); }
-.page :global(.button.secondary) { background: #fff; color: var(--clocker-ink); border-color: #d1d5db; }
-.page :global(.button.secondary:hover), .page :global(.button.ghost:hover) { background: #f3f4f6; }
-.page :global(.button.ghost) { color: var(--clocker-muted); border-color: transparent; }
+/* A quiet, readable disabled look (the shared rule only fades the deep fill). */
+.page.page.page :global(.button.primary):disabled { background: var(--ck-track); color: var(--ck-ink2); opacity: 1; }
+.page :global(.button.secondary) { background: var(--ck-card); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-edge); }
+.page :global(.button.secondary:hover) { background: #F1EFEA; }
+.page :global(.button.ghost) { background: transparent; color: var(--ck-ink); }
+.page :global(.button.ghost:hover) { background: #EFEDE8; }
 .page button:active { transform: scale(.98); }
 .page button:focus-visible, .page a:focus-visible { outline: 3px solid var(--clocker-focus); outline-offset: 3px; }
 .page button:disabled { cursor: not-allowed; }
 .page button:disabled:active { transform: none; }
-.footer { color: var(--clocker-muted); font-size: 0.8125rem; line-height: 1.6; padding-top: 22px; }
-.skip { position: absolute; top: 12px; left: 12px; z-index: 2; padding: 14px 20px; border-radius: 12px; background: #fff; transform: translateY(-160%); }
-.skip:focus { transform: none; }
-@media (max-width: 950px) { .context { padding: 36px 28px; } .task { padding: 32px; } .clock time { font-size: 4rem; } }
-@media (min-width: 701px) and (max-height: 820px) { .task { padding: 24px 40px; } .context { padding: 36px; } }
-@media (max-width: 700px) {
-  .page { padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
-  .header { margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
-  .brand { gap: 12px; } .brand img { width: 112px; } .brand > span { padding-left: 12px; font-size: 0.8125rem; }
-  .deviceStatus { font-size: 0.8125rem; }
-  .frame { grid-template-columns: 1fr; border-radius: 20px; margin: 0; }
-  .context { padding: 24px; display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
-  .location { font-size: 0.8125rem; } .location svg { width: 16px; height: 16px; }
-  .context h2 { margin: 8px 0 0; font-size: 1.3125rem; }
-  /* The location name gets the full width; the time and date share the next line and the date
-   * drops below the time, whole, when the line is too narrow. */
-  .clock { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 12px; margin: 12px 0 0; }
-  .clock time { font-size: 2rem; gap: 5px; letter-spacing: -.045em; }
-  .clock time > span { font-size: 0.8125rem; }
-  .clock p { margin: 0; font-size: 0.8125rem; white-space: nowrap; }
-  .clock small, .guidance, .deviceName { display: none; }
-  .task { padding: 24px 24px 20px; }
-  .task h1 { font-size: 1.75rem; }
-  .footer { flex-wrap: wrap; justify-content: center; gap: 4px 20px; padding-top: 16px; text-align: center; }
-  .footer > span:first-child { display: none; }
-}
-@media (max-width: 380px) { .context { padding: 20px; } .context h2 { font-size: 1.125rem; } .clock time { font-size: 1.75rem; } .task { padding: 28px 20px 20px; } .deviceStatus { margin-left: auto; } }
-@media (prefers-reduced-motion: reduce) { .page *, .page *::before, .page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } .page button:active { transform: none; } }
+.page.page.page :global(.button.primary):is(:hover, :active):not(:disabled) { color: var(--clocker-on-accent); }
 
-/* U9: the phone kiosk uses the portal's teal ladder, not the legacy blue
- * tokens it inherits from mobile-workforce.css (the kiosk is outside the shell). */
-.page.page.page[data-mobile-clocker="true"] {
-  --mobile-masthead: #1c4a47;
-  --mobile-masthead-secondary: #cfe3e1;
-  --mobile-accent: #077572;
-  --mobile-accent-hover: #055c5a;
-  --mobile-selected: #e7f3f2;
-  --mobile-canvas: #f6f7f8;
-  --mobile-ink: #1c1c1c;
-  --mobile-secondary: #5f6368;
-  --mobile-divider: #ecedef;
-  --mobile-shadow: 0 1px 3px #0000001a, 0 1px 2px #0000000d;
-  --mobile-sheet-shadow: 0 12px 48px #1c4a4733;
-}
-.page.page.page[data-mobile-clocker="true"] :global(.button.primary) { color: #ffffff; }
+.skip { position: absolute; top: 12px; left: 12px; z-index: 3; padding: 14px 20px; border-radius: 12px; background: #ffffff; color: var(--ck-ink); transform: translateY(-160%); }
+.skip:focus { transform: none; }
 
 /* U9 bilingual labels: English first, Spanish beneath in a lighter weight. */
 .page :global(.clocker-label) { display: inline-grid; justify-items: inherit; gap: 2px; line-height: 1.25; }
-.page :global(.clocker-es) { font-size: 0.8125rem; font-weight: 500; }
+.page :global(.clocker-es) { font-size: 0.9375rem; font-weight: 400; }
 .page :global(.clocker-language-toggle) {
-  justify-self: center; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid var(--clocker-border); border-radius: 999px;
-  background: #ffffff; color: var(--clocker-muted); font: inherit; font-size: 0.875rem; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 4px; border: 0; background: transparent;
+  color: var(--ck-ink2); font: inherit; font-size: 0.875rem; cursor: pointer; white-space: nowrap;
 }
-.page :global(.clocker-language-toggle > span) { display: inline-grid; place-items: center; min-width: 28px; height: 22px; border-radius: 6px; background: #f1f2f4; color: var(--clocker-ink); font-size: 0.75rem; font-weight: 700; }
-.page :global(.clocker-language-toggle[aria-pressed="true"] > span) { background: var(--clocker-accent); color: #ffffff; }
-/* The portal-wide hover rule (typeface-theme.css) pairs --design-accent with dark
- * ink. Here --design-accent is the dark teal hover, so keep the on-accent text. */
-.page.page.page :global(.button.primary):is(:hover, :active):not(:disabled) { color: var(--clocker-on-accent); }
+.page :global(.clocker-language-toggle > b) { padding: 2px 9px; border-radius: 999px; background: #EFEDE8; color: var(--ck-ink2); font-size: 0.75rem; font-weight: 600; }
+.page :global(.clocker-language-toggle[aria-pressed="true"] > b) { background: #E2F1ED; color: #0A5753; }
 
-/* Company logo (B1): beside the wordmark in a white chip, never replacing it. */
-.companyLogo { display: inline-flex; align-items: center; justify-content: center; height: 36px; max-width: 140px; padding: 4px 8px; border: 1px solid var(--clocker-border); border-radius: 8px; background: #ffffff; }
-.companyLogo img { display: block; max-width: 100%; max-height: 28px; width: auto; height: auto; object-fit: contain; }
+@media (min-width: 701px) and (max-height: 820px) { .when { padding: 20px 0; } .clock time { font-size: clamp(4.5rem, 8vw, 6.5rem); } .task { padding-block: 24px; } }
+
+/* Phone: the side becomes a top band and the task sits on a sheet that overlaps it. */
+@media (max-width: 700px) {
+  .frame { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+  .side { padding: max(18px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) 44px max(24px, env(safe-area-inset-left)); }
+  .mark { width: 300px; right: -70px; bottom: -40px; }
+  .wordmark img { width: 104px; }
+  .when { margin: 0; padding: 14px 0 0; }
+  .location { font-size: 0.6875rem; padding: 6px 12px 6px 9px; }
+  .clock { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 10px; }
+  .clock time { font-size: 3.75rem; letter-spacing: -.04em; gap: 6px; }
+  .clock time > span { font-size: 1.125rem; }
+  .clock p { margin: 0; font-size: 1.0625rem; }
+  .foot { padding: 12px 0 0; border: 0; margin-top: 4px; font-size: 0.8125rem; }
+  .zone, .powered { display: none; }
+  .task { position: relative; z-index: 1; align-items: flex-start; margin-top: -28px; padding: 22px max(20px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); border-radius: 28px 28px 0 0; background: var(--ck-page); }
+  .task h1 { font-size: 2.125rem; }
+}
+@media (max-width: 360px) { .clock time { font-size: 3.25rem; } .side { padding-inline: 20px; } .task { padding-inline: 16px; } }
+@media (prefers-reduced-motion: reduce) { .page *, .page *::before, .page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } .page button:active { transform: none; } }

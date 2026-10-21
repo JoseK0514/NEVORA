@@ -79,13 +79,28 @@
 .pinCard .footnote { margin-top: 16px !important; text-align: center; }
 @media(max-width:480px){ .pinCard { padding: 24px; } }
 
-.kioskBody { text-align: center; }
-.kioskBody h1 { margin: 22px 0 12px; }
-.kioskIcon { width: 58px; height: 58px; border-radius: 18px; margin: 0 auto; display: grid; place-items: center; background: var(--clocker-soft); color: var(--clocker-focus); }
-.kioskLead { margin: 0; font-size: 0.9375rem; line-height: 1.65; color: var(--muted); }
-.kioskBody .tabletForm { margin-top: 28px; text-align: left; }
-.kioskBody .field textarea { background: #fafafa; border-radius: 17px; min-height: 110px; }
-.kioskBody .tabletNotice { text-align: left; font-size: 0.875rem; }
-.kioskBody .connectedMark { margin: 0 auto; }
-.kioskBody .footnote { margin: 20px 0 !important; font-size: 0.8125rem; }
-.kioskStatus { margin: 16px 0 0; color: var(--muted); font-size: 0.8125rem; line-height: 1.5; }
+/* Signature Clocker setup: one icon, eyebrow, light title, a white code field and one deep action. */
+.kioskBody { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.kioskBody > * { max-width: 100%; }
+.kioskBody h1 { margin: 0; }
+.kioskIcon { display: grid; place-items: center; width: 92px; height: 92px; margin: 0 0 22px; border-radius: 50%; background: var(--clocker-soft); color: var(--ck-deep); }
+.kioskIcon[data-tone=amber] { background: var(--ck-amber-wash); color: var(--ck-amber); }
+.kioskEyebrow { margin: 0 0 10px; font-size: 0.75rem; line-height: 1.35; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--ck-ink2); }
+.kioskLead { max-width: 440px; margin: 14px 0 0; font-size: 1.0625rem; line-height: 1.55; color: var(--ck-ink2); }
+.kioskBody .tabletForm { width: 100%; max-width: 440px; margin-top: 26px; text-align: left; }
+.kioskBody .tabletForm fieldset { gap: 12px; }
+.kioskBody .field { gap: 0; padding: 14px 18px 6px; border-radius: 20px; background: var(--ck-card); box-shadow: 0 0 0 1px var(--ck-edge), 0 14px 30px -24px rgba(13, 54, 52, .28); font-size: 0.75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ck-ink3); }
+.kioskBody .field:focus-within { box-shadow: 0 0 0 2px var(--nevora-blue); }
+.kioskBody .field textarea { min-height: 72px; padding: 6px 0 8px; border: 0; border-radius: 0; background: transparent; font-size: 1.0625rem; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--color-brand-primary); resize: none; }
+.kioskBody .field textarea:focus-visible { outline: none; }
+.kioskBody .hint { text-align: center; font-size: 0.875rem; color: var(--ck-ink3); }
+.kioskBody .tabletForm button { min-height: 60px; margin-top: 8px; }
+.connectedMark { display: grid; place-items: center; width: 104px; height: 104px; margin: 0 0 26px; border-radius: 50%; background: var(--clocker-accent); color: #ffffff; box-shadow: 0 0 0 12px #E2F1ED; }
+.kioskBody .tabletNotice { width: 100%; max-width: 440px; margin-top: 24px; padding: 18px 20px; border-radius: 20px; background: var(--ck-card); box-shadow: 0 0 0 1px var(--ck-edge); text-align: left; font-size: 0.9375rem; color: var(--ck-ink2); }
+.kioskBody .footnote { margin: 18px 0 !important; font-size: 0.875rem; color: var(--ck-ink3); }
+.kioskBody > :global(.button) { width: min(100%, 440px); }
+.kioskStatus { margin: 16px 0 0; color: var(--ck-ink3); font-size: 0.875rem; line-height: 1.5; }
+.kioskProblem { display: grid; gap: 12px; width: 100%; max-width: 440px; margin-top: 18px; }
+.kioskProblem .error { margin: 0 !important; padding: 14px 18px; border-radius: 16px; background: #FBEDEC; text-align: left; }
+.kioskProblem :global(.button) { width: 100%; }
+@media (max-width: 700px) { .kioskIcon { width: 76px; height: 76px; margin-bottom: 18px; } .connectedMark { width: 84px; height: 84px; box-shadow: 0 0 0 10px #E2F1ED; } .kioskEyebrow { display: none; } }
