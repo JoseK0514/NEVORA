@@ -1,8 +1,10 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { findEmployeeCredential } from "@/lib/data/employees";
-import { verifyPassword } from "@/lib/auth/password";
+import { dummyPasswordHash, verifyPassword } from "@/lib/auth/password";
+import { admitLoginAttempt, clientAddress } from "@/lib/auth/login-limits.server";
 import { createSession, destroySession } from "@/lib/auth/session";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { prepareInstallationForLogin } from "@/lib/notifications/logout";
@@ -19,13 +21,17 @@ export async function login(formData: FormData) {
     redirect(`/login?error=invalid${returnQuery}`);
   }
 
-  const employee = await findEmployeeCredential(employeeId);
+  // Counted before the password is checked, so parallel guesses can't slip past the limit.
+  const address = clientAddress((await headers()).get("x-forwarded-for"));
+  if (!(await admitLoginAttempt(employeeId, address))) {
+    redirect(`/login?error=busy${returnQuery}`);
+  }
 
-  if (
-    !employee ||
-    !employee.active ||
-    !(await verifyPassword(password, employee.password_hash))
-  ) {
+  const employee = await findEmployeeCredential(employeeId);
+  // Unknown and inactive IDs are checked against a dummy hash so every failure takes the same time.
+  const passwordMatches = await verifyPassword(password, employee?.active ? employee.password_hash : await dummyPasswordHash());
+
+  if (!employee || !employee.active || !passwordMatches) {
     redirect(`/login?error=invalid${returnQuery}`);
   }
 

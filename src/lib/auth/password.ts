@@ -49,3 +49,11 @@ export async function verifyPassword(password: string, encoded: string) {
 
   return timingSafeEqual(actual, expected);
 }
+
+let dummyHash: Promise<string> | null = null;
+/** A real scrypt hash of a random secret, made once per process. Sign-in checks unknown or inactive Employee IDs
+ * against it so every failed sign-in costs the same time and doesn't reveal which IDs exist. */
+export function dummyPasswordHash(): Promise<string> {
+  dummyHash ??= hashPassword(randomBytes(24).toString("hex"));
+  return dummyHash;
+}

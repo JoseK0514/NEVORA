@@ -1,9 +1,11 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn() }));
+const state = vi.hoisted(() => ({ create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), admit: vi.fn(), forwarded: null as string | null }));
+vi.mock('next/headers', () => ({ headers: async () => new Headers(state.forwarded ? { 'x-forwarded-for': state.forwarded } : {}) }));
+vi.mock('@/lib/auth/login-limits.server', async () => ({ ...(await import('../../lib/auth/login-limits.server')), admitLoginAttempt: state.admit }));
 vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 vi.mock('@/lib/auth/session', () => ({ createSession: state.create, destroySession: state.destroy }));
 vi.mock('@/lib/data/employees', () => ({ findEmployeeCredential: state.credential, getEmployeeActivationState: state.activation, activateEmployeeCredential: state.activate }));
-vi.mock('@/lib/auth/password', () => ({ verifyPassword: state.verify, hashPassword: async () => 'fictional-hash' }));
+vi.mock('@/lib/auth/password', () => ({ verifyPassword: state.verify, hashPassword: async () => 'fictional-hash', dummyPasswordHash: async () => 'fictional-dummy-hash' }));
 vi.mock('@/lib/notifications/destinations', () => import('../../lib/notifications/destinations'));
 vi.mock('@/lib/notifications/logout', () => ({ prepareInstallationForLogin: state.prepare }));
 vi.mock('@/lib/phone', () => import('../../lib/phone'));
@@ -11,7 +13,7 @@ import { login, logout } from './actions';
 import { activateAccountAction } from '../activate/actions';
 function form(returnTo?: string) { const f = new FormData(); f.set('employeeId', ' employee '); f.set('password', 'test-password'); f.set('confirmPassword', 'test-password'); f.set('phone', '7875550123'); if (returnTo)
     f.set('returnTo', returnTo); return f; }
-beforeEach(() => { vi.clearAllMocks(); state.activation.mockResolvedValue(null); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional', updated_at:'2030-01-01 00:00:00.123456+00', password_updated_at:'2030-01-01 00:00:00.234567+00' }); state.verify.mockResolvedValue(true); state.activate.mockResolvedValue(true); state.prepare.mockResolvedValue({ state: 'complete' }); });
+beforeEach(() => { vi.clearAllMocks(); state.admit.mockResolvedValue(true); state.forwarded = null; state.activation.mockResolvedValue(null); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional', updated_at:'2030-01-01 00:00:00.123456+00', password_updated_at:'2030-01-01 00:00:00.234567+00' }); state.verify.mockResolvedValue(true); state.activate.mockResolvedValue(true); state.prepare.mockResolvedValue({ state: 'complete' }); });
 it('login_defaults_and_permissions_remain_unchanged', async () => { await expect(login(form())).rejects.toThrow('redirect:/app'); expect(state.create).toHaveBeenCalledWith('EMPLOYEE',await state.credential()); state.credential.mockResolvedValue(null); await expect(login(form('/app/requests?tab=my'))).rejects.toThrow('redirect:/login?error=invalid'); });
 it('safe_notification_return_is_preserved_after_successful_login', async () => { await expect(login(form('/app/notifications/open?notificationId=fictional'))).rejects.toThrow('redirect:/app/notifications/open?notificationId=fictional'); expect(state.prepare).toHaveBeenCalledWith('EMPLOYEE'); expect(state.prepare.mock.invocationCallOrder[0]).toBeLessThan(state.create.mock.invocationCallOrder[0]); });
 it.each(['https://evil.test', '//evil.test', '/clocker/2', '/app/%2e%2e', '/application'])('unsafe_return_%s_falls_back_to_app', async (path) => { await expect(login(form(path))).rejects.toThrow('redirect:/app'); });
@@ -84,3 +86,18 @@ it.each([
 
 // Public identity is an external database read, independent of return-to validation.
 vi.mock('@/lib/data/workspaces', () => ({getPublicWorkspaceName:async()=> 'Northside Services'}));
+
+it('too_many_attempts_stop_before_the_account_is_read_and_say_so', async () => {
+ state.admit.mockResolvedValue(false); state.forwarded = '203.0.113.7, 10.0.0.1';
+ await expect(login(form('/app/requests?tab=my'))).rejects.toThrow('redirect:/login?error=busy&returnTo=%2Fapp%2Frequests%3Ftab%3Dmy');
+ expect(state.admit).toHaveBeenCalledWith('EMPLOYEE', '203.0.113.7');
+ expect(state.credential).not.toHaveBeenCalled(); expect(state.verify).not.toHaveBeenCalled(); expect(state.create).not.toHaveBeenCalled();
+});
+it('unknown_and_inactive_ids_still_pay_for_a_password_check', async () => {
+ state.credential.mockResolvedValue(null); state.verify.mockResolvedValue(false);
+ await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');
+ expect(state.verify).toHaveBeenCalledWith('test-password', 'fictional-dummy-hash');
+ state.verify.mockClear(); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: false, password_hash: 'real-but-inactive' });
+ await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');
+ expect(state.verify).toHaveBeenCalledWith('test-password', 'fictional-dummy-hash'); expect(state.create).not.toHaveBeenCalled();
+});
