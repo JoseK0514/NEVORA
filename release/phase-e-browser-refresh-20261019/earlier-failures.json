@@ -1,0 +1,116 @@
+{
+  "note": "Failures remain failures at their original checkpoint. Later execution does not erase these observations.",
+  "cases": [
+    {
+      "file": "navigation-0a2ea1b3.zip",
+      "run": 39349244221,
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39349244221",
+      "receipt": {
+        "checkpoint": "0a2ea1b383aed42e954f7f563e8ab8e1bd6a381f",
+        "tree": "e53ad6207e395c24bc1818004cd8706c63d06a53",
+        "sourceClean": true,
+        "status": "failed",
+        "failure": {
+          "name": "AssertionError",
+          "summary": "Browser runtime/network errors recorded\n\n7 !== 0\n",
+          "sourceLocation": null,
+          "stage": null,
+          "cell": {
+            "suite": "navigation",
+            "engine": "webkit",
+            "width": 1440,
+            "status": "passed"
+          },
+          "operator": "strictEqual",
+          "actual": 7,
+          "expected": 0
+        }
+      }
+    },
+    {
+      "file": "navigation-7e9e931e.zip",
+      "run": 39350515603,
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39350515603",
+      "receipt": {
+        "checkpoint": "7e9e931eb55f5b6b12dd6220d95e21550ea09e30",
+        "tree": "bc013544fd935d75acaaa4b48ea621dc3239b5b9",
+        "sourceClean": true,
+        "status": "failed",
+        "failure": {
+          "name": "AssertionError",
+          "summary": "Requests hub accessibility\n+ actual - expected\n\n+ [\n+   'document-title'\n+ ]\n- []\n",
+          "sourceLocation": "phase-e-navigation-browser-scenarios.mjs:44:261",
+          "stage": null,
+          "cell": {
+            "suite": "navigation",
+            "engine": "webkit",
+            "width": 390,
+            "status": "failed"
+          },
+          "operator": "deepStrictEqual"
+        }
+      }
+    },
+    {
+      "file": "calendar-7e9e931e.zip",
+      "run": 39350515603,
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39350515603",
+      "receipt": {
+        "checkpoint": "7e9e931eb55f5b6b12dd6220d95e21550ea09e30",
+        "tree": "bc013544fd935d75acaaa4b48ea621dc3239b5b9",
+        "sourceClean": true,
+        "status": "failed",
+        "failure": {
+          "name": "AssertionError",
+          "summary": "Browser runtime/network errors recorded\n\n2 !== 0\n",
+          "sourceLocation": null,
+          "stage": null,
+          "cell": {
+            "suite": "calendar",
+            "engine": "webkit",
+            "width": 1440,
+            "status": "passed"
+          },
+          "operator": "strictEqual",
+          "actual": 2,
+          "expected": 0
+        }
+      }
+    },
+    {
+      "file": "ci-ac99ed31-home.zip",
+      "run": 39350175628,
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39350175628",
+      "receipt": {
+        "checkpoint": "9f9cd1db4bda843ea219bdc861730e1ca9f0bacb",
+        "tree": "53310d801fb797ef554a8813a29106a4fec3b9d6",
+        "sourceClean": true,
+        "status": "failed",
+        "failure": {
+          "name": "TimeoutError",
+          "summary": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - waiting for getByText('Clocked In', { exact: true }) to be visible\n",
+          "sourceLocation": "phase-e-home-browser-scenarios.mjs:38:50",
+          "stage": "loading",
+          "cell": {
+            "suite": "home",
+            "engine": "chromium",
+            "width": 320,
+            "status": "failed"
+          }
+        }
+      }
+    },
+    {
+      "file": "ci-ac99ed31-attendance.zip",
+      "run": 39350175628,
+      "receipt": {
+        "checkpoint": "9f9cd1db4bda843ea219bdc861730e1ca9f0bacb",
+        "tree": "53310d801fb797ef554a8813a29106a4fec3b9d6",
+        "sourceClean": true,
+        "errors": [
+          "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 0\n\n    at file:///home/runner/work/NEVORA/NEVORA/scripts/phase-d-attendance-ui-qa.mjs:346:12"
+        ]
+      }
+    }
+  ]
+}

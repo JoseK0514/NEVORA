@@ -1,0 +1,364 @@
+{
+  "checkpoint": "6c56f5043bcf264296a11961b5335a54255b31cd",
+  "tree": "e2f4861da703309f0345910a151cc4dbae578502",
+  "sourceClean": true,
+  "ownerId": "3b34455f5abc275214a53024490fb9e7",
+  "ownershipFile": "/home/runner/work/_temp/phase-e-browser-probe/owned-postgres-He977p/ownership.json",
+  "ownershipClosed": true,
+  "suites": [
+    "navigation"
+  ],
+  "status": "passed",
+  "executions": [
+    {
+      "suite": "navigation",
+      "engine": "chromium",
+      "width": 320,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated EMPLOYEE role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "More_Escape_restores_focus with native Enter/Escape and explicit link order",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "chromium",
+      "width": 375,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "More_Escape_restores_focus with native Enter/Escape and explicit link order",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "chromium",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "More_Escape_restores_focus with native Enter/Escape and explicit link order",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "Long-lived actual session plus near-expiry persisted source clears stale rows without false Sign in; Retry reauthorizes current empty state; allowed management role retains only own items; actual missing-cookie 401 and cross-view-binding 403 still clear and deny",
+        "Actual PostgreSQL lock timeout renders unavailable+Retry; legacy source renders partial; authorized source exclusion renders empty; recovery reauthorizes",
+        "Actual cookie API rejects missing session, cross-view binding, other-employee query and changed management role",
+        "Delayed real authenticated GET cannot repaint after blur (transport held; no fixture response content)",
+        "Actual account/session replacement rejects former mounted-view binding",
+        "Native time-off date constraint blocks invalid submissions without persistence; native submit and explicit stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback",
+        "Actual normal/weekly availability save persists reviewed hours; past canonical deadline disables native controls and retains submitted records",
+        "Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "chromium",
+      "width": 430,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "More_Escape_restores_focus with native Enter/Escape and explicit link order",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "chromium",
+      "width": 768,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "Native keyboard desktop account-menu Profile navigation and focus handoff",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "chromium",
+      "width": 1024,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "Native keyboard desktop account-menu Profile navigation and focus handoff",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "chromium",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated EMPLOYEE role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "Native keyboard desktop account-menu Profile navigation and focus handoff",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "webkit",
+      "width": 320,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated EMPLOYEE role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "More_Escape_restores_focus with native Enter/Escape and explicit link order",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "webkit",
+      "width": 375,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "More_Escape_restores_focus with native Enter/Escape and explicit link order",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "webkit",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "More_Escape_restores_focus with native Enter/Escape and explicit link order",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "Long-lived actual session plus near-expiry persisted source clears stale rows without false Sign in; Retry reauthorizes current empty state; allowed management role retains only own items; actual missing-cookie 401 and cross-view-binding 403 still clear and deny",
+        "Actual PostgreSQL lock timeout renders unavailable+Retry; legacy source renders partial; authorized source exclusion renders empty; recovery reauthorizes",
+        "Actual cookie API rejects missing session, cross-view binding, other-employee query and changed management role",
+        "Delayed real authenticated GET cannot repaint after blur (transport held; no fixture response content)",
+        "Actual account/session replacement rejects former mounted-view binding",
+        "Native time-off date constraint blocks invalid submissions without persistence; native submit and explicit stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback",
+        "Actual normal/weekly availability save persists reviewed hours; past canonical deadline disables native controls and retains submitted records",
+        "Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "webkit",
+      "width": 430,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "More_Escape_restores_focus with native Enter/Escape and explicit link order",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "Native focus, text entry and Tab/Shift+Tab on existing request form; no submission; physical keyboard occlusion remains unverified",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "webkit",
+      "width": 768,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "Native keyboard desktop account-menu Profile navigation and focus handoff",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "webkit",
+      "width": 1024,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated LEAD role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "Native keyboard desktop account-menu Profile navigation and focus handoff",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "navigation",
+      "engine": "webkit",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "Actual authenticated EMPLOYEE role",
+        "Required CSS width and mobile touch emulation verified; native taps used on mobile navigation",
+        "Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation",
+        "Requests hub axe WCAG A/AA",
+        "Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs, query intent and selected ownership",
+        "Native keyboard desktop account-menu Profile navigation and focus handoff",
+        "Profile axe WCAG A/AA",
+        "Native Tab traversal and scroll keeps Refresh/Sign out unobscured above mobile navigation",
+        "Actual composited normal/hover/pressed/focus text and focus-outline contrast measured",
+        "Notifications axe WCAG A/AA",
+        "push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation",
+        "Bound blur/hide/pagehide handlers and browser offline clear private rows; re-entry obtains current authorization",
+        "long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance",
+        "axe WCAG A/AA check"
+      ]
+    }
+  ],
+  "errors": [],
+  "runtime": {
+    "playwright": "1.62.1",
+    "axe": "4.11.0"
+  },
+  "launches": [
+    {
+      "engine": "chromium"
+    },
+    {
+      "engine": "webkit"
+    }
+  ],
+  "sourceManifest": "/home/runner/work/_temp/phase-e-browser-probe/owned-next-yMx8EI/source-manifest.json",
+  "limitations": [
+    "Owned local Next/SQL mirror is not hosted verification.",
+    "Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance."
+  ],
+  "appRoot": "/home/runner/work/_temp/phase-e-browser-probe/owned-next-yMx8EI",
+  "appOwnerId": "ccc51061-353a-4b45-abb7-93c36f079393"
+}

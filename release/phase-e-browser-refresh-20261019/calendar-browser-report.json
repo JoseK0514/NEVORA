@@ -1,0 +1,328 @@
+{
+  "checkpoint": "b9412a5cd78ac4a7e8981dc425d71788a5fea50d",
+  "tree": "62b7b634b149da9a7150ae411766a631c69ee450",
+  "sourceClean": true,
+  "ownerId": "d1532e10a25a942b45aee3622e2823f6",
+  "ownershipFile": "/home/runner/work/_temp/phase-e-browser-probe/owned-postgres-msFNfv/ownership.json",
+  "ownershipClosed": true,
+  "suites": [
+    "calendar"
+  ],
+  "status": "passed",
+  "executions": [
+    {
+      "suite": "calendar",
+      "engine": "chromium",
+      "width": 320,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "chromium",
+      "width": 375,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "chromium",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "chromium",
+      "width": 430,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "chromium",
+      "width": 768,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "chromium",
+      "width": 1024,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "chromium",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "webkit",
+      "width": 320,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "webkit",
+      "width": 375,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "webkit",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "webkit",
+      "width": 430,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "webkit",
+      "width": 768,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "webkit",
+      "width": 1024,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "calendar",
+      "engine": "webkit",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "Pre-issuance sentinel absent from persisted request and Next logs",
+        "Real fictional login and Schedule secondary calendar entry",
+        "Deliberate create produces one transient URL and own private GET/HEAD feed",
+        "Completed controlled clipboard write shows copied feedback only after completion",
+        "Clipboard rejection offers keyboard-accessible manual select without false copied success",
+        "Blur and offline clear the one-time URL and refocus returns only safe active status",
+        "Replace revokes old origin requests while event UID and serialized bytes remain stable",
+        "Delayed completed clipboard response after hide cannot restore copied notice or private URL",
+        "Lost issuance response retries the same committed operation without recovering the raw URL",
+        "Late creation response after hide remains suppressed and replay has no URL",
+        "Unavailable settings offer retry and real current status recovers",
+        "Revocation status, client caveats, responsive keyboard controls and token-free capture",
+        "axe WCAG A/AA check"
+      ]
+    }
+  ],
+  "errors": [],
+  "runtime": {
+    "playwright": "1.62.1",
+    "axe": "4.11.0"
+  },
+  "launches": [
+    {
+      "engine": "chromium"
+    },
+    {
+      "engine": "webkit"
+    }
+  ],
+  "sourceManifest": "/home/runner/work/_temp/phase-e-browser-probe/owned-next-77rzUr/source-manifest.json",
+  "limitations": [
+    "Owned local Next/SQL mirror is not hosted verification.",
+    "Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance."
+  ],
+  "appRoot": "/home/runner/work/_temp/phase-e-browser-probe/owned-next-77rzUr",
+  "appOwnerId": "414640c4-1b46-4360-8fc8-d47d9906a8c9"
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "ownerId": "414640c4-1b46-4360-8fc8-d47d9906a8c9",
+    "source": "/home/runner/work/NEVORA/NEVORA",
+    "root": "/home/runner/work/_temp/phase-e-browser-probe/owned-next-77rzUr",
+    "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+    "started": true,
+    "pid": 5623,
+    "port": 33887,
+    "url": "http://127.0.0.1:33887",
+    "identity": {
+      "name": "nevora_exchange_test_e_d1532e10a25a_s0",
+      "oid": 16384,
+      "marker": "fuel-phase3-disposable:c7715652-460b-4513-b88a-9706d1681fbf"
+    },
+    "closed": true,
+    "closedAt": "2026-10-20T01:08:56.936Z",
+    "sourceVerified": true,
+    "mirrorVerified": true
+  },
+  {
+    "ownerId": "d1532e10a25a942b45aee3622e2823f6",
+    "source": "/home/runner/work/NEVORA/NEVORA",
+    "root": "/home/runner/work/_temp/phase-e-browser-probe/owned-postgres-msFNfv",
+    "data": "/home/runner/work/_temp/phase-e-browser-probe/owned-postgres-msFNfv/data",
+    "port": 43513,
+    "checkpoint": "b9412a5cd78ac4a7e8981dc425d71788a5fea50d",
+    "mode": "browser",
+    "suites": [
+      "calendar"
+    ],
+    "started": true,
+    "closed": true
+  }
+]

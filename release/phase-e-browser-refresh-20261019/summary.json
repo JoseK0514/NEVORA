@@ -1,0 +1,64 @@
+{
+  "finalCandidate": "6c56f5043bcf264296a11961b5335a54255b31cd",
+  "coordinator": "1fa7a260dcd73ac549b3f4fe45ce42f5e38234e5",
+  "merge": "c8752f2bab60f1a85da5d408dfc8537cebc50007",
+  "generatedAt": "2026-10-21T02:15:07.351Z",
+  "applicationTree": "432054fbc8c14a448e5c0278b240bd4576079acc",
+  "taskModifiedApplicationCode": false,
+  "concurrentApplicationFixesPreservedFrom": "ac99ed311a4ef07b61175fa9f926c0862121a1e5",
+  "executions": 42,
+  "passedCells": 42,
+  "status": "passed",
+  "results": [
+    {
+      "suite": "navigation",
+      "file": "navigation-6c56f504.zip",
+      "run": 39351351653,
+      "actualTestedCheckpoint": "6c56f5043bcf264296a11961b5335a54255b31cd",
+      "executions": 14,
+      "passedCells": 14,
+      "checks": 218,
+      "status": "passed",
+      "errors": [],
+      "sourceClean": true,
+      "ownershipClosed": true,
+      "allObservedResourcesStopped": true,
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39351351653"
+    },
+    {
+      "suite": "calendar",
+      "file": "calendar-b9412a5c.zip",
+      "run": 39351214621,
+      "actualTestedCheckpoint": "b9412a5cd78ac4a7e8981dc425d71788a5fea50d",
+      "executions": 14,
+      "passedCells": 14,
+      "checks": 182,
+      "status": "passed",
+      "errors": [],
+      "sourceClean": true,
+      "ownershipClosed": true,
+      "allObservedResourcesStopped": true,
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39351214621"
+    },
+    {
+      "suite": "communications",
+      "file": "communications-7e9e931e.zip",
+      "run": 39350515603,
+      "actualTestedCheckpoint": "7e9e931eb55f5b6b12dd6220d95e21550ea09e30",
+      "executions": 14,
+      "passedCells": 14,
+      "checks": 156,
+      "status": "passed",
+      "errors": [],
+      "sourceClean": true,
+      "ownershipClosed": true,
+      "allObservedResourcesStopped": true,
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/39350515603"
+    }
+  ],
+  "limitations": [
+    "Owned fictional Next/PostgreSQL fixtures in GitHub Actions, not production or hosted preview verification.",
+    "Focused Phase E suites are separate from full release CI and independent UI exits.",
+    "Chromium/WebKit automation does not certify physical devices, assistive technology or actual calendar clients."
+  ]
+}

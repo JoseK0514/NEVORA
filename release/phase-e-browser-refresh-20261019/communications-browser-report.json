@@ -1,0 +1,302 @@
+{
+  "checkpoint": "7e9e931eb55f5b6b12dd6220d95e21550ea09e30",
+  "tree": "bc013544fd935d75acaaa4b48ea621dc3239b5b9",
+  "sourceClean": true,
+  "ownerId": "dd6277ef9e6cd8be032cdd092f0b14e9",
+  "ownershipFile": "/home/runner/work/_temp/phase-e-browser-probe/owned-postgres-tG7JBT/ownership.json",
+  "ownershipClosed": true,
+  "suites": [
+    "communications"
+  ],
+  "status": "passed",
+  "executions": [
+    {
+      "suite": "communications",
+      "engine": "chromium",
+      "width": 320,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "chromium",
+      "width": 375,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "chromium",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "U02 actual audience change after preview conflicts; refreshed preview required before publication",
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "chromium",
+      "width": 430,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "chromium",
+      "width": 768,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "chromium",
+      "width": 1024,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "chromium",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "webkit",
+      "width": 320,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "webkit",
+      "width": 375,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "webkit",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "U02 actual audience change after preview conflicts; refreshed preview required before publication",
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "webkit",
+      "width": 430,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "webkit",
+      "width": 768,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "webkit",
+      "width": 1024,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    },
+    {
+      "suite": "communications",
+      "engine": "webkit",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "U01 actual type/context/plain-text bounds, Unicode audience preview and atomic publication without acknowledgement",
+        "U11 actual foreground native keyboard reaches the acknowledgement with complete viewport visibility; no acknowledgement is submitted by focus",
+        "U03 full content rendered and escaped before explicit version-bound keyboard acknowledgement; concurrent revision clears body and requires fresh review",
+        "U04 committed result lost by actual HTTP response abort recovers same operation and original receipt; no duplicate acknowledgement",
+        "U05 required widths have no horizontal clipping, 44px actions and zero selected axe violations",
+        "U06 actual offline clears private content; fresh online read restores current authorized version",
+        "U07 explicit withdrawal confirmation precedes mutation and stops current detail reads while preserving exact-version receipt history",
+        "U08 current published today assignment permits standalone optional team message; employee sent count has no coworker roster; explicit Mark read is separate",
+        "U09 real account-cookie replacement refuses old presentation authority and clears private update",
+        "U10 manager browser has no uncaught application errors",
+        "axe WCAG A/AA check"
+      ]
+    }
+  ],
+  "errors": [],
+  "runtime": {
+    "playwright": "1.62.1",
+    "axe": "4.11.0"
+  },
+  "launches": [
+    {
+      "engine": "chromium"
+    },
+    {
+      "engine": "webkit"
+    }
+  ],
+  "sourceManifest": "/home/runner/work/_temp/phase-e-browser-probe/owned-next-Pm4pJ1/source-manifest.json",
+  "limitations": [
+    "Owned local Next/SQL mirror is not hosted verification.",
+    "Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance."
+  ],
+  "appRoot": "/home/runner/work/_temp/phase-e-browser-probe/owned-next-Pm4pJ1",
+  "appOwnerId": "37cb2df7-9f1a-4195-a0b6-38619eacd51a"
+}
