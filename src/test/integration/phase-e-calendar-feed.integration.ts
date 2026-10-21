@@ -1,5 +1,6 @@
 import {afterEach,beforeEach,expect,it} from 'vitest';
 import {createDisposableFoundationDatabase} from './local-postgres';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 import {randomUUID} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -30,6 +31,7 @@ async function seed(requestedDate?:string,includeSecondLocation=true){
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('calendar-owner','Fictional','Owner','555-0100','OWNER','loc-1'),('calendar-self','Fictional','Self','555-0101','EMPLOYEE','loc-1'),('calendar-other','Fictional','Other','555-0102','EMPLOYEE','loc-1')");
  await q("INSERT INTO employee_location_eligibility VALUES('calendar-self','loc-1')");if(includeSecondLocation)await q("INSERT INTO employee_location_eligibility VALUES('calendar-self','loc-2')");
  await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'calendar-owner',now()+interval '1 day'),(repeat('b',64),'calendar-self',now()+interval '1 day')");
+ await installFixtureCompanyAccess(db.executor);
  const date=requestedDate??addDays(businessDate(new Date(),'America/Puerto_Rico'),1),week=weekStartFor(date);
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('calendar-schedule','loc-1',$1,'DRAFT','calendar-owner')",[week]);
  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes) VALUES('calendar-shift','calendar-schedule','calendar-self',$1,'08:00','16:00','PRIVATE NOTE'),('calendar-coworker','calendar-schedule','calendar-other',$1,'09:00','17:00','PRIVATE COWORKER')",[date]);

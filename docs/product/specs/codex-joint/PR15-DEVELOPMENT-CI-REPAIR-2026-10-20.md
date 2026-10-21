@@ -57,8 +57,28 @@ Red runs are failure history, not successful acceptance receipts.
 - Production build passes locally; no build/start migration script is configured.
 - Foundation: 281 passed. Phase B authority: 46 passed.
 - Exchange SQL: 199 passed. Notifications SQL: 77 passed.
-- Generation and the complete five-group SQL command are being rerun after the
-  observed hook/fixture corrections. Browser and hosted checks remain required.
+- The complete five-group release SQL command passed:779 tests in33 files,
+  zero failures, and its owned cluster closed.
+- Local Attention and Communications: all 14 cells each passed at `87768b9e`,
+  Chromium/WebKit at every required width, zero recorded runtime errors.
+- Local Navigation exposed an unassigned Manager in the positive notification
+  case. Hosted Attendance exposed the same fixture omission. Both positive cases
+  now request a real explicit Owner Company scope assignment; negative cases
+  and the fixture's lack of automatic grants remain. The SQL regression also
+  verifies explicit grant success while another revoked Manager stays denied.
+- Hosted Communications timed out during its first Chromium dashboard startup;
+  the screenshot still shows Next compiling and no runtime error was recorded.
+  Its four routes now receive bounded unauthenticated compilation preparation,
+  each requiring401, followed by the original actual browser reads, each
+  requiring200. Endpoint/status receipts are retained under a safe report name.
+  Every15second assertion and fatal runtime-error check remains. This cold
+  development-server preparation is not Schedule performance acceptance.
+- Browser reruns and exact-candidate hosted checks remain required.
+- Hosted Phase E SQL reached calendar-feed after eight preceding groups passed.
+  Its19-case fixture used direct publication proofs without Company Access
+  adoption. Explicit adoption after seeding the real actors repairs that fixture;
+  the complete19-case focused run now passes. No production publication or feed
+  code changed. The full owned Phase E SQL gate still must pass.
 
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
