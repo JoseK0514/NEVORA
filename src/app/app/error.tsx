@@ -6,10 +6,8 @@ import { focusAfterRetry } from '@/components/kit/focus-after-retry';
 import { SignatureError } from '@/components/signature/system-state';
 
 import { SigButton } from "@/components/signature/sig-button";
-/** The portal's own error state: one kit page for every role (AL-53, Phase 3). */
-export default function Error({reset}:{error:Error & {digest?:string};reset:()=>void}) {
- const retry = () => { reset(); focusAfterRetry('[data-nv-page]:not(.premium-error) [data-nv-band] h1', '.premium-error .nv-btn[data-kind="primary"]'); };
- // The employee shell shows the Signature version (employee-style.css); other roles keep the kit page.
+export default function Error({reset,retry:refetch}:{error:Error & {digest?:string};reset:()=>void;retry?:()=>void}) {
+ const retry = () => { (refetch ?? reset)(); focusAfterRetry('[data-nv-page]:not(.premium-error) [data-nv-band] h1', '.premium-error .nv-btn[data-kind="primary"]'); };
  return <>
   <div className="sg-sys-employee"><SignatureError action={<SigButton className="sg-cta" onClick={retry}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</SigButton>}/></div>
   <div className="sg-sys-generic nv-page premium-error" data-nv-page="">
@@ -22,7 +20,7 @@ export default function Error({reset}:{error:Error & {digest?:string};reset:()=>
       <div className="premium-error__body">
        <p className="premium-error__text">Try loading the page again before taking an action.</p>
        <div className="premium-error__actions">
-        <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry('[data-nv-page]:not(.premium-error) [data-nv-band] h1', '.premium-error .nv-btn[data-kind="primary"]'); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
+        <button type="button" className="nv-btn" data-kind="primary" onClick={retry}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
         <Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>
        </div>
       </div>

@@ -118,3 +118,12 @@ it.each(writes)('$name loses Company after admission and all actual business row
   await denied(()=>test.run(f,ex));expect(reached).toBe(true);expect(await snapshot(f)).toEqual(before);
  }finally{await close(f);}
 });
+it('P4 leaving someone with recorded hours out of pay needs an Owner and a real reason',async()=>{
+ const f=await setup();try{
+  const input=(reason:string)=>({...f.populationInput,operationId:randomUUID(),expectedRevision:1,
+   members:f.populationInput.members.map(m=>m.employeeId==='period-private-b'?{...m,disposition:'EXCLUDE' as const,reason}:m)});
+  await expect(savePeriodPopulation(f.manager,input('Left the company on 9/26; paid by final check'),f.db.executor)).rejects.toThrow('EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER');
+  await expect(savePeriodPopulation(f.owner,input('x'),f.db.executor)).rejects.toThrow('EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER');
+  expect((await savePeriodPopulation(f.owner,input('Left the company on 9/26; paid by final check'),f.db.executor)).revision).toBe(2);
+ }finally{await close(f);}
+});

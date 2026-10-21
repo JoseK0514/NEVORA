@@ -86,3 +86,21 @@ it('removed-session cleanup obeys the work deadline and does not begin delivery 
         expect(deps.sender.send).not.toHaveBeenCalled();
     } finally { vi.useRealTimers(); }
 });
+it.each(['workspace_unavailable', 'workspace_changed'])('P3 a transient %s check waits a minute and tries again instead of cancelling for good', async reason => {
+    const m = await moduleUnderTest(); const { deps, claims, intent } = fixture();
+    vi.mocked(deps.state.check).mockResolvedValue({ deliverable: false, reason, effectiveVersion: intent.effectiveVersion, expiresAt: intent.expiresAt });
+    const report = await m.runDispatch({ mode: 'all', deps });
+    expect(deps.sender.send).not.toHaveBeenCalled(); expect(report).toMatchObject({ cancelled: 0 });
+    expect(deps.deliveries.defer).toHaveBeenCalledWith(claims[0], new Date(deps.clock().getTime() + m.TRANSIENT_RECHECK_MS));
+});
+it('P3 a transient check that would land after expiry expires instead of looping', async () => {
+    const m = await moduleUnderTest(); const { deps, intent, setNow } = fixture();
+    setNow(Date.parse(intent.expiresAt) - 30_000);
+    vi.mocked(deps.state.check).mockResolvedValue({ deliverable: false, reason: 'workspace_unavailable', effectiveVersion: intent.effectiveVersion, expiresAt: intent.expiresAt });
+    expect(await m.runDispatch({ mode: 'all', deps })).toMatchObject({ expired: 1, cancelled: 0 }); expect(deps.deliveries.defer).not.toHaveBeenCalled();
+});
+it('P3 a real business reason still cancels', async () => {
+    const m = await moduleUnderTest(); const { deps, intent } = fixture();
+    vi.mocked(deps.state.check).mockResolvedValue({ deliverable: false, reason: 'request_resolved_or_seed', effectiveVersion: intent.effectiveVersion, expiresAt: intent.expiresAt });
+    expect(await m.runDispatch({ mode: 'all', deps })).toMatchObject({ cancelled: 1 }); expect(deps.deliveries.defer).not.toHaveBeenCalled();
+});

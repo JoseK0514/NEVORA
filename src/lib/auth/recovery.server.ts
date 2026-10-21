@@ -10,14 +10,15 @@ import {hashPassword} from './password';
 const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
 const safeId=(v:string)=>v.trim().length>0&&v.trim().length<=200&&!/[\u0000-\u001f\u007f]/.test(v);
 const unavailable={state:'unavailable' as const};
-export type RecoveryDelivery={send:(email:string,proof:string)=>Promise<void>};
+/** `notifyReset` tells the account's registered email that its password was just changed (optional for older senders). */
+export type RecoveryDelivery={send:(email:string,proof:string)=>Promise<void>;notifyReset?:(email:string)=>Promise<void>};
 function issueStatement(tokenHash:string,employeeId:string,email:string|null,actor:string|null,note:string|null,workspaceId:string):SqlStatement{
  return {text:`INSERT INTO password_recovery_proofs(token_hash,employee_id,credential_updated_at,employee_updated_at,method,actor_employee_id,attestation,expires_at)
   SELECT $1,e.id,c.password_updated_at,e.updated_at,CASE WHEN $4::text IS NULL THEN 'EMAIL' ELSE 'ASSISTED' END,$4,$5,clock_timestamp()+interval '15 minutes'
   FROM employees e JOIN employee_credentials c ON c.employee_id=e.id JOIN locations l ON l.id=e.primary_location_id
   WHERE upper(e.id)=upper($2) AND e.active AND l.workspace_id=$7 AND ($3::text IS NULL OR lower(trim(e.email))=lower($3))
-   AND ($4::text IS NOT NULL OR (SELECT attempts FROM password_recovery_limits WHERE scope='global' AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900))<=300)
-   AND ($4::text IS NOT NULL OR (SELECT attempts FROM password_recovery_limits WHERE scope=$6 AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900))<=3)
+   AND ($4::text IS NOT NULL OR COALESCE((SELECT attempts FROM password_recovery_limits WHERE scope='global' AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900)),0)<300)
+   AND ($4::text IS NOT NULL OR COALESCE((SELECT attempts FROM password_recovery_limits WHERE scope=$6 AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900)),0)<3)
   RETURNING employee_id AS "employeeId",eXpires_at::text AS "expiresAt",(SELECT email FROM employees WHERE id=employee_id) AS email`,values:[tokenHash,employeeId,email,actor,note,hash(employeeId.toUpperCase()),workspaceId]};
 }
 /** Called after the public response. Known/unknown/inactive/unconfigured cases
@@ -29,13 +30,19 @@ export async function requestPasswordRecovery(employeeId:string,email:string,del
   const workspace=await getWorkspace(executor);
   const statements:SqlStatement[]=[...workspaceReadGuard(workspace),
    {text:"DELETE FROM password_recovery_limits WHERE bucket<floor(EXTRACT(epoch FROM clock_timestamp())/900)-96",values:[]},
-   {text:"INSERT INTO password_recovery_limits(scope,bucket,attempts) VALUES('global',floor(EXTRACT(epoch FROM clock_timestamp())/900),1) ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1",values:[]},
-   {text:"INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT $1,floor(EXTRACT(epoch FROM clock_timestamp())/900),1 WHERE EXISTS(SELECT 1 FROM password_recovery_limits WHERE scope='global' AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900) AND attempts<=300) ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1",values:[hash(id.toUpperCase())]},
    {text:'SELECT id FROM employees WHERE upper(id)=upper($1) ORDER BY id FOR UPDATE',values:[id]},
    {text:'SELECT employee_id FROM employee_credentials WHERE upper(employee_id)=upper($1) FOR SHARE',values:[id]},
-   ...(delivery?[issueStatement(hash(token),id,email.trim(),null,null,workspace.id)]:[]),
   ];
-  const results=await executor.transaction(statements),issued=results.at(-1)?.[0] as {email:string}|undefined;
+  // Only a request that matches an active account and its registered email uses up the hourly budgets, so anonymous
+  // requests can't lock a person (or the whole company) out of self-recovery.
+  const issueAt=statements.length;
+  if(delivery){
+   const issued="EXISTS(SELECT 1 FROM password_recovery_proofs WHERE token_hash=$1)",bucket="floor(EXTRACT(epoch FROM clock_timestamp())/900)";
+   statements.push(issueStatement(hash(token),id,email.trim(),null,null,workspace.id),
+    {text:`INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT 'global',${bucket},1 WHERE ${issued} ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1`,values:[hash(token)]},
+    {text:`INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT $2,${bucket},1 WHERE ${issued} ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1`,values:[hash(token),hash(id.toUpperCase())]});
+  }
+  const results=await executor.transaction(statements),issued=results[issueAt]?.[0] as {email:string}|undefined;
   if(delivery&&issued?.email)await delivery.send(issued.email,token);
  }catch{ /* Public response never reveals account existence or mail/SQL errors. */ }
 }
@@ -46,7 +53,7 @@ export async function issueAssistedRecovery(proof:SessionMutationProof,employeeI
   const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),workspace=access.workspace,token=randomBytes(32).toString('base64url');
   const authority=()=>operationalScopeStatements(proof,workspace,{kind:'COMPANY'},access.authority);
   const guards:SqlStatement[]=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([proof.employee.id,employeeId])].sort()]},...authority(),
-   {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees actor JOIN employees target ON target.id=$2 JOIN locations l ON l.id=target.primary_location_id WHERE actor.id=$1 AND actor.active AND target.active AND l.workspace_id=$3 AND (target.role<>'OWNER' OR actor.role='OWNER')) THEN '1' ELSE 'recovery_permission_denied' END)::integer`,values:[proof.employee.id,employeeId,workspace.id]},
+   {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees actor JOIN employees target ON target.id=$2 JOIN locations l ON l.id=target.primary_location_id WHERE actor.id=$1 AND actor.active AND target.active AND l.workspace_id=$3 AND (target.role IN ('EMPLOYEE','LEAD') OR actor.role='OWNER')) THEN '1' ELSE 'recovery_permission_denied' END)::integer`,values:[proof.employee.id,employeeId,workspace.id]},
    {text:'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR SHARE',values:[employeeId]},
    {text:"SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_credentials WHERE employee_id=$1) THEN '1' ELSE 'recovery_permission_denied' END)::integer",values:[employeeId]},
    {text:'UPDATE password_recovery_proofs SET retired_at=clock_timestamp() WHERE employee_id=$1 AND used_at IS NULL AND retired_at IS NULL',values:[employeeId]}];
@@ -58,15 +65,19 @@ export async function issueAssistedRecovery(proof:SessionMutationProof,employeeI
 }
 /** Atomic credential replacement + single-use consumption + all portal session
  * revocation. Clocker device/PIN proofs and operational records are untouched. */
-export async function resetPasswordWithProof(token:string,password:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<{state:'reset'|'invalid'|'unavailable'}>{
+export async function resetPasswordWithProof(token:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),delivery:RecoveryDelivery|null=null):Promise<{state:'reset'|'invalid'|'unavailable'}>{
  if(!/^[A-Za-z0-9_-]{43}$/.test(token)||Buffer.from(token,'base64url').length!==32||Buffer.from(token,'base64url').toString('base64url')!==token||password.length<8||password.length>1024)return {state:'invalid'};
  try{
   const tokenHash=hash(token),globalScope=hash('NEVORA password reset limit global v1');
+  // Only codes that exist are counted (10 tries per code, 250 resets per 15 minutes overall), so random codes from
+  // anyone can't use up the company-wide budget and stop real resets.
+  const bucket="floor(EXTRACT(epoch FROM clock_timestamp())/900)",exists="EXISTS(SELECT 1 FROM password_recovery_proofs WHERE token_hash=$1)";
   const limits=await executor.transaction([
-   {text:"DELETE FROM password_recovery_limits WHERE bucket<floor(EXTRACT(epoch FROM clock_timestamp())/900)-96",values:[]},
-   {text:"INSERT INTO password_recovery_limits(scope,bucket,attempts) VALUES($1,floor(EXTRACT(epoch FROM clock_timestamp())/900),1) ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1",values:[globalScope]},
-   {text:"INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT $1,floor(EXTRACT(epoch FROM clock_timestamp())/900),1 WHERE EXISTS(SELECT 1 FROM password_recovery_limits WHERE scope=$2 AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900) AND attempts<=250) ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1",values:[tokenHash,globalScope]},
-   {text:"SELECT count(*)=2 AND bool_and(attempts<=CASE WHEN scope=$1 THEN 250 ELSE 10 END) AS allowed FROM password_recovery_limits WHERE scope=ANY($2::text[]) AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900)",values:[globalScope,[globalScope,tokenHash]]},
+   {text:`DELETE FROM password_recovery_limits WHERE bucket<${bucket}-96`,values:[]},
+   {text:`INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT $2,${bucket},1 WHERE ${exists} ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1`,values:[tokenHash,globalScope]},
+   {text:`INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT $1,${bucket},1 WHERE ${exists} ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1`,values:[tokenHash]},
+   {text:`SELECT ${exists} AND COALESCE((SELECT attempts FROM password_recovery_limits WHERE scope=$2 AND bucket=${bucket}),0)<=250
+     AND COALESCE((SELECT attempts FROM password_recovery_limits WHERE scope=$1 AND bucket=${bucket}),0)<=10 AS allowed`,values:[tokenHash,globalScope]},
   ]);
   if(!(limits.at(-1)?.[0] as {allowed:boolean}|undefined)?.allowed)return {state:'invalid'};
   const newHash=await hashPassword(password),workspace=await getWorkspace(executor);
@@ -85,6 +96,11 @@ export async function resetPasswordWithProof(token:string,password:string,execut
    {text:"UPDATE push_subscriptions SET status='detached',generation=gen_random_uuid()::text,encrypted_material=NULL,updated_at=clock_timestamp() WHERE employee_id=$1 AND status='active'",values:[employeeId]},
    {text:"UPDATE push_deliveries SET status='cancelled',lease_token=NULL,lease_expires_at=NULL,updated_at=clock_timestamp() WHERE subscription_id IN (SELECT id FROM push_subscriptions WHERE employee_id=$1) AND status IN ('queued','retry_pending','processing')",values:[employeeId]},
   ];
-  await executor.transaction(statements);return {state:'reset'};
+  const results=await executor.transaction([...statements,{text:"SELECT NULLIF(trim(email),'') AS email FROM employees WHERE id=$1",values:[employeeId]}]);
+  // The person hears about the change on their registered email, whoever asked for the reset. Best effort: the reset
+  // has already happened, and every session was ended with it.
+  const email=(results.at(-1)?.[0] as {email:string|null}|undefined)?.email;
+  if(email&&delivery?.notifyReset)await delivery.notifyReset(email).catch(()=>undefined);
+  return {state:'reset'};
  }catch(error){return {state:error instanceof Error&&error.message.includes('recovery_proof_invalid')?'invalid':'unavailable'};}
 }

@@ -20,7 +20,9 @@ const NO_PRESENTATION: ActivePresentation = { style: undefined, tokens: null, lo
 /** The brand, words and modules every page renders with. Read on each
  * request, so it never throws: a missing table or an unreadable row falls
  * back to NEVORA teal, standard words and every module on. */
-export async function readActivePresentation(workspaceId: string, executor: SqlExecutor = neonNotificationExecutor()): Promise<ActivePresentation> {
+/** `strict` (module gates): only "not installed" (missing table/column) means the default all-on presentation; any
+ * other read failure throws, so a gate can't treat a database blip as "every module on". */
+export async function readActivePresentation(workspaceId: string, executor: SqlExecutor = neonNotificationExecutor(), { strict = false }: { strict?: boolean } = {}): Promise<ActivePresentation> {
   try {
     const rows = await executor.query<{ revision: number; settings: unknown }>({
       text: "SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=$1 ORDER BY revision DESC LIMIT 1",
@@ -31,7 +33,9 @@ export async function readActivePresentation(workspaceId: string, executor: SqlE
     const style = brandStyle(settings.brand.tokens);
     return { style, tokens: style ? settings.brand.tokens : null, logoAssetId: settings.brand.logoAssetId, revision: rows[0].revision,
       modules: enabledModules(settings.modules?.disabled), words: settings.words?.preset ?? "standard" };
-  } catch {
+  } catch (error) {
+    const code = error && typeof error === "object" && "code" in error ? String((error as { code: unknown }).code) : "";
+    if (strict && !["42P01", "42703"].includes(code)) throw error;
     return NO_PRESENTATION;
   }
 }

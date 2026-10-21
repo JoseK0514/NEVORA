@@ -1,5 +1,5 @@
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';
-import {createHash,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {issueAssistedRecovery,requestPasswordRecovery,resetPasswordWithProof} from '../../lib/auth/recovery.server';
 import {hashPassword,verifyPassword} from '../../lib/auth/password';
@@ -57,4 +57,23 @@ it('UX-01 reset detaches push material and cancels pending deliveries while pres
  await f.q("INSERT INTO push_deliveries(id,notification_id,subscription_id,generation,status,next_attempt_at,expires_at) VALUES('UX1-D','UX1-N','UX1-P','old-generation','queued',clock_timestamp(),clock_timestamp()+interval '1 hour')");
  const p=await issued();expect((await resetPasswordWithProof(p.proof,'Fictional new password',f.db.executor)).state).toBe('reset');
  expect(await f.q("SELECT status,encrypted_material,generation<>'old-generation' AS rotated,installation_hash FROM push_subscriptions WHERE id='UX1-P'")).toEqual([{status:'detached',encrypted_material:null,rotated:true,installation_hash:'fictional-installation'}]);expect(await f.q("SELECT status FROM push_deliveries WHERE id='UX1-D'")).toEqual([{status:'cancelled'}]);
+});
+it('P1 requests that match no account and email use up no budget, so nobody can be locked out of self-recovery',async()=>{
+ const send=vi.fn();for(let i=0;i<12;i++)await requestPasswordRecovery('c34-a','wrong@example.invalid',{send},f.db.executor);
+ for(let i=0;i<12;i++)await requestPasswordRecovery(`unknown-${i}`,'avery@example.invalid',{send},f.db.executor);
+ expect(await f.q('SELECT count(*)::int AS n FROM password_recovery_limits')).toEqual([{n:0}]);
+ await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledOnce();
+});
+it('P1 random reset codes use up no budget; a real code still resets and the person is told by email',async()=>{
+ for(let i=0;i<30;i++)expect(await resetPasswordWithProof(randomBytes(32).toString('base64url'),'Fictional new password',f.db.executor)).toEqual({state:'invalid'});
+ expect(await f.q('SELECT count(*)::int AS n FROM password_recovery_limits')).toEqual([{n:0}]);
+ const notifyReset=vi.fn(async()=>{}),p=await issued();
+ expect(await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor,{send:vi.fn(),notifyReset})).toEqual({state:'reset'});
+ expect(notifyReset).toHaveBeenCalledExactlyOnceWith('avery@example.invalid');
+});
+it('P1 a failed notice never undoes the reset, and a person without an email is simply not emailed',async()=>{
+ const failing=vi.fn(async()=>{throw Error('fictional mail outage');});let p=await issued();
+ expect(await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor,{send:vi.fn(),notifyReset:failing})).toEqual({state:'reset'});expect(failing).toHaveBeenCalledOnce();
+ await f.q("UPDATE employees SET email=NULL WHERE id='c34-a'");const quiet=vi.fn(async()=>{});p=await issued();
+ expect(await resetPasswordWithProof(p.proof,'Fictional newer password',f.db.executor,{send:vi.fn(),notifyReset:quiet})).toEqual({state:'reset'});expect(quiet).not.toHaveBeenCalled();
 });

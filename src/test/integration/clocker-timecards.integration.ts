@@ -48,6 +48,19 @@ describe('D3 owned timecard protocol', () => {
     expect(await mutateTimecard(employee,{operationId:randomUUID(),employeeId:'c34-b',...period,expectedRevision:0,
       expectedSourceHash:'0'.repeat(32),action:'APPROVE'},f.db.executor)).toEqual({status:'unavailable'});
   });
+  it('P4 reopen is refused while approved payroll pays this person for the period, and allowed once a correction is open', async () => {
+    expect((await act('APPROVE')).status).toBe('approved');
+    expect((await act('FINALIZE')).status).toBe('finalized');
+    const [{ id: workspaceId }] = await f.q<{ id: string }>('SELECT id FROM workspaces WHERE singleton');
+    const run = randomUUID(), correction = randomUUID();
+    await f.q('INSERT INTO payroll_runs(workspace_id,id,start_date,end_date) VALUES($1,$2,$3,$4)', [workspaceId, run, '2026-09-21', '2026-10-04']);
+    await f.q('INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES($1,$2,1,$3)', [workspaceId, run, { id: run, status: 'APPROVED', rows: null, nativeCalculation: { employees: [{ employeeId: 'c34-a' }] } }]);
+    expect(await act('REOPEN')).toEqual({ status: 'blocked', reason: 'payroll_approved' });
+    expect((await card()).state).toBe('FINALIZED');
+    await f.q('INSERT INTO payroll_runs(workspace_id,id,start_date,end_date,correction_of) VALUES($1,$2,$3,$4,$5)', [workspaceId, correction, '2026-09-21', '2026-10-04', run]);
+    await f.q('INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES($1,$2,1,$3)', [workspaceId, correction, { id: correction, status: 'REVIEW_REQUIRED', rows: [{ employeeId: 'c34-a' }] }]);
+    expect((await act('REOPEN')).status).toBe('reopened');
+  });
   it('approves, finalizes and retains history across explicit reopen', async () => {
     expect((await act('APPROVE')).status).toBe('approved');
     expect((await act('FINALIZE')).status).toBe('finalized');

@@ -2,6 +2,6 @@
 import {AppErrorScreen} from '@/components/app-error-screen';
 
 /** Catches failures in segment layouts (the portal shell's own reads) that app/app/error.tsx can't. */
-export default function Error({reset}: {error: Error & {digest?: string}; reset: () => void}) {
-  return <AppErrorScreen reset={reset} />;
+export default function Error({reset, retry}: {error: Error & {digest?: string}; reset: () => void; retry?: () => void}) {
+  return <AppErrorScreen reset={retry ?? reset} />;
 }

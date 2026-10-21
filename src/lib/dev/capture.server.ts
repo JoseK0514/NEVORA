@@ -27,6 +27,12 @@ export function devRecoveryDelivery(env:Record<string,string|undefined>,headers?
       text:`A password reset was requested for your NEVORA account. This single-use link expires in 15 minutes.\n\n${origin}/reset-access#proof=${proof}\n\nIf you did not request this, keep your existing password and contact your manager. If you cannot use your registered recovery channel, ask a manager for assisted recovery.`,disableFileAccess:true,disableUrlAccess:true});
     if(!Buffer.isBuffer(message.message))throw Error('Local email capture did not produce a buffered message');
     await record(directory,'email','.eml',message.message);
+  },async notifyReset(email){
+    if(!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email))throw Error('Invalid local capture input');
+    const {PASSWORD_CHANGED_NOTICE}=await import('../auth/recovery-delivery.server');
+    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,subject:'Your NEVORA password was changed',text:PASSWORD_CHANGED_NOTICE(origin)});
+    if(!Buffer.isBuffer(message.message))throw Error('Local email capture did not produce a buffered message');
+    await record(directory,'email','.eml',message.message);
   }};
 }
 export async function capturePush(input:Parameters<PushSender['send']>[0],config:Pick<PushRuntimeConfig,'localCapture'>,context?:LocalCaptureContext):Promise<Awaited<ReturnType<PushSender['send']>>|undefined> {

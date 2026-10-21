@@ -412,6 +412,11 @@ export async function savePeriodPopulation(
         card.card.issues.length > 0)
     )
       throw Error("ZERO_TIME_REQUIRES_COMPLETE_EMPTY_EVIDENCE");
+    // Leaving someone with recorded hours out of pay is a pay decision, not a time decision: only an Owner, with a
+    // reason someone can act on later. Without it, the run would carry a silent zero row.
+    const hasTime = card.card.recordedNanoseconds !== "0" || card.card.entries.length > 0;
+    if (member.disposition === "EXCLUDE" && hasTime && (proof.employee.role !== "OWNER" || member.reason.trim().length < 10))
+      throw Error("EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER");
   }
   const payload: Population = {
     operationId: command.operationId,

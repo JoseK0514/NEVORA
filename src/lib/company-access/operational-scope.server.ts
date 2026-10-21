@@ -27,6 +27,9 @@ const current=`w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND
 const allowedCompany=`(e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ${validSelectionSql}))`;
 
 export class OperationalAuthorizationError extends Error {constructor(){super('operational_authorization');}}
+/** The authority couldn't be READ (a missing migration, an outage), as opposed to read and denied. Kept apart so a
+ * database that lacks Company Access shows a setup problem, not an access denial, in screens and logs. */
+export class OperationalUnavailableError extends Error {constructor(readonly reason:string){super('operational_unavailable:'+reason);}}
 /** Exact authorization diagnostics only; database/validation failures retain their meaning. */
 export function isOperationalAuthorizationError(error:unknown):boolean {
  return error instanceof OperationalAuthorizationError || (error!==null&&typeof error==='object'
@@ -37,6 +40,7 @@ export function isOperationalAuthorizationError(error:unknown):boolean {
  * operational guard inside their business transaction, after all lock waits. */
 export async function assertOperationalAccess(proof:SessionMutationProof,footprint:OperationalFootprint|undefined,executor:SqlExecutor=neonNotificationExecutor()) {
  const view=await readOperationalAuthority(proof,executor);
+ if(view.state!=='ready'&&view.reason!=='access_denied')throw new OperationalUnavailableError(view.reason);
  if(view.state!=='ready'||!view.scope||!['OWNER','MANAGER'].includes(view.role))throw new OperationalAuthorizationError();
  const actual=footprint??(view.scope.mode==='COMPANY'?{kind:'COMPANY'} as const:{kind:'LOCATIONS',locationIds:view.scope.locationIds} as const);
  const workspace=await getWorkspace(executor);

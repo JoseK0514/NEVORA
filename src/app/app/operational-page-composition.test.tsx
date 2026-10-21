@@ -20,6 +20,7 @@ vi.mock('@/components/payroll-export-motion',()=>({PayrollExportMotion:()=>null}
 vi.mock('@/components/account-recovery',()=>({AccountRecovery:()=> <p>Protected assisted recovery</p>}));
 vi.mock('@/components/clocker-recovery-review',()=>({ClockerRecoveryReview:()=> <p>Protected device recovery</p>}));
 import Updates from './updates/page';import Detail from './updates/[id]/page';import Compose from './updates/compose/page';import Timecards from './timecards/page';import Reports from './reports/page';import Export from './payroll-export/page';import Recovery from './account-recovery/page';import DeviceRecovery from './clocker-recovery/page';
+vi.mock('@/lib/workspace-presentation/service', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/workspace-presentation/service')>()), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
 const query={searchParams:Promise.resolve({})};
 beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.company.mockReset();});
 it('current company denial withholds management communication, attendance, export, report and recovery surfaces',async()=>{

@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it, vi } from 'vitest';
-import { buildPushEnvelope } from './payloads';
+import { buildPushEnvelope, PUSH_KINDS } from './payloads';
 import type { NotificationIntent } from './types';
 
 const workerPath = 'public/fuel-portal-sw.js';
@@ -127,8 +127,9 @@ describe('portal service worker source', () => {
     const h = harness(); await h.message('SET_OWNER'); await h.push();
     expect(h.self.registration.showNotification).toHaveBeenCalledWith(envelope.title, expect.objectContaining({ body: envelope.body, tag: envelope.tag, icon: '/icons/fuel-192.png', data: envelope }));
   });
-  it.each(['SCHEDULE_PUBLISHED', 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', 'SCHEDULE_CHANGED', 'COVERAGE_ATTENTION', 'TIME_OFF_APPROVED', 'TIME_OFF_DENIED', 'CALLOUT_APPROVED', 'CALLOUT_DENIED', 'SWAP_RESPONSE_REQUIRED', 'SWAP_APPROVED', 'SWAP_DENIED', 'COVERAGE_APPROVED', 'COVERAGE_DENIED', 'AVAILABILITY_REMINDER', 'AVAILABILITY_SUMMARY', 'PAYROLL_PREPARATION','PAYROLL_STATEMENT','MANAGER_REVIEW', 'SELF_TEST'])('accepts actual Task1 payload projection for %s', async kind => {
-    const intent: NotificationIntent = { id: envelope.notificationId, employeeId: 'fictional-person', type: kind, title: 'private title', body: 'private detail', actionHref: '/private', eventKey: 'event-key', environment: 'test', source: { kind: 'SCHEDULE', id: 'week', version: 'v1' }, effectiveVersion: 'v1', purpose: 'EVENT', urgency: 'normal', dueAt: '2098-01-01T00:00:00Z', expiresAt: envelope.expiresAt };
+  // Every kind the server can send, read from the server's own list, so a new kind can't be dropped silently again.
+  it.each([...PUSH_KINDS])('accepts actual Task1 payload projection for %s', async kind => {
+    const intent: NotificationIntent = { id: envelope.notificationId, employeeId: 'fictional-person', type: kind, title: 'private title', body: 'private detail', actionHref: '/private', eventKey: 'event-key', environment: 'test', source: kind === 'COMMUNICATION' ? { kind: 'COMMUNICATION', id: 'update', version: 'v1' } : { kind: 'SCHEDULE', id: 'week', version: 'v1' }, effectiveVersion: 'v1', purpose: 'EVENT', urgency: 'normal', dueAt: '2098-01-01T00:00:00Z', expiresAt: envelope.expiresAt };
     const h = harness(); await h.message('SET_OWNER'); await h.push(buildPushEnvelope(intent, generation));
     expect(h.notices).toHaveLength(1); expect(JSON.stringify(h.notices[0].data)).not.toContain('private');
   });

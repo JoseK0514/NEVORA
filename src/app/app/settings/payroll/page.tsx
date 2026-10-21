@@ -25,5 +25,5 @@ export default async function PayrollSettingsPage() {
     } catch { nativeSources = null; }
   }
   if (nativeSources && !(await readPayrollCapabilities(proof)).canConfigure) redirect('/app');
-  return <PayrollSettings nativeSources={nativeSources} key={recoveryScope} recoveryScope={recoveryScope} />;
+  return <PayrollSettings nativeSources={nativeSources} key={recoveryScope} recoveryScope={recoveryScope} timeZone={workspace.timeZone} />;
 }
