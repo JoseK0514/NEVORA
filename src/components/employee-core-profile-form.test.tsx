@@ -6,10 +6,6 @@ import { expect, it, vi } from "vitest";
 
 const cssPath = fileURLToPath(new URL("../app/globals.css", import.meta.url));
 
-vi.mock("@/components/configuration-form", () => ({
-  ConfigurationForm: ({ children, reviewedUpdatedAt }: { children: React.ReactNode; reviewedUpdatedAt: string }) =>
-    createElement("form", null, createElement("input", {type:"hidden",name:"expectedUpdatedAt",value:reviewedUpdatedAt}), children),
-}));
 vi.mock("@/components/phone-input", () => ({
   PhoneInput: (props: Record<string, unknown>) => createElement("input", props),
 }));
@@ -37,17 +33,18 @@ const locations = [
   { id: "other-old", workspaceId: "w", clockerKey: "other-old", name: "Other Old Office", shortName: "Other Old", active: false },
 ];
 
-it("keeps employee identity immutable and explains deactivate/reactivate behavior", () => {
+it("renders stable identity and account lifecycle guidance (presentation smoke)", () => {
   const html = renderToStaticMarkup(
     <EmployeeCoreProfileForm
       employee={employee}
       locations={locations}
-      actorRole="OWNER"
+      actorId="OWNER1" actorRole="OWNER"
       action={vi.fn()}
     />,
   );
   expect(html).toContain('name="employeeId" value="worker"');
-  expect(html).toContain('name="expectedUpdatedAt" value="2026-10-05 12:00:00+00"');
+  // Version custody now travels in one command JSON field; mounted command tests
+  // verify the opened employee/scope revisions through actual submission.
   expect(html).not.toContain('name="id"');
   expect(html).toContain("Employee ID");
   expect(html).toContain("worker");
@@ -63,7 +60,7 @@ it("keeps the current inactive primary location visible without offering unrelat
     <EmployeeCoreProfileForm
       employee={employee}
       locations={locations}
-      actorRole="OWNER"
+      actorId="OWNER1" actorRole="OWNER"
       action={vi.fn()}
     />,
   );
@@ -77,10 +74,10 @@ it("keeps the current inactive primary location visible without offering unrelat
 
 it("only offers Owner authority to an Owner actor", () => {
   const ownerHtml = renderToStaticMarkup(
-    <EmployeeCoreProfileForm employee={employee} locations={locations} actorRole="OWNER" action={vi.fn()} />,
+    <EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />,
   );
   const managerHtml = renderToStaticMarkup(
-    <EmployeeCoreProfileForm employee={employee} locations={locations} actorRole="MANAGER" action={vi.fn()} />,
+    <EmployeeCoreProfileForm employee={employee} locations={locations} actorId="OWNER1" actorRole="MANAGER" action={vi.fn()} />,
   );
   expect(ownerHtml).toContain('value="OWNER"');
   expect(managerHtml).not.toContain('value="OWNER"');

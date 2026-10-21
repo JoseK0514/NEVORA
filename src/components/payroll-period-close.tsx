@@ -1,19 +1,18 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Period } from "@/lib/timecards/project";
+import {stableExportJson} from '@/lib/payroll-export/json';
 import { formatRecordedHours } from "@/lib/timecards/project";
 import type { readPeriodClose, MemberReview } from "@/lib/period-close/service";
 import { MobileHomeDisclosure } from "./mobile-home-disclosure";
 import { payrollReviewIssues, payrollReviewState } from "./payroll-review-copy";
 type Review = Awaited<ReturnType<typeof readPeriodClose>>;
 type PendingCommand = { action: string; command: unknown };
-export function PayrollPeriodClose({
-  period,
-  actorId,
-}: {
-  period: Period;
-  actorId: string;
-}) {
+type Props={period:Period;actorId:string};
+export function PayrollPeriodClose(props:Props){
+  return <PeriodCloseView key={JSON.stringify([props.actorId,props.period.startDate,props.period.endDate])} {...props}/>;
+}
+function PeriodCloseView({period,actorId}:Props) {
   const [review, setReview] = useState<Review | null>(null),
     [notice, setNotice] = useState("Loading complete population"),
     [busy, setBusy] = useState(false),
@@ -22,8 +21,14 @@ export function PayrollPeriodClose({
     [recoveryReady, setRecoveryReady] = useState(false);
   const recoveryKey = `nevora-period-pending:${actorId}:${period.startDate}:${period.endDate}`;
   const generation = useRef({ value: 0 });
+  const active=useRef(false),reading=useRef(false),mutating=useRef(false),sequence=useRef(0);
+  const request=useRef<AbortController|null>(null),deadline=useRef(0),sourceKey=useRef<string|null>(null);
+  const expiry=useRef<ReturnType<typeof setTimeout>|null>(null),early=useRef<ReturnType<typeof setTimeout>|null>(null),readTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const [viewKey,setViewKey]=useState('');
+  const cancelRead=useCallback(()=>{sequence.current++;request.current?.abort();reading.current=false;if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;},[]);
+  const retire=useCallback((message:string)=>{generation.current.value++;cancelRead();if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);expiry.current=early.current=null;deadline.current=0;sourceKey.current=null;mutating.current=false;setReview(null);setViewKey('');setSelected([]);setBusy(false);setNotice(message);},[cancelRead]);
   const post = useCallback(
-    async (action: string, command: unknown) =>
+    async (action: string, command: unknown, signal?:AbortSignal) =>
       fetch("/api/period-close", {
         method: "POST",
         cache: "no-store",
@@ -34,67 +39,63 @@ export function PayrollPeriodClose({
           "x-nevora-actor": actorId,
         },
         body: JSON.stringify({ action, command }),
+        ...(signal?{signal}:{}),
       }),
     [actorId],
   );
-  const load = useCallback(async () => {
+  const load = useCallback(async function loadProjection(background=false):Promise<boolean>{
     await Promise.resolve();
-    const n = ++generation.current.value;
-    setReview(null);
-    setSelected([]);
-    try {
-      const response = await post("READ", period),
-        body = await response.json();
-      if (n !== generation.current.value) return;
-      if (!response.ok || body.state !== "ready") throw Error();
-      setReview(body.result);
-      setNotice(
-        "Review the complete roster, including inactive and zero-time employees.",
-      );
-    } catch {
-      if (n === generation.current.value)
-        setNotice("Population unavailable. Reload to try again.");
-    }
-  }, [post, period]);
-  useEffect(() => {
-    const lifecycle = generation.current;
-    const recover = () => {
-      try {
-        const saved = localStorage.getItem(recoveryKey);
-        const original: PendingCommand | null = saved ? JSON.parse(saved) : null;
-        if (original && (!["POPULATION", "MANIFEST", "HANDOFF"].includes(original.action) || !original.command || typeof original.command !== "object")) throw Error();
-        setRetry(original);
-        setRecoveryReady(true);
-        return true;
-      } catch {
-        setRecoveryReady(false);
-        setNotice("Recovery storage unavailable. Enable browser storage before saving payroll period changes.");
-        return false;
-      }
-    };
-    const initialLoad = window.setTimeout(() => { if (recover()) void load(); }, 0);
-    const storageChanged = () => { recover(); };
-    const clear = () => {
-        generation.current.value++;
-        setReview(null);
-        setNotice("Population paused. Reload to review current data.");
-      },
-      visibility = () => {
-        if (document.visibilityState === "hidden") clear();
-      };
-    window.addEventListener("offline", clear);
-    window.addEventListener("storage", storageChanged);
-    document.addEventListener("visibilitychange", visibility);
-    return () => {
-      window.clearTimeout(initialLoad);
-      lifecycle.value++;
-      window.removeEventListener("offline", clear);
-      window.removeEventListener("storage", storageChanged);
-      document.removeEventListener("visibilitychange", visibility);
-    };
-  }, [load, recoveryKey]);
+    if(!active.current||document.visibilityState==='hidden'||!navigator.onLine)return false;
+    if(background&&(reading.current||mutating.current))return false;
+    const preserve=background&&sourceKey.current!==null&&performance.now()<deadline.current;
+    if(!preserve)retire('Loading complete population');
+    const own=generation.current.value,n=++sequence.current,started=performance.now(),abort=new AbortController();request.current=abort;reading.current=true;
+    const current=()=>active.current&&own===generation.current.value&&n===sequence.current;
+    // This Company-only legacy DTO has no lease metadata. The request-start
+    // maximum includes server work, transit, parsing and comparison time.
+    readTimeout.current=setTimeout(()=>{if(current())retire('Population expired. Reload to review current data.');},15000);
+    try{
+      const response=await post('READ',period,abort.signal),body=await response.json();
+      if(!current())return false;
+      if(!response.ok||body.state!=='ready'||!body.result||body.result.period?.startDate!==period.startDate||body.result.period?.endDate!==period.endDate||typeof body.result.sourceHash!=='string'||!Array.isArray(body.result.members)||!Array.isArray(body.result.manifests)||!Array.isArray(body.result.exports))throw Error('Population unavailable');
+      const key=stableExportJson(body.result),remaining=started+15000-performance.now();
+      if(remaining<1||(preserve&&performance.now()>=deadline.current))throw Error('Population expired');
+      if(!preserve||key!==sourceKey.current){setSelected([]);setViewKey(key);}
+      if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);
+      sourceKey.current=key;deadline.current=started+15000;
+      expiry.current=setTimeout(()=>retire('Population expired. Reload to review current data.'),remaining);
+      early.current=setTimeout(()=>void loadProjection(true),remaining*.65);
+      setReview(body.result);setNotice('Review the complete roster, including inactive and zero-time employees.');
+      return true;
+    }catch{if(current())retire('Population unavailable. Reload to try again.');return false;}
+    finally{if(current()){if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;reading.current=false;}}
+  },[post,period,retire]);
+  useEffect(()=>{
+    let mounted=true;
+    const lifecycle=generation.current;
+    const recover=()=>{try{const saved=localStorage.getItem(recoveryKey),original:PendingCommand|null=saved?JSON.parse(saved):null;
+      if(original&&(!['POPULATION','MANIFEST','HANDOFF'].includes(original.action)||!original.command||typeof original.command!=='object'))throw Error('Recovery unavailable');
+      setRetry(original);setRecoveryReady(true);return true;
+    }catch{setRecoveryReady(false);setNotice('Recovery storage unavailable. Enable browser storage before saving payroll period changes.');return false;}};
+    const paused=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active.current=false;retire('Population paused. Reload to review current data.');};
+    const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active.current))return;
+      active.current=document.visibilityState!=='hidden'&&navigator.onLine;
+      if(!active.current){paused();return;}if(recover())void load();};
+    const visible=()=>document.visibilityState==='hidden'?paused():sync();
+    const initialLoad=window.setTimeout(()=>{if(mounted)sync();},0);
+    const poll=window.setInterval(()=>{if(active.current&&document.visibilityState==='visible'&&navigator.onLine)void load(true);},30000);
+    for(const event of ['blur','offline','pagehide'])window.addEventListener(event,paused);
+    for(const event of ['focus','online','pageshow','storage'])window.addEventListener(event,sync);
+    document.addEventListener('visibilitychange',visible);
+    return()=>{mounted=false;active.current=false;window.clearTimeout(initialLoad);window.clearInterval(poll);lifecycle.value++;cancelRead();if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);deadline.current=0;sourceKey.current=null;
+      for(const event of ['blur','offline','pagehide'])window.removeEventListener(event,paused);
+      for(const event of ['focus','online','pageshow','storage'])window.removeEventListener(event,sync);
+      document.removeEventListener('visibilitychange',visible);};
+  },[load,recoveryKey,retire,cancelRead]);
   const send = async (action: string, command: unknown) => {
-    if (busy || !recoveryReady) return;
+    if (busy || mutating.current || !recoveryReady) return;
+    if(!active.current||!sourceKey.current||performance.now()>=deadline.current){retire('Population expired. Reload before sending a period command.');return;}
+    cancelRead();const own=generation.current.value;
     let pending: PendingCommand;
     try {
       const saved = localStorage.getItem(recoveryKey);
@@ -105,10 +106,11 @@ export function PayrollPeriodClose({
       return;
     }
     setRetry(pending);
-    setBusy(true);
+    mutating.current=true;setBusy(true);
     try {
       const response = await post(pending.action, pending.command),
         body = await response.json();
+      if(!active.current||own!==generation.current.value)return;
       if (response.status === 400 || response.status === 409) {
         localStorage.removeItem(recoveryKey);
         setRetry(null);
@@ -118,18 +120,20 @@ export function PayrollPeriodClose({
       if (!response.ok || body.state !== "ready") throw Error();
       localStorage.removeItem(recoveryKey);
       setRetry(null);
-      await load();
+      const loaded=await load();
+      if(!loaded)return;
       setNotice(
         pending.action === "HANDOFF"
           ? "Handoff report saved. Provider import and payroll processing remain unverified."
           : "Saved with an immutable operation receipt.",
       );
     } catch {
+      if(!active.current||own!==generation.current.value)return;
       setNotice(
         "Outcome unconfirmed. Retry the original command before starting another.",
       );
     } finally {
-      setBusy(false);
+      if(active.current&&own===generation.current.value){mutating.current=false;setBusy(false);}
     }
   };
   return (
@@ -144,7 +148,7 @@ export function PayrollPeriodClose({
       <button
         className="button secondary"
         type="button"
-        disabled={busy || retry !== null}
+        disabled={busy}
         onClick={() => void load()}
       >
         Reload population
@@ -153,7 +157,7 @@ export function PayrollPeriodClose({
         <button
           className="button primary"
           type="button"
-          disabled={busy}
+          disabled={busy || review===null}
           onClick={() => void send(retry.action, retry.command)}
         >
           Retry original period command
@@ -163,7 +167,7 @@ export function PayrollPeriodClose({
         available={Boolean(review) && !busy && !retry}
         summary={review && !busy && !retry ? <p>{review.members.length} people in this period.</p> : undefined}>
       {review && (
-        <>
+        <div key={viewKey}>
           <form
             className="employee-form"
             onSubmit={(event) => {
@@ -447,7 +451,7 @@ export function PayrollPeriodClose({
               </ul>
             </article>
           ))}
-        </>
+        </div>
       )}
       </MobileHomeDisclosure>
     </section>

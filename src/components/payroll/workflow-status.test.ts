@@ -43,4 +43,12 @@ describe('payroll operational status', () => {
     expect(payrollExceptionMessage('POPULATION_DISPOSITION:fictional-a')).toContain('Review the period population');
     expect(payrollExceptionMessage('Unrecognized actionable source issue')).toBe('Unrecognized actionable source issue');
   });
+  it('explains missing recorded-source coverage using a safe timecard review action', () => {
+    expect(payrollExceptionMessage('RECORDED_SOURCE_COVERAGE_MISSING:fictional-a')).toBe('Review and finalize the employee timecards, including confirmed zero-hour periods, before recalculating. Employee reference fictional-a.');
+  });
+  it('turns native missing YTD and recorded-source prerequisites into recovery actions', () => {
+    expect(payrollExceptionMessage('ATTESTED_YTD_REQUIRED:fictional-a')).toContain('year-to-date');
+    expect(payrollExceptionMessage('RECORDED_SOURCE_STALE:fictional-a')).toContain('timecards');
+    expect(payrollExceptionMessage('ROUNDING_POLICY_ACCEPTANCE_REQUIRED:fictional-a')).toContain('verification');
+  });
 });

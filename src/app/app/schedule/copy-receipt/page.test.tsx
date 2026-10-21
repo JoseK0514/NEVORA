@@ -1,3 +1,4 @@
+import {beforeEach} from 'vitest';
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it,vi} from 'vitest';
@@ -14,3 +15,12 @@ it('offers safe schedule inspection without inviting a new copy when the outcome
  expect(html).toContain('Do not start a new copy');
  expect(html).not.toContain('Start a new copy</');
 });
+
+// Server composition tests; actual mounted finite-body behavior is checked separately.
+const operationalPageFixture=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+
+beforeEach(()=>{operationalPageFixture.denied=false;});
+
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({operation:'11111111-1111-4111-8111-111111111111'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Retry saved copy');expect(html).not.toContain('Schedule copy result');});

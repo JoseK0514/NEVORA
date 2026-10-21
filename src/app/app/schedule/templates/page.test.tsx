@@ -3,6 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScheduleTemplatesPage from "./page";
 
+const access=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 const f = vi.hoisted(() => ({
   requireRoles: vi.fn(), requireProof: vi.fn(), list: vi.fn(), copy: vi.fn(),
   proof: { employee: { id: "manager", role: "MANAGER" }, sessionTokenHash: "a".repeat(64) },
@@ -24,6 +26,7 @@ vi.mock("@/lib/data/schedule-templates", () => ({ listScheduleTemplates: f.list 
 vi.mock("./actions", () => ({ saveTemplateAction: vi.fn(), applyTemplateAction: vi.fn(), archiveTemplateAction: vi.fn() }));
 
 beforeEach(() => {
+  access.denied=false;
   vi.useRealTimers();
   f.requireRoles.mockReset().mockResolvedValue({ id: "manager" });
   f.requireProof.mockReset().mockResolvedValue(f.proof);
@@ -95,3 +98,8 @@ describe("schedule template workflow presentation", () => {
     expect(output).toContain('minLength="3" maxLength="50" required=""');
   });
 });
+
+it('does not load templates or expose copy commands when company source is denied',async()=>{access.denied=true;const output=await html();expect(f.list).not.toHaveBeenCalled();expect(f.copy).not.toHaveBeenCalled();expect(output).toContain('Schedule templates unavailable');});
+
+// This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

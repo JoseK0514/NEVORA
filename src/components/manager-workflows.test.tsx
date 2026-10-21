@@ -13,6 +13,8 @@ import { listManagementCoverage, listManagerPendingExchanges, listTeamExchangeAc
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import { listPendingCallouts } from "@/lib/data/callouts";
 
+const access=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 vi.mock("@/lib/auth/session", () => ({ requireSession: vi.fn(),requireSessionMutationProof:async()=>({employee:{id:"reviewer",role:"MANAGER"},sessionTokenHash:"a".repeat(64)}) }));
 vi.mock("@/lib/auth/permissions", () => import("../lib/auth/permissions"));
 vi.mock("@/lib/scheduling/periods", () => import("../lib/scheduling/periods"));
@@ -45,7 +47,7 @@ vi.mock("@/app/app/exchange/callout/actions", () => ({ reviewCalloutAction: vi.f
 vi.mock("next/navigation", () => ({ useRouter:()=>({refresh:()=>{}}), redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 vi.mock("next/link", () => ({ useLinkStatus: () => ({ pending: false }), default: ({href,children,prefetch,...props}: ComponentProps<"a"> & { prefetch?: boolean }) => { void prefetch; return createElement("a",{href,...props},children); } }));
 
-beforeEach(() => { vi.clearAllMocks(); vi.mocked(requireSession).mockResolvedValue({id:"reviewer",firstName:"Alex",lastName:"Rivera",role:"MANAGER",primaryLocationId:"loc"}); });
+beforeEach(() => { access.denied=false;vi.clearAllMocks(); vi.mocked(requireSession).mockResolvedValue({id:"reviewer",firstName:"Alex",lastName:"Rivera",role:"MANAGER",primaryLocationId:"loc"}); });
 
 it.each(["EMPLOYEE","LEAD"] as const)("denies %s direct management review before reading team data", async role => {
   vi.mocked(requireSession).mockResolvedValue({id:"viewer",firstName:"Sam",lastName:"Cruz",role,primaryLocationId:"loc"});
@@ -137,3 +139,7 @@ it("Back to Inbox keeps the Inbox's selected item, and ignores anything that isn
   const hostile = renderToStaticMarkup(await ManagerTimeOff({ tab: "pending", requestId: "req-1", filter: "requests", item: "javascript:alert(1)" }));
   expect(hostile).toContain('href="/app/inbox?filter=requests"');
 });
+it('honors company-read denial before team requests, availability and activity loaders (presentation boundary)',async()=>{access.denied=true;for(const load of [()=>ManagerTimeOff({}),()=>ManagerAvailability({timeZone:'America/Puerto_Rico',currentWeek:'2026-10-12'}),()=>ManagerShiftRequests({timeZone:'America/Puerto_Rico'}),()=>CoverageSuggestionsPage({searchParams:Promise.resolve({week:'2026-10-12',date:'2026-10-12',locationId:'loc',start:'08:00',end:'16:00'})})]){const html=renderToStaticMarkup(await load());expect(html).toContain('Return to Home');expect(html).toContain('current company-wide management access');}expect(listPendingTimeOffRequests).not.toHaveBeenCalled();expect(listAvailabilitySubmissionStatuses).not.toHaveBeenCalled();expect(listManagerPendingExchanges).not.toHaveBeenCalled();expect(getShiftValidationContext).not.toHaveBeenCalled();});
+
+// This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

@@ -1,4 +1,5 @@
 "use server";
+import {assertOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {parseWorkflowPolicyForm} from '@/lib/shift-changes/policy-form';
@@ -18,9 +19,14 @@ import {
   saveScheduleHealthSettings,
 } from "@/lib/data/schedule-health";
 
+async function configurationAdmission(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>,inline:boolean){
+ try{await assertOperationalAccess(proof,{kind:'COMPANY'});}
+ catch(error){if(!inline&&(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)))redirect('/app/schedule/settings?error=ACCESS_DENIED');throw error;}
+}
 async function saveSettings(formData: FormData, inline = false) {
   const proof = await requireSessionMutationProof();
-  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect("/app");
+  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect('/app');
+  await configurationAdmission(proof,inline);
 
   const [locations, employees] = await Promise.all([
     listLocationStaffingSettings(),
@@ -110,7 +116,8 @@ async function saveSettings(formData: FormData, inline = false) {
 }
 async function addWindow(formData: FormData, inline=false) {
   const proof = await requireSessionMutationProof();
-  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect("/app");
+  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect('/app');
+  await configurationAdmission(proof,inline);
   const actor = proof.employee;
 
   const locationId = String(formData.get("locationId") ?? "");
@@ -163,7 +170,8 @@ async function addWindow(formData: FormData, inline=false) {
 
 export async function deleteCoverageWindowAction(formData: FormData) {
   const proof = await requireSessionMutationProof();
-  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect("/app");
+  if (!MANAGER_ROLES.includes(proof.employee.role)) redirect('/app');
+  await configurationAdmission(proof,false);
   const windowId = String(formData.get("windowId") ?? "");
 
   if (!windowId) {
@@ -173,6 +181,7 @@ export async function deleteCoverageWindowAction(formData: FormData) {
   try {
     await deleteCoverageWindow(windowId, proof);
   } catch (error) {
+    if(isOperationalAuthorizationError(error))redirect('/app/schedule/settings?error=ACCESS_DENIED');
     if (!isManagementAuthorizationError(error)) throw error;
     // Re-read current cookie authority after the transaction has rolled back.
     // Missing/expired/inactive sessions go to login; role loss uses /app.
@@ -200,8 +209,8 @@ export async function replaceCoverageWindowPositionRequirementsAction(data:FormD
  const proof=await requireSessionMutationProof();
  if(!MANAGER_ROLES.includes(proof.employee.role))redirect("/app");
  const actor=proof.employee;
- try {await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id,proof});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:'Position quantities updated.'};}
- catch{return {error:'Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.'};}
+ try {await configurationAdmission(proof,true);await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id,proof});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:'Position quantities updated.'};}
+ catch(error){if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))return {error:'Operational access is unavailable. Reload and try again.'};return {error:'Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.'};}
 }
 
 export async function saveShiftChangePolicyAction(data:FormData):Promise<import('@/lib/shift-changes/types').PolicyWriteResult>{

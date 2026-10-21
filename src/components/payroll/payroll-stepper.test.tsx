@@ -7,6 +7,12 @@ const run = (extra: Partial<Parameters<typeof payrollSteps>[0]> = {}) => ({ stat
 const states = (value: Parameters<typeof payrollSteps>[0]) => payrollSteps(value).map(step => `${step.id}:${step.state}`).join(' ');
 
 describe('payroll steps', () => {
+  it('describes native calculation and automatic publication without requesting a provider import', () => {
+    const native = run({ sourceAuthority: 'NATIVE_RECORDED_TIME' });
+    expect(payrollSteps(native)[1].hint).toBe('Calculated from recorded time');
+    expect(payrollSteps({ ...native, status: 'BLOCKED', rows: null, totals: null })[1].hint).toBe('Recalculate after resolving prerequisites');
+    expect(payrollSteps({ ...native, status: 'APPROVED', documents: [statement(false)] })[4].hint).toBe('Statements publish automatically after verification');
+  });
   it('blocks on unfinalized time and waits for amounts', () => {
     expect(states(run({ status: 'WAITING_FOR_AMOUNTS', rows: null, totals: null, exceptions: ['WAITING_FOR_AMOUNTS', 'TIME_NOT_FINALIZED:a', 'TIME_NOT_FINALIZED:b'] })))
       .toBe('hours:blocked amounts:upcoming review:upcoming approve:upcoming publish:upcoming');

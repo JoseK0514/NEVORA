@@ -1,3 +1,4 @@
+import {readShiftChangeCompany,isShiftChangeAuthorizationError} from './shift-change-authority';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { SessionMutationProof, ShiftTerms, ShiftChangeSnapshot, ShiftChangeEvaluation } from '../shift-changes/types';
 export function shiftChangeEvent(input:{workspaceId:string;requestId:string;revision:number;kind:'EXCHANGE'|'CALLOUT';event:string;actorId:string|null;source:ShiftTerms|null;target?:ShiftTerms|null;participants:Record<string,unknown>;mode?:string;outcomeReason?:string;reasonCode?:string;reasonNote?:string}):SqlStatement {
@@ -5,11 +6,11 @@ export function shiftChangeEvent(input:{workspaceId:string;requestId:string;revi
 }
 /** History stays accessible after live-row deletion. Absence details are never exposed to peers. */
 export async function readShiftChangeHistory(proof:SessionMutationProof,requestId:string,executor:SqlExecutor) {
- return executor.query({text:`SELECT request_kind,request_id,request_revision,event_kind,source_terms,target_terms,participants,outcome_mode,h.created_at,
+ try{return await readShiftChangeCompany(proof,()=>executor.query({text:`SELECT request_kind,request_id,request_revision,event_kind,source_terms,target_terms,participants,outcome_mode,h.created_at,
  CASE WHEN e.role IN ('OWNER','MANAGER') OR h.participants->>'employeeId'=e.id THEN callout_reason_code ELSE NULL END AS callout_reason_code,
  CASE WHEN e.role IN ('OWNER','MANAGER') OR h.participants->>'employeeId'=e.id THEN callout_reason_note ELSE NULL END AS callout_reason_note
  FROM shift_change_events h JOIN workspaces w ON w.id=h.workspace_id AND w.active JOIN employees e ON e.id=$1 AND e.active JOIN employee_sessions s ON s.employee_id=e.id AND s.token_hash=$2 AND s.expires_at>clock_timestamp()
- WHERE h.request_id=$3 AND (e.role IN ('OWNER','MANAGER') OR h.participants->>'employeeId'=e.id OR h.participants->>'requesterEmployeeId'=e.id OR h.participants->>'targetEmployeeId'=e.id) ORDER BY h.created_at,h.request_revision`,values:[proof.employee.id,proof.sessionTokenHash,requestId]});
+ WHERE h.request_id=$3 AND e.role=$4 AND (e.role IN ('OWNER','MANAGER') OR h.participants->>'employeeId'=e.id OR h.participants->>'requesterEmployeeId'=e.id OR h.participants->>'targetEmployeeId'=e.id) ORDER BY h.created_at,h.request_revision`,values:[proof.employee.id,proof.sessionTokenHash,requestId,proof.employee.role]}),executor);}catch(error){if(isShiftChangeAuthorizationError(error))return [];throw error;}
 }
 
 /** Prospective audit references only: no profile values, classifications or defaults.

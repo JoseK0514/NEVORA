@@ -1,3 +1,4 @@
+import {assertOperationalAccess,assertOriginalOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { createHash } from 'node:crypto';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { planWeek } from '../scheduling/generation/planner';
@@ -7,9 +8,9 @@ import { isProtectedAssignment } from '../scheduling/generation-provenance';
 import { affectedWorkweeks, shiftPeriod } from '../scheduling/periods';
 import { generationMutationGuards, generationInsertedSourceGuard, GenerationScopeError, withGenerationRetry, type GenerationSourceRow } from './generation-guards';
 import { neonNotificationExecutor } from './notification-transactions';
-import { readGenerationSnapshot, type GenerationRequest } from './schedule-generation-snapshot';
+import { readGenerationSnapshot, validateGenerationRequest, type GenerationRequest } from './schedule-generation-snapshot';
 import type { SessionMutationProof } from '../shift-changes/types';
-import { assertManagementProof, managementSessionStatements } from './management-session';
+import { assertManagementProof } from './management-session';
 export { readGenerationSnapshot } from './schedule-generation-snapshot';
 export type { GenerationRequest, GenerationSnapshot } from './schedule-generation-snapshot';
 export type GenerationResult = {
@@ -76,7 +77,10 @@ const semantics = (s: GenerationSourceRow) => canonical([s.schedule_id, s.employ
  * No solver work or external provider calls run inside the ordered SQL batch. */
 export async function generateWeekDraft(request: GenerationRequest & { proof: SessionMutationProof }, executor: SqlExecutor = neonNotificationExecutor()): Promise<GenerationResult> {
   assertManagementProof(request.proof, request.actorEmployeeId);
-  return withGenerationRetry(async () => {
+  validateGenerationRequest(request);
+  const admission=await assertOperationalAccess(request.proof,{kind:'COMPANY'},executor);
+  const {workspace}=admission;
+  try{return await withGenerationRetry(async () => {
     const {
       source,
       changedAt,
@@ -187,7 +191,7 @@ export async function generateWeekDraft(request: GenerationRequest & { proof: Se
       if (parent) weeks.add(parent.weekStart);
     }
     for (const a of plan.additions) for (const week of affectedWorkweeks(a)) weeks.add(week);
-    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...managementSessionStatements(request.proof, request.actorEmployeeId), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id))), ...managementSessionStatements(request.proof, request.actorEmployeeId)]);
+    await executor.transaction([...generationMutationGuards(source, [...weeks]), ...operationalScopeStatements(request.proof,workspace,{kind:'COMPANY'},admission.authority), ...writes, generationInsertedSourceGuard(after,additions.map(row=>String(row.id)),source.shifts.map(row=>String(row.assignment_episode_id))), ...operationalScopeStatements(request.proof,workspace,{kind:'COMPANY'},admission.authority)]);
     const scopedParentIds = new Set([...parentByLocation].filter(([locationId]) => plan.demand.locationIds.includes(locationId)).map(([, parent]) => parent.id));
     return {
       status: plan.status,
@@ -262,5 +266,5 @@ export async function generateWeekDraft(request: GenerationRequest & { proof: Se
         periodsEnumerated: plan.periodsEnumerated
       }
     };
-  });
+  });}finally{await assertOriginalOperationalAccess(request.proof,admission,executor);}
 }

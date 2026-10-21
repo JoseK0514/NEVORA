@@ -1,20 +1,24 @@
+import {readOperationalDirectory} from '@/lib/company-access/operational-read.server';
+import {ScopedEmployeeDirectory} from '@/components/company-access/scoped-operational-views';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import { EmployeeDirectory } from "@/components/employee-directory";
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { listEmployees, listLocations } from "@/lib/data/employees";
 import { filterDirectoryEmployees, readDirectoryFilters, type DirectorySearchParams } from "@/lib/employee-directory";
 
 export default async function EmployeesPage({ searchParams }: {
   searchParams?: Promise<DirectorySearchParams>;
 } = {}) {
   await requireRoles(MANAGER_ROLES);
-  const [employees, locations, params] = await Promise.all([
-    listEmployees(),
-    listLocations({ includeInactive: true }),
-    searchParams ?? Promise.resolve({}),
-  ]);
+  const params=await(searchParams??Promise.resolve({}));
+  const source=await readOperationalDirectory(await requireSessionMutationProof());
+  if(source.state==='unavailable')return <OperationalUnavailable title="Employees unavailable" reason={source.reason}/>;
+  if(source.data.mode==='LOCATIONS')return <ScopedEmployeeDirectory data={source.data} observation={source}/>;
+  const {employees,locations}=source.data;
   const filters = readDirectoryFilters(params, locations);
-  return <EmployeeDirectory words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
-    visibleEmployees={filterDirectoryEmployees(employees, filters)} />;
+  return <ScopedReadFrame observation={source}><EmployeeDirectory words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
+    visibleEmployees={filterDirectoryEmployees(employees, filters)} /></ScopedReadFrame>;
 }

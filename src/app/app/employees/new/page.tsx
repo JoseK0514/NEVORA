@@ -1,15 +1,15 @@
-import Link from "next/link";
-import { ConfigurationForm } from "@/components/configuration-form";
-import { SelectField } from "@/components/select-field";
-import { EmployeeSchedulingFields } from "@/components/employee-scheduling-fields";
-import { PhoneInput } from "@/components/phone-input";
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import { Card, KitLink, PageBand } from "@/components/kit/kit";
-import { Field, FieldPair, FormActions, Notice } from "@/components/wave-a/parts";
-import { PendingButton } from "@/components/wave-a/pending-button";
+import { Notice } from "@/components/wave-a/parts";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
 import { listPositions } from "@/lib/data/positions";
 import { createEmployeeFormAction } from "@/app/app/employees/actions";
+
+import {NewEmployeeForm} from "@/components/company-access/new-employee-form";
 
 const errors: Record<string, string> = {
   permission: "Only an Owner can add another Owner.",
@@ -25,14 +25,15 @@ export default async function NewEmployeePage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
-  const [locations, positions, params] = await Promise.all([
-    listLocations(), listPositions(), searchParams,
-  ]);
+  const params=await searchParams;
+  const source=await withOperationalCompany(await requireSessionMutationProof(),()=>Promise.all([listLocations(),listPositions()]));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Employee creation unavailable" reason={source.reason}/>;
+  const [locations,positions]=source.data;
   const activeLocations = locations.filter((location) => location.active);
 
   // Phase 3.5 Wave A: New employee on the kit. Three cards (person, access, scheduling), then what happens next.
   return (
-    <div className="nv-page wa-page wa-newmember" data-nv-page="">
+    <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-newmember" data-nv-page="">
       <PageBand back={{ href: "/app/employees", label: "Team" }} title="Add employee" summary="Their contact, access and scheduling details. Email is optional." />
       <div className="nv-content wa-narrow">
         {params.error ? <Notice tone="urgent" title="The employee wasn’t added">{errors[params.error] ?? "Complete all required employee fields."}</Notice> : null}
@@ -41,65 +42,19 @@ export default async function NewEmployeePage({
         </Notice> : null}
         {!activeLocations.length && session.role === "OWNER" ? <KitLink href="/app/settings/locations">Manage locations</KitLink> : null}
 
-        <ConfigurationForm action={createEmployeeFormAction} className="wa-form">
-          <Card title="Person" id="new-person">
-            <div className="wa-fields">
-              <FieldPair>
-                <Field label="First name"><input name="firstName" autoComplete="off" required maxLength={160} /></Field>
-                <Field label="Last name"><input name="lastName" autoComplete="off" required maxLength={160} /></Field>
-              </FieldPair>
-              <Field label="Employee ID" help="Unique. They use it to sign in." helpId="employee-id-help">
-                <input name="id" autoCapitalize="characters" autoComplete="off" spellCheck={false} required maxLength={128} aria-describedby="employee-id-help" />
-              </Field>
-              <FieldPair>
-                <Field label="Phone" help="They confirm it when they activate their account." helpId="employee-phone-help"><PhoneInput name="phone" autoComplete="off" required aria-describedby="employee-phone-help" /></Field>
-                <Field label="Email" optional><input name="email" type="email" autoComplete="off" maxLength={254} /></Field>
-              </FieldPair>
-            </div>
-          </Card>
-
-          <Card title="Access" id="new-access">
-            <div className="wa-fields">
-              <FieldPair>
-                <SelectField className="wa-select" name="role" label="Access role" defaultValue="EMPLOYEE"
-                  hint="What they can do in the app. Separate from job qualifications."
-                  options={[
-                    ...(session.role === "OWNER" ? [{ value: "OWNER", label: "Owner" }] : []),
-                    { value: "MANAGER", label: "Manager" },
-                    { value: "LEAD", label: "Lead" },
-                    { value: "EMPLOYEE", label: "Employee" },
-                  ]}
-                />
-                <SelectField className="wa-select" name="primaryLocationId" label="Primary location" required defaultValue=""
-                  hint="They can always be scheduled here."
-                  options={[
-                    { value: "", label: "Choose a location", disabled: true },
-                    ...activeLocations.map((location) => ({ value: location.id, label: location.shortName })),
-                  ]}
-                />
-              </FieldPair>
-            </div>
-          </Card>
-
-          <Card title="Scheduling" id="new-scheduling">
-            <div className="wa-fields"><EmployeeSchedulingFields locations={activeLocations} positions={positions} /></div>
-          </Card>
-
-          <FormActions>
-            <PendingButton pending="Adding…" disabled={!activeLocations.length} block>Add employee</PendingButton>
-            <Link className="nv-btn" data-kind="secondary" data-block="true" href="/app/employees">Cancel</Link>
-          </FormActions>
-        </ConfigurationForm>
+        <Card title="Employee details"><div className="wa-fields">
+          <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction}/>
+        </div></Card>
 
         <Card title="What happens next" id="new-next">
           <ol className="wa-steps">
-            <li>Give them their Employee ID.</li>
-            <li>They open Activate account and enter their ID and phone number.</li>
-            <li>They create a password and sign in.</li>
+            <li>Review their registered email and Employee ID.</li>
+            <li>An Owner sends the account invitation from their profile.</li>
+            <li>They open the email link, create a password and sign in with their Employee ID.</li>
           </ol>
-          <p className="wa-card-note">The phone number must match when they activate, so check it carefully.</p>
+          <p className="wa-card-note">Email is optional for the employee record. A registered email is required before an invitation can be sent.</p>
         </Card>
       </div>
-    </div>
+    </div></ScopedReadFrame>
   );
 }

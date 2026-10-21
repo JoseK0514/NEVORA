@@ -1,11 +1,12 @@
 import 'server-only';
+import {operationalScopeStatements} from '../company-access/operational-scope.server';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { SqlExecutor } from '../notifications/types';
 import { neonNotificationExecutor } from '../data/notification-transactions';
 import { getWorkspace, workspaceReadGuard } from '../data/workspaces';
 import { clockerDeviceWriteGuards, type ClockerDeviceWriteProof, type ClockerOwnerProof } from './devices.server';
 import { hashClockerPin, verifyClockerPin, burnUnknownPin, validatePin, pinFingerprint, pinKeyIdentity } from './pin-crypto.server';
-import { pinBatch, pinActorGuards, pinActorAssertion, pinKeyGuard, ClockerPinError, assertPin, statement as s } from './pin-authority.server';
+import { pinBatch, pinActorGuards, pinActorAssertion, pinKeyGuard, pinManagementAccess, ClockerPinError, assertPin, statement as s } from './pin-authority.server';
 import { reservePinAttempt, releasePinReservation } from './pin-limits.server';
 import { pinSessionHash } from './pin-identity.server';
 export { readClockerIdentity, clearClockerIdentity, clockerIdentityWriteGuards } from './pin-identity.server';
@@ -14,10 +15,14 @@ export type EmployeePinView = { employeeId:string; configured:boolean; version:n
 const metadata=(employeeId:string)=>s(`SELECT e.id AS "employeeId",p.employee_id IS NOT NULL AS configured,
   COALESCE(p.version,0) AS version FROM employees e LEFT JOIN employee_clocker_pins p ON p.employee_id=e.id WHERE e.id=$1`,[employeeId]);
 export async function readEmployeeClockerPin(proof:ClockerOwnerProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeePinView>{
- const workspace=await getWorkspace(executor);
- const result=await pinBatch(executor,[...workspaceReadGuard(workspace),...pinActorGuards(proof,employeeId,workspace.id,false),metadata(employeeId)]);
- const row=result.at(-1)?.[0] as EmployeePinView|undefined;
- if(!row)throw new ClockerPinError('FORBIDDEN');return row;
+ const access=await pinManagementAccess(proof,executor),workspace=access.workspace;
+ const authority=()=>operationalScopeStatements(access.proof,workspace,{kind:'COMPANY'},access.authority);
+ const guards=[...workspaceReadGuard(workspace),...pinActorGuards(proof,employeeId,workspace.id,false),...authority()];
+ const result=await pinBatch(executor,[...guards,metadata(employeeId),...authority()]);
+ const row=result[guards.length]?.[0] as EmployeePinView|undefined;
+ if(!row)throw new ClockerPinError('FORBIDDEN');
+ await pinBatch(executor,[...workspaceReadGuard(workspace),...pinActorGuards(proof,employeeId,workspace.id,false),...authority()]);
+ return row;
 }
 export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{employeeId:string;pin:string;expectedVersion:number},key:Buffer,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeePinView>{
  try{validatePin(input?.pin);}catch{throw new ClockerPinError('INVALID');}
@@ -25,11 +30,12 @@ export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{emplo
  // Reject unprivileged callers before spending work on the slow hash.
  const current=await readEmployeeClockerPin(proof,input.employeeId,executor);
  if(current.version!==input.expectedVersion)throw new ClockerPinError('STALE');
- const workspace=await getWorkspace(executor);
+ const access=await pinManagementAccess(proof,executor),workspace=access.workspace;
+ const authority=()=>operationalScopeStatements(access.proof,workspace,{kind:'COMPANY'},access.authority);
  const fingerprint=pinFingerprint(input.pin,workspace.id,key);
  const hash=await hashClockerPin(input.pin,workspace.id,input.employeeId,key);
  const result=await pinBatch(executor,[
-  ...workspaceReadGuard(workspace),...pinActorGuards(proof,input.employeeId,workspace.id,true),
+  ...workspaceReadGuard(workspace),...pinActorGuards(proof,input.employeeId,workspace.id,true),...authority(),
   s('INSERT INTO clocker_pin_configuration(workspace_id,key_identity) VALUES($1,$2) ON CONFLICT DO NOTHING',[workspace.id,pinKeyIdentity(key)]),
   pinKeyGuard(workspace.id,key),
   assertPin('COALESCE((SELECT version FROM employee_clocker_pins WHERE employee_id=$1),0)=$2',[input.employeeId,input.expectedVersion],'STALE'),
@@ -41,8 +47,10 @@ export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{emplo
   s('INSERT INTO clocker_pin_events(id,employee_id,actor_employee_id,pin_version) SELECT $1,employee_id,$2,version FROM employee_clocker_pins WHERE employee_id=$3',[randomUUID(),proof.employeeId,input.employeeId]),
   // Roll back the PIN, audit event and identity invalidation if authority expired during a write lock wait.
   pinActorAssertion(proof,input.employeeId,workspace.id,true),
+  ...authority(),
   metadata(input.employeeId),
  ]);
+ await pinBatch(executor,[...workspaceReadGuard(workspace),...pinActorGuards(proof,input.employeeId,workspace.id,true),...authority()]);
  return result.at(-1)![0] as EmployeePinView;
 }
 export type PinVerification = {state:'denied'} | {state:'limited';retryAfterSeconds:number} | {state:'verified';token:string;firstName:string;expiresAt:string};

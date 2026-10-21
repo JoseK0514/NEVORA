@@ -1,3 +1,6 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import { redirect } from "next/navigation";
 import { CoverageAssistant } from "@/components/coverage-assistant";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -48,18 +51,21 @@ export default async function CoverageSuggestionsPage({
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
+  const proof=await requireSessionMutationProof();
   const params = await searchParams;
   if (params.repair !== undefined) {
-    const proof = await requireSessionMutationProof();
     let locator;
     try { locator = parseCoverageRepairLocator(params.repair); }
     catch { redirect('/app/schedule?error=COVERAGE_REVIEW_STALE'); }
-    let review;
-    try { review = await readCoverageRepair(locator, proof, params.refresh === '1'); }
-    catch (error) { if (!(error instanceof CoverageRepairConflictError)) throw error; }
+    const source=await withOperationalCompany(proof,async()=>{
+      try{return await readCoverageRepair(locator,proof,params.refresh==='1');}
+      catch(error){if(!(error instanceof CoverageRepairConflictError))throw error;return null;}
+    });
+    if(source.state==='unavailable')return <OperationalUnavailable title="Coverage review unavailable" reason={source.reason}/>;
+    const review=source.data;
     const back = `/app/schedule?week=${encodeURIComponent(locator.weekStart)}&location=${encodeURIComponent(locator.locationId)}`;
     const status = review?.status ?? 'STALE';
-    return <CoverageAssistant
+    return <ScopedReadFrame observation={source}><CoverageAssistant
       date={locator.date}
       startTime={locator.startTime}
       endTime={locator.endTime}
@@ -90,7 +96,7 @@ export default async function CoverageSuggestionsPage({
         priorUnderTargetWeeks: candidate.priorUnderTargetWeeks,
         href: `/app/schedule/new?review=${encodeURIComponent(candidate.review)}`,
       }))}
-    />;
+    /></ScopedReadFrame>;
   }
   const weekStart = params.week ?? "";
   const date = params.date ?? "";
@@ -110,6 +116,7 @@ export default async function CoverageSuggestionsPage({
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
+  const source=await withOperationalCompany(proof,async()=>{
   const [employees, fairness, locations, positions] = await Promise.all([
     listEmployees(),
     listHourFairness(weekStart),
@@ -154,10 +161,14 @@ export default async function CoverageSuggestionsPage({
   const candidates = rankCoverageCandidates(
     inputs.filter((input) => input !== null),
   );
+    return {locations,positions,candidates};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Coverage suggestions unavailable" reason={source.reason}/>;
+  const {locations,positions,candidates}=source.data;
   const location = locations.find((item) => item.id === locationId);
   const position = positions.find(item => item.id === params.positionId);
 
-  return <CoverageAssistant
+  return <ScopedReadFrame observation={source}><CoverageAssistant
     date={date}
     startTime={startTime}
     endTime={endTime}
@@ -177,5 +188,5 @@ export default async function CoverageSuggestionsPage({
       priorUnderTargetWeeks: candidate.priorUnderTargetWeeks,
       href: `/app/schedule/new?week=${weekStart}&date=${date}&locationId=${locationId}&employeeId=${candidate.employeeId}&start=${startTime}&end=${endTime}${params.lead === "1" ? "&lead=1" : ""}${params.positionId ? `&positionId=${encodeURIComponent(params.positionId)}` : ''}`,
     }))}
-  />;
+  /></ScopedReadFrame>;
 }

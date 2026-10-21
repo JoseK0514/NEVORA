@@ -1,4 +1,5 @@
 import 'server-only';
+import {readCompanyResult} from '../company-access/company-result.server';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor} from '../notifications/types';
 import {neonNotificationExecutor} from '../data/notification-transactions';
@@ -9,6 +10,9 @@ export type RecoveryReview={state:'ready';observedAt:string;validForMs:number;co
 /** Assisted resolution inspects the immutable ledger. It never commits, replays,
  * deletes or claims cancellation of an absent/in-flight action. */
 export async function readClockerRecoveryReview(proof:SessionMutationProof,reference:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<RecoveryReview>{
+ return readCompanyResult(proof,()=>readReview(proof,reference,executor),executor);
+}
+async function readReview(proof:SessionMutationProof,reference:string,executor:SqlExecutor):Promise<RecoveryReview>{
  try{
   assertManagementProof(proof,proof?.employee?.id);if(!['OWNER','MANAGER'].includes(proof.employee.role))return {state:'unavailable',reason:'access_denied'};
   const commandId=parseCommandId(reference),workspace=await getWorkspace(executor);

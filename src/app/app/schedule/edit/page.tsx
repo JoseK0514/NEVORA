@@ -1,7 +1,15 @@
-import { listPositions } from "@/lib/data/positions";
+import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
+import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
+import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {requireSessionMutationProof} from '@/lib/auth/session';
+import {listPositions} from "@/lib/data/positions";
 import { ShiftEditAssignment } from "./shift-edit-assignment";
 import { ConfigurationForm } from "@/components/configuration-form";
-import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
+import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
+import {schedulingIssueMessage} from '@/lib/scheduling/validate-shift';
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ShiftEditTiming } from "./shift-edit-timing";
@@ -26,8 +34,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   APPROVED_TIME_OFF: "That person has approved time off during this shift.",
   EMPLOYEE_INACTIVE: "Inactive people can’t be scheduled.",
   INVALID_TIME_RANGE: "Enter a valid date, start and end time.",
-  INVALID_SHIFT_LEAD:
-    "Only an Owner, Manager or Lead can lead a shift.",
+  INVALID_SHIFT_LEAD: "Only an Owner, Manager or Lead can lead a shift.",
 };
 
 export default async function EditShiftPage({
@@ -41,13 +48,27 @@ export default async function EditShiftPage({
   if (!params.shiftId) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
+  const shiftId=params.shiftId;
+  const feedback=<ScheduleRouteFeedback destination="editor" error={params.error}/>;
+  const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
+  if(access.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={access.reason}/>;
+  if(access.scope?.mode!=='COMPANY'){
+    const source=await readOperationalShiftEditor(proof,{shiftId});
+    if(source.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={source.reason} scoped/>;
+    if(source.authority!==access.authority)return <OperationalUnavailable title="Shift editor unavailable" reason="source_changed" scoped/>;
+    const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
+    if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation} feedback={feedback}/>;
+    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={updateShiftAction} deleteAction={deleteShiftAction} feedback={feedback} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name}/></ScopedReadFrame>;
+  }
 
-  const [shift, employees, locations, positions] = await Promise.all([
-    getShiftForManagement(params.shiftId),
+  const source=await withOperationalCompany(proof,()=>Promise.all([
+    getShiftForManagement(shiftId),
     listEmployees(),
     listLocations({includeInactive:true}),
     listPositions({includeInactive:true}),
-  ]);
+  ]));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={source.reason}/>;
+  const [shift,employees,locations,positions]=source.data;
 
   if (!shift) {
     redirect("/app/schedule?error=INVALID_SHIFT");
@@ -59,16 +80,14 @@ export default async function EditShiftPage({
   const day = formatDayLabel(shift.date);
 
   // Phase 3.5 Wave A: Edit shift on the kit. The band says whose shift and when; the form is the same three groups as Add shift.
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="nv-page wa-page wa-shift" data-nv-page="">
       <PageBand back={{ href: returnUrl, label: "Schedule" }} eyebrow="Edit shift" title={shift.employeeName}
         summary={<MetaParts text={keepWhole(`${day.weekday},\u00a0${day.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${location?.shortName ?? shift.locationId}`)} />} />
       <div className="nv-content wa-narrow">
-        {params.error ? (
-          <Notice tone="urgent" title="The shift wasn’t saved">
-            {ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "The shift could not be updated."}
-          </Notice>
-        ) : null}
+        {params.error ? <Notice tone="urgent" title="The shift wasn’t saved">
+          {(Object.hasOwn(ERROR_MESSAGES, params.error) ? ERROR_MESSAGES[params.error] : schedulingIssueMessage(params.error)) ?? "The shift could not be updated."}
+        </Notice> : null}
 
         <ConfigurationForm action={updateShiftAction} className="wa-form">
           <input type="hidden" name="shiftId" value={shift.id} />
@@ -122,5 +141,5 @@ export default async function EditShiftPage({
         </Card>
       </div>
     </div>
-  );
+  </ScopedReadFrame>);
 }

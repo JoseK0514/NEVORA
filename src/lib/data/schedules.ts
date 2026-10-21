@@ -1,3 +1,5 @@
+import { databaseDate as dateValue } from './database-date';
+import {assertOperationalAccess} from '../company-access/operational-scope.server';
 import { currentCalloutReleaseSql } from './shift-change-release';
 import { resolveOperationalRuleProfile } from '../shift-changes/policy';
 import type { AssignmentOrigin } from '../domain';
@@ -41,11 +43,6 @@ export type LocationScheduleStatus = {
   locationId: string;
   status: ScheduleStatus;
 };
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
 
 function timeValue(value: unknown) {
   return String(value).slice(0, 5);
@@ -260,24 +257,26 @@ export type ShiftValidationContext = NonNullable<Awaited<ReturnType<typeof getSh
 export async function ensureSchedule(input: {
   locationId: string; weekStart: string; createdBy: string; proof: SessionMutationProof;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
+  await assertOperationalAccess(input.proof,{kind:'LOCATIONS',locationIds:[input.locationId]},executor);
   let scheduleId: string = randomUUID();
   await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.createdBy,proof:input.proof,sourceType:'MANAGER_MUTATION',build: state => {
     const existing=state.schedules.find(s=>s.locationId===input.locationId && s.weekStart===input.weekStart);
     if(existing) {
       scheduleId=existing.id;
-      return {statements:[{text:'SELECT 1',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts};
+      return unchanged(state);
     }
     return {statements:[{text:'INSERT INTO schedules (id,location_id,week_start,created_by) VALUES ($1,$2,$3,$4)',values:[scheduleId,input.locationId,input.weekStart,input.createdBy]}],
       afterSchedules:[...state.schedules,{id:scheduleId,locationId:input.locationId,weekStart:input.weekStart,status:'DRAFT',updatedAt:''}],afterShifts:state.shifts};
   }},executor);
+  await assertOperationalAccess(input.proof,{kind:'LOCATIONS',locationIds:[input.locationId]},executor);
   return scheduleId;
 }
 
 async function mutationWeek(id: string, kind: 'schedule' | 'shift', executor: SqlExecutor) {
-  const [row]=await executor.query<{week_start:string}>({text:kind==='schedule'
-    ? 'SELECT week_start::text FROM schedules WHERE id=$1'
-    : 'SELECT s.week_start::text FROM schedules s JOIN shifts sh ON sh.schedule_id=s.id WHERE sh.id=$1',values:[id]});
-  return row?.week_start;
+  const [row]=await executor.query<{week_start:string;location_id:string;status:ScheduleStatus;assignment_origin?:AssignmentOrigin}>({text:kind==='schedule'
+    ? 'SELECT week_start::text,location_id,status FROM schedules WHERE id=$1'
+    : 'SELECT s.week_start::text,s.location_id,s.status,sh.assignment_origin FROM schedules s JOIN shifts sh ON sh.schedule_id=s.id WHERE sh.id=$1',values:[id]});
+  return row;
 }
 function unchanged(state: GuardedWeekState) {
   return {statements:[],afterSchedules:state.schedules,afterShifts:state.shifts};
@@ -288,7 +287,10 @@ export async function insertShift(input: {
   endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string; proof: SessionMutationProof;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   const id=randomUUID();
-  const week=await mutationWeek(input.scheduleId,'schedule',executor);
+  await assertOperationalAccess(input.proof,undefined,executor);
+  const target=await mutationWeek(input.scheduleId,'schedule',executor);
+  if(target)await assertOperationalAccess(input.proof,target.status!=='DRAFT'||target.assignment_origin==='GENERATED'?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:[target.location_id]},executor);
+  const week=target?.week_start;
   if(!week) throw new Error('Schedule no longer exists.');
   const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:id,build: state => {
     const schedule=state.schedules.find(s=>s.id===input.scheduleId);
@@ -299,6 +301,27 @@ export async function insertShift(input: {
   }},executor);
   if(!result.committed) throw new Error('Schedule no longer exists.');
   return id;
+}
+
+/** Normal manual creation owns the parent and assignment in ONE transaction. */
+export async function insertShiftAtLocation(input:{
+ locationId:string;weekStart:string;employeeId:string;date:string;startTime:string;endTime:string;
+ notes?:string;positionId?:string|null;isDesignatedLead?:boolean;actorEmployeeId:string;proof:SessionMutationProof;
+},executor:SqlExecutor=neonNotificationExecutor()) {
+ assertManagementProof(input.proof,input.actorEmployeeId);
+ await assertOperationalAccess(input.proof,{kind:'LOCATIONS',locationIds:[input.locationId]},executor);
+ const id=randomUUID(),parentId=randomUUID();
+ const result=await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:id,build:state=>{
+  const existing=state.schedules.find(s=>s.locationId===input.locationId&&s.weekStart===input.weekStart);
+  const scheduleId=existing?.id??parentId;
+  return {statements:[
+   ...(!existing?[{text:'INSERT INTO schedules(id,location_id,week_start,created_by) VALUES($1,$2,$3,$4)',values:[scheduleId,input.locationId,input.weekStart,input.actorEmployeeId]}]:[]),
+   {text:'INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead,position_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',values:[id,scheduleId,input.employeeId,input.date,input.startTime,input.endTime,input.notes??null,input.isDesignatedLead??false,input.positionId||null]}],
+   afterSchedules:existing?state.schedules:[...state.schedules,{id:scheduleId,locationId:input.locationId,weekStart:input.weekStart,status:'DRAFT' as const,updatedAt:''}],
+   afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId,weekStart:input.weekStart,locationId:input.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,positionId:input.positionId||undefined,isDesignatedLead:input.isDesignatedLead??false,isCalloutApproved:false,hasExchangeHistory:false}]};
+ }},executor);
+ if(!result.committed)throw new Error('Schedule no longer exists.');
+ return id;
 }
 
 /** Ensure the exact location/week and insert the reviewed replacement atomically. */
@@ -334,11 +357,6 @@ export async function createCoverageRepairShift(input: {
   if (!result.committed) throw new CoverageRepairConflictError();
   return { id, locator };
 }
-
-export function roleCanManageSchedule(role: UserRole) {
-  return role === "OWNER" || role === "MANAGER";
-}
-
 
 export type ManagementShift = ScheduleShiftRow & {
   weekStart: string;
@@ -408,7 +426,10 @@ export async function updateShift(input: {
   shiftId: string; employeeId: string; date: string; startTime: string;
   endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string; proof: SessionMutationProof;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
-  const week=await mutationWeek(input.shiftId,'shift',executor);
+  await assertOperationalAccess(input.proof,undefined,executor);
+  const target=await mutationWeek(input.shiftId,'shift',executor);
+  if(target)await assertOperationalAccess(input.proof,target.status!=='DRAFT'||target.assignment_origin==='GENERATED'?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:[target.location_id]},executor);
+  const week=target?.week_start;
   if(!week) return false;
   const result=await commitPublishedWeekChange({weekStarts:[week],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:input.shiftId,build: state => {
     const existing=state.shifts.find(s=>s.sourceShiftId===input.shiftId);
@@ -424,8 +445,10 @@ export async function updateShift(input: {
 export async function deleteShift(shiftId: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
   const actorEmployeeId = proof?.employee?.id;
   assertManagementProof(proof, actorEmployeeId);
+  await assertOperationalAccess(proof,undefined,executor);
   const [target]=await executor.query<{week_start:string;assignment_origin?:AssignmentOrigin;status?:ScheduleStatus;workspace_id:string;location_id:string}>({
     text:`SELECT s.week_start::text,sh.assignment_origin,s.status,l.workspace_id,s.location_id FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id WHERE sh.id=$1`,values:[shiftId]});
+  if(target)await assertOperationalAccess(proof,target.status!=='DRAFT'||target.assignment_origin==='GENERATED'?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:[target.location_id]},executor);
   if(target?.assignment_origin==='GENERATED' && target.status==='DRAFT') {
     return (await deleteGeneratedDraftShift({shiftId,actorEmployeeId,proof,workspaceId:target.workspace_id,locationId:target.location_id,weekStart:target.week_start},executor)).status==='deleted';
   }

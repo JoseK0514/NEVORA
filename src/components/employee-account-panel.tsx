@@ -47,10 +47,11 @@ export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,
   // shared controller, including browsers that finish an aborted fetch.
   const sync=()=>{controller.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller.start();};
   document.addEventListener('visibilitychange',sync);
+  if(kind==='notifications')window.addEventListener('nevora:notifications-changed',sync);
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
   for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
-  return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
+  return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);if(kind==='notifications')window.removeEventListener('nevora:notifications-changed',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,kind,endpoint]);
  return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled} signature={signature} onMarkRead={markReadAllowed?async id=>{
  const response=await fetch('/api/notifications/read',{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000),headers:{'Content-Type':'application/json','X-Nevora-Notification-Read':'1','X-Nevora-Employee-View':authority},body:JSON.stringify({notificationId:id})});

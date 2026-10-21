@@ -1,3 +1,4 @@
+import { databaseDate as dateValue } from './database-date';
 import {projectShiftChangeState} from '../shift-changes/maintenance';
 import {resolveShiftChangePolicy} from '../shift-changes/policy';
 import type {ShiftTerms} from '../shift-changes/types';
@@ -52,11 +53,6 @@ export type ExchangeRecord = {
   targetShift?: ExchangeShift;
   createdAt: string;
 };
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
 
 function timeValue(value: unknown) {
   return String(value).slice(0, 5);

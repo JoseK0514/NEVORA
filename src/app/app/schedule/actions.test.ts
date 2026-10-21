@@ -7,6 +7,8 @@ const m=vi.hoisted(()=>({
   clear:vi.fn(), send:vi.fn(()=>new Promise<never>(()=>{})), provider:vi.fn(), role:'MANAGER', existingWeek:'2030-10-07', templateStart:'09:00',
   shifts:[{id:'s',employeeId:'E',locationId:'loc-1',date:'2030-09-30',startTime:'09:00',endTime:'17:00',isDesignatedLead:false}],
 }));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64)}),isOperationalAuthorizationError:()=>false}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'},employeeOptions:[],positionOptions:[]}})}));
 vi.mock('@/lib/data/schedule-copy',()=>({executeScheduleCopy:m.copy}));
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('M',m.role as 'MANAGER')}));
 vi.mock('@/lib/notifications/provider',()=>({createPushSender:m.provider.mockImplementation(()=>({send:m.send}))}));
@@ -25,7 +27,7 @@ vi.mock('@/lib/data/acknowledgements',()=>({clearWeekAcknowledgements:m.clear}))
 vi.mock('@/lib/data/publication-revisions',()=>({publishScheduleWithRevision:m.publish}));
 vi.mock('@/lib/data/positions',()=>({listPositions:async()=>[]}));
 vi.mock('@/lib/data/employees',()=>({listEmployees:vi.fn()}));
-vi.mock('@/lib/data/schedules',()=>({insertShift:m.insert,updateShift:m.update,deleteShift:m.remove,ensureSchedule:async()=> 'a',getShiftValidationContext:async()=>({}),getShiftForManagement:async()=>({id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'}),listWeekShifts:async()=>m.shifts}));
+vi.mock('@/lib/data/schedules',()=>({insertShiftAtLocation:m.insert,insertShift:m.insert,updateShift:m.update,deleteShift:m.remove,ensureSchedule:async()=> 'a',getShiftValidationContext:async()=>({}),getShiftForManagement:async()=>({id:'s',employeeId:'E',locationId:'loc-1',weekStart:m.existingWeek,date:'2030-10-08'}),listWeekShifts:async()=>m.shifts}));
 vi.mock('@/lib/data/schedule-templates',()=>({listTemplateShifts:async()=>[{employeeId:'E',locationId:'loc-1',positionId:'barista',dayOffset:6,startTime:m.templateStart,endTime:'17:00'},{employeeId:'BLOCKED',locationId:'loc-1',dayOffset:1,startTime:'09:00',endTime:'17:00'}],archiveScheduleTemplate:vi.fn(),createTemplateFromWeek:vi.fn()}));
 import { applyTemplateAction } from './templates/actions';
 import { createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction,copyPreviousWeekAction,setAvailabilityDeadlineAction } from './actions';
@@ -113,5 +115,5 @@ it('copy and template wrappers never substitute client assignment fields for the
 it('a newly saved second-location shift returns to that location rather than all locations',async()=>{
  const data=form();data.set('locationId','loc-2');
  await expect(createShiftAction(data)).rejects.toMatchObject({destination:'/app/schedule?week=2030-10-07&location=loc-2&day=2030-10-07#schedule-employee-E'});
- expect(m.insert).toHaveBeenCalledWith(expect.objectContaining({scheduleId:'a',employeeId:'E'}));
+ expect(m.insert).toHaveBeenCalledWith(expect.objectContaining({locationId:'loc-2',weekStart:'2030-10-07',employeeId:'E'}));
 });

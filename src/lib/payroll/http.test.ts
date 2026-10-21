@@ -1,5 +1,5 @@
 import { it, expect, afterEach } from "vitest";
-import { boundary, handle } from "./http";
+import { boundary, handle, failure } from "./http";
 const op = "11111111-1111-4111-8111-111111111111";
 afterEach(() => {
   delete process.env.NEVORA_PAYROLL_ENABLED;
@@ -87,4 +87,26 @@ it("authenticated download boundary allows direct same-origin navigation and rej
       true,
     ),
   ).toBe(403);
+});
+it("maps only the exact native overlap guard to the ordinary private conflict contract", async () => {
+  const response = failure(new Error("OVERLAPPING_NATIVE_PAYROLL"));
+  expect(response.status).toBe(409);
+  expect(await response.json()).toEqual({ error: "PAYROLL_CONFLICT", message: "Reload and review current information." });
+  expect(response.headers.get("Cache-Control")).toBe("no-store, private");
+});
+it.each([
+  new Error("connection terminated"),
+  new Error("OVERLAPPING_NATIVE_PAYROLL transport interrupted"),
+  new Error("UNKNOWN_NATIVE_PAYROLL"),
+  "OVERLAPPING_NATIVE_PAYROLL",
+  { message: "OVERLAPPING_NATIVE_PAYROLL" },
+])("keeps unknown or unestablished failures unavailable without raw database detail %#", async error => {
+  const response = failure(error);
+  expect(response.status).toBe(503);
+  expect(await response.json()).toEqual({ error: "PAYROLL_UNAVAILABLE", message: "Request could not be completed." });
+});
+it("preserves authorization precedence over a mentioned overlap", async () => {
+  const response = failure(new Error("payroll_authorization OVERLAPPING_NATIVE_PAYROLL"));
+  expect(response.status).toBe(403);
+  expect(await response.json()).toEqual({ error: "ACCESS_DENIED", message: "Payroll access is unavailable." });
 });

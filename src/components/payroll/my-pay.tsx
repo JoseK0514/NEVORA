@@ -32,7 +32,8 @@ export function PaydayMoment({ statement }: { statement: Statement }) {
     <div className={styles.mpLatestCopy}>
       <p className={styles.mpKicker}>Latest statement</p>
       <h2 id="pw-payday-title"><span className="nv-sr">Payday </span>{longDay(statement.payday)}</h2>
-      <p>{periodLabel(statement.period.startDate, statement.period.endDate)} · PDF<span className="nv-sr"> from your payroll provider</span></p>
+      <p>{periodLabel(statement.period.startDate, statement.period.endDate)} · PDF<span className="nv-sr">, published pay statement</span></p>
+      {statement.viewUrl ? <a className={`sg-link ${styles.mpView}`} href={`${documentHref(statement)}/view`}>View<span className="nv-sr"> statement, payday {longDay(statement.payday)}</span></a> : null}
     </div>
     <a className="sg-primary" href={documentHref(statement)} aria-label={`Download statement, payday ${longDay(statement.payday)}`}><DownloadIcon />Download</a>
   </section>;
@@ -51,7 +52,7 @@ export function MyPay({ nextPay = null }: { nextPay?: NextPay }) {
   </SigBand> : <SigBand eyebrow="Pay statements"><h1 className="sg-word">My pay</h1><p className="sg-sub"><span>Your published pay statements.</span></p></SigBand>;
 
   return <SigPage band={band} className={styles.mpRoot}>
-    {loading && !data ? <div className={styles.mpLatest} role="status"><div className={styles.mpLatestCopy}><p className={styles.mpKicker}>Latest statement</p><p className={styles.mpLoadingTitle}>Loading your statements</p><p>Checking your private pay documents.</p></div></div>
+    {loading ? <div className={styles.mpLatest} role="status"><div className={styles.mpLatestCopy}><p className={styles.mpKicker}>Latest statement</p><p className={styles.mpLoadingTitle}>Loading your statements</p><p>Checking your private pay documents.</p></div></div>
       : error ? <div className="sg-alert" role="alert"><strong>Statements unavailable</strong><span>{error}</span>{error === PAYROLL_SIGNED_OUT ? <Link className="sg-link" href="/login">Sign in</Link> : <button type="button" className="sg-link" onClick={() => void reload()}>Try again</button>}</div>
       : statements.length ? <>
         <PaydayMoment statement={statements[0]} />

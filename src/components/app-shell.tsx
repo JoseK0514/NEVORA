@@ -5,11 +5,11 @@ import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { PlusIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import { PortalAccountMenu } from "./portal-account-menu";
@@ -24,11 +24,36 @@ import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
 import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
+import type {OperationalAuthorityView} from '@/lib/company-access/model';
+import {useOperationalNavigation} from './company-access/use-operational-navigation';
 
 /** Home's views share Home's address; the trail names them as their bands do. */
 const HOME_VIEWS = { attendance: "Attendance", team: "Team overview", activity: "Schedule activity" } as const;
 
-export function AppShell({
+type AppShellProps = {
+  brand?: { style?: Record<string, string>; logoUrl?: string | null };
+  presentation?: NavContext;
+  workspaceName: string;
+  initialCollapsed?: boolean;
+  preferenceCookie?: string;
+  notificationAuthority?: string;
+  notificationsEnabled?: boolean;
+  payrollCapabilities?: PayrollCapabilities;
+  operationalAuthority?: OperationalAuthorityView;
+  children: ReactNode;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    role: UserRole;
+  };
+};
+
+export function AppShell(props:AppShellProps){
+ return <AppShellView key={JSON.stringify([props.user.id,props.user.role])} {...props}/>;
+}
+
+function AppShellView({
   children,
   workspaceName,
   user,
@@ -39,26 +64,11 @@ export function AppShell({
   notificationAuthority,
   brand,
   presentation,
-}: {
-  workspaceName: string;
-  /** Company brand (B1): derived colour tokens and an optional logo. */
-  brand?: { style?: Record<string, string>; logoUrl?: string | null };
-  /** Company modules and words (B2). */
-  presentation?: NavContext;
-  initialCollapsed?: boolean;
-  preferenceCookie?: string;
-  notificationAuthority?: string;
-  notificationsEnabled?: boolean;
-  payrollCapabilities?: PayrollCapabilities;
-  children: ReactNode;
-  user: {
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-  };
-}) {
+  operationalAuthority,
+}:AppShellProps) {
   const pathname = usePathname();
   const search = useSearchParams();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   function toggleSidebar() {
     const next = !collapsed; setCollapsed(next);
@@ -66,8 +76,10 @@ export function AppShell({
   }
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
-  const inboxCount = useInboxCount(!employee, pathname);
-  const context = presentation ?? {};
+  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')window.location.reload();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router]);
+  const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
+  const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.view?.state === 'ready' && operational.view.scope?.mode === 'COMPANY'), pathname);
+  const context:NavContext = {...presentation, operational:operational.view??undefined};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);
   const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
   const mobileMore = mobileMoreForRole(user.role, payrollCapabilities, context);
@@ -80,7 +92,7 @@ export function AppShell({
   const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
   const sidebarItems = sidebarNavigation(user.role, navigation);
   // Clean Manager (v3): Home's occasional tools (its views and the two recovery pages) have their own group.
-  const teamTools = teamToolsForRole(user.role);
+  const teamTools = teamToolsForRole(user.role, context);
   const toolView = pathname === "/app" ? search?.get("view") : null;
   const activeTool = teamTools.find(tool => tool.href === pathname || (toolView && tool.href === `/app?view=${toolView}`));
   const sidebarActive = activeTool?.href ?? sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
@@ -308,21 +320,21 @@ export function AppShell({
           {companyLogo}
           <div className="mobile-header-actions">
           {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
-          {!employee ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
-          {!employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
+          {!employee && navigation.some(item => item.href === "/app/schedule") ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
+          {!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY") ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
           {/* Employee app (new style): the avatar comes first, so focus order matches the phone header (avatar left; "+" and the
             bell right). On desktop its CSS order puts it back at the end of the top bar. */}
           {employee ? accountMenu : null}
           {/* Employee app (new style): a round "+" for a new request, next to the bell. */}
           {employee ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}
-          {notificationAuthority ? <NotificationBell authority={notificationAuthority} /> : null}
+          {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
           {!employee ? accountMenu : null}
           </div>
         </header>
 
-        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{children}</PresentationProvider></main>
+        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}{children}</PresentationProvider></main>
 
-        <nav className="mobile-nav" aria-label="Mobile navigation">
+        <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${Math.min(navigation.length,5)},minmax(0,1fr))`}:undefined}>
           {employee ? (
             <>
               {mobileTabs.map((item) => (

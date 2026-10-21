@@ -8,7 +8,7 @@ let f:Awaited<ReturnType<typeof createPunchFixture>>;
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 const owner:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 beforeEach(async()=>{
- f=await createPunchFixture();
+ f=await createPunchFixture({companyAccess:true});
  await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version)
  VALUES('D4-T','c34-a','loc-1',$1,'2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)`,[f.devices[0].device.id]);
  await f.q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status) VALUES('D4-TO','c34-a','2026-09-23','2026-09-23','PRIVATE ABSENCE REASON','PENDING')");

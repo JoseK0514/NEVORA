@@ -1,3 +1,4 @@
+import {notificationCompanySql,notificationOperationalAllowedSql,notificationOperationalGuard,isNotificationOperationalAuthorizationError} from '../data/notification-operational-sql';
 import { businessDate } from '../business-time';
 import { workspaceReadGuard } from '../data/workspaces';
 import { createHash, randomUUID } from 'node:crypto';
@@ -56,18 +57,38 @@ function cancelIntentStatement(intent: NotificationIntent, terminal: 'cancelled'
       UPDATE push_deliveries SET status=$3,lease_token=NULL,lease_expires_at=NULL,updated_at=now()
       WHERE notification_id IN (SELECT id FROM cancelled) AND status IN ('queued','retry_pending','processing')`,values:[intent.id,intent.environment,terminal]};
 }
+function sameOperationalAuthority(original:RecipientAccess|null,current:RecipientAccess|null):boolean {
+ return !!original&&!!current&&original.active&&current.active&&isReviewRole(original)&&isReviewRole(current)
+  &&original.operationalCompany===true&&current.operationalCompany===true&&original.employeeId===current.employeeId
+  &&original.role===current.role&&/^[a-f0-9]{64}$/.test(original.operationalAuthority??'')&&original.operationalAuthority===current.operationalAuthority;
+}
+/** A real source transition may cancel a notice only under its original current
+ * authority. Scope loss preserves history even if the source also resolved. */
+async function cancelCurrentIntent(intent:NotificationIntent,terminal:'cancelled'|'expired',deps:ReminderDeps,recipient?:RecipientAccess):Promise<boolean>{
+ try{
+  await deps.executor.transaction([
+   ...(recipient&&deps.config.workspace?workspaceReadGuard(deps.config.workspace):[]),
+   ...(recipient?[{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[recipient.employeeId]},notificationOperationalGuard(recipient.employeeId,recipient.role,recipient.operationalAuthority??'')]:[]),
+   cancelIntentStatement(intent,terminal),
+   ...(recipient?[notificationOperationalGuard(recipient.employeeId,recipient.role,recipient.operationalAuthority??'')]:[]),
+  ]);
+  return true;
+ }catch(error){if(recipient&&isNotificationOperationalAuthorizationError(error))return false;throw error;}
+}
 async function persistReminder(intent: NotificationIntent, deps:ReminderDeps, withinBudget:()=>boolean) {
     const {executor} = deps;
     const insert = notificationIntentStatements([intent])[0];
     // Account-level budget is independent of installation count or edited deadline version.
-    let sql = insert.text.replace('VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,\'pending\')',`SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending'
-      WHERE NOT EXISTS (SELECT 1 FROM notifications n WHERE n.environment=$8 AND n.employee_id=$2 AND n.source_kind=$9 AND n.source_id=$10 AND n.purpose='REMINDER'
-        AND (n.event_key=$7 OR (n.due_at AT TIME ZONE $18)::date=($15::timestamptz AT TIME ZONE $18)::date))`);
+    const conflict='      ON CONFLICT';
+    const budget=`AND NOT EXISTS (SELECT 1 FROM notifications n WHERE n.environment=$8 AND n.employee_id=$2 AND n.source_kind=$9 AND n.source_id=$10 AND n.purpose='REMINDER'
+        AND (n.event_key=$7 OR (n.due_at AT TIME ZONE $18)::date=($15::timestamptz AT TIME ZONE $18)::date))`;
+    let sql=insert.text.replace(conflict,budget+'\n'+conflict);
+    if(sql===insert.text||!insert.text.includes('FROM employees notification_recipient'))throw Error('Reminder outbox contract changed');
     if (intent.source.kind==='AVAILABILITY') {
-        sql = sql.replace('WHERE NOT EXISTS', `WHERE EXISTS (SELECT 1 FROM schedule_week_settings w WHERE w.week_start=$10::text::date AND w.availability_deadline=$11::text::timestamptz AND w.availability_deadline>clock_timestamp())
+        sql=sql.replace(budget,`AND EXISTS (SELECT 1 FROM schedule_week_settings w WHERE w.week_start=$10::text::date AND w.availability_deadline=$11::text::timestamptz AND w.availability_deadline>clock_timestamp())
           AND EXISTS (SELECT 1 FROM employees e WHERE e.id=$2 AND e.active=true AND e.role IN ('EMPLOYEE','LEAD'))
           AND NOT EXISTS (SELECT 1 FROM weekly_availability_submissions s WHERE s.week_start=$10::text::date AND s.employee_id=$2 AND s.submitted_at IS NOT NULL)
-          AND NOT EXISTS`);
+          ${budget}`);
     }
     for (let attempt=0;attempt<3;attempt++) {
         if (!withinBudget()) return;
@@ -104,16 +125,20 @@ async function persistGroup(inputs:readonly SummaryInput[],recipient:RecipientAc
             if (!withinBudget()) return;
             await executor.transaction([
                 ...(config.workspace ? workspaceReadGuard(config.workspace) : []),
+                {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[recipient.employeeId]},
                 // The account lock also fences the deadline lifetime budget across midnight.
                 {text:`SELECT pg_advisory_xact_lock(hashtextextended('manager-account:' || $1 || ':' || $2,0))`,values:[config.environment,recipient.employeeId]},
                 {text:`SELECT pg_advisory_xact_lock(hashtextextended('manager-day:' || $1 || ':' || $2 || ':' || $3,0))`,values:[config.environment,recipient.employeeId,businessDate(new Date(intent.dueAt),deps.config.policy.timeZone)]},
+                notificationOperationalGuard(recipient.employeeId,recipient.role,recipient.operationalAuthority??''),
                 // A conflict aborts and rebuilds the group with the winner's consumed items.
                 {text:`SELECT (CASE WHEN NOT EXISTS (SELECT 1 FROM notifications WHERE environment=$1 AND employee_id=$2 AND source_kind='MANAGER_SUMMARY' AND purpose='SUMMARY' AND item_keys && $3::text[]) THEN '1' ELSE 'notification_group_conflict' END)::integer`,values:[config.environment,recipient.employeeId,intent.itemKeys]},
                 ...notificationIntentStatements([intent]),
-                {text:`UPDATE notifications SET push_state='materialized' WHERE id=ANY($1::text[]) AND environment=$2 AND employee_id=$3 AND purpose='SUMMARY' AND source_kind<>'MANAGER_SUMMARY' AND push_state='pending'`,values:[inputs.filter(input=>(intent.itemKeys??[]).some(key=>{const member=parseSummaryMember(key);return member?.source.kind===input.source.kind && member.source.id===input.source.source.id && member.source.version===summarySourceRef(input.source,input.urgency).version;})).flatMap(i=>i.seedId?[i.seedId]:[]),config.environment,recipient.employeeId]},
+                {text:`UPDATE notifications SET push_state='materialized' WHERE id=ANY($1::text[]) AND environment=$2 AND employee_id=$3 AND purpose='SUMMARY' AND source_kind<>'MANAGER_SUMMARY' AND push_state='pending' AND EXISTS(SELECT 1 FROM notifications persisted WHERE persisted.environment=$2 AND persisted.employee_id=$3 AND persisted.event_key=$4 AND persisted.source_kind='MANAGER_SUMMARY' AND persisted.effective_version=$5 AND persisted.cancelled_at IS NULL)`,values:[inputs.filter(input=>(intent.itemKeys??[]).some(key=>{const member=parseSummaryMember(key);return member?.source.kind===input.source.kind && member.source.id===input.source.source.id && member.source.version===summarySourceRef(input.source,input.urgency).version;})).flatMap(i=>i.seedId?[i.seedId]:[]),config.environment,recipient.employeeId,intent.eventKey,intent.effectiveVersion]},
+                notificationOperationalGuard(recipient.employeeId,recipient.role,recipient.operationalAuthority??''),
             ]);
             return;
         } catch (error) {
+            if(isNotificationOperationalAuthorizationError(error))return;
             if (!(error instanceof Error && 'code' in error && error.code==='22P02' && error.message.includes('notification_group_conflict')) || attempt===2) throw error;
         }
     }
@@ -151,7 +176,7 @@ function managerRecipientStatement(input:SummaryInput,now:Date,config:Notificati
     if (!buildSummaryGroup([input],{employeeId:'candidate',role:'MANAGER',active:true,allowedLocationIds:[]},now,config.environment,config.policy,new Set())) return null;
     const candidates = summaryKeyVariants([input],now,config.policy);
     if (!candidates.length || Date.parse(input.expiresAt)<=now.getTime()) return null;
-    return {text:`SELECT id FROM employees e WHERE active=true AND role IN ('OWNER','MANAGER')
+    return {text:`SELECT id FROM employees e WHERE active=true AND role IN ('OWNER','MANAGER') AND ${notificationCompanySql()}
       AND EXISTS (SELECT 1 FROM jsonb_array_elements($2::jsonb) item WHERE NOT EXISTS (
         SELECT 1 FROM notifications n WHERE n.environment=$1 AND n.employee_id=e.id AND n.source_kind='MANAGER_SUMMARY' AND n.purpose='SUMMARY'
           AND n.item_keys && ARRAY(SELECT jsonb_array_elements_text(item))))
@@ -174,8 +199,8 @@ export async function runReminders(deps:ReminderDeps):Promise<WorkerReport> {
       AND purpose IN ('REMINDER','SUMMARY')
       AND (push_state='pending' OR EXISTS (SELECT 1 FROM push_deliveries d WHERE d.notification_id=notifications.id AND d.status IN ('queued','retry_pending','processing')))
       AND (purpose<>'SUMMARY' OR source_kind='MANAGER_SUMMARY' OR push_state='pending')
-      AND (due_at<=$2 OR purpose='REMINDER') ORDER BY due_at,id LIMIT $3`,values:[config.environment,started.toISOString(),limit]});
-    const groups = new Map<string,SummaryInput[]>();
+      AND (due_at<=$2 OR purpose='REMINDER') AND ${notificationOperationalAllowedSql('notifications')} ORDER BY due_at,id LIMIT $3`,values:[config.environment,started.toISOString(),limit]});
+    const groups = new Map<string,{recipient:RecipientAccess;inputs:SummaryInput[]}>();
     for (const {id} of ids) {
         if (!withinReconciliationBudget()) break;
         const intent = await state.findIntent(id);
@@ -183,31 +208,46 @@ export async function runReminders(deps:ReminderDeps):Promise<WorkerReport> {
         report.claimed++;
         const now = clock();
         if (intent.purpose==='SUMMARY' && intent.source.kind!=='MANAGER_SUMMARY') {
+            const access=await state.recipientAccess(intent.employeeId,'operational');
+            if (!withinReconciliationBudget()) break;
+            if(!access||!sameOperationalAuthority(access,access))continue;
             const source = await state.readSource(intent.source);
             if (!withinReconciliationBudget()) break;
-            const access = await state.recipientAccess(intent.employeeId);
-            if (!withinReconciliationBudget()) break;
+            const afterSource=await state.recipientAccess(intent.employeeId,'operational');
+            // Complete this already-started authority check within the reserved
+            // flush window; a slow collection still leaves time for progress.
+            if(!withinSeedFlushBudget())break;
+            if(!sameOperationalAuthority(access,afterSource))continue;
             const items = source ? summarySourceItems(source) : [];
             if (!source || (source.source.version!==intent.effectiveVersion && !isCurrentCoverageAttentionSeed(intent,source)) || !access?.active || !isReviewRole(access) || !destinationForSource(source,access) || !items.length || Date.parse(intent.expiresAt)<=now.getTime()) {
-                await executor.transaction([cancelIntentStatement(intent)]);report.cancelled++;continue;
+                if(await cancelCurrentIntent(intent,'cancelled',deps,access))report.cancelled++;continue;
             }
-            groups.set(intent.employeeId,[...(groups.get(intent.employeeId)??[]),{source,expiresAt:intent.expiresAt,seedId:intent.id,urgency:intent.urgency}]);
+            const previous=groups.get(intent.employeeId);
+            if(previous&&!sameOperationalAuthority(previous.recipient,access))continue;
+            groups.set(intent.employeeId,{recipient:previous?.recipient??access,inputs:[...(previous?.inputs??[]),{source,expiresAt:intent.expiresAt,seedId:intent.id,urgency:intent.urgency}]});
         } else {
+            const independent=['PAYROLL_PREPARATION','PAYROLL_STATEMENT','SELF_TEST'].includes(intent.source.kind);
+            const access=independent?null:await state.recipientAccess(intent.employeeId,'operational');
+            if(!withinReconciliationBudget())break;
+            const operational=!independent&&(!!access&&isReviewRole(access)||intent.purpose==='SUMMARY'||intent.source.kind==='MANAGER_SUMMARY');
+            if(operational&&!sameOperationalAuthority(access,access))continue;
             const check = await state.check(intent,intent.employeeId,now);
             if (!withinReconciliationBudget()) break;
+            if(check.reason==='operational_access_lost')continue;
             if (!check.deliverable) {
-                await executor.transaction([cancelIntentStatement(intent,check.reason==='expired'?'expired':'cancelled')]);
-                if (check.reason==='expired') report.expired++; else report.cancelled++;
+                if(await cancelCurrentIntent(intent,check.reason==='expired'?'expired':'cancelled',deps,operational?access!:undefined)){
+                    if (check.reason==='expired') report.expired++; else report.cancelled++;
+                }
             }
         }
     }
     // Persist already-collected seeds before scanning unrelated sources.
-    for (const [employeeId,inputs] of groups) {
+    for (const [employeeId,group] of groups) {
         if (!withinSeedFlushBudget()) break;
-        const recipient = await state.recipientAccess(employeeId);
-        if (recipient?.active && isReviewRole(recipient)) for (const compatible of compatibleInputs(inputs)) {
+        const recipient = await state.recipientAccess(employeeId,'operational');
+        if (sameOperationalAuthority(group.recipient,recipient)) for (const compatible of compatibleInputs(group.inputs)) {
             if (!withinSeedFlushBudget()) break;
-            await persistGroup(compatible,recipient,clock(),deps,withinSeedFlushBudget);
+            await persistGroup(compatible,group.recipient,clock(),deps,withinSeedFlushBudget);
         }
     }
     if (!withinBudget()) return report;
@@ -234,8 +274,8 @@ export async function runReminders(deps:ReminderDeps):Promise<WorkerReport> {
         const accounts = await executor.query<{id:string}>(statement);
         for (const {id} of accounts) {
             if (!withinBudget()) return;
-            const recipient = await state.recipientAccess(id);
-            if (recipient?.active && isReviewRole(recipient) && withinBudget()) await persistGroup([input],recipient,clock(),deps,withinBudget);
+            const recipient = await state.recipientAccess(id,'operational');
+            if (recipient?.active && recipient.operationalCompany===true && isReviewRole(recipient) && withinBudget()) await persistGroup([input],recipient,clock(),deps,withinBudget);
         }
     }
     let visited = false;

@@ -1,4 +1,5 @@
 import {readFile} from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
 import {Client} from 'pg';
 import {beforeEach,afterEach,it,expect} from 'vitest';
 import {createDisposableFoundationDatabase} from './local-postgres';
@@ -11,6 +12,8 @@ import {withActionRequestFacts} from '../../lib/data/action-request-facts.server
 import {getWorkspace} from '../../lib/data/workspaces';
 import type {ActionItem} from '../../lib/action-center/project';
 import {currentShiftTermsSql} from '../../lib/data/shift-change-release';
+import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/company-access/operational-scope.server';
+import type {ScopeSelection} from '../../lib/company-access/model';
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const proof=(role:'OWNER'|'MANAGER'='OWNER'):SessionMutationProof=>({employee:{id:role.toLowerCase(),role,firstName:'Fictional',lastName:role,primaryLocationId:'loc-1'},sessionTokenHash:(role==='OWNER'?'a':'b').repeat(64)});
 beforeEach(async()=>{
@@ -20,13 +23,21 @@ beforeEach(async()=>{
     ('owner','Fictional','Owner','owner@example.invalid','787-555-0100','OWNER','loc-1'),
     ('manager','Fictional','Manager',NULL,'','MANAGER','loc-1');
     INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('a',64),'owner',clock_timestamp()+interval '1 day'),(repeat('b',64),'manager',clock_timestamp()+interval '1 day');`,values:[]});
+  await db.executor.query({text:await readFile('db/migrations/0032_company_access_invitations.sql','utf8'),values:[]});
 });
 afterEach(async()=>{await db?.dispose();});
-it('reads Owner and legacy Manager snapshots using the real database clock and scope',async()=>{
+async function setManagerScope(scope:ScopeSelection|null) {
+  const view=await readOwnerOperationalScope(proof(),'manager',db.executor);
+  expect(view.state).toBe('ready');
+  if(view.state!=='ready')throw Error('scope fixture unavailable');
+  const current=view.data.current,base={operationId:randomUUID(),expectedEmployeeVersion:current.employeeUpdatedAt,expectedRoleGeneration:current.roleGeneration,expectedScopeRevision:current.scopeRevision};
+  expect(await assignOperationalScope(proof(),'manager',scope?{...base,action:'ASSIGN',scope}:{...base,action:'REVOKE'},db.executor)).toMatchObject({state:'saved'});
+}
+it('reads Owner and adopted Manager snapshots using the real database clock and scope',async()=>{
   const owner=await readManagementProfile(proof(),db.executor),manager=await readManagementProfile(proof('MANAGER'),db.executor);
   expect(owner).toMatchObject({state:'ready',contact:{email:'owner@example.invalid'},locations:{scope:'all'}});
   expect(manager).toMatchObject({state:'ready',contact:{email:null,phone:''},locations:{scope:'all'}});
-  if(owner.state==='ready')expect(owner.validForMs).toBeGreaterThan(45000);
+  if(owner.state==='ready'){expect(owner.validForMs).toBeGreaterThan(0);expect(owner.validForMs).toBeLessThanOrEqual(15000);}
 });
 it('supports zero active locations and expires an otherwise valid proof',async()=>{
   await db.executor.query({text:'UPDATE locations SET active=false',values:[]});
@@ -34,22 +45,43 @@ it('supports zero active locations and expires an otherwise valid proof',async()
   await db.executor.query({text:"UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id='manager'",values:[]});
   expect(await readManagementProfile(proof('MANAGER'),db.executor)).toMatchObject({state:'unavailable',reason:'access_denied'});
 });
-it('reads installed Manager location scope and denies a missing administrative grant',async()=>{
-  await db.executor.query({text:`CREATE SCHEMA IF NOT EXISTS nevora_tenancy;
-    CREATE TABLE nevora_tenancy.portal_administrative_authority(workspace_id text,employee_id text,scope_kind text);
-    CREATE TABLE nevora_tenancy.portal_administrative_location(workspace_id text,employee_id text,location_id text);
-    INSERT INTO nevora_tenancy.portal_administrative_authority SELECT id,'manager','LOCATIONS' FROM workspaces;
-    INSERT INTO nevora_tenancy.portal_administrative_location SELECT id,'manager','loc-2' FROM workspaces;`,values:[]});
+it('reads Company Access location grants and keeps own profile after revocation or an unassigned lifecycle',async()=>{
+  await setManagerScope({mode:'LOCATIONS',locationIds:['loc-2']});
   const profile=await readManagementProfile(proof('MANAGER'),db.executor);
   const locations=await db.executor.query<{name:string}>({text:"SELECT name FROM locations WHERE id='loc-2'",values:[]});
   expect(profile).toMatchObject({state:'ready',locations:{scope:'assigned',names:[locations[0].name]}});
   expect(await readManagementProfile(proof(),db.executor)).toMatchObject({state:'ready',locations:{scope:'all'}});
-  await db.executor.query({text:"UPDATE nevora_tenancy.portal_administrative_authority SET scope_kind='ALL_TENANT'",values:[]});
+  await setManagerScope({mode:'COMPANY',locationIds:[]});
   expect(await readManagementProfile(proof('MANAGER'),db.executor)).toMatchObject({state:'ready',locations:{scope:'all'}});
-  await db.executor.query({text:"UPDATE nevora_tenancy.portal_administrative_authority SET scope_kind='LOCATIONS'; DELETE FROM nevora_tenancy.portal_administrative_location",values:[]});
+  await setManagerScope(null);
   expect(await readManagementProfile(proof('MANAGER'),db.executor)).toMatchObject({state:'ready',locations:{scope:'assigned',names:[]}});
-  await db.executor.query({text:'DELETE FROM nevora_tenancy.portal_administrative_authority',values:[]});
-  expect(await readManagementProfile(proof('MANAGER'),db.executor)).toMatchObject({state:'unavailable',reason:'access_denied'});
+  await db.executor.query({text:"UPDATE employees SET role='EMPLOYEE' WHERE id='manager'; UPDATE employees SET role='MANAGER' WHERE id='manager'",values:[]});
+  await saveManagementAlertChoice(proof('MANAGER'),{topicId:'time-off',on:false},db.executor);
+  const unassigned=await readManagementProfile(proof('MANAGER'),db.executor);
+  expect(unassigned).toMatchObject({state:'ready',contact:{email:null,phone:''},locations:{scope:'assigned',names:[]}});
+  expect(unassigned.state==='ready'&&unassigned.alerts.find(a=>a.id==='time-off')?.on).toBe(false);
+});
+it('keeps a newly created Manager own profile and preferences without any operational grant',async()=>{
+  await db.executor.query({text:`INSERT INTO employees(id,first_name,last_name,email,phone,role,primary_location_id)
+    VALUES('unassigned','New','Manager','new@example.invalid','','MANAGER','loc-1');
+    INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('c',64),'unassigned',clock_timestamp()+interval '1 day');`,values:[]});
+  const ownProof={...proof('MANAGER'),employee:{...proof('MANAGER').employee,id:'unassigned'},sessionTokenHash:'c'.repeat(64)};
+  await saveManagementAlertChoice(ownProof,{topicId:'time-off',on:false},db.executor);
+  const profile=await readManagementProfile(ownProof,db.executor);
+  expect(profile).toMatchObject({state:'ready',contact:{email:'new@example.invalid'},locations:{scope:'assigned',names:[]}});
+  expect(profile.state==='ready'&&profile.alerts.find(a=>a.id==='time-off')?.on).toBe(false);
+});
+it.each(['role','scope','revocation'] as const)('suppresses a profile when its %s changes after the contact read',async change=>{
+  await setManagerScope({mode:'LOCATIONS',locationIds:['loc-2']});
+  const executor={...db.executor,transaction:async(...args:Parameters<typeof db.executor.transaction>)=>{
+    const result=await db.executor.transaction(...args);
+    if(args[0].some(s=>s.text.startsWith('WITH observed'))){
+      if(change==='role')await db.executor.query({text:"UPDATE employees SET role='EMPLOYEE' WHERE id='manager'",values:[]});
+      else await setManagerScope(change==='revocation'?null:{mode:'COMPANY',locationIds:[]});
+    }
+    return result;
+  }};
+  expect(await readManagementProfile(proof('MANAGER'),executor)).toEqual({state:'unavailable',reason:'access_denied'});
 });
 it('adds request detail only within the currently authorized Manager location scope',async()=>{
   await db.executor.query({text:`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason) VALUES('facts','manager','2030-01-01','2030-01-02','Fictional reason');

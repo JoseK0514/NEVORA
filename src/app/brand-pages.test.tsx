@@ -37,19 +37,21 @@ it("brands login as NEVORA Workforce with the configured workspace and Velani ow
   expect(html).toContain("Welcome back");
 });
 
+// Activation follows development's email-invitation page until it gets its own Signature mock.
 it("brands activation as NEVORA Workforce", async () => {
   const html = renderToStaticMarkup(await ActivatePage({ searchParams: Promise.resolve({}) }));
-  expect(html).toContain('alt="NEVORA"');
-  expect(html).toContain("NEVORA Workforce");
-  expect(html).toContain("Activate account");
+  expect(html).toContain("NEVORA");
+  expect(html).toContain("Workforce");
+  expect(html).toContain("Northside Services");
   expect(html).not.toContain("Fuel Coffee Drive");
   expect(html).toContain("© 2026 VELANI LLC. All rights reserved.");
-  expect(html).toContain('href="/login"');
+  expect(html).toContain("NEVORA is a product of VELANI LLC.");
 });
 
 it("keeps explicit Fuel customer identity when configured", async () => {
   identity.name = "Fuel Coffee Drive";
   expect(renderToStaticMarkup(await LoginPage({ searchParams: Promise.resolve({}) }))).toContain("Fuel Coffee Drive");
+  expect(renderToStaticMarkup(await ActivatePage({ searchParams: Promise.resolve({}) }))).toContain("Fuel Coffee Drive");
 });
 it("renders unavailable workspace identity when public configuration is missing", async () => {
   identity.name = null;
@@ -57,4 +59,7 @@ it("renders unavailable workspace identity when public configuration is missing"
   expect(html).toContain("Workspace unavailable");
   expect(html).not.toContain("Fuel Coffee Drive");
   expect(html).toContain('alt="NEVORA"');
+  const activation = renderToStaticMarkup(await ActivatePage({ searchParams: Promise.resolve({}) }));
+  expect(activation).toContain("Workspace unavailable");
+  expect(activation).not.toContain("Fuel Coffee Drive");
 });

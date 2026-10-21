@@ -1,3 +1,5 @@
+import {notificationOperationalRecipientSql} from './notification-operational-sql';
+import {isOperationalReviewRecipient,operationalNotificationAllowed} from '../notifications/operational-access';
 import {communicationDevelopmentAllowedSql,communicationRecipientAllowedSql} from '../communications/sql';
 import {recipientAlertOn} from '../notifications/alert-choices';
 import {checkPayrollNotice} from '../payroll/notices';
@@ -24,6 +26,7 @@ import { canAccessPublishedAssignment, destinationForSource, isReviewRole, isSel
 import { nextRoutineTime } from '../notifications/policy';
 import { buildAcknowledgementState } from '../assistance/acknowledgement-state';
 export const notificationReadSql = {
+    operationalRecipient:notificationOperationalRecipientSql,
     summarySeeds: (environment='$1', employee='$2', source='$3', version='$4') => `SELECT event_key,urgency FROM notifications WHERE environment=${environment} AND employee_id=${employee} AND source_kind='EXCHANGE' AND source_id=${source} AND source_version=${version} AND purpose='SUMMARY' AND push_state='materialized' AND cancelled_at IS NULL`,
     coverageLocations: () => `SELECT l.id,l.short_name AS name,s.minimum_staff_per_shift AS "minimumStaffPerShift",s.requires_designated_lead AS "requiresDesignatedLead" FROM locations l LEFT JOIN location_staffing_settings s ON s.location_id=l.id WHERE l.active=true`,
     coverageWindows: () => `SELECT location_id AS "locationId",day_of_week AS "dayOfWeek",left(start_time::text,5) AS "startTime",left(end_time::text,5) AS "endTime",minimum_staff AS "minimumStaff", COALESCE((SELECT jsonb_agg(jsonb_build_object('positionId',r.position_id,'quantity',r.quantity)) FROM coverage_window_position_requirements r WHERE r.coverage_window_id=location_coverage_windows.id),'[]'::jsonb) AS "positionRequirements" FROM location_coverage_windows`,
@@ -75,7 +78,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
             return { id: String(row.id), employeeId: String(row.employee_id), type: String(row.type), title: String(row.title), body: String(row.body), actionHref: row.action_href ? String(row.action_href) : undefined, eventKey: String(row.event_key), environment: row.environment,
                 source: { kind: row.source_kind as SourceKind, id: String(row.source_id), version: String(row.source_version) }, effectiveVersion: String(row.effective_version), purpose: row.purpose as NotificationIntent['purpose'], urgency: row.urgency as NotificationIntent['urgency'], dueAt, expiresAt, itemKeys: Array.isArray(row.item_keys) && row.item_keys.every(item => typeof item === 'string') ? row.item_keys : undefined };
         },
-        async recipientAccess(employeeId) {
+        async recipientAccess(employeeId,domain) {
             const [row] = await executor.query<{
                 id: string;
                 role: UserRole;
@@ -85,7 +88,10 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
             }>({ text: notificationReadSql.recipient(), values: [employeeId] });
             if (!row || !['OWNER', 'MANAGER', 'LEAD', 'EMPLOYEE'].includes(row.role))
                 return null;
-            return { employeeId: row.id, role: row.role, active: row.active, allowedLocationIds: row.allowed_location_ids,...(row.alert_choices?{alertChoices:row.alert_choices}:{}) } satisfies RecipientAccess;
+            const base:RecipientAccess={employeeId:row.id,role:row.role,active:row.active,allowedLocationIds:row.allowed_location_ids,...(row.alert_choices?{alertChoices:row.alert_choices}:{})};
+            if(domain!=='operational'||!isOperationalReviewRecipient(base))return base;
+            const [access]=await executor.query<{id:string;role:UserRole;active:boolean;company:boolean;authority:string}>({text:notificationReadSql.operationalRecipient(),values:[employeeId]});
+            return {...base,operationalCompany:!!access?.company&&access.id===base.employeeId&&access.role===base.role&&access.active,operationalAuthority:access?.authority};
         },
         async readSource(source) {
             if(source.kind==='PAYROLL_PREPARATION'||source.kind==='PAYROLL_STATEMENT')return null; // Payroll checks use metadata-only authority queries.
@@ -163,15 +169,27 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
         async check(intent, recipientId, now, use = 'delivery') {
             if (intent.employeeId !== recipientId) return rejected(intent,'recipient_mismatch');
             if(intent.source.kind==='PAYROLL_PREPARATION'||intent.source.kind==='PAYROLL_STATEMENT')return checkPayrollNotice(intent,recipientId,now,executor,workspace);
-            let [recipient, source] = await Promise.all([repository.recipientAccess(recipientId),repository.readSource(intent.source)]);
+            let recipient=await repository.recipientAccess(recipientId);
             if(!recipientAlertOn(recipient,intent.source.kind,intent.type))return rejected(intent,'topic_disabled');
+            const operational=intent.source.kind!=='SELF_TEST'&&(!!recipient&&isOperationalReviewRecipient(recipient)||intent.purpose==='SUMMARY'||intent.source.kind==='MANAGER_SUMMARY');
+            if(operational){const originalRole=recipient?.role;recipient=await repository.recipientAccess(recipientId,'operational');if(!recipient?.active||recipient.role!==originalRole||!isOperationalReviewRecipient(recipient)||recipient.operationalCompany!==true||!recipient.operationalAuthority)return rejected(intent,'operational_access_lost');}
+            const admitted=recipient;
+            const response=async(result:SourceCheck)=>{
+                if(!result.deliverable||intent.source.kind==='SELF_TEST')return result;
+                const current=await repository.recipientAccess(recipientId,operational?'operational':undefined);
+                // A successful own-source read keeps its original identity/role;
+                // promotion cannot inherit the earlier self-service admission.
+                if(!current?.active||current.employeeId!==admitted?.employeeId||current.role!==admitted?.role)return rejected(intent,'operational_access_lost');
+                return !operational||current.operationalCompany===true&&current.operationalAuthority===admitted?.operationalAuthority?result:rejected(intent,'operational_access_lost');
+            };
+            let source=await repository.readSource(intent.source);
             if(source?.kind==='EXCHANGE' && source.record.status==='OPEN'){const current=await readShiftChangeMaintenanceSnapshot(intent.source.id,'EXCHANGE',executor,now);if(current?.lifecycle.source)source=maintenanceExchangeSource(current,source.record);}
             try {
                 const current=await getWorkspace(executor);
                 if (workspace && (current.id!==workspace.id || current.timeZone!==workspace.timeZone || current.updatedAt!==workspace.updatedAt)) return rejected(intent,'workspace_changed');
                 if (use==='open') {
                     const history=checkParticipantHistory(intent,recipient,source,now);
-                    if (history) return history;
+                    if (history) return await response(history);
                 }
                 const locationIds=source?.kind==='EXCHANGE' ? [source.record.sourceShift.locationId,...(source.record.targetShift ? [source.record.targetShift.locationId] : [])]
                     : source?.kind==='CALLOUT' ? [source.record.locationId]
@@ -180,7 +198,7 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                     const active=await executor.query<{id:string}>({text:notificationReadSql.locations(),values:[[...new Set(locationIds)]]});
                     if(locationIds.some(id=>!active.some(l=>l.id===id))) return rejected(intent,'location_inactive');
                 }
-                return evaluateNotificationSource(intent, recipient, source, now,notificationPolicyFor(current.timeZone));
+                return await response(evaluateNotificationSource(intent, recipient, source, now,notificationPolicyFor(current.timeZone)));
             } catch {return rejected(intent,'workspace_unavailable');}
         },
         async listReminderCandidates(now, limit, shouldContinue = () => true, visit) {
@@ -231,6 +249,7 @@ function checkParticipantHistory(intent: NotificationIntent, recipient: Recipien
 export function evaluateNotificationSource(intent: NotificationIntent, recipient: RecipientAccess | null, source: SourceSnapshot | null, now: Date, policy: import('../notifications/types').NotificationPolicy): SourceCheck {
     const shiftStart = (shift:{date:string;startTime:string;endTime:string}) => notificationShiftStart(shift,policy.timeZone);
     if (!recipient?.active || recipient.employeeId!==intent.employeeId || !source) return rejected(intent,'source_or_access_lost');
+    if(!operationalNotificationAllowed(source.kind,recipient))return rejected(intent,'operational_access_lost');
     if (source.kind!==intent.source.kind || source.source.id!==intent.source.id) return rejected(intent,'source_mismatch');
     let expiry = Date.parse(intent.expiresAt);
     let effectiveVersion = source.source.version;

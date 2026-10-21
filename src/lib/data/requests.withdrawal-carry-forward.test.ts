@@ -20,6 +20,7 @@ import {describe} from 'vitest';
 import * as requests from './requests';
 import {createDisposableFoundationDatabase} from '../../test/integration/local-postgres';
 import {Client} from 'pg';
+import {readFile} from 'node:fs/promises';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 const withdrawalId='dc6b44c9-6e3f-4f0e-890c-328067ebfe9e';
 const command={requestId:withdrawalId,operationId:`TIME_OFF_WITHDRAW:${withdrawalId}`,employeeId:'employee',proof:managementProof('employee','EMPLOYEE')};
@@ -35,6 +36,9 @@ describe.skipIf(!process.env.FUEL_TEST_DATABASE_URL)('owned PostgreSQL withdrawa
   const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
   const q=(text:string,values:unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
   await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('employee','Fictional','Employee','555001','EMPLOYEE','loc-1'),('manager','Fictional','Manager','555002','MANAGER','loc-1'),('foreign','Fictional','Foreign','555003','EMPLOYEE','loc-1')");
+  // This fixture's intended legacy Manager exists before the atomic census.
+  // Later-created Managers remain unassigned; no shared automatic grant.
+  for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
   for(const actor of ['employee','manager','foreign'])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[managementProof(actor).sessionTokenHash,actor]);
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,created_at) VALUES($1,'employee','2030-10-07','2030-10-08','Original fictional reason','2030-01-01T00:00:00Z')",[withdrawalId]);
   const real=await vi.importActual<typeof import('./request-notifications')>('./request-notifications');vi.mocked(commitRequestTransition).mockImplementation(real.commitRequestTransition);
@@ -101,17 +105,35 @@ describe.skipIf(!process.env.FUEL_TEST_DATABASE_URL)('owned PostgreSQL withdrawa
   }finally{await db.dispose();}
  });
  it.each(['withdrawal-first','manager-first'] as const)('allows only the canonical terminal winner in %s race',async order=>{
-  const db=await fixture();let release:()=>void=()=>{};try{
+  const db=await fixture();let release:()=>void=()=>{},releasePlanning:()=>void=()=>{};
+  const pending:Promise<unknown>[]=[];
+  try{
    let locked:()=>void=()=>{};const acquired=new Promise<void>(resolve=>{locked=resolve;});const gate=new Promise<void>(resolve=>{release=resolve;});
    const held:SqlExecutor={...db.executor,transaction:async statements=>{
     const client=new Client({connectionString:db.connectionString});await client.connect();try{await client.query('BEGIN');const results:unknown[][]=[];for(const statement of statements){results.push((await client.query(statement.text,[...statement.values])).rows);if(statement.text.includes('time_off_requests WHERE id=$1 ORDER BY id FOR UPDATE')){locked();await gate;}}await client.query('COMMIT');return results;}catch(error){await client.query('ROLLBACK');throw error;}finally{await client.end();}
    }};
    const review=(executor:SqlExecutor)=>requests.reviewTimeOffRequest({requestId:withdrawalId,managerId:'manager',proof:managementProof('manager'),status:'APPROVED'},executor);
-   const winner=order==='withdrawal-first'?requests.withdrawTimeOffRequest(command,held):review(held);await acquired;
-   const loser=order==='withdrawal-first'?review(db.executor):requests.withdrawTimeOffRequest(command,db.executor);let waiting=false;for(let poll=0;poll<30&&!waiting;poll++){const rows=await db.q("SELECT count(*)::integer AS waiting FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE '%time_off_requests%'");waiting=Number(rows[0].waiting)>0;if(!waiting)await new Promise(resolve=>setTimeout(resolve,20));}expect(waiting).toBe(true);release();
+   let plannedReview:Promise<boolean>|undefined;
+   if(order==='withdrawal-first'){
+    // Perform real Company admission before the winner takes workspace SHARE.
+    // Park only the actual decision batch so this race still proves the original
+    // request-row wait; initial/final business-transaction guards remain real.
+    let prepared:()=>void=()=>{};const planning=new Promise<void>(resolve=>{prepared=resolve;});
+    const planningGate=new Promise<void>(resolve=>{releasePlanning=resolve;});
+    const managerExecutor:SqlExecutor={...db.executor,transaction:async statements=>{
+     if(statements.some(s=>s.text.includes('UPDATE time_off_requests SET status'))){prepared();await planningGate;}
+     return db.executor.transaction(statements);
+    }};
+    plannedReview=review(managerExecutor);pending.push(plannedReview);
+    await Promise.race([planning,plannedReview.then(()=>{throw Error('Manager decision did not reach its real business batch');})]);
+   }
+   const winner=order==='withdrawal-first'?requests.withdrawTimeOffRequest(command,held):review(held);pending.push(winner);
+   await Promise.race([acquired,winner.then(()=>{throw Error('Winner did not reach the request-row lock');})]);
+   const loser=order==='withdrawal-first'?plannedReview!:requests.withdrawTimeOffRequest(command,db.executor);pending.push(loser);releasePlanning();
+   let waiting=false;for(let poll=0;poll<30&&!waiting;poll++){const rows=await db.q("SELECT count(*)::integer AS waiting FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE '%time_off_requests%'");waiting=Number(rows[0].waiting)>0;if(!waiting)await new Promise(resolve=>setTimeout(resolve,20));}expect(waiting).toBe(true);release();
    const [first,second]=await Promise.all([winner,loser]);expect(first).toBeTruthy();expect(second).toBe(order==='withdrawal-first'?false:null);
    expect((await db.q('SELECT status,reviewed_by FROM time_off_requests'))[0]).toEqual(order==='withdrawal-first'?{status:'CANCELLED',reviewed_by:'employee'}:{status:'APPROVED',reviewed_by:'manager'});
-  }finally{release();await db.dispose();}
+  }finally{releasePlanning();release();await Promise.allSettled(pending);await db.dispose();}
  });
  it.each(['after-row-wait','final-boundary'] as const)('rolls back cancellation when authority expires at %s',async boundary=>{
   const db=await fixture();let blocker:Client|undefined;try{

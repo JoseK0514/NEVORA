@@ -1,3 +1,6 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {randomUUID} from 'node:crypto';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
@@ -72,6 +75,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof();
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
+  const source=await withOperationalCompany(proof,async()=>{
   const [pending, callouts, coverage, exchanges, history] = await Promise.all([
     selected.id === "pending" ? listManagerPendingExchanges() : Promise.resolve([]),
     selected.id === "pending" ? listPendingCallouts() : Promise.resolve([]),
@@ -83,6 +87,10 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   const liveCoverage=coverage.filter(e=>e.status==='OPEN');
   const approvals=new Map(await Promise.all([...livePending.map(e=>({id:e.id,revision:e.requestRevision,kind:'MANAGER_APPROVE' as const})),...callouts.map(e=>({id:e.id,revision:e.requestRevision,kind:'APPROVE_CALLOUT' as const}))].map(async e=>[e.id,e.revision?await readShiftChangeAvailability(proof,{kind:e.kind,requestId:e.id,expectedRevision:e.revision,operationId:randomUUID()}).catch(()=>({allowed:false,notice:'We couldn’t check this right now. Reload to try again.'})):{allowed:false,notice:'This request changed. Reload to see the latest.'}] as const)));
   const historyViews=new Map(await Promise.all([...exchanges,...history].map(async e=>[e.id,await readShiftChangeHistoryView(proof,e.id).catch(()=>null)] as const)));
+    return {callouts,exchanges,history,livePending,liveCoverage,approvals,historyViews};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Team shift requests unavailable" reason={source.reason}/>;
+  const {callouts,exchanges,history,livePending,liveCoverage,approvals,historyViews}=source.data;
   const activity = [
     ...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, title: `${exchange.kind === "SWAP" ? "Swap" : "Coverage"}\u00a0· ${exchange.requestedByName}`, lead: exchangeLead(exchange), body: <ExchangeShifts exchange={exchange} /> })),
     ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, title: `Unable to work\u00a0· ${callout.employeeName}`, lead: null, body: <>
@@ -96,7 +104,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   const decisionNotice = (id: string) => approvals.get(id)?.notice
     ? <div className="wa-card-body wa-card-body--tight"><Notice tone="review" quiet>{approvals.get(id)?.notice}</Notice></div> : null;
 
-  return <div className="nv-page wa-page wa-shiftreq" data-nv-page="">
+  return <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-shiftreq" data-nv-page="">
     <PageBand title="Shift requests" overlap={false}
       summary={selected.id === "pending" ? (count ? `${plural(count, "request needs", "requests need")} your decision.` : "Nothing needs your decision.")
         : selected.id === "coverage" ? (count ? `${plural(count, "shift", "shifts")} nobody has picked up yet.` : "Every offered shift has been picked up.")
@@ -167,5 +175,5 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
         <div className="wa-card-body"><p className="wa-text wa-muted">{selected.id === "pending" ? "Swaps, pick-ups and “Unable to work” reports that need you show up here and in your Inbox." : selected.id === "coverage" ? "Shifts people offer up show here until someone picks them up." : "Approved, declined and withdrawn requests show up here."}</p></div>
       </Card> : null}
     </div>
-  </div>;
+  </div></ScopedReadFrame>;
 }

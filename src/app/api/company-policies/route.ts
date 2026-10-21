@@ -1,6 +1,9 @@
 import { parseCompanyPolicyCommand } from "@/lib/business-improvements/company-policies/model";
 import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
-import { saveCompanyPolicy } from "@/lib/business-improvements/company-policies/service";
+import {
+  readCompanyPolicyHistory,
+  saveCompanyPolicy,
+} from "@/lib/business-improvements/company-policies/service";
 import {
   correctionBoundary,
   correctionJson,
@@ -8,6 +11,21 @@ import {
 } from "@/lib/time-corrections/http.server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/** Private Owner recovery read; ready describes the read, not policy validity.
+ * Each scope/revision has its own explicit validity state. */
+export async function GET(request: Request) {
+  const boundary = correctionBoundary(request, false, "x-nevora-company-policies");
+  if (boundary) return correctionJson({ state: "unavailable" }, boundary);
+  try {
+    const session = await getSession();
+    if (!session) return correctionJson({ state: "unavailable" }, 401);
+    if (session.role !== "OWNER") return correctionJson({ state: "unavailable" }, 403);
+    const history = await readCompanyPolicyHistory(await requireSessionMutationProof());
+    return correctionJson({ state: "ready", history });
+  } catch {
+    return correctionJson({ state: "unavailable" }, 503);
+  }
+}
 export async function POST(request: Request) {
   const boundary = correctionBoundary(
     request,

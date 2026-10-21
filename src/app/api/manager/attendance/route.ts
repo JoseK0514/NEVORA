@@ -36,7 +36,7 @@ export async function GET(request: Request): Promise<Response> {
       return json({ state: 'unavailable', reason: 'access_denied' }, 403);
     }
 
-    if(policyRequest){const {readAttendancePolicies}=await import('@/lib/business-improvements/attendance-policy/service');const result=await readAttendancePolicies(await requireSessionMutationProof());return json(result,result.state==='ready'?200:503);}
+    if(policyRequest){const {readAttendancePolicies}=await import('@/lib/business-improvements/attendance-policy/service');const result=await readAttendancePolicies(await requireSessionMutationProof());return json(result,result.state==='ready'?200:result.reason==='access_denied'?403:503);}
     const result = await getAttendanceReview();
     if (result.state === 'ready') return json(result);
     return json(

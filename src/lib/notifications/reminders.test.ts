@@ -7,7 +7,7 @@ import { DEFAULT_NOTIFICATION_POLICY as policy } from './policy';
 import { readNotificationConfig as readRuntimeConfig } from './config';
 import type { NotificationIntent, NotificationStateRepository, RecipientAccess, SourceSnapshot, SqlExecutor, SqlStatement } from './types';
 const now = new Date('2026-10-05T12:00:00Z');
-const employees: RecipientAccess[] = [{employeeId:'E',role:'EMPLOYEE',active:true,allowedLocationIds:['2']},{employeeId:'L',role:'LEAD',active:true,allowedLocationIds:['2']},{employeeId:'M',role:'MANAGER',active:true,allowedLocationIds:[]}];
+const employees: RecipientAccess[] = [{employeeId:'E',role:'EMPLOYEE',active:true,allowedLocationIds:['2']},{employeeId:'L',role:'LEAD',active:true,allowedLocationIds:['2']},{employeeId:'M',role:'MANAGER',active:true,allowedLocationIds:[],operationalCompany:true,operationalAuthority:'b'.repeat(64)}];
 const availability: SourceSnapshot = {kind:'AVAILABILITY',source:{kind:'AVAILABILITY',id:'2026-10-05',version:'2026-10-06T12:00:00.000Z'},updatedAt:now.toISOString(),settings:{weekStart:'2026-10-05',availabilityDeadline:'2026-10-06T12:00:00.000Z'},submissions:[{employeeId:'E',employeeName:'E',submitted:true,state:'SUBMITTED_UNAVAILABLE',windowCount:0},{employeeId:'L',employeeName:'L',submitted:false,state:'NOT_SUBMITTED',windowCount:0}]};
 it('zero_hour_submission_is_not_missing',()=>{
  expect(planSourceReminders(availability,employees,now,'test',policy).map(i=>i.employeeId)).toEqual(['L']);
@@ -109,7 +109,8 @@ it('coverage_resolving_before_first_delivery_leaves_routine_seed_in_its_own_quie
  const routine=inserts.find(s=>s.values[13]==='normal')!;
  expect(routine.values[14]).toBe('2026-10-06T11:00:00.000Z');expect(routine.values[15]).toBe('2026-10-08T12:00:00.000Z');
  expect(routine.values[16]).toEqual([expect.stringContaining('"leave"')]);
- expect(batches.find(batch=>batch.includes(routine))!.at(-1)?.values[0]).toEqual(['leave']);
+ expect(batches.find(batch=>batch.includes(routine))!.find(s=>s.text.includes("UPDATE notifications SET push_state='materialized'"))!.values[0]).toEqual(['leave']);
+ expect(batches.find(batch=>batch.includes(routine))!.at(-1)?.text).toContain('notification_operational_authorization');
  const persisted:NotificationIntent={...seeds[0],id:String(routine.values[0]),source:{kind:'MANAGER_SUMMARY',id:String(routine.values[9]),version:String(routine.values[10])},effectiveVersion:String(routine.values[11]),urgency:'normal',dueAt:String(routine.values[14]),expiresAt:String(routine.values[15]),itemKeys:routine.values[16] as string[]};
  const surviving:SourceSnapshot={kind:'MANAGER_SUMMARY',source:{...persisted.source,kind:'MANAGER_SUMMARY'},updatedAt:persisted.dueAt,weekStart:'',expiresAt:persisted.expiresAt,items:[{id:'TIME_OFF:leave',type:'TIME_OFF',priority:'REVIEW',title:'Review',detail:'',href:'/app/requests?tab=pending&requestId=leave'}]};
  expect(evaluateNotificationSource(persisted,employees[2],surviving,night,policy)).toMatchObject({deliverable:true,expiresAt:'2026-10-08T12:00:00.000Z',destination:'/app/requests?tab=pending&requestId=leave'});

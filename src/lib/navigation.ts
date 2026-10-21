@@ -6,7 +6,8 @@ import { DEFAULT_WORDS, type WordSlots } from './workspace-presentation/words';
 
 /** Company choices that shape navigation (B2): modules that are off disappear
  * everywhere, and the vocabulary names the people page. Defaults change nothing. */
-export type NavContext = { modules?: EnabledModules; words?: WordSlots };
+export type NavContext = { modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
+import type {OperationalAuthorityView} from './company-access/model';
 
 export type NavigationItem = {
   href: string;
@@ -90,8 +91,9 @@ const TEAM_TOOLS: NavigationItem[] = [
   { href: "/app/clocker-recovery", label: "Clocker recovery", icon: "refresh" },
   { href: "/app/account-recovery", label: "Account recovery", icon: "employee" },
 ];
-export function teamToolsForRole(role: UserRole): NavigationItem[] {
-  return role === "OWNER" || role === "MANAGER" ? TEAM_TOOLS : [];
+export function teamToolsForRole(role: UserRole, context: NavContext = {}): NavigationItem[] {
+  const current = context.operational;
+  return role === "OWNER" || role === "MANAGER" && current?.state === "ready" && current.role === "MANAGER" && current.scope?.mode === "COMPANY" ? TEAM_TOOLS : [];
 }
 
 /** Presentation groups consume only already-authorized navigation entries. Team tools, when given, sit before Workspace. */
@@ -125,7 +127,7 @@ export function moreNavigationGroups(items: NavigationItem[], tools: NavigationI
 
 /** Canonical workflows keep their URLs, queries and commands. Only their
  * employee navigation owner is the Requests group. Manager owners are unchanged. */
-export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
+export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext | OperationalAuthorityView = {}): string | undefined {
   const pathname = path.split(/[?#]/, 1)[0];
   const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   if ((role === "EMPLOYEE" || role === "LEAD") &&
@@ -137,14 +139,15 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 }
 
-export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): NavigationItem[] {
+export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, input: NavContext | OperationalAuthorityView = {}): NavigationItem[] {
+  const context:NavContext = 'state' in input ? {operational:input} : input;
   const modules = context.modules ?? ALL_MODULES_ON, words = context.words ?? DEFAULT_WORDS.en;
-  return baseNavigation(role, payroll)
+  return baseNavigation(role, payroll, context.operational)
     .filter(item => pathEnabled(item.href, modules))
     .map(item => item.href === "/app/employees" ? { ...item, label: words.people } : item);
 }
 
-function baseNavigation(role: UserRole, payroll?: PayrollCapabilities): NavigationItem[] {
+function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView): NavigationItem[] {
   const finance: NavigationItem[] = payroll?.enabled ? [
     ...(payroll.canReview ? [{ href: '/app/payroll', label: 'Payroll', icon: 'payroll' as const }] : []),
     { href: '/app/my-pay', label: 'My pay', icon: 'statement' },
@@ -161,7 +164,10 @@ function baseNavigation(role: UserRole, payroll?: PayrollCapabilities): Navigati
   }
 
   if (role === "MANAGER") {
-    return management;
+    const scope=operational?.state==='ready'&&operational.role==='MANAGER'?operational.scope:null;
+    if(scope?.mode==='COMPANY')return management;
+    const allowed=new Set(['/app','/app/profile',...(scope?.mode==='LOCATIONS'&&scope.locationIds.length?['/app/schedule','/app/employees']:[]),...finance.map(item=>item.href)]);
+    return management.filter(item=>allowed.has(item.href));
   }
 
   return [...employeeNavigation, ...finance];
@@ -184,12 +190,14 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
       : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time", "/app/timecards"] };
     return [home, schedule, { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/availability"] }, pay];
   }
-  return [
+  const authorized = new Set(navigationForRole(role, payroll, context).map(item=>item.href));
+  const tabs:MobileTab[] = [
     home,
     schedule,
     { href: "/app/inbox", label: "Inbox", icon: "inbox", owns: ["/app/inbox", "/app/requests", "/app/exchange", "/app/availability"] },
     { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees"] },
   ];
+  return tabs.filter(tab=>authorized.has(tab.href));
 }
 
 /** Authorized destinations without a tab of their own, in sidebar order. */
@@ -237,6 +245,8 @@ export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCa
       ] },
     ];
   // A turned-off module's pages leave the tabs; a lone tab is no tab row.
-  const visible = groups.map(group => ({ ...group, items: group.items.filter(item => pathEnabled(item.href, modules)) })).filter(group => group.items.length > 1);
+  const authorized = new Set(navigationForRole(role,payroll,context).map(item=>item.href));
+  if(payroll?.canConfigure)authorized.add('/app/settings/payroll');
+  const visible = groups.map(group => ({ ...group, items: group.items.filter(item => pathEnabled(item.href, modules)&&(role!=='MANAGER'||authorized.has(item.href))) })).filter(group => group.items.length > 1);
   return visible.find(group => group.items.some(item => item.href === pathname)) ?? null;
 }

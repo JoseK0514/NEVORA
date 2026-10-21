@@ -1,4 +1,5 @@
 import 'server-only';
+import {assertOperationalAccess,operationalScopeStatements,OperationalAuthorizationError,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {createHash,randomUUID} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
@@ -27,6 +28,39 @@ export function communicationAuthority(proof:SessionMutationProof):string{
  assertManagementProof(proof,proof?.employee?.id);
  return createHash('sha256').update(JSON.stringify(['nevora:communication:lifetime:v1',proof.employee.id,proof.sessionTokenHash])).digest('hex');
 }
+type CommunicationWorkspace=Workspace&{operational?:{authority:string;started:number;validForMs:number}};
+const management=(proof:SessionMutationProof)=>['OWNER','MANAGER'].includes(proof.employee.role);
+const authorizationDenied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error);
+/** Keep the own Employee/Lead protocol independent. Management composes global
+ * audience, context and status, so every management entry requires Company. */
+async function communicationWorkspace(proof:SessionMutationProof,executor:SqlExecutor,signal:AbortSignal):Promise<CommunicationWorkspace>{
+ const started=performance.now(),w=await readEmployeeWorkspace(executor,signal);
+ if(!management(proof))return w;
+ const bounded:SqlExecutor={query:(s,caller)=>executor.query(s,caller?AbortSignal.any([signal,caller]):signal),transaction:(s,caller)=>executor.transaction(s,caller?AbortSignal.any([signal,caller]):signal)};
+ const access=await assertOperationalAccess(proof,{kind:'COMPANY'},bounded);
+ if(access.workspace.id!==w.id||access.workspace.updatedAt!==w.updatedAt)throw new OperationalAuthorizationError();
+ return {...w,operational:{authority:access.authority,started,validForMs:access.validForMs}};
+}
+function currentAuthority(proof:SessionMutationProof,w:CommunicationWorkspace):SqlStatement[]{
+ const session=managementSessionStatements(proof,proof.employee.id,[proof.employee.role]);
+ if(!management(proof))return session;
+ if(!w.operational)throw new OperationalAuthorizationError();
+ return [...session,...operationalScopeStatements(proof,w,{kind:'COMPANY'},w.operational.authority)];
+}
+function limitedLifetime<T extends {validForMs:number}>(lifetime:T,w:CommunicationWorkspace,observationStarted?:number):T{
+ if(!w.operational)return lifetime;
+ const now=performance.now();
+ const validForMs=Math.floor(Math.min(lifetime.validForMs-(now-(observationStarted??w.operational.started)),Math.min(15000,w.operational.validForMs)-(now-w.operational.started)));
+ if(validForMs<1)throw new OperationalAuthorizationError();
+ return {...lifetime,validForMs};
+}
+/** Recheck after all awaited projection/receipt/commit work. A committed write
+ * stays committed if the response is suppressed by subsequently lost authority. */
+async function responseFence(proof:SessionMutationProof,w:CommunicationWorkspace,executor:SqlExecutor,signal:AbortSignal){
+ if(!management(proof))return;
+ await executor.transaction([...employeeReadLimits,communicationDevelopmentGuard,...workspaceReadGuard(w),{text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},...currentAuthority(proof,w)],signal);
+ limitedLifetime({validForMs:15000},w);
+}
 /** D04 live activation is held. A flag or database name alone is insufficient:
  * actual PostgreSQL loopback address AND disposable ownership comment required. */
 export const communicationDevelopmentGuard:SqlStatement={text:`SELECT (CASE WHEN ${communicationDevelopmentAllowedSql()} THEN '1' ELSE 'communication_activation_held' END)::integer`,values:[]};
@@ -34,17 +68,17 @@ function proofValid(proof:SessionMutationProof){assertManagementProof(proof,proo
 /** Range locks protect new grants/assignments as well as existing rows. Existing
  * workspace/employee/catalog/source/session order is retained. Locks/timeouts
  * bound contention; authority is observed only after every source/root wait. */
-function guards(proof:SessionMutationProof,w:Workspace,root?:string):SqlStatement[]{
+function guards(proof:SessionMutationProof,w:CommunicationWorkspace,root?:string):SqlStatement[]{
  return [...employeeReadLimits,communicationDevelopmentGuard,...workspaceReadGuard(w),
   {text:'LOCK TABLE employees IN SHARE MODE',values:[]},
   {text:'SELECT id FROM employees ORDER BY id FOR SHARE',values:[]},
   {text:'SELECT id FROM locations WHERE workspace_id=$1 ORDER BY id FOR SHARE',values:[w.id]},
   {text:'LOCK TABLE employee_location_eligibility, schedules, shifts, shift_callouts IN SHARE MODE',values:[]},
   ...(root?[{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=$2::uuid FOR UPDATE',values:[w.id,root]}]:[]),
-  ...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])];
+  ...currentAuthority(proof,w)];
 }
 type Observation={facts:CommunicationFacts;fingerprint:string;observedAt:string};
-function snapshot(proof:SessionMutationProof,w:Workspace,draft:CommunicationDraft):SqlStatement{
+function snapshot(proof:SessionMutationProof,w:CommunicationWorkspace,draft:CommunicationDraft):SqlStatement{
  const s=draft.scope;
  return {text:`/* communication_snapshot */ WITH facts AS (SELECT jsonb_build_object(
  'actor',(SELECT jsonb_build_object('id',e.id,'role',e.role,'active',e.active,'workspaceId',l.workspace_id) FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.id=$2),
@@ -60,16 +94,17 @@ function snapshot(proof:SessionMutationProof,w:Workspace,draft:CommunicationDraf
  SELECT value AS facts,encode(sha256(convert_to(value::text,'UTF8')),'hex') AS fingerprint,to_jsonb(clock_timestamp()) AS "observedAt" FROM facts`,
  values:[w.id,proof.employee.id,s.locationId,s.kind,s.kind==='TODAYS_TEAM'?s.businessDate:null,s.kind==='SHIFT'?s.sourceShiftId:null]};
 }
-async function observe(proof:SessionMutationProof,w:Workspace,draft:CommunicationDraft,executor:SqlExecutor,signal:AbortSignal,root?:string){
- const prefix=guards(proof,w,root),r=await executor.transaction([...prefix,snapshot(proof,w,draft),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+async function observe(proof:SessionMutationProof,w:CommunicationWorkspace,draft:CommunicationDraft,executor:SqlExecutor,signal:AbortSignal,root?:string){
+ const prefix=guards(proof,w,root),r=await executor.transaction([...prefix,snapshot(proof,w,draft),...currentAuthority(proof,w)],signal);
  const observation=r[prefix.length]?.[0] as Observation|undefined;if(!observation||!hex.test(observation.fingerprint))throw Error('communication_source_unavailable');
  return {...observation,...projectCommunicationAudience(draft,observation.facts,w,observation.observedAt)};
 }
 export async function previewCommunicationAudience(proof:SessionMutationProof,draft:CommunicationDraft,executor:SqlExecutor=neonNotificationExecutor()):Promise<{state:'ready';count:number;fingerprint:string;authority:string}|{state:'blocked'|'unavailable';reason:string}>{
  try{proofValid(proof);const d=validateCommunicationDraft(draft);if(!d.ok)return {state:'blocked',reason:'invalid_draft'};
-  const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),o=await observe(proof,w,d.value,executor,signal);
+  const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),o=await observe(proof,w,d.value,executor,signal);
+  await responseFence(proof,w,executor,signal);
   return o.allowed?{state:'ready',count:o.grants.length,fingerprint:o.fingerprint,authority:communicationAuthority(proof)}:{state:'blocked',reason:'access_denied'};
- }catch(error){return {state:isManagementAuthorizationError(error)?'blocked':'unavailable',reason:'preview_unavailable'};}
+ }catch(error){return {state:authorizationDenied(error)?'blocked':'unavailable',reason:'preview_unavailable'};}
 }
 function validCommand(input:unknown):input is CommunicationCommand{
  if(!input||typeof input!=='object'||Array.isArray(input))return false;const c=input as Record<string,unknown>;
@@ -82,27 +117,28 @@ function validCommand(input:unknown):input is CommunicationCommand{
  try{return Buffer.byteLength(JSON.stringify(c),'utf8')<=COMMUNICATION_TRANSPORT_BYTES;}catch{return false;}
 }
 type Root={id:string;authorId:string;state:'PUBLISHED'|'WITHDRAWN'|'DRAFT';revisionId:string;version:number;contentHash:string;draft:CommunicationDraft;publishedAt:string;authorContext:string};
-function rootStatement(w:Workspace,id:string):SqlStatement{return {text:`SELECT c.id::text,c.author_employee_id AS "authorId",c.state,r.id::text AS "revisionId",r.version,r.content_hash AS "contentHash",r.published_at::text AS "publishedAt",(SELECT CASE WHEN role IN('OWNER','MANAGER') THEN 'Management' ELSE 'Team member' END FROM employees WHERE id=c.author_employee_id) AS "authorContext",
+function rootStatement(w:CommunicationWorkspace,id:string):SqlStatement{return {text:`SELECT c.id::text,c.author_employee_id AS "authorId",c.state,r.id::text AS "revisionId",r.version,r.content_hash AS "contentHash",r.published_at::text AS "publishedAt",(SELECT CASE WHEN role IN('OWNER','MANAGER') THEN 'Management' ELSE 'Team member' END FROM employees WHERE id=c.author_employee_id) AS "authorContext",
  jsonb_build_object('type',r.type,'scope',CASE r.scope_kind WHEN 'LOCATION' THEN jsonb_build_object('kind',r.scope_kind,'locationId',r.location_id)
  WHEN 'TODAYS_TEAM' THEN jsonb_build_object('kind',r.scope_kind,'locationId',r.location_id,'businessDate',r.business_date::text)
  ELSE jsonb_build_object('kind',r.scope_kind,'locationId',r.location_id,'sourceShiftId',r.source_shift_id,'assignmentEpisodeId',r.assignment_episode_id,'termsFingerprint',r.terms_fingerprint) END,
  'title',r.title,'body',r.body,'acknowledgement',r.acknowledgement,'expiresAt',CASE WHEN r.expires_at IS NULL THEN NULL ELSE to_char(r.expires_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') END) AS draft
  FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=$1 AND c.id=$2::uuid`,values:[w.id,id]};}
-async function rootRead(proof:SessionMutationProof,w:Workspace,id:string,executor:SqlExecutor,signal:AbortSignal){const p=guards(proof,w,id),r=await executor.transaction([...p,rootStatement(w,id),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);return r[p.length]?.[0] as Root|undefined;}
+async function rootRead(proof:SessionMutationProof,w:CommunicationWorkspace,id:string,executor:SqlExecutor,signal:AbortSignal){const p=guards(proof,w,id),r=await executor.transaction([...p,rootStatement(w,id),...currentAuthority(proof,w)],signal);return r[p.length]?.[0] as Root|undefined;}
 type Operation={payloadHash:string;sessionHash:string;id:string;version:string};
-function operationStatement(proof:SessionMutationProof,w:Workspace,id:string):SqlStatement{return {text:`SELECT payload_hash AS "payloadHash",session_hash AS "sessionHash",communication_id::text AS id,revision_id::text AS version FROM communication_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid
+function operationStatement(proof:SessionMutationProof,w:CommunicationWorkspace,id:string):SqlStatement{return {text:`SELECT payload_hash AS "payloadHash",session_hash AS "sessionHash",communication_id::text AS id,revision_id::text AS version FROM communication_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid
  UNION ALL SELECT command_hash::text AS "payloadHash",$4::text AS "sessionHash",result->>'id' AS id,result->>'version' AS version FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid AND result->>'kind'='COMMUNICATION_READ' AND result->>'authority'=$5 LIMIT 1`,values:[w.id,proof.employee.id,id,proof.sessionTokenHash,communicationAuthority(proof)]};}
 const committed=(id:string,version:string,operationId:string):CommandResult=>({status:'committed',id,version,operationId});
 export async function findCommunicationOperation(proof:SessionMutationProof,operationId:string,authority:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
  try{proofValid(proof);if(!uuid.test(operationId)||authority!==communicationAuthority(proof))return blocked;
-  const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),p=guards(proof,w),r=await executor.transaction([...p,operationStatement(proof,w,operationId),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal),o=r[p.length]?.[0] as Operation|undefined;
+  const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),p=guards(proof,w),r=await executor.transaction([...p,operationStatement(proof,w,operationId),...currentAuthority(proof,w)],signal),o=r[p.length]?.[0] as Operation|undefined;
+  await responseFence(proof,w,executor,signal);
   return o&&o.sessionHash===proof.sessionTokenHash?committed(o.id,o.version,operationId):{status:'unavailable',reason:'operation_not_found'};
- }catch{return {status:'unavailable',reason:'operation_unavailable'};}
+ }catch(error){return authorizationDenied(error)?blocked:{status:'unavailable',reason:'operation_unavailable'};}
 }
-function sourceGuard(proof:SessionMutationProof,w:Workspace,d:CommunicationDraft,fingerprint:string):SqlStatement{
+function sourceGuard(proof:SessionMutationProof,w:CommunicationWorkspace,d:CommunicationDraft,fingerprint:string):SqlStatement{
  const s=snapshot(proof,w,d);return {text:`SELECT (CASE WHEN fingerprint=$7 THEN '1' ELSE 'communication_source_conflict' END)::integer FROM (${s.text}) source`,values:[...s.values,fingerprint]};
 }
-function publicationClockGuard(w:Workspace,d:CommunicationDraft):SqlStatement{return {text:`SELECT (CASE WHEN ($1::timestamptz IS NULL OR $1::timestamptz>clock_timestamp())
+function publicationClockGuard(w:CommunicationWorkspace,d:CommunicationDraft):SqlStatement{return {text:`SELECT (CASE WHEN ($1::timestamptz IS NULL OR $1::timestamptz>clock_timestamp())
  AND ($2::date IS NULL OR $2::date=(clock_timestamp() AT TIME ZONE $3)::date) THEN '1' ELSE 'communication_source_conflict' END)::integer`,values:[d.expiresAt,d.scope.kind==='TODAYS_TEAM'?d.scope.businessDate:null,w.timeZone]};}
 const conflict:CommandResult={status:'conflict',reason:'source_or_operation_changed'};
 function cancelStatements(id:string):SqlStatement[]{return [{text:`WITH cancelled AS (UPDATE notifications SET push_state='cancelled',cancelled_at=clock_timestamp()
@@ -114,11 +150,11 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
  let dispatched=false;
  try{
   proofValid(proof);if(c.authority!==communicationAuthority(proof))return blocked;
-  const signal=AbortSignal.timeout(10000),w=await readEmployeeWorkspace(executor,signal),root=c.kind==='PUBLISH'?undefined:await rootRead(proof,w,c.communicationId,executor,signal);
+  const signal=AbortSignal.timeout(10000),w=await communicationWorkspace(proof,executor,signal),root=c.kind==='PUBLISH'?undefined:await rootRead(proof,w,c.communicationId,executor,signal);
   // Actor-bound recovery precedes source eligibility: successful withdrawals and
   // edits remain recoverable without revealing any former body/grant/roster.
-  const opPrefix=guards(proof,w),old=(await executor.transaction([...opPrefix,operationStatement(proof,w,c.operationId),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal))[opPrefix.length]?.[0] as Operation|undefined;
-  const payloadHash=communicationPayloadHash(c);if(old)return old.payloadHash===payloadHash&&old.sessionHash===proof.sessionTokenHash?committed(old.id,old.version,c.operationId):conflict;
+  const opPrefix=guards(proof,w),old=(await executor.transaction([...opPrefix,operationStatement(proof,w,c.operationId),...currentAuthority(proof,w)],signal))[opPrefix.length]?.[0] as Operation|undefined;
+  const payloadHash=communicationPayloadHash(c);if(old){await responseFence(proof,w,executor,signal);return old.payloadHash===payloadHash&&old.sessionHash===proof.sessionTokenHash?committed(old.id,old.version,c.operationId):conflict;}
   if(c.kind!=='PUBLISH'&&(!root||root.state!=='PUBLISHED'||root.revisionId!==c.expectedRevisionId))return conflict;
   const d=c.kind==='PUBLISH'||c.kind==='REVISE'?validateCommunicationDraft(c.draft):validateCommunicationDraft(root!.draft);if(!d.ok)return blocked;
   const o=await observe(proof,w,d.value,executor,signal,root?.id);
@@ -160,11 +196,12 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
   writes.push({text:`INSERT INTO communication_operations(workspace_id,actor_employee_id,operation_id,session_hash,payload_hash,kind,communication_id,revision_id,receipt_id)
    VALUES($1,$2,$3::uuid,$4,$5,$6,$7::uuid,$8::uuid,${c.kind==='ACKNOWLEDGE'?"(SELECT id FROM communication_receipts WHERE workspace_id=$1 AND employee_id=$2 AND communication_id=$7::uuid AND revision_id=$8::uuid)":'NULL'})`,values:[...identity,proof.sessionTokenHash,payloadHash,c.kind,id,revisionId]});
   const finalClock=c.kind==='PUBLISH'||c.kind==='REVISE'?[publicationClockGuard(w,d.value)]:c.kind==='ACKNOWLEDGE'?[recipientCommandGuard(proof,w,id,revisionId,c.contentHash)]:[];
-  dispatched=true;await executor.transaction([...prefix,opLock,opCheck,freshCheck,...writes,...finalClock,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  dispatched=true;await executor.transaction([...prefix,opLock,opCheck,freshCheck,...writes,...finalClock,...currentAuthority(proof,w)],signal);
+  await responseFence(proof,w,executor,signal);
   return committed(id,revisionId,c.operationId);
  }catch(error){
   const message=error instanceof Error?error.message:'';
-  if(isManagementAuthorizationError(error))return blocked;
+  if(authorizationDenied(error))return blocked;
   if(message.includes('communication_recipient_denied'))return blocked;
   if(message.includes('communication_operation_replay'))return findCommunicationOperation(proof,c.operationId,c.authority,executor);
   if(message.includes('communication_source_conflict')||message.includes('communication_operation_conflict'))return conflict;
@@ -172,18 +209,18 @@ export async function executeCommunicationCommand(proof:SessionMutationProof,c:C
   return dispatched?{status:'outcome_unknown',operationId:c.operationId}:{status:'unavailable',reason:'read_failed'};
  }
 }
-function recipientStatement(proof:SessionMutationProof,w:Workspace,r:Root):SqlStatement{return {text:`SELECT g.grant_kind AS kind,g.source_shift_id AS "sourceShiftId",g.assignment_episode_id AS "assignmentEpisodeId",g.terms_fingerprint AS "termsFingerprint",
+function recipientStatement(proof:SessionMutationProof,w:CommunicationWorkspace,r:Root):SqlStatement{return {text:`SELECT g.grant_kind AS kind,g.source_shift_id AS "sourceShiftId",g.assignment_episode_id AS "assignmentEpisodeId",g.terms_fingerprint AS "termsFingerprint",
  (SELECT acknowledged_at::text FROM communication_receipts WHERE workspace_id=g.workspace_id AND communication_id=g.communication_id AND revision_id=g.revision_id AND employee_id=g.employee_id) AS "acknowledgedAt",
  (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=g.workspace_id AND employee_id=g.employee_id AND source_kind='COMMUNICATION' AND source_id=g.communication_id::text AND source_version=g.revision_id::text) AS "readAt"
  FROM communication_recipients g WHERE g.workspace_id=$1 AND g.communication_id=$2::uuid AND g.revision_id=$3::uuid AND g.employee_id=$4`,values:[w.id,r.id,r.revisionId,proof.employee.id]};}
 function lifetimeStatement(proof:SessionMutationProof):SqlStatement{return {text:`/* communication_lifetime */ SELECT to_jsonb(clock_timestamp()) AS "observedAt",LEAST(45000,FLOOR(EXTRACT(EPOCH FROM(expires_at-clock_timestamp()))*1000))::integer AS "validForMs" FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2 AND expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id]};}
-function statusStatement(proof:SessionMutationProof,w:Workspace,r:Root):SqlStatement{return {text:`SELECT count(*)::integer AS count,CASE WHEN $4 IN('OWNER','MANAGER') THEN COALESCE(jsonb_agg(jsonb_build_object('name',trim(e.first_name||' '||e.last_name),'acknowledgedAt',(SELECT to_jsonb(acknowledged_at) FROM communication_receipts receipt WHERE receipt.workspace_id=g.workspace_id AND receipt.communication_id=g.communication_id AND receipt.revision_id=g.revision_id AND receipt.employee_id=g.employee_id)) ORDER BY e.id),'[]') ELSE NULL END AS recipients FROM communication_recipients g JOIN employees e ON e.id=g.employee_id WHERE g.workspace_id=$1 AND g.communication_id=$2::uuid AND g.revision_id=$3::uuid`,values:[w.id,r.id,r.revisionId,proof.employee.role]};}
+function statusStatement(proof:SessionMutationProof,w:CommunicationWorkspace,r:Root):SqlStatement{return {text:`SELECT count(*)::integer AS count,CASE WHEN $4 IN('OWNER','MANAGER') THEN COALESCE(jsonb_agg(jsonb_build_object('name',trim(e.first_name||' '||e.last_name),'acknowledgedAt',(SELECT to_jsonb(acknowledged_at) FROM communication_receipts receipt WHERE receipt.workspace_id=g.workspace_id AND receipt.communication_id=g.communication_id AND receipt.revision_id=g.revision_id AND receipt.employee_id=g.employee_id)) ORDER BY e.id),'[]') ELSE NULL END AS recipients FROM communication_recipients g JOIN employees e ON e.id=g.employee_id WHERE g.workspace_id=$1 AND g.communication_id=$2::uuid AND g.revision_id=$3::uuid`,values:[w.id,r.id,r.revisionId,proof.employee.role]};}
 export async function readCommunication(proof:SessionMutationProof,id:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationRead>{
  try{
   proofValid(proof);if(!uuid.test(id))return {state:'unauthorized',reason:'update_unavailable'};
-  const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),r=await rootRead(proof,w,id,executor,signal);
+  const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),r=await rootRead(proof,w,id,executor,signal);
   if(!r)return {state:'unauthorized',reason:'update_unavailable'};
-  const o=await observe(proof,w,r.draft,executor,signal,id),p=guards(proof,w,id),result=await executor.transaction([...p,sourceGuard(proof,w,r.draft,o.fingerprint),rootStatement(w,id),recipientStatement(proof,w,r),lifetimeStatement(proof),statusStatement(proof,w,r),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  const o=await observe(proof,w,r.draft,executor,signal,id),p=guards(proof,w,id),observationStarted=performance.now(),result=await executor.transaction([...p,sourceGuard(proof,w,r.draft,o.fingerprint),rootStatement(w,id),recipientStatement(proof,w,r),lifetimeStatement(proof),statusStatement(proof,w,r),...currentAuthority(proof,w)],signal);
   const current=result[p.length+1]?.[0] as Root|undefined,grant=result[p.length+2]?.[0] as {kind:string;sourceShiftId:string;assignmentEpisodeId:string;termsFingerprint:string;acknowledgedAt:string|null;readAt:string|null}|undefined;
   const management=canManageCommunication(o.context),member=o.facts.members.some(m=>m.id===proof.employee.id);
   const assignmentValid=grant&&o.context.assignments.some(a=>a.employeeId===proof.employee.id&&a.published&&!a.released&&a.sourceShiftId===grant.sourceShiftId&&a.assignmentEpisodeId===grant.assignmentEpisodeId&&a.termsFingerprint===grant.termsFingerprint);
@@ -194,20 +231,22 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
   if(current.draft.expiresAt&&Date.parse(current.draft.expiresAt)<=Date.now())return {state:'withdrawn',reason:'update_unavailable'};
   const lifetime=result[p.length+3]?.[0] as {observedAt:string;validForMs:number}|undefined,status=result[p.length+4]?.[0] as {count:number;recipients:{name:string;acknowledgedAt:string|null}[]|null};
   if(!lifetime||lifetime.validForMs<=0)return {state:'unauthorized',reason:'update_unavailable'};
-  return {state:'ready',id:r.id,revisionId:r.revisionId,contentHash:r.contentHash,title:r.draft.title,body:r.draft.body,type:r.draft.type,publishedAt:r.publishedAt,editedAt:r.version>1?r.publishedAt:null,acknowledgement:r.draft.acknowledgement,ownAcknowledgedAt:grant?.acknowledgedAt??null,ownReadAt:grant?.readAt??null,authority:communicationAuthority(proof),...lifetime,validForMs:Math.min(lifetime.validForMs,r.draft.expiresAt?Date.parse(r.draft.expiresAt)-Date.parse(lifetime.observedAt):45000),timeZone:w.timeZone,expiresAt:r.draft.expiresAt,authorContext:r.authorContext??'Team member',canWithdraw:canWithdrawCommunication(r.draft,r.authorId,o.context),...(r.authorId===proof.employee.id?{sentCount:status.count}:{}),...(management?{management:{draft:r.draft,recipients:status.recipients??[]}}:{})};
- }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'update_unavailable'};}
+  await responseFence(proof,w,executor,signal);
+  const currentLifetime=limitedLifetime(lifetime,w,observationStarted);
+  return {state:'ready',id:r.id,revisionId:r.revisionId,contentHash:r.contentHash,title:r.draft.title,body:r.draft.body,type:r.draft.type,publishedAt:r.publishedAt,editedAt:r.version>1?r.publishedAt:null,acknowledgement:r.draft.acknowledgement,ownAcknowledgedAt:grant?.acknowledgedAt??null,ownReadAt:grant?.readAt??null,authority:communicationAuthority(proof),...currentLifetime,validForMs:Math.min(currentLifetime.validForMs,r.draft.expiresAt?Date.parse(r.draft.expiresAt)-Date.parse(lifetime.observedAt):45000),timeZone:w.timeZone,expiresAt:r.draft.expiresAt,authorContext:r.authorContext??'Team member',canWithdraw:canWithdrawCommunication(r.draft,r.authorId,o.context),...(r.authorId===proof.employee.id?{sentCount:status.count}:{}),...(management?{management:{draft:r.draft,recipients:status.recipients??[]}}:{})};
+ }catch(error){return {state:authorizationDenied(error)?'unauthorized':'unavailable',reason:'update_unavailable'};}
 }
 /** Final protected membership check for list/Home/ack consumers. Immutable
  * grants intersect current exact assignment and current location eligibility. */
-function recipientCommandGuard(proof:SessionMutationProof,w:Workspace,id:string,revision:string,contentHash?:string):SqlStatement{return {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid
+function recipientCommandGuard(proof:SessionMutationProof,w:CommunicationWorkspace,id:string,revision:string,contentHash?:string):SqlStatement{return {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid
  AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ($5::text IS NULL OR r.content_hash=$5) AND ${communicationRecipientAllowedSql()}) THEN '1' ELSE 'communication_recipient_denied' END)::integer`,values:[w.id,proof.employee.id,id,revision,contentHash??null]};}
 export async function recordCommunicationRead(proof:SessionMutationProof,c:AttentionCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
  let dispatched=false;
  try{
   proofValid(proof);if(!c||Object.keys(c).sort().join(',')!=='authority,kind,operationId,ref'||c.kind!=='MARK_READ'||!c.ref||Object.keys(c.ref).sort().join(',')!=='id,kind,version'||c.ref.kind!=='COMMUNICATION'||!uuid.test(c.operationId)||!uuid.test(c.ref.id)||!uuid.test(c.ref.version)||c.authority!==communicationAuthority(proof)||!['EMPLOYEE','LEAD'].includes(proof.employee.role))return blocked;
-  const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),identity=[w.id,proof.employee.id,c.operationId],payloadHash=createHash('sha256').update(JSON.stringify(['communication:read:v1',c])).digest('hex');
+  const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),identity=[w.id,proof.employee.id,c.operationId],payloadHash=createHash('sha256').update(JSON.stringify(['communication:read:v1',c])).digest('hex');
   const prefix=guards(proof,w,c.ref.id),op:SqlStatement={text:'SELECT command_hash::text AS hash,result FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid',values:identity};
-  const current=(await executor.transaction([...prefix,op,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal))[prefix.length]?.[0] as {hash:string;result:Record<string,string>}|undefined;
+  const current=(await executor.transaction([...prefix,op,...currentAuthority(proof,w)],signal))[prefix.length]?.[0] as {hash:string;result:Record<string,string>}|undefined;
   if(current)return current.hash===payloadHash?committed(current.result.id,current.result.version,c.operationId):conflict;
   const root=await rootRead(proof,w,c.ref.id,executor,signal);if(!root||root.state!=='PUBLISHED'||root.revisionId!==c.ref.version)return conflict;if(root.draft.acknowledgement==='REQUIRED')return {status:'blocked',reason:'required_action'};
   dispatched=true;
@@ -216,38 +255,41 @@ export async function recordCommunicationRead(proof:SessionMutationProof,c:Atten
    recipientCommandGuard(proof,w,c.ref.id,c.ref.version),
    {text:`INSERT INTO employee_attention_receipts(id,workspace_id,employee_id,source_kind,source_id,source_version) VALUES($1::uuid,$2,$3,'COMMUNICATION',$4,$5) ON CONFLICT(workspace_id,employee_id,source_kind,source_id,source_version) DO NOTHING`,values:[randomUUID(),w.id,proof.employee.id,c.ref.id,c.ref.version]},
    {text:`INSERT INTO employee_attention_operations(workspace_id,employee_id,operation_id,command_hash,result) VALUES($1,$2,$3::uuid,$4,jsonb_build_object('status','committed','operationId',$3::text,'id',$5::text,'version',$6::text,'kind','COMMUNICATION_READ','authority',$7::text)) ON CONFLICT(workspace_id,employee_id,operation_id) DO NOTHING`,values:[...identity,payloadHash,c.ref.id,c.ref.version,c.authority]},
-   recipientCommandGuard(proof,w,c.ref.id,c.ref.version),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+   recipientCommandGuard(proof,w,c.ref.id,c.ref.version),...currentAuthority(proof,w)],signal);
   return committed(c.ref.id,c.ref.version,c.operationId);
- }catch(error){const message=error instanceof Error?error.message:'';if(isManagementAuthorizationError(error)||message.includes('communication_recipient_denied'))return blocked;if(message.includes('communication_operation_conflict'))return conflict;return dispatched?{status:'outcome_unknown',operationId:c.operationId}:{status:'unavailable',reason:'read_failed'};}
+ }catch(error){const message=error instanceof Error?error.message:'';if(authorizationDenied(error)||message.includes('communication_recipient_denied'))return blocked;if(message.includes('communication_operation_conflict'))return conflict;return dispatched?{status:'outcome_unknown',operationId:c.operationId}:{status:'unavailable',reason:'read_failed'};}
 }
-function finalItemStatement(proof:SessionMutationProof,w:Workspace,item:Extract<CommunicationRead,{state:'ready'}>):SqlStatement{return {text:`SELECT EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id
+function finalItemStatement(proof:SessionMutationProof,w:CommunicationWorkspace,item:Extract<CommunicationRead,{state:'ready'}>):SqlStatement{return {text:`SELECT EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id
  WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp())
  AND ($5 IN('OWNER','MANAGER') OR ${communicationRecipientAllowedSql()})) AS allowed`,values:[w.id,proof.employee.id,item.id,item.revisionId,proof.employee.role]};}
-function communicationIndex(proof:SessionMutationProof,w:Workspace):SqlStatement{return {text:`/* communication_list_index */ SELECT c.id::text,c.head_revision_id::text AS revision,
+function communicationIndex(proof:SessionMutationProof,w:CommunicationWorkspace):SqlStatement{return {text:`/* communication_list_index */ SELECT c.id::text,c.head_revision_id::text AS revision,
  (SELECT acknowledged_at::text FROM communication_receipts WHERE workspace_id=c.workspace_id AND communication_id=c.id AND revision_id=c.head_revision_id AND employee_id=$2) AS acknowledged,
  (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=c.workspace_id AND source_kind='COMMUNICATION' AND source_id=c.id::text AND source_version=c.head_revision_id::text AND employee_id=$2) AS read FROM communications c WHERE c.workspace_id=$1 AND c.state='PUBLISHED' AND
  ($3 IN('OWNER','MANAGER') OR c.author_employee_id=$2 OR EXISTS(SELECT 1 FROM communication_recipients g WHERE g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=c.head_revision_id AND g.employee_id=$2)) ORDER BY c.created_at DESC,c.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]};}
 export async function listEmployeeCommunications(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationListRead>{
- try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),p=guards(proof,w),results=await executor.transaction([...p,communicationIndex(proof,w)],signal);
+ try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),p=guards(proof,w),results=await executor.transaction([...p,communicationIndex(proof,w)],signal);
   const rows=results[p.length] as {id:string}[],items:CommunicationRead[]=[];let partial=rows.length>100;
   for(const row of rows.slice(0,100)){const r=await readCommunication(proof,row.id,executor);if(r.state==='ready')items.push(r);else if(r.state==='unavailable')partial=true;}
   const ready=items.filter((i):i is Extract<CommunicationRead,{state:'ready'}>=>i.state==='ready');
   const finalPrefix=[...guards(proof,w),{text:'LOCK TABLE communications IN SHARE MODE',values:[]},{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY id FOR SHARE',values:[w.id,ready.map(i=>i.id).sort()]}];
-  const final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w),lifetimeStatement(proof),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  const observationStarted=performance.now(),final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w),lifetimeStatement(proof),...currentAuthority(proof,w)],signal);
   if(JSON.stringify(final[finalPrefix.length+ready.length])!==JSON.stringify(rows))partial=true;
   const current=ready.filter((_,i)=>(final[finalPrefix.length+i]?.[0] as {allowed:boolean}|undefined)?.allowed===true);if(current.length!==ready.length)partial=true;
   const lifetime=final[finalPrefix.length+ready.length+1]?.[0] as {observedAt:string;validForMs:number}|undefined;if(!lifetime||lifetime.validForMs<=0)return {state:'unauthorized',reason:'updates_unavailable'};
-  return {state:partial?'partial':'complete',...lifetime,validForMs:Math.min(lifetime.validForMs,...current.map(i=>i.validForMs-(Date.parse(lifetime.observedAt)-Date.parse(i.observedAt)))),authority:communicationAuthority(proof),timeZone:w.timeZone,items:current,reason:partial?'source_unavailable':null};
- }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'updates_unavailable'};}
+  await responseFence(proof,w,executor,signal);
+  const currentLifetime=limitedLifetime({...lifetime,validForMs:Math.min(lifetime.validForMs,...current.map(i=>i.validForMs-(Date.parse(lifetime.observedAt)-Date.parse(i.observedAt))))},w,observationStarted);
+  return {state:partial?'partial':'complete',...currentLifetime,authority:communicationAuthority(proof),timeZone:w.timeZone,items:current,reason:partial?'source_unavailable':null};
+ }catch(error){return {state:authorizationDenied(error)?'unauthorized':'unavailable',reason:'updates_unavailable'};}
 }
 
 /** Bounded current composition context; employee context has no coworker roster. */
 export async function readCommunicationContext(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationContext>{
- try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await readEmployeeWorkspace(executor,signal),prefix=guards(proof,w),management=['OWNER','MANAGER'].includes(proof.employee.role);
-  const r=await executor.transaction([...prefix,{text:`SELECT l.id,l.short_name AS label FROM locations l WHERE l.workspace_id=$1 AND l.active AND ($3 IN('OWNER','MANAGER') OR EXISTS(SELECT 1 FROM employees e WHERE e.id=$2 AND (e.primary_location_id=l.id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=l.id)))) ORDER BY l.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]},
+ try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),prefix=guards(proof,w),management=['OWNER','MANAGER'].includes(proof.employee.role);
+  const observationStarted=performance.now(),r=await executor.transaction([...prefix,{text:`SELECT l.id,l.short_name AS label FROM locations l WHERE l.workspace_id=$1 AND l.active AND ($3 IN('OWNER','MANAGER') OR EXISTS(SELECT 1 FROM employees e WHERE e.id=$2 AND (e.primary_location_id=l.id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=l.id)))) ORDER BY l.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]},
    {text:`SELECT sh.id,s.location_id AS "locationId",sh.date::text,left(sh.start_time::text,5) AS "startTime",left(sh.end_time::text,5) AS "endTime",sh.assignment_episode_id::text AS "assignmentEpisodeId",${currentShiftFingerprintSql()} AS "termsFingerprint",e.first_name || ' ' || e.last_name AS "assigneeLabel",published.position_name AS "positionLabel" FROM shifts sh JOIN employees e ON e.id=sh.employee_id JOIN schedules s ON s.id=sh.schedule_id
-    LEFT JOIN LATERAL (SELECT rs.position_name FROM schedule_publication_revision_shifts rs JOIN schedule_publication_revisions pr ON pr.id=rs.revision_id WHERE pr.week_start=s.week_start AND rs.source_shift_id=sh.id AND rs.employee_id=sh.employee_id AND rs.position_id IS NOT DISTINCT FROM sh.position_id ORDER BY pr.revision_number DESC LIMIT 1) published ON true JOIN locations l ON l.id=s.location_id WHERE $2 IN('OWNER','MANAGER') AND l.workspace_id=$1 AND l.active AND s.status='PUBLISHED' AND sh.date BETWEEN (clock_timestamp() AT TIME ZONE $3)::date-1 AND (clock_timestamp() AT TIME ZONE $3)::date+28 AND EXISTS(SELECT 1 FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start) AND NOT EXISTS(SELECT 1 FROM shift_callouts callout WHERE ${currentCalloutReleaseSql('callout')}) ORDER BY sh.date,sh.id LIMIT 501`,values:[w.id,proof.employee.role,w.timeZone]},lifetimeStatement(proof),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+    LEFT JOIN LATERAL (SELECT rs.position_name FROM schedule_publication_revision_shifts rs JOIN schedule_publication_revisions pr ON pr.id=rs.revision_id WHERE pr.week_start=s.week_start AND rs.source_shift_id=sh.id AND rs.employee_id=sh.employee_id AND rs.position_id IS NOT DISTINCT FROM sh.position_id ORDER BY pr.revision_number DESC LIMIT 1) published ON true JOIN locations l ON l.id=s.location_id WHERE $2 IN('OWNER','MANAGER') AND l.workspace_id=$1 AND l.active AND s.status='PUBLISHED' AND sh.date BETWEEN (clock_timestamp() AT TIME ZONE $3)::date-1 AND (clock_timestamp() AT TIME ZONE $3)::date+28 AND EXISTS(SELECT 1 FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start) AND NOT EXISTS(SELECT 1 FROM shift_callouts callout WHERE ${currentCalloutReleaseSql('callout')}) ORDER BY sh.date,sh.id LIMIT 501`,values:[w.id,proof.employee.role,w.timeZone]},lifetimeStatement(proof),...currentAuthority(proof,w)],signal);
   const locations=r[prefix.length] as Extract<CommunicationContext,{state:'ready'}>['locations'],shifts=r[prefix.length+1] as Extract<CommunicationContext,{state:'ready'}>['shifts'],lifetime=r[prefix.length+2]?.[0] as {observedAt:string;validForMs:number};if(!lifetime||lifetime.validForMs<=0||locations.length>100||shifts.length>500)return {state:'unavailable',reason:'context_unavailable'};
-  return {state:'ready',...lifetime,authority:communicationAuthority(proof),management,businessDate:businessDate(new Date(lifetime.observedAt),w.timeZone),timeZone:w.timeZone,locations,shifts};
- }catch(error){return {state:isManagementAuthorizationError(error)?'unauthorized':'unavailable',reason:'context_unavailable'};}
+  await responseFence(proof,w,executor,signal);
+  return {state:'ready',...limitedLifetime(lifetime,w,observationStarted),authority:communicationAuthority(proof),management,businessDate:businessDate(new Date(lifetime.observedAt),w.timeZone),timeZone:w.timeZone,locations,shifts};
+ }catch(error){return {state:authorizationDenied(error)?'unauthorized':'unavailable',reason:'context_unavailable'};}
 }

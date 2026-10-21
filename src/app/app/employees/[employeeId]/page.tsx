@@ -1,4 +1,11 @@
 import type { ReactNode } from "react";
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';
+import {readInvitationStatus} from '@/lib/auth/invitations/service.server';
+import {EmployeeInvitationPanel} from '@/components/company-access/employee-invitation-panel';
+import {ManagerOperationalScopePanel} from '@/components/company-access/manager-operational-scope-panel';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import { EmployeeCoreProfileForm } from "@/components/employee-core-profile-form";
 import { EmployeeSchedulingFields } from "@/components/employee-scheduling-fields";
 import { ConfigurationForm } from "@/components/configuration-form";
@@ -11,16 +18,11 @@ import { FormActions, Notice } from "@/components/wave-a/parts";
 import { PendingButton } from "@/components/wave-a/pending-button";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import {
-  getEmployeeManagementProfile,
-  listLocations,
-} from "@/lib/data/employees";
 import { listPositions } from "@/lib/data/positions";
 import { readOperationalRuleProfileView } from "@/lib/data/shift-change-views";
-import { employeeInitials, employeeRoleLabel } from "@/lib/employee-display";
+import { employeeRoleLabel } from "@/lib/employee-display";
 import { formatPhoneNumber } from "@/lib/phone";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import {
   saveEmployeeCoreProfileAction,
   saveEmployeeSchedulingProfileAction,
@@ -31,26 +33,24 @@ export default async function EmployeeProfilePage({
 }: {
   params: Promise<{ employeeId: string }>;
 }) {
-  const actor = await requireRoles(MANAGER_ROLES);
+  await requireRoles(MANAGER_ROLES);
   const { employeeId } = await params;
 
-  const [employee, locations, positions] = await Promise.all([
-    getEmployeeManagementProfile(employeeId),
-    listLocations({ includeInactive: true }),
-    listPositions({ includeInactive: true }),
-  ]);
-
-  if (!employee) notFound();
-
-  const proof = await requireSessionMutationProof();
-  let operational = null;
-  let profileUnavailable = false;
-  try {
-    operational = await readOperationalRuleProfileView(proof, employee.id);
-  } catch {
-    profileUnavailable = true;
-  }
-
+  const proof=await requireSessionMutationProof();
+  const actor=proof.employee;
+  const source=await withOperationalCompany(proof,async()=>{
+    const profile=await readOperationalEmployeeProfile(proof,employeeId);
+    if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null};
+    const positions=await listPositions({includeInactive:true});
+    let operational=null,profileUnavailable=false;
+    try{operational=await readOperationalRuleProfileView(proof,profile.data.profile.id);}catch{profileUnavailable=true;}
+    const invitation=proof.employee.role==='OWNER'?await readInvitationStatus(proof,employeeId):null;
+    return {profile,positions,operational,profileUnavailable,invitation};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
+  const {profile,positions,operational,profileUnavailable,invitation}=source.data;
+  if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
+  const {profile:employee,locations,ownerScope}=profile.data;
   const primaryLocation = locations.find(
     (location) => location.id === employee.primaryLocationId,
   );
@@ -59,7 +59,7 @@ export default async function EmployeeProfilePage({
   const roleLabel = employeeRoleLabel(employee.role);
   // Phase 3.5 Wave A: Team member detail on the kit. Who they are in the band, contact at a glance,
   // then Details (contact, access, tablet PIN, sign-in help) and Scheduling (positions, locations, Owner rules).
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="nv-page wa-page wa-member" data-nv-page="">
       <PageBand overlap={false} back={{ href: "/app/employees", label: "Team" }} eyebrow={`${roleLabel}\u00a0· ${employee.active ? "Active" : "Inactive"}`}
         title={`${employee.firstName} ${employee.lastName}`}
@@ -69,11 +69,13 @@ export default async function EmployeeProfilePage({
           details={<>
             <Card title="Employee details" id="member-details">
               {canManageCore ? (
-                <EmployeeCoreProfileForm employee={employee} locations={locations} actorRole={actor.role} action={saveEmployeeCoreProfileAction} />
+                <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} />
               ) : (
                 <div className="wa-card-body"><p className="wa-text wa-muted">Only an Owner can change another Owner. Scheduling information remains available in Scheduling.</p></div>
               )}
             </Card>
+            {actor.role==='OWNER'&&invitation&&<EmployeeInvitationPanel actorId={actor.id} employeeId={employee.id} initialStatus={invitation}/>}
+            {actor.role==='OWNER'&&employee.role!=='OWNER'&&(ownerScope?<ManagerOperationalScopePanel actorId={actor.id} current={ownerScope} locations={locations}/>:<p role="status">Management access could not be confirmed. Refresh this employee before changing access.</p>)}
             {canManageCore && employee.active ? <Card title="Access">
               <Rows label="Access">
                 <Row href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`} title="Clocker PIN" meta="For the shared tablet. Separate from portal sign-in."
@@ -108,7 +110,7 @@ export default async function EmployeeProfilePage({
         />
       </div>
     </div>
-  );
+  </ScopedReadFrame>);
 }
 
 function KitLinkInline({ href, children }: { href: string; children: ReactNode }) {

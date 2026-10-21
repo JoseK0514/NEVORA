@@ -1,3 +1,7 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import Link from "next/link";
 import type React from "react";
 import { PageBand, Status, Tile } from "@/components/kit/kit";
@@ -40,14 +44,19 @@ export default async function ScheduleSettingsPage({ searchParams }: {
   searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
+  const params=await searchParams;
+  const source=await withOperationalCompany(await requireSessionMutationProof(),async()=>{
   let policy = null;
   let policyUnavailable = false;
   try { policy = await readShiftChangePolicy(neonNotificationExecutor()); } catch { policyUnavailable = true; }
-  const params = await searchParams;
   const [staffing, employees, locations, coverageWindows, positions] = await Promise.all([
     listLocationStaffingSettings(), listEmployeeHourTargets(), listLocations(),
     listCoverageWindows(), listPositions({ includeInactive: true }),
   ]);
+    return {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Scheduling rules unavailable" reason={source.reason}/>;
+  const {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions}=source.data;
   const weekOrder = [1, 2, 3, 4, 5, 6, 0];
   const coverageGroups = [...new Set(coverageWindows.map(window => window.locationId))].map(locationId => {
     const windows = coverageWindows.filter(window => window.locationId === locationId)
@@ -60,7 +69,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
     return locations.find(location => location.id === locationId)?.shortName ?? fallback;
   }
 
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="nv-page wb-page wb-rules" data-nv-page="">
       <PageBand back={{ href: "/app/schedule", label: "Schedule" }} title={"Sched\u00aduling rules"} summary="Set staffing, weekly hours and recurring coverage so your team knows what a complete schedule needs." overlap={false} />
       <div className="nv-content">
@@ -180,5 +189,5 @@ export default async function ScheduleSettingsPage({ searchParams }: {
       </div>
       </div>
     </div>
-  );
+  </ScopedReadFrame>);
 }

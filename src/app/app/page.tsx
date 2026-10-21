@@ -2,6 +2,11 @@ import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockw
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
 import {Card,CardBody,KitStack,PageBand} from '@/components/kit/kit';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
+import {ScopedManagementHome} from '@/components/company-access/scoped-operational-views';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {businessDate} from '@/lib/business-time';
@@ -53,6 +58,10 @@ export default async function DashboardPage({
     return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone}/>;
   }
 
+  const proof=await requireSessionMutationProof();
+  const authority=await readOperationalAuthority(proof);
+  if(authority.state==='unavailable')return <OperationalUnavailable title="Home unavailable" reason={authority.reason}/>;
+  if(authority.scope?.mode!=='COMPANY')return <ScopedManagementHome view={authority}/>;
   const retired = retiredViewDestination(params);
   if (retired) redirect(retired);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
@@ -60,7 +69,9 @@ export default async function DashboardPage({
   const previousWeek = addDays(weekStart, -7);
   const nextWeek = addDays(weekStart, 7);
 
-  const dashboardData=await loadManagerDashboardData(weekStart,await requireSessionMutationProof()).catch(()=>null);
+  const source=await withOperationalCompany(proof,()=>loadManagerDashboardData(weekStart,proof));
+  if(source.state==='unavailable'&&source.reason!=='read_failed')return <OperationalUnavailable title="Home unavailable" reason={source.reason}/>;
+  const dashboardData=source.state==='ready'?source.data:null;
   // WR-59: the same kit error page as app/app/error.tsx. IS-50: "Try again" reloads this exact view (week, day, location, person).
   // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
   const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
@@ -77,11 +88,11 @@ export default async function DashboardPage({
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision}=dashboardData;
 
   const {modules}=await currentPresentation();
-  return (
+  return (<ScopedReadFrame observation={source.state==='ready'?source:null}>
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
-      correctionAuthority={correctionAuthority(await requireSessionMutationProof())}
+      correctionAuthority={correctionAuthority(proof)}
       workspaceName={workspace.name}
       timeZone={workspace.timeZone}
       firstName={session.firstName}
@@ -113,5 +124,5 @@ export default async function DashboardPage({
           : null
       }
     />
-  );
+  </ScopedReadFrame>);
 }

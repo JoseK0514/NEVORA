@@ -52,4 +52,3 @@ it("does not fetch or render workspace details when access is denied", async () 
   mocks.requireRoles.mockRejectedValueOnce(new Error("Forbidden"));
   await expect(WorkspacePage()).rejects.toThrow("Forbidden");
 });
-

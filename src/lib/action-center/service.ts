@@ -1,3 +1,4 @@
+import {readCompanyResult} from '../company-access/company-result.server';
 import 'server-only';
 import {withActionRequestFacts} from '../data/action-request-facts.server';
 import {readActivePresentation} from '../workspace-presentation/service';
@@ -18,7 +19,7 @@ type SchedulingReader=(proof:SessionMutationProof,week:string,executor:SqlExecut
 const schedulingReader:SchedulingReader=async(proof,week,executor)=>(await loadManagerDashboardData(week,proof,executor)).managerActions;
 /** Reuses the scheduling builder, D1 observations, D2 pending requests and D3
  * canonical cards. All four must succeed under current authority. */
-export async function readActionCenter(proof:SessionMutationProof,weekStart:string,executor:SqlExecutor=neonNotificationExecutor(),readScheduling:SchedulingReader=schedulingReader):Promise<ActionCenter>{
+async function readActionCenterCore(proof:SessionMutationProof,weekStart:string,executor:SqlExecutor=neonNotificationExecutor(),readScheduling:SchedulingReader=schedulingReader):Promise<ActionCenter>{
  try{
   assertManagementProof(proof,proof?.employee?.id);if(!['OWNER','MANAGER'].includes(proof.employee.role))return {state:'unavailable',reason:'access_denied'};if(!isValidWeekStart(weekStart))throw Error('Invalid week');
   const workspace=await getWorkspace(executor),started=performance.now();
@@ -36,4 +37,8 @@ export async function readActionCenter(proof:SessionMutationProof,weekStart:stri
   const validForMs=Math.floor(Math.min(authority[0].remaining,attendance.validForMs,corrections.validForMs,timecards.validForMs,45000)-(performance.now()-started));if(validForMs<1)throw Error('Sources expired');
   return {state:'ready',observedAt:authority[0].observedAt,weekStart,validForMs,items,counts:{total:items.length,scheduling:items.filter(i=>i.category==='scheduling').length,requests:items.filter(i=>i.category==='requests').length,timekeeping:items.filter(i=>i.category==='timekeeping').length},limitedAttendance:attendance.coverage.state==='limited'};
  }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
+}
+
+export async function readActionCenter(proof:SessionMutationProof,weekStart:string,executor:SqlExecutor=neonNotificationExecutor(),readScheduling:SchedulingReader=schedulingReader):Promise<ActionCenter>{
+ return readCompanyResult(proof,()=>readActionCenterCore(proof,weekStart,executor,readScheduling),executor);
 }

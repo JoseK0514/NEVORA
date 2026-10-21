@@ -101,7 +101,8 @@ function threshold(v: unknown, extra: string[] = []): ThresholdRule {
     !Number.isSafeInteger(v.thresholdMinutes) ||
     Number(v.thresholdMinutes) < 0 ||
     Number(v.thresholdMinutes) > 525600 ||
-    !["GT", "GTE"].includes(String(v.comparison))
+    typeof v.comparison !== "string" ||
+    !["GT", "GTE"].includes(v.comparison)
   )
     throw Error("Invalid explicit threshold");
   return {
@@ -140,10 +141,10 @@ export function parseCompanyPolicySettings(
         const base = threshold(rule, ["basis", "appliesTo"]);
         if (
           !object(rule) ||
-          !["RECORDED_ELAPSED", "EFFECTIVE_ELAPSED"].includes(
-            String(rule.basis),
-          ) ||
-          !["OPEN", "CLOSED", "BOTH"].includes(String(rule.appliesTo))
+          typeof rule.basis !== "string" ||
+          !["RECORDED_ELAPSED", "EFFECTIVE_ELAPSED"].includes(rule.basis) ||
+          typeof rule.appliesTo !== "string" ||
+          !["OPEN", "CLOSED", "BOTH"].includes(rule.appliesTo)
         )
           throw Error("Invalid entry basis");
         attendance.longEntry = {
@@ -161,9 +162,8 @@ export function parseCompanyPolicySettings(
         if (
           !object(rule) ||
           rule.association !== "CAPTURED_PUBLISHED_SHIFT" ||
-          !["AFTER_SCHEDULE_START", "AFTER_SCHEDULE_END"].includes(
-            String(rule.cutoff),
-          )
+          typeof rule.cutoff !== "string" ||
+          !["AFTER_SCHEDULE_START", "AFTER_SCHEDULE_END"].includes(rule.cutoff)
         )
           throw Error("Invalid expected-assignment basis");
         attendance.missingClockIn = {
@@ -216,12 +216,15 @@ export function parseCompanyPolicySettings(
         ]);
         if (
           !object(rule) ||
+          typeof rule.basis !== "string" ||
           ![
             "RECORDED_ELAPSED_INCLUDING_BREAKS",
             "EFFECTIVE_ELAPSED_INCLUDING_BREAKS",
-          ].includes(String(rule.basis)) ||
-          !["BUSINESS_DAY", "BUSINESS_WEEK"].includes(String(rule.window)) ||
-          !["COMPANY", "LOCATION"].includes(String(rule.aggregation)) ||
+          ].includes(rule.basis) ||
+          typeof rule.window !== "string" ||
+          !["BUSINESS_DAY", "BUSINESS_WEEK"].includes(rule.window) ||
+          typeof rule.aggregation !== "string" ||
+          !["COMPANY", "LOCATION"].includes(rule.aggregation) ||
           typeof rule.dayBoundaryTime !== "string" ||
           !/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(rule.dayBoundaryTime) ||
           (rule.window === "BUSINESS_WEEK"
@@ -256,10 +259,11 @@ export function parseCompanyPolicySettings(
         ]);
         if (
           !text(rule.ruleReference) ||
+          typeof rule.breakTreatment !== "string" ||
           ![
             "INCLUDE_ALL_RECORDED_BREAKS",
             "EXCLUDE_SELECTED_BREAK_TYPES",
-          ].includes(String(rule.breakTreatment)) ||
+          ].includes(rule.breakTreatment) ||
           !Array.isArray(rule.excludedBreakTypeIds) ||
           rule.excludedBreakTypeIds.length > 100 ||
           rule.excludedBreakTypeIds.some((v) => !text(v, 200)) ||
@@ -320,6 +324,10 @@ export function effectiveCompanyPolicies(
   company: CompanyPolicySettings | null,
   location: CompanyPolicySettings | null,
 ): EffectiveCompanyPolicies {
+  // Saved JSON is untrusted too. Reject invalid revisions before selecting any
+  // inherited/overridden rule; never coerce or rewrite immutable history.
+  company = company === null ? null : parseCompanyPolicySettings(company);
+  location = location === null ? null : parseCompanyPolicySettings(location);
   const own = (section: "attendance" | "labor", field: string) => {
     const override = location?.[section] as Record<string, unknown> | undefined;
     return override && Object.hasOwn(override, field)

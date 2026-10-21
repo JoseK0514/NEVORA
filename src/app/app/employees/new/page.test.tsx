@@ -2,8 +2,12 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 
+const access=vi.hoisted(()=>({denied:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+
 const m = vi.hoisted(() => ({ role: "MANAGER", noLocations: false }));
-beforeEach(() => { m.role = "MANAGER"; m.noLocations = false; });
+beforeEach(() => { m.role = "MANAGER"; m.noLocations = false; access.denied=false; });
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
@@ -19,14 +23,6 @@ vi.mock("@/lib/data/employees", () => ({
   ],
 }));
 vi.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
-vi.mock("@/components/page-header", () => ({
-  PageHeader: ({ description }: { description?: string }) =>
-    createElement("p", null, description),
-}));
-vi.mock("@/components/configuration-form", () => ({
-  ConfigurationForm: ({ children }: { children: React.ReactNode }) =>
-    createElement("form", null, children),
-}));
 vi.mock("@/components/phone-input", () => ({
   PhoneInput: (props: React.ComponentProps<"input">) => createElement("input", props),
 }));
@@ -38,7 +34,7 @@ vi.mock("@/app/app/employees/actions", () => ({ createEmployeeFormAction: vi.fn(
 
 import NewEmployeePage from "./page";
 
-it("uses canonical native-authoritative selects while preserving Owner-only Owner assignment", async () => {
+it("keeps native selects and role options (presentation smoke)", async () => {
   m.role = "MANAGER";
   const manager = renderToStaticMarkup(
     await NewEmployeePage({ searchParams: Promise.resolve({}) }),
@@ -70,6 +66,8 @@ it("preserves submitted field names, required contact fields and optional email"
   expect(html).toContain('value="EMPLOYEE" selected=""');
   // Back (to Team) and Cancel.
   expect(html.match(/href="\/app\/employees"/g)).toHaveLength(2);
+  expect(html).toContain("An Owner sends the account invitation from their profile.");
+  expect(html).toContain("A registered email is required before an invitation can be sent.");
 });
 
 it("blocks creation when no active location exists and supplies the Owner setup route", async () => {
@@ -91,3 +89,8 @@ it("announces a server validation error without rendering untrusted error codes"
   expect(html).not.toContain("&lt;script&gt;");
   expect(html).not.toContain("<script>invalid</script>");
 });
+
+it('honors company-read denial before loading employee-creation catalogs (presentation boundary)',async()=>{access.denied=true;const html=renderToStaticMarkup(await NewEmployeePage({searchParams:Promise.resolve({})}));expect(html).toContain('Employee creation unavailable');expect(html).toContain('Return to Home');expect(html).not.toContain('new-employee-form');});
+
+// This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

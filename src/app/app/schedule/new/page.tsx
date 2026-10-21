@@ -1,3 +1,11 @@
+import accessStyles from '@/components/company-access/company-access.module.css';
+import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
+import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
+import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
+import {SelectField} from '@/components/select-field';
+import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {listPositions} from "@/lib/data/positions";
 import { keepDuration } from "@/components/wave-a/keep-duration";
 import { CreateShiftForm } from "@/components/create-shift-form";
@@ -40,34 +48,38 @@ export default async function NewShiftPage({
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
+  const proof=await requireSessionMutationProof();
   const params = await searchParams;
   if (params.review !== undefined) {
-    const proof = await requireSessionMutationProof();
-    let selected;
-    try { selected = await readCoverageRepairSelection(params.review, proof); }
-    catch (error) {
-      if (!(error instanceof CoverageRepairConflictError)) throw error;
-      let href = '/app/schedule';
-      try { href = coverageRepairUrl(decodeCoverageRepairReview(params.review, proof).locator, true); } catch { /* No trusted locator. */ }
-      return <div className="nv-page wa-page wa-shift" data-nv-page="">
-        <PageBand back={{ href, label: "Coverage" }} eyebrow="Replacement" title="Coverage changed" summary="Someone changed this shift since you opened the review." />
+    const source=await withOperationalCompany(proof,async()=>{
+      try{return {kind:'selected' as const,selected:await readCoverageRepairSelection(params.review!,proof)};}
+      catch(error){
+        if(!(error instanceof CoverageRepairConflictError))throw error;
+        let href='/app/schedule';
+        try{href=coverageRepairUrl(decodeCoverageRepairReview(params.review!,proof).locator,true);}catch{/* No trusted locator. */}
+        return {kind:'conflict' as const,href};
+      }
+    });
+    if(source.state==='unavailable')return <OperationalUnavailable title="Replacement review unavailable" reason={source.reason}/>;
+    if(source.data.kind==='conflict')return <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-shift" data-nv-page="">
+        <PageBand back={{ href:source.data.href, label: "Coverage" }} eyebrow="Replacement" title="Coverage changed" summary="Someone changed this shift since you opened the review." />
         <div className="nv-content wa-narrow">
           <Card title="This review is out of date">
             <div className="wa-card-body">
               <p className="wa-text">Open the review again to see who can cover it now. Nothing was saved.</p>
-              <Link className="nv-btn" data-kind="primary" data-block="true" href={href}>Open current review</Link>
+              <Link className="nv-btn" data-kind="primary" data-block="true" href={source.data.href}>Open current review</Link>
             </div>
           </Card>
         </div>
-      </div>;
-    }
+      </div></ScopedReadFrame>;
+    const selected=source.data.selected;
     const { locator } = selected;
     const day = formatDayLabel(locator.date);
     const overnight = locator.endTime === "24:00" || locator.endTime < locator.startTime;
     const nextDay = overnight ? formatDayLabel(addDays(locator.date, 1)) : null;
     const refreshHref = coverageRepairUrl(locator, true);
     const need = locator.target === "POSITION" ? "the position requirement" : locator.target === "LEAD" ? "the lead requirement" : "the staffing requirement";
-    return <div className="nv-page wa-page wa-shift" data-nv-page="">
+    return <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-shift" data-nv-page="">
       <PageBand back={{ href: refreshHref, label: "Coverage" }} eyebrow={keepWhole(formatWeekRange(locator.weekStart))} title="Review replacement"
         summary={`${selected.employeeName} for ${keepWhole(`${day.weekday},\u00a0${day.day}`)}.`} />
       <div className="nv-content wa-narrow">
@@ -93,7 +105,7 @@ export default async function NewShiftPage({
       </FormActions>
     </ConfigurationForm>
       </div>
-    </div>;
+    </div></ScopedReadFrame>;
   }
   const workspace = await getWorkspace();
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
@@ -104,21 +116,35 @@ export default async function NewShiftPage({
       : weekStart;
   const weekEnd = addDays(weekStart, 6);
 
-  const [employees, locations, positions] = await Promise.all([
+  const access=await readOperationalAuthority(proof);
+  if(access.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={access.reason}/>;
+  if(access.scope?.mode!=='COMPANY'){
+    if(access.scope?.mode!=='LOCATIONS'||!access.locations.length)return <OperationalUnavailable title="Shift creation unavailable" reason="access_denied"/>;
+    if(params.locationId===undefined)return <ScopedReadFrame observation={access}><section className={'panel '+accessStyles.stack}><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
+    const source=await readOperationalShiftEditor(proof,{weekStart,locationId:params.locationId});
+    if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason} scoped/>;
+    if(source.authority!==access.authority)return <OperationalUnavailable title="Shift creation unavailable" reason="source_changed" scoped/>;
+    const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
+    if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation}/>;
+    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={createShiftAction} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name} prefill={{date,employeeId:params.employeeId,positionId:params.positionId,startTime:params.start,endTime:params.end,lead:params.lead==='1'}}/></ScopedReadFrame>;
+  }
+  const source=await withOperationalCompany(proof,()=>Promise.all([
     listEmployees(),
     listLocations(),
     listPositions(),
-  ]);
+  ]));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason}/>;
+  const [employees,locations,positions]=source.data;
   const locationId = locations.some(location => location.id === params.locationId) ? params.locationId! : "";
   // W2: Back returns to the day and person the form was opened for, when it was opened for one.
   const cancelHref = `/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}${params.date === date ? `&day=${date}` : ""}${params.employeeId ? `#schedule-employee-${encodeURIComponent(params.employeeId)}` : ""}`;
   // Phase 3.5 Wave A: Add shift on the kit. The band names the week; the form is two cards and a summary.
-  return (
+  return (<ScopedReadFrame observation={source}>
     <div className="nv-page wa-page wa-shift" data-nv-page="">
       <PageBand back={{ href: cancelHref, label: "Schedule" }} eyebrow={keepWhole(formatWeekRange(weekStart))} title="Add shift" summary="Choose who’s working, where and when." />
       <div className="nv-content wa-wide">
         <CreateShiftForm action={createShiftAction} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />
       </div>
     </div>
-  );
+  </ScopedReadFrame>);
 }

@@ -25,7 +25,7 @@ vi.mock('@/app/app/schedule/actions',()=>({copyPreviousWeekAction:vi.fn(),setAva
 vi.mock('@/lib/data/schedule-publication-review',()=>({getSchedulePublishReadiness:async()=>({locationName:'West Office',coverageGaps:3,missingLeadBlocks:1,positionNeedsSetup:false,staffingNeedsSetup:false,coverageNeedsSetup:false,underTargetCount:2,overTargetCount:1,unconfiguredTargetCount:1,hasWarnings:true})}));
 vi.mock('@/lib/data/week-settings',()=>({getWeekSettings:async()=>null}));
 // Clean Manager v3: Schedule shows the week's facts Home used to (availability, open shifts) from the dashboard's read.
-vi.mock('@/lib/data/manager-dashboard',()=>({loadManagerDashboardData:async()=>f.dashboard}));
+vi.mock('@/lib/data/manager-dashboard',()=>({loadManagerDashboardData:async()=>{f.managerReads('dashboard');return f.dashboard;}}));
 vi.mock('@/lib/data/acknowledgements',()=>({getEmployeeAcknowledgementState:async()=>({latestRevisionId:'latest',acknowledgedRevisionId:'before',needsAcknowledgement:true,acknowledged:false})}));
 vi.mock('@/app/app/schedule/acknowledge-actions',()=>({acknowledgeScheduleAction:vi.fn()}));
 vi.mock('@/lib/employee-display',()=>({employeeRoleLabel:()=>''}));
@@ -130,6 +130,50 @@ it('Add shift preserves the selected second-location destination',async()=>{
 
 it('forged acknowledged query does not manufacture success without canonical receipt',async()=>{const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',acknowledged:'1'})}));expect(output).not.toContain('Schedule confirmed.');});
 
+const operationalPageFixture=vi.hoisted(()=>({denied:false,scoped:false}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,locations:[{id:'main',name:'Managed location',shortName:'Managed'}],scope:{mode:operationalPageFixture.scoped?'LOCATIONS':'COMPANY',locationIds:operationalPageFixture.scoped?['loc']:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+// Composition only; mounted body lifetime is covered by the browser harness.
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
+
+it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('current company-wide management access');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
+it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('my-schedule-motion');expect(output).not.toContain('current company-wide management access');});
+
+vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalSchedule:async(_proof:unknown,query:{weekStart:string;locationId?:string})=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{weekStart:query.weekStart,selectedLocationId:query.locationId??null,locations:[{id:'loc',name:'Managed location',shortName:'Managed',active:true}],shifts:[{id:'local-shift',scheduleId:'local-week',employeeId:'local',employeeName:'Local Shift',locationId:'loc',date:'2026-10-05',startTime:'08:00',endTime:'12:00',positionName:'Recorded position',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:'PUBLISHED'}],roster:[],companyControls:{state:'requires_company'}}})}));
+it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});
+
+it.each([
+ ['error','INVALID_SHIFT','The shift information is incomplete or outside this week.','alert'],
+ ['error','SHIFT_HAS_EXCHANGE_HISTORY','This shift has scheduling history and cannot be deleted. Edit it instead.','alert'],
+ ['warning','OUTSIDE_AVAILABILITY',"Review this shift: it is outside the employee&#x27;s submitted availability.",'status'],
+ ['warning','WEEKLY_HOURS','Review this employee’s scheduled hours; they may exceed 40 hours.','status'],
+])('preserves scoped redirect %s=%s and its week/location context',async(field,code,message,role)=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',[field]:code})}));
+ expect(output).toContain(`role="${role}"`);expect(output).toContain(message);
+ expect(output).toContain('Local Shift');expect(output).toContain('href="/app/schedule/new?week=2026-10-05&amp;locationId=loc"');
+ expect(output).toContain('href="/app/schedule?week=2026-09-28&amp;location=loc"');
+ expect(output).not.toContain('Shift saved');expect(f.managerReads).not.toHaveBeenCalled();
+});
+it.each(['updated','deleted'])('a scoped %s route hint prompts inspection without manufacturing a save receipt',async field=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',[field]:'1'})}));
+ expect(output).toContain('Review the current schedule to confirm your change.');expect(output).toContain('role="status"');
+ expect(output).not.toContain('Shift updated.');expect(output).not.toContain('Shift deleted.');expect(output).not.toContain('form-success');
+});
+it('unknown scoped route codes stay generic and cannot manufacture success or echo arbitrary text',async()=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',error:'UNTRUSTED_QUERY_TEXT',warning:'constructor',updated:'untrusted',deleted:'untrusted',published:'loc'})}));
+ expect(output).toContain('The schedule could not be updated.');expect(output).toContain('Review the current schedule for any scheduling warnings.');
+ expect(output).not.toContain('UNTRUSTED_QUERY_TEXT');expect(output).not.toContain('constructor');expect(output).not.toContain('form-success');
+ expect(output).not.toContain('Shift saved');expect(output).not.toContain('Shift updated.');expect(output).not.toContain('Shift deleted.');expect(output).not.toContain('Managed published.');
+});
+it('preserves the existing Company error and warning messages',async()=>{
+ f.role='MANAGER';
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',error:'INVALID_SHIFT',warning:'OUTSIDE_AVAILABILITY'})}));
+ expect(output).toContain('The shift information is incomplete or outside this week.');expect(output).toContain("Shift saved, but it is outside the employee&#x27;s submitted availability.");
+ expect(output).toContain('role="alert"');expect(output).toContain('role="status"');
+});
 it('v3: the week facts sit in the title lines, open shifts link to Find cover, and an unplanned location offers Plan',async()=>{
  f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'},{id:'west',shortName:'West Office'}];
  f.statuses=[{locationId:'main',status:'PUBLISHED'}];

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
 import { reviewTimeCorrection, submitTimeCorrection } from './service';
@@ -123,3 +123,7 @@ describe('D2 correction transaction service', () => {
     });
   });
 });
+
+// Business-unit admission I/O only; keep real transaction guard assembly.
+// Current Company/lifecycle/replay/rollback use owned SQL in time-review cases.
+vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace,authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));

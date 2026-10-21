@@ -1,11 +1,11 @@
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { createHash, randomUUID } from "node:crypto";
 import type { SessionMutationProof } from "../shift-changes/types";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import {
   assertManagementProof,
-  managementSessionStatements,
 } from "./management-session";
-import { getWorkspace, workspaceReadGuard } from "./workspaces";
+import { workspaceReadGuard } from "./workspaces";
 import {
   neonNotificationExecutor,
   notificationStateSql,
@@ -186,14 +186,14 @@ async function authorizedOperation(
   executor: SqlExecutor,
 ) {
   assertManagementProof(proof, proof.employee.id);
-  const workspace = await getWorkspace(executor);
+  const {workspace}=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
   const guards = [
     ...workspaceReadGuard(workspace),
     {
       text: "SELECT id FROM employees WHERE id=$1 FOR SHARE",
       values: [proof.employee.id],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
   ];
   const results = await executor.transaction([
     ...guards,
@@ -201,7 +201,7 @@ async function authorizedOperation(
       text: "SELECT o.command_hash,o.command,o.source,r.payload FROM schedule_copy_operations o LEFT JOIN schedule_copy_receipts r USING(workspace_id,actor_employee_id,operation_id) WHERE o.workspace_id=$1 AND o.actor_employee_id=$2 AND o.operation_id=$3::uuid",
       values: [workspace.id, proof.employee.id, id],
     },
-    ...managementSessionStatements(proof, proof.employee.id),
+    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
   ]);
   return {
     workspace,
@@ -276,7 +276,7 @@ export async function executeScheduleCopy(
         ...generationMutationGuards(read.source, weeks),
         ...workspaceReadGuard(workspace),
         ...templateGuards(command, workspace.id, current),
-        ...managementSessionStatements(proof, actor),
+        ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
       ];
       if (!operation) {
         await executor.transaction([
@@ -292,7 +292,7 @@ export async function executeScheduleCopy(
               JSON.stringify(current),
             ],
           },
-          ...managementSessionStatements(proof, actor),
+          ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
         ]);
         operation = {
           command_hash: commandHash,
@@ -492,7 +492,7 @@ export async function executeScheduleCopy(
         ...common,
         ...plan.guards,
         ...plan.statements,
-        ...managementSessionStatements(proof, actor),
+        ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
       ]);
       return receipt;
     } catch (error) {

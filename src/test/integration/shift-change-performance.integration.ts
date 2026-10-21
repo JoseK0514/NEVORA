@@ -11,7 +11,7 @@ it.each([40, 160])('T06 records separate discovery/command/maintenance measureme
   const db = await createDisposableExchangeDatabase({ mode: 'current-runtime' });
   const q = (text: string, values: readonly unknown[] = []) => db.executor.query<Record<string, unknown>>({ text, values });
   try {
-    await seedShiftChanges(db.executor);
+    await seedShiftChanges(db.executor,{companyAccess:true});
     await q("INSERT INTO locations(id,workspace_id,clocker_key,name,short_name) VALUES('perf-3','workspace-fuel','perf-3','Fictional Third Office','Third Office')");
     await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) SELECT 'perf-'||i,'Fictional','Worker '||i,'QA-NO-PHONE','EMPLOYEE','loc-1' FROM generate_series(1,$1::int) i", [employeeCount - 4]);
     await q("INSERT INTO employee_location_eligibility SELECT e.id,l.id FROM employees e CROSS JOIN locations l ON CONFLICT DO NOTHING");

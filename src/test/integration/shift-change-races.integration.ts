@@ -9,7 +9,7 @@ import type {SqlExecutor} from '../../lib/notifications/types';
 import {readNotificationWeekState} from '../../lib/data/notification-transactions';
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 const q=(text:string,values:readonly unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
-beforeAll(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor);});
+beforeAll(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor,{companyAccess:true});});
 afterAll(async()=>{await db?.dispose();});
 let index=0;
 async function offered(){const id='race-'+(++index);const terms=await fixtureShift(db.executor,id,'e1',new Date(Date.UTC(2035,9,index+5)).toISOString().slice(0,10));const r=await executeShiftChange(proof('e1'),{kind:'OFFER_COVERAGE',operationId:randomUUID(),...terms},db.executor);expect(r.status).toBe('pending');if(r.status!=='pending')throw new Error(JSON.stringify(r));return {id,terms,requestId:r.requestId,command:{kind:'ACCEPT' as const,requestId:r.requestId,expectedRevision:1,operationId:randomUUID()}};}
@@ -100,11 +100,12 @@ it.each(['acceptance-first','manual-first'] as const)('A051 actual manual materi
   try{await held.reached;editing=edit(db.executor);await waitBlocked(held.client,'FROM workspaces');held.release();expect(await accepting).toMatchObject({status:'completed'});expect(await editing).toBe(true);}finally{held.release();await accepting;await editing;await held.close();}
   expect((await q('SELECT assignment_episode_id FROM shifts WHERE id=$1',[f.id]))[0].assignment_episode_id).not.toBe(f.terms.sourceEpisodeId);
  }else{
-  // Pause the actual publication writer after its initial workspace row lock.
+  // Complete current Company admission before pausing the actual publication
+  // business writer after its initial workspace row lock.
   const client=held.client;let signal!:()=>void,release!:()=>void;const reached=new Promise<void>(r=>signal=r),done=new Promise<void>(r=>release=r);let once=true;
-  const executor:SqlExecutor={query:db.executor.query,transaction:async s=>{await client.query('BEGIN');try{const results=[];for(const x of s){results.push((await client.query(x.text,[...x.values])).rows);if(once&&x.text.includes('FROM workspaces')&&x.text.includes('FOR NO KEY UPDATE')){once=false;signal();await done;}}await client.query('COMMIT');return results;}catch(e){await client.query('ROLLBACK');throw e;}}};
+  const executor:SqlExecutor={query:db.executor.query,transaction:async s=>{if(!s.some(x=>x.text.startsWith('UPDATE shifts SET')))return db.executor.transaction(s);await client.query('BEGIN');try{const results=[];for(const x of s){results.push((await client.query(x.text,[...x.values])).rows);if(once&&x.text.includes('FROM workspaces')&&x.text.includes('FOR NO KEY UPDATE')){once=false;signal();await done;}}await client.query('COMMIT');return results;}catch(e){await client.query('ROLLBACK');throw e;}}};
   const editing=edit(executor);let accepting:ReturnType<typeof executeShiftChange>|undefined;
-  try{await Promise.race([reached,editing.then(()=>{throw Error('Manual writer completed before workspace lock barrier');})]);accepting=executeShiftChange(proof('e2'),f.command,db.executor);await waitBlocked(client,'FROM workspaces');release();expect(await editing).toBe(true);expect((await accepting).status).toBe('blocked');}finally{release();await editing;await accepting;await held.close();}
+  try{await Promise.race([reached,editing.then(()=>{throw Error('Manual writer completed before workspace lock barrier');})]);expect(once).toBe(false);accepting=executeShiftChange(proof('e2'),f.command,db.executor);await waitBlocked(client,'FROM workspaces');release();expect(await editing).toBe(true);expect((await accepting).status).toBe('blocked');}finally{release();await editing;await accepting;await held.close();}
  }
 });
 it('A057 bounded conflicts retry three times; provenance corruption rolls back',async()=>{

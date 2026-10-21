@@ -1,3 +1,5 @@
+import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
+import {readFile} from 'node:fs/promises';
 import {afterEach,beforeEach,expect,it} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {Client} from 'pg';
@@ -22,6 +24,9 @@ beforeEach(async()=>{
  db=await createDisposableFoundationDatabase({mode:'current-runtime'});
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','555-0100','OWNER','loc-1'),('employee','Fictional','Self','555-0101','EMPLOYEE','loc-1'),('other','Fictional','Other','555-0102','LEAD','loc-2')");
  for(const p of [owner,employee,other])await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[p.sessionTokenHash,p.employee.id]);
+
+ // Explicit current Company schema; intended actors are already seeded.
+ for(const file of ['0031_native_payroll.sql','0032_company_access_invitations.sql'])await q(await readFile('db/migrations/'+file,'utf8'));
 });
 afterEach(async()=>{await db?.dispose();});
 it('location immutable grants do not backfill transfers; deactivation denies reads',async()=>{
@@ -43,10 +48,14 @@ it('audience fingerprint rejects a phantom eligibility change after preview',asy
  expect(await executeCommunicationCommand(owner,c,db.executor)).toMatchObject({status:'conflict'});expect(await q('SELECT * FROM communications')).toEqual([]);
 });
 it('withdraw cancels current intents and deliveries; author deactivation preserves management control',async()=>{
- const {r}=await publish();await q("UPDATE employees SET active=false WHERE id='owner'");
+ const {r}=await publish();
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('manager','Fictional','Manager','555-0103','MANAGER','loc-1')");
  const manager={...owner,employee:{...owner.employee,id:'manager',role:'MANAGER' as const},sessionTokenHash:'d'.repeat(64)};
  await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'manager',now()+interval '1 day')",[manager.sessionTokenHash]);
+ // A newly created Manager needs the actual active Owner's explicit Company grant.
+ const context=await readOwnerOperationalScope(owner,'manager',db.executor);if(context.state!=='ready')throw Error('Owned Manager scope context');const current=context.data.current;
+ expect((await assignOperationalScope(owner,'manager',{operationId:randomUUID(),action:'ASSIGN',expectedEmployeeVersion:current.employeeUpdatedAt,expectedRoleGeneration:current.roleGeneration,expectedScopeRevision:current.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},db.executor)).state).toBe('saved');
+ await q("UPDATE employees SET active=false WHERE id='owner'");
  expect(await executeCommunicationCommand(manager,{kind:'WITHDRAW',communicationId:r.id,expectedRevisionId:r.version,authority:communicationAuthority(manager),operationId:randomUUID()},db.executor)).toMatchObject({status:'committed'});
  expect(await readCommunication(employee,r.id,db.executor)).toMatchObject({state:'withdrawn'});expect(await q('SELECT push_state FROM notifications')).toEqual([{push_state:'cancelled'}]);
  expect((await q('SELECT * FROM communication_revisions')).length).toBe(1);

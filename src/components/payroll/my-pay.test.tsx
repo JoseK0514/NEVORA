@@ -9,6 +9,7 @@ it('shows the newest statement as the payday moment without inventing amounts', 
   // Signature: the payday as a long date ("Payday" stays for screen readers), the period in short form.
   expect(html).toContain('Payday </span>October 16');
   expect(html).toContain('Oct 5–11 · PDF');
+  expect(html).toContain('published pay statement');
   expect(html).toContain('/api/payroll/documents/s1');
   expect(html).not.toMatch(/\$\d/);
 });

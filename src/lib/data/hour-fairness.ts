@@ -1,3 +1,4 @@
+import { databaseDate as dateValue } from './database-date';
 import { currentCalloutReleaseSql } from './shift-change-release';
 import { getDb, queryRows } from "@/lib/db";
 import { addDays } from "../date-utils";
@@ -14,11 +15,6 @@ export type HourFairnessRecord = {
     underTarget: boolean;
   }>;
 };
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
 
 export async function listHourFairness(
   currentWeekStart: string,

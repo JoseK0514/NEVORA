@@ -230,3 +230,9 @@ it("P1-enum-coercion rejects nonstrings for each rule enum and employee exceptio
       parseSettingsCommand({ ...c, exception: { ...c.exception, language } }),
     ).toThrow();
 });
+
+it("accepts server-only recalculation and native correction commands without client money",()=>{
+ const c={action:"RECALCULATE",operationId:crypto.randomUUID(),runId:crypto.randomUUID(),expectedRevision:1};expect(parseRunCommand(c)).toEqual(c);
+ const correction={...c,action:"CORRECT_NATIVE",reason:"Approved actual-time correction"};expect(parseRunCommand(correction)).toEqual(correction);
+ expect(()=>parseRunCommand({...c,amounts:fixture})).toThrow();expect(()=>parseRunCommand({...correction,amounts:fixture})).toThrow();expect(()=>parseRunCommand({...c,sourceAuthority:"NATIVE_RECORDED_TIME"})).toThrow();
+});

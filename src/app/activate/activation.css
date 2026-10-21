@@ -25,6 +25,12 @@
 }
 .activation-page .activation-back:hover { color: var(--login-blue-hover); text-decoration: underline; text-underline-offset: 4px; }
 .activation-page summary:focus-visible { outline: 2px solid var(--login-blue); outline-offset: 4px; }
+.activation-page .activation-invitation-state { line-height: 1.6; overflow-wrap: anywhere; }
+.activation-page .activation-success { display: grid; gap: 16px; }
+.activation-page .activation-success p { margin: 0; }
+.activation-page .activation-success-id { display: grid; gap: 8px; font-size: 14px; font-weight: 500; }
+.activation-page .activation-success-id input { width: 100%; user-select: all; }
+.activation-page .activation-success:focus-visible { outline: 2px solid var(--login-blue); outline-offset: 6px; }
 @media (max-width: 799px) { .activation-page .activation-secondary { margin-top: 24px; } }
 @media (prefers-reduced-motion: reduce) { .activation-page .activation-help summary svg { transition: none; } }
 @media (max-width: 799px) { .activation-page .activation-hint { font-size: 0.9375rem; } }

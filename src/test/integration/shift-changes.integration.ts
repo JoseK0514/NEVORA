@@ -11,7 +11,7 @@ import { proof,seedShiftChanges,fixtureShift } from './shift-change-fixture';
 import type { ShiftChangeCommand } from '../../lib/shift-changes/types';
 let db: Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 const q = (text:string, values:readonly unknown[]=[]) => db.executor.query<Record<string,unknown>>({text,values});
-beforeAll(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor);});
+beforeAll(async()=>{db=await createDisposableExchangeDatabase({mode:'current-runtime'});await seedShiftChanges(db.executor,{companyAccess:true});});
 afterAll(async()=>{await db?.dispose();});
 const shift=(id:string,employee='e1',date='2035-10-02')=>fixtureShift(db.executor,id,employee,date);
 it('A039/A048 atomic coverage creates a protected assignment once and reconciles original result',async()=>{
@@ -171,8 +171,8 @@ it.each(['CANCEL_CALLOUT','DECLINE_CALLOUT'] as const)('R1/R2 %s after reassignm
  await q("UPDATE shifts SET employee_id='e2',start_time='09:00' WHERE id=$1",[id]);
  const before=await readGenerationSource(db.executor),weekBefore=await readNotificationWeekState(['2035-10-01'],db.executor);
  const command:ShiftChangeCommand={kind,requestId:created.requestId,expectedRevision:1,operationId:randomUUID()},actor=proof(kind==='CANCEL_CALLOUT'?'e1':'owner');
- const injected={query:db.executor.query,transaction:(statements:readonly import('../../lib/notifications/types').SqlStatement[])=>{const n=statements.findIndex(x=>x.text.startsWith('INSERT INTO shift_change_events'));expect(n).toBeGreaterThan(0);return db.executor.transaction([...statements.slice(0,n+1),{text:'SELECT 1/0',values:[]},...statements.slice(n+1)]);}};
- await expect(executeShiftChange(actor,command,injected)).rejects.toMatchObject({code:'22012'});
+ let injectionReached=false;const injected={query:db.executor.query,transaction:(statements:readonly import('../../lib/notifications/types').SqlStatement[])=>{const n=statements.findIndex(x=>x.text.startsWith('INSERT INTO shift_change_events'));if(n<0)return db.executor.transaction(statements);expect(n).toBeGreaterThan(0);injectionReached=true;return db.executor.transaction([...statements.slice(0,n+1),{text:'SELECT 1/0',values:[]},...statements.slice(n+1)]);}};
+ await expect(executeShiftChange(actor,command,injected)).rejects.toMatchObject({code:'22012'});expect(injectionReached).toBe(true);
  expect((await readGenerationSource(db.executor)).source).toEqual(before.source);expect(await readNotificationWeekState(['2035-10-01'],db.executor)).toEqual(weekBefore);
  expect(await executeShiftChange(actor,command,db.executor)).toMatchObject({status:'closed',revision:2});
  const events=await q('SELECT source_terms,participants,actor_employee_id,outcome_mode FROM shift_change_events WHERE request_id=$1 ORDER BY request_revision',[created.requestId]);expect(events).toHaveLength(2);

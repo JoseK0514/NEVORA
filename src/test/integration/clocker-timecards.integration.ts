@@ -13,7 +13,7 @@ const owner = proof('c34-owner','OWNER','a'), employee = proof('c34-a','EMPLOYEE
 let f: Awaited<ReturnType<typeof createPunchFixture>>;
 const period = { startDate:'2026-09-21',endDate:'2026-09-27' };
 beforeEach(async () => {
-  f = await createPunchFixture();
+  f = await createPunchFixture({companyAccess:true});
   await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',now()+interval '1 day')");
   await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version)
     VALUES('D3-T','c34-a','loc-1',$1,'2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)`, [f.devices[0].device.id]);

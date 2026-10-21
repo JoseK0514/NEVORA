@@ -1,3 +1,4 @@
+import { databaseDate as dateValue } from './database-date';
 import { executeShiftChangeAdapter, type ShiftChangeAdapterInput } from './shift-change-adapters';
 import { neonNotificationExecutor } from './notification-transactions';
 import type { SqlExecutor } from '../notifications/types';
@@ -32,11 +33,6 @@ export type CalloutRecord = {
   status: CalloutStatus;
   createdAt: string;
 };
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
 
 function timeValue(value: unknown) {
   return String(value).slice(0, 5);

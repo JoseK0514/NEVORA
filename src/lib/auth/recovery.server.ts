@@ -1,10 +1,11 @@
 import 'server-only';
+import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import {createHash,randomBytes} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 import {neonNotificationExecutor} from '../data/notification-transactions';
 import {getWorkspace,workspaceReadGuard} from '../data/workspaces';
-import {assertManagementProof,managementSessionStatements} from '../data/management-session';
+import {assertManagementProof} from '../data/management-session';
 import {hashPassword} from './password';
 const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
 const safeId=(v:string)=>v.trim().length>0&&v.trim().length<=200&&!/[\u0000-\u001f\u007f]/.test(v);
@@ -42,13 +43,15 @@ export async function issueAssistedRecovery(proof:SessionMutationProof,employeeI
  try{
   assertManagementProof(proof,proof?.employee?.id);
   if(!['OWNER','MANAGER'].includes(proof.employee.role)||!safeId(employeeId)||employeeId===proof.employee.id||attestation.trim().length<10||attestation.length>500||/[\u0000-\u001f\u007f]/.test(attestation))return unavailable;
-  const workspace=await getWorkspace(executor),token=randomBytes(32).toString('base64url');
-  const guards:SqlStatement[]=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([proof.employee.id,employeeId])].sort()]},...managementSessionStatements(proof,proof.employee.id),
+  const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),workspace=access.workspace,token=randomBytes(32).toString('base64url');
+  const authority=()=>operationalScopeStatements(proof,workspace,{kind:'COMPANY'},access.authority);
+  const guards:SqlStatement[]=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([proof.employee.id,employeeId])].sort()]},...authority(),
    {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees actor JOIN employees target ON target.id=$2 JOIN locations l ON l.id=target.primary_location_id WHERE actor.id=$1 AND actor.active AND target.active AND l.workspace_id=$3 AND (target.role<>'OWNER' OR actor.role='OWNER')) THEN '1' ELSE 'recovery_permission_denied' END)::integer`,values:[proof.employee.id,employeeId,workspace.id]},
    {text:'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR SHARE',values:[employeeId]},
    {text:"SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_credentials WHERE employee_id=$1) THEN '1' ELSE 'recovery_permission_denied' END)::integer",values:[employeeId]},
    {text:'UPDATE password_recovery_proofs SET retired_at=clock_timestamp() WHERE employee_id=$1 AND used_at IS NULL AND retired_at IS NULL',values:[employeeId]}];
-  const results=await executor.transaction([...guards,issueStatement(hash(token),employeeId,null,proof.employee.id,attestation.trim(),workspace.id),...managementSessionStatements(proof,proof.employee.id)]);
+  const results=await executor.transaction([...guards,issueStatement(hash(token),employeeId,null,proof.employee.id,attestation.trim(),workspace.id),...authority()]);
+  await executor.transaction([...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},...authority()]);
   const row=results[guards.length]?.[0] as {employeeId:string;expiresAt:string}|undefined;if(!row)return unavailable;
   return {state:'issued' as const,proof:token,employeeId:row.employeeId,expiresAt:row.expiresAt};
  }catch{return unavailable;}

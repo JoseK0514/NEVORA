@@ -33,3 +33,21 @@ it.each([401,403])('still clears and denies when current revalidation actually r
  expect(last().snapshot).toEqual({state:'unavailable',reason:'access_denied'});expect(html()).not.toContain('notificationId=expiring');expect(html()).toContain('Sign in again');expect(html()).not.toContain('Retry');
  await vi.advanceTimersByTimeAsync(120000);expect(request).toHaveBeenCalledTimes(2);
 });
+
+it('invalidates old notification rows before rechecking a changed operational source',async()=>{
+ let resolve!: (response:Response)=>void;
+ const request=vi.fn().mockResolvedValueOnce(Response.json(ready())).mockImplementation(()=>new Promise<Response>(done=>{resolve=done;}));vi.stubGlobal('fetch',request);
+ await mount();expect(html()).toContain('notificationId=expiring');
+ window.dispatchEvent(new Event('nevora:notifications-changed'));
+ expect(html()).not.toContain('notificationId=expiring');
+ await vi.advanceTimersByTimeAsync(0);expect(request).toHaveBeenCalledTimes(2);
+ resolve(Response.json(ready(false)));await vi.advanceTimersByTimeAsync(0);
+ expect(html()).toContain('No notifications here.');expect(html()).not.toContain('notificationId=expiring');
+});
+
+it('does not apply notification source invalidation to the separate own-profile reader',async()=>{
+ const request=vi.fn(async()=>Response.json({state:'unavailable',reason:'read_failed'}));vi.stubGlobal('fetch',request);
+ EmployeeAccountPanel({kind:'profile',authority:'profile-view'});cleanup=host.effect!();await vi.advanceTimersByTimeAsync(0);
+ window.dispatchEvent(new Event('nevora:notifications-changed'));await vi.advanceTimersByTimeAsync(0);
+ expect(request).toHaveBeenCalledTimes(1);
+});

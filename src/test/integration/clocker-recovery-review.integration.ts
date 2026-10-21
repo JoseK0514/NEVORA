@@ -6,7 +6,7 @@ import {readClockerRecoveryReview} from '../../lib/clocker/recovery-review.serve
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 let f:Awaited<ReturnType<typeof createPunchFixture>>;
 const owner:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
-beforeEach(async()=>{f=await createPunchFixture();});afterEach(async()=>{await f?.db.dispose();});
+beforeEach(async()=>{f=await createPunchFixture({companyAccess:true});});afterEach(async()=>{await f?.db.dispose();});
 it('UX-05 concurrent employees retain separate immutable receipts and reject cross-identity replay',async()=>{
  const service=new ClockerPunchService(f.key,f.db.executor),a=await f.identity();
  const make=async(proof:typeof a.proof)=>({commandId:randomUUID(),action:'CLOCK_IN' as const,verificationId:(await service.read(proof)).verificationId,expected:{revision:0,timeEntryId:null,timeEntryVersion:null,breakEntryId:null,breakEntryVersion:null}});

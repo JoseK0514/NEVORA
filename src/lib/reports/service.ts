@@ -1,3 +1,4 @@
+import {readCompanyResult} from '../company-access/company-result.server';
 import {Temporal} from '@js-temporal/polyfill';
 import type {SqlExecutor} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
@@ -78,7 +79,7 @@ SELECT jsonb_build_object('workspaceId',$1::text,'timeZone',$6::text,'observedAt
  FROM (SELECT DISTINCT employee_id FROM raw) ids),'[]'::jsonb)) AS source,
  (SELECT expires_at::text FROM employee_sessions WHERE token_hash=$7) AS "expiresAt" FROM cards c`;
 export type ReportsResult={state:'ready';source:unknown;report:PeriodReports;validForMs:number}|{state:'unavailable';reason:'access_denied'|'read_failed'|'source_limit'|'schema_missing'};
-export async function readReports(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()):Promise<ReportsResult>{
+async function readReportsCore(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()):Promise<ReportsResult>{
  try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable',reason:'access_denied'};}
  if(!['OWNER','MANAGER'].includes(proof.employee.role))return {state:'unavailable',reason:'access_denied'};
  const period=parsePeriod(requested.startDate,requested.endDate);
@@ -104,4 +105,9 @@ export async function readReports(proof:SessionMutationProof,requested:Period,ex
   const code=error&&typeof error==='object'&&'code' in error?String(error.code):'';
   return {state:'unavailable',reason:['42P01','42703','42883'].includes(code)?'schema_missing':/source limit|SOURCE_LIMIT|source limit or unavailable/i.test(error instanceof Error?error.message:'')?'source_limit':'read_failed'};
  }
+}
+
+/** Complete company report; canonical timecard SQL remains unfiltered. */
+export async function readReports(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()):Promise<ReportsResult>{
+ return readCompanyResult(proof,()=>readReportsCore(proof,requested,executor),executor);
 }
