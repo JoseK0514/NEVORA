@@ -96,8 +96,8 @@
   .toMonthDays:not(#to), .toMonthGrid:not(#to) { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
   .toMonthDays small:not(#to) { padding-bottom: 8px; text-align: center; font: 600 .6875rem/.875rem var(--sg-font); color: var(--sg-ink-3); }
   .toMonthGrid button:not(#to) { height: 44px; margin: 2px 0; padding: 0; border: 0; background: none; color: var(--sg-ink); font: 400 .9375rem/1 var(--sg-font); font-variant-numeric: tabular-nums; cursor: pointer; }
-  .toMonthGrid button:hover:not(#to) { background: var(--sg-page); border-radius: 22px; }
-  .toMonthGrid button[data-past]:not(#to) { color: #A19E97; }
+  @media (hover: hover) { .toMonthGrid button:hover:not(#to) { background: var(--sg-page); border-radius: 22px; } }
+  .toMonthGrid button[data-past]:not(#to) { color: var(--sig-ink-3, #6F6C66); }
   .toMonthGrid button[data-today]:not(#to) { font-weight: 600; color: var(--sg-teal); }
   .toMonthGrid button[data-range]:not(#to) { border-radius: 0; background: #E2F1ED; color: #0A5753; font-weight: 500; }
   .toMonthGrid button[data-edge]:not(#to) { background: var(--sg-deep); color: #FFFFFF; font-weight: 500; }

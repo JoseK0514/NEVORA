@@ -44,7 +44,7 @@
 .error { margin: 16px 0 0 !important; color: #97302f !important; line-height: 1.6; }
 .dangerText { color: #97302f !important; }
 .dangerButton { background: #a43836 !important; color: var(--color-bg-surface) !important; }
-.dangerButton:hover { background: #812a29 !important; }
+@media (hover: hover) { .dangerButton:hover { background: #812a29 !important; } }
 .tabletPage { min-height: 100dvh; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); background: var(--color-bg-main); color: var(--color-brand-primary); }
 .tabletCard { width: min(100%, 620px); background: var(--color-bg-surface); border-radius: 28px; padding: 48px; box-shadow: 0 10px 40px #20232d08; box-sizing: border-box; }
 .tabletCard h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); line-height: 1.1; letter-spacing: -.045em; margin: 20px 0 16px; }

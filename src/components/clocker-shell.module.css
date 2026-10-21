@@ -96,18 +96,19 @@
 /* Signature button scale: 56px, radius 16 (the action cards and keypad keys keep their own shapes). */
 .page :global(.button) { min-height: var(--sig-control-h, 56px); border-radius: var(--sig-radius-control, 16px); padding: 14px 22px; font-family: inherit; font-size: 1.0625rem; line-height: 1.3; font-weight: 500; gap: 10px; white-space: normal; border: 0; box-shadow: none; transition: background-color .16s ease, transform .16s ease; }
 .page :global(.button.primary) { background: var(--clocker-accent); color: var(--clocker-on-accent); }
-.page :global(.button.primary:hover) { background: var(--clocker-accent-hover); }
+@media (hover: hover) { .page :global(.button.primary:hover) { background: var(--clocker-accent-hover); } }
 /* A quiet, readable disabled look (the shared rule only fades the deep fill). */
 .page.page.page :global(.button.primary):disabled { background: var(--ck-track); color: var(--ck-ink2); opacity: 1; }
 .page :global(.button.secondary) { background: var(--ck-card); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-edge), 0 1px 2px rgba(22, 28, 27, .06); }
-.page :global(.button.secondary:hover) { background: #F1EFEA; }
+@media (hover: hover) { .page :global(.button.secondary:hover) { background: #F1EFEA; } }
 .page :global(.button.ghost) { background: transparent; color: var(--ck-ink); }
-.page :global(.button.ghost:hover) { background: #EFEDE8; }
+@media (hover: hover) { .page :global(.button.ghost:hover) { background: #EFEDE8; } }
 .page button:active { transform: scale(.98); }
 .page button:focus-visible, .page a:focus-visible { outline: 3px solid var(--clocker-focus); outline-offset: 3px; }
 .page button:disabled { cursor: not-allowed; }
 .page button:disabled:active { transform: none; }
-.page.page.page :global(.button.primary):is(:hover, :active):not(:disabled) { color: var(--clocker-on-accent); }
+@media (hover: hover) { .page.page.page :global(.button.primary):hover:not(:disabled) { color: var(--clocker-on-accent); } }
+.page.page.page :global(.button.primary):active:not(:disabled) { color: var(--clocker-on-accent); }
 
 .skip { position: absolute; top: 12px; left: 12px; z-index: 3; padding: 14px 20px; border-radius: 12px; background: #ffffff; color: var(--ck-ink); transform: translateY(-160%); }
 .skip:focus { transform: none; }

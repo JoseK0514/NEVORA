@@ -35,7 +35,7 @@
 .ap-back + .ap-title { margin-top: 18px; }
 .ap-subtitle { margin-top: 12px; font: 400 1.0625rem/1.5625rem var(--sys); letter-spacing: -.2px; color: var(--ink-2); }
 .ap-back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin: -12px 0 0; font: 500 .875rem/1.25rem var(--sys); color: var(--ink-2); text-decoration: none; }
-.ap-back:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+@media (hover: hover) { .ap-back:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; } }
 
 /* ---------- Fields ---------- */
 .ap-form { margin-top: 36px; }
@@ -49,7 +49,7 @@
 .ap-label { display: block; font: 500 .8125rem/1.125rem var(--sys); color: var(--ink); }
 .ap-aside-link { position: relative; font: 400 .8125rem/1.125rem var(--sys); color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
 .ap-aside-link::after { content: ""; position: absolute; inset: calc(50% - 22px) -4px; }
-.ap-aside-link:hover { color: var(--ink); }
+@media (hover: hover) { .ap-aside-link:hover { color: var(--ink); } }
 .ap-box {
   display: flex; align-items: center; min-height: 3.25rem; margin-top: 8px; padding: 0 16px; border: 1px solid var(--edge); border-radius: 10px;
   background: var(--paper); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8); transition: border-color 120ms ease, box-shadow 120ms ease;
@@ -64,7 +64,7 @@
 .ap-form[data-invalid] .ap-box, .ap-box:has(input[aria-invalid="true"]) { border-color: var(--danger); }
 .ap-box--toggle { padding-right: 4px; }
 .ap-eye { display: inline-grid; flex: none; place-items: center; width: 44px; height: 44px; margin: 0; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); cursor: pointer; }
-.ap-eye:hover { color: var(--ink); background: rgba(22, 28, 27, .05); }
+@media (hover: hover) { .ap-eye:hover { color: var(--ink); background: rgba(22, 28, 27, .05); } }
 .ap-hint { margin-top: 8px; font: 400 .8125rem/1.125rem var(--sys); color: var(--ink-2); }
 .ap-fieldset:disabled .ap-box { opacity: .7; }
 
@@ -74,7 +74,7 @@
   border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--sys); letter-spacing: -.1px;
   text-align: center; text-decoration: none; cursor: pointer; transition: transform 120ms ease, background-color 120ms ease;
 }
-.ap .ap-primary:hover:not(:disabled):not([aria-busy="true"]) { background: #0A2A28; }
+@media (hover: hover) { .ap .ap-primary:hover:not(:disabled):not([aria-busy="true"]) { background: #0A2A28; } }
 .ap .ap-primary:active:not(:disabled):not([aria-busy="true"]) { transform: scale(.98); }
 .ap .ap-primary:disabled { cursor: wait; }
 .ap .ap-primary[aria-busy="true"] { cursor: progress; }
@@ -87,7 +87,7 @@
 .ap-links { display: grid; gap: 8px; margin-top: 26px; }
 .ap-alt { font: 400 .9375rem/1.375rem var(--sys); color: var(--ink-2); }
 .ap-link { color: var(--ink); font-weight: 500; text-decoration: underline; text-decoration-color: var(--rule); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-.ap-link:hover { text-decoration-color: currentColor; }
+@media (hover: hover) { .ap-link:hover { text-decoration-color: currentColor; } }
 .ap-links > p:not(.ap-alt) .ap-link { display: inline-flex; align-items: center; min-height: 44px; font-size: .9375rem; }
 .ap-help summary { display: flex; align-items: center; gap: 10px; min-height: 44px; color: var(--ink); font: 500 .9375rem/1.375rem var(--sys); list-style: none; cursor: pointer; }
 .ap-help summary::-webkit-details-marker { display: none; }
@@ -126,7 +126,7 @@
 .ap-legal .brand-legal > span + span { display: none; }
 .ap-legal .brand-legal :is(nav, .brand-legal-links) { display: flex; flex-wrap: wrap; gap: 0 20px; }
 .ap-legal .brand-legal a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink-3); font-size: .8125rem; text-decoration: none; }
-.ap-legal .brand-legal a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) { .ap-legal .brand-legal a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; } }
 
 /* ---------- Focus ---------- */
 .ap :is(a, button, summary):focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px; }

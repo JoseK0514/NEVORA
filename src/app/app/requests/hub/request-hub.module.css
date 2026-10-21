@@ -28,7 +28,7 @@
 .r6Sheet:not(#r6) { position: relative; z-index: 1; display: flex; flex-direction: column; min-width: 0; margin-top: -30px; padding-top: 26px; border-radius: 28px 28px 0 0; background: var(--r6-page); }
 .r6Primary:not(#r6) { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; margin: 0 16px; border-radius: 10px; background: var(--r6-deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--r6-font); text-decoration: none; }
 .r6Primary svg:not(#r6) { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
-.r6Primary:hover:not(#r6) { background: #12423F; }
+@media (hover: hover) { .r6Primary:hover:not(#r6) { background: #12423F; } }
 .r6Section:not(#r6) { display: flex; flex-direction: column; min-width: 0; margin-top: 30px; }
 .r6Head:not(#r6) { margin: 0 24px 12px; }
 .r6Head h2:not(#r6) { font: 600 .75rem/1rem var(--r6-font); letter-spacing: .13em; text-transform: uppercase; color: var(--r6-ink-2); }
@@ -37,7 +37,7 @@
 .r6List > li + li:not(#r6)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--r6-rule); }
 .r6Row:not(#r6), .r6LinkRow:not(#r6) { display: flex; align-items: center; gap: 14px; min-height: 72px; padding: 14px 16px 14px 18px; color: var(--r6-ink); text-decoration: none; }
 .r6LinkRow:not(#r6) { justify-content: space-between; min-height: 68px; padding-block: 12px; }
-.r6Row:hover:not(#r6), .r6LinkRow:hover:not(#r6) { background: #FAFAF8; }
+@media (hover: hover) { .r6Row:hover:not(#r6), .r6LinkRow:hover:not(#r6) { background: #FAFAF8; } }
 .r6Row:focus-visible:not(#r6), .r6LinkRow:focus-visible:not(#r6) { outline-offset: -3px; border-radius: 18px; }
 .r6Day:not(#r6) { flex: none; display: flex; flex-direction: column; width: 2.5rem; }
 .r6Day small:not(#r6) { font: 600 .6875rem/.875rem var(--r6-font); letter-spacing: .12em; text-transform: uppercase; color: var(--r6-ink-3); }
@@ -47,7 +47,7 @@
 .r6Copy span:not(#r6), .r6LinkRow small:not(#r6) { font: 400 .9375rem/1.25rem var(--r6-font); color: var(--r6-ink-2); }
 .r6State:not(#r6) { flex: none; font: 600 .6875rem/.875rem var(--r6-font); letter-spacing: .12em; text-transform: uppercase; }
 .r6Wait:not(#r6) { color: var(--r6-amber); } .r6Good:not(#r6) { color: var(--r6-teal); } .r6No:not(#r6) { color: var(--r6-red); } .r6Quiet:not(#r6) { color: var(--r6-ink-3); }
-.r6Chevron:not(#r6) { flex: none; fill: none; stroke: var(--r6-faint); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.r6Chevron:not(#r6) { flex: none; fill: none; stroke: var(--sig-glyph, #8A8378); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .r6None:not(#r6) { padding: 20px 18px; font: 400 .9375rem/1.3125rem var(--r6-font); color: var(--r6-ink-3); }
 .r6Empty:not(#r6) { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 0 16px; padding: 20px 18px; border: 1px solid var(--r6-rule); border-radius: 18px; background: var(--r6-card); font: 400 .9375rem/1.3125rem var(--r6-font); color: var(--r6-ink-2); }
 .r6Empty strong:not(#r6) { font: 500 1rem/1.3125rem var(--r6-font); color: var(--r6-ink); }

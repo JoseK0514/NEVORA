@@ -19,7 +19,7 @@
 .mtEntries :global(.employee-time-entry):not(#mt):not(#mt) { margin: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
 .mtEntries :global(.employee-time-entry > summary):not(#mt):not(#mt) { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto 24px; align-items: center; gap: 14px; min-height: 72px; padding: 14px 14px 14px 18px; border: 0; background: none; list-style: none; cursor: pointer; }
 .mtEntries :global(.employee-time-entry > summary)::-webkit-details-marker { display: none; }
-.mtEntries :global(.employee-time-entry > summary:hover):not(#mt):not(#mt) { background: #FAFAF8; }
+@media (hover: hover) { .mtEntries :global(.employee-time-entry > summary:hover):not(#mt):not(#mt) { background: #FAFAF8; } }
 .mtEntries :global(.employee-time-entry-date):not(#mt):not(#mt) { display: flex; flex-direction: column; width: auto; height: auto; padding: 0; border: 0; border-radius: 0; background: none; color: var(--sg-ink); box-shadow: none; }
 .mtEntries :global(.employee-time-entry-date span):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
 .mtEntries :global(.employee-time-entry-date b):not(#mt):not(#mt) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--sg-display); letter-spacing: -.03em; }
@@ -28,7 +28,7 @@
 .mtEntries :global(.employee-time-entry-label small):not(#mt):not(#mt) { display: flex; align-items: center; gap: 4px; font: 400 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
 .mtEntries :global(.employee-time-entry-total):not(#mt):not(#mt) { display: flex; flex-direction: column; align-items: flex-end; font: 300 1.25rem/1.5rem var(--sg-display); color: var(--sg-ink); font-variant-numeric: tabular-nums; }
 .mtEntries :global(.employee-time-entry-total small):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
-.mtEntries :global(.employee-time-disclosure):not(#mt):not(#mt) { color: var(--sg-faint); }
+.mtEntries :global(.employee-time-disclosure):not(#mt):not(#mt) { color: var(--sig-glyph, #8A8378); }
 .mtEntries :global(.employee-time-punches):not(#mt):not(#mt) { margin: 0 14px 0 18px; padding: 6px 0 14px; border-top: 1px solid var(--sg-rule); background: none; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
 .mtEntries :global(.employee-time-punches dl > div):not(#mt):not(#mt) { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border: 0; }
 .mtEntries :global(.employee-time-punches dt):not(#mt):not(#mt) { color: var(--sg-ink-2); }
@@ -98,7 +98,7 @@
 .mtCorrections :global(.employee-time-section-heading h2):not(#mt):not(#mt) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: var(--sg-ink-2); }
 .mtCorrections :global(.employee-time-section-heading p):not(#mt):not(#mt) { margin-top: 4px; font-size: .875rem; color: var(--sg-ink-3); }
 .mtCorrections :global(.employee-time-correction-trigger):not(#mt):not(#mt) { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px; padding: 16px 18px; border: 0; border-radius: 22px; background: #EAF4F2; box-shadow: none; color: var(--sg-ink); text-align: left; cursor: pointer; }
-.mtCorrections :global(.employee-time-correction-trigger:hover):not(#mt):not(#mt) { background: #E1EFEC; }
+@media (hover: hover) { .mtCorrections :global(.employee-time-correction-trigger:hover):not(#mt):not(#mt) { background: #E1EFEC; } }
 .mtCorrections :global(.employee-time-correction-trigger[data-open]):not(#mt):not(#mt) { min-height: 52px; padding: 8px 12px; background: transparent; color: var(--sg-ink-2); }
 .mtCorrections :global(.employee-time-correction-trigger:disabled):not(#mt):not(#mt) { opacity: 1; background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
 .mtCorrections :global(.employee-time-correction-trigger__tile):not(#mt):not(#mt) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; background: #FFFFFF; color: var(--sg-teal); box-shadow: 0 6px 16px -10px rgba(13, 54, 52, .45); }

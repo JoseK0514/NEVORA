@@ -32,6 +32,11 @@
 .avSwitch input:checked + span:not(#av) { background: var(--sg-teal); }
 .avSwitch input:checked + span:not(#av)::after { transform: translateX(20px); }
 .avSwitch input:focus-visible + span:not(#av) { outline: 2px solid var(--sg-ink); outline-offset: 3px; }
+/* Press: the thumb stretches toward the side it will travel to and the track dims a touch, the instant it is touched. */
+.avSwitch input:active + span:not(#av) { filter: brightness(.95); }
+.avSwitch input:active + span:not(#av)::after { width: 28px; transition-duration: 0s, 0s; }
+.avSwitch input:checked:active + span:not(#av)::after { transform: translateX(16px); }
+.avSwitch span:not(#av)::after { transition: transform .18s var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), width var(--sig-dur-press, 120ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)); }
 .avTimes:not(#av) { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); align-items: end; gap: 6px; margin: 8px 0 0; }
 .avTimes label:not(#av) { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .avTimes label span:not(#av) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
