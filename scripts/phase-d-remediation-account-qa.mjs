@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {Temporal} from '@js-temporal/polyfill';
 import {createOwnedNextApp} from '../src//test/integration/owned-next-app.ts';
-import {seedOwnedApp,TEST_PASSWORD} from '../src//test/integration/owned-app-fixture.ts';
+import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src//test/integration/owned-app-fixture.ts';
 import {hashPassword} from '../src//lib/auth/password.ts';
 const pw=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'))('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()==='';
@@ -25,6 +25,7 @@ async function page(c,path){const p=await c.newPage();p.setDefaultTimeout(12000)
 try{
  app=await createOwnedNextApp(dir);await seedOwnedApp(app.database.executor);const ph=await hashPassword(TEST_PASSWORD);
  for(const [id,role] of [['RV-E1','EMPLOYEE'],['RV-E2','EMPLOYEE'],['RV-M1','MANAGER'],['RV-M2','MANAGER']]){await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$1,'Fictional','555-0444',$2,'loc-1')",[id,role]);await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,ph]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);}
+ for(const id of ['RV-M1','RV-M2'])await assignOwnedManagerCompanyAccess(app.database.executor,id);
  for(const engine of ['chromium','webkit']){
   browser=await pw[engine].launch({headless:true});const dates=engine==='chromium'?['07','08','09']:['17','18','19'];
   await record(engine+' employee cross-tab account switch clears uncertain missing command',async o=>{

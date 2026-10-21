@@ -64,6 +64,14 @@ const report = {
 };
 let app;
 const browsers = [];
+const responseGates = new Set();
+function holdResponse() {
+  let release;
+  const pending = new Promise(resolve => { release = resolve; });
+  const gate = {pending,release:()=>{responseGates.delete(gate);release();}};
+  responseGates.add(gate);
+  return gate;
+}
 const checked = (name) => {
   report.checks.push(name);
   console.log('[D1.3 browser] PASS ' + name);
@@ -268,12 +276,13 @@ try {
     await owner.route('**/api/manager/attendance', async (route) => {
       const headers = route.request().headers();
       assert.equal(headers['x-nevora-attendance'], '1');
-      if (fixture.delayMs) await new Promise((resolve) => setTimeout(resolve, fixture.delayMs));
+      const response = fixture;
+      if (response.gate) await response.gate.pending;
       await route.fulfill({
-        status: fixture.status,
+        status: response.status,
         contentType: 'application/json',
         headers: { 'Cache-Control': 'no-store, private', Vary: 'Cookie' },
-        body: JSON.stringify(fixture.payload),
+        body: JSON.stringify(response.payload),
       });
     });
 
@@ -292,10 +301,11 @@ try {
     await page.getByText('Some comparisons are limited', { exact: true }).waitFor();
     checked(engine + ': limited source state is explicitly disclosed');
 
+    const lifecycleGate = holdResponse();
     fixture = {
       status: 403,
       payload: { state: 'unavailable', reason: 'access_denied' },
-      delayMs: 350,
+      gate: lifecycleGate,
     };
     await page.evaluate(() => window.dispatchEvent(new StorageEvent('storage', { key: 'nevora-session-check' })));
     await page.getByText('Loading attendance', { exact: true }).waitFor();
@@ -304,26 +314,31 @@ try {
       0,
       'protected attendance data must clear before lifecycle reauthorization completes',
     );
+    lifecycleGate.release();
     await page.getByText('Sign in again', { exact: true }).waitFor();
     checked(engine + ': lifecycle reauthorization clears protected snapshot before the response');
     fixture = { payload: fixtureReady(), status: 200 };
     await page.reload({ waitUntil: 'networkidle' });
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
 
-    fixture = { payload: fixtureReady(), status: 200, delayMs: 200 };
+    const visibilityGate = holdResponse();
+    fixture = { payload: fixtureReady(), status: 200, gate: visibilityGate };
     await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
     await page.getByText('Loading attendance', { exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+    visibilityGate.release();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': visibility revalidation clears protected snapshot before refresh');
 
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
     await page.getByText('Attendance paused', { exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
-    fixture = { payload: fixtureReady(), status: 200, delayMs: 200 };
+    const pageshowGate = holdResponse();
+    fixture = { payload: fixtureReady(), status: 200, gate: pageshowGate };
     await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
     await page.getByText('Loading attendance', { exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+    pageshowGate.release();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': pagehide/pageshow requires a fresh protected snapshot');
 
@@ -414,6 +429,7 @@ try {
   report.errors.push(String(error?.stack ?? error));
   process.exitCode = 1;
 } finally {
+  for (const gate of responseGates) gate.release();
   for (const browser of browsers) await browser.close().catch(() => {});
   if (app) await app.close().catch((error) => report.errors.push(String(error)));
   report.finishedAt = new Date().toISOString();

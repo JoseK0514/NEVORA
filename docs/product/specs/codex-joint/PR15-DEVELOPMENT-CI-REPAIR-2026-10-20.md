@@ -78,7 +78,20 @@ Red runs are failure history, not successful acceptance receipts.
   Its19-case fixture used direct publication proofs without Company Access
   adoption. Explicit adoption after seeding the real actors repairs that fixture;
   the complete19-case focused run now passes. No production publication or feed
-  code changed. The full owned Phase E SQL gate still must pass.
+  code changed. Its subsequent complete owned run is recorded below.
+
+At `cb4cc5ca`, the complete owned Phase E SQL gate passed all189 tests across
+its10 explicit groups. Navigation and Communications each passed all14 browser
+cells with zero runtime errors and closed ownership receipts, including the390
+management binding and WebKit375/1440 cases. Attendance passed its real Owner,
+Manager and Employee boundaries, then missed its200ms loading transition.
+That test now holds each lifecycle/visibility/pageshow response until the
+loading and private-row clearing assertions finish, then releases it and checks
+the final state. Response payloads are captured at request entry; pending gates
+release during teardown. No timeout, private clearing assertion or final-state
+assertion was removed. The same explicit Manager scope setup is also applied to
+the whole Phase D and account-remediation positive Manager fixtures found by the
+helper-graph search. These final Phase D corrections require matching reruns.
 
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.

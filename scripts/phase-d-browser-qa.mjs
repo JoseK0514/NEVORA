@@ -8,7 +8,7 @@ import {homedir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
-import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {createOwnedSmtp} from '../src/test/integration/owned-smtp.ts';
 const evidence=resolve(process.env.PHASE_D_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/nevora-phase-d-d3-d8'));
@@ -33,6 +33,7 @@ try{
     await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);
   }
   await q("INSERT INTO clocker_devices(id,location_id,name,active) VALUES('d3-device','loc-1','Fictional D3 tablet',true)");
+  await assignOwnedManagerCompanyAccess(app.database.executor,'D3-M');
   await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D3-UI','D3-E','loc-1','d3-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)");
   await q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('D3-UI-B','D3-UI','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
   const engineName=id=>'Portal '+id;
