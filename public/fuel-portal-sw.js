@@ -146,13 +146,16 @@ function validEnvelope(value) {
       !Number.isFinite(Date.parse(value.expiresAt)) || Date.parse(value.expiresAt) <= Date.now() ||
       typeof value.tag !== 'string' || !/^fuel-[a-f0-9]{32}$/.test(value.tag)) return false;
   let title, body;
-  if (['SCHEDULE_PUBLISHED', 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER'].includes(value.kind)) {
+  // Must cover every kind in PUSH_KINDS (src/lib/notifications/payloads.ts); an unlisted kind is dropped silently.
+  if (value.kind === 'COMMUNICATION') {
+    title = 'NEVORA update'; body = 'Open NEVORA to review an update.';
+  } else if (['SCHEDULE_PUBLISHED', 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER'].includes(value.kind)) {
     title = 'Your NEVORA Schedule Is Ready'; body = 'Open NEVORA to review your schedule.';
   } else if (value.kind === 'SCHEDULE_CHANGED') {
     title = 'Your NEVORA Schedule Changed'; body = 'Open NEVORA to review your schedule.';
   } else if (value.kind === 'COVERAGE_ATTENTION') {
     title = 'Coverage Needs Attention'; body = 'Open NEVORA to review coverage.';
-  } else if (['TIME_OFF_APPROVED', 'TIME_OFF_DENIED', 'CALLOUT_APPROVED', 'CALLOUT_DENIED', 'SWAP_RESPONSE_REQUIRED', 'SWAP_APPROVED', 'SWAP_DENIED', 'COVERAGE_APPROVED', 'COVERAGE_DENIED', 'AVAILABILITY_REMINDER', 'AVAILABILITY_SUMMARY', 'PAYROLL_PREPARATION','PAYROLL_STATEMENT','MANAGER_REVIEW', 'SELF_TEST'].includes(value.kind)) {
+  } else if (['TIME_OFF_APPROVED', 'TIME_OFF_DENIED', 'CALLOUT_APPROVED', 'CALLOUT_DENIED', 'SWAP_RESPONSE_REQUIRED', 'SWAP_APPROVED', 'SWAP_DENIED', 'COVERAGE_APPROVED', 'COVERAGE_DENIED', 'COVERAGE_INVITATION', 'COVERAGE_CANCELLED', 'COVERAGE_EXPIRED', 'SWAP_CANCELLED', 'SWAP_EXPIRED', 'AVAILABILITY_REMINDER', 'AVAILABILITY_SUMMARY', 'PAYROLL_PREPARATION', 'PAYROLL_STATEMENT', 'MANAGER_REVIEW', 'SELF_TEST'].includes(value.kind)) {
     title = 'NEVORA Request Update'; body = 'Open NEVORA to review your pending task.';
   } else return false;
   return value.title === title && value.body === body;
