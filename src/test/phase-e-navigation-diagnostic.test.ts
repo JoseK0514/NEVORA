@@ -11,7 +11,7 @@ async function fixture({verified=true,engine='webkit',phase='scenario',pending=t
  const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
  const request={isNavigationRequest:()=>true,frame:()=>frame,url:()=> 'http://127.0.0.1:43210/app/schedule'};
  if(pending)page.emit('request',request);
- const error={name:'Fetch API cannot load http',message:'/'+host+path+'?token=PRIVATE_ACTOR_TOKEN due to access control checks.'};
+ const error={name:'Fetch API cannot load http',message:'/'+host+path+' due to access control checks.'};
  return {cell,context,page,errors,execution,error,frame,request,binding};
 }
 it('records the reproduced native refusal only during a pending owned document navigation',async()=>{
@@ -24,6 +24,7 @@ it('records the reproduced native refusal only during a pending owned document n
 it.each([
  {verified:false},{engine:'chromium'},{pending:false},{phase:'context-close'},
  {host:'fictional.invalid'},{host:'127.0.0.1:43211'},{path:'/__nextjs_original-stack-frames'},{path:'/api/manager/communications'},{path:'/PRIVATE_ACTOR_TOKEN'},
+ {host:'PRIVATE_ACTOR_TOKEN@127.0.0.1:43210'},{path:'/api/notifications?token=PRIVATE_ACTOR_TOKEN'},{path:'/api/employee/home#PRIVATE_ACTOR_TOKEN'},
 ])('keeps an unproven or live-document event fatal: %j',async options=>{
  const f=await fixture(options);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(0);
 });

@@ -31,6 +31,9 @@ function nativeFetchResourceKind(message,page) {
     return null;
   })??null;
 }
+function plainOwnNativeRead(message,page){
+  return readable(()=>{const failed=new URL('http:/'+message.slice(0,-' due to access control checks.'.length));return failed.origin===new URL(page.url()).origin&&!failed.username&&!failed.password&&!failed.search&&!failed.hash;})===true;
+}
 
 /** Only exact static messages or a bounded React invariant prefix survive;
  * arbitrary suffixes, URLs, arguments and stacks must never be persisted. */
@@ -49,6 +52,7 @@ function originalRuntimeDiagnostic(name, message, page) {
     reactInvariant: invariant ? Number(invariant[1]) : null,
     route: runtimeRoutes.has(route) ? route : null,
     resourceKind: nativeFetch ? nativeFetchResourceKind(message,page) : null,
+    plainOwnRead:nativeFetch&&plainOwnNativeRead(message,page),
   };
 }
 

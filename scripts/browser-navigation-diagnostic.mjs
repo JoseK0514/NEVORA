@@ -3,7 +3,7 @@ import {createServer} from 'node:http';
 
 const reads=new Set(['notification-read','home-read','recorded-time-read']);
 export function navigationFetchDiagnostic(execution,diagnostic,pending,verified,phase){
- return execution.engine==='webkit'&&verified===true&&pending===true&&phase==='scenario'
+ return execution.engine==='webkit'&&verified===true&&pending===true&&phase==='scenario'&&diagnostic.plainOwnRead===true
   &&diagnostic.canonicalMessage==='Fetch API cannot load resource due to access control checks.'
   &&reads.has(diagnostic.resourceKind);
 }

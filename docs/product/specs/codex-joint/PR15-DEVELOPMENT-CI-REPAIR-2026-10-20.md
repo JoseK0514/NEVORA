@@ -235,6 +235,9 @@ navigation request and its commit/failure. Window exceptions, genuine TypeErrors
 foreign/unknown resources, ordinary live-document failures and teardown errors
 remain fatal. A spoofed native-shaped JavaScript throw still fails through the
 independent observer. Diagnostic receipts contain static resource kinds only.
+The URL must also have no userinfo, query string or fragment. Three added rejection
+cases failed before this restriction and passed afterward; the focused runtime
+and classification regression set now passes160 cases.
 No test is skipped and the full browser matrix, source custody and receipt gates
 remain required. This classification remains a candidate until matching CI passes.
 
