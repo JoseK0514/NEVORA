@@ -1,0 +1,58 @@
+{
+  "candidate": "4b9e9ccee4a8ea1176c9d9002b58b2ec2acd40b1",
+  "result": "PASS",
+  "databaseRuns": [
+    {
+      "receipt": "final-a.json",
+      "checksPassed": 54,
+      "checksFailed": 0,
+      "scenariosPassed": 4,
+      "backupRestores": 3,
+      "cleanup": true
+    },
+    {
+      "receipt": "final-b.json",
+      "checksPassed": 54,
+      "checksFailed": 0,
+      "scenariosPassed": 4,
+      "backupRestores": 3,
+      "cleanup": true
+    }
+  ],
+  "safetyTests": {
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0
+  },
+  "focusedLint": {
+    "command": "node_modules/.bin/eslint scripts/rehearsal",
+    "exitCode": 0
+  },
+  "focusedTypecheck": {
+    "command": "node_modules/.bin/tsc --noEmit --pretty false -p scripts/rehearsal/tsconfig.json",
+    "exitCode": 0
+  },
+  "applicationSourceChanges": false,
+  "migrationChanges": false,
+  "dependencyChanges": false,
+  "existingTestChanges": false,
+  "ciChanges": false,
+  "productionDataAccess": false,
+  "productionDeployment": false,
+  "currentCandidateBrowserChecks": "NOT RUN",
+  "historicalBrowserEvidence": {
+    "commit": "6c56f504",
+    "passed": 42,
+    "artifactCommit": "f3a1a7c4b8d10ca76094f7c819f1fa59615998c2",
+    "executedByThisRehearsal": false
+  },
+  "limits": [
+    "Disposable PostgreSQL 16.15 only; no hosted Neon/PITR or cross-major restore certification.",
+    "Existing UI integration and CI repairs remain with their owners.",
+    "Individual migration rollback and pre-upgrade backup recovery verified; whole-chain transaction rollback and production downgrade not claimed."
+  ],
+  "receiptSha256": {
+    "final-a.json": "558af342fcea0bc502c7a25bf84175efbec274fbeaa9af5cfcb7dac9b014b796",
+    "final-b.json": "980c30aaf47d67be9923bacefa825f0d478dc488431e54fb43443e967c4d994f"
+  }
+}
