@@ -269,7 +269,11 @@ try{
     }catch{report.databaseDiagnostics='unavailable';}
     try{
       const log=(await readFile(join(app.root,'next.log'),'utf8')).replace(/\[[0-9;]*m/g,'').replaceAll(String.fromCharCode(27),'');
-      report.recoveryServerRequests=log.split('\n').flatMap(line=>{const match=line.match(/\b(POST|GET) (\/api\/auth\/(?:recovery|reset-access)|\/api\/manager\/account-recovery) (\d{3}) in ([\d.]+)(ms|s)/);return match?[{method:match[1],path:match[2],status:Number(match[3]),elapsedMs:Number(match[4])*(match[5]==='s'?1000:1)}]:[];}).slice(-32);
+      report.recoveryServerRequests=log.split('\n').flatMap(line=>{
+        const match=line.match(/\b(POST|GET) (\/api\/auth\/(?:recovery|reset-access)|\/api\/manager\/account-recovery) (\d{3}) in ([\d.]+)(ms|s)/);
+        const duration=pattern=>{const value=line.match(pattern);return value?Number(value[1])*(value[2]==='s'?1000:1):null;};
+        return match?[{method:match[1],path:match[2],status:Number(match[3]),elapsedMs:Number(match[4])*(match[5]==='s'?1000:1),compileMs:duration(/compile: ([\d.]+)(ms|s)/),renderMs:duration(/render: ([\d.]+)(ms|s)/)}]:[];
+      }).slice(-32);
     }catch{report.serverDiagnostics='unavailable';}
   }
   report.errors.push(error instanceof Error?error.stack:String(error));process.exitCode=1;console.error(error);
