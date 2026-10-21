@@ -29,3 +29,23 @@ it("the root boundary and the global boundary render the same screen", () => {
   expect(global).toContain("This page could not be loaded");
   for (const html of [root, global]) expect(html).not.toContain("4074344408");
 });
+
+it("UI Try again asks Next to refetch (retry), not just re-render the failed result (reset)", async () => {
+  const error = new Error("fictional transient failure"), reset = vi.fn(), retry = vi.fn();
+  for (const Boundary of [RootError, GlobalError]) {
+    const tree = JSON.stringify(Boundary({ error, reset, retry }), (_key, value) => typeof value === "function" ? (value === retry ? "RETRY" : value === reset ? "RESET" : "fn") : value);
+    expect(tree).toContain('"reset":"RETRY"');
+  }
+  vi.doMock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
+  const PortalError = (await import("../app/app/error")).default;
+  const find = (node: unknown): (() => void) | null => {
+    if (!node || typeof node !== "object") return null;
+    const props = (node as { props?: { onClick?: () => void; children?: unknown } }).props;
+    if (props?.onClick) return props.onClick;
+    const kids = props?.children; for (const kid of Array.isArray(kids) ? kids : [kids]) { const hit = find(kid); if (hit) return hit; }
+    const type = (node as { type?: unknown }).type;
+    return typeof type === "function" && type.name !== "Link" ? find((type as (p: unknown) => unknown)((node as { props: unknown }).props)) : null;
+  };
+  find(PortalError({ error, reset, retry }))?.();
+  expect(retry).toHaveBeenCalledOnce(); expect(reset).not.toHaveBeenCalled();
+});

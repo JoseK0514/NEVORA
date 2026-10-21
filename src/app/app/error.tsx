@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { Card, CardBody, KitStack, PageBand } from '@/components/kit/kit';
 import { focusAfterRetry } from '@/components/kit/focus-after-retry';
 
-/** The portal's own error state: one kit page for every role (AL-53, Phase 3). */
-export default function Error({reset}:{error:Error & {digest?:string};reset:()=>void}) {
+/** The portal's own error state: one kit page for every role (AL-53, Phase 3). Try again uses Next's `retry` (refetch,
+ * then re-render); `reset` alone re-renders the same failed result. */
+export default function Error({reset,retry}:{error:Error & {digest?:string};reset:()=>void;retry?:()=>void}) {
  return <>
   <div className="nv-page premium-error" data-nv-page="">
    <PageBand title="This page could not be loaded" summary="Your current information is unavailable." />
@@ -17,7 +18,7 @@ export default function Error({reset}:{error:Error & {digest?:string};reset:()=>
       <div className="premium-error__body">
        <p className="premium-error__text">Try loading the page again before taking an action.</p>
        <div className="premium-error__actions">
-        <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry('[data-nv-page]:not(.premium-error) [data-nv-band] h1', '.premium-error .nv-btn[data-kind="primary"]'); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
+        <button type="button" className="nv-btn" data-kind="primary" onClick={() => { (retry ?? reset)(); focusAfterRetry('[data-nv-page]:not(.premium-error) [data-nv-band] h1', '.premium-error .nv-btn[data-kind="primary"]'); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
         <Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>
        </div>
       </div>
