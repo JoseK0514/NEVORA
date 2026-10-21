@@ -324,7 +324,7 @@ try {
     checked(engine + ': visibility revalidation clears protected snapshot before refresh');
 
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
-    await page.getByText('Attendance paused', { exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'View paused', exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await expectClearedDuringRevalidation(() => page.evaluate(() => window.dispatchEvent(new Event('pageshow'))));
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
@@ -402,7 +402,7 @@ try {
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     await owner.setOffline(true);
-    await page.getByText('You’re offline', { exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'View paused', exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await owner.setOffline(false);
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();

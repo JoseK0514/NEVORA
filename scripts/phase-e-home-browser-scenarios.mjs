@@ -32,7 +32,19 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const items=()=>page.locator('[data-home-group] li');
  const recorded=()=>page.locator('aside[aria-label="Own recorded time"]');
  const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
- const refresh=async()=>{await page.bringToFront();await ready();const [response]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home'),page.locator('[data-home-refresh]').click()]);await response.finished();await page.getByRole('button',{name:/^(Refresh home|Retry home)$/}).waitFor();await ready();};
+ const refresh=async()=>{
+  await page.bringToFront();await ready();
+  try {
+   const [response]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home'),page.locator('[data-home-refresh]').click()]);
+   await response.finished();await page.getByRole('button',{name:/^(Refresh home|Retry home)$/}).waitFor();await ready();
+  } catch(error) {
+   const diagnostic=await page.evaluate(()=>{
+    const button=document.querySelector('[data-home-refresh]'),root=document.querySelector('[data-home-state]');
+    return {visibility:document.visibilityState,focused:document.hasFocus(),state:root?.getAttribute('data-home-state'),busy:root?.getAttribute('aria-busy'),refresh:button?{disabled:button.disabled,text:button.textContent,rectangle:button.getBoundingClientRect().toJSON(),display:getComputedStyle(button).display,visibility:getComputedStyle(button).visibility}:null,active:document.activeElement?.tagName};
+   });
+   await writeFile(join(evidenceDirectory,`home-refresh-${engine}-${width}-report.json`),JSON.stringify({stage,diagnostic},null,2));throw error;
+  }
+ };
  async function login(target=page,id=actor){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);}
  function gate(path){
   let release,started,finished,used=false,failure,outcome,operation='fetch',navigationReleased=false;const documentUrl=page.url();
