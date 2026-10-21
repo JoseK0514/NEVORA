@@ -1,6 +1,7 @@
 import { LockSimpleIcon } from "@phosphor-icons/react/ssr";
 import { Button, Card, CardBody, PageBand } from "./kit/kit";
 import { EmptyState } from "./empty-state";
+import "./owner-only-notice.css";
 
 /** PD9 / UX10: an Owner-only page opened by someone else (a shared link, a bookmark) says why it is closed and who can
  * help, in place of a silent move to Home. Permissions are unchanged: nothing on the page is read or shown. */
