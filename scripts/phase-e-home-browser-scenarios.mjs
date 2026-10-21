@@ -279,7 +279,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
  await page.goto(app.url+'/app');await ready();
- stage='empty';await q('DELETE FROM shifts WHERE employee_id=$1',[actor]);await refresh();await page.getByText('No upcoming published shift',{exact:true}).waitFor();assert.equal(await page.getByText('Scheduled now',{exact:true}).count(),0);assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);await shot('empty');checks.push('H12 actual no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
+ stage='empty';await q('DELETE FROM shifts WHERE employee_id=$1',[actor]);await refresh();await page.getByRole('region',{name:'Coming up',exact:true}).getByText('No upcoming published shift',{exact:true}).waitFor();assert.equal(await page.getByText('Scheduled now',{exact:true}).count(),0);assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);await shot('empty');checks.push('H12 actual no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
  stage='last-shift-removal';
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:scenario.week,managerId:'QAOWNER'},app.database.executor);
  await refresh();

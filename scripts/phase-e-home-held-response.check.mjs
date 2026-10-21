@@ -18,7 +18,7 @@ for(const engine of ['chromium','webkit']){
  const result={engine,status:'failed',scenario:'Prior ready snapshot must not satisfy the fresh-generation wait',observations:[]};results.push(result);
  try{
   context=await browser.newContext({viewport:{width:320,height:600}});const page=await context.newPage();page.setDefaultTimeout(15000);
-  await page.setContent('<main data-home-state="ready" aria-busy="true"><section aria-labelledby="employee-reviewed-next-heading"><h2 id="employee-reviewed-next-heading">Next shift</h2><p>Main Office Operations and Customer Support</p></section></main>');
+  await page.setContent('<main data-home-state="ready" aria-busy="true"><section style="display:contents" aria-labelledby="employee-reviewed-next-heading"><h2 id="employee-reviewed-next-heading">Next shift</h2><p>Main Office Operations and Customer Support</p></section></main>');
   await page.waitForLoadState('networkidle');
   const observe=()=>page.evaluate(()=>({state:document.querySelector('main').dataset.homeState,busy:document.querySelector('main').getAttribute('aria-busy'),fresh:document.querySelector('section').textContent.includes('Fresh fixture Main Office'),old:document.querySelector('section').textContent.includes('Main Office Operations and Customer Support')}));
   let settled=false;const waiting=waitForFreshHome(page,'Fresh fixture Main Office').then(async()=>{settled=true;result.resolved=await observe();});

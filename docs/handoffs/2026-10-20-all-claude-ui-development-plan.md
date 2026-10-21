@@ -8,7 +8,7 @@ database writes remain outside this task. Codex owns integration and verificatio
 
 - Development: `d4b01453f7fabaa7ac739d049934527b6b366310`.
 - Clean Manager/Owner and CI repairs (PR15): `cb4cc5ca0c0d851247d3eb6a321d79dc505ce128` (includes the original `87768b9e` input).
-- Latest Claude auth plus Employee/Lead Signature UI: `8107dfed14938ab6b366224da0292d5a0dd17e8d`.
+- Claude auth plus Employee/Lead and Clocker Signature UI: `b0632ce63104197c728bd062c168b28771ac4687` (includes `8107dfed`). This is the frozen Claude input; later changes need their own candidate.
 - Policy pages/deletion requests: `d0b6d1f5e12f8602b947ad18cc40e04fc1180a6a`.
 - Matching passkey server: `48ededa576f3951054dbf6d9394d10670b831c60`.
 - Latest release-integration `898e99d4` is already included through auth/Manager inputs.
@@ -56,12 +56,34 @@ regressions and an unchanged 5-second typed-backfill timeout under local load.
 That entire 68-test backfill file passed alone at its original limits. A final
 full hosted run is required; these targeted reruns are not a full-suite pass.
 
-The owned browser runs use fictional data and local PostgreSQL. Chromium has
-observed native WebAuthn registration, removal confirmation focus, removal and
-discoverable sign-in; an earlier run also observed the deletion receipt and
-revocation. The latest incomplete run timed out compiling the deletion route
-under concurrent machine load, with no page errors. Full combined Chromium/WebKit
-completion is still required. Physical Face ID has not been tested.
+The owned browser runs use fictional data and local PostgreSQL. At `6c72e7d6`,
+the combined Chromium/WebKit run passed all 40 recorded journeys with zero page
+errors, including native WebAuthn registration, removal confirmation focus,
+removal, discoverable sign-in and deletion receipt/session/passkey revocation.
+Public/authenticated screens were checked at 320/390/768/1440 pixels. Physical
+Face ID has not been tested. The D1.3 attendance browser run also passed all 46
+checks on that source; its temporary database was stopped.
+
+Hosted validation on the earlier combined candidate `368abce9` passed 9,154 unit
+tests (523 files), types, lint, production build, and both dependency audits with
+zero vulnerabilities. Existing default-suite skips were retained. Subsequent
+CSS, Clocker and driver changes still require the complete final hosted run.
+
+Real mobile regressions were reproduced: bottom navigation obscured Home Refresh
+and Profile Sign out. Restoring bottom clearance and native scroll padding made
+the original keyboard/contrast assertions pass at 320/375 pixels; the final full
+matrix remains mandatory. The new Profile passkey row also explicitly resets its
+inherited flex direction, eliminating an oversized empty card. The combined
+browser run verifies its bounded height. No assertions or scenarios were removed.
+
+Driver repairs preserve the original requirements: held attendance responses make
+privacy clearing observable without timer sleeps; Company Access's parent pause
+replaces the unmounted child state; role-based controls avoid ambiguous new
+section labels; schema equivalence includes 0034/0035 on both upgrade/fresh paths.
+Contrast measurement now supports dark text on light backgrounds while still
+rejecting a foreground crossing the background range (new red/green regressions).
+Home's fresh-generation wait requires a visible fresh fact, including when its
+semantic parent uses display:contents, and rejects the former location text.
 
 PR16: https://github.com/JoseK0514/NEVORA/pull/16. The final merge gate is all
 mandatory hosted checks on the combined candidate, plus reconciliation with the
