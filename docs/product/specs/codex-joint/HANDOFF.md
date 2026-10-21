@@ -267,7 +267,7 @@ Each session runs its own preview, database and port. The shared files are in `/
 Start it in the background (it takes a few minutes and prints `PREVIEW_READY <url>`):
 
 ```
-PREVIEW_OUT=<your scratchpad>/preview node --import tsx /Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/parallel/preview/preview-runtime.mjs
+PREVIEW_OUT=<your scratchpad>/preview node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx /Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/parallel/preview/preview-runtime.mjs
 ```
 
 Run it from the main checkout `/Users/josek0514/Desktop/NEVORA-UI-READINESS` so `tsx` resolves.

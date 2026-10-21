@@ -32,7 +32,7 @@ Start it from the main checkout and keep it in the background. It prints `PREVIE
 
 ```
 cd /Users/josek0514/Desktop/NEVORA-UI-READINESS
-PREVIEW_OUT=/tmp/codex-preview node --import tsx .claude/parallel/preview/preview-runtime.mjs
+PREVIEW_OUT=/tmp/codex-preview node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx .claude/parallel/preview/preview-runtime.mjs
 ```
 
 Then add the extra test data and sign the accounts in:
