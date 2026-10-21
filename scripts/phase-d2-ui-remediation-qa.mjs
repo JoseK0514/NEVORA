@@ -56,8 +56,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   }
   observations.states.push(state);
  };
- const safePause=async(label)=>{
-  const text=await mp.locator('.manager-corrections').innerText();
+ const safePause=async(label,selector='.manager-corrections')=>{
+  const text=await mp.locator(selector).innerText();
   assert(!text.includes('No correction requests'));assert(!text.includes('No employee time corrections are waiting for review.'));
   assert.equal(await mp.locator('.manager-corrections-count').count(),0);
   assert.equal(await mp.locator('.manager-correction-row').count(),0);
@@ -136,12 +136,12 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
 
   // Cleared states use real lifecycle events and preserve the authoritative count.
-  phase='offline';await owner.setOffline(true);await mp.getByText('Correction requests unavailable offline',{exact:true}).waitFor();await safePause('offline');await shots(mp,'.manager-corrections','offline');
+  phase='offline';await owner.setOffline(true);await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('offline','.portal-route-state');await shots(mp,'.portal-route-state','offline');
   await owner.setOffline(false);await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();phase='normal';checked(`${engine}: offline → online protected refresh`);
-  await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByText('Updates paused',{exact:true}).waitFor();await safePause('pagehide');
+  await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.portal-route-state');
   await mp.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
-  await mp.getByText('Updates paused',{exact:true}).waitFor();await safePause('hidden');
+  await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('hidden','.portal-route-state');
   await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});document.dispatchEvent(new Event('visibilitychange'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
 
@@ -183,7 +183,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal((await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE employee_id=$1',[employeeId]))[0].count,4);
   const unrelated=await owner.request.get(app.url+'/api/employee/time-corrections',{headers});assert.equal(unrelated.status(),403);
   phase='authority-denied';await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
-  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction access ended',{exact:true}).waitFor();assert.equal(await mp.locator('.manager-correction-row').count(),0);
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.locator('.manager-corrections').waitFor({state:'detached'});assert.equal(await mp.locator('.manager-correction-row').count(),0);
   assert.equal((await owner.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
   await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");
   // Record all native errors. Only explicitly injected transport failures may be classified.

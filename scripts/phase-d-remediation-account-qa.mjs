@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {Temporal} from '@js-temporal/polyfill';
 import {createOwnedNextApp} from '../src//test/integration/owned-next-app.ts';
-import {seedOwnedApp,TEST_PASSWORD} from '../src//test/integration/owned-app-fixture.ts';
+import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src//test/integration/owned-app-fixture.ts';
 import {hashPassword} from '../src//lib/auth/password.ts';
 const pw=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'))('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()==='';
@@ -25,6 +25,7 @@ async function page(c,path){const p=await c.newPage();p.setDefaultTimeout(12000)
 try{
  app=await createOwnedNextApp(dir);await seedOwnedApp(app.database.executor);const ph=await hashPassword(TEST_PASSWORD);
  for(const [id,role] of [['RV-E1','EMPLOYEE'],['RV-E2','EMPLOYEE'],['RV-M1','MANAGER'],['RV-M2','MANAGER']]){await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$1,'Fictional','555-0444',$2,'loc-1')",[id,role]);await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,ph]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);}
+ for(const id of ['RV-M1','RV-M2'])await assignOwnedManagerCompanyAccess(app.database.executor,id);
  for(const engine of ['chromium','webkit']){
   browser=await pw[engine].launch({headless:true});const dates=engine==='chromium'?['07','08','09']:['17','18','19'];
   await record(engine+' employee cross-tab account switch clears uncertain missing command',async o=>{
@@ -107,12 +108,18 @@ try{
    const c=await context();let release;try{
     await login(c,'RV-M1');const p=await page(c,'/app?view=attendance');let command,authority,committed=false;const barrier=new Promise(resolve=>{release=resolve;});
     await p.route('**/api/manager/time-corrections',async route=>{if(route.request().method()!=='POST')return route.continue();command=route.request().postDataJSON();authority=route.request().headers()['x-nevora-correction-authority'];const r=await route.fetch();assert.equal(r.status(),200);committed=true;await barrier;return route.fulfill({status:200,contentType:'application/json',body:'{'});});
-    await p.locator('.manager-correction-row').filter({hasText:'Late manager commit '+engine}).getByRole('button',{name:'Approve correction for RV-E1 Fictional',exact:true}).click();const deadline=Date.now()+15000;while(!committed){assert(Date.now()<deadline);await new Promise(resolve=>setTimeout(resolve,20));}
-    await login(c,'RV-M2');await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.getByText('Correction access ended',{exact:true}).waitFor();
+    const originalRow=p.locator('.manager-correction-row').filter({hasText:'Late manager commit '+engine});
+    const retiredRow=await originalRow.elementHandle();assert(retiredRow);const sourceDocument=await p.evaluate(()=>performance.timeOrigin);
+    await originalRow.getByRole('button',{name:'Approve correction for RV-E1 Fictional',exact:true}).click();const deadline=Date.now()+15000;while(!committed){assert(Date.now()<deadline);await new Promise(resolve=>setTimeout(resolve,20));}
+    const currentQueue=p.waitForResponse(response=>new URL(response.url()).pathname==='/api/manager/time-corrections'&&response.request().method()==='GET'&&response.request().headers()['x-nevora-actor']==='RV-M2');
+    await login(c,'RV-M2');await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));
+    const currentResponse=await currentQueue;assert.equal(currentResponse.status(),200);const current=await currentResponse.json();assert.equal(current.state,'ready');assert.match(current.authority,/^[a-f0-9]{64}$/);assert.notEqual(current.authority,authority);
+    const documentReplaced=await p.evaluate(()=>performance.timeOrigin)!==sourceDocument;
+    assert(documentReplaced||!await retiredRow.evaluate(row=>row.isConnected));assert.equal(await originalRow.count(),0);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
     const settled=p.waitForResponse(r=>r.url().endsWith('/api/manager/time-corrections')&&r.request().method()==='POST');release();await settled;await p.waitForTimeout(150);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
     assert.equal((await c.request.post(app.url+'/api/manager/time-corrections',{headers:{...headers(),'X-Nevora-Correction-Authority':authority},data:command})).status(),403);
     assert.deepEqual(await q("SELECT actor_employee_id FROM time_correction_events WHERE request_id=$1 AND event_kind='APPROVED'",[created.requestId]),[{actor_employee_id:'RV-M1'}]);
-    o({lateReplyDiscarded:true,staleRetryStatus:403,approvedEvents:1,approvedActor:'RV-M1'});
+    o({lateReplyDiscarded:true,currentActorBound:true,oldRowClearedBeforeLateReply:true,staleRetryStatus:403,approvedEvents:1,approvedActor:'RV-M1'});
    }finally{release?.();await c.close();}
   });
   await browser.close();browser=null;

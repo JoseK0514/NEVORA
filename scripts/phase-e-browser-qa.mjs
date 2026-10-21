@@ -14,6 +14,21 @@ const runtimeRoutes = new Set(['/login', '/app', '/app/schedule', '/app/communic
 function readable(read) {
   try { return read(); } catch { return undefined; }
 }
+function nativeFetchResourceKind(message,page) {
+  return readable(()=>{
+    const failed=new URL('http:/'+message.slice(0,-' due to access control checks.'.length));
+    if(failed.origin!==new URL(page.url()).origin)return null;
+    const path=failed.pathname;
+    if(path==='/api/company-access/operational-authority')return 'authority-read';
+    if(path==='/__nextjs_original-stack-frames')return 'framework-diagnostic';
+    if(path==='/api/notifications')return 'notification-read';
+    if(path==='/api/manager/communications'||path.startsWith('/api/manager/communications/'))return 'manager-read';
+    if(path==='/api/employee/communications'||path.startsWith('/api/employee/communications/'))return 'employee-read';
+    if(path==='/api/employee/my-time')return 'recorded-time-read';
+    if(runtimeRoutes.has(path)||path==='/app/updates/compose'||/^\/app\/updates\/[a-f0-9-]{36}$/.test(path))return 'route-read';
+    return null;
+  })??null;
+}
 
 /** Only exact static messages or a bounded React invariant prefix survive;
  * arbitrary suffixes, URLs, arguments and stacks must never be persisted. */
@@ -31,6 +46,7 @@ function originalRuntimeDiagnostic(name, message, page) {
     canonicalMessage: nativeFetch ? 'Fetch API cannot load resource due to access control checks.' : canonicalRuntimeMessages.has(canonical) ? canonical : invariant ? `Minified React error #${invariant[1]}` : null,
     reactInvariant: invariant ? Number(invariant[1]) : null,
     route: runtimeRoutes.has(route) ? route : null,
+    resourceKind: nativeFetch ? nativeFetchResourceKind(message,page) : null,
   };
 }
 

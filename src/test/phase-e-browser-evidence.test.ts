@@ -45,7 +45,7 @@ function fixture() {
     const common = { checkpoint, tree, sourceClean: true, ownerId, ownershipFile, ownershipClosed: true, suites: [suite], status: 'passed', errors: [] };
     put(join(evidence, 'browser-report.json'), { ...common, executions, appRoot: app, appOwnerId, sourceManifest: join(app, 'source-manifest.json') });
     put(join(evidence, 'owned-browser-report.json'), { ...common, mode: 'browser', results: [{
-      suite, command: [process.execPath, '--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', suite],
+      suite, command: [process.execPath, '--import', join(source,'scripts/qa-server-context.mjs'), '--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', suite],
       exitCode: 0, checks: executions.flatMap(row => row.checks),
       resources: ['next', 'browser-chromium', 'browser-webkit'].map((kind, i) => ({ kind, pid: 12345 + i, ppid: 12344, pgid: 12345 + i, started: 'fixture', commandHash: 'a'.repeat(64), stopped: true })),
     }] });
@@ -105,7 +105,7 @@ it.each(['failure', 'cancelled', 'skipped', 'neutral', 'missing', 'extra'])('rej
   expect(result.status).not.toBe(0); expect(existsSync(join(f.output, 'browser-aggregate-report.json'))).toBe(false);
 });
 
-it.each(['missing-suite', 'extra-suite', 'duplicate-suite', 'missing-cell', 'duplicate-cell', 'extra-cell', 'failed-cell', 'skipped-cell', 'empty-checks', 'sha', 'tree', 'source-hash', 'mirror-hash', 'runtime-error', 'pg-open', 'next-open', 'resource-open', 'missing-resource', 'observation-failure', 'command', 'partial-command-checks', 'leaf-proof', 'missing-receipt', 'owner-mismatch', 'traversal', 'symlink', 'duplicate-layout'])('rejects relocated %s', mutation => {
+it.each(['missing-suite', 'extra-suite', 'duplicate-suite', 'missing-cell', 'duplicate-cell', 'extra-cell', 'failed-cell', 'skipped-cell', 'empty-checks', 'sha', 'tree', 'source-hash', 'mirror-hash', 'runtime-error', 'pg-open', 'next-open', 'resource-open', 'missing-resource', 'observation-failure', 'command', 'missing-preload', 'wrong-preload', 'partial-command-checks', 'leaf-proof', 'missing-receipt', 'owner-mismatch', 'traversal', 'symlink', 'duplicate-layout'])('rejects relocated %s', mutation => {
   const f = fixture(); f.leaves(); const roots = f.relocate(), root = roots[0];
   const path = join(root, 'browser-report.json'), report = read(path);
   if (mutation === 'missing-suite') rmSync(dirname(root), { recursive: true });
@@ -128,12 +128,14 @@ it.each(['missing-suite', 'extra-suite', 'duplicate-suite', 'missing-cell', 'dup
   } else if (mutation === 'pg-open' || mutation === 'next-open') {
     const path = join(root, mutation === 'pg-open' ? 'owned-postgres-fixture/ownership.json' : 'owned-next-fixture/ownership.json');
     put(path, { ...read(path), closed: false });
-  } else if (['resource-open', 'missing-resource', 'observation-failure', 'command', 'partial-command-checks'].includes(mutation)) {
+  } else if (['resource-open', 'missing-resource', 'observation-failure', 'command', 'missing-preload', 'wrong-preload', 'partial-command-checks'].includes(mutation)) {
     const path = join(root, 'owned-browser-report.json'), value = read(path);
     if (mutation === 'resource-open') value.results[0].resources[0].stopped = false;
     if (mutation === 'missing-resource') value.results[0].resources = [];
     if (mutation === 'observation-failure') value.results[0].observationFailure = { reason: 'UNKNOWN' };
     if (mutation === 'command') value.results[0].command[5] = 'all';
+    if (mutation === 'missing-preload') value.results[0].command.splice(1,2);
+    if (mutation === 'wrong-preload') value.results[0].command[2] = join(f.source,'scripts/node-server-context.mjs');
     if (mutation === 'partial-command-checks') value.results[0].checks.pop();
     put(path, value);
   } else if (mutation === 'leaf-proof') {

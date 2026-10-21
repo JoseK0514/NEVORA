@@ -78,7 +78,70 @@ Red runs are failure history, not successful acceptance receipts.
   Its19-case fixture used direct publication proofs without Company Access
   adoption. Explicit adoption after seeding the real actors repairs that fixture;
   the complete19-case focused run now passes. No production publication or feed
-  code changed. The full owned Phase E SQL gate still must pass.
+  code changed. Its subsequent complete owned run is recorded below.
+
+At `cb4cc5ca`, the complete owned Phase E SQL gate passed all189 tests across
+its10 explicit groups. Navigation and Communications each passed all14 browser
+cells with zero runtime errors and closed ownership receipts, including the390
+management binding and WebKit375/1440 cases. Attendance passed its real Owner,
+Manager and Employee boundaries, then missed its200ms loading transition.
+That test now holds each lifecycle/visibility/pageshow response until the
+loading and private-row clearing assertions finish, then releases it and checks
+the final state. Response payloads are captured at request entry; pending gates
+release during teardown. No timeout, private clearing assertion or final-state
+assertion was removed. The same explicit Manager scope setup is also applied to
+the whole Phase D and account-remediation positive Manager fixtures found by the
+helper-graph search. These final Phase D corrections require matching reruns.
+
+The next Phase D run confirmed the held loading states, then exposed stale
+inner-pane pause expectations. Company Access now retires the whole operational
+view on pagehide/offline and renders `View paused`. Tests require that exact outer
+state and retain protected-person/report absence checks. The late Manager
+account-switch test now observes the replacement Manager's real GET200 with a
+different bound authority and retirement of the old row before releasing the
+held committed reply. No retry may reappear, stale intent must return403, and the
+single original approval event must still belong to the first Manager. The old
+inner `Correction access ended` label cannot survive the enclosing view's
+retirement. The failed run's WebKit development-overlay fetch error is retained;
+runtime failures remain fatal and must be absent in the matching rerun.
+
+At `e806b028`, Attendance passed46 checks in both engines with zero errors.
+The account-switch test reached the new Manager's ready queue, then its legacy
+element-state helper rejected the already detached old row. The assertion now
+checks actual node disconnection, or replacement of the original document,
+alongside the exact old-row/retry absence and new-authority assertions. The
+remaining whole Phase D/D2 pause assertions follow the same enclosing retirement
+contract; pending-row counts, no-false-empty checks, geometry, stale-command403
+and persisted decision history remain mandatory.
+
+Hosted `cb4cc5ca` passed validate (including production build), Clocker,
+release PostgreSQL and Phase E PostgreSQL. Calendar passed all14 browser cells
+with zero errors but failed its leaf receipt validator: that validator still
+required the old six-argument command. It now requires the exact eight-argument
+command, including the candidate-local absolute QA preload. Missing and wrong
+preload mutation tests must reject. No old-command fallback is accepted.
+
+Hosted Communications WebKit768 recorded two fatal native fetch errors during
+the revision navigation. That journey now foregrounds the real Manager view and
+uses its `Edit update` link, so it exercises the actual protected edit transition.
+This is a candidate repair, not an established closure of the intermittent error.
+Hosted Home WebKit390 also recorded a fatal native fetch error during H11's
+explicit hard route leave. H11 and its privacy/runtime assertions are unchanged.
+The shared observer adds only static same-origin resource kinds, never raw URLs,
+query values, opaque IDs, messages or stacks. Resource projection regression:
+7failed/128passed before implementation; final138passed, including foreign-origin
+and private-sentinel rejection. Every native event still fails the cell.
+
+The exact preload receipt regression passed47 cases after the validator repair.
+One initial concurrent run exceeded a5second unit-case budget; an isolated rerun
+passed all47 without changing any timeout or assertion. The failure log remains.
+Home's held-response transport now avoids fulfilling a request only when the
+browser already reports it cancelled after a confirmed document navigation.
+Live late responses still deliver, same-document paused responses still exercise
+the original handler, and unknown fulfillment failures remain fatal even after
+navigation. Regression:4failed before implementation,5passed afterward. H07/H08/
+H11 privacy assertions and all runtime checks remain. This transport change is a
+candidate repair; matching browser and hosted execution still decide acceptance.
 
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
