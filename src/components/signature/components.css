@@ -66,19 +66,19 @@
  * The four `:not(#sig)` lifts are needed because page modules set `background` with up to three id lifts (for
  * example Home's clock links on hover); the shorthand would otherwise clear the wash layer. */
 [data-sig-surface="light"] {
-  --sig-surface-wash: var(--sig-press-bg, rgba(22, 28, 27, .05));
+  --sig-surface-wash: var(--sig-press-wash, rgba(22, 28, 27, .05));
   --sig-surface-dim: brightness(.92);
-  --sig-surface-ring: var(--sig-focus-on-light, #161C1B);
+  --sig-surface-ring: var(--sig-focus, #161C1B);
 }
 [data-sig-surface="deep"] {
-  --sig-surface-wash: var(--sig-press-bg-on-dark, rgba(255, 255, 255, .12));
+  --sig-surface-wash: var(--sig-press-wash-on-dark, rgba(255, 255, 255, .12));
   --sig-surface-dim: none;
   --sig-surface-ring: var(--sig-focus-on-dark, #FFFFFF);
 }
 /* Sign-in on phones: Back and EN/ES sit over the deep band, though they live in the form column. */
 @media (max-width: 767px) {
   .ap > .ap-main > .ap-top {
-    --sig-surface-wash: var(--sig-press-bg-on-dark, rgba(255, 255, 255, .12));
+    --sig-surface-wash: var(--sig-press-wash-on-dark, rgba(255, 255, 255, .12));
     --sig-surface-dim: none;
     --sig-surface-ring: var(--sig-focus-on-dark, #FFFFFF);
   }
@@ -88,13 +88,13 @@
 [data-sig-surface] :is(a[href], button, summary, [role="button"], [role="tab"], label:has(> input:is([type="radio"], [type="checkbox"], [type="date"], [type="datetime-local"]):not([role="switch"]))):not(#sig):not(#sig):not(#sig):not(#sig),
 .sig-btn:not(#sig):not(#sig):not(#sig):not(#sig) {
   transition:
-    transform var(--sig-motion-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
-    filter var(--sig-motion-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
-    opacity var(--sig-motion-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
-    background-color var(--sig-motion-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
-    border-color var(--sig-motion-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
-    box-shadow var(--sig-motion-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
-    color var(--sig-motion-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1));
+    transform var(--sig-dur-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    filter var(--sig-dur-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    opacity var(--sig-dur-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    background-color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    border-color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    box-shadow var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)),
+    color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1));
 }
 
 /* Wash: every tappable thing in a Signature surface. Disabled and pending controls don't answer. */
@@ -123,14 +123,14 @@
  * Sign out take the wash; tab-bar items, the phone header's icons and the band tabs dim. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation :is(a, button):not(#e5):not(#e52):not(#e53):not(#sig),
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mobile-nav-link, .mobile-header :is(.e5-new, .portal-notification-bell, .nevora-action-menu-trigger), .page-frame > .section-tabs .section-tab):not(#e5):not(#e52):not(#sig) {
-  transition: opacity var(--sig-motion-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), background-color var(--sig-motion-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), color var(--sig-motion-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1));
+  transition: opacity var(--sig-dur-press, 90ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), background-color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), color var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1));
 }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation :is(a, button):active:not(#e5):not(#e52):not(#e53):not(#sig) {
-  background-image: linear-gradient(var(--sig-press-bg, rgba(22, 28, 27, .05)), var(--sig-press-bg, rgba(22, 28, 27, .05)));
+  background-image: linear-gradient(var(--sig-press-wash, rgba(22, 28, 27, .05)), var(--sig-press-wash, rgba(22, 28, 27, .05)));
   transition-duration: 0s;
 }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] #employee-more-navigation .employee-more-card:active:not(#e5):not(#e52):not(#e53):not(#sig) {
-  background-image: linear-gradient(var(--sig-press-bg-on-dark, rgba(255, 255, 255, .12)), var(--sig-press-bg-on-dark, rgba(255, 255, 255, .12)));
+  background-image: linear-gradient(var(--sig-press-wash-on-dark, rgba(255, 255, 255, .12)), var(--sig-press-wash-on-dark, rgba(255, 255, 255, .12)));
 }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mobile-nav-link, .mobile-header :is(.e5-new, .portal-notification-bell, .nevora-action-menu-trigger), .page-frame > .section-tabs .section-tab):active:not(#e5):not(#e52):not(#sig) {
   opacity: .64;
