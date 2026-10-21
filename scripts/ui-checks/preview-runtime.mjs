@@ -75,6 +75,15 @@ try{
  await q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,'7875550101',$4,$5,'loc-1')",[id,first,last,id.toLowerCase()+'@example.invalid',role]);
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,password]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1'),($1,'loc-2')",[id]);await q("INSERT INTO employee_positions(employee_id,position_id) VALUES($1,'qa-pos')",[id]);
  }
+ // The current-runtime chain stops before 0032_company_access_invitations, so the database has no
+ // company_access_adoption row and every operational write (publishScheduleWithRevision, the browser
+ // publication) fails as operational_authorization. Apply 0032 here, after the AUDIT-* inserts so legacy
+ // adoption gives AUDIT-M COMPANY scope, and before the first publishScheduleWithRevision. 0031 is left
+ // out: with the native payroll schema present, seedPayrollPreviewFixture's provider-amount IMPORT fails
+ // NATIVE_AMOUNT_INPUT_FORBIDDEN, and the fixture's timecard FINALIZE needs 0032 applied first anyway.
+ await q(await readFile(join(source,'db/migrations/0032_company_access_invitations.sql'),'utf8'));
+ const [adoption]=await q("SELECT state,legacy_manager_census AS census FROM company_access_adoption");
+ assert.equal(adoption?.state,'ENFORCED','Company Access adoption must be enforced');assert.deepEqual(adoption.census.map(r=>r.employeeId),['AUDIT-M'],'AUDIT-M must keep legacy COMPANY scope');report.companyAccessCensus=adoption.census.map(r=>r.employeeId);
  await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) VALUES('audit-rest','workspace-fuel','Rest break','REST',15,'QAOWNER','QAOWNER')");
  const today=businessDate(new Date(),'America/Puerto_Rico'),week=weekStartFor(today);report.fixtureDate=today;report.fixtureWeek=week;
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('audit-current','loc-1',$1,'DRAFT','QAOWNER')",[week]);
