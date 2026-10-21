@@ -29,7 +29,7 @@
 .ap-legal { margin-top: auto; }
 
 .ap-eyebrow { display: flex; align-items: center; gap: 10px; font: 600 .8125rem/1.125rem var(--sys); letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-2); overflow-wrap: anywhere; }
-.ap-eyebrow i { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: var(--deep); color: #FFFFFF; font: 700 11px/1 var(--sys); font-style: normal; letter-spacing: 0; }
+.ap-eyebrow i { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: var(--sig-fill); color: var(--sig-on-fill); font: 700 11px/1 var(--sys); font-style: normal; letter-spacing: 0; }
 .ap-title { margin-top: 22px; font: 500 2.875rem/3.125rem var(--sys); letter-spacing: -1.8px; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; }
 .ap-col > .ap-title:first-child, .ap-back + .ap-title { margin-top: 0; }
 .ap-back + .ap-title { margin-top: 18px; }
@@ -71,10 +71,10 @@
 /* ---------- Actions and links ---------- */
 .ap .ap-primary {
   display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--sig-control-h, 56px); margin-top: 28px; padding: .75rem 1rem;
-  border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--sys); letter-spacing: -.1px;
+  border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--sig-fill); color: var(--sig-on-fill); font: 500 1rem/1.25rem var(--sys); letter-spacing: -.1px;
   text-align: center; text-decoration: none; cursor: pointer; transition: transform 120ms ease, background-color 120ms ease;
 }
-.ap .ap-primary:hover:not(:disabled):not([aria-busy="true"]) { background: #0A2A28; }
+.ap .ap-primary:hover:not(:disabled):not([aria-busy="true"]) { background: var(--sig-fill-hover); }
 .ap .ap-primary:active:not(:disabled):not([aria-busy="true"]) { transform: scale(.98); }
 .ap .ap-primary:disabled { cursor: wait; }
 .ap .ap-primary[aria-busy="true"] { cursor: progress; }

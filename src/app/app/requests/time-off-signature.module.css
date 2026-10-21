@@ -100,7 +100,7 @@
   .toMonthGrid button[data-past]:not(#to) { color: #A19E97; }
   .toMonthGrid button[data-today]:not(#to) { font-weight: 600; color: var(--sg-teal); }
   .toMonthGrid button[data-range]:not(#to) { border-radius: 0; background: #E2F1ED; color: #0A5753; font-weight: 500; }
-  .toMonthGrid button[data-edge]:not(#to) { background: var(--sg-deep); color: #FFFFFF; font-weight: 500; }
+  .toMonthGrid button[data-edge]:not(#to) { background: var(--sig-fill); color: var(--sig-on-fill); font-weight: 500; }
   .toMonthGrid button[data-edge="start"]:not(#to) { border-radius: 22px 0 0 22px; }
   .toMonthGrid button[data-edge="end"]:not(#to) { border-radius: 0 22px 22px 0; }
   .toMonthGrid button[data-edge="both"]:not(#to) { border-radius: 22px; }

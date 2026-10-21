@@ -39,7 +39,7 @@
 .mtCorrections :global(.employee-time-section-heading):not(#mt):not(#mt) { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 14px; margin: 0; padding: 0; border: 0; }
 .mtCorrections :global(.employee-time-section-heading h2):not(#mt):not(#mt) { margin: 0; font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
 .mtCorrections :global(.employee-time-section-heading p):not(#mt):not(#mt) { margin: 2px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
-.mtCorrections :global(.employee-time-correction-trigger):not(#mt):not(#mt) { min-height: var(--sig-control-h-compact, 44px); padding: 0 16px; border: 0; border-radius: var(--sig-radius-compact, 12px); background: var(--sig-deep, #0D3634); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
+.mtCorrections :global(.employee-time-correction-trigger):not(#mt):not(#mt) { min-height: var(--sig-control-h-compact, 44px); padding: 0 16px; border: 0; border-radius: var(--sig-radius-compact, 12px); background: var(--sig-fill); color: var(--sig-on-fill); font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
 .mtCorrections :global(.employee-time-empty):not(#mt):not(#mt) { margin: 12px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); }
 
 @media (min-width: 768px) { .mtCorrections :global(.employee-correction-center):not(#mt):not(#mt) { margin-inline: 0; } .mtFine:not(#mt) { margin-inline: 4px; } }
@@ -65,7 +65,7 @@
 .mtPanel :global(.correction-comparison > div:first-child strong):not(#mt):not(#mt) { color: var(--sg-ink-3); }
 .mtPanel :global(.correction-context-zone):not(#mt):not(#mt) { margin: -6px 2px 0; font: 400 .8125rem/1.125rem var(--sg-font); color: var(--sg-ink-3); }
 .mtPanel :global(.employee-time-correction-note):not(#mt):not(#mt) { margin: 0; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
-.mtPanel :global(.employee-time-correction-submit):not(#mt):not(#mt) { display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--sig-control-h, 56px); padding: 0 20px; border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--sig-deep, #0D3634); color: #FFFFFF; font: 500 1.0625rem/1 var(--sg-font); cursor: pointer; }
+.mtPanel :global(.employee-time-correction-submit):not(#mt):not(#mt) { display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--sig-control-h, 56px); padding: 0 20px; border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--sig-fill); color: var(--sig-on-fill); font: 500 1.0625rem/1 var(--sg-font); cursor: pointer; }
 .mtPanel :global(.employee-time-correction-submit):disabled:not([aria-disabled="true"]):not(#mt):not(#mt) { background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
 /* Sending: aria-disabled while busy keeps the deep fill. */
 .mtPanel :global(.employee-time-correction-submit[aria-disabled="true"]):not(#mt):not(#mt) { cursor: progress; }
@@ -106,7 +106,7 @@
 .mtCorrections :global(.employee-time-correction-trigger__copy):not(#mt):not(#mt) { flex: 1; min-width: 0; }
 .mtCorrections :global(.employee-time-correction-trigger__copy b):not(#mt):not(#mt) { font: 500 1.0625rem/1.375rem var(--sg-font); }
 .mtCorrections :global(.employee-time-correction-trigger__copy small):not(#mt):not(#mt) { font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); opacity: 1; }
-.mtCorrections :global(.employee-time-correction-trigger__go):not(#mt):not(#mt) { flex: none; width: 36px; height: 36px; padding: 9px; border-radius: 50%; background: #FFFFFF; color: var(--sg-deep); }
+.mtCorrections :global(.employee-time-correction-trigger__go):not(#mt):not(#mt) { flex: none; width: 36px; height: 36px; padding: 9px; border-radius: 50%; background: #FFFFFF; color: var(--sig-fill); }
 .mtCorrections :global(.employee-time-correction-form.missing):not(#mt):not(#mt) { margin: 12px 16px 0; padding: 0; background: none; box-shadow: none; gap: 14px; }
 .mtCorrections :global(.employee-time-correction-form.missing > label:first-child):not(#mt):not(#mt), .mtPanel :global(.employee-time-correction-form > label:has(textarea)):not(#mt):not(#mt) { padding: 14px 16px; border-radius: 18px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .07); }
 .mtPanel :global(.employee-time-correction-form > label :is(select, textarea)):not(#mt):not(#mt):not(#mt2) { min-height: 40px; padding: 4px 0; border-radius: 8px; background: transparent; box-shadow: none; font-size: 1.0625rem; }

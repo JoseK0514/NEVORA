@@ -121,6 +121,11 @@
   --sig-card-hover:         #FAFAF8;  /* dark: —  | secondary button hover (= --sig-hover-bg) | components.css */
   --sig-disabled:           #ECEAE5;  /* dark: —  | true-disabled button fill; never used for pending | components.css */
   --sig-ink-disabled:       #5F625E;  /* dark: —  | text on --sig-disabled, 5.1:1 | components.css */
+  /* Emphasis fill: solid actions and markers (primary buttons, today, progress, filled PIN dots). Deep teal in light,
+   * mint in dark, so the main action stays the brightest thing on screen. Bands keep --sig-deep in both. */
+  --sig-fill:               var(--sig-deep);        /* dark: #A9E2DA | primary fill */
+  --sig-fill-hover:         var(--sig-deep-hover);  /* dark: #BDEAE3 | primary fill on hover */
+  --sig-on-fill:            #FFFFFF;                /* dark: #0C1817 | text and icons on the fill, 13.17:1 light / 12.58:1 dark */
 
   /* ---------- Elevation ---------- */
   /* card lift without the edge (= --sg-card-shadow) | signature.module.css:93 */
@@ -165,4 +170,41 @@
   --sig-display:  var(--sig-font-display);
   --sig-amber:    var(--sig-review-ink);
   --sig-red:      var(--sig-urgent-ink);
+}
+
+
+/* ---------- Dark ("Midnight") ----------
+ * Approved October 20, 2026 (docs/product/specs/employee-style/signature/dark-mode/v2). The root layout's theme script
+ * sets data-theme on <html> from the person's choice in Profile (System, Light or Dark) and the phone's setting.
+ * Scoped to the Signature surfaces: the employee app, sign-in and activation, and the Clocker. Manager and Owner
+ * screens stay light until their own pass. Display weights go up one step in dark (thin light type looks thinner on
+ * dark), and every text colour keeps at least 7:1 on cards. */
+:root[data-theme="dark"] :is([data-nv-e5], .ap, [data-mobile-clocker]) {
+  color-scheme: dark;
+  --sig-page: #0C1817;            --sig-card: #172725;           --sig-card-hover: #1C2C2A;
+  --sig-ink-1: #F5F2EB;           --sig-ink-2: #D3D0C8;          --sig-ink-3: #B8B7B0;          --sig-ink: var(--sig-ink-1);
+  --sig-faint: #56625F;           --sig-rule: #2C3B39;           --sig-edge: #30403E;           --sig-control-edge: #5A6764;
+  --sig-track: #20302E;           --sig-frame: var(--sig-track); --sig-paper: var(--sig-card);
+  --sig-deep: #0D3634;            --sig-deep-hover: #12423F;     --sig-mark: #134340;
+  --sig-mint: #A9E2DA;            --sig-action: #A9E2DA;         --sig-action-wash: rgba(169, 226, 218, .12); --sig-teal: var(--sig-action);
+  --sig-fill: #A9E2DA;            --sig-fill-hover: #BDEAE3;     --sig-on-fill: #0C1817;
+  --sig-scrim: rgba(0, 0, 0, .55);
+  --sig-done-ink: #A9E2DA;        --sig-done-wash: rgba(169, 226, 218, .12);  --sig-done-line: rgba(169, 226, 218, .26);
+  --sig-review-ink: #EBBC74;      --sig-review-wash: rgba(235, 188, 116, .12); --sig-review-line: rgba(235, 188, 116, .28); --sig-amber: var(--sig-review-ink);
+  --sig-urgent-ink: #F3A79D;      --sig-urgent-wash: rgba(243, 167, 157, .12); --sig-urgent-line: rgba(243, 167, 157, .3);  --sig-red: var(--sig-urgent-ink);
+  --sig-info-ink: #D3D0C8;        --sig-info-wash: rgba(245, 242, 235, .06);   --sig-info-line: #30403E;
+  --sig-disabled: #20302E;        --sig-ink-disabled: #B8B7B0;
+  --sig-shadow-card-lift: 0 1px 0 rgba(0, 0, 0, .2), 0 12px 28px -18px rgba(0, 0, 0, .6);
+  --sig-shadow-card: inset 0 0 0 1px #30403E, var(--sig-shadow-card-lift);
+  --sig-shadow-raised: 0 0 0 1px #30403E, 0 14px 30px -18px rgba(0, 0, 0, .6);
+  --sig-shadow-sheet: 0 -10px 40px rgba(0, 0, 0, .5);
+  --sig-press-bg: #1B2B29;        --sig-hover-bg: #1A2A28;
+  --sig-press-wash: rgba(255, 255, 255, .06);
+  --sig-focus: #F5F2EB;           --sig-focus-on-dark: #FFFFFF;
+  --sig-type-hero-word:     400 2.875rem/3.125rem var(--sig-font-display);
+  --sig-type-hero-figure:   300 3.75rem/3.875rem var(--sig-font-display);
+  --sig-type-hero-duration: 300 3.375rem/3.5rem var(--sig-font-display);
+  --sig-type-headline:      400 2.5rem/2.75rem var(--sig-font-display);
+  --sig-type-figure-ticket: 300 3.5rem/3.375rem var(--sig-font-display);
+  --sig-type-figure-day:    400 1.75rem/1.875rem var(--sig-font-display);
 }

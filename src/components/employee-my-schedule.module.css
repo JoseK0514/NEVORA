@@ -52,10 +52,10 @@
 .s6Strip a b:not(#s6) { display: inline-flex; width: 2.5rem; height: 2.5rem; align-items: center; justify-content: center; border-radius: 50%; color: var(--s6-ink); font: 400 1.125rem/1 var(--s6-display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .s6Strip a i:not(#s6) { width: 4px; height: 4px; border-radius: 50%; background: transparent; }
 .s6Strip a i.s6HasShift:not(#s6) { background: var(--s6-teal); }
-.s6Strip a.s6StripToday b:not(#s6) { background: var(--s6-deep); color: #FFFFFF; font-weight: 500; }
+.s6Strip a.s6StripToday b:not(#s6) { background: var(--sig-fill); color: var(--sig-on-fill); font-weight: 500; }
 .s6Strip a.s6StripSelected b:not(#s6) { box-shadow: inset 0 0 0 1.5px var(--s6-deep); }
 .s6Strip a:hover b:not(#s6) { background: rgba(22, 28, 27, .05); }
-.s6Strip a.s6StripToday:hover b:not(#s6) { background: var(--s6-deep); }
+.s6Strip a.s6StripToday:hover b:not(#s6) { background: var(--sig-fill); }
 .s6Strip a:focus-visible:not(#s6) { outline-offset: -2px; }
 .s6Fine:not(#s6) { margin: 12px 24px 0; font: 400 .9375rem/1.3125rem var(--s6-font); color: var(--s6-ink-3); }
 
@@ -69,7 +69,7 @@
 .s6Confirmed:not(#s6) .s6NoticeCopy h2 { color: var(--s6-teal); }
 .s6ReviewAction:not(#s6) { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .s6ReviewAction :global(.employee-action):not(#s6):not(#s6) { display: inline-flex; align-items: center; justify-content: center; min-height: var(--sig-control-h-compact, 44px); padding: 0 18px; border: 1px solid var(--s6-rule); border-radius: var(--sig-radius-compact, 12px); background: var(--s6-card); color: var(--s6-ink); font: 500 .9375rem/1 var(--s6-font); box-shadow: 0 1px 2px rgba(22, 28, 27, .06); cursor: pointer; }
-.s6ReviewAction :global(.employee-action.primary):not(#s6):not(#s6) { border-color: var(--s6-deep); background: var(--s6-deep); color: #FFFFFF; box-shadow: none; }
+.s6ReviewAction :global(.employee-action.primary):not(#s6):not(#s6) { border-color: var(--sig-fill); background: var(--sig-fill); color: var(--sig-on-fill); box-shadow: none; }
 /* "Confirming…" (aria-busy) keeps its fill; only true disabled goes quiet. */
 .s6ReviewAction :global(.employee-action):disabled:not([aria-busy="true"]):not(#s6):not(#s6) { border-color: transparent; background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); box-shadow: none; cursor: not-allowed; }
 .s6ReviewAction :global(.employee-action[aria-busy="true"]):not(#s6):not(#s6) { cursor: progress; }
@@ -113,7 +113,7 @@
 .s6Failure:not(#s6) { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 0 16px; padding: 22px 18px; border: 1px solid var(--s6-rule); border-radius: 18px; background: var(--s6-card); }
 .s6Failure strong:not(#s6) { font: 500 1.0625rem/1.375rem var(--s6-font); }
 .s6Failure p:not(#s6) { font: 400 .9375rem/1.3125rem var(--s6-font); color: var(--s6-ink-2); }
-.s6Primary:not(#s6) { display: inline-flex; align-items: center; justify-content: center; min-height: var(--sig-control-h, 56px); margin-top: 12px; padding: 0 22px; border-radius: var(--sig-radius-control, 16px); background: var(--sig-deep, #0D3634); color: #FFFFFF; font: 500 1rem/1.25rem var(--s6-font); text-decoration: none; }
+.s6Primary:not(#s6) { display: inline-flex; align-items: center; justify-content: center; min-height: var(--sig-control-h, 56px); margin-top: 12px; padding: 0 22px; border-radius: var(--sig-radius-control, 16px); background: var(--sig-fill); color: var(--sig-on-fill); font: 500 1rem/1.25rem var(--s6-font); text-decoration: none; }
 
 .s6Blocked:not(#s6):empty { display: none; }
 .s6Blocked:not(#s6) { margin: 14px 16px 0; }

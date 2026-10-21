@@ -1,12 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { NUVORA_BRAND } from "../lib/brand";
+import { THEME_SCRIPT } from "../lib/theme";
 import "../components/signature/tokens.css";
 import "./globals.css";
 import "./typeface-theme.css";
 import "./mobile-workforce.css";
 import "./employee-mobile-corporate.css";
 import "../components/signature/components.css";
+import "../components/signature/dark.css";
 
 export const metadata: Metadata = {
   title: NUVORA_BRAND.metadataTitle,
@@ -29,6 +31,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* P3-ST-20: loading placeholders grow with the reader's text size like the pages they stand in for. This tells CSS the
             text scale (root font size ÷ 16) and its nearest measured step (100, 125, 150 or 200%) before first paint, and again whenever the text size changes. Nothing else. */}
         <script dangerouslySetInnerHTML={{ __html: TEXT_SCALE_SCRIPT }} />
+        {/* Appearance: light or dark from the choice in Profile and the device setting, set before first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>{children}</body>
     </html>
