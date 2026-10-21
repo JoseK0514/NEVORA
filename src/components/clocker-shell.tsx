@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { NUVORA_BRAND } from '@/lib/brand';
+import { BrandWordmark } from './brand-mark';
 import { ClockerIcon } from './clocker-icon';
 import styles from './clocker-shell.module.css';
 
@@ -33,8 +34,8 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
         <svg className={styles.mark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/><path className={styles.markSky} d="M146 330 L180 266 L214 330 Z"/></svg>
         <header className={styles.brand}>
           <span className={styles.wordmark}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- a small static wordmark; next/image adds nothing here */}
-            <img src="/images/nevora-wordmark-white.png" alt="NEVORA" width={907} height={122} />
+            {/* The app's wordmark (official PNG recoloured through a mask, cyan A kept), white on the deep side as on sign-in. */}
+            <span className={styles.logo}><BrandWordmark /></span>
             <span>Time clock</span>
           </span>
           {brand?.logoUrl ? <span className={styles.companyLogo}>

@@ -116,7 +116,7 @@ Translate the existing server error messages for these pages the same way, keepi
 
 ## Assets
 
-- White wordmark: `wordmark-white.png` is a knockout of the official PNG, good enough for dev. Ask Jose for an official transparent SVG before production.
+- Wordmark: the pages use the app's own `BrandWordmark` (src/components/brand-mark.tsx), the official PNG recoloured through an SVG mask with the cyan A kept: navy `#051538` on cream, white in the phone band. The separate knockout file is no longer used. A true vector (SVG) from Jose would only sharpen it at very large sizes.
 - The Λ mark: use an inline SVG (`M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z`, triangle `M146 330 L180 266 L214 330 Z`, viewBox `0 0 360 340`). It's decorative, `aria-hidden`.
 - No photos and no external images; the grain is an inline SVG data URI.
 

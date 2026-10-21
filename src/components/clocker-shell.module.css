@@ -63,8 +63,9 @@
 .mark .markSky { fill: #35B6EC; }
 .brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .wordmark { display: grid; gap: 6px; }
-.wordmark img { display: block; width: 128px; height: auto; }
-.wordmark > span { font-size: 0.625rem; line-height: 1.2; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.logo { display: block; height: 17px; color: #ffffff; line-height: 0; }
+.logo :global(.brand-wordmark) { display: block; width: auto; height: 100%; }
+.wordmark > span:not(.logo) { font-size: 0.625rem; line-height: 1.2; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
 .when { margin: auto 0; padding: 32px 0; min-width: 0; }
 .location { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; margin: 0; padding: 7px 14px 7px 10px; border-radius: 999px;
   background: rgba(255, 255, 255, .08); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
@@ -130,7 +131,7 @@
   .frame { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
   .side { padding: max(18px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) 44px max(24px, env(safe-area-inset-left)); }
   .mark { width: 300px; right: -70px; bottom: -40px; }
-  .wordmark img { width: 104px; }
+  .logo { height: 14px; }
   .when { margin: 0; padding: 14px 0 0; }
   .location { font-size: 0.6875rem; padding: 6px 12px 6px 9px; }
   .clock { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 10px; }

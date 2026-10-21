@@ -21,6 +21,7 @@ import {getWorkspace} from '@/lib/data/workspaces';
 import {readAuthLang} from '@/lib/auth-lang.server';
 import {LangSwitch} from '@/components/auth-premium/lang-switch';
 import {GlobeIcon} from '@phosphor-icons/react/dist/ssr/Globe';
+import {AccountPrivacyLinks} from '@/components/legal/account-privacy-links';
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
  const authority=employeeViewAuthority(proof,'profile');
@@ -59,6 +60,7 @@ export default async function ProfilePage(){
   <div className={`profile-layout ${pf.pfSection}`}>
    <EmployeeAccountPanel key={authority} kind="profile" authority={authority}/>
   </div>
+  <AccountPrivacyLinks variant="settings" sectionClassName={pf.pfSection} headingClassName={pf.pfHeading}/>
   <section className={`profile-signout ${pf.pfSignout}`} aria-label="Session"><PortalSignout><button type="submit" className="profile-setting-row profile-signout-row"><span className="profile-setting-copy"><NavIcon name="logout" size={20}/><strong>Sign out</strong></span></button></PortalSignout></section>
  </SigPage></ProfileFrame>;
 }
