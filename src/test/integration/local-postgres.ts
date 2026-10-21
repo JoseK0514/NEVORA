@@ -4,7 +4,10 @@ import { resolve } from 'node:path';
 import { Client } from 'pg';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
-const CURRENT_MIGRATIONS = [
+/** Keep this a literal equal to db/migrations/order.ts BASE_MIGRATIONS: the
+ * PR16 database-restore rehearsal parses it from this file's source, and
+ * src/test/migration-order.test.ts fails on any drift between the two. */
+export const CURRENT_MIGRATIONS = [
   '0001_initial.sql',
   '0002_schedule_health.sql',
   '0003_schedule_assistance.sql',
