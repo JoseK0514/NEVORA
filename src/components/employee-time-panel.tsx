@@ -12,6 +12,8 @@ import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 import {employeeButtonClass} from './employee-corporate-ui';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {HoldHeight} from './kit/hold-height';
+import {Duration,SigBand,SigPage,SigSection} from './signature/signature';
+import sig from './employee-time-signature.module.css';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off clock':entry.state==='ON_BREAK'?'On break':'Clocked in';
 /** Freshness needs minutes, not seconds: "Oct 15, 7:31 PM". */
@@ -107,7 +109,51 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
  </HoldHeight>;
 }
 
-export function EmployeeTimePanel({compact=false,corporate=false,authority}:{compact?:boolean;corporate?:boolean;authority?:string}){
+/** My time in the Signature style (phase 1, approved Oct 20, 2026; target:
+ * docs/product/specs/employee-style/signature/phase-1/p1c-mytime.png). The band carries the clock status and today's
+ * totals; the sheet holds freshness and refresh, today's and earlier entries (each with its correction), and the
+ * correction requests. Same reads, refresh, pause and privacy rules as the view above. */
+export type MyTimeContext={todayLabel:string;payLine?:string};
+export function EmployeeTimeSignatureView({state,onRefresh,context}:{state:EmployeeTimePanelState;onRefresh:()=>void;context:MyTimeContext}){
+ const {time,paused,refreshing}=state;
+ const ready=!paused&&time?.state==='ready'?time:null;
+ const denied=time?.state==='unavailable'&&time.reason==='access_denied';
+ const unavailable=!denied&&time?.state==='unavailable';
+ const current=ready?.current??null;
+ const word=ready?status(current):paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load your time records':'Loading recorded time';
+ const todayLabel=ready?new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(ready.date+'T12:00:00Z')):context.todayLabel;
+ const band=<SigBand eyebrow={<>Today · {todayLabel}</>} live={ready?(current?true:'idle'):false}>
+  <h1 className="nv-sr">My time</h1>
+  <p className={`sg-word ${ready?'':sig.mtWaiting}`} role="status"><span data-state={ready?current?.state??'OFF_CLOCK':undefined} className="employee-time-badge">{word}</span></p>
+  <p className={`sg-sub ${sig.mtWhere}`}>{current&&ready?<span>{current.locationName} · since <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time>{current.state==='ON_BREAK'?<> · <b>{duration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</span>:<span aria-hidden={!ready||undefined}>{ready?'Not clocked in right now':'\u00a0'}</span>}</p>
+  <dl className="sg-pair">
+   <div><dt>Worked today</dt><dd>{ready?<Duration seconds={ready.today.recordedSeconds} size="pair"/>:<span className={sig.mtDash} aria-hidden="true">–</span>}</dd></div>
+   <div><dt>On break</dt><dd>{ready?<Duration seconds={ready.today.breakSeconds} size="pair"/>:<span className={sig.mtDash} aria-hidden="true">–</span>}</dd></div>
+  </dl>
+ </SigBand>;
+ const refresh=denied?<Link className="sg-link" href="/login">Sign in</Link>:<button className="sg-link employee-time-refresh" type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} onClick={onRefresh} disabled={paused||refreshing}>{unavailable?'Try again':'Refresh'}</button>;
+ return <SigPage band={band} className={sig.mtRoot}>
+  <HoldHeight className={sig.mtPanel} holding={!ready}>
+   <div className="sg-quiet" style={{marginTop:0}}>
+    <span>{ready?<>Updated <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,hour:'numeric',minute:'2-digit'}).format(new Date(ready.observedAt))}</time></>:paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</span>
+    <span className={sig.mtControls}>{refresh}{ready?<details className={`employee-corporate-record-details ${sig.mtDetails}`}><summary className="sg-link">Details</summary><div><p>Updated <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{timeZoneLabel(ready.timeZone)} · Updates every 30s while active.</p></div></details>:null}</span>
+   </div>
+   <p className="sg-note" style={{marginTop:2}}><span>Your punches come from your location’s Clocker.{context.payLine?<> {context.payLine}.</>:null}</span></p>
+   {ready?<>
+    <SigSection id="employee-time-today-title" title="Today">
+     {ready.today.entries.length?<div className={`sg-list ${sig.mtEntries}`}>{ready.today.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div>:<div className="sg-list"><p className="sg-empty">No recorded punches today.</p></div>}
+     <p className={sig.mtFine}>Today’s totals. Hours include breaks and aren’t payroll hours.</p>
+    </SigSection>
+    <SigSection id="employee-time-recent-title" title={<>Earlier entries{ready.recent.total?<span className={sig.mtCount}> · {ready.recent.total}</span>:null}</>}>
+     {ready.recent.entries.length?<><div className={`sg-list ${sig.mtEntries}`}>{ready.recent.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div>{ready.recent.entries.length<ready.recent.total?<p className={sig.mtFine}>Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p>:null}</>:<div className="sg-list"><p className="sg-empty">No earlier entries.</p></div>}
+    </SigSection>
+    <div className={sig.mtCorrections}><EmployeeCorrectionCenter zone={ready.timeZone}/></div>
+   </>:null}
+  </HoldHeight>
+ </SigPage>;
+}
+
+export function EmployeeTimePanel({compact=false,corporate=false,authority,signature}:{compact?:boolean;corporate?:boolean;authority?:string;signature?:MyTimeContext}){
  const [state,setState]=useState<EmployeeTimePanelState>({time:null,refreshing:true,paused:false});
  const [commands,setCommands]=useState<Record<string,CorrectionRequestCommand>>({});
  const authorityLost=useRef(false);
@@ -134,5 +180,5 @@ export function EmployeeTimePanel({compact=false,corporate=false,authority}:{com
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;time.stop();controller.current=null;document.removeEventListener('visibilitychange',sync);window.removeEventListener('online',sync);window.removeEventListener('offline',pause);window.removeEventListener('pagehide',pause);window.removeEventListener('pageshow',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',sync);};
  },[authority]);
- return <EmployeeCorrectionRecoveryContext.Provider value={{commands,update,authority}}><EmployeeTimeView state={state} compact={compact} corporate={corporate} onRefresh={()=>controller.current?.refresh()}/></EmployeeCorrectionRecoveryContext.Provider>;
+ return <EmployeeCorrectionRecoveryContext.Provider value={{commands,update,authority}}>{signature&&!compact?<EmployeeTimeSignatureView state={state} context={signature} onRefresh={()=>controller.current?.refresh()}/>:<EmployeeTimeView state={state} compact={compact} corporate={corporate} onRefresh={()=>controller.current?.refresh()}/>}</EmployeeCorrectionRecoveryContext.Provider>;
 }

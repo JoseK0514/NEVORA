@@ -2152,3 +2152,12 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .employee-time-corr
   background-position: right 0.75rem center;
   background-size: 1rem;
 }
+/* Sign-in redesign (E4), employee Profile: the band now holds the avatar, name and role, so its placeholder takes the
+ * new band's height (one-line name; rem, so it follows the text size). Matches profile/profile-premium.css. */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="profile"][data-band] > .route-skeleton-band:not(#pfx):not(#pfx2) { box-sizing: border-box; height: calc(4.875rem + 24px); }
+@media (min-width: 768px) { html body .app-shell.nevora-portal.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="profile"][data-band] > .route-skeleton-band:not(#pfx):not(#pfx2) { height: calc(4.875rem + 40px); } }
+@media (min-width: 1024px) { html body .app-shell.nevora-portal.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="profile"][data-band] > .route-skeleton-band:not(#pfx):not(#pfx2) { height: calc(5.5rem + 40px); } }
+/* Large text on phones stacks the avatar above the name (a container query on the page); the placeholder does the same
+ * with its own width. The name's wrapping varies, so this is a typical height (within about 50px). */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="profile"][data-band]:not(#pfx) { container-type: inline-size; }
+@container (max-width: 19rem) { html body .app-shell.nevora-portal.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame > .route-skeleton[data-route="profile"][data-band] > .route-skeleton-band:not(#pfx):not(#pfx2):not(#pfx3) { height: calc(11.5rem + 24px); } }

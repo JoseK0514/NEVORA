@@ -13,6 +13,10 @@ import type { EmployeeTimeCorrections } from '@/lib/time-corrections/read-model'
 import type { CorrectionRequestCommand } from '@/lib/time-corrections/validation';
 import {PendingLabel} from './employee-submit-button';
 import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-context';
+import {CorrectionTimeTicket} from './correction-time-ticket';
+import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
+import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
+import {XIcon} from '@phosphor-icons/react/dist/ssr/X';
 
 const changedEvent='nevora:time-correction-changed';
 
@@ -33,6 +37,9 @@ function useCorrectionRetry(key:string){
 }
 
 function pad(value:number){return String(value).padStart(2,'0');}
+/** "OCT" / "20" for a history row's date block, and "7:55 AM" for its change line, in the workspace zone. */
+function dayPart(at:string,zone:string,part:'short'|'day'){return new Intl.DateTimeFormat('en-US',part==='short'?{timeZone:zone,month:'short'}:{timeZone:zone,day:'numeric'}).format(new Date(at));}
+function clock(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit'}).format(new Date(at));}
 function localValue(at:string,zone:string){
   const value=Temporal.Instant.from(at).toZonedDateTimeISO(zone);
   return `${value.year}-${pad(value.month)}-${pad(value.day)}T${pad(value.hour)}:${pad(value.minute)}`;
@@ -193,14 +200,7 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
       <CorrectionComparison recordedStartAt={target.startAt} recordedEndAt={target.endAt} context={effective??{state:'unavailable'}} zone={zone}/>
       <PriorCorrectionDecisions context={effective??{state:'unavailable'}} zone={zone}/>
       {!effective?<p className="employee-time-correction-note" role="status">{contextLoading?'Checking current effective time…':'Current effective time could not be confirmed. Reopen the form or return online before editing.'}</p>:null}
-      <div className="employee-time-correction-grid">
-        <label>Start
-          <input disabled={busy||retry!==null||!effective} type="datetime-local" step="60" required value={start} onChange={(event)=>setStart(event.target.value)} />
-        </label>
-        <label>End
-          <input disabled={busy||retry!==null||!effective} type="datetime-local" step="60" required value={end} onChange={(event)=>setEnd(event.target.value)} />
-        </label>
-      </div>
+      <CorrectionTimeTicket start={start} end={end} disabled={busy||retry!==null||!effective} onStart={setStart} onEnd={setEnd}/>
       <label>Reason
         <textarea disabled={busy||retry!==null} required maxLength={500} value={reason} onChange={(event)=>setReason(event.target.value)} placeholder="Briefly explain what should be corrected." />
       </label>
@@ -295,8 +295,10 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
   return <section className="employee-view-surface employee-correction-center" aria-labelledby="employee-corrections-title">
     <header className="employee-time-section-heading">
       <div><h2 id="employee-corrections-title">Corrections</h2><p>Your manager reviews each request. Your original times are kept.</p></div>
-      <button className="employee-time-correction-trigger" type="button" aria-expanded={open} aria-controls="employee-missing-time-correction" onClick={()=>{setOpen(value=>!value);setReplacementTarget(null);setStart('');setEnd('');setReason('');}} disabled={!ready||ready.locations.length===0}>
-        {open?'Cancel':'Request a correction'}
+      <button className="employee-time-correction-trigger" data-open={open||undefined} type="button" aria-expanded={open} aria-controls="employee-missing-time-correction" onClick={()=>{setOpen(value=>!value);setReplacementTarget(null);setStart('');setEnd('');setReason('');}} disabled={!ready||ready.locations.length===0}>
+        <span className="employee-time-correction-trigger__tile" aria-hidden="true">{open?<XIcon size={18}/>:<PlusIcon size={20}/>}</span>
+        <span className="employee-time-correction-trigger__copy"><b>{open?'Cancel':'Request a correction'}</b>{open?null:<small aria-hidden="true">Add time that wasn’t recorded</small>}</span>
+        {open?null:<ArrowRightIcon className="employee-time-correction-trigger__go" size={18} aria-hidden="true"/>}
       </button>
     </header>
     {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
@@ -307,10 +309,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
           {ready.locations.map((item)=><option value={item.id} key={item.id}>{item.name}</option>)}
         </select>
       </label>
-      <div className="employee-time-correction-grid">
-        <label>Start<input disabled={busy||retry!==null} type="datetime-local" step="60" required value={start} onChange={(event)=>setStart(event.target.value)} /></label>
-        <label>End<input disabled={busy||retry!==null} type="datetime-local" step="60" required value={end} onChange={(event)=>setEnd(event.target.value)} /></label>
-      </div>
+      <CorrectionTimeTicket start={start} end={end} disabled={busy||retry!==null} onStart={setStart} onEnd={setEnd}/>
       <label>Reason<textarea disabled={busy||retry!==null} required maxLength={500} value={reason} onChange={(event)=>setReason(event.target.value)} placeholder="Explain why the time was not recorded." /></label>
       <p className="employee-time-correction-note">{replacementTarget?'This replaces the selected approved missing time after manager review. The previous adjustment stays in history.':'Missing time is submitted as a correction record. It does not create a recorded Clocker punch.'}</p>
       <button className="employee-time-correction-submit" type="submit" aria-disabled={busy} disabled={!busy&&(retry!==null||!location||!reason.trim())}><PendingLabel pending={busy} pendingText="Sending…">Send request</PendingLabel></button>
@@ -319,7 +318,8 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
       snapshot?.state==='unavailable'?<p className="employee-time-empty">Correction history is unavailable right now.{snapshot.reason==='access_denied'?<> <Link href="/login">Sign in</Link></>:null}</p>:
       recent.length?<div className="employee-correction-history">
         {recent.map((item)=><div className="employee-correction-history-row" key={item.id}>
-          <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
+          <span className="employee-correction-day" aria-hidden="true"><small>{dayPart(item.proposedStartAt,zone,'short')}</small><b>{dayPart(item.proposedStartAt,zone,'day')}</b></span>
+          <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><span className="employee-correction-change">{item.originalStartAt?<s>{clock(item.originalStartAt,zone)}</s>:<s>Not recorded</s>}<ArrowRightIcon size={14} aria-hidden="true"/><b>{clock(item.proposedStartAt,zone)} – {clock(item.proposedEndAt,zone)}</b></span><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
             <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={zone}/>
             <p className="employee-time-correction-note">{item.status==='PENDING'?'Pending proposal':item.status==='APPROVED'?'Approved proposal':'Declined proposal'} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}{item.status==='REJECTED'?' · does not change effective time':''}</p>
             <PriorCorrectionDecisions context={item.context} zone={zone}/>

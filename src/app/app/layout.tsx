@@ -18,6 +18,8 @@ import "./clean-manager/timecards.css";
 import "./clean-manager/insights.css";
 import "./clean-manager/updates.css";
 import "./clean-manager/notifications.css";
+// Employee app, new style (Withings-inspired, Jose approved Oct 20): scoped to the shell's data-nv-e5.
+import "./employee-style.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
@@ -33,6 +35,7 @@ import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import { DEFAULT_TOKENS } from "@/lib/workspace-presentation/derive";
 import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
+import { PasskeyOffer } from "@/components/passkeys/passkey-offer";
 
 export const metadata: Metadata = {
   manifest: "/fuel-portal.webmanifest",
@@ -75,6 +78,8 @@ export default async function PlatformLayout({ children }: { children: ReactNode
       }}
     >
       {children}
+      {/* Face ID offer after a password sign-in (hidden unless NEXT_PUBLIC_NEVORA_PASSKEYS=on). */}
+      <PasskeyOffer />
     </AppShell>
   );
 }

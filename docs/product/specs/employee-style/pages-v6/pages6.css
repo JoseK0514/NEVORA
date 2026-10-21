@@ -1,0 +1,66 @@
+@import url("pages5.css");
+/* v6: each page makes its own decision. Teal only where it is the page's one live fact (My time's clock).
+ * Quieter section labels, data-bearing subtitles, numbers set as figures, fewer boxes. */
+
+.pt p.fig { font-variant-numeric: tabular-nums; }
+.lab { display: flex; align-items: baseline; justify-content: space-between; margin: 30px 20px 10px; }
+.lab h2 { font: 600 17px/22px var(--sys); letter-spacing: -.2px; color: var(--ink); }
+.lab a { font: 600 15px/20px var(--sys); color: var(--teal); }
+
+/* Schedule: the week lives on the canvas */
+.range { display: flex; align-items: center; justify-content: space-between; margin: 20px 20px 0; }
+.range b { font: 600 17px/22px var(--sys); }
+.range .arrows { display: flex; gap: 8px; }
+.range .arrows i { display: inline-flex; width: 36px; height: 36px; border-radius: 50%; align-items: center; justify-content: center; background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(17,21,20,.06), 0 0 0 .5px rgba(17,21,20,.06); font-style: normal; }
+.strip { display: grid; grid-template-columns: repeat(7, 1fr); margin: 14px 12px 0; }
+.strip span { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 0 10px; margin: 0 3px; border-radius: 16px; font: 500 13px/16px var(--sys); color: var(--ink-3); }
+.strip span b { font: 600 19px/22px var(--disp); color: var(--ink); font-variant-numeric: tabular-nums; }
+.strip span i { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); }
+.strip span.off i { background: transparent; }
+.strip span.on { background: var(--deep); color: rgba(255,255,255,.7); }
+.strip span.on b { color: #fff; }
+.strip span.on i { background: var(--mint); }
+.askrow { display: flex; align-items: center; gap: 14px; margin: 20px 16px 0; padding: 14px 14px 14px 18px; border-radius: 20px; background: #fff; box-shadow: 0 1px 2px rgba(17,21,20,.04); }
+.askrow p { flex: 1; font: 400 15px/20px var(--sys); color: var(--ink-2); }
+.askrow p b { display: block; font: 600 16px/21px var(--sys); color: var(--ink); }
+.pill { flex: none; display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 12px; background: var(--deep); color: #fff; font: 600 15px/1 var(--sys); }
+.hrs { flex: none; font: 500 15px/20px var(--sys); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.row .hrs + .c { margin-left: -4px; }
+
+/* Requests: one clear action, then waiting and decided */
+.cta { display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; margin: 20px 16px 0; border-radius: 16px; background: var(--deep); color: #fff; font: 600 16px/20px var(--sys); }
+.stat { flex: none; display: inline-flex; align-items: center; gap: 7px; font: 500 15px/20px var(--sys); color: var(--ink-2); }
+.stat::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.stat.wait { color: var(--amber); } .stat.good { color: #2B7A47; } .stat.no { color: #B42318; }
+.more-row { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 16px; font: 600 15px/20px var(--sys); color: var(--teal); }
+
+/* Pay: editorial — the payday is the headline, the file is a quiet row */
+.doc { margin: 18px 16px 0; padding: 22px 20px 6px; border-radius: 22px; background: #fff; box-shadow: 0 1px 2px rgba(17,21,20,.04); }
+.doc .k2 { font: 600 15px/20px var(--sys); color: var(--teal); }
+.doc .pd { display: block; margin-top: 8px; font: 600 28px/34px var(--disp); letter-spacing: -.6px; }
+.doc .per { display: block; margin-top: 4px; font: 400 16px/22px var(--sys); color: var(--ink-2); }
+.doc .file { display: flex; align-items: center; gap: 12px; margin: 18px -20px 0; padding: 14px 20px 16px; border-top: 1px solid var(--rule); }
+.doc .file span { flex: 1; font: 400 15px/20px var(--sys); color: var(--ink-2); }
+.doc .file a { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 12px; background: #EEF5F4; color: var(--deep); font: 600 15px/1 var(--sys); }
+.dlx { flex: none; display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; color: var(--teal); }
+
+/* My time: the teal card is the clock; figures separated by a rule, not boxes */
+.split { display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; border-top: 1px solid rgba(255,255,255,.12); }
+.split div { padding: 14px 0 2px; }
+.split div + div { padding-left: 18px; border-left: 1px solid rgba(255,255,255,.12); }
+.split small { display: block; font: 500 15px/20px var(--sys); color: rgba(255,255,255,.62); }
+.split strong { display: block; margin-top: 4px; font: 600 28px/32px var(--disp); letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+.calm { padding: 26px 20px; text-align: center; font: 400 15px/21px var(--sys); color: var(--ink-2); }
+
+/* Notifications: time sits on the right of the title */
+.nrow { position: relative; display: flex; gap: 12px; padding: 14px 16px 14px 14px; }
+.nrow + .nrow::before { content: ""; position: absolute; top: 0; left: 34px; right: 0; height: 1px; background: var(--rule); }
+.nrow .dotcol { flex: none; width: 8px; padding-top: 7px; }
+.nrow .dotcol i { display: block; width: 8px; height: 8px; border-radius: 50%; background: #35B6EC; }
+.nrow .tx2 { flex: 1; min-width: 0; }
+.nrow .top2 { display: flex; justify-content: space-between; gap: 10px; }
+.nrow .top2 b { font: 600 16px/21px var(--sys); }
+.nrow .top2 time { flex: none; font: 400 15px/21px var(--sys); color: var(--ink-3); }
+.nrow p { margin-top: 2px; font: 400 15px/20px var(--sys); color: var(--ink-2); }
+.nrow .go { display: inline-block; margin-top: 6px; font: 600 15px/20px var(--sys); color: var(--teal); }
+.row.plain:not(:has(.tx span)) { min-height: 56px; }

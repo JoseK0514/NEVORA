@@ -9,10 +9,10 @@ export function ActivationPasswords({ errorId }: { errorId?: string }) {
   const type = visible ? "text" : "password";
   return (
     <>
-      <div className="activation-password-field">
-        <label htmlFor="activation-password">Create password</label>
-        <div className="activation-password-input">
-          <input id="activation-password" name="password" type={type} minLength={8}
+      <div className="activation-password-field ap-field">
+        <label className="ap-label" htmlFor="activation-password">Create password</label>
+        <div className="activation-password-input ap-box ap-box--toggle">
+          <input className="ap-input" id="activation-password" name="password" type={type} minLength={8}
             placeholder="Choose your password" autoComplete="new-password" required
             aria-describedby={["activation-password-hint", errorId].filter(Boolean).join(" ")} />
           <button type="button" className="activation-password-toggle" aria-pressed={visible}
@@ -25,9 +25,9 @@ export function ActivationPasswords({ errorId }: { errorId?: string }) {
         </div>
         <p className="activation-hint" id="activation-password-hint">At least 8 characters.</p>
       </div>
-      <label htmlFor="activation-confirm-password">Confirm password
-        <input id="activation-confirm-password" name="confirmPassword" type={type} minLength={8}
-          placeholder="Re-enter your password" autoComplete="new-password" required aria-describedby={errorId} />
+      <label className="ap-label ap-field" htmlFor="activation-confirm-password">Confirm password
+        <span className="ap-box"><input className="ap-input" id="activation-confirm-password" name="confirmPassword" type={type} minLength={8}
+          placeholder="Re-enter your password" autoComplete="new-password" required aria-describedby={errorId} /></span>
       </label>
     </>
   );

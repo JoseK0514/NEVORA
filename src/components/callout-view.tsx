@@ -1,11 +1,25 @@
+import Link from "next/link";
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { ReviewedCalloutForm } from "./reviewed-callout-form";
-import { Card, KitLink, PageBand } from "./kit/kit";
 import { Notice } from "./wave-a/parts";
-import { SwapShiftSummary } from "./swap-shift-summary";
+import { swapBandDay, swapBandLine } from "./swap-shift-summary";
 import { CalloutSentBoundary } from "./wave-a/callout-sent";
+import { SigBand, SigPage } from "./signature/signature";
+import sr from "./shift-requests-signature.module.css";
 import type { ExchangeShift } from "../lib/data/exchanges";
 
-/** Phase 3.5 Wave A: "Unable to work" on the kit (Employee and Lead). The shift, what happens next, then the reason. */
+/* "Unable to work" in the Signature style (phase 3, approved Oct 20, 2026; target:
+ * docs/product/specs/employee-style/signature/phase-3/p3c-board-b.png). The band is the shift; the sheet asks what
+ * happened, takes an optional note, says it's still your shift, then Send report. Same reviewed fields as before. */
+export function CalloutBand({ shift, title = "Unable to work" }: { shift: ExchangeShift; title?: string }) {
+  return <SigBand eyebrow="Unable to work">
+    <h1 className="nv-sr">{title}</h1>
+    <p className="sg-word"><time dateTime={shift.date}>{swapBandDay(shift.date)}</time></p>
+    <p className="sg-sub"><span>{swapBandLine(shift)}</span></p>
+    <Link className="sg-band-link" href="/app/exchange?tab=requests"><CaretLeftIcon size={14} aria-hidden="true" />Shift requests</Link>
+  </SigBand>;
+}
+
 export function CalloutView({
   shift,
   fields,
@@ -17,32 +31,14 @@ export function CalloutView({
 }) {
   return (
     <CalloutSentBoundary shift={shift}>
-    <div className="nv-page wa-page wa-callout" data-nv-page="">
-      <PageBand back={{ href: "/app/exchange?tab=my", label: "Shift requests" }} title="Unable to work" summary="Tell your manager you can’t work this shift." />
-      <div className="nv-content wa-narrow">
+      <SigPage className={sr.srRoot} band={<CalloutBand shift={shift} />}>
         {error ? (
-          <Notice tone="urgent" title="Your report wasn’t sent">
+          <div className={sr.srNoticeTop}><Notice tone="urgent" title="Your report wasn’t sent">
             {error === "details" ? "Add a few words about the reason when you choose Other." : "Choose a reason first."}
-          </Notice>
+          </Notice></div>
         ) : null}
-
-        <Card title="Your shift" id="callout-shift">
-          <div className="wa-shifts"><SwapShiftSummary shift={shift} label="Can’t work" /></div>
-          <div className="wa-card-body wa-card-body--tight">
-            <Notice tone="review" quiet title="It’s still your shift">You’re responsible for it until a manager approves your report.</Notice>
-          </div>
-          <ol className="wa-steps">
-            <li>A manager reviews your report. You can follow it in Shift requests.</li>
-            <li>If they approve it, the shift opens for someone else to pick up.</li>
-          </ol>
-          <div className="wa-card-body wa-card-body--tight"><KitLink href="/app/exchange?tab=requests">See my requests</KitLink></div>
-        </Card>
-
-        <Card title="Why can’t you work it?" id="callout-reason">
-          <ReviewedCalloutForm fields={fields} />
-        </Card>
-      </div>
-    </div>
+        <ReviewedCalloutForm fields={fields} />
+      </SigPage>
     </CalloutSentBoundary>
   );
 }

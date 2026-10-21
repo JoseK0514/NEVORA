@@ -1,91 +1,77 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect, useRef, useState, type FormEventHandler, type RefCallback} from 'react';
-import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
-import {EyeIcon} from '@phosphor-icons/react/dist/ssr/Eye';
-import {EyeSlashIcon} from '@phosphor-icons/react/dist/ssr/EyeSlash';
+import {useEffect, useRef, type FormEventHandler, type RefCallback} from 'react';
 import {AuthDisclosureSymbol} from './auth-disclosure-symbol';
+import {PasswordInput} from './auth-premium/password-input';
+import {AUTH_COPY, authMessage, type AuthLang} from '@/lib/auth-copy';
 
-export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef}: {
+export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en'}: {
  hydrated: boolean;
  busy: boolean;
  done: boolean;
  message: string;
  onSubmit: FormEventHandler<HTMLFormElement>;
  proofRef: RefCallback<HTMLInputElement>;
+ lang?: AuthLang;
 }) {
- const [visible, setVisible] = useState(false);
+ const t = AUTH_COPY[lang];
  const feedback = useRef<HTMLDivElement>(null);
+ // The outcome is decided on AccountRecovery's English message; only what is shown is translated.
  const mismatch = message === 'Passwords do not match.';
  const invalid = message.startsWith('This recovery code');
  const uncertain = message.startsWith('The reset outcome');
  useEffect(() => {if (message) feedback.current?.focus();}, [message, done]);
 
- return <section className="auth-card employee-login-card reset-card">
-  <div className="employee-login-heading">
-   <h1>{done ? 'Password updated' : 'Set a new password'}</h1>
-  </div>
+ return <>
+  <h1 className="ap-title">{done ? t.resetDoneTitle : t.resetTitle}</h1>
   {done ? <>
-   <div className="reset-receipt" ref={feedback} role="status" tabIndex={-1}>
-    <h2>Your next step</h2><p>{message}</p>
+   <div className="ap-receipt" ref={feedback} role="status" tabIndex={-1}>
+    <h2>{t.nextStep}</h2><p>{authMessage(lang, message)}</p>
    </div>
-   <Link href="/login" className="button primary employee-login-submit reset-sign-in">
-    <span>Sign in with new password</span>
-   </Link>
+   <Link href="/login" className="ap-primary"><span>{t.signInWithNewPassword}</span></Link>
   </> : <>
-   <noscript><p className="reset-no-script">Enable JavaScript to reset your password, or contact your manager or Owner for help.</p></noscript>
-   <form className="form-stack employee-login-form reset-form" onSubmit={onSubmit}>
-    <fieldset disabled={!hydrated || busy}>
-     <div className="reset-field">
-      <div className="auth-label-row">
-       <label htmlFor="reset-proof">Recovery code</label>
-       <details className="auth-field-help">
-        <summary aria-label="About your recovery code"><InfoIcon size={18} weight="regular" aria-hidden="true" focusable="false"/></summary>
-        <p id="reset-proof-hint">Filled from your recovery link, or paste the code you received.</p>
-       </details>
-      </div>
-      <input id="reset-proof" ref={proofRef} name="proof" required minLength={43} maxLength={43}
-       autoComplete="off" autoCapitalize="none" spellCheck={false} placeholder="Paste your recovery code"
-       aria-describedby={message ? 'reset-proof-hint reset-error' : 'reset-proof-hint'}/>
+   <noscript><p className="ap-alert" data-tone="info">{t.resetNoScript}</p></noscript>
+   <form className="ap-form" onSubmit={onSubmit}>
+    <fieldset className="ap-fieldset" disabled={!hydrated || busy}>
+     <div className="ap-field">
+      <label className="ap-label" htmlFor="reset-proof">{t.recoveryCode}</label>
+      <div className="ap-box"><input id="reset-proof" className="ap-input" ref={proofRef} name="proof" required minLength={43} maxLength={43}
+       autoComplete="off" autoCapitalize="none" spellCheck={false} placeholder={t.recoveryCodePlaceholder}
+       aria-describedby={message ? 'reset-proof-hint reset-error' : 'reset-proof-hint'}/></div>
+      <p className="ap-hint" id="reset-proof-hint">{t.recoveryCodeHint}</p>
      </div>
-     <div className="reset-field">
-      <label htmlFor="reset-password">New password</label>
-      <div className="reset-password-input">
-       <input id="reset-password" name="password" type={visible ? 'text' : 'password'} required minLength={8} maxLength={1024}
-        autoComplete="new-password" placeholder="Create a new password" aria-describedby="reset-password-hint"/>
-       <button type="button" className="reset-password-toggle" aria-label={visible ? 'Hide passwords' : 'Show passwords'}
-        aria-pressed={visible} aria-controls="reset-password reset-confirm-password" onClick={() => setVisible(!visible)}>
-        {visible ? <EyeSlashIcon size={20} weight="regular" aria-hidden="true" focusable="false"/> : <EyeIcon size={20} weight="regular" aria-hidden="true" focusable="false"/>}
-       </button>
-      </div>
-      <p id="reset-password-hint" className="reset-hint">At least 8 characters.</p>
+     <div className="ap-field">
+      <label className="ap-label" htmlFor="reset-password">{t.newPassword}</label>
+      <PasswordInput id="reset-password" name="password" required minLength={8} maxLength={1024} autoComplete="new-password"
+       placeholder={t.newPasswordPlaceholder} aria-describedby="reset-password-hint"
+       controls={['reset-password', 'reset-confirm-password']} showLabel={t.showPasswords} hideLabel={t.hidePasswords}/>
+      <p className="ap-hint" id="reset-password-hint">{t.atLeast8}</p>
      </div>
-     <div className="reset-field">
-      <label htmlFor="reset-confirm-password">Confirm new password</label>
-      <input id="reset-confirm-password" name="confirmPassword" type={visible ? 'text' : 'password'} required minLength={8} maxLength={1024}
-       autoComplete="new-password" placeholder="Enter it again" aria-invalid={mismatch || undefined} aria-describedby={message ? 'reset-error' : undefined}/>
+     <div className="ap-field">
+      <label className="ap-label" htmlFor="reset-confirm-password">{t.confirmNewPassword}</label>
+      <div className="ap-box"><input id="reset-confirm-password" className="ap-input" name="confirmPassword" type="password" required minLength={8} maxLength={1024}
+       autoComplete="new-password" placeholder={t.enterItAgain} aria-invalid={mismatch || undefined} aria-describedby={message ? 'reset-error' : undefined}/></div>
      </div>
-     <button type="submit" className="button primary employee-login-submit reset-submit" disabled={!hydrated || busy} aria-busy={busy}>
-      <span>{busy ? 'Resetting password…' : 'Reset password'}</span>
+     <button type="submit" className="ap-primary" disabled={!hydrated || busy} aria-busy={busy}>
+      <span>{busy ? t.resettingPassword : t.resetPassword}</span>
      </button>
     </fieldset>
    </form>
-   {message ? <div id="reset-error" className="reset-error" ref={feedback} role="alert" tabIndex={-1}>
-    <h2>{mismatch ? 'Check your passwords' : invalid ? 'Use a new recovery code' : uncertain ? 'Check your sign-in first' : 'Reset not confirmed'}</h2>
-    <p>{message}</p>
-    {invalid ? <Link href="/forgot-access">Request a new recovery code</Link> : null}
-    {uncertain ? <Link href="/login">Try signing in</Link> : null}
+   {message ? <div id="reset-error" className="ap-alert ap-alert--block" data-tone="error" ref={feedback} role="alert" tabIndex={-1}>
+    <h2>{mismatch ? t.checkPasswords : invalid ? t.useNewCode : uncertain ? t.checkSignInFirst : t.resetNotConfirmed}</h2>
+    <p>{authMessage(lang, message)}</p>
+    {invalid ? <Link className="ap-link" href="/forgot-access">{t.requestNewCode}</Link> : null}
+    {uncertain ? <Link className="ap-link" href="/login">{t.trySigningIn}</Link> : null}
    </div> : null}
-   <span className="login-submit-status" role="status">{busy ? 'Resetting password. Please wait.' : ''}</span>
-   <div className="auth-secondary employee-login-secondary reset-secondary">
-    <details className="reset-help">
-     <summary><span>Need a recovery code?</span><AuthDisclosureSymbol/></summary>
-     <p>Request recovery using your registered email. If you can’t use that email, contact your manager or Owner. They must verify your identity before issuing a code.</p>
-     <Link href="/forgot-access" className="reset-help-link">Request recovery</Link>
+   <span className="ap-sr" role="status">{busy ? t.resettingStatus : ''}</span>
+   <div className="ap-links">
+    <details className="ap-help">
+     <summary><span>{t.needRecoveryCode}</span><AuthDisclosureSymbol/></summary>
+     <p>{t.needRecoveryCodeBody}</p>
+     <Link href="/forgot-access" className="ap-link">{t.requestRecovery}</Link>
     </details>
    </div>
-   <Link href="/login" className="reset-back">Back to sign in</Link>
   </>}
- </section>;
+ </>;
 }

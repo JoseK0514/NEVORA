@@ -1,0 +1,154 @@
+/* Shift requests, swap and Unable to work in the Signature style (tokens and pieces from signature.module.css).
+ * The forms and their feedback keep their own markup (ShiftChangeForm, swap and report forms); this file dresses them. */
+.srRoot :global(.sg-alert):not(#sr) { margin-bottom: 20px; }
+.srRoot :global(.sg-alert[data-tone="error"]):not(#sr) { background: #FBF0EE; border-color: #F1D6D1; color: var(--sg-red); }
+.srRoot :global(.sg-card) > li:not(#sr) { list-style: none; }
+.srRoot :global(.sg-copy > span):not(#sr) { overflow-wrap: anywhere; }
+.srRoot :global(.sg-copy > span + span + span):not(#sr) { color: var(--sg-ink-3); }
+
+/* The older shift-entry and action rules in globals.css stay out of this page. */
+.srRoot :global(.employee-shift-entry):not(#sr) { display: block; min-width: 0; padding: 0; gap: 0; border-top: 0; }
+.srRoot :global(.employee-shift-entry.sg-r):not(#sr) { display: flex; padding: 16px 20px; gap: 16px; }
+.srRoot :global(.employee-shift-entry.sg-card):not(#sr) { display: block; }
+.srRoot :global(.employee-shift-entry-actions .employee-action):not(#sr) { width: auto; height: auto; margin: 0; }
+.srRoot :global(.employee-shift-entry-actions .employee-action > span):not(#sr) { display: inline; width: auto; }
+.srRoot :global(.employee-shift-entry-actions):not(#sr) { min-height: 0; grid-template-columns: none; }
+
+/* Actions: a compact pill for Claim, quiet pills elsewhere. */
+.srRoot :global(.employee-shift-entry-actions):not(#sr) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.srRoot :global(.employee-shift-entry-actions:empty):not(#sr) { display: none; }
+.srRoot :global(.shift-change-form):not(#sr) { display: contents; }
+.srRoot :global(.shift-change-fields):not(#sr) { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.srRoot :global(.employee-action):not(#sr) { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--sg-card); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 .9375rem/1 var(--sg-font); text-decoration: none; cursor: pointer; }
+.srRoot :global(.employee-action.primary):not(#sr) { background: var(--sg-deep); box-shadow: none; color: #FFFFFF; }
+.srRoot :global(.employee-action.danger):not(#sr) { color: var(--sg-red); }
+.srRoot :global(.employee-action):disabled:not(#sr) { opacity: .55; cursor: default; }
+.srRoot :global(.employee-action):focus-visible:not(#sr) { outline: 2px solid var(--sg-ink); outline-offset: 2px; }
+.srRoot :global(.sg-r > .employee-shift-entry-actions):not(#sr) { flex: none; }
+.srRoot :global(form[aria-busy]) :global(p[role]):not(#sr) { margin: 8px 0 0; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+.srRoot :global(form) :global(.form-error):not(#sr) { color: var(--sg-red); }
+.srRoot :global(form) :global(.form-success):not(#sr) { color: #0A5753; }
+
+/* Pills and notices */
+.srRoot :global(.status-pill):not(#sr) { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: #EFEDE8; color: #55585A; font: 500 .8125rem/1 var(--sg-font); white-space: nowrap; }
+.srRoot :global(.status-pill.success):not(#sr) { background: #E2F1ED; color: #0A5753; }
+.srRoot :global(.sg-t1 .status-pill):not(#sr) { max-width: 100%; white-space: normal; height: auto; min-height: 24px; padding: 3px 9px; line-height: 1.125rem; }
+.srRoot :global(.shift-change-unavailable):not(#sr) { display: block; color: var(--sg-amber) !important; font: 400 .875rem/1.25rem var(--sg-font); }
+.srRoot :global(.shift-change-history):not(#sr) { margin-top: 6px; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+.srRoot :global(.shift-change-history > summary):not(#sr) { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; color: var(--sg-ink); text-decoration: underline; text-decoration-color: var(--sg-rule); text-underline-offset: 5px; }
+.srRoot :global(.shift-change-history ol):not(#sr) { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 0; padding: 0 0 0 14px; border-left: 2px solid var(--sg-rule); }
+.srRoot :global(.shift-change-history li):not(#sr) { display: flex; flex-direction: column; }
+
+/* Stacked rows: copy, then the actions under it. */
+.srStacked:not(#sr) { align-items: flex-start; }
+.srStacked :global(.sg-copy):not(#sr) { gap: 3px; }
+.srStacked :global(.employee-shift-entry-actions):not(#sr) { margin-top: 10px; }
+.srStack:not(#sr) { display: flex; flex-direction: column; gap: 12px; }
+.srStack :global(.sg-ticket em):not(#sr) { margin-top: 6px; font: 400 .8125rem/1.125rem var(--sg-font); font-style: normal; color: var(--sg-ink-3); }
+.srStack :global(.sg-card-body) :global(.employee-shift-entry-actions):not(#sr) { margin-top: 16px; }
+.srStack :global(.sg-card-body) :global(.shift-change-fields):not(#sr) { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+.srStack :global(.sg-card-body) :global(.employee-action):not(#sr) { min-height: 48px; border-radius: 14px; }
+.srAvatar:not(#sr) { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; background: linear-gradient(145deg, #1B5A56, var(--sg-deep)); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); letter-spacing: .02em; }
+.srHeadCopy:not(#sr) { flex: 1; min-width: 0; }
+.srHeadCopy b:not(#sr) { display: block; font: 500 1.0625rem/1.375rem var(--sg-font); }
+.srHeadCopy small:not(#sr) { display: block; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.srMuted:not(#sr) { margin-top: 4px !important; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); }
+
+/* Your shifts: the row is the summary; options open under it. */
+.srShift:not(#sr) { position: relative; }
+.srShift + .srShift:not(#sr)::before { content: ""; position: absolute; top: 0; left: 78px; right: 0; height: 1px; background: var(--sg-rule); }
+.srOptions > summary:not(#sr) { list-style: none; cursor: pointer; }
+.srOptions > summary:not(#sr)::-webkit-details-marker { display: none; }
+.srOptions > summary:focus-visible:not(#sr) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
+.srMore:not(#sr) { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; background: var(--sg-page); color: var(--sg-ink-2); }
+.srOptions[open] .srMore:not(#sr) { background: var(--sg-deep); color: #FFFFFF; }
+.srOptions[open] > :global(.employee-shift-entry-actions):not(#sr) { padding: 0 20px 18px 78px; }
+.srNotice:not(#sr) { padding: 0 20px 10px 78px; }
+
+/* Shifts you can't pick up, and the Availability link. */
+.srBlocked:not(#sr) { position: relative; }
+.srBlocked + .srBlocked:not(#sr) { border-top: 1px solid var(--sg-rule); }
+.srBlocked :global(.sg-card-foot):not(#sr) { flex-wrap: wrap; margin: 0; padding: 12px 20px; list-style: none; }
+.srBlocked :global(.sg-card-foot li):not(#sr) { list-style: none; }
+.srBlocked :global(.sg-card-foot li + li):not(#sr)::before { content: "·"; margin-right: 10px; }
+.srBlocked :global(.sg-time):not(#sr) { color: var(--sg-ink-2); }
+.srNext:not(#sr) { display: flex; align-items: center; gap: 14px; padding: 18px 20px; color: var(--sg-ink); text-decoration: none; }
+.srNext > span:nth-child(2):not(#sr) { flex: 1; min-width: 0; }
+.srNext b:not(#sr) { display: block; font: 500 1.0625rem/1.375rem var(--sg-font); }
+.srNext small:not(#sr) { display: block; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.srNext i:not(#sr) { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 50%; background: #FFFFFF; color: var(--sg-deep); }
+.srNext:focus-visible:not(#sr) { outline-offset: -3px; border-radius: 22px; }
+.srRoot :global(.sg-card[data-tone="tint"]):not(#sr) { margin-top: 24px; }
+.srEmpty:not(#sr) { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 32px 24px; text-align: center; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.srEmpty strong:not(#sr) { margin-top: 8px; font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
+
+@container sg (max-width: 359px) {
+  .srRoot :global(.sg-r:has(> .employee-shift-entry-actions:not(:empty))):not(#sr) { flex-wrap: wrap; }
+  .srRoot :global(.sg-r > .sg-copy):not(#sr) { flex: 1 1 calc(100% - 56px); }
+  .srRoot :global(.sg-r > .employee-shift-entry-actions):not(#sr) { margin-left: 54px; }
+  .srShift + .srShift:not(#sr)::before { left: 70px; }
+  .srOptions[open] > :global(.employee-shift-entry-actions):not(#sr), .srNotice:not(#sr) { padding-left: 16px; padding-right: 16px; }
+}
+
+/* Swap and Unable to work forms. ShiftChangeForm wraps children and actions in fieldsets; here they stack. */
+.srSwapForm:not(#sr) { display: flex; flex-direction: column; min-width: 0; margin: 0; }
+.srSwapForm > :global(.shift-change-fields):not(#sr) { display: block; min-width: 0; margin: 0; padding: 0; border: 0; }
+.srSwapBody:not(#sr) { display: flex; flex-direction: column; min-width: 0; }
+.srSwapBody > :global(.sg-h:first-child):not(#sr), .srReasons > legend:not(#sr) { margin-top: 4px; }
+.srChoices:not(#sr) { min-width: 0; margin: 0 16px; padding: 0; border: 0; }
+.srChoices > label:not(#sr) { cursor: pointer; }
+.srChoices > label[data-selected]:not(#sr) { background: #F5FAF8; }
+.srChoices input[type="radio"]:not(#sr) { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.srChoices > label:focus-within:not(#sr) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
+.srRadio:not(#sr) { flex: none; width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #CFCBC3; transition: box-shadow .15s ease; }
+.srChoices > label[data-selected] .srRadio:not(#sr) { box-shadow: inset 0 0 0 7px var(--sg-deep); }
+.srPick:not(#sr) { padding: 22px 20px 6px; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); text-align: center; }
+.srHow:not(#sr) { border-top: 1px solid var(--sg-rule); }
+.srHow > summary:not(#sr) { display: flex; align-items: center; min-height: 52px; padding: 0 20px; cursor: pointer; font: 500 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink); list-style: none; }
+.srHow > summary:not(#sr)::-webkit-details-marker { display: none; }
+.srHow > summary:not(#sr)::after { content: "+"; margin-left: auto; font-weight: 400; font-size: 1.25rem; color: var(--sg-ink-3); }
+.srHow[open] > summary:not(#sr)::after { content: "–"; }
+.srHow > p:not(#sr) { padding: 0 20px 18px; font: 400 .9375rem/1.375rem var(--sg-font); color: var(--sg-ink-2); }
+.srNoticeTop:not(#sr) { display: flex; flex-direction: column; gap: 12px; margin: 0 16px 20px; }
+.srSwapBody .srNoticeTop:not(#sr) { margin: 20px 16px 0; }
+.srNoticeTop :global(.sg-cta):not(#sr) { width: 100%; margin: 0; }
+.srCoverage:not(#sr) { display: flex; flex-direction: column; gap: 14px; }
+
+/* Reasons: a two-column grid of choices. */
+.srReasons:not(#sr) { min-width: 0; margin: 0; padding: 0; border: 0; }
+.srReasons > legend:not(#sr) { float: left; width: calc(100% - 48px); margin: 4px 24px 14px; padding: 0; }
+.srReasons > legend + *:not(#sr) { clear: both; }
+.srReasonGrid:not(#sr) { clear: both; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 16px; }
+.srReason:not(#sr) { position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; min-height: 104px; padding: 16px; border-radius: 18px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .07); cursor: pointer; transition: background-color .15s ease, box-shadow .15s ease; }
+.srReason input:not(#sr) { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.srReason i:not(#sr) { display: inline-flex; width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 50%; background: var(--sg-page); color: var(--sg-deep); }
+.srReason b:not(#sr) { font: 500 1rem/1.25rem var(--sg-font); color: var(--sg-ink); }
+.srReason[data-selected]:not(#sr) { background: var(--sg-deep); box-shadow: 0 14px 30px -18px rgba(13, 54, 52, .7); }
+.srReason[data-selected] i:not(#sr) { background: rgba(255, 255, 255, .1); color: var(--sg-mint); }
+.srReason[data-selected] b:not(#sr) { color: #FFFFFF; }
+.srReason:focus-within:not(#sr) { outline: 2px solid var(--sg-ink); outline-offset: 2px; }
+.srNote textarea:not(#sr) { display: block; width: 100%; min-height: 88px; padding: 18px 20px; border: 0; background: none; resize: vertical; color: var(--sg-ink); font: 400 1.0625rem/1.5rem var(--sg-font); }
+.srNote textarea:not(#sr)::placeholder { color: var(--sg-ink-3); }
+.srNote textarea:focus-visible:not(#sr) { outline: 2px solid var(--sg-ink); outline-offset: -4px; border-radius: 20px; }
+.srNote :global(.sg-card-foot):not(#sr) { justify-content: space-between; font-size: .875rem; color: var(--sg-ink-3); }
+.srCount:not(#sr) { flex: none; font-variant-numeric: tabular-nums; }
+.srSwapBody > :global(.sg-card[data-tone="amber"]):not(#sr) { margin-top: 24px; }
+
+/* Shared Wave A action row and buttons, dressed as the Signature action. */
+.srRoot :global(.wa-actions):not(#sr) { display: flex; flex-direction: column-reverse; gap: 14px; margin: 32px 16px 0; padding: 0; border: 0; background: none; }
+.srRoot :global(.wa-actions__note):not(#sr) { margin: 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); text-align: center; text-wrap: balance; }
+.srRoot :global(.wa-actions__note a):not(#sr) { color: var(--sg-ink); text-decoration: underline; text-decoration-color: var(--sg-rule); text-underline-offset: 4px; }
+.srRoot :global(.wa-actions__buttons):not(#sr) { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.srRoot :global(.wa-actions__buttons > .nv-btn):not(#sr), .srCoverage :global(.nv-btn):not(#sr) { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 54px; padding: 0 20px; border: 0; border-radius: 16px; background: var(--sg-deep); box-shadow: none; color: #FFFFFF; font: 500 1.0625rem/1 var(--sg-font); cursor: pointer; }
+.srRoot :global(.wa-actions__buttons > .nv-btn):disabled:not(#sr) { background: #C9CFCD; color: #4E5654; cursor: not-allowed; }
+.srRoot :global(.wa-actions__buttons > .nv-btn):focus-visible:not(#sr) { outline: 2px solid var(--sg-ink); outline-offset: 3px; }
+.srSwapForm > :global(.shift-change-fields + .shift-change-fields):not(#sr) { margin-top: 0; }
+.srSwapForm > :global(p[role]):not(#sr) { margin: 16px 16px 0; padding: 14px 18px; border-radius: 16px; background: var(--sg-card); box-shadow: inset 0 0 0 1px var(--sg-rule); font: 400 .9375rem/1.3125rem var(--sg-font); }
+.srSwapForm > :global(.form-error):not(#sr) { background: #FBF0EE; box-shadow: none; color: var(--sg-red); }
+.srSwapForm > :global(.form-success):not(#sr) { background: #EAF4F2; box-shadow: none; color: #0A5753; }
+.srSwapForm > :global(:is(.button, .swap-button)):not(#sr) { align-self: center; margin-top: 10px; min-height: 44px; }
+
+@media (min-width: 768px) {
+  .srChoices:not(#sr), .srReasonGrid:not(#sr), .srNoticeTop:not(#sr), .srRoot :global(.wa-actions):not(#sr) { margin-inline: 0; }
+  .srReasons > legend:not(#sr) { margin-inline: 4px; }
+}

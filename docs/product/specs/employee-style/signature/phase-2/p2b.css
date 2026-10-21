@@ -1,0 +1,31 @@
+@import url("p2.css");
+/* Phase 2 upscaled: a membership card for Profile (and its mini in More), calmer notification rows. */
+.u1 .segrow { display: flex; align-items: center; gap: 10px; margin: 0 16px; }
+.u1 .segrow .seg3 { flex: 1; margin: 0; }
+.u1 .rnd { flex: none; display: inline-flex; width: 46px; height: 46px; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--rule); background: #fff; color: var(--ink); }
+.u1 .nt3 { position: relative; display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 12px; align-items: center; min-height: 76px; padding: 14px 16px 14px 18px; }
+.u1 .nt3 + .nt3::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--rule); }
+.u1 .nt3 strong { display: flex; align-items: center; gap: 8px; font: 500 17px/22px var(--sys); letter-spacing: -.2px; }
+.u1 .nt3 strong i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #35B6EC; }
+.u1 .nt3 span.m { display: block; margin-top: 3px; padding-left: 16px; font: 400 15px/20px var(--sys); color: var(--ink2); }
+.u1 .nt3 span.m b { font-weight: 500; color: #8A5208; }
+.u1 .nt3 .r { display: flex; align-items: center; gap: 10px; color: var(--ink3); font: 400 15px/20px var(--sys); }
+.u1 .nt3.read strong i { background: transparent; box-shadow: inset 0 0 0 1.5px #CFCBC3; }
+/* Membership card */
+.u1 .mcard { position: relative; z-index: 2; margin: 18px 0 0; padding: 20px 20px 18px; border-radius: 20px; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); overflow: hidden; color: #fff; }
+.u1 .mcard::after { content: ""; position: absolute; right: -40px; bottom: -70px; width: 200px; height: 190px; background: #164B48; clip-path: polygon(50% 0, 100% 100%, 82% 100%, 50% 47%, 18% 100%, 0 100%); opacity: .9; z-index: -1; }
+.u1 .mcard .row1 { display: flex; align-items: center; justify-content: space-between; }
+.u1 .mcard .mono { display: inline-flex; width: 44px; height: 44px; border-radius: 50%; align-items: center; justify-content: center; background: #F7F6F3; color: var(--deep); font: 400 17px/1 var(--disp); letter-spacing: .6px; }
+.u1 .mcard .tag { font: 600 11px/14px var(--sys); letter-spacing: 1.6px; text-transform: uppercase; color: #A9E2DA; }
+.u1 .mcard .nm { display: block; margin-top: 18px; font: 300 30px/34px var(--disp); letter-spacing: -1px; }
+.u1 .mcard .co { display: block; margin-top: 4px; font: 400 15px/20px var(--sys); color: rgba(255,255,255,.72); }
+.u1 .mcard .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.14); }
+.u1 .mcard .meta small { display: block; font: 600 11px/14px var(--sys); letter-spacing: 1.3px; text-transform: uppercase; color: rgba(255,255,255,.55); }
+.u1 .mcard .meta span { display: block; margin-top: 4px; font: 400 15px/20px var(--sys); color: #fff; }
+.u1 .mini3 { display: flex; align-items: center; gap: 14px; margin: 0 16px; padding: 16px; border-radius: 20px; background: var(--deep); color: #fff; position: relative; overflow: hidden; }
+.u1 .mini3::after { content: ""; position: absolute; right: -30px; bottom: -60px; width: 150px; height: 140px; background: #164B48; clip-path: polygon(50% 0, 100% 100%, 82% 100%, 50% 47%, 18% 100%, 0 100%); }
+.u1 .mini3 .mono { position: relative; z-index: 1; flex: none; display: inline-flex; width: 46px; height: 46px; border-radius: 50%; align-items: center; justify-content: center; background: #F7F6F3; color: var(--deep); font: 400 17px/1 var(--disp); }
+.u1 .mini3 .tx { position: relative; z-index: 1; flex: 1; }
+.u1 .mini3 b { display: block; font: 400 19px/24px var(--disp); letter-spacing: -.3px; }
+.u1 .mini3 small { display: block; margin-top: 2px; font: 400 15px/20px var(--sys); color: rgba(255,255,255,.7); }
+.u1 .mini3 svg { position: relative; z-index: 1; color: rgba(255,255,255,.6); }

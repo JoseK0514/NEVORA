@@ -9,6 +9,11 @@ vi.mock("next/navigation", () => ({
   redirect: (destination: string) => { throw new Error(`redirect:${destination}`); },
 }));
 
+vi.mock("@/lib/workspace-presentation/current.server", () => ({ currentPresentation: async () => ({ modules: { timeOff: true, marketplace: true, payStatements: true } }) }));
+const data = vi.hoisted(() => ({ requests: [] as unknown[] | Error }));
+vi.mock("@/lib/data/requests", () => ({ listEmployeeTimeOffRequests: async () => { if (data.requests instanceof Error) throw data.requests; return data.requests; } }));
+vi.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ timeZone: "America/Puerto_Rico" }) }));
+
 import RequestsHubPage from "./page";
 
 beforeEach(() => {
@@ -34,4 +39,21 @@ it.each(["MANAGER", "OWNER"])("redirects %s before rendering employee request co
 it("does not render the hub when session verification rejects access", async () => {
   auth.proof.mockRejectedValue(new Error("redirect:/login"));
   await expect(RequestsHubPage()).rejects.toThrow("redirect:/login");
+});
+
+it("lists the person's own time off, waiting first, and never turns a failed read into no requests", async () => {
+  auth.role = "EMPLOYEE";
+  data.requests = [
+    { id: "w", status: "PENDING", startDate: "2030-10-29", endDate: "2030-10-30", createdAt: "2030-10-19T12:00:00Z" },
+    { id: "a", status: "APPROVED", startDate: "2030-11-13", endDate: "2030-11-13", createdAt: "2030-10-17T12:00:00Z" },
+  ];
+  const html = renderToStaticMarkup(await RequestsHubPage());
+  expect(html).toContain("1 waiting for approval");
+  expect(html.indexOf("request-w")).toBeLessThan(html.indexOf("request-a"));
+  expect(html).toContain("2 full days");
+  data.requests = new Error("read failed");
+  const failed = renderToStaticMarkup(await RequestsHubPage());
+  expect(failed).toContain("Couldn’t load your requests");
+  expect(failed).not.toContain("No time-off requests yet");
+  data.requests = [];
 });

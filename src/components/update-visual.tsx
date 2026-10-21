@@ -10,7 +10,7 @@ import {MapPinLineIcon} from '@phosphor-icons/react/dist/ssr/MapPinLine';
 import type {CommunicationDraft} from '@/lib/communications/types';
 
 gsap.registerPlugin(useGSAP);
-const kinds = {
+export const updateKinds = {
  TODAYS_TEAM: {label: "Today's team", Icon: UsersThreeIcon},
  SHIFT_NOTE: {label: 'Shift note', Icon: NotePencilIcon},
  OPERATIONAL_UPDATE: {label: 'Important update', Icon: MegaphoneIcon},
@@ -18,7 +18,7 @@ const kinds = {
 };
 
 export function UpdateKind({type, iconOnly = false}: {type: CommunicationDraft['type']; iconOnly?: boolean}) {
- const {label, Icon} = kinds[type];
+ const {label, Icon} = updateKinds[type];
  return <span className={iconOnly ? 'update-kind-icon' : 'update-kind'}>
   <Icon size={22} weight="regular" aria-hidden="true" focusable="false" />
   {iconOnly ? null : <span>{label}</span>}
