@@ -113,6 +113,15 @@
   --sig-radius-sheet:    28px;     /* sheet top corners, More sheet | signature.module.css:44, employee-style.css:197 */
   --sig-radius-pill:     999px;    /* pills, chips, band link | signature.module.css:113, signature.module.css:144 */
 
+  /* ---------- Controls ---------- */
+  /* One button scale (components.css, SigButton). Primary and secondary share height and radius on every width. */
+  --sig-control-h:          56px;     /* primary / secondary button height | components.css (.sig-btn), signature.module.css (.sg-cta) */
+  --sig-control-h-compact:  44px;     /* button inside a row or beside a field | components.css, .sg-primary, .employee-action */
+  --sig-radius-compact:     12px;     /* compact button radius | components.css */
+  --sig-card-hover:         #FAFAF8;  /* dark: —  | secondary button hover (= --sig-hover-bg) | components.css */
+  --sig-disabled:           #ECEAE5;  /* dark: —  | true-disabled button fill; never used for pending | components.css */
+  --sig-ink-disabled:       #5F625E;  /* dark: —  | text on --sig-disabled, 5.1:1 | components.css */
+
   /* ---------- Elevation ---------- */
   /* card lift without the edge (= --sg-card-shadow) | signature.module.css:93 */
   --sig-shadow-card-lift: 0 1px 1px rgba(22, 28, 27, .03), 0 2px 6px rgba(22, 28, 27, .03), 0 16px 36px -22px rgba(13, 54, 52, .24);
@@ -132,9 +141,12 @@
   --sig-ease:       cubic-bezier(.2, .7, .2, 1);  /* standard ease-out | auth-premium.css:26 */
 
   /* ---------- Press & focus ---------- */
-  --sig-press-bg:       #F3F2EF;  /* dark: —  | row pressed (Home rows only today; elsewhere new: not yet used) | employee-home-today.module.css:111 (.h5Row:active) */
+  --sig-press-bg:       #F3F2EF;  /* dark: —  | opaque pressed-row colour; kept for compatibility, the shared press uses --sig-press-wash */
   --sig-hover-bg:       #FAFAF8;  /* dark: —  | row hover | signature.module.css:76 */
   --sig-press-scale:    .98;      /* button pressed | clocker-shell.module.css:104 */
+  /* The shared press wash is painted as a layer over any fill, so it must stay translucent (--sig-press-bg is opaque). */
+  --sig-press-wash:         rgba(22, 28, 27, .05);    /* dark: —  | press on light surfaces | components.css */
+  --sig-press-wash-on-dark: rgba(255, 255, 255, .12); /* dark: —  | press on the deep band | components.css */
   --sig-focus:          #161C1B;  /* dark: —  | focus ring on light surfaces; 17.27 white / 15.98 page | signature.module.css:17 (var(--sg-ink)) */
   --sig-focus-on-dark:  #FFFFFF;  /* dark: —  | focus ring on the band; 13.17 on deep (mint #A9E2DA would be 9.14) | signature.module.css:147, employee-style.css:45 */
   --sig-focus-width:    2px;      /* signature.module.css:17 */

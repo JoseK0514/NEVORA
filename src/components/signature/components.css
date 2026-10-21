@@ -29,7 +29,7 @@
 }
 @media (hover: hover) {
   .sig-btn--primary:not(:disabled):not([aria-disabled="true"]):not(#sig):hover { background: var(--sig-deep-hover, #12423F); }
-  .sig-btn--secondary:not(:disabled):not([aria-disabled="true"]):not(#sig):hover { background: var(--sig-card-hover, #FBFAF8); }
+  .sig-btn--secondary:not(:disabled):not([aria-disabled="true"]):not(#sig):hover { background: var(--sig-card-hover, #FAFAF8); }
   .sig-btn--link:not(:disabled):not([aria-disabled="true"]):not(#sig):hover { text-decoration-color: currentColor; }
 }
 .sig-btn[aria-busy="true"]:not(#sig) { cursor: progress; }
