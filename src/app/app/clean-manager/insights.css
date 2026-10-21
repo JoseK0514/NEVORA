@@ -174,6 +174,11 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__detail .wb-insights-grid { gap: 20px; }
 }
 
+/* MK5 / PD4: four periods (This week · Last week · Month · Custom) fit one line from 320px at normal text size. */
+@media (max-width: 360px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__seg-item { padding: 0 2px; letter-spacing: -.2px; }
+}
+
 /* MK5 / PD4: a period with no recorded time: one centred line on a single baseline, where the bars would be. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 150px; margin-top: 16px; padding: 12px 8px;
