@@ -135,3 +135,16 @@
 .pfRoot :global(.employee-calendar-management > p):not(#pf):not(#pf) { margin: 0 0 12px; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
 .pfRoot :global(.employee-calendar-management .employee-calendar-actions):not(#pf):not(#pf) { padding-bottom: 14px; }
 .pfRoot :global(.calendar-revoke):not(#pf):not(#pf) { color: var(--sg-red) !important; }
+
+/* Phase 4 clean pass: one message per card. The example week already says what the panel is for, so its intro line
+ * goes; the link card leads with a tile and its state; the closing note is small and centred. */
+.pfRoot :global(.employee-calendar > p:not([role])):not(#pf):not(#pf) { display: none; }
+.pfRoot :global(.profile-calendar-disclosure[open] > .employee-calendar):not(#pf):not(#pf) { gap: 16px; padding-top: 16px; }
+.pfRoot :global(.employee-calendar-status-box):not(#pf):not(#pf) { position: relative; padding: 18px 18px 18px 72px; min-height: 76px; }
+.pfRoot :global(.employee-calendar-status-box):not(#pf):not(#pf)::before { content: ""; position: absolute; top: 18px; left: 18px; width: 42px; height: 42px; border-radius: 13px; background: #E8F2EF url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%230D3634' stroke-width='1.6' stroke-linecap='round'><path d='M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1'/></svg>") center / 22px no-repeat; }
+.pfRoot :global(.employee-calendar-status-box:has(.employee-calendar-secret)):not(#pf):not(#pf)::before { background-color: rgba(255, 255, 255, .1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23A9E2DA' stroke-width='1.6' stroke-linecap='round'><path d='M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1'/></svg>"); }
+.pfRoot :global(.employee-calendar-status-box .button):not(#pf):not(#pf) { align-self: stretch; margin-left: -54px; margin-top: 4px; }
+.pfRoot :global(.employee-calendar-secret):not(#pf):not(#pf) { margin-left: -54px; }
+.pfRoot :global(.employee-calendar > .profile-supporting-copy):not(#pf):not(#pf) { margin: 0 12px; text-align: center; font-size: .8125rem; line-height: 1.125rem; }
+.pfRoot :global(.employee-calendar-privacy):not(#pf):not(#pf) { margin: 0 6px; font-size: .8125rem; line-height: 1.125rem; }
+.pfRoot :global(.employee-calendar-example figcaption):not(#pf):not(#pf) { flex-direction: column; align-items: flex-start; gap: 2px; }

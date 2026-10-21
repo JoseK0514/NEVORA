@@ -258,3 +258,8 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-sett
 /* Phase 4: the employee shell shows the Signature not-found and error screens in place of the shared ones. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .sg-sys-employee:not(#e5):not(#e52) { display: block; }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .sg-sys-generic:not(#e5):not(#e52) { display: none; }
+/* Phase 4 clean pass: each alert step says one thing; the second step's status line is its description. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > h3 + p:not([role]):not(#e5):not(#e52) { display: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-content > :is(h2, h3) + p:not(#e5):not(#e52) { margin-top: -4px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-actions:not(#e5):not(#e52) { grid-template-columns: minmax(0, 1fr); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] .portal-device-settings .portal-device-button.secondary:not(#e5):not(#e52):is(:last-child:not(:only-child)) { background: transparent; box-shadow: none; color: var(--e5-ink-2); min-height: 44px; }
