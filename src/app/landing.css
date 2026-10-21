@@ -1,20 +1,23 @@
-/* The public landing page (src/app/page.tsx). Prefix lp-. It belongs to the sign-in family (auth-premium.css):
- * the cream page, the deep teal panel, rem text sizes so the reader's text size applies, 44px targets, visible
- * focus. Colours: cream #F4EFE7 and paper #FFFDF9 (the ap- family), masthead teal #1C4A47 and action teal
- * #077572 (DESIGN.MD), the mark's deep #164B48 and sky #35B6EC. No entrance animation: the page is calm. */
+/* The public landing page (src/app/page.tsx). Prefix lp-. It speaks the sign-in family's language
+ * (auth-premium.css, imported first: the grain, the device mock, the ap-lang switch) on the signature
+ * palette (signature/tokens.css): page #F7F6F3, card #FFFFFF, rule #E8E5DF, deep #0D3634, mark #134340.
+ * Action teal #077572 (DESIGN.MD). Text sizes in rem so the reader's text size applies; 44px targets;
+ * the one entrance animation is the device's own ap-rise, which auth-premium.css already quiets under
+ * prefers-reduced-motion. */
 
 .lp {
-  --lp-cream: #F4EFE7; --lp-paper: #FFFDF9; --lp-ink: #1F1C17; --lp-ink-2: #4A463F; --lp-ink-3: #6E6A63;
-  --lp-rule: #E2DACD; --lp-deep: #1C4A47; --lp-act: #077572; --lp-act-ink: #065653;
+  --lp-page: #F7F6F3; --lp-card: #FFFFFF; --lp-ink: #1F1C17; --lp-ink-2: #4A463F; --lp-ink-3: #6F6C66;
+  --lp-rule: #E8E5DF; --lp-deep: #0D3634; --lp-mark: #134340; --lp-act: #077572; --lp-act-ink: #065653;
+  --lp-sys: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   box-sizing: border-box; min-height: 100svh; margin: 0; padding: 1.25rem 16px 2rem;
-  background: var(--lp-cream); color: var(--lp-ink);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 1rem; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: clip;
+  background: var(--lp-page); color: var(--lp-ink);
+  font-family: var(--lp-sys); font-size: 1rem; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: clip;
 }
 .lp *, .lp *::before, .lp *::after { box-sizing: border-box; }
 .lp :where(h1, h2, p, ul) { margin: 0; }
 .lp ::selection { background: #CFE7E4; color: var(--lp-ink); }
 .lp :where(a, button):focus-visible { outline: 2px solid var(--lp-act); outline-offset: 2px; border-radius: 10px; }
+.lp .lp-hero :where(a, button):focus-visible { outline-color: #FFFFFF; }
 
 .lp > * { width: min(1120px, 100%); margin-inline: auto; }
 
@@ -22,53 +25,69 @@
 .lp-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 2.75rem; }
 .lp-wordmark { display: block; height: 16px; color: #051538; line-height: 0; }
 .lp-wordmark .brand-wordmark { display: block; width: auto; height: 100%; }
-.lp-top__actions { display: flex; align-items: center; gap: 12px; }
-
-/* The sign-in pages' language switch (ap-lang), restyled for the landing's scope. */
-.lp .ap-lang { display: flex; gap: 2px; padding: 2px; border: 1px solid var(--lp-rule); border-radius: 999px; background: var(--lp-paper); }
-.lp .ap-lang button { min-height: 2.5rem; padding: 0 0.875rem; border: 0; border-radius: 999px; background: transparent; color: var(--lp-ink-2); font: inherit; font-size: 0.875rem; cursor: pointer; }
-.lp .ap-lang button[aria-pressed="true"] { background: var(--lp-deep); color: #FFFFFF; }
-.lp .ap-lang__short { display: none; }
-@media (max-width: 479px) { .lp .ap-lang__long { display: none; } .lp .ap-lang__short { display: inline; } }
+.lp-top__actions { display: flex; align-items: center; gap: 14px; }
+/* The sign-in switch turns white for the deep band at phone widths; the landing's top bar stays cream. */
+.lp-top__actions .ap-lang { margin-left: 0; background: rgba(22, 28, 27, .07); }
+.lp-top__actions .ap-lang button { font-family: var(--lp-sys); color: var(--lp-ink-2); }
+.lp-top__actions .ap-lang button[aria-pressed="true"] { background: #FFFFFF; color: var(--lp-ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
 
 /* ---------- Buttons ---------- */
-.lp-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1.25rem; border-radius: 999px; font: inherit; font-weight: 600; font-size: 0.9375rem; text-decoration: none; }
-.lp-btn[data-kind="primary"] { background: var(--lp-act); color: #FFFFFF; }
-.lp-btn[data-kind="primary"]:hover { background: var(--lp-act-ink); }
-.lp-btn[data-kind="ghost"] { border: 1px solid var(--lp-act); color: var(--lp-act-ink); }
-.lp-btn[data-kind="quiet"] { color: var(--lp-act-ink); }
-.lp-btn[data-kind="quiet"]:hover, .lp-btn[data-kind="ghost"]:hover { background: #E8F0EE; }
+.lp-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1.375rem; border-radius: 999px; font: 600 0.9375rem/1 var(--lp-sys); text-decoration: none; }
+.lp-btn[data-kind="light"] { background: #FFFFFF; color: var(--lp-deep); box-shadow: 0 1px 2px rgba(0, 0, 0, .18); }
+.lp-btn[data-kind="light"]:hover { background: #ECE9E2; }
+.lp-btn[data-kind="outline"] { border: 1px solid rgba(255, 255, 255, .45); color: #FFFFFF; }
+.lp-btn[data-kind="outline"]:hover { background: rgba(255, 255, 255, .12); }
+.lp-btn[data-kind="quiet"] { padding: 0 0.875rem; color: var(--lp-act-ink); }
+.lp-btn[data-kind="quiet"]:hover { background: #E8F0EE; }
 
-/* ---------- Hero ---------- */
-.lp-hero { display: grid; gap: 24px; margin-top: 2.5rem; }
-.lp-eyebrow { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--lp-act-ink); }
-.lp-title { margin-top: 0.75rem; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.12; letter-spacing: -0.015em; text-wrap: balance; }
-.lp-subtitle { margin-top: 1rem; max-width: 34rem; font-size: 1.125rem; color: var(--lp-ink-2); text-wrap: pretty; }
-.lp-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1.75rem; }
-.lp-hint { margin-top: 0.625rem; font-size: 0.875rem; color: var(--lp-ink-3); }
-.lp-hero__panel { display: grid; place-items: center; min-height: 200px; border-radius: 24px; background: var(--lp-deep); }
-.lp-hero__mark { width: clamp(96px, 18vw, 150px); height: auto; opacity: 0.9; }
-.lp-hero__mark path:first-child { fill: #2E6662; }
-@media (min-width: 900px) { .lp-hero { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: stretch; } }
+/* ---------- Hero: the signature panel, marketing-scaled ---------- */
+.lp-hero {
+  position: relative; isolation: isolate; overflow: hidden; display: grid; gap: 24px;
+  margin-top: 1.25rem; padding: 2.5rem 1.25rem 0; border-radius: 28px; background: var(--lp-deep); color: #FFFFFF;
+}
+.lp-hero__mark { position: absolute; z-index: -1; right: -170px; bottom: -40px; width: 680px; height: 642px; }
+.lp-hero__mark path:first-child { fill: var(--lp-mark); }
+.lp-hero__mark path:last-child { fill: #35B6EC; opacity: .85; }
+.lp-hero__copy { position: relative; z-index: 1; padding-bottom: 4.5rem; }
+.lp-eyebrow { font: 500 0.8125rem/1.125rem var(--lp-sys); letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.lp-title { margin-top: 0.875rem; font: 600 clamp(2.125rem, 4.6vw, 3.375rem)/1.1 var(--lp-sys); letter-spacing: -0.02em; color: #FFFFFF; }
+.lp-subtitle { margin-top: 1.125rem; max-width: 30rem; font-size: 1.125rem; line-height: 1.55; color: rgba(255, 255, 255, .72); text-wrap: pretty; }
+.lp-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2rem; }
+.lp-hint { margin-top: 0.75rem; font-size: 0.875rem; color: rgba(255, 255, 255, .55); }
+
+/* The sign-in pages' fictional employee phone, rising out of the panel's lower edge. */
+.lp-hero__device { position: relative; z-index: 1; display: flex; justify-content: center; align-self: end; }
+.lp-hero__device .ap-device { margin: 0 0 -17rem; }
+
+@media (min-width: 900px) {
+  .lp-hero { grid-template-columns: minmax(0, 11fr) minmax(0, 9fr); gap: 32px; padding: 4rem 0 0 4rem; }
+  .lp-hero__copy { align-self: center; padding-bottom: 4rem; }
+  .lp-hero__device { justify-content: flex-start; padding-left: 1rem; }
+  .lp-hero__device .ap-device { margin-bottom: -13rem; }
+}
 
 /* ---------- Features ---------- */
-.lp-features { display: grid; gap: 16px; margin-top: 2.5rem; }
+.lp-features { display: grid; gap: 16px; margin-top: 24px; }
 @media (min-width: 760px) { .lp-features { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.lp-card { padding: 1.5rem 1.25rem; border: 1px solid var(--lp-rule); border-radius: 20px; background: var(--lp-paper); }
-.lp-card__icon { color: var(--lp-act); }
-.lp-card h2 { margin-top: 0.75rem; font-size: 1.125rem; }
-.lp-card p { margin-top: 0.5rem; font-size: 0.9375rem; color: var(--lp-ink-2); }
+.lp-card { padding: 1.5rem 1.375rem 1.625rem; border: 1px solid var(--lp-rule); border-radius: 20px; background: var(--lp-card); box-shadow: 0 16px 40px rgba(13, 54, 52, .12), 0 1px 2px rgba(13, 54, 52, .06); }
+.lp-card__disc { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(7, 117, 114, .1); color: var(--lp-act); }
+.lp-card h2 { margin-top: 1rem; font-size: 1.125rem; letter-spacing: -0.01em; }
+.lp-card p { margin-top: 0.5rem; font-size: 0.9375rem; line-height: 1.55; color: var(--lp-ink-2); }
 
 /* ---------- Trust ---------- */
-.lp-trust { margin-top: 2.5rem; padding: 1.5rem 1.25rem; border-radius: 20px; background: #EAE3D7; }
-.lp-trust h2 { font-size: 1.125rem; }
-.lp-trust ul { margin-top: 0.75rem; padding-left: 1.25rem; display: grid; gap: 0.5rem; color: var(--lp-ink-2); font-size: 0.9375rem; }
+.lp-trust { margin-top: 2.5rem; padding: 1.75rem 1.5rem; border: 1px solid var(--lp-rule); border-radius: 20px; background: var(--lp-card); }
+.lp-trust h2 { font-size: 1.125rem; letter-spacing: -0.01em; }
+.lp-trust ul { display: grid; gap: 16px; margin-top: 1.25rem; padding: 0; list-style: none; }
+@media (min-width: 760px) { .lp-trust ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.lp-trust li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9375rem; line-height: 1.5; color: var(--lp-ink-2); }
+.lp-trust li svg { flex: none; margin-top: 1px; color: var(--lp-act); }
 
-.lp-existing { margin-top: 2rem; text-align: center; font-size: 0.9375rem; color: var(--lp-ink-3); }
+.lp-existing { margin-top: 2.25rem; text-align: center; font-size: 0.9375rem; color: var(--lp-ink-3); }
 
 /* ---------- Footer ---------- */
-.lp-footer { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--lp-rule); }
+.lp-footer { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center; justify-content: space-between; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--lp-rule); }
+.lp-wordmark--footer { height: 13px; opacity: .8; }
 .lp .brand-legal { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 1rem; font-size: 0.8125rem; color: var(--lp-ink-3); }
-.lp .brand-legal-links { display: flex; gap: 1rem; }
-.lp .brand-legal-links a { color: var(--lp-act-ink); text-decoration: none; min-height: 2.75rem; display: inline-flex; align-items: center; }
+.lp .brand-legal-links { display: flex; gap: 0.25rem; }
+.lp .brand-legal-links a { color: var(--lp-act-ink); text-decoration: none; min-height: 2.75rem; display: inline-flex; align-items: center; padding-inline: 0.375rem; }
 .lp .brand-legal-links a:hover { text-decoration: underline; }

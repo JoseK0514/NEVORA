@@ -18,7 +18,8 @@ afterEach(() => { vi.unstubAllEnvs(); vi.mocked(getSession).mockResolvedValue(nu
 describe("the public landing page", () => {
   it("renders signed out, in English, with sign-in, contact and the legal links", async () => {
     const html = renderToStaticMarkup(await Home());
-    expect(html).toContain("Your team&#x27;s week, in one place.");
+    expect(html).toContain("Your team&#x27;s week,");
+    expect(html).toContain("in one place.");
     expect(html).toContain('lang="en"');
     expect(html).toContain('href="/login"');
     expect(html).toContain('href="mailto:support@thevelani.com"');
@@ -29,7 +30,8 @@ describe("the public landing page", () => {
   it("renders in Spanish when the nv-lang cookie says so", async () => {
     vi.mocked(readAuthLang).mockResolvedValue("es");
     const html = renderToStaticMarkup(await Home());
-    expect(html).toContain("La semana de tu equipo, en un solo lugar.");
+    expect(html).toContain("La semana de tu equipo,");
+    expect(html).toContain("en un solo lugar.");
     expect(html).toContain('lang="es"');
     expect(html).toContain("nunca mueve dinero");
   });

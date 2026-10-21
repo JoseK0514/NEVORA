@@ -24,7 +24,7 @@ function TwoLines({ text }: { text: string }) {
 }
 
 /** A static, fictional employee Today screen in an iPhone frame. Decorative only. */
-function Device({ d }: { d: AuthCopy["device"] }) {
+export function Device({ d }: { d: AuthCopy["device"] }) {
   return (
     <div className="ap-device" aria-hidden="true">
       <span className="ap-device__side" />
