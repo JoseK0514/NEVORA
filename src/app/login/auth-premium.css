@@ -68,16 +68,19 @@
 
 /* ---------- Actions and links ---------- */
 .ap .ap-primary {
-  display: flex; align-items: center; justify-content: center; width: 100%; min-height: 3.25rem; margin-top: 28px; padding: .75rem 1rem;
-  border: 0; border-radius: 10px; background: var(--deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--sys); letter-spacing: -.1px;
+  display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--sig-control-h, 56px); margin-top: 28px; padding: .75rem 1rem;
+  border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--sys); letter-spacing: -.1px;
   text-align: center; text-decoration: none; cursor: pointer; transition: transform 120ms ease, background-color 120ms ease;
 }
 .ap .ap-primary:hover:not(:disabled) { background: #0A2A28; }
-.ap .ap-primary:active:not(:disabled) { transform: scale(.96); }
+.ap .ap-primary:active:not(:disabled) { transform: scale(.98); }
 .ap .ap-primary:disabled { cursor: wait; }
 .ap-or { display: flex; align-items: center; gap: 14px; margin-top: 22px; font: 400 .8125rem/1.125rem var(--sys); color: var(--ink-3); }
 .ap-or::before, .ap-or::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
-.ap-secondary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 3.25rem; margin-top: 22px; border: 1px solid var(--edge); border-radius: 10px; background: transparent; color: var(--ink); font: 500 1rem/1.25rem var(--sys); }
+/* Signature secondary: white, ink, a hairline and a soft lift; same 56px and 16px radius as the primary. */
+.ap-secondary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: var(--sig-control-h, 56px); margin-top: 22px; border: 1px solid transparent; border-radius: var(--sig-radius-control, 16px); background: var(--sig-card, #FFFFFF); color: var(--ink); font: 500 1rem/1.25rem var(--sys); box-shadow: inset 0 0 0 1px var(--sig-rule, #E8E5DF), 0 1px 2px rgba(22, 28, 27, .06); }
+@media (hover: hover) { .ap .ap-secondary:not(:disabled):not(.act-soft):hover { background: var(--sig-card-hover, #FBFAF8); } }
+.ap .ap-secondary[aria-busy="true"] { cursor: progress; }
 .ap-links { display: grid; gap: 8px; margin-top: 26px; }
 .ap-alt { font: 400 .9375rem/1.375rem var(--sys); color: var(--ink-2); }
 .ap-link { color: var(--ink); font-weight: 500; text-decoration: underline; text-decoration-color: var(--rule); text-decoration-thickness: 1px; text-underline-offset: 3px; }
@@ -204,7 +207,6 @@
   .ap-narrow { display: block; }
   .ap-pill { position: relative; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px 6px 8px; border-radius: 16px; background: rgba(255, 255, 255, .14); color: #FFFFFF; font: 500 .9375rem/1.25rem var(--sys); text-decoration: none; }
   .ap-pill::after { content: ""; position: absolute; inset: -6px -4px; }
-  .ap :is(.ap-pill, .ap-lang button):focus-visible { outline-color: #FFFFFF; }
   .ap-lang { background: rgba(255, 255, 255, .12); }
   .ap-lang button { min-width: 2.75rem; padding: 4px 9px; color: rgba(255, 255, 255, .8); }
   .ap-lang button[aria-pressed="true"] { background: #FFFFFF; color: var(--ink); }
@@ -217,8 +219,8 @@
   .ap-form { margin-top: 22px; }
   .ap-field + .ap-field { margin-top: 14px; }
   .ap-box { min-height: 3.125rem; }
-  .ap .ap-primary { min-height: 3.125rem; margin-top: 20px; }
-  .ap-secondary { min-height: 3.125rem; margin-top: 10px; }
+  .ap .ap-primary { margin-top: 20px; }
+  .ap-secondary { margin-top: 10px; }
   .ap-links { justify-items: center; gap: 2px; margin-top: 16px; text-align: center; }
   .ap-legal .brand-legal { justify-content: center; text-align: center; }
 }

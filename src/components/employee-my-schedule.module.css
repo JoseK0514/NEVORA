@@ -68,9 +68,11 @@
 .s6NoticeError strong:not(#s6) { color: var(--s6-red); }
 .s6Confirmed:not(#s6) .s6NoticeCopy h2 { color: var(--s6-teal); }
 .s6ReviewAction:not(#s6) { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-.s6ReviewAction :global(.employee-action):not(#s6):not(#s6) { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border: 1px solid var(--s6-rule); border-radius: 10px; background: var(--s6-card); color: var(--s6-ink); font: 500 .9375rem/1 var(--s6-font); box-shadow: none; cursor: pointer; }
-.s6ReviewAction :global(.employee-action.primary):not(#s6):not(#s6) { border-color: var(--s6-deep); background: var(--s6-deep); color: #FFFFFF; }
-.s6ReviewAction :global(.employee-action):disabled:not(#s6):not(#s6) { opacity: .6; cursor: default; }
+.s6ReviewAction :global(.employee-action):not(#s6):not(#s6) { display: inline-flex; align-items: center; justify-content: center; min-height: var(--sig-control-h-compact, 44px); padding: 0 18px; border: 1px solid var(--s6-rule); border-radius: var(--sig-radius-compact, 12px); background: var(--s6-card); color: var(--s6-ink); font: 500 .9375rem/1 var(--s6-font); box-shadow: 0 1px 2px rgba(22, 28, 27, .06); cursor: pointer; }
+.s6ReviewAction :global(.employee-action.primary):not(#s6):not(#s6) { border-color: var(--s6-deep); background: var(--s6-deep); color: #FFFFFF; box-shadow: none; }
+/* "Confirming…" (aria-busy) keeps its fill; only true disabled goes quiet. */
+.s6ReviewAction :global(.employee-action):disabled:not([aria-busy="true"]):not(#s6):not(#s6) { border-color: transparent; background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); box-shadow: none; cursor: not-allowed; }
+.s6ReviewAction :global(.employee-action[aria-busy="true"]):not(#s6):not(#s6) { cursor: progress; }
 .s6ReviewAction :global(.employee-quiet-status):not(#s6):not(#s6) { padding: 0; border: 0; background: none; color: var(--s6-ink-2); font: 500 .9375rem/1.25rem var(--s6-font); }
 .s6ReviewAction :global(.employee-quiet-status.success):not(#s6):not(#s6) { color: var(--s6-teal); }
 .s6ReviewAction p:not(#s6) { max-width: 18rem; font: 400 .9375rem/1.25rem var(--s6-font); color: var(--s6-ink-2); text-align: right; }
@@ -111,7 +113,7 @@
 .s6Failure:not(#s6) { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 0 16px; padding: 22px 18px; border: 1px solid var(--s6-rule); border-radius: 18px; background: var(--s6-card); }
 .s6Failure strong:not(#s6) { font: 500 1.0625rem/1.375rem var(--s6-font); }
 .s6Failure p:not(#s6) { font: 400 .9375rem/1.3125rem var(--s6-font); color: var(--s6-ink-2); }
-.s6Primary:not(#s6) { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 12px; padding: 0 22px; border-radius: 10px; background: var(--s6-deep); color: #FFFFFF; font: 500 1rem/1.25rem var(--s6-font); text-decoration: none; }
+.s6Primary:not(#s6) { display: inline-flex; align-items: center; justify-content: center; min-height: var(--sig-control-h, 56px); margin-top: 12px; padding: 0 22px; border-radius: var(--sig-radius-control, 16px); background: var(--sig-deep, #0D3634); color: #FFFFFF; font: 500 1rem/1.25rem var(--s6-font); text-decoration: none; }
 
 .s6Blocked:not(#s6):empty { display: none; }
 .s6Blocked:not(#s6) { margin: 14px 16px 0; }
@@ -123,6 +125,9 @@
 .s6LinkRow small:not(#s6) { font: 400 .9375rem/1.25rem var(--s6-font); color: var(--s6-ink-2); }
 .s6LinkRow:hover:not(#s6) { background: #FAFAF8; }
 .s6LinkRow:focus-visible:not(#s6) { outline-offset: -3px; border-radius: 18px; }
+/* Row links and disclosures sit in an overflow:hidden card, so their ring goes inside; this has to outweigh the root
+ * ring rule above. Buttons inside a row (Claim shift) keep the outside ring. */
+.s6List :is(a, summary):not(:global(.sig-btn), :global(.sg-cta), :global(.sg-primary), :global(.sg-round), :global(.employee-action), [data-sig-press="button"]):focus-visible:not(#s6):not(#s6) { outline-offset: -3px; }
 .s6Chevron:not(#s6) { flex: none; fill: none; stroke: var(--s6-faint); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---------- Wider screens: the band becomes a rounded panel ---------- */

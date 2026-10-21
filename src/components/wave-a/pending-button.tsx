@@ -63,7 +63,7 @@ export function PendingButton({ children, pending, kind = "primary", block = fal
 
   return (
     <button ref={button} className="nv-btn" data-kind={kind} data-block={block ? "true" : undefined} data-busy={busy ? "true" : undefined}
-      type="submit" name={name} value={value} disabled={disabled} aria-disabled={busy} onClick={event => { if (event.currentTarget.form?.getAttribute("aria-busy") === "true") event.preventDefault(); }} aria-label={busy ? undefined : label}>
+      type="submit" name={name} value={value} disabled={disabled} aria-disabled={busy} aria-busy={busy || undefined} onClick={event => { if (event.currentTarget.form?.getAttribute("aria-busy") === "true") event.preventDefault(); }} aria-label={busy ? undefined : label}>
       {icon ? <span style={busy ? {visibility: "hidden"} : undefined} aria-hidden="true">{icon}</span> : null}
       <PendingLabel className="wa-btn__words" pending={busy} pendingText={pending}>{children}</PendingLabel>
     </button>

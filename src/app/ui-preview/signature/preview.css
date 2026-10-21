@@ -1,0 +1,39 @@
+/* Layout for the Signature reference page only: the grid that holds each state, and its small captions. No component
+ * styling lives here; buttons, rows, tiles, pills, tickets, fields and the band all come from their real sheets. The
+ * `:not(#sgp)` lifts match the Signature module's own `:not(#sg)` weight so these placement rules win. */
+
+html body .sgp.app-shell.nevora-portal:not(#sgp) { display: block; min-height: 100vh; }
+html body .sgp .page-frame:not(#sgp) { display: block; min-width: 0; margin: 0 auto; }
+
+.sgp .sgp-pad:not(#sgp) { padding: 8px 20px 20px; }
+.sgp .sgp-matrix:not(#sgp) { padding-top: 16px; }
+.sgp .sgp-matrix + .sgp-matrix:not(#sgp) { margin-top: 8px; border-top: 1px solid var(--sg-rule); }
+.sgp .sgp-mhead:not(#sgp) { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin-bottom: 12px; }
+.sgp .sgp-mhead b:not(#sgp) { font: 500 1rem/1.375rem var(--sg-font); color: var(--sg-ink); }
+.sgp .sgp-mhead small:not(#sgp) { font: 400 .875rem/1.25rem ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--sg-ink-3); }
+.sgp .sgp-grid:not(#sgp) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.25rem), 1fr)); gap: 14px 16px; }
+.sgp .sgp-cell:not(#sgp) { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.sgp .sgp-cap:not(#sgp) { min-height: 2rem; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .1em; text-transform: uppercase; color: var(--sg-ink-3); }
+.sgp .sgp-band-host .sgp-cap:not(#sgp) { color: rgba(255, 255, 255, .72); }
+.sgp .sgp-slot:not(#sgp) { display: flex; align-items: center; min-height: 56px; min-width: 0; }
+.sgp .sgp-na:not(#sgp) { font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
+.sgp .sgp-band-host .sgp-na:not(#sgp) { color: rgba(255, 255, 255, .72); }
+/* .sg-cta is full width with page margins; inside a state cell it sits in place. */
+.sgp .sgp-slot > .sg-cta.sgp-inline:not(#sgp):not(#sgp2) { width: 100%; margin: 0; padding: 0 14px; }
+.sgp .sgp-slot > .sg-band-link:not(#sgp), .sgp .sgp-bandrow > .sg-band-link:not(#sgp) { margin-top: 0; }
+.sgp .sgp-bandrow:not(#sgp) { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.sgp .sgp-bandrow > button.sg-band-link:not(#sgp) { border: 0; cursor: pointer; font-family: var(--sg-font); }
+.sgp .sgp-band-host:not(#sgp) { margin: 0 16px; border-radius: 22px; overflow: hidden; }
+.sgp .sgp-band-host > header:not(#sgp) { padding-bottom: 24px; }
+.sgp .sgp-grid--band:not(#sgp) { margin-top: 12px; }
+.sgp .sgp-trybox:not(#sgp) { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 20px; }
+.sgp .sgp-try > .sg-cta:not(#sgp):not(#sgp2) { width: 100%; margin: 0; }
+.sgp .sgp-trybox > .sg-after:not(#sgp) { margin: 0; }
+.sgp .sgp-tint:not(#sgp) { background: #EAF4F2; }
+.sgp .sgp-form-host:not(#sgp) { margin: 0 16px 12px; }
+.sgp .sgp-help:not(#sgp) { margin: -6px 0 0; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
+.sgp .sg-card + .sg-alert:not(#sgp) { margin-top: 12px; }
+.sgp .sgp-times > :first-child:not(#sgp) { padding-top: 20px; }
+@media (min-width: 768px) {
+  .sgp .sgp-band-host:not(#sgp), .sgp .sgp-form-host:not(#sgp) { margin-inline: 0; }
+}

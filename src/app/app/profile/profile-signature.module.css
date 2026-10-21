@@ -46,7 +46,7 @@
 .pfRoot :global(.pk-body):not(#pf):not(#pf) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; margin: 0 16px; padding: 14px 16px 14px 18px; border: 1px solid var(--sg-rule); border-radius: 18px; background: var(--sg-card); font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
 .pfRoot :global(.pk-muted):not(#pf):not(#pf) { flex: 1 1 10rem; margin: 0; color: var(--sg-ink-2); }
 .pfRoot :global(.pk-notice):not(#pf):not(#pf) { flex: 1 1 100%; margin: 0; }
-.pfRoot :global(.pk-add):not(#pf):not(#pf) { flex: none; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--sg-deep); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
+.pfRoot :global(.pk-add):not(#pf):not(#pf) { flex: none; min-height: var(--sig-control-h-compact, 44px); padding: 0 18px; border: 0; border-radius: var(--sig-radius-compact, 12px); background: var(--sig-deep, #0D3634); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
 .pfRoot :global(.pk-list):not(#pf):not(#pf) { flex: 1 1 100%; margin: 0; padding: 0; list-style: none; }
 
 /* Work details: the panel as a heading, the details list and the Refresh link. */

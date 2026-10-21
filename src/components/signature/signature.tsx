@@ -10,7 +10,7 @@ import styles from "./signature.module.css";
 export { styles as signatureStyles };
 
 export function SigPage({ band, children, className = "" }: { band: ReactNode; children: ReactNode; className?: string }) {
-  return <div className={`${styles.sgRoot} ${className}`.trim()} data-sig="">
+  return <div className={`${styles.sgRoot} ${className}`.trim()} data-sig="" data-sig-surface="light">
     {band}
     <div className={styles.sgSheet}>{children}</div>
   </div>;
@@ -19,7 +19,7 @@ export function SigPage({ band, children, className = "" }: { band: ReactNode; c
 /** The band: an eyebrow (tracked caps), the hero (a large figure or word), and what follows it. The page's h1 is the
  * hero's label for screen readers when the hero is a figure. */
 export function SigBand({ eyebrow, live = false, mark = true, children }: { eyebrow: ReactNode; live?: boolean | "idle"; /** False when the page draws its own Λ (Profile's card). */ mark?: boolean; children: ReactNode }) {
-  return <header className={styles.sgBand}>
+  return <header className={styles.sgBand} data-sig-surface="deep">
     {mark ? <svg className={styles.sgMark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path className={styles.sgMarkL} d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/><path className={styles.sgMarkT} d="M146 330 L180 266 L214 330 Z"/></svg> : null}
     <p className={styles.sgEyebrow}>{live ? <i className={live === true ? styles.sgLive : undefined} aria-hidden="true" /> : null}{eyebrow}</p>
     {children}

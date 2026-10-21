@@ -17,7 +17,7 @@
 .ccTag > span:last-child:not(#cc) { letter-spacing: .02em; color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
 .ccTag [data-over]:not(#cc), .ccFoot [data-over]:not(#cc) { color: var(--sg-red) !important; }
 .ccTitle:not(#cc) { display: block; width: 100%; margin-top: 10px; padding: 4px 0; border: 0; background: none; color: var(--sg-ink); font: 300 1.75rem/2.0625rem var(--sg-display); letter-spacing: -.028em; }
-.ccTitle:not(#cc)::placeholder { color: #B9B6AF; }
+.ccTitle:not(#cc)::placeholder { color: var(--sig-ink-3, #6F6C66); }
 .ccBody:not(#cc) { display: block; width: 100%; min-height: 128px; margin-top: 8px; padding: 4px 0; border: 0; background: none; resize: vertical; color: var(--sg-ink-2); font: 400 1.0625rem/1.625rem var(--sg-font); }
 .ccBody:not(#cc)::placeholder { color: #A19E97; }
 .ccTitle:focus-visible:not(#cc), .ccBody:focus-visible:not(#cc) { outline: 2px solid var(--sg-ink); outline-offset: 2px; border-radius: 6px; }

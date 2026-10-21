@@ -92,12 +92,13 @@
 .task h1 { max-width: 100%; margin: 0; font-size: clamp(2.25rem, 3.6vw, 2.75rem); line-height: 1.1; font-weight: 300; letter-spacing: -.035em; color: var(--ck-ink); overflow-wrap: anywhere; }
 
 /* Shared buttons inside the kiosk. */
-.page :global(.button) { min-height: 60px; border-radius: 18px; padding: 14px 22px; font-family: inherit; font-size: 1.0625rem; line-height: 1.3; font-weight: 500; gap: 10px; white-space: normal; border: 0; box-shadow: none; transition: background-color .16s ease, transform .16s ease; }
+/* Signature button scale: 56px, radius 16 (the action cards and keypad keys keep their own shapes). */
+.page :global(.button) { min-height: var(--sig-control-h, 56px); border-radius: var(--sig-radius-control, 16px); padding: 14px 22px; font-family: inherit; font-size: 1.0625rem; line-height: 1.3; font-weight: 500; gap: 10px; white-space: normal; border: 0; box-shadow: none; transition: background-color .16s ease, transform .16s ease; }
 .page :global(.button.primary) { background: var(--clocker-accent); color: var(--clocker-on-accent); }
 .page :global(.button.primary:hover) { background: var(--clocker-accent-hover); }
 /* A quiet, readable disabled look (the shared rule only fades the deep fill). */
 .page.page.page :global(.button.primary):disabled { background: var(--ck-track); color: var(--ck-ink2); opacity: 1; }
-.page :global(.button.secondary) { background: var(--ck-card); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-edge); }
+.page :global(.button.secondary) { background: var(--ck-card); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-edge), 0 1px 2px rgba(22, 28, 27, .06); }
 .page :global(.button.secondary:hover) { background: #F1EFEA; }
 .page :global(.button.ghost) { background: transparent; color: var(--ck-ink); }
 .page :global(.button.ghost:hover) { background: #EFEDE8; }
@@ -109,6 +110,8 @@
 
 .skip { position: absolute; top: 12px; left: 12px; z-index: 3; padding: 14px 20px; border-radius: 12px; background: #ffffff; color: var(--ck-ink); transform: translateY(-160%); }
 .skip:focus { transform: none; }
+/* The skip link opens over the deep side, so its ring is the light one (13.2:1 on #0D3634). */
+.page .skip:focus-visible { outline-color: var(--sig-focus-on-dark, #FFFFFF); }
 
 /* U9 bilingual labels: English first, Spanish beneath in a lighter weight. */
 .page :global(.clocker-label) { display: inline-grid; justify-items: inherit; gap: 2px; line-height: 1.25; }

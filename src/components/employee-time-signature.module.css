@@ -39,7 +39,7 @@
 .mtCorrections :global(.employee-time-section-heading):not(#mt):not(#mt) { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 14px; margin: 0; padding: 0; border: 0; }
 .mtCorrections :global(.employee-time-section-heading h2):not(#mt):not(#mt) { margin: 0; font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
 .mtCorrections :global(.employee-time-section-heading p):not(#mt):not(#mt) { margin: 2px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
-.mtCorrections :global(.employee-time-correction-trigger):not(#mt):not(#mt) { min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--sg-deep); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
+.mtCorrections :global(.employee-time-correction-trigger):not(#mt):not(#mt) { min-height: var(--sig-control-h-compact, 44px); padding: 0 16px; border: 0; border-radius: var(--sig-radius-compact, 12px); background: var(--sig-deep, #0D3634); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); box-shadow: none; }
 .mtCorrections :global(.employee-time-empty):not(#mt):not(#mt) { margin: 12px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); }
 
 @media (min-width: 768px) { .mtCorrections :global(.employee-correction-center):not(#mt):not(#mt) { margin-inline: 0; } .mtFine:not(#mt) { margin-inline: 4px; } }
@@ -65,8 +65,10 @@
 .mtPanel :global(.correction-comparison > div:first-child strong):not(#mt):not(#mt) { color: var(--sg-ink-3); }
 .mtPanel :global(.correction-context-zone):not(#mt):not(#mt) { margin: -6px 2px 0; font: 400 .8125rem/1.125rem var(--sg-font); color: var(--sg-ink-3); }
 .mtPanel :global(.employee-time-correction-note):not(#mt):not(#mt) { margin: 0; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
-.mtPanel :global(.employee-time-correction-submit):not(#mt):not(#mt) { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 54px; padding: 0 20px; border: 0; border-radius: 16px; background: var(--sg-deep); color: #FFFFFF; font: 500 1.0625rem/1 var(--sg-font); cursor: pointer; }
-.mtPanel :global(.employee-time-correction-submit):disabled:not(#mt):not(#mt) { background: #C9CFCD; color: #4E5654; cursor: not-allowed; }
+.mtPanel :global(.employee-time-correction-submit):not(#mt):not(#mt) { display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--sig-control-h, 56px); padding: 0 20px; border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--sig-deep, #0D3634); color: #FFFFFF; font: 500 1.0625rem/1 var(--sg-font); cursor: pointer; }
+.mtPanel :global(.employee-time-correction-submit):disabled:not([aria-disabled="true"]):not(#mt):not(#mt) { background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
+/* Sending: aria-disabled while busy keeps the deep fill. */
+.mtPanel :global(.employee-time-correction-submit[aria-disabled="true"]):not(#mt):not(#mt) { cursor: progress; }
 .mtPanel :global(.employee-time-correction-status):not(#mt):not(#mt) { margin: 10px 0 0; padding: 12px 14px; border-radius: 14px; background: #FBF0EE; color: var(--sg-red); font: 500 .9375rem/1.3125rem var(--sg-font); }
 .mtPanel :global(.employee-time-correction-status.success):not(#mt):not(#mt) { background: #EAF4F2; color: #0A5753; }
 .mtPanel :global(.employee-time-correction-retry):not(#mt):not(#mt) { min-height: 44px; margin-top: 8px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--sg-card); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 .9375rem/1 var(--sg-font); }
@@ -98,7 +100,7 @@
 .mtCorrections :global(.employee-time-correction-trigger):not(#mt):not(#mt) { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px; padding: 16px 18px; border: 0; border-radius: 22px; background: #EAF4F2; box-shadow: none; color: var(--sg-ink); text-align: left; cursor: pointer; }
 .mtCorrections :global(.employee-time-correction-trigger:hover):not(#mt):not(#mt) { background: #E1EFEC; }
 .mtCorrections :global(.employee-time-correction-trigger[data-open]):not(#mt):not(#mt) { min-height: 52px; padding: 8px 12px; background: transparent; color: var(--sg-ink-2); }
-.mtCorrections :global(.employee-time-correction-trigger:disabled):not(#mt):not(#mt) { opacity: .55; cursor: default; }
+.mtCorrections :global(.employee-time-correction-trigger:disabled):not(#mt):not(#mt) { opacity: 1; background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
 .mtCorrections :global(.employee-time-correction-trigger__tile):not(#mt):not(#mt) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; background: #FFFFFF; color: var(--sg-teal); box-shadow: 0 6px 16px -10px rgba(13, 54, 52, .45); }
 .mtCorrections :global(.employee-time-correction-trigger[data-open] .employee-time-correction-trigger__tile):not(#mt):not(#mt) { width: 36px; height: 36px; border-radius: 50%; background: var(--sg-track); box-shadow: none; color: var(--sg-ink-2); }
 .mtCorrections :global(.employee-time-correction-trigger__copy):not(#mt):not(#mt) { flex: 1; min-width: 0; }

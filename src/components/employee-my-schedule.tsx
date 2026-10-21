@@ -187,8 +187,8 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
     </div>
   </article>; };
   return <EmployeeScheduleMotion weekStart={weekStart}>
-    <div className={styles.s6Root}>
-      <header className={styles.s6Band}>
+    <div className={styles.s6Root} data-sig-surface="light">
+      <header className={styles.s6Band} data-sig-surface="deep">
         <Mark />
         <p className={styles.s6Eyebrow}>{weekOf(weekStart)}</p>
         <h1>My schedule</h1>
@@ -233,7 +233,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
           {/* Organized by what matters now: the days still ahead first (the next shift featured), finished days folded away. */}
           <section className={styles.s6Section} data-s6-agenda="" aria-labelledby="my-agenda-title">
             {/* P3-WR-14: a failed read replaces the week list (no "–" days that read as days off) and offers the primary Try again. */}
-            {state === 'unavailable' ? <><header className={styles.s6Head} data-s6-heading=""><h2 id="my-agenda-title">Shifts</h2></header><div className={styles.s6Failure} role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule.</p><Link href={`/app/schedule?week=${weekStart}`} className={styles.s6Primary}>Try again<span className="nv-sr"> to load your schedule</span></Link></div></>
+            {state === 'unavailable' ? <><header className={styles.s6Head} data-s6-heading=""><h2 id="my-agenda-title">Shifts</h2></header><div className={styles.s6Failure} role="status"><strong>Schedule unavailable</strong><p>We couldn’t load your schedule.</p><Link href={`/app/schedule?week=${weekStart}`} className={styles.s6Primary} data-sig-press="button">Try again<span className="nv-sr"> to load your schedule</span></Link></div></>
               : <>
                 {upcomingDates.length ? <>
                   <header className={styles.s6Head} data-s6-heading=""><h2 id="my-agenda-title">{doneDates.length ? 'Coming up' : 'This week'}<span className={styles.s6Count}>{upcomingCount ? ` · ${upcomingCount} ${upcomingCount === 1 ? 'shift' : 'shifts'}` : ''}</span></h2><span className="nv-sr">{state === 'published' ? 'Published schedule' : 'Published assignments only'}</span></header>
