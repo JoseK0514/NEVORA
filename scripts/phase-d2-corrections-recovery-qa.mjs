@@ -119,8 +119,8 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     await page.getByRole('button',{name:`${decision==='APPROVE'?'Approve':'Decline'} correction for Avery Correction QA`,exact:true}).click();
     await page.getByText('The server outcome could not be confirmed. Retry the same decision safely.',{exact:true}).waitFor();
     await c.setOffline(true);
-    await page.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
-    await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
+    await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.getByRole('heading',{name:'View paused',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);assert.equal(await page.locator('.manager-correction-row').count(),0);
+    await c.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));
     const ready=await c.request.get(app.url+'/api/manager/time-corrections',{headers});
     assert.equal((await ready.json()).requests.some(item=>item.id===pending.requestId),loss==='before');
     if(loss!=='before')await page.getByRole('button',{name:'Approve correction for Avery Correction QA',exact:true}).waitFor({state:'detached'});

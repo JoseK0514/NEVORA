@@ -7,7 +7,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER_SUITES, captureSource, ENGINES, externalEvidence, installTerminationHandlers, parseSuiteArguments, raceOwnedAbort, registerOwnedProcess, safeEnvironment, selectSuites, verifyBrowserExecutions, verifySourceManifest, WIDTHS } from './phase-e-owned.mjs';
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
-import {navigationFetchDiagnostic,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
+import {navigationFetchDiagnostic,observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 
 const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
 const canonicalRuntimeMessages = new Set(['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop limit exceeded', 'Connection closed.']);
@@ -27,6 +27,9 @@ function nativeFetchResourceKind(message,page) {
     if(path==='/api/manager/communications'||path.startsWith('/api/manager/communications/'))return 'manager-read';
     if(path==='/api/employee/communications'||path.startsWith('/api/employee/communications/'))return 'employee-read';
     if(path==='/api/employee/my-time')return 'recorded-time-read';
+    if(path==='/api/employee/profile')return 'profile-read';
+    if(path==='/api/employee/calendar-subscriptions')return 'calendar-read';
+    if(path==='/app/api/push/status')return 'device-status-read';
     if(runtimeRoutes.has(path)||path==='/app/updates/compose'||/^\/app\/updates\/[a-f0-9-]{36}$/.test(path))return 'route-read';
     return null;
   })??null;
@@ -56,6 +59,7 @@ function originalRuntimeDiagnostic(name, message, page) {
   };
 }
 
+/** Window exceptions and unproven native events remain fatal. */
 export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false}={}) {
   const start = errors.length;
   const classified=new WeakSet(),pages=new WeakMap();
@@ -68,10 +72,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
       assert(['primary', 'manager'].includes(role));
       context.on('page', page => {
         const index = pageIndex++;
-        const state={index,role,pending:null};pages.set(page,state);
-        page.on('request',request=>{if(readable(()=>request.isNavigationRequest()&&request.frame()===page.mainFrame())){state.pending=readable(()=>new URL(request.url()).origin===new URL(page.url()).origin)?request:null;}});
-        page.on('framenavigated',frame=>{if(readable(()=>frame===page.mainFrame()))state.pending=null;});
-        page.on('requestfailed',request=>{if(state.pending===request)state.pending=null;});
+        const state={index,role,navigation:observeDocumentNavigation(page)};pages.set(page,state);
         page.on('pageerror', error => {
           const originalMessage = readable(() => error?.message), name = readable(() => error?.name);
           const message = typeof originalMessage === 'string' ? originalMessage : '';
@@ -81,11 +82,11 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
               : /chunkloaderror|loading chunk/i.test(message) ? 'Module load failure'
                 : 'Unclassified page runtime error';
           const stage = readable(readStage);
-          if(navigationFetchDiagnostic(execution,diagnostic,!!state.pending,navigationDiagnosticVerified,phase)){
+          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),navigationDiagnosticVerified,phase)){
             classified.add(error);execution.navigationDiagnostics??=[];
             execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,stage:stages.has(stage)?stage:null});return;
           }
-          errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,
+          errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,pendingMainFrameNavigation:state.navigation.pending(),documentNavigation:state.navigation.snapshot(),
             failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
         });
       });

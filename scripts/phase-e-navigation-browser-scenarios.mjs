@@ -6,6 +6,7 @@ import {seedOwnedScenario,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '.
 import {interceptedInboxResponse,withActorRole} from './phase-e-navigation-request.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
+ let stage='seed';cellRuntimeErrors.setStageReader(()=>stage);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],prefix=`navigation-${engine}-${width}`,headers={};
  const q=(text,values=[])=>app.database.executor.query({text,values});
@@ -75,7 +76,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES($1,$2,current_date+7,current_date+7,'APPROVED','Fictional private reason')",[requestId,actor]);
   await q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state) VALUES($1,$2,'TIME_OFF_DECIDED','STORED PRIVATE TITLE','STORED PRIVATE BODY',$1,'test','TIME_OFF',$3,'APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high','pending')",[noticeId,actor,requestId]);
   const actualRole=[320,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);
-  await login(actor);await settle();
+  stage='login';await login(actor);await settle();
   // Move the owned dev runtime's badge away from Home using its own preferences;
   // keep developer errors visible and retain normal native navigation hit testing.
   const devTools=page.locator('nextjs-portal');await devTools.getByRole('button',{name:'Open Next.js Dev Tools',exact:true}).click();await devTools.locator('[data-preferences]').click();await devTools.getByLabel('Position',{exact:true}).selectOption('top-left');await devTools.getByRole('button',{name:'Close devtools panel',exact:true}).click();await settle();await page.keyboard.press('Escape');await devTools.locator('[data-preferences]').waitFor({state:'hidden'});await settle();
@@ -98,7 +99,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const trigger=page.getByRole('button',{name:'More',exact:true}),menu=page.locator('#employee-more-navigation');await trigger.focus();await page.keyboard.press('Enter');await menu.waitFor({state:'visible'});await page.waitForFunction(()=>document.querySelector('#employee-more-navigation')?.contains(document.activeElement));assert(await menu.evaluate(e=>e.contains(document.activeElement)),'Keyboard open moves focus into More');assert.deepEqual(await menu.locator('.employee-more-link').allTextContents(),['Updates','Notifications','Profile']);await page.keyboard.press('Escape');await menu.waitFor({state:'hidden'});await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='More');assert(await trigger.evaluate(e=>document.activeElement===e),'Escape restores trigger focus');
    checks.push('More_Escape_restores_focus with native Enter/Escape and explicit link order');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
-  await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.getByText('Alerts on this device aren’t turned on for your workplace yet.',{exact:true}).isVisible());await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
+  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.getByText('Alerts on this device aren’t turned on for your workplace yet.',{exact:true}).isVisible());await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator('[data-inbox-row] > a').count(),1);assert.equal(await page.locator('[data-inbox-row] > a').getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);assert(!await page.locator('[data-private-view]').innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
   const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator('[data-inbox-row] > a').click();await page.waitForURL(u=>u.pathname==='/app/requests');
   // The guarded open loads a new document. Wait for its current bell read before Back;
@@ -106,7 +107,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');await settle();
   const opened=new URL(page.url());assert.equal(opened.searchParams.get('requestId'),requestId);assert.equal(opened.searchParams.get('tab'),'my');assert.equal(opened.hash,'#request-'+requestId);assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);await page.goBack();await ready('notifications');await settle();
   checks.push('push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation');
-  for(const event of ['blur','pagehide']){await page.evaluate(e=>window.dispatchEvent(new Event(e)),event);assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');}
+  stage='private-lifetime';for(const event of ['blur','pagehide']){await page.evaluate(e=>window.dispatchEvent(new Event(e)),event);assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');}
   await context.setOffline(true);await page.waitForFunction(()=>!document.querySelector('[data-inbox-row]'));await context.setOffline(false);await ready('notifications');
   // Observe the real abort boundary and React commit separately. Keep an actual
   // authorized old response held: clearing cannot depend on another successful read.
@@ -203,7 +204,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications().click();await ready('notifications');
    checks.push('Actual PostgreSQL lock timeout renders unavailable+Retry; legacy source renders partial; authorized source exclusion renders empty; recovery reauthorizes');
   }
-  await nav('/app/profile');await ready('profile');
+  stage='api';await nav('/app/profile');await ready('profile');
   if(width===390){
    const endpoint='/api/employee/profile',binding=headers[endpoint];assert(binding);const get=(path=endpoint,b=binding)=>context.request.get(app.url+path,{headers:{'X-Nevora-Employee-View':b}});
    assert.equal((await get(endpoint+'?employeeId='+scenario.actors[1])).status(),400);assert.equal((await get(endpoint,headers['/api/notifications'])).status(),403);
@@ -215,10 +216,10 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.getByRole('button',{name:'Refresh details',exact:true}).click();await seen;await page.evaluate(()=>window.dispatchEvent(new Event('blur')));release();await page.waitForTimeout(100);assert.equal(await page.locator('.employee-profile-details:not([aria-hidden="true"])').count(),0);assert.deepEqual(await page.locator('.employee-profile-details dd').allTextContents(),['–','–','–','–','–'],'Paused profile retains only static placeholders, including hidden DOM');await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
    checks.push('Delayed real authenticated GET cannot repaint after blur (transport held; no fixture response content)');
    // Actual session replacement through login binds the old mounted view out.
-   await login(scenario.actors[1]);assert.equal((await get(endpoint,binding)).status(),403);await login(actor);await nav('/app/profile');await ready('profile');checks.push('Actual account/session replacement rejects former mounted-view binding');
+   stage='replacement';await login(scenario.actors[1]);assert.equal((await get(endpoint,binding)).status(),403);await login(actor);await nav('/app/profile');await ready('profile');checks.push('Actual account/session replacement rejects former mounted-view binding');
   }
   if(width===390){
-   const timeOffForm=()=>page.locator('form.nto-form');
+   stage='api';const timeOffForm=()=>page.locator('form.nto-form');
    const openTimeOffForm=async()=>{await page.goto(app.url+'/app/requests?tab=new');await settle();await timeOffForm().getByRole('button',{name:'Partial day',exact:true}).click();await timeOffForm().getByLabel('Start time',{exact:true}).waitFor();await timeOffForm().getByRole('button',{name:'Full day',exact:true}).click();await timeOffForm().getByLabel('End date',{exact:true}).waitFor();assert.equal(await timeOffForm().getByRole('button',{name:'Full day',exact:true}).getAttribute('aria-pressed'),'true');};
    await openTimeOffForm();await timeOffForm().locator('[name="startDate"]').fill(scenario.targetDate);await timeOffForm().locator('[name="endDate"]').fill(scenario.sourceDate);const invalidId=await timeOffForm().locator('[name="requestId"]').inputValue();assert.equal(await timeOffForm().getByLabel('End date',{exact:true}).evaluate(field=>field.validity.rangeUnderflow),true);let invalidPosts=0;const observeInvalid=request=>{if(request.method()==='POST'&&new URL(request.url()).pathname==='/app/requests')invalidPosts++;};page.on('request',observeInvalid);await timeOffForm().getByRole('button',{name:'Submit request',exact:true}).click();await settle();page.off('request',observeInvalid);assert.equal(invalidPosts,0,'Native invalid-date constraint blocks submission');assert.equal(new URL(page.url()).searchParams.get('tab'),'new');assert.deepEqual(await q('SELECT id FROM time_off_requests WHERE id=$1',[invalidId]),[]);
    const submitTimeOff=async(replay)=>{await openTimeOffForm();await timeOffForm().locator('[name="startDate"]').fill(scenario.sourceDate);await timeOffForm().locator('[name="endDate"]').fill(scenario.sourceDate);await page.locator('main p[aria-live="polite"]').filter({hasText:/^1 day away$/}).waitFor();if(replay)await timeOffForm().locator('[name="requestId"]').evaluate((field,id)=>{field.value=id;},replay);const id=await timeOffForm().locator('[name="requestId"]').inputValue();await timeOffForm().getByRole('button',{name:'Submit request',exact:true}).click();await page.waitForURL(u=>u.searchParams.get('submitted')==='1');await settle();return id;};
@@ -229,7 +230,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await q("UPDATE schedule_week_settings SET availability_deadline=clock_timestamp()-interval '1 second' WHERE week_start=$1",[scenario.week]);await page.reload();await settle();await page.getByText('Submissions closed',{exact:true}).waitFor();assert(await page.getByRole('button',{name:'Submit weekly availability',exact:true}).isDisabled());assert(await page.getByLabel('Monday availability',{exact:true}).isDisabled());assert.deepEqual(await q('SELECT * FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 ORDER BY day_of_week,start_time',[actor,scenario.week]),submitted);checks.push('Actual normal/weekly availability save persists reviewed hours; past canonical deadline disables native controls and retains submitted records');
    await page.goto(app.url+'/app/profile');await ready('profile');
   }
-  if(width<768){
+  stage='keyboard';if(width<768){
    await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator('textarea').first();await field.fill('Fictional long keyboard text '.repeat(20));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press(tabKey);assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press(backTabKey);await page.goto(app.url+'/app/profile');await ready('profile');
    checks.push(`Native focus, text entry and ${tabKey}/${backTabKey} on existing request form; no submission; physical keyboard occlusion remains unverified`);
   }

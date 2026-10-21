@@ -2,6 +2,19 @@ import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 
 const reads=new Set(['notification-read','home-read','recorded-time-read']);
+export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).origin){
+ let pending=null,phase='idle',startedAt=null;
+ const read=fn=>{try{return fn();}catch{return undefined;}};
+ page.on('request',request=>{
+  if(!read(()=>request.isNavigationRequest()&&request.frame()===page.mainFrame()))return;
+  if(!read(()=>new URL(request.url()).origin===origin())){pending=null;phase='idle';startedAt=null;return;}
+  pending=request;phase='requested';startedAt=Date.now();
+ });
+ page.on('framenavigated',frame=>{if(read(()=>frame===page.mainFrame())&&pending){pending=null;phase='committed';}});
+ page.on('domcontentloaded',()=>{if(phase==='committed')phase='dom-ready';});
+ page.on('requestfailed',request=>{if(pending===request){pending=null;phase='failed';}});
+ return {pending:()=>pending!==null,snapshot:()=>({phase,ageMs:startedAt===null?null:Math.min(60000,Math.max(0,Date.now()-startedAt))})};
+}
 export function navigationFetchDiagnostic(execution,diagnostic,pending,verified,phase){
  return execution.engine==='webkit'&&verified===true&&pending===true&&phase==='scenario'&&diagnostic.plainOwnRead===true
   &&diagnostic.canonicalMessage==='Fetch API cannot load resource due to access control checks.'
@@ -32,9 +45,9 @@ export async function verifyNavigationFetchDiagnostic(browser){
    const context=await browser.newContext({serviceWorkers:'block'}),errors=[];let navigationResult,reportWindow;const windowEvents=[];
    try{
     await context.route('**/*',route=>{assert.equal(new URL(route.request().url()).origin,origin);return route.continue();});
-    const page=await context.newPage();page.setDefaultTimeout(15000);
+    const page=await context.newPage();page.setDefaultTimeout(15000);const navigationPhase=observeDocumentNavigation(page,()=>origin),nativeNavigation=[];
     await observeWindowExceptions(context,(_page,kind)=>{windowEvents.push(kind);reportWindow?.();});
-    page.on('pageerror',error=>errors.push(error.name==='Fetch API cannot load http'&&error.message==='/'+origin.slice('http://'.length)+'/read due to access control checks.'));
+    page.on('pageerror',error=>{const native=error.name==='Fetch API cannot load http'&&error.message==='/'+origin.slice('http://'.length)+'/read due to access control checks.';errors.push(native);if(native)nativeNavigation.push(navigationPhase.snapshot());});
     await page.goto(origin+'/initial');
     const handle=await page.evaluateHandle(()=>{
      const state={id:crypto.randomUUID(),errors:0,rejections:0,pagehide:0};
@@ -47,7 +60,7 @@ export async function verifyNavigationFetchDiagnostic(browser){
     try{result=await Promise.race([handle.evaluate(value=>value.read()),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Navigation diagnostic read did not settle')),5000);})]);}
     finally{clearTimeout(timer);release?.();release=undefined;}
     if(navigation){assert((await navigationResult).ok);await page.getByRole('heading',{name:'/replacement',exact:true}).waitFor();}
-    const cell={navigation,identityMatches:result.id===identity,status:result.status,handled:result.handled,windowErrors:result.errors,unhandledRejections:result.rejections,pagehide:result.pagehide,serverReads:ingress-before,nativeDiagnostics:errors.length,onlyExactNativeDiagnostic:errors.every(Boolean)};
+    const cell={navigation,identityMatches:result.id===identity,status:result.status,handled:result.handled,windowErrors:result.errors,unhandledRejections:result.rejections,pagehide:result.pagehide,serverReads:ingress-before,nativeDiagnostics:errors.length,onlyExactNativeDiagnostic:errors.every(Boolean),nativeNavigation};
     assert(cell.identityMatches);assert.equal(cell.windowErrors,0);assert.equal(cell.unhandledRejections,0);assert.equal(cell.pagehide,0);
     if(!navigation){assert.equal(cell.status,200);assert.equal(cell.serverReads,1);assert.equal(cell.nativeDiagnostics,0);}
     cells.push(cell);
