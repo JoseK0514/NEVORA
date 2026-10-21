@@ -10,6 +10,7 @@ import { readManagementProfile } from '@/lib/data/management-profile.server';
 import { parseManagerProfile } from './contract';
 import { ManagerProfileLive } from './manager-profile-live';
 import { PasskeySection } from '@/components/passkeys/passkey-section';
+import { AccountPrivacyLinks } from '@/components/legal/account-privacy-links';
 
 /** Phase 3.5: the Owner and Manager Profile, laid out like the employee Profile (band, details, settings, Sign out).
  * Name, role, company, time zone, My pay and device alerts come from today's reads. Contact, locations and
@@ -43,6 +44,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         payrollAlerts: payrollFeatureEnabled(),
       }} />
       <PasskeySection />
+      <AccountPrivacyLinks />
     </KitStack>
   </div>;
 }
