@@ -155,8 +155,9 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await page.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
    await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-   await page.getByText('Correction access ended',{exact:true}).waitFor();
+   await page.locator('.manager-corrections').waitFor({state:'detached'});
    assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
+   assert.equal((await manager.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
    checked(`${engine}: current Manager authority loss clears uncertain recovery`);
   }finally{
    await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");await manager.close();

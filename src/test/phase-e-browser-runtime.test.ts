@@ -6,6 +6,32 @@ import {EventEmitter} from 'node:events';
 const runtimeModule=resolve('scripts/phase-e-browser-qa.mjs');
 const {darwinWebKitLaunch}=await import(runtimeModule);
 const {observeBrowserCell}=await import(runtimeModule);
+it.each([
+ ['/api/company-access/operational-authority','authority-read'],
+ ['/__nextjs_original-stack-frames','framework-diagnostic'],
+ ['/app/updates/11111111-1111-4111-8111-111111111111','route-read'],
+ ['/api/manager/communications/PRIVATE_ACTOR_TOKEN','manager-read'],
+ ['/api/employee/communications','employee-read'],
+ ['/api/employee/my-time','recorded-time-read'],
+ ['/api/notifications','notification-read'],
+ ['/PRIVATE_ACTOR_TOKEN',null],
+])('projects only a static resource kind for an owned native fetch failure: %s',(path,resourceKind)=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://127.0.0.1:43210/app'});
+ const cell=observeBrowserCell({suite:'communications',engine:'webkit',width:768,status:'failed'},errors);
+ cell.observeContext(context,'manager');context.emit('page',page);
+ page.emit('pageerror',{name:'Fetch API cannot load http',message:'/127.0.0.1:43210'+path+'?token=PRIVATE_ACTOR_TOKEN#PRIVATE_ACTOR_TOKEN due to access control checks.'});
+ expect(errors[0]).toMatchObject({diagnostic:{resourceKind}});
+ expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|127\.0\.0\.1|43210|https?:|token=|11111111/);
+ expect(()=>cell.assertClean()).toThrow();
+});
+it.each(['fictional.invalid','127.0.0.1:43211'])('never attributes a foreign native fetch to the current owned resource: %s',host=>{
+ const errors:unknown[]=[],context=new EventEmitter(),page=Object.assign(new EventEmitter(),{url:()=> 'http://127.0.0.1:43210/app'});
+ const cell=observeBrowserCell({suite:'home',engine:'webkit',width:390,status:'failed'},errors);
+ cell.observeContext(context,'primary');context.emit('page',page);
+ page.emit('pageerror',{name:'Fetch API cannot load http',message:'/'+host+'/api/employee/my-time?PRIVATE_ACTOR_TOKEN due to access control checks.'});
+ expect(errors[0]).toMatchObject({diagnostic:{resourceKind:null}});expect(()=>cell.assertClean()).toThrow();
+ expect(JSON.stringify(errors)).not.toMatch(/PRIVATE|fictional|43211|127\.0\.0\.1/);
+});
 it('retains only the observed native HTTP fetch format as fatal network detail in both contexts',()=>{
  const errors:unknown[]=[],cell=observeBrowserCell({suite:'home',engine:'webkit',width:320,status:'failed'},errors);
  cell.setStageReader(()=> 'early-my-time-route');

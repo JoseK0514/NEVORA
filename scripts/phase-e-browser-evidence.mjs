@@ -56,9 +56,9 @@ function validateReceipts(root, custody, suite) {
   const result = owned.results[0];
   assert.equal(result.suite, suite); assert.equal(result.exitCode, 0);
   assert.equal(result.observationFailure, undefined, 'Resource observation failure');
-  assert(Array.isArray(result.command) && result.command.length === 6);
+  assert(Array.isArray(result.command) && result.command.length === 8);
   absolute(result.command[0]);
-  assert.deepEqual(result.command.slice(1), ['--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', suite]);
+  assert.deepEqual(result.command.slice(1), ['--import', join(pg.source,'scripts/qa-server-context.mjs'), '--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', suite]);
   assert.deepEqual(result.checks, browser.executions.flatMap(row => row.checks), 'Partial command checks');
   assert(Array.isArray(result.resources) && result.resources.length > 0, 'Missing resource closure proof');
   assert.equal(new Set(result.resources.map(item => item.pid)).size, result.resources.length, 'Duplicate resource');

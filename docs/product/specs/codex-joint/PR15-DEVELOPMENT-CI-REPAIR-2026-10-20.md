@@ -105,6 +105,44 @@ inner `Correction access ended` label cannot survive the enclosing view's
 retirement. The failed run's WebKit development-overlay fetch error is retained;
 runtime failures remain fatal and must be absent in the matching rerun.
 
+At `e806b028`, Attendance passed46 checks in both engines with zero errors.
+The account-switch test reached the new Manager's ready queue, then its legacy
+element-state helper rejected the already detached old row. The assertion now
+checks actual node disconnection, or replacement of the original document,
+alongside the exact old-row/retry absence and new-authority assertions. The
+remaining whole Phase D/D2 pause assertions follow the same enclosing retirement
+contract; pending-row counts, no-false-empty checks, geometry, stale-command403
+and persisted decision history remain mandatory.
+
+Hosted `cb4cc5ca` passed validate (including production build), Clocker,
+release PostgreSQL and Phase E PostgreSQL. Calendar passed all14 browser cells
+with zero errors but failed its leaf receipt validator: that validator still
+required the old six-argument command. It now requires the exact eight-argument
+command, including the candidate-local absolute QA preload. Missing and wrong
+preload mutation tests must reject. No old-command fallback is accepted.
+
+Hosted Communications WebKit768 recorded two fatal native fetch errors during
+the revision navigation. That journey now foregrounds the real Manager view and
+uses its `Edit update` link, so it exercises the actual protected edit transition.
+This is a candidate repair, not an established closure of the intermittent error.
+Hosted Home WebKit390 also recorded a fatal native fetch error during H11's
+explicit hard route leave. H11 and its privacy/runtime assertions are unchanged.
+The shared observer adds only static same-origin resource kinds, never raw URLs,
+query values, opaque IDs, messages or stacks. Resource projection regression:
+7failed/128passed before implementation; final138passed, including foreign-origin
+and private-sentinel rejection. Every native event still fails the cell.
+
+The exact preload receipt regression passed47 cases after the validator repair.
+One initial concurrent run exceeded a5second unit-case budget; an isolated rerun
+passed all47 without changing any timeout or assertion. The failure log remains.
+Home's held-response transport now avoids fulfilling a request only when the
+browser already reports it cancelled after a confirmed document navigation.
+Live late responses still deliver, same-document paused responses still exercise
+the original handler, and unknown fulfillment failures remain fatal even after
+navigation. Regression:4failed before implementation,5passed afterward. H07/H08/
+H11 privacy assertions and all runtime checks remain. This transport change is a
+candidate repair; matching browser and hosted execution still decide acceptance.
+
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,

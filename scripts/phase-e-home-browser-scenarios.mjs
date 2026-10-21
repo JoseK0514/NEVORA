@@ -18,6 +18,15 @@ export async function waitForFreshHome(page, freshLocation){
  },freshLocation,{timeout:15000});
 }
 
+export async function fulfillHeldResponse(route,response,documentLeft) {
+ if(documentLeft&&route.request().failure())return 'document-left';
+ try{await route.fulfill({response});return 'fulfilled';}
+ catch{
+  if(route.request().failure())return documentLeft?'document-left':'request-aborted';
+  throw Error('Held response fulfillment failed');
+ }
+}
+
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -41,8 +50,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    if(used)return route.continue();used=true;
    try{
     const response=await route.fetch();operation='parse';if(path.includes('/home'))homeResponse=await response.json();started();await wait;operation='fulfill';
-    try{await route.fulfill({response});outcome='fulfilled';}
-    catch{if(navigationReleased)outcome='document-left';else if(route.request().failure())outcome='request-aborted';else throw Error('Held response fulfillment failed');}
+    outcome=await fulfillHeldResponse(route,response,navigationReleased);
    }catch(error){
     // Never leak Playwright's request headers through an unhandled route error.
     // Unexpected fetch/fulfillment failure remains a failed scenario, not a retry.

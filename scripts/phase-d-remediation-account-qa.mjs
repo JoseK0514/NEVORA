@@ -109,12 +109,13 @@ try{
     await login(c,'RV-M1');const p=await page(c,'/app?view=attendance');let command,authority,committed=false;const barrier=new Promise(resolve=>{release=resolve;});
     await p.route('**/api/manager/time-corrections',async route=>{if(route.request().method()!=='POST')return route.continue();command=route.request().postDataJSON();authority=route.request().headers()['x-nevora-correction-authority'];const r=await route.fetch();assert.equal(r.status(),200);committed=true;await barrier;return route.fulfill({status:200,contentType:'application/json',body:'{'});});
     const originalRow=p.locator('.manager-correction-row').filter({hasText:'Late manager commit '+engine});
-    const retiredRow=await originalRow.elementHandle();assert(retiredRow);
+    const retiredRow=await originalRow.elementHandle();assert(retiredRow);const sourceDocument=await p.evaluate(()=>performance.timeOrigin);
     await originalRow.getByRole('button',{name:'Approve correction for RV-E1 Fictional',exact:true}).click();const deadline=Date.now()+15000;while(!committed){assert(Date.now()<deadline);await new Promise(resolve=>setTimeout(resolve,20));}
     const currentQueue=p.waitForResponse(response=>new URL(response.url()).pathname==='/api/manager/time-corrections'&&response.request().method()==='GET'&&response.request().headers()['x-nevora-actor']==='RV-M2');
     await login(c,'RV-M2');await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));
     const currentResponse=await currentQueue;assert.equal(currentResponse.status(),200);const current=await currentResponse.json();assert.equal(current.state,'ready');assert.match(current.authority,/^[a-f0-9]{64}$/);assert.notEqual(current.authority,authority);
-    await retiredRow.waitForElementState('hidden');assert.equal(await originalRow.count(),0);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
+    const documentReplaced=await p.evaluate(()=>performance.timeOrigin)!==sourceDocument;
+    assert(documentReplaced||!await retiredRow.evaluate(row=>row.isConnected));assert.equal(await originalRow.count(),0);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
     const settled=p.waitForResponse(r=>r.url().endsWith('/api/manager/time-corrections')&&r.request().method()==='POST');release();await settled;await p.waitForTimeout(150);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
     assert.equal((await c.request.post(app.url+'/api/manager/time-corrections',{headers:{...headers(),'X-Nevora-Correction-Authority':authority},data:command})).status(),403);
     assert.deepEqual(await q("SELECT actor_employee_id FROM time_correction_events WHERE request_id=$1 AND event_kind='APPROVED'",[created.requestId]),[{actor_employee_id:'RV-M1'}]);
