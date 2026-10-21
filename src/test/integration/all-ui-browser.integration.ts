@@ -39,6 +39,7 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         const response = await page.goto(origin+path);
         expect(response?.status(),engine+' '+path).toBe(200);
         await page.getByRole('heading',{level:1}).first().waitFor();
+        await page.waitForLoadState('networkidle');
         for (const width of [320,390,768,1440]) {
           await page.setViewportSize({width,height:900});
           expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),engine+' '+path+' '+width).toBe(true);
@@ -61,12 +62,19 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         const response = await page.goto(origin+path);
         expect(response?.status(),engine+' '+path).toBe(200);
         await page.locator('main').getByRole('heading',{level:1}).first().waitFor();
+        await page.waitForLoadState('networkidle');
         for (const width of [320,390,768,1440]) {
           await page.setViewportSize({width,height:900});
           expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),engine+' '+path+' '+width).toBe(true);
         }
         checks.push(engine+': employee '+path+' at 320/390/768/1440');
       }
+      await page.getByRole('button',{name:'Refresh details',exact:true}).waitFor();
+      const profileGeometry=await page.locator('.employee-profile-details').evaluate((element:HTMLElement)=>({
+        details:element.getBoundingClientRect().width,
+        settings:document.querySelector('.profile-settings-list')!.getBoundingClientRect().width,
+      }));
+      expect(profileGeometry.details).toBeGreaterThanOrEqual(profileGeometry.settings-32);
       await page.screenshot({path:evidence+'/'+engine+'-profile-1440.png',fullPage:true});
       if (engine==='chromium') {
         await page.setViewportSize({width:1440,height:1000});

@@ -6,9 +6,11 @@
 .mpLatestCopy p:not(#mp):not(.mpKicker) { margin: 4px 0 0; font: 400 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
 .mpPrivacy:not(#mp) { display: inline-flex; align-items: flex-start; gap: 8px; flex: 1 1 14rem; min-width: 0; padding: 10px 0; }
 .mpPrivacy svg:not(#mp) { flex: none; margin-top: 3px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.mpActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 @container sg (max-width: 21rem) {
   .mpLatest:not(#mp) { flex-wrap: wrap; }
   .mpLatest > a:not(#mp) { flex: 1 0 100%; }
+  .mpLatest > .mpActions { flex: 1 0 100%; }
 }
 @media (min-width: 768px) { .mpLatest:not(#mp) { margin-inline: 0; } }
 .mpLoadingTitle:not(#mp):not(#mp) { margin: 0; font: 300 1.625rem/1.875rem var(--sg-display); letter-spacing: -.03em; color: var(--sg-ink-3); }

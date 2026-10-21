@@ -35,7 +35,10 @@ export function PaydayMoment({ statement }: { statement: Statement }) {
       <h2 id="pw-payday-title">Payday {formatDisplayDate(statement.payday)}</h2>
       <p>{formatDateRange(statement.period.startDate, statement.period.endDate)} · Published pay statement</p>
     </div>
-    <a className="sg-primary" href={documentHref(statement)} aria-label={`Download statement, payday ${longDay(statement.payday)}`}><DownloadIcon />Download</a>
+    <div className={styles.mpActions}>
+      {statement.viewUrl ? <a className="sg-link" href={`${documentHref(statement)}/view`} aria-label={`View ${statement.filename}`}>View</a> : null}
+      <a className="sg-primary" href={documentHref(statement)} aria-label={`Download ${statement.filename}`}><DownloadIcon />Download</a>
+    </div>
   </section>;
 }
 
@@ -52,14 +55,17 @@ export function MyPay({ nextPay = null }: { nextPay?: NextPay }) {
   </SigBand> : <SigBand eyebrow="Pay statements"><h1 className="sg-word">My pay</h1><p className="sg-sub"><span>Your published pay statements.</span></p></SigBand>;
 
   return <SigPage band={band} className={styles.mpRoot}>
-    {loading && !data ? <div className={styles.mpLatest} role="status"><div className={styles.mpLatestCopy}><p className={styles.mpKicker}>Latest statement</p><p className={styles.mpLoadingTitle}>Loading your statements</p><p>Checking your private pay documents.</p></div></div>
+    {loading ? <div className={styles.mpLatest} role="status"><div className={styles.mpLatestCopy}><p className={styles.mpKicker}>Latest statement</p><p className={styles.mpLoadingTitle}>Loading your statements</p><p>Checking your private pay documents.</p></div></div>
       : error ? <div className="sg-alert" role="alert"><strong>Statements unavailable</strong><span>{error}</span>{error === PAYROLL_SIGNED_OUT ? <Link className="sg-link" href="/login">Sign in</Link> : <button type="button" className="sg-link" onClick={() => void reload()}>Try again</button>}</div>
       : statements.length ? <>
         <PaydayMoment statement={statements[0]} />
         {statements.length > 1 ? <SigSection id="pw-earlier" title="Earlier statements">
           <ul className="sg-list">{statements.slice(1).map(statement => <li key={statement.id} className="sg-row">
-            <span className="sg-copy"><b>{longDay(statement.payday)}</b><span>{periodLabel(statement.period.startDate, statement.period.endDate)} · PDF</span></span>
-            <a className="sg-round" href={documentHref(statement)} aria-label={`Download statement, payday ${longDay(statement.payday)}`}><DownloadIcon /></a>
+            <span className="sg-copy"><b>Payday {formatDisplayDate(statement.payday)}</b><span>{formatDateRange(statement.period.startDate, statement.period.endDate)} · Published pay statement</span></span>
+            <div className={styles.mpActions}>
+              {statement.viewUrl ? <a className="sg-link" href={`${documentHref(statement)}/view`} aria-label={`View ${statement.filename}`}>View</a> : null}
+              <a className="sg-round" href={documentHref(statement)} aria-label={`Download ${statement.filename}`}><DownloadIcon /></a>
+            </div>
           </li>)}</ul>
         </SigSection> : null}
       </>
