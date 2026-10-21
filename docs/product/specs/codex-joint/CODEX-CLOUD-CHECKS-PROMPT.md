@@ -18,7 +18,7 @@ You're Codex, working in the cloud on NEVORA (`JoseK0514/NEVORA`, Next 16 / Reac
 
 ```bash
 export PREVIEW_OUT=/tmp/nv-<branch>  PREVIEW_SOURCE=/work/<branch-checkout>
-node --import tsx scripts/ui-checks/preview-runtime.mjs     # background; wait for PREVIEW_READY
+node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/ui-checks/preview-runtime.mjs     # background; wait for PREVIEW_READY
 node --import tsx scripts/ui-checks/seed-extra.mts
 node scripts/ui-checks/login.mjs AUDIT-E AUDIT-LEAD AUDIT-ON AUDIT-BREAK AUDIT-LONG payroll-qa-a payroll-qa-b AUDIT-M QAOWNER
 ```
