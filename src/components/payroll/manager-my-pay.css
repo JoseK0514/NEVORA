@@ -1,0 +1,51 @@
+/* UI-4: My pay for Owners and Managers in the clean v3 frame (manager-my-pay.tsx). Every rule is scoped to the clean
+ * shell and .cm-mypay, so the employee My pay (Signature) is untouched. */
+
+/* ---------- Both widths ---------- */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-content { display: flex; flex-direction: column; gap: 20px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-payday { position: relative; isolation: isolate; overflow: hidden; margin: 0; padding: 20px 20px 22px; border-radius: 10px; background: #0D3634; color: #fff; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-mark { position: absolute; z-index: -1; right: -72px; bottom: -6px; width: 220px; height: auto; pointer-events: none; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-mark__l { fill: #164B48; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-mark__t { fill: #35B6EC; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-payday__label { margin: 0; font: 600 .8125rem/1.125rem var(--cm-sys); letter-spacing: .04em; text-transform: uppercase; color: rgba(255, 255, 255, .78); }
+/* The date is the one large figure: 40px at 600, tabular (no ultra-light weight). */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-payday__date { margin: 6px 0 0; font: 600 2.5rem/2.875rem var(--cm-sys); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: #fff; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-payday__sub { display: flex; flex-wrap: wrap; gap: 0 10px; margin: 4px 0 0; font: 400 1rem/1.375rem var(--cm-sys); color: rgba(255, 255, 255, .82); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-payday__sub b { font-weight: 600; color: #A9E2DA; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-strong { margin: 0; font-weight: 600; color: var(--cm-label); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-muted { margin: 2px 0 0; color: var(--cm-label-2); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-link { display: inline-flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; color: var(--cm-tint); font: inherit; cursor: pointer; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest__copy { flex: 1 1 12rem; min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest__day { margin: 0; font: 600 1.25rem/1.5625rem var(--cm-sys); color: var(--cm-label); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest__actions .nv-btn { gap: 6px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-download { display: inline-grid; place-items: center; flex: none; width: 44px; height: 44px; margin-left: auto; border-radius: 22px; color: var(--cm-tint); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-download:hover { background: var(--cm-fill); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-privacy { display: inline-flex; align-items: flex-start; gap: 6px; min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-privacy svg { flex: none; margin-top: 2px; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay :is(.cm-mp-download, .cm-mp-link, .cm-mp-back):focus-visible { outline: 2px solid var(--cm-tint); outline-offset: 2px; }
+
+/* ---------- Phones: iOS navigation bar, large title, inset grouped cards ---------- */
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-navbar { display: flex; align-items: center; min-height: 44px; padding: 0 8px 0 4px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-back { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 8px; border: 0; background: none; box-shadow: none; color: var(--cm-tint); font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.026em; cursor: pointer; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-back:active { opacity: .5; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-content { padding: 4px 16px 0; gap: 26px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-card .nv-card__body { padding: 14px 16px; font: 400 1.0625rem/1.375rem var(--cm-sys); letter-spacing: -.43px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest__actions { flex: 1 0 100%; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest__actions .nv-btn { flex: 1 1 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-muted { font-size: .9375rem; line-height: 1.25rem; letter-spacing: -.24px; }
+}
+
+/* ---------- Desktop: flat, left-aligned under the standard title ---------- */
+@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-navbar { display: none; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-content { max-width: 720px; gap: 16px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-payday { padding: 24px 28px 26px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-mark { right: -40px; width: 240px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-card .nv-card__body { padding: 16px; font: 400 .875rem/1.25rem var(--cm-sys); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest__day { font-size: 1.125rem; line-height: 1.5rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-latest__actions .nv-btn { min-height: 36px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-mypay .cm-mp-download { width: 36px; height: 36px; border-radius: 18px; }
+}

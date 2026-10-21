@@ -3,6 +3,8 @@ import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import { requireSession } from '@/lib/auth/session';
 import { payrollFeatureEnabled } from '@/lib/payroll/service';
 import { MyPay, type NextPay } from '@/components/payroll/my-pay';
+import { ManagerMyPay } from '@/components/payroll/manager-my-pay';
+import { isManagerRole } from '@/lib/auth/permissions';
 import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { businessDate } from '@/lib/business-time';
@@ -22,5 +24,6 @@ export default async function MyPayPage() {
     const daysUntil = Math.round((Date.parse(`${pay.payday}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000);
     if (daysUntil >= 0) nextPay = { payday: pay.payday, daysUntil };
   }
-  return <MyPay key={session.id} nextPay={nextPay} />;
+  // UI-4: Owners and Managers see My pay in the clean v3 frame; Employees and Leads keep the Signature My pay.
+  return isManagerRole(session.role) ? <ManagerMyPay key={session.id} nextPay={nextPay} /> : <MyPay key={session.id} nextPay={nextPay} />;
 }
