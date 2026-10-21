@@ -42,9 +42,11 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         payHref: offersPay ? '/app/my-pay' : null,
         deviceAlerts: readNotificationConfig(process.env).featureEnabled,
         payrollAlerts: payrollFeatureEnabled(),
-      }} />
-      <PasskeySection />
-      <AccountPrivacyLinks />
+      }} accountCards={<>
+        {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
+        <PasskeySection />
+        <AccountPrivacyLinks />
+      </>} />
     </KitStack>
   </div>;
 }
