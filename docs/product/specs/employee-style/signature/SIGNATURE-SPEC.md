@@ -375,9 +375,12 @@ still the older portal shell; that seam is review gap 7 and is not part of this 
 
 ## 6. Components
 
-Status: **Built** = in code today. **Target** = agreed, not built. The parallel `sig-components` session is building
-the press feedback, the button scale, the pending look and the band focus ring; until it lands, the "Built" column is
-what users see.
+Status: **Built** = in code today. **Target** = agreed, not built. The component set landed on October 21, 2026
+(branch `claude/sig-components`): React components in `src/components/signature/` (`sig-button.tsx`,
+`sig-components.tsx`, `sig-overlays.tsx`, `sig-fade.tsx`) and one shared rule sheet, `components.css`, imported once in
+the root layout after `tokens.css`. Every piece is shown live on `/ui-preview/signature` (development or
+`NEVORA_UI_PREVIEW_ENABLED=1`, fictional data). New pages use the components; older pages keep their markup until
+they are touched, and the shared rules (press, focus, pending, button scale) already apply to that markup.
 
 ### 6.1 Cards
 
@@ -403,8 +406,13 @@ what users see.
 | More sheet row | 58 | 0 / 16 / 0 / 18 | hairline from 18px | `employee-style.css:207` |
 
 Row content: an optional leading tile or day block, a title (row role, ink-1), one secondary line (callout, ink-2), and
-a trailing chevron in `--sig-faint` or a status pill. Hover is `#FAFAF8`. Signature still draws its own chevron
-(`SigChevron`); gap 14 replaces it with Phosphor `CaretRight` (target).
+a trailing chevron in `--sig-glyph` (`#8A8378`, 3.75:1 on white, 3.47:1 on the page; it was `--sig-faint` at 2.0:1) or
+a status pill. Hover is `#FAFAF8`, only on devices that hover (`@media (hover: hover)`). Rows inside a clipped card or
+list take their focus ring inside (offset -3px). Signature still draws its own chevron (`SigChevron`); gap 14 replaces
+it with Phosphor `CaretRight` (target).
+
+**Components:** `SigList` + `SigRow` (link, button or plain row; chevron only when it goes somewhere) and `SigCard` +
+`SigCardRow` (`flush` for rows that carry their own padding).
 
 ### 6.3 Tiles
 
@@ -429,8 +437,7 @@ There is no red pill. "Declined" and urgent words use red ink `#A3271A` as text.
 
 `.sg-ticket`: a two-sided card body (from / to) with a 48px round arrow between (40px under 360). Each side has a caps
 label, a large light figure (section 4.2) and two short lines. An empty figure (`[data-empty]`) is drawn in
-`--sig-faint` `#B9B6AF`, which is **2.02:1** on white and fails as text. **Target (gap 10):** show an em dash in
-`--sig-ink-3`.
+`--sig-ink-3` (5.23:1 on white). It was `--sig-faint` `#B9B6AF` at 2.02:1 until October 21, 2026.
 
 ### 6.6 Fields and field groups (sign-in card)
 
@@ -440,39 +447,42 @@ label, a large light figure (section 4.2) and two short lines. An empty figure (
 - **Wider screens (built):** separate fields, 52px tall (`3.25rem`), 1px `#8A8378` edge (3.75:1 on white), 10px radius,
   placeholder `#726E67` (5.07:1). Focus: ink edge plus a 4px deep wash ring.
 - **Invalid:** auth uses `--danger` `#B42318`; activation uses `#A43836` with a white tile alert on `#FBEDEC`.
-- **Target (review note 3):** a shared `SigField` and `SigFieldGroup` built on the phone card style, used by every
-  employee form.
+- **Built (component):** `SigFieldGroup` (one white card, 22px radius, hairlines between fields; with a `legend` it
+  is a fieldset) and `SigField` (12px caps label, 17px value, 44px control, hint in ink-3, error in urgent ink with a
+  1.5px urgent edge). `SigField` gives its single child control the `id`, `aria-describedby` (hint, error) and
+  `aria-invalid`. Focus draws a 2px ink ring inside the field. New employee forms use these; existing forms move as
+  they are touched.
 
 ### 6.7 Buttons
 
-**Built today, honestly:**
+**Built (October 21, 2026):** one scale, in `components.css` and `SigButton`.
 
-| Button | Height | Radius | Fill | Where |
+| Variant | Height | Radius | Look | Classes |
 |---|---|---|---|---|
-| `.sg-primary` | 44 | full | deep | shared frame |
-| `.sg-cta` | 54 | 16 | deep; disabled `#C9CFCD` with `#4E5654` text | shared frame |
-| `.sg-cta[data-kind="ghost"]` | 54 | 16 | white, rule inset edge | shared frame |
-| `.h5PrimaryButton`, `.r6Primary` | 52 | 10 | deep | Home, Requests |
-| `.s6Primary` | 48 | 10 | deep | Schedule |
-| `.ap-primary` | 52 (50 on phones) | 10 (16 on phones) | deep; hover `#0A2A28` | sign-in |
-| `.act-submit`, `.act-go`, `.act-soft` | 56 | 16 | deep / white with lift | activation |
-| Clocker `.button` | 60 | 18 | deep (`--clocker-accent`) | Clocker |
-| Alerts sheet buttons | 46 | 14 | deep / white | `employee-style.css:253` |
-| `.sg-band-link` | 44 | full | white at 10% on the band | band |
-| `.sg-round` | 44 | circle | none, rule ring | rows |
+| Primary | 56 (`--sig-control-h`), every width | 16 (`--sig-radius-control`) | deep fill, white 17px/500 label, hover `#12423F` | `sig-btn--primary`, `.sg-cta`, `.h5PrimaryButton`, `.s6Primary`, `.r6Primary`, `.ap-primary`, `.act-submit`, Clocker `.button`, PIN Continue |
+| Secondary | 56 | 16 | white, ink label, rule hairline plus a 1px soft lift | `sig-btn--secondary`, `.sg-cta[data-kind="ghost"]`, `.ap-secondary` |
+| Compact (in a row, beside a field) | 44 (`--sig-control-h-compact`) | 12 (`--sig-radius-compact`) | as primary or secondary | `.sg-primary`, `.employee-action`, `.pk-add`, correction trigger |
+| Link | 44 hit area | — | section 6.8 | `sig-btn--link`, `.sg-link` |
+| Round icon | 44 | circle | rule ring | `.sg-round`, Clocker keypad keys |
+| Band link | 44 | pill | white at 10% on the band | `.sg-band-link` |
 
-Hover on deep fills is `#12423F` (shared frame) or `#164B48` (Clocker). While saving, `.sg-cta:disabled` turns grey
-and reads "Saving…", which looks disabled or failed.
+Jose's call (October 20): 56/16 on phones **and** tablets, which settles Decision D6 at 16px rather than the review's 14.
 
-**Target (review gap 6; the `sig-components` session is normalising this now):**
+**States:**
 
-- Primary: 52px tall with a 14px radius on phones, 44px on desktop, deep fill, white label. The token
-  `--sig-radius-control` holds today's 16px; 14px is Decision D6.
-- Secondary: an outline at the same size.
-- Text link: section 6.8.
-- Pill shapes only for chips and the band link.
-- Pending keeps the deep fill, shows a 16px Phosphor `CircleNotch` spinner (static under reduced motion) and sets
-  `aria-busy`.
+- **Pending** = `aria-busy="true"` (plus `aria-disabled`). The fill stays, a 16px Phosphor `CircleNotch` (bold) spins
+  beside the busy words (static under reduced motion), the label keeps the size of the longer wording, the cursor is
+  `progress`. The button is **never natively disabled while working**: it keeps focus, and a second press, tap or
+  Enter is refused in code. Used by `SigButton`, `EmployeeSubmitButton`, `PendingLabel` (and so `PendingButton`),
+  sign-in, activation, recovery, passkeys, Schedule "Confirming…" and compose "Checking audience…". If the field the
+  person pressed Enter in is locked while the form works, `useKeepFocusWhileBusy` moves focus to the busy button.
+- **Disabled** = `:disabled` or `aria-disabled` without `aria-busy`: `--sig-disabled` `#ECEAE5` fill, `--sig-ink-disabled`
+  `#5F625E` text (5.1:1), no lift, `not-allowed`. Clearly different from pending, which keeps the deep fill.
+- One exception remains: Home's "Try again / Checking…" refresh keeps native `disabled` (a unit test pins it).
+
+**`SigButton` API:** `variant` (`primary` | `secondary` | `link`), `pending`, `pendingText`, `href` (renders a
+next/link; pending or disabled blocks navigation), `disabled`, `type` (defaults to `button`; pass `submit` in forms),
+plus any button or link prop. Adopt it by adding the page's class (`<SigButton className="sg-cta">`) so margins stay.
 
 ### 6.8 Links
 
@@ -484,12 +494,12 @@ Disabled links turn `--sig-ink-3`. See section 10 for what teal is used for.
 
 | State | Built | Target |
 |---|---|---|
-| **Loading** | Route skeletons per route (`employee-style.css:62-194`): the band with white-at-12% bars, then white cards on the overlapping sheet. No shimmer. Activation: `act-skel` bars `#ECE9E3` and a 16px spinner (static under reduced motion). Evidence: `build-home/state-loading.png`. | A 1.2s opacity pulse, off under reduced motion. Skeleton heights match the loaded page so nothing jumps. |
-| **Empty** | `.sg-empty`: one centred 15px sentence in ink-3 inside the card. `.r6Empty`: a card with a bold first line. Evidence: `build-home/state-noshifts.png`. | Gap 12: a 42px tile with a Phosphor icon, a 17px title, one line in ink-2 and at most one action. No illustration. |
+| **Loading** | Route skeletons per route (`employee-style.css:62-194`): the band with white-at-12% bars, then white cards on the overlapping sheet. Activation: `act-skel` bars `#ECE9E3` and a 16px spinner (static under reduced motion). In-page: `SigSkeleton` (tile + lines, 1.4s sheen, static under reduced motion, hidden from screen readers; mark the region `aria-busy`). | Skeleton heights match the loaded page so nothing jumps. |
+| **Empty** | `.sg-empty`: one centred 15px sentence in ink-3 inside the card. `.r6Empty`: a card with a bold first line. `SigEmpty`: a 56px mint tile with a Phosphor icon, a 17px title, one line in ink-3 and at most one action. No illustration. | Pages adopt `SigEmpty` as they are touched (gap 12). |
 | **Error** | `SignatureError` and `SignatureNotFound` (`system-state.tsx`): the band frame, an amber-glyph orb (`#F4C98A`), plain words, one action. 404 figure at weight 200 in mint. Auth: `.ap-alert[data-tone="error"]`. Evidence: `build-home/state-error.png`. | A no-access variant of `SignatureError` (gap 8). |
 | **Offline** | Per page only. The Home offline line is in `build-home/state-offline.png`; the board is `phase-4/p4b-offline-320.png` (not yet in the repo, section 15). No shared banner. | Gap 8: one connection banner under the header (offline, reconnecting, back online). |
 | **Signed out / session ended** | Per page ("Your session ended"). Evidence: `build-home/state-signedout.png`. | Gap 8: one sheet that offers sign-in again and keeps the draft. |
-| **Success** | Sign-in: `.ap-alert[data-tone="done"]` green `#1D6F42` on `#E7F4EC`. Activation: a deep seal with a teal-wash halo, then the Employee ID. Clocker: a recorded receipt. Employee app: the older Gusto toast (`toaster.tsx`), success and info only. | Gap 8: a Signature toast with success, info and error tones, an Undo slot and a 44px close. |
+| **Success** | Sign-in: `.ap-alert[data-tone="done"]` green `#1D6F42` on `#E7F4EC`. Activation: a deep seal with a teal-wash halo, then the Employee ID. Clocker: a recorded receipt. Employee app: the older Gusto toast (`toaster.tsx`). Built: `SigToast` (a deep pill above the tab bar, mint Undo, 44px dismiss, pauses on hover or focus, leaves after 6s, only the message is announced) and `SigBanner` (info, review, urgent = `role="alert"`, done). | Move the employee app from `toaster.tsx` to `SigToast`. |
 
 ---
 
@@ -505,43 +515,52 @@ Disabled links turn `--sig-ink-3`. See section 10 for what teal is used for.
   `--sig-focus-on-dark`: white (13.17:1 on the band) or mint (9.14:1). Never ink: ink on the band is **1.31:1**.
 - This is the band's **default**, not a per-element override.
 
-**Built today:** ink rings on light surfaces (`.sgRoot`, `.h5Root`, `.s6Root`, `.r6Root`, `.ap`). On the band only
-`.sg-band-link`, the phone header buttons, section tabs and the sign-in pill and EN/ES switch switch to white. Every
-other element on a band inherits the ink ring and fails WCAG 2.4.7 and 2.4.11. The Clocker uses a 3px `#0B6E69` ring,
-offset 3px (5.63:1 on the page).
-
-The `sig-components` session is making `--sig-focus-on-dark` the band default.
+**Built (October 21, 2026):** surfaces declare themselves with `data-sig-surface="light"` or `"deep"` (SigPage and
+SigBand, the Home, Schedule and Requests roots and bands, the sign-in page, band and desktop panel, the Clocker page and
+its side). The surface sets `--sig-surface-ring`, and one rule in `components.css` colours the ring of anything focusable
+inside a deep surface white (13.17:1); pages keep their own width, offset and radius. The phone sign-in Back and EN/ES
+pills sit over the band outside it in the markup and get the white ring by a phone-only rule. The tablet header's page
+title is white on the deep header. The Clocker keeps its 3px `#0B6E69` ring on the page (5.63:1); its skip link, which
+opens over the deep side, is white (13:1).
 
 ### 7.2 Press feedback
 
-**Rule (target):**
+**Built (October 21, 2026), in `components.css`:**
 
-- Rows and list items: background `--sig-press-bg` (`#F3F2EF`, Home's pressed row today) while pressed.
-- Buttons: `transform: scale(var(--sig-press-scale))` (.98) plus the darker fill.
-- Both within 80–100ms. The token `--sig-dur-press` records today's 120ms (sign-in); moving it to 80–100ms (the review
-  says 90ms) is part of Decision D8.
-- Under `prefers-reduced-motion: reduce`: no transform; the background change may stay.
-
-**Built today:** `.h5Row:active` (`#F3F2EF`) and `.h5Action:active` (ink at 5%) on Home; Clocker buttons scale .98 over
-160ms; `.ap-primary` scales .96 over 120ms. The shared frame (`.sg-r`, `.sg-row`, `.sgLinkRow`, `.sg-cta`,
-`.sg-primary`, `.sg-round`, `.sg-band-link`), the tab bar and the More sheet have no pressed state, and
-`globals.css:76` turns off the tap highlight. The `sig-components` session implements the rule above.
+- **Wash** (rows, tiles, cards that are links, chips, choice labels): a 5% ink layer (`--sig-press-wash`, 12% white on
+  deep) painted as a background image, so it sits over any fill. `--sig-press-bg` (`#F3F2EF`) is opaque and is not used
+  for the shared press.
+- **Lift** (buttons): the wash plus `scale(.98)` and `brightness(.92)` (no darkening on deep, where the wash lightens).
+- **Dim** (text links, tab-bar items, phone header icons, band tabs): opacity .64.
+- Press-in is instant (`transition-duration: 0s` on `:active`); the release eases back over `--sig-dur-press` (120ms)
+  and colours over `--sig-dur-state`. Disabled and pending controls don't respond.
+- Reduced motion: no transform; the wash, darkening and fade stay.
+- Hover lives only in `@media (hover: hover)` across the Signature, sign-in and Clocker sheets, so a tap on a phone
+  leaves no hover colour behind. The availability switch stretches its thumb and dims its track while pressed.
+- `-webkit-tap-highlight-color: transparent` stays (`globals.css`); every tappable element has its own press instead.
 
 ---
 
 ## 8. Motion
 
-| Token | Value today | Use | Note |
-|---|---|---|---|
-| `--sig-dur-press` | 120ms | press feedback | review target 90ms (D8) |
-| `--sig-dur-state` | 180ms | colour and state changes | from activation |
-| `--sig-dur-sheet` | 280ms | sheets and route rise | new, not used yet |
-| `--sig-dur-rise` | 360ms | page entrance rise | from sign-in |
-| `--sig-ease` | `cubic-bezier(.2, .7, .2, 1)` | all of the above | from sign-in |
+| Token | Value | Use |
+|---|---|---|
+| `--sig-dur-press` | 120ms | press release (press-in is instant) |
+| `--sig-dur-state` | 180ms | colour and state changes, figure cross-fade, toast |
+| `--sig-dur-sheet` | 280ms | sheet rise on route change, bottom sheet |
+| `--sig-dur-rise` | 360ms | sign-in entrance rise |
+| `--sig-ease` | `cubic-bezier(.2, .7, .2, 1)` | all of the above |
 
-Built: sign-in rises over 360ms on that curve (`auth-premium.css:26`); the activation rule dots change over 180ms; the
-Clocker fades in with GSAP over 240ms. The shared frame and `employee-style.css` have no motion. Every animated rule
-needs a `prefers-reduced-motion: reduce` version (opacity only or none).
+Built (October 21, 2026):
+
+- **Route change:** each page's sheet (`[data-sig-sheet]`: SigPage, Home, Schedule, Requests) rises 12px and fades in
+  over 280ms; the band above does not move, so switching tabs keeps it steady. Fill mode `backwards`, so no transform
+  stays on the sheet. Reduced motion: a 180ms fade only.
+- **Figures:** `SigFade` cross-fades a figure when its value changes, never on first render (the band `Duration`).
+- **Sheet and toast:** `SigSheet` rises over 280ms with a fading backdrop; `SigToast` rises 8px over 180ms. Reduced
+  motion: fade only.
+- **Clocker:** `useClockerMotion` uses the Web Animations API (6px, .55 opacity, 240ms) instead of GSAP, skipped under
+  reduced motion. Other employee pages still use GSAP for their own entrances.
 
 ---
 
@@ -556,6 +575,9 @@ needs a `prefers-reduced-motion: reduce` version (opacity only or none).
   `hyphens: manual`, and an edge fade on scrolling tab rows.
 
 ### 9.2 The caps-label exception
+
+Built: every 11px tracked caps label in the Signature, sign-in and Clocker sheets is now 12/16
+(`--sig-type-caps-sm`), so the exception below has one size: 12px.
 
 Tracked uppercase labels may go below the 15px floor only under all of these conditions:
 
@@ -726,6 +748,11 @@ Either way the band is never recoloured. Once decided, it is wired through `toke
 3. Each new screen cites its board path in a comment, and the board is in `docs/` before the code lands.
 4. Each new screen covers loading, empty, error, offline and success (section 6.9), at 320, 390, 768 and 1440, with
    keyboard focus and reduced motion checked in a real browser.
+5. No raw hex colours in a Signature stylesheet. `src/components/signature/hex-guard.test.ts` counts hex outside
+   comments, custom-property declarations and `var()` fallbacks, and fails when any Signature sheet gains one (each
+   existing sheet keeps its October 21, 2026 count as a ceiling; lower it when you remove one).
+6. Build with the components (section 6) before writing new `sg-*` markup, and check a new component on
+   `/ui-preview/signature` first.
 
 ---
 
