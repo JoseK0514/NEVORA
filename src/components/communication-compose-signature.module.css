@@ -61,3 +61,17 @@
 @media (min-width: 768px) {
   .ccPaper:not(#cc), .ccCount:not(#cc), .ccRoot :global(.wb-notice):not(#cc) { margin-inline: 0; }
 }
+
+/* Phase 4 upscale: the update on a lock screen, from the person's own title and message (illustration). */
+.ccLock:not(#cc) { margin: 0 16px; padding: 22px 14px 18px; border-radius: 26px; background: radial-gradient(120% 90% at 20% 0%, #2B6E69 0%, #12403D 55%, #0B2725 100%); overflow: hidden; }
+.ccLockTime:not(#cc) { display: flex; flex-direction: column; align-items: center; margin-bottom: 18px; color: #FFFFFF; }
+.ccLockTime b:not(#cc) { font: 200 3.25rem/3.375rem var(--sg-display); letter-spacing: -.03em; }
+.ccLockTime span:not(#cc) { font: 500 .875rem/1.125rem var(--sg-font); color: rgba(255, 255, 255, .8); }
+.ccAlert:not(#cc) { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 18px; background: rgba(245, 247, 246, .9); box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
+.ccApp:not(#cc) { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 9px; background: var(--sg-deep); color: #FFFFFF; font: 600 1rem/1 var(--sg-display); }
+.ccAlertCopy:not(#cc) { flex: 1; min-width: 0; }
+.ccAlertCopy > b:not(#cc) { display: block; font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .04em; text-transform: uppercase; color: var(--sg-ink-2); }
+.ccAlertCopy > span:not(#cc) { display: -webkit-box; margin-top: 3px; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; font: 400 .875rem/1.1875rem var(--sg-font); color: var(--sg-ink); overflow-wrap: anywhere; }
+.ccAlertCopy > span b:not(#cc) { display: block; font-weight: 600; }
+.ccAlert > small:not(#cc) { flex: none; font: 400 .75rem/1rem var(--sg-font); color: var(--sg-ink-3); }
+@media (min-width: 768px) { .ccLock:not(#cc) { margin-inline: 0; } }

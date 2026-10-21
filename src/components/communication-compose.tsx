@@ -77,9 +77,12 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
  const signature=mode==='employee'&&!context.management;
  const day=keepWhole(formatDisplayDate(context.businessDate));
  const sigReview=preview&&action.notice!=='conflict'&&!staleEdit?<section className={`compose-reviewed ${cc.ccReview}`} aria-label="Audience preview">
-   <div className={cc.ccCount}><b aria-hidden="true">{preview.count}</b><span><h2 ref={previewHeadingRef} tabIndex={-1}><span className="nv-sr">Audience preview: </span>{preview.count} {preview.count===1?'person':'people'}</h2><small>Today’s team at {location}</small></span></div>
+   <div className={cc.ccCount}><b aria-hidden="true">{preview.count}</b><span><h2 ref={previewHeadingRef} tabIndex={-1}><span className="nv-sr">Audience preview: {preview.count} </span>{preview.count===1?'person':'people'} at {location}</h2><small>Everyone on today’s team · {day}</small></span></div>
    {preview.count===0?<p className={cc.ccEmpty}>No eligible recipients in this audience. You can change the delivery settings before publishing.</p>:null}
-   <SigHead title="How it will look"/>
+   <SigHead title="On their phone"/>
+   <div className={cc.ccLock} aria-hidden="true"><div className={cc.ccLockTime}><b>9:41</b><span>{day}</span></div>
+    <div className={cc.ccAlert}><span className={cc.ccApp}>N</span><span className={cc.ccAlertCopy}><b>NEVORA · {location}</b><span><b>{title.trim()||'Your title'}</b> {body.trim()||'Your message'}</span></span><small>now</small></div></div>
+   <SigHead title="In the app"/>
    <div className={`sg-card ${cc.ccPreview}`} aria-hidden="true"><div className="sg-card-head"><span className="sg-tile"><UsersThreeIcon size={22}/></span><span className={cc.ccHeadCopy}><b>Today’s team</b><small>{day}</small></span></div>
     <div className={cc.ccPreviewBody}><b>{title.trim()||'Your title'}</b><span>{body.trim()||'Your message'}</span></div></div>
    <button className="sg-cta" type="button" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><PaperPlaneTiltIcon size={20} aria-hidden="true"/><PendingLabel pending={action.pending} pendingText="Publishing…">Publish update</PendingLabel></button>

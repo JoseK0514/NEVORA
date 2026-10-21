@@ -13800,3 +13800,11 @@ html.mobile-keyboard-open :is(.availability-savebar, .employee-create-savebar, .
 
 /* Employee Signature system screens (phase 4): hidden outside the employee shell, which shows them instead. */
 .sg-sys-employee { display: none; }
+
+/* Correction trigger and history pieces (phase 4 upscale): readable everywhere; the employee Signature page dresses them. */
+.employee-time-correction-trigger { display: inline-flex; align-items: center; gap: 10px; }
+.employee-time-correction-trigger__copy { display: inline-flex; flex-direction: column; text-align: left; }
+.employee-time-correction-trigger__copy small { font-size: .8125rem; font-weight: 400; opacity: .75; }
+.employee-correction-day { display: none; }
+.employee-correction-change { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.employee-correction-change s { opacity: .6; }
