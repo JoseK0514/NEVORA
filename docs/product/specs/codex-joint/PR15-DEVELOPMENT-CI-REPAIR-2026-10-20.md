@@ -143,6 +143,37 @@ navigation. Regression:4failed before implementation,5passed afterward. H07/H08/
 H11 privacy assertions and all runtime checks remain. This transport change is a
 candidate repair; matching browser and hosted execution still decide acceptance.
 
+Local `a405b608` whole Phase D reached82 passing Chromium checks, then timed out
+waiting for the Clocker document's `load` event; its failure screenshot shows the
+ready Clocker devices page. The navigation now requires DOM readiness, HTTP
+success and the actual page heading before continuing. Recovery proof navigation
+uses the same readiness contract and still requires the real Recovery code input,
+fragment removal, proof consumption, reuse/expiry denial and session invalidation.
+The original15second deadlines remain.
+
+Hosted `a405b608` passed all46 Attendance checks. The combined Phase D job
+then exposed a stale delayed-script recovery assertion: `ScopedReadFrame`
+withholds the entire form until scripts establish fresh current access. Its
+failure screenshot shows `Current view needs a fresh check`. The browser test
+now requires that exact barrier and absence of the reference, submit control and
+receipt rows while scripts are held, then requires enabled controls after
+release and performs the same real immutable-receipt lookup.
+
+A focused diagnostic using the complete Home scenario at WebKit390 reproduced
+H08's held-read/navigation ordering failure with zero runtime errors. H08/H11 now
+observe DOM readiness, HTTP success and the destination heading before releasing
+the old response; subsequent network-idle, stale-private-row absence and fatal
+runtime assertions remain. The external diagnostic intentionally retains the
+complete14-cell validator and cannot produce acceptance for its missing13 cells.
+
+The late committed Manager switch test now awaits the actual held transport's
+settlement, allowing a cancelled request only when Playwright reports cancellation.
+The replacement Manager's real authorized read must return200 with a different
+authority. The old row must detach before release, no retry may return, stale
+intent must receive403 and exactly one original approval must remain. The shared
+transport helper retains five passing regression cases, including live late
+delivery and fatal unknown failures. Matching browser execution remains required.
+
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,

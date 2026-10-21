@@ -1,6 +1,6 @@
 import {expect,it,vi} from 'vitest';
 import {resolve} from 'node:path';
-const {fulfillHeldResponse}=await import(resolve('scripts/phase-e-home-browser-scenarios.mjs'));
+const {fulfillHeldResponse}=await import(resolve('scripts/browser-held-response.mjs'));
 
 it('does not deliver into a request the browser already cancelled after document navigation',async()=>{
  const fulfill=vi.fn(async()=>{});
@@ -9,10 +9,10 @@ it('does not deliver into a request the browser already cancelled after document
  expect(fulfill).not.toHaveBeenCalled();
 });
 it('still delivers a live late response after navigation so the real lifetime guard must reject it',async()=>{
- const response={},fulfill=vi.fn(async()=>{});
+ const response={response:{}},fulfill=vi.fn(async()=>{});
  const route={request:()=>({failure:()=>null}),fulfill};
  expect(await fulfillHeldResponse(route,response,true)).toBe('fulfilled');
- expect(fulfill).toHaveBeenCalledExactlyOnceWith({response});
+ expect(fulfill).toHaveBeenCalledExactlyOnceWith(response);
 });
 it('keeps the same-document held-response exercise even when its client read was aborted',async()=>{
  const fulfill=vi.fn(async()=>{throw Error('Discarded request');});

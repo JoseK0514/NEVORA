@@ -1,4 +1,5 @@
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
+import {fulfillHeldResponse} from './browser-held-response.mjs';
 import {execFileSync} from 'node:child_process';
 import {homedir} from 'node:os';
 import {join,resolve} from 'node:path';
@@ -106,20 +107,23 @@ try{
    const e=await context();await login(e,'RV-E1');const day=engine==='chromium'?'03':'13';
    const createdResponse=await boundCorrectionPost(e.request,app.url+'/api/employee/time-corrections',{headers:headers(),data:{operationId:randomUUID(),kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:`2020-12-${day}T08:00:00Z`,proposedEndAt:`2020-12-${day}T09:00:00Z`,reason:'Late manager commit '+engine}});assert.equal(createdResponse.status(),202);const created=await createdResponse.json();await e.close();
    const c=await context();let release;try{
-    await login(c,'RV-M1');const p=await page(c,'/app?view=attendance');let command,authority,committed=false;const barrier=new Promise(resolve=>{release=resolve;});
-    await p.route('**/api/manager/time-corrections',async route=>{if(route.request().method()!=='POST')return route.continue();command=route.request().postDataJSON();authority=route.request().headers()['x-nevora-correction-authority'];const r=await route.fetch();assert.equal(r.status(),200);committed=true;await barrier;return route.fulfill({status:200,contentType:'application/json',body:'{'});});
+    await login(c,'RV-M1');const p=await page(c,'/app?view=attendance');let command,authority,committed=false,documentReplaced=false,replyOutcome,replyFailure=false,originalRequest,finishReply;const barrier=new Promise(resolve=>{release=resolve;}),replyDone=new Promise(resolve=>{finishReply=resolve;});
+    await p.route('**/api/manager/time-corrections',async route=>{
+     if(route.request().method()!=='POST')return route.continue();
+     try{originalRequest=route.request();command=originalRequest.postDataJSON();authority=originalRequest.headers()['x-nevora-correction-authority'];const r=await route.fetch();assert.equal(r.status(),200);committed=true;await barrier;replyOutcome=await fulfillHeldResponse(route,{status:200,contentType:'application/json',body:'{'},documentReplaced);}
+     catch{replyFailure=true;}finally{finishReply();}
+    });
     const originalRow=p.locator('.manager-correction-row').filter({hasText:'Late manager commit '+engine});
-    const retiredRow=await originalRow.elementHandle();assert(retiredRow);const sourceDocument=await p.evaluate(()=>performance.timeOrigin);
-    await originalRow.getByRole('button',{name:'Approve correction for RV-E1 Fictional',exact:true}).click();const deadline=Date.now()+15000;while(!committed){assert(Date.now()<deadline);await new Promise(resolve=>setTimeout(resolve,20));}
-    const currentQueue=p.waitForResponse(response=>new URL(response.url()).pathname==='/api/manager/time-corrections'&&response.request().method()==='GET'&&response.request().headers()['x-nevora-actor']==='RV-M2');
+    const sourceDocument=await p.evaluate(()=>performance.timeOrigin);
+    await originalRow.getByRole('button',{name:'Approve correction for RV-E1 Fictional',exact:true}).click();const deadline=Date.now()+15000;while(!committed&&!replyFailure){assert(Date.now()<deadline);await new Promise(resolve=>setTimeout(resolve,20));}assert.equal(replyFailure,false);
     await login(c,'RV-M2');await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));
-    const currentResponse=await currentQueue;assert.equal(currentResponse.status(),200);const current=await currentResponse.json();assert.equal(current.state,'ready');assert.match(current.authority,/^[a-f0-9]{64}$/);assert.notEqual(current.authority,authority);
-    const documentReplaced=await p.evaluate(()=>performance.timeOrigin)!==sourceDocument;
-    assert(documentReplaced||!await retiredRow.evaluate(row=>row.isConnected));assert.equal(await originalRow.count(),0);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
-    const settled=p.waitForResponse(r=>r.url().endsWith('/api/manager/time-corrections')&&r.request().method()==='POST');release();await settled;await p.waitForTimeout(150);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
+    const currentResponse=await c.request.get(app.url+'/api/manager/time-corrections',{headers:{...headers(),'X-Nevora-Actor':'RV-M2'}});assert.equal(currentResponse.status(),200);const current=await currentResponse.json();assert.equal(current.state,'ready');assert.match(current.authority,/^[a-f0-9]{64}$/);assert.notEqual(current.authority,authority);
+    await originalRow.waitFor({state:'detached'});documentReplaced=await p.evaluate(()=>performance.timeOrigin)!==sourceDocument;
+    assert.equal(await originalRow.count(),0);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
+    release();let replyTimeout;try{await Promise.race([replyDone,new Promise((_,reject)=>{replyTimeout=setTimeout(()=>reject(Error('Held committed reply did not settle')),12000);})]);}finally{clearTimeout(replyTimeout);}assert.equal(replyFailure,false);assert(['fulfilled','document-left','request-aborted'].includes(replyOutcome));if(replyOutcome!=='fulfilled')assert(originalRequest.failure());await p.waitForTimeout(150);assert.equal(await p.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
     assert.equal((await c.request.post(app.url+'/api/manager/time-corrections',{headers:{...headers(),'X-Nevora-Correction-Authority':authority},data:command})).status(),403);
     assert.deepEqual(await q("SELECT actor_employee_id FROM time_correction_events WHERE request_id=$1 AND event_kind='APPROVED'",[created.requestId]),[{actor_employee_id:'RV-M1'}]);
-    o({lateReplyDiscarded:true,currentActorBound:true,oldRowClearedBeforeLateReply:true,staleRetryStatus:403,approvedEvents:1,approvedActor:'RV-M1'});
+    o({lateReplyDiscarded:true,currentActorBound:true,oldRowClearedBeforeLateReply:true,replyOutcome,staleRetryStatus:403,approvedEvents:1,approvedActor:'RV-M1'});
    }finally{release?.();await c.close();}
   });
   await browser.close();browser=null;

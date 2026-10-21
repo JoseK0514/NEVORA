@@ -7,6 +7,7 @@ import {randomUUID,createHash} from 'node:crypto';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
+import {fulfillHeldResponse} from './browser-held-response.mjs';
 
 // Shared by H06 and its controlled browser scheduling regression.
 export async function waitForFreshHome(page, freshLocation){
@@ -16,15 +17,6 @@ export async function waitForFreshHome(page, freshLocation){
   const style=getComputedStyle(next),text=next.textContent??'';
   return ['partial','ready'].includes(root.getAttribute('data-home-state'))&&root.getAttribute('aria-busy')==='false'&&next.getClientRects().length>0&&style.visibility==='visible'&&style.display!=='none'&&text.includes(fresh)&&!text.includes('Main Office Operations and Customer Support');
  },freshLocation,{timeout:15000});
-}
-
-export async function fulfillHeldResponse(route,response,documentLeft) {
- if(documentLeft&&route.request().failure())return 'document-left';
- try{await route.fulfill({response});return 'fulfilled';}
- catch{
-  if(route.request().failure())return documentLeft?'document-left':'request-aborted';
-  throw Error('Held response fulfillment failed');
- }
 }
 
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
@@ -50,7 +42,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    if(used)return route.continue();used=true;
    try{
     const response=await route.fetch();operation='parse';if(path.includes('/home'))homeResponse=await response.json();started();await wait;operation='fulfill';
-    outcome=await fulfillHeldResponse(route,response,navigationReleased);
+    outcome=await fulfillHeldResponse(route,{response},navigationReleased);
    }catch(error){
     // Never leak Playwright's request headers through an unhandled route error.
     // Unexpected fetch/fulfillment failure remains a failed scenario, not a retry.
@@ -258,10 +250,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   timeEvidence.afterHeldSettled={at:Date.now(),state:'paused',clockedInCount:0};
  }finally{time.release();await time.done;await page.unroute(time.path,time.handler);page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
  await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await ready();await page.getByText('Off clock',{exact:true}).waitFor();checks.push('H07 held actual MyTime response after pagehide/unmount cannot restore old Clocked In; fresh re-entry reflects persisted clock-out');
- stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.locator('[data-home-refresh]').click();await leaving.seen;await page.goto(app.url+'/app/requests/hub');leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('[aria-labelledby="employee-reviewed-next-heading"] a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
+ stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.locator('[data-home-refresh]').click();await leaving.seen;const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('[aria-labelledby="employee-reviewed-next-heading"] a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
  if(width===390){stage='sql-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Time off unavailable',{exact:true}).waitFor();assert.equal(await assignments().count(),2);await shot('unavailable');await blocker.query('COMMIT');await refresh();assert.equal(await page.getByText('Time off unavailable',{exact:true}).count(),0);checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='replaced-session';const other=await context.newPage();await login(other,scenario.actors[1]);await other.waitForLoadState('networkidle');await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().locator('time').count(),0);assert(await recorded().getByRole('link',{name:'Sign in',exact:true}).isVisible());assert(await recorded().getByRole('link',{name:'My Time',exact:false}).isVisible());assert.equal(await recorded().getByRole('button',{name:'Refresh recorded time',exact:true}).count(),0);await shot('session-replaced');checks.push('H10 actual same-browser account cookie replacement refuses former lifetime binding and clears every Home private row');
- await login();await ready();stage='early-my-time-route';const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await early.seen;await page.goto(app.url+'/app/schedule?week='+scenario.week);early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error');
+ await login();await ready();stage='early-my-time-route';const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await early.seen;const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{name:'My schedule',exact:true}).waitFor();early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('aside[aria-label="Own recorded time"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error');
  stage='removal-review';
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
  await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();
