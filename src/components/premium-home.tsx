@@ -144,7 +144,7 @@ export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems
       <div className="cm-home__people">
         <PeopleCards today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
       </div>
-      {readyToday && readyToday.shifts.length ? <div className="cm-home__timeline"><ShiftTimeline today={readyToday} timeZone={timeZone} /></div> : null}
+      {readyToday && readyToday.shifts.length ? <div className="cm-home__timeline"><ShiftTimeline today={readyToday} monitor={monitor} timeZone={timeZone} /></div> : null}
     </KitStack>
   </div>;
 }
@@ -249,34 +249,72 @@ function PeopleCards({ today, monitor, monitorPending = false, refreshing, onRet
   </>;
 }
 
-/** Desktop only: today's shifts on one timeline. Bars are decoration; each row's name and times are text. */
-function ShiftTimeline({ today, timeZone }: { today: Extract<Today, { state: "ready" }>; timeZone: string }) {
-  const starts = today.shifts.map(shift => Date.parse(shift.startAt)), ends = today.shifts.map(shift => Date.parse(shift.endAt));
+/** One timeline row: the planned shift (if any) and the time recorded so far (if any), in epoch milliseconds. */
+export type TimelineLane = {
+  key: string; name: string; planned: { from: number; to: number } | null; recorded: { from: number; to: number } | null;
+  /** in: on the clock now · done: clocked in and finished · later: starts later · missed: no clock-in · unscheduled: on the clock with no shift today. */
+  kind: "in" | "done" | "later" | "missed" | "unscheduled"; clockedInAt: string | null; shift: TodayShift | null;
+};
+
+/** UI-1 / PD2 / UX6: the day as planned and as recorded. Someone the clock-in read lists as working is never drawn as
+ * "No clock-in", even when they clocked in outside their planned hours; their recorded time runs from the clock-in to now.
+ * People on the clock with no shift today get their own row. The axis always includes now. */
+export function timelineLanes(today: Extract<Today, { state: "ready" }>, monitor: ClockMonitor | null) {
+  const now = Date.parse(today.observedAt);
+  const open = new Map((monitor?.state === "ready" ? monitor.employees : []).map(person => [person.employeeId, person]));
+  const lanes: TimelineLane[] = [...today.shifts].sort((a, b) => a.startAt.localeCompare(b.startAt)).map(shift => {
+    const planned = { from: Date.parse(shift.startAt), to: Date.parse(shift.endAt) };
+    const clock = open.get(shift.employeeId);
+    const clockedInAt = working(shift) ? shift.firstClockInAt ?? clock?.clockInAt ?? null : clock?.clockInAt ?? null;
+    const recorded = clockedInAt && (working(shift) || clock) ? { from: Math.min(Date.parse(clockedInAt), now), to: now } : null;
+    const kind: TimelineLane["kind"] = working(shift) || clock ? "in" : shift.status === "done" ? "done" : later(shift) ? "later" : "missed";
+    return { key: shift.id, name: shift.employeeName, planned, recorded, kind, clockedInAt: kind === "done" ? shift.firstClockInAt : clockedInAt, shift };
+  });
+  const scheduled = new Set(today.shifts.map(shift => shift.employeeId));
+  for (const person of open.values()) if (!scheduled.has(person.employeeId)) lanes.push({ key: `open:${person.timeEntryId}`, name: person.employeeName, planned: null,
+    recorded: { from: Math.min(Date.parse(person.clockInAt), now), to: now }, kind: "unscheduled", clockedInAt: person.clockInAt, shift: null });
   const hour = 3_600_000;
-  const from = Math.floor(Math.min(...starts) / hour) * hour, to = Math.ceil(Math.max(...ends) / hour) * hour;
+  const times = lanes.flatMap(lane => [lane.planned?.from, lane.planned?.to, lane.recorded?.from]).filter((time): time is number => Number.isFinite(time));
+  // From the earliest start or clock-in (or now) to the latest end, or the hour after now, whichever is later.
+  const from = Math.floor(Math.min(now, ...times) / hour) * hour;
+  const to = Math.max(Math.ceil(Math.max(...times, now) / hour) * hour, Math.floor(now / hour) * hour + hour);
+  return { lanes, from, to, now };
+}
+
+/** Desktop only: today's shifts on one timeline. Bars are decoration; each row's name and times are text. */
+function ShiftTimeline({ today, monitor, timeZone }: { today: Extract<Today, { state: "ready" }>; monitor: ClockMonitor | null; timeZone: string }) {
+  const { lanes, from, to, now } = timelineLanes(today, monitor);
+  const hour = 3_600_000;
   const span = Math.max(to - from, hour);
   const at = (time: number) => `${(((time - from) / span) * 100).toFixed(2)}%`;
-  const now = Date.parse(today.observedAt);
+  const width = (range: { from: number; to: number }) => `calc(${at(range.to)} - ${at(range.from)})`;
   // Whole-hour ticks, at most about seven of them.
   const step = Math.max(1, Math.ceil(span / hour / 6)) * hour;
   const ticks = Array.from({ length: Math.floor(span / step) + 1 }, (_, i) => from + step * i);
-  const kind = (shift: TodayShift) => working(shift) || shift.status === "done" ? "in" : later(shift) ? "later" : "missed";
+  const said = (lane: TimelineLane) => {
+    const planned = lane.shift ? `, ${clock(lane.shift.startAt, timeZone)} to ${clock(lane.shift.endAt, timeZone)}` : ", no shift today";
+    const state = lane.kind === "in" || lane.kind === "unscheduled" ? (lane.clockedInAt ? `, clocked in at ${clock(lane.clockedInAt, timeZone)}` : ", clocked in")
+      : lane.kind === "done" ? ", clocked in" : lane.kind === "later" ? ", later today" : `, no ${CLOCK_IN}`;
+    return planned + state;
+  };
+  const recording = lanes.some(lane => lane.recorded);
   return <Card id="home-timeline" title="Shifts today" meta={<span className="cm-count">{today.shifts.length}</span>}>
     <div className="cm-timeline">
       <div className="cm-timeline__axis" aria-hidden="true"><span />
         <span className="cm-timeline__track">{ticks.map((tick, i) => <span key={i} style={{ left: at(tick) }}>{clock(new Date(tick).toISOString(), timeZone).replace(":00", "")}</span>)}</span>
       </div>
       <ul className="cm-timeline__rows" aria-label="Shifts today">
-        {[...today.shifts].sort((a, b) => a.startAt.localeCompare(b.startAt)).map(shift => <li key={shift.id} className="cm-timeline__row">
-          <span className="cm-timeline__name">{shift.employeeName}<span className="sr-only">{`, ${clock(shift.startAt, timeZone)} to ${clock(shift.endAt, timeZone)}, ${kind(shift) === "in" ? "clocked in" : kind(shift) === "later" ? "later today" : `no ${CLOCK_IN}`}`}</span></span>
+        {lanes.map(lane => <li key={lane.key} className="cm-timeline__row">
+          <span className="cm-timeline__name">{lane.name}<span className="sr-only">{said(lane)}</span></span>
           <span className="cm-timeline__track" aria-hidden="true">
             {ticks.map((tick, i) => <i key={i} className="cm-timeline__grid" style={{ left: at(tick) }} />)}
-            <i className="cm-timeline__bar" data-kind={kind(shift)} style={{ left: at(Date.parse(shift.startAt)), width: `calc(${at(Date.parse(shift.endAt))} - ${at(Date.parse(shift.startAt))})` }} />
-            {now >= from && now <= to ? <i className="cm-timeline__now" style={{ left: at(now) }} /> : null}
+            {lane.planned ? <i className="cm-timeline__bar" data-kind={lane.kind === "in" ? "planned" : lane.kind === "done" ? "in" : lane.kind} style={{ left: at(lane.planned.from), width: width(lane.planned) }} /> : null}
+            {lane.recorded ? <i className="cm-timeline__bar" data-kind="recorded" style={{ left: at(lane.recorded.from), width: width(lane.recorded) }} /> : null}
+            <i className="cm-timeline__now" style={{ left: at(now) }} />
           </span>
         </li>)}
       </ul>
-      <p className="cm-timeline__key" aria-hidden="true"><span data-kind="in">Clocked in</span><span data-kind="missed">No {CLOCK_IN}</span><span data-kind="later">Later today</span><span data-kind="now">Now, {clock(today.observedAt, timeZone)}</span></p>
+      <p className="cm-timeline__key" aria-hidden="true"><span data-kind="in">Clocked in</span>{recording ? <span data-kind="planned">Planned</span> : null}<span data-kind="missed">No {CLOCK_IN}</span><span data-kind="later">Later today</span><span data-kind="now">Now, {clock(today.observedAt, timeZone)}</span></p>
     </div>
   </Card>;
 }
