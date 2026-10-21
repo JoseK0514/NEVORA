@@ -4,6 +4,9 @@ import { businessDate } from '../../lib/business-time';
 import { addDays, weekStartFor } from '../../lib/date-utils';
 import { fictionalProfile } from '../fixtures/shift-changes';
 import {installFixtureCompanyAccess} from './fixture-company-access';
+import {fixtureProof} from './shift-change-api';
+import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
+import {randomUUID} from 'node:crypto';
 
 import type { SqlExecutor } from '../../lib/notifications/types';
 
@@ -23,6 +26,16 @@ export async function seedOwnedApp(executor: SqlExecutor, options: {adoptCompany
   }
   await q("INSERT INTO positions(id,workspace_id,name) VALUES('qa-pos','workspace-fuel','Customer Support'),('qa-pos2','workspace-fuel','Operations')");
   if (options.adoptCompanyAccess !== false) await installFixtureCompanyAccess(executor);
+}
+
+export async function assignOwnedManagerCompanyAccess(executor:SqlExecutor,employeeId:string,ownerId='QAOWNER') {
+  const owner=await fixtureProof(executor,ownerId);
+  const view=await readOwnerOperationalScope(owner,employeeId,executor);
+  if(view.state!=='ready')throw Error('Owned Manager scope context unavailable.');
+  const current=view.data.current;
+  const result=await assignOperationalScope(owner,employeeId,{action:'ASSIGN',operationId:randomUUID(),expectedEmployeeVersion:current.employeeUpdatedAt,expectedRoleGeneration:current.roleGeneration,expectedScopeRevision:current.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},executor);
+  if(result.state!=='saved')throw Error('Owned Manager Company scope assignment failed.');
+  return result.receipt;
 }
 
 export async function seedOwnedScenario(executor: SqlExecutor, label: string, offset: number) {

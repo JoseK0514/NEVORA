@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {Client} from 'pg';
-import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {seedOwnedScenario,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {interceptedInboxResponse,withActorRole} from './phase-e-navigation-request.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile}){
@@ -178,6 +178,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const inboxBinding=headers['/api/notifications'],profileBinding=headers['/api/employee/profile'];
    assert(inboxBinding&&profileBinding&&inboxBinding!==profileBinding);
    for(const role of ['MANAGER','OWNER'])await withActorRole(q,actor,role,actualRole,async()=>{
+    if(role==='MANAGER')await assignOwnedManagerCompanyAccess(app.database.executor,actor);
     const managementView=await context.request.get(app.url+'/api/notifications',{headers:{'X-Nevora-Employee-View':inboxBinding}});assert.equal(managementView.status(),200);const ownManagementItems=(await managementView.json()).items;assert.deepEqual(ownManagementItems.map(item=>item.id),[noticeId]);
     const wrongView=await context.request.get(app.url+'/api/notifications',{headers:{'X-Nevora-Employee-View':profileBinding}});assert.equal(wrongView.status(),403);
     expiryRecovery.push({role,ownBindingStatus:managementView.status(),profileBindingStatus:wrongView.status(),ownItemsOnly:true});

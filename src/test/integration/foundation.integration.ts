@@ -190,6 +190,10 @@ it('fixture adoption never restores a revoked Manager or grants a new Manager Co
    expect(await withOperationalCompany(proof,async()=>{reads++;return 'private';},db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
    expect(reads).toBe(0);
   }
+  const {assignOwnedManagerCompanyAccess}=await import('./owned-app-fixture');
+  expect(await assignOwnedManagerCompanyAccess(db.executor,'new-manager','owner')).toMatchObject({action:'ASSIGN',employeeId:'new-manager',scope:{mode:'COMPANY',locationIds:[]}});
+  expect(await readOperationalAuthority(await fixtureProof(db.executor,'new-manager'),db.executor)).toMatchObject({state:'ready',scope:{mode:'COMPANY',locationIds:[]}});
+  expect(await readOperationalAuthority(await fixtureProof(db.executor,'manager'),db.executor)).toMatchObject({state:'ready',scope:null});
  }finally{await db.dispose();}
 });
 it('workspace profile enforces active Owner and permits normal availability and unchanged timezone name edits',async()=>{

@@ -5,7 +5,7 @@ import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createOwnedNextApp } from '../src/test/integration/owned-next-app.ts';
-import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture.ts';
+import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture.ts';
 import { hashPassword } from '../src/lib/auth/password.ts';
 
 const WIDTHS = [320, 375, 390, 430, 768, 1024, 1440];
@@ -235,6 +235,8 @@ try {
     );
     await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')", [id]);
   }
+
+  await assignOwnedManagerCompanyAccess(app.database.executor,'D13-M');
 
   for (const engine of ENGINES) {
     const browser = await playwright[engine].launch({ headless: true });
