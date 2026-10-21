@@ -14,6 +14,7 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
   const app = await createOwnedNextApp(evidence, {passkeysEnabled:true,payrollEnabled:true});
   const browsers: {close():Promise<void>}[] = [];
   const checks: string[] = [], errors: string[] = [];
+  let complete=false, failureScreenshot:(()=>Promise<void>)|undefined;
   const q = (text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
   try {
     await q("INSERT INTO employees(id,first_name,last_name,email,phone,role,primary_location_id) VALUES('UI-EMPLOYEE','Fictional','Employee','employee@example.invalid','2025550141','EMPLOYEE','loc-1'),('UI-LEAD','Fictional','Lead','lead@example.invalid','2025550142','LEAD','loc-1')");
@@ -30,6 +31,7 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         else await route.continue();
       });
       const page = await context.newPage();
+      failureScreenshot=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:true});};
       page.setDefaultTimeout(15000);
       page.on('pageerror',(error:Error)=>errors.push(engine+': '+error.message.slice(0,400)));
       await page.bringToFront();
@@ -74,7 +76,7 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         await page.getByRole('button',{name:'Add a passkey',exact:true}).click();
         await page.locator('.pk-list .pk-item').waitFor();
         expect(await q("SELECT count(*)::int n FROM employee_passkeys WHERE employee_id='UI-EMPLOYEE' AND revoked_at IS NULL")).toEqual([{n:1}]);
-        await page.getByRole('button',{name:'Remove',exact:true}).click();
+        await page.locator('.pk-list').getByRole('button',{name:/^Remove /}).click();
         const confirmation = page.getByRole('dialog');
         await confirmation.waitFor();
         expect(await confirmation.getByRole('button',{name:'Keep',exact:true}).evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
@@ -101,9 +103,13 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
       await context.close();
     }
     expect(errors).toEqual([]);
+    complete=true;
+  } catch (error) {
+    await failureScreenshot?.().catch(()=>{});
+    throw error;
   } finally {
     await Promise.all(browsers.map(browser=>browser.close()));
     await app.close();
-    await writeFile(evidence+'/report.json',JSON.stringify({checks,errors,source:app.sourceHashes,fictionalOnly:true,physicalFaceIdTested:false},null,2));
+    await writeFile(evidence+'/report.json',JSON.stringify({complete,checks,errors,source:app.sourceHashes,fictionalOnly:true,physicalFaceIdTested:false},null,2));
   }
 },240000);
