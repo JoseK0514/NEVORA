@@ -132,7 +132,7 @@ const es: AuthCopy = {
   forgotAccess: "¿Olvidaste tu acceso?",
   signIn: "Iniciar sesión",
   signingIn: "Iniciando sesión…",
-  newEmployee: "¿Eres nuevo?",
+  newEmployee: "¿Primera vez aquí?",
   activateYourAccount: "Activa tu cuenta",
   passkeyDesktop: "Iniciar sesión con una llave de acceso",
   passkeyPhone: "Iniciar sesión con Face ID",
@@ -204,7 +204,7 @@ const es: AuthCopy = {
   activationInvalid: "Escribe tu ID de empleado y tu número de teléfono, y elige una contraseña de al menos 8 caracteres que coincida en los dos campos.",
   privacy: "Privacidad",
   terms: "Términos",
-  support: "Soporte",
+  support: "Ayuda",
 };
 
 export const AUTH_COPY: Record<AuthLang, AuthCopy> = { en, es };
@@ -216,7 +216,7 @@ const MESSAGES_ES: Record<string, string> = {
     "Si estos datos coinciden con una cuenta activa y su canal de recuperación registrado está disponible, enviaremos instrucciones de recuperación. Si no puedes usar ese canal, comunícate con tu gerente o con el Owner para una recuperación asistida.",
   "Recovery could not be confirmed. Keep your current access and try again.": "No pudimos confirmar la recuperación. Conserva tu acceso actual e inténtalo de nuevo.",
   "Recovery is unavailable. Try again or contact your manager for assisted recovery.": "La recuperación no está disponible. Inténtalo de nuevo o comunícate con tu gerente para una recuperación asistida.",
-  "Your access ended. Sign in again.": "Tu acceso terminó. Inicia sesión de nuevo.",
+  "Your access ended. Sign in again.": "Tu sesión terminó. Inicia sesión de nuevo.",
   "Passwords do not match.": "Las contraseñas no coinciden.",
   "Password reset. All portal sessions have ended. Sign in with your new password.": "Contraseña restablecida. Se cerraron todas las sesiones del portal. Inicia sesión con tu contraseña nueva.",
   "This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.": "Este código de recuperación venció, ya se usó o no se puede verificar. Solicita un código nuevo o comunícate con tu gerente.",

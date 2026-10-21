@@ -50,7 +50,7 @@ describe("public policy pages", () => {
 
   it("the sign-in footer names the links in Spanish; the employee Profile draws them as Settings rows", () => {
     const es = renderToStaticMarkup(createElement(BrandLegal, { lang: "es" }));
-    for (const text of ['aria-label="Políticas y ayuda"', ">Privacidad</a>", ">Términos</a>", ">Soporte</a>"]) expect(es).toContain(text);
+    for (const text of ['aria-label="Políticas y ayuda"', ">Privacidad</a>", ">Términos</a>", ">Ayuda</a>", "© 2026 VELANI LLC. Todos los derechos reservados."]) expect(es).toContain(text);
     const rows = renderToStaticMarkup(createElement(AccountPrivacyLinks, { variant: "settings", sectionClassName: "sig", headingClassName: "sig-h" }));
     expect(rows).toContain('class="profile-settings account-privacy sig"');
     expect(rows).toContain('<h2 id="account-privacy-title" class="sig-h">Privacy and your account</h2>');

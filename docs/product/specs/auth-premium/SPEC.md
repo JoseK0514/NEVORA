@@ -57,7 +57,7 @@ Check every text pair at 4.5:1 and every control boundary at 3:1 (placeholder `#
 
 English stays as it is today, except for these approved changes: the sign-in title ("Good morning" etc.), the subtitle, "Your week, in one place." and the supporting line.
 
-Spanish (draft for Jose's review; payroll and legal text is not involved):
+Spanish (reviewed by Jose, October 20: "tú" throughout, "Owner" in English, the copyright line translated; the policy pages stay English for launch):
 
 | English | Español |
 |---|---|
@@ -72,7 +72,7 @@ Spanish (draft for Jose's review; payroll and legal text is not involved):
 | Enter your password | Escribe tu contraseña |
 | Forgot access? | ¿Olvidaste tu acceso? |
 | Sign in | Iniciar sesión |
-| New employee? Activate your account | ¿Eres nuevo? Activa tu cuenta |
+| New employee? Activate your account | ¿Primera vez aquí? Activa tu cuenta |
 | Forgot access (title) | Recuperar acceso |
 | Recovery email | Correo de recuperación |
 | Use the email registered with your account. | Usa el correo registrado en tu cuenta. |
@@ -94,7 +94,7 @@ Spanish (draft for Jose's review; payroll and legal text is not involved):
 | Confirm password / Re-enter your password | Confirma la contraseña / Vuelve a escribirla |
 | Need your employee details? | ¿Necesitas tus datos de empleado? |
 | Back to sign in / Sign in (pill) | Volver a iniciar sesión / Iniciar sesión |
-| Privacy · Terms · Support | Privacidad · Términos · Soporte |
+| © 2026 VELANI LLC. All rights reserved. · Privacy · Terms · Support | © 2026 VELANI LLC. Todos los derechos reservados. · Privacidad · Términos · Ayuda |
 | Device screen (decorative): TUESDAY, OCTOBER 20 · Good morning, Alex · NEXT SHIFT · In 22 min · Front desk · Main Office · Clock in · THIS WEEK · Scheduled · Worked · Next payday · Fri, Oct 23 · Time off · Oct 26 · Approved by Morgan · Approved · Home / Schedule / Requests / Pay | MARTES, 20 DE OCTUBRE · Buenos días, Alex · PRÓXIMO TURNO · En 22 min · Recepción · Oficina principal · Marcar entrada · ESTA SEMANA · Programadas · Trabajadas · Próximo pago · vie, 23 oct · Tiempo libre · 26 oct · Aprobado por Morgan · Aprobado · Inicio / Horario / Solicitudes / Pago |
 | Waiting for Face ID… / Waiting for your passkey… | Esperando Face ID… / Esperando tu llave de acceso… |
 | Face ID isn’t set up for NEVORA on this device. Sign in with your password, then set it up in Profile. | Face ID no está configurado para NEVORA en este dispositivo. Inicia sesión con tu contraseña y luego configúralo en tu perfil. |
