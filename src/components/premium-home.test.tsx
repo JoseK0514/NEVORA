@@ -51,3 +51,21 @@ describe("Home timeline (UI-1, PD2, UX6)", () => {
     expect(from % hour).toBe(0);
   });
 });
+
+describe("Home's Next payday row (MK1)", () => {
+  it("shows the next payday from My pay's date, and nothing without one", async () => {
+    const { renderToStaticMarkup } = await import("react-dom/server");
+    const { createElement } = await import("react");
+    const { PremiumHomeSurface } = await import("./premium-home");
+    const base = { greeting: "", dateLabel: "Tuesday, October 20", timeZone: "America/Puerto_Rico", week: { weekStart: "2026-10-19", weekLabel: "", plannedShifts: 0, availabilitySubmitted: 0, availabilityEligible: 0, locations: [] },
+      today: null, actions: null, actionsConnection: "loading" as const };
+    const html = renderToStaticMarkup(createElement(PremiumHomeSurface, { ...base, nextPay: { payday: "2026-10-27", daysUntil: 6 } }));
+    expect(html).toContain("Coming up");
+    expect(html).toContain("Next payday");
+    expect(html).toContain("Tue, Oct");
+    expect(html).toContain("in 6 days");
+    expect(html).toContain('href="/app/my-pay"');
+    expect(renderToStaticMarkup(createElement(PremiumHomeSurface, { ...base, nextPay: { payday: "2026-10-21", daysUntil: 0 } }))).toContain(">today<");
+    expect(renderToStaticMarkup(createElement(PremiumHomeSurface, base))).not.toContain("Next payday");
+  });
+});

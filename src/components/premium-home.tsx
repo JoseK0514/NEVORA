@@ -3,7 +3,7 @@ import Link from "next/link";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
-import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
+import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, WalletIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { Avatar, Button, Card, CardBody, Freshness, KitLink, KitStack, PageBand, Row, Rows, Tile } from "@/components/kit/kit";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
 import { useToday } from "./manager-today";
@@ -15,6 +15,8 @@ import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import { useClockMonitor } from "./clean/use-clock-monitor";
+import { keepWhole } from "@/lib/keep-whole";
+import type { NextPay } from "./payroll/my-pay";
 
 /* Manager and Owner Home, rebuilt for the clean Manager app (v3, approved Oct 19; spec in
  * docs/product/specs/clean-manager/spec.md). One job: what needs me now, and how today is going.
@@ -41,6 +43,8 @@ export type PremiumHomeProps = {
   setup?: ReactNode;
   /** When the Owner setup card lists the setup items, they leave Planning. */
   setupHoldsItems?: boolean;
+  /** MK1: the next payday from My pay's pay schedule; Home shows it as one Coming up row. */
+  nextPay?: NextPay;
 };
 
 const clock = (iso: string, timeZone: string) => {
@@ -89,7 +93,7 @@ export type PremiumHomeSurfaceProps = PremiumHomeProps & {
 };
 
 /** Presentation only, so the fictional preview can show Home without a session. */
-export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems = false, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
+export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems = false, nextPay = null, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
   actions, actionsConnection, onRetryActions, liveReaders, offline = false }: PremiumHomeSurfaceProps) {
   const readyToday = today?.state === "ready" ? today : null;
   // r4 QA: Home remembers whether the Owner setup card shows, so the next route placeholder starts with its shape.
@@ -140,6 +144,7 @@ export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems
       {setup ? <div className="cm-home__setup">{setup}</div> : null}
       <div className="cm-home__now" ref={nowColumn}>
         {value ? <NeedsYouCard value={value} timeZone={timeZone} /> : <PendingCard connection={offline ? "offline" : actionsConnection} onRetry={retryAll} />}
+        {nextPay ? <ComingUpCard nextPay={nextPay} /> : null}
       </div>
       <div className="cm-home__people">
         <PeopleCards today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
@@ -183,6 +188,20 @@ function NeedsYouCard({ value, timeZone }: { value: NeedsYou; timeZone: string }
       {requests.length ? <Row href="/app/inbox?filter=requests" leading={<Tile tone="neutral">{oneRequest?.type === "TIME_OFF" ? <AirplaneTiltIcon size={20} weight="fill" /> : <UserCheckIcon size={20} weight="fill" />}</Tile>}
         title={oneRequest ? (oneRequest.type === "TIME_OFF" ? "Time-off request" : oneRequest.type === "EXCHANGE" ? "Shift change request" : "Can’t-work report") : "Requests"} meta={requestMeta} trailing={<span className="cm-row-count">{requests.length}</span>}
         label={`${plural(requests.length, "request", "requests").replace("\u00a0", " ")} waiting, open in Inbox`} /> : null}
+    </Rows>
+  </Card>;
+}
+
+/** MK1 (the UI part): one dated row for the next payday, from the date My pay already shows. Payroll runs and deadlines
+ * join it once their wording is approved. */
+function ComingUpCard({ nextPay }: { nextPay: NonNullable<NextPay> }) {
+  const day = new Date(`${nextPay.payday}T12:00:00Z`);
+  const date = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(day);
+  const when = nextPay.daysUntil === 0 ? "today" : nextPay.daysUntil === 1 ? "tomorrow" : `in ${nextPay.daysUntil} days`;
+  return <Card id="home-coming-up" title="Coming up">
+    <Rows label="Coming up">
+      <Row href="/app/my-pay" leading={<Tile tone="neutral"><WalletIcon size={20} weight="fill" /></Tile>} title="Next payday" meta={keepWhole(date)} trailing={when}
+        label={`Next payday, ${date}, ${when}, open My pay`} />
     </Rows>
   </Card>;
 }
