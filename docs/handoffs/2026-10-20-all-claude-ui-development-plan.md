@@ -7,7 +7,7 @@ database writes remain outside this task. Codex owns integration and verificatio
 ## Pinned inputs
 
 - Development: `d4b01453f7fabaa7ac739d049934527b6b366310`.
-- Clean Manager/Owner and CI repairs (PR15): `cb4cc5ca0c0d851247d3eb6a321d79dc505ce128` (includes the original `87768b9e` input).
+- Clean Manager/Owner and CI repairs (PR15): `a405b6080c5d0ca4086965bc6c37bf76713b511b` (includes `cb4cc5ca` and the original `87768b9e` input).
 - Claude auth plus Employee/Lead and Clocker Signature UI: `b0632ce63104197c728bd062c168b28771ac4687` (includes `8107dfed`). This is the frozen Claude input; later changes need their own candidate.
 - Policy pages/deletion requests: `d0b6d1f5e12f8602b947ad18cc40e04fc1180a6a`.
 - Matching passkey server: `48ededa576f3951054dbf6d9394d10670b831c60`.
@@ -84,6 +84,14 @@ Contrast measurement now supports dark text on light backgrounds while still
 rejecting a foreground crossing the background range (new red/green regressions).
 Home's fresh-generation wait requires a visible fresh fact, including when its
 semantic parent uses display:contents, and rejects the former location text.
+
+The Profile calendar cleanup originally hid all unroled paragraphs, including the
+private-link disclosure and refresh/connection caveat. The existing calendar
+browser scenario reproduced this; the hide rule now targets only the redundant
+introductory paragraph. Native request verification reads the Signature form's
+visible one-day heading instead of the retired form's summary aside. The PR15
+repair merge retains its explicit Manager grants, operational retirement checks,
+cancelled-document response handling, and exact receipt command validation.
 
 PR16: https://github.com/JoseK0514/NEVORA/pull/16. The final merge gate is all
 mandatory hosted checks on the combined candidate, plus reconciliation with the
