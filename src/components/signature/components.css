@@ -43,6 +43,8 @@
 /* The label: idle words and pending words share one grid cell (used by SigButton and EmployeeSubmitButton). */
 .sig-btn__label { display: inline-grid; align-items: center; justify-items: center; max-width: 100%; }
 .sig-btn__label > * { grid-area: 1 / 1; }
+/* A text link lines up with the copy around it; the busy cell (spinner + words) must not push it right. */
+.sig-btn--link .sig-btn__label { justify-items: start; }
 .sig-btn .sig-btn__idle, .sig-btn__busy { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .sig-btn__spin { flex: none; transform-origin: 50% 50%; animation: sig-btn-spin .8s linear infinite; }
 @keyframes sig-btn-spin { to { transform: rotate(360deg); } }
@@ -217,6 +219,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mo
 .sig-banner__copy strong { font: 500 1rem/1.3125rem var(--sig-font, sans-serif); }
 .sig-banner__copy p { margin: 0; font: var(--sig-type-callout, 400 .9375rem/1.3125rem sans-serif); color: var(--sig-ink-2, #5F625E); }
 .sig-banner__action { margin-top: 6px; }
+.sig-banner__action > .sig-btn--link { margin-left: -4px; }
 
 /* Empty state: a 56px icon tile, a title, a line, the next step. */
 .sig-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px 24px; text-align: center; color: var(--sig-ink, #161C1B); }
@@ -254,13 +257,14 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mo
 .sig-field:focus-within { box-shadow: inset 0 0 0 2px var(--sig-focus, #161C1B); }
 .sig-field[data-invalid] { box-shadow: inset 0 0 0 1.5px var(--sig-urgent-ink, #A3271A); }
 .sig-field__label { display: block; font: var(--sig-type-caps, 600 .75rem/1rem sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--sig-ink-3, #6F6C66); }
-.sig-field :is(input, select, textarea) {
+/* The :not(#sig) lift outweighs the shell's generic input box (border, radius, invalid glow), as elsewhere in this sheet. */
+.sig-field :is(input, select, textarea):not(#sig):not(#sig) {
   box-sizing: border-box; display: block; width: 100%; min-height: 44px; margin: 4px 0 0; padding: 8px 0; border: 0; border-radius: 0;
-  background: transparent; color: var(--sig-ink, #161C1B); font: 400 1.0625rem/1.5rem var(--sig-font, sans-serif); outline: none;
+  background: transparent; color: var(--sig-ink, #161C1B); font: 400 1.0625rem/1.5rem var(--sig-font, sans-serif); outline: none; box-shadow: none;
 }
-.sig-field textarea { min-height: 96px; resize: vertical; }
-.sig-field :is(input, textarea)::placeholder { color: var(--sig-ink-3, #6F6C66); }
-.sig-field :is(input, select, textarea):disabled { color: var(--sig-ink-3, #6F6C66); }
+.sig-field textarea:not(#sig):not(#sig) { min-height: 96px; resize: vertical; }
+.sig-field :is(input, textarea):not(#sig):not(#sig)::placeholder { color: var(--sig-ink-3, #6F6C66); }
+.sig-field :is(input, select, textarea):disabled:not(#sig):not(#sig) { color: var(--sig-ink-3, #6F6C66); }
 .sig-field__hint, .sig-field__error { margin: 4px 0 0; font: var(--sig-type-row-sub, 400 .9375rem/1.25rem sans-serif); }
 .sig-field__hint { color: var(--sig-ink-3, #6F6C66); }
 .sig-field__error { color: var(--sig-urgent-ink, #A3271A); }
@@ -277,10 +281,11 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mo
   animation: sig-sheet-rise var(--sig-dur-sheet, 280ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)) backwards;
 }
 .sig-sheet[open]::backdrop { animation: sig-fade-in var(--sig-dur-sheet, 280ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)); }
+.sig-sheet__panel:focus { outline: none; }
 .sig-sheet__handle { display: block; width: 36px; height: 5px; margin: 0 auto 8px; border-radius: 3px; background: var(--sig-edge, #E3DFD8); }
 .sig-sheet__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
 .sig-sheet__head h2 { margin: 0; font: 500 1.1875rem/1.5rem var(--sig-font, sans-serif); }
-.sig-sheet__close, .sig-toast__close { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; margin: 0 -10px 0 0; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--sig-ink-2, #5F625E); cursor: pointer; }
+.sig-sheet__close, .sig-toast__close { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; margin: 0 -6px 0 0; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--sig-ink-2, #5F625E); cursor: pointer; }
 .sig-sheet__body { padding-top: 8px; }
 @media (min-width: 768px) {
   .sig-sheet[open] { align-items: center; }

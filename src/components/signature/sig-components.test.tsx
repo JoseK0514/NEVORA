@@ -33,8 +33,8 @@ describe('Signature components', () => {
   it('tabs are links with aria-current on the page you are on', () => {
     const html = renderToStaticMarkup(<SigTabs label="Requests" variant="band" items={[{ href: '/a', label: 'Mine', current: true, count: 2 }, { href: '/b', label: 'New' }]} />);
     expect(html).toContain('<nav class="sig-tabs" data-variant="band" aria-label="Requests">');
-    expect(html).toContain('<a href="/a" aria-current="page">Mine<em>2</em></a>');
-    expect(html).toContain('<a href="/b">New</a>');
+    expect(html).toContain('<a href="/a" class="sig-tabs__link" aria-current="page">Mine<em>2</em></a>');
+    expect(html).toContain('<a href="/b" class="sig-tabs__link">New</a>');
   });
 
   it('banners announce urgent messages at once and the rest politely', () => {
