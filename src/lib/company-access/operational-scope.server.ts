@@ -27,6 +27,10 @@ const current=`w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND
 const allowedCompany=`(e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ${validSelectionSql}))`;
 
 export class OperationalAuthorizationError extends Error {constructor(){super('operational_authorization');}}
+/** The authority could not be READ (schema missing, transport down, invalid stored
+ * selection) as opposed to being read and denied. Callers' generic unavailable
+ * paths handle it; it must never be reported as an access decision. */
+export class OperationalUnavailableError extends Error {constructor(){super('operational_unavailable');}}
 /** Exact authorization diagnostics only; database/validation failures retain their meaning. */
 export function isOperationalAuthorizationError(error:unknown):boolean {
  return error instanceof OperationalAuthorizationError || (error!==null&&typeof error==='object'
@@ -37,7 +41,10 @@ export function isOperationalAuthorizationError(error:unknown):boolean {
  * operational guard inside their business transaction, after all lock waits. */
 export async function assertOperationalAccess(proof:SessionMutationProof,footprint:OperationalFootprint|undefined,executor:SqlExecutor=neonNotificationExecutor()) {
  const view=await readOperationalAuthority(proof,executor);
- if(view.state!=='ready'||!view.scope||!['OWNER','MANAGER'].includes(view.role))throw new OperationalAuthorizationError();
+ // A failed READ (missing 0032 schema, transport failure) is not a denial: an
+ // Owner on an unmigrated database must see "unavailable", not an access message.
+ if(view.state!=='ready')throw view.reason==='access_denied'?new OperationalAuthorizationError():new OperationalUnavailableError();
+ if(!view.scope||!['OWNER','MANAGER'].includes(view.role))throw new OperationalAuthorizationError();
  const actual=footprint??(view.scope.mode==='COMPANY'?{kind:'COMPANY'} as const:{kind:'LOCATIONS',locationIds:view.scope.locationIds} as const);
  const workspace=await getWorkspace(executor);
  await executor.transaction([...workspaceReadGuard(workspace),
