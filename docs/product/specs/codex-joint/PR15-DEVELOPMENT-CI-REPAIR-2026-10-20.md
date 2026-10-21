@@ -271,7 +271,7 @@ exact committed source custody and its original owned runtime checks.
 
 Hosted `1002c9cc` passed types, lint, full units, the production build, all three
 database jobs and all14 Home, Communications and Calendar browser cells. Whole
-Phase D passed201 checks in each engine, including the fresh reset-document
+Phase D passed201 checks across both engines, including the fresh reset-document
 regressions. The later D2 recovery suite exposed an application regression:
 the enclosing current-access frame unmounts the private correction pane while
 offline, which discarded its local uncertain review command.
@@ -331,6 +331,15 @@ live signal authorization and closed-resource checks are unchanged.
 A real tiny-process regression simulates only that later PPID field: it failed
 with the original receipt and passes after the fix; the unrelated-process refusal
 also passes. Full lifecycle/negative regressions remain required in cloud CI.
+
+The completed `534ae15a` Attendance job passed: whole Phase D201 checks,
+D2 correction282 checks and Clocker lifecycle/recovery90 checks across Chromium
+and WebKit, plus the preceding remediation gates. Every Manager approve/decline
+before/after/malformed/unknown delivery case recovered the same operation, and
+current Manager/Employee authority-loss cases cleared recovery. D2 closed its
+owned database. Attention also passed all14 cells. The complete workflow remains
+failed because Home, Navigation and the Calendar leaf gate failed; these successes
+do not satisfy final-candidate acceptance for the later readiness/receipt repairs.
 
 CTO position for the application fix: recovery state belongs above the private
 pane's lifetime, with its original immutable command identity. CISO position:
